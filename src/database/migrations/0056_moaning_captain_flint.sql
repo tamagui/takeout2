@@ -1,0 +1,1 @@
+ALTER TABLE "userPublic" ADD COLUMN "hasOnboarded" boolean DEFAULT false NOT NULL;

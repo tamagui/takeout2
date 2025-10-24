@@ -1,0 +1,87 @@
+import { desc, like } from 'drizzle-orm'
+import { getDb } from '~/database'
+import { migrations as migrationsTable } from '~/database/schema-private'
+import { handleError } from '~/features/errors/handleError'
+import { migrations } from './migrations'
+
+const ZERO_MIGRATION_PREFIX = `zero-migration-`
+
+export async function initializeZeroMigrations() {
+  const db = getDb()
+
+  // validate migrations versions numbers are incrementing:
+  let lastVersion = -1
+  const existingVersions = new Set<number>()
+  for (const [index, migration] of migrations.entries()) {
+    if (lastVersion === -1) {
+      lastVersion = migration.version
+      continue
+    }
+    if (migration.version <= lastVersion || existingVersions.has(migration.version)) {
+      console.error(
+        `[zero.migrate] ❌ Error: Zero migration at index ${index} version is not greater than last or duplicate of previous migration`
+      )
+      process.exit(1)
+    }
+    lastVersion = migration.version
+    existingVersions.add(migration.version)
+  }
+
+  try {
+    const completedMigrations = await db
+      .select()
+      .from(migrationsTable)
+      .where(like(migrationsTable.name, `${ZERO_MIGRATION_PREFIX}%`))
+      .orderBy(desc(migrationsTable.name))
+
+    const completedVersions = new Set(
+      completedMigrations.map((m) => {
+        const version = m.name.replace(ZERO_MIGRATION_PREFIX, '')
+        return Number.parseInt(version, 10)
+      })
+    )
+
+    const highestCompletedVersion =
+      completedVersions.size > 0 ? Math.max(...completedVersions) : -1
+
+    const migrationsToRun = migrations.filter((m) => m.version > highestCompletedVersion)
+
+    console.info(
+      `[zero.migrate] at version ${highestCompletedVersion}, ${migrations.length} total migrations, ${migrationsToRun.length} left to run`
+    )
+
+    if (migrationsToRun.length === 0) {
+      return
+    }
+
+    console.info(
+      `[zero.migrate] v${highestCompletedVersion} → v${Math.max(...migrationsToRun.map((m) => m.version))}`
+    )
+
+    for (const migration of migrationsToRun) {
+      console.info(`[zero.migrate] running v${migration.version} (${migration.name})`)
+
+      try {
+        await migration.run()
+
+        await db.insert(migrationsTable).values({
+          name: `${ZERO_MIGRATION_PREFIX}${migration.version}`,
+        })
+
+        console.info(`[zero.migrate] ✅ v${migration.version} (${migration.name})`)
+      } catch (error) {
+        console.error(
+          `[zero.migrate] ❌ v${migration.version} (${migration.name})`,
+          error
+        )
+        handleError(error instanceof Error ? error : new Error(String(error)))
+        break
+      }
+    }
+
+    console.info('[zero.migrate] ✨ complete')
+  } catch (error) {
+    console.error('[zero.migrate] ❌ failed', error)
+    handleError(error instanceof Error ? error : new Error(String(error)))
+  }
+}

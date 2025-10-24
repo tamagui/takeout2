@@ -1,0 +1,650 @@
+/*
+ * HOME PAGE SCROLL ANIMATIONS
+ *
+ * This file contains all scroll-driven animations for the home page.
+ * The page uses CSS Scroll-Driven Animations API to sync animations with scroll position.
+ *
+ * ============================================================================
+ * ARCHITECTURE OVERVIEW
+ * ============================================================================
+ *
+ * The home page has three coordinated animation systems that work together:
+ *
+ * 1. SHOWCASE (3D Screenshot) - Fixed position element that transforms through scroll
+ *    - Lives at: src/features/website/Showcase.tsx
+ *    - Uses: animation-timeline: --body-scroll (global scroll position)
+ *    - Controlled by: showcase-container-transform keyframes
+ *    - Moves through 3D space (rotate, scale, translate) as user scrolls
+ *    - Has 4 image layers (background, hud, main-content, topbar-search) that animate independently
+ *
+ * 2. SECTIONS (Content) - Scrollable content that fades in/out as it enters/exits viewport
+ *    - Uses: animation-timeline: view() (viewport-relative position)
+ *    - Controlled by: fade-in-section and parallax-* keyframes
+ *    - Each section has different entry/exit animations
+ *
+ * 3. OVERVIEW CARDS - Staggered card reveals in the overview section
+ *    - Lives at: src/features/website/OverviewSection.tsx
+ *    - Uses: animation-timeline: view() (viewport-relative position)
+ *    - Controlled by: fade-blur-in keyframes
+ *    - Cards cascade in with slight delays as overview section enters viewport
+ *
+ * ============================================================================
+ * SCROLL RANGES - HOW THEY ALIGN
+ * ============================================================================
+ *
+ * The page is divided into sections with specific scroll % ranges.
+ * SHOWCASE animations use --body-scroll (0-100% of total page scroll).
+ * SECTION animations use view() (relative to when section enters/exits viewport).
+ *
+ * Page Structure:
+ * ┌─────────────────────────────────────────────────────────────┐
+ * │ Hero (0-5%)                                                  │
+ * │ - Showcase: Initial 3D angled view, large scale             │
+ * │ - Sections: Hero content with initial fade-in               │
+ * ├─────────────────────────────────────────────────────────────┤
+ * │ Overview (5-20%)                                             │
+ * │ - Showcase: Zooms out, flattens, resists scroll downward    │
+ * │ - Sections: Overview grid fades in with stagger             │
+ * ├─────────────────────────────────────────────────────────────┤
+ * │ HUD (20-40%)                                                 │
+ * │ - Showcase: Moves down, zooms into HUD layer                │
+ * │ - Sections: HUD features fade in from right with stagger    │
+ * ├─────────────────────────────────────────────────────────────┤
+ * │ Apps (40-60%)                                                │
+ * │ - Showcase: Rotates right, shows apps section               │
+ * │ - Sections: Apps content with parallax drift                │
+ * ├─────────────────────────────────────────────────────────────┤
+ * │ Data (60-80%)                                                │
+ * │ - Showcase: Centers, shows data visualization               │
+ * │ - Sections: Data content with parallax drift                │
+ * ├─────────────────────────────────────────────────────────────┤
+ * │ Tasks (80-100%)                                              │
+ * │ - Showcase: Rotates left, shows tasks section               │
+ * │ - Sections: Tasks content with parallax drift               │
+ * └─────────────────────────────────────────────────────────────┘
+ *
+ * ============================================================================
+ * EDITING GUIDE
+ * ============================================================================
+ *
+ * When adjusting timing:
+ *
+ * 1. To change when SHOWCASE transforms:
+ *    - Edit showcase-container-transform keyframes
+ *    - Use percentages based on full page scroll (0-100%)
+ *    - Example: 20% = when page is scrolled 20% of total height
+ *
+ * 2. To change when SECTIONS fade in/out:
+ *    - Edit .scroll-section or .section-{name}-trigger classes
+ *    - Use view() ranges: entry, exit, cover
+ *    - Example: "entry 20%" = 20% after section enters viewport
+ *
+ * 3. To keep them aligned:
+ *    - If you delay showcase moving to HUD section (e.g., 20% → 22%)
+ *    - Consider delaying HUD section fade-in too (e.g., entry 0% → entry 10%)
+ *    - Test by scrolling slowly to ensure smooth coordination
+ *
+ * 4. Common keyframe percentages:
+ *    - Showcase uses: 0%, 5%, 10%, 15%, 18%, 21%, 25%, 34%, 37%, etc.
+ *    - Sections use: entry 0%, entry 20%, cover 10%, exit 100%, etc.
+ *
+ * ============================================================================
+ * CSS CLASSES REFERENCE
+ * ============================================================================
+ *
+ * SHOWCASE (3D Screenshot):
+ * - .showcase-layers-container    - Main container with perspective
+ * - .showcase-base                - Animated container (gets showcase-container-transform)
+ * - .showcase-layer               - Individual image layer
+ * - .layer-background             - Background layer (gets background-layer animation)
+ * - .layer-hud                    - HUD overlay layer (gets hud-layer animation)
+ * - .layer-main-content           - Main content layer (gets main-content-layer animation)
+ * - .layer-topbar-search          - Topbar layer (gets topbar-search-layer animation)
+ *
+ * SECTIONS (Content):
+ * - .scroll-section               - Any scrollable section (gets fade-in-section)
+ * - .section-overview-trigger     - Overview section trigger
+ * - .section-hud-trigger          - HUD section trigger
+ * - .section-apps-trigger         - Apps section trigger
+ * - .section-data-trigger         - Data section trigger
+ * - .section-tasks-trigger        - Tasks section trigger
+ *
+ * OVERVIEW CARDS:
+ * - #overview-grid                - Container for overview cards
+ * - .fade-blur-in-0 through -4    - Individual cards with staggered fade-in
+ * - .fade-blur-in-5               - Additional content with delayed fade-in
+ *
+ * ============================================================================
+ */
+
+/* ============================================================================
+ * SHOWCASE CONTAINER TRANSFORM
+ * Animates the 3D screenshot through different sections of the page
+ * ============================================================================ */
+
+@keyframes showcase-container-transform {
+  /* Hero */
+  0% {
+    transform: rotateX(15deg) rotateY(25deg) rotateZ(-10deg) translateZ(0px) scale(1.7)
+      translateY(37vh) translateX(100px);
+  }
+  8% {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) translateZ(0px) scale(0.4)
+      translateY(300px) translateX(0px);
+  }
+
+  /* Overview */
+  10% {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) translateZ(0px) scale(0.4)
+      translateY(240px) translateX(0px);
+  }
+  18% {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) translateZ(0px) scale(0.4)
+      translateY(-450px) translateX(0px);
+  }
+
+  /* HUD */
+  23.5%,
+  34% {
+    /* Zoom/rotation faster - complete zoom in and hold longer */
+    transform: rotateX(5deg) rotateY(0deg) rotateZ(0deg) translateZ(100px) scale(2)
+      translateY(42vh);
+  }
+
+  /* Apps (40-60%) - Apps feature section */
+  37% {
+    /* Start transition to Apps even later */
+    transform: rotateX(5deg) rotateY(0deg) rotateZ(0deg) translateZ(100px) scale(2)
+      translateY(42vh);
+  }
+  41%,
+  51% {
+    /* Complete transition - tilt left, smaller scale to show left side */
+    transform: rotateX(0deg) rotateY(-15deg) rotateZ(0deg) translateZ(150px) scale(0.95)
+      translateX(min(42vw, 580px));
+  }
+
+  /* Data (60-80%) - Data feature section */
+  51% {
+    /* Start transition from Apps - start sooner */
+    transform: rotateX(0deg) rotateY(-15deg) rotateZ(0deg) translateZ(150px) scale(0.95)
+      translateX(min(42vw, 580px));
+  }
+  55%,
+  68% {
+    /* Complete zoom-out and hold Data position - faster transition */
+    transform: rotateX(0deg) rotateY(5deg) rotateZ(0deg) translateZ(0px) scale(0.5)
+      translateX(min(55vw, 650px)) translateY(0px);
+  }
+
+  /* Tasks (80-100%) - Tasks feature section - Mirror of Apps (left side) */
+  67% {
+    /* Transition from Data - start sooner */
+    transform: rotateX(0deg) rotateY(5deg) rotateZ(0deg) translateZ(0px) scale(0.5)
+      translateX(min(55vw, 650px)) translateY(0px);
+  }
+  75%,
+  90% {
+    /* Zoom in and tilt left */
+    transform: rotateX(0deg) rotateY(-15deg) rotateZ(0deg) translateZ(150px) scale(1.5)
+      translateX(max(-90vw, -950px));
+  }
+  100% {
+    /* Hold position */
+    transform: rotateX(0deg) rotateY(-15deg) rotateZ(0deg) translateZ(150px) scale(1.5)
+      translateX(max(-90vw, -950px));
+  }
+}
+
+/* ============================================================================
+ * SHOWCASE LAYER ANIMATIONS
+ * Individual animations for each layer of the showcase screenshot
+ * ============================================================================ */
+
+/* HUD layer - appears/disappears based on section */
+@keyframes hud-layer {
+  /* Hero + Overview (0-20%) - Flat 2D */
+  0%,
+  2% {
+    opacity: 0;
+  }
+  7%,
+  8% {
+    /* Keep flat - no z-axis movement */
+    opacity: 0.3;
+  }
+  15% {
+    opacity: 0.3;
+  }
+
+  /* HUD (20-40%) - HUD prominent */
+  18%,
+  19% {
+    /* HUD prominent */
+    opacity: 1;
+  }
+  30% {
+    opacity: 1;
+  }
+
+  /* Apps (40-60%) */
+  42%,
+  43% {
+    /* Pause */
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+
+  /* Data (60-80%) */
+  75%,
+  76% {
+    /* Pause */
+    opacity: 0.2;
+  }
+  83% {
+    opacity: 0.2;
+  }
+
+  /* Tasks (80-100%) */
+  95%,
+  96% {
+    /* Pause */
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+/* Main content layer */
+@keyframes main-content-layer {
+  /* Hero + Overview (0-20%) - Flat 2D */
+  0%,
+  3% {
+    transform: translateZ(0px);
+    opacity: 1;
+  }
+  10%,
+  11% {
+    /* Keep flat - no z-axis movement */
+    transform: translateZ(0px);
+    opacity: 1;
+  }
+  18% {
+    transform: translateZ(0px);
+    opacity: 1;
+  }
+
+  /* HUD (20-40%) */
+  31%,
+  32% {
+    /* Pause - main content visible but behind HUD */
+    transform: translateZ(0px);
+    opacity: 0.8;
+  }
+  39% {
+    transform: translateZ(0px);
+    opacity: 0.8;
+  }
+
+  /* Apps (40-60%) */
+  55%,
+  56% {
+    /* Pause */
+    transform: translateZ(0px);
+    opacity: 0.15;
+  }
+  63% {
+    transform: translateZ(0px);
+    opacity: 0.15;
+  }
+
+  /* Data (60-80%) */
+  75%,
+  76% {
+    /* Pause */
+    transform: translateZ(40px);
+    opacity: 0.2;
+  }
+  83% {
+    transform: translateZ(40px);
+    opacity: 0.2;
+  }
+
+  /* Tasks (80-100%) */
+  95%,
+  96% {
+    /* Pause */
+    transform: translateZ(20px);
+    opacity: 0.2;
+  }
+  100% {
+    transform: translateZ(20px);
+    opacity: 0.2;
+  }
+}
+
+/* Background layer */
+@keyframes background-layer {
+  /* Hero + Overview (0-20%) - Flat 2D */
+  0%,
+  3% {
+    opacity: 1;
+    transform: translateZ(0px);
+  }
+  10%,
+  11% {
+    /* Keep flat - no z-axis movement */
+    opacity: 0.4;
+    transform: translateZ(0px);
+  }
+  18% {
+    opacity: 0.4;
+    transform: translateZ(0px);
+  }
+
+  /* HUD (20-40%) */
+  31%,
+  32% {
+    /* Pause - background subtle */
+    opacity: 0.3;
+    transform: translateZ(-30px);
+  }
+  39% {
+    opacity: 0.3;
+    transform: translateZ(-30px);
+  }
+
+  /* Apps (40-60%) - background prominent */
+  55%,
+  56% {
+    /* Pause */
+    opacity: 1;
+    transform: translateZ(-80px);
+  }
+  63% {
+    opacity: 1;
+    transform: translateZ(-80px);
+  }
+
+  /* Section 4 (60-80%) */
+  75%,
+  76% {
+    /* Pause */
+    opacity: 0.3;
+    transform: translateZ(-50px);
+  }
+  83% {
+    opacity: 0.3;
+    transform: translateZ(-50px);
+  }
+
+  /* Section 5 (80-100%) */
+  95%,
+  96% {
+    /* Pause */
+    opacity: 0.3;
+    transform: translateZ(-30px);
+  }
+  100% {
+    opacity: 0.3;
+    transform: translateZ(-30px);
+  }
+}
+
+/* Topbar search layer */
+@keyframes topbar-search-layer {
+  /* Hero + Overview (0-20%) - Flat 2D */
+  0%,
+  3% {
+    transform: translateZ(0px);
+    opacity: 1;
+  }
+  10%,
+  11% {
+    /* Keep flat - no z-axis movement */
+    transform: translateZ(0px);
+    opacity: 0.2;
+  }
+  17% {
+    transform: translateZ(0px);
+    opacity: 0.2;
+  }
+
+  /* HUD (20-40%) */
+  32%,
+  33% {
+    /* Pause - topbar visible with HUD (delayed more after zoom) */
+    transform: translateZ(140px) translateY(-35px);
+    opacity: 0.9;
+  }
+  34% {
+    transform: translateZ(140px) translateY(-35px);
+    opacity: 0.9;
+  }
+
+  /* Apps (40-60%) */
+  55%,
+  56% {
+    /* Pause */
+    transform: translateZ(0px);
+    opacity: 0.1;
+  }
+  63% {
+    transform: translateZ(0px);
+    opacity: 0.1;
+  }
+
+  /* Section 4 (60-80%) */
+  75%,
+  76% {
+    /* Pause */
+    transform: translateZ(80px);
+    opacity: 0.3;
+  }
+  83% {
+    transform: translateZ(80px);
+    opacity: 0.3;
+  }
+
+  /* Section 5 (80-100%) */
+  95%,
+  96% {
+    /* Pause */
+    transform: translateZ(40px);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateZ(40px);
+    opacity: 0.4;
+  }
+}
+
+/* Topbar search backdrop filter layer (synced to topbar-search but no opacity because it breaks filter) */
+@keyframes topbar-search-backdrop-filter {
+  /* Hero + Overview (0-20%) - Match topbar-search-layer exactly */
+  0%,
+  3% {
+    transform: translateZ(0px);
+  }
+  10%,
+  11% {
+    transform: translateZ(0px);
+  }
+  17% {
+    transform: translateZ(0px);
+  }
+
+  /* HUD (20-40%) - Match topbar-search-layer exactly */
+  32%,
+  33% {
+    transform: translateZ(140px) translateY(-35px);
+  }
+  34% {
+    transform: translateZ(140px) translateY(-35px);
+  }
+
+  /* Apps (40-60%) */
+  55%,
+  56% {
+    /* Pause */
+    transform: translateZ(0px);
+  }
+  63% {
+    transform: translateZ(0px);
+  }
+
+  /* Section 4 (60-80%) */
+  75%,
+  76% {
+    /* Pause */
+    transform: translateZ(80px);
+  }
+  83% {
+    transform: translateZ(80px);
+  }
+
+  /* Section 5 (80-100%) */
+  95%,
+  96% {
+    /* Pause */
+    transform: translateZ(40px);
+  }
+  100% {
+    transform: translateZ(40px);
+  }
+}
+
+/* ============================================================================
+ * SECTION FADE ANIMATIONS
+ * Controls how content sections fade in/out as they enter/exit viewport
+ * ============================================================================ */
+
+/* Base section fade-in animation */
+@keyframes fade-in-section {
+  /* Entry phase - starts just below, quick fade-in */
+  0% {
+    opacity: 0;
+    filter: blur(20px);
+    transform: translateY(50px);
+  }
+  /* Quick fade-in */
+  15% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0px);
+  }
+  /* Hold visible through middle and exit */
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0px);
+  }
+}
+
+/* ============================================================================
+ * PARALLAX SCROLL ANIMATIONS
+ * Creates depth by moving content at different speeds relative to scroll
+ * ============================================================================ */
+
+/* Subtle parallax - more resistive, enters higher and stays centered */
+@keyframes parallax-content-subtle {
+  0% {
+    opacity: 0;
+    filter: blur(20px);
+    transform: translateY(-95%);
+  }
+  15% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(-85%);
+  }
+  90% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(-15%);
+  }
+  100% {
+    opacity: 0;
+    filter: blur(20px);
+    transform: translateY(-25%);
+  }
+}
+
+/* Scroll shift upwards - slow upward drift throughout viewport */
+@keyframes scroll-shift-upwards {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-100px);
+  }
+}
+
+/* ============================================================================
+ * OVERVIEW SECTION CARD ANIMATIONS
+ * Staggered fade-in animations for the overview grid cards
+ * ============================================================================ */
+
+/*
+ * Overview Card Animation Timing:
+ * - Uses view() timeline (relative to when overview section enters viewport)
+ * - Cards fade in with staggered timing as section scrolls into view
+ * - Each card has slightly delayed start for cascade effect
+ *
+ * Timing relationship with SHOWCASE:
+ * - SHOWCASE at 5-20% (overview scroll range)
+ * - Showcase holds at translateY(-90px) from 15-19% (strong scroll resistance)
+ * - These cards fade in early in that range (starting at 15%)
+ * - HUD transition delayed to 23% for better coordination
+ *
+ * Animation pattern:
+ * - Card 0: Starts at cover 15%, ends at cover 25% (first to appear)
+ * - Cards 1-4: Each starts 1-3% later for smooth cascade (20-23%)
+ * - Card 5: Second row/"and of course" at cover 27% (3% sooner, 20px lower)
+ */
+
+@keyframes fade-blur-in {
+  from {
+    opacity: 0;
+    filter: blur(20px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+#overview-grid .fade-blur-in-1 {
+  animation: fade-blur-in both;
+  animation-timeline: view();
+  animation-range: cover 10% cover 18%;
+}
+
+#overview-grid .fade-blur-in-2 {
+  animation: fade-blur-in both;
+  animation-timeline: view();
+  animation-range: cover 10.5% cover 18%;
+}
+
+#overview-grid .fade-blur-in-3 {
+  animation: fade-blur-in both;
+  animation-timeline: view();
+  animation-range: cover 11% cover 18%;
+}
+
+#overview-grid .fade-blur-in-4 {
+  animation: fade-blur-in both;
+  animation-timeline: view();
+  animation-range: cover 11.5% cover 18%;
+}
+
+/* Second row and "...and of course" text - Appears sooner and positioned lower */
+.fade-blur-in-5 {
+  animation: fade-blur-in both;
+  animation-timeline: view();
+  animation-range: cover 12% cover 18%;
+  transform: translateY(20px);
+}

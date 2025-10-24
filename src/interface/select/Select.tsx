@@ -1,0 +1,156 @@
+import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
+import React, { useState } from 'react'
+
+import type { FontSizeTokens, SelectProps as TamaguiSelectProps } from 'tamagui'
+import {
+  Adapt,
+  Sheet,
+  Select as TamaguiSelect,
+  XStack,
+  YStack,
+  getFontSize,
+} from 'tamagui'
+import { LinearGradient } from 'tamagui/linear-gradient'
+
+export type SelectProps = Omit<TamaguiSelectProps, 'children'> & {
+  items: { name: string; id: string; icon?: React.ReactNode }[]
+  width?: number | string
+}
+
+export function Select({
+  items,
+  defaultValue,
+  onValueChange,
+  width,
+  ...props
+}: SelectProps) {
+  const [id, setId] = useState(defaultValue || items[0]?.id)
+  const selected = items.find((x) => x.id === id)
+
+  const handleChange = (val: string) => {
+    setId(val)
+    onValueChange?.(val as any)
+  }
+
+  return (
+    <TamaguiSelect
+      value={id}
+      onValueChange={handleChange}
+      disablePreventBodyScroll
+      {...props}
+    >
+      <TamaguiSelect.Trigger
+        iconAfter={ChevronDown}
+        bg="transparent"
+        borderColor="$color3"
+        {...(width
+          ? {
+              width: width as any,
+              maxWidth: (typeof width === 'string' ? width : width || 220) as any,
+            }
+          : {
+              maxWidth: 220,
+            })}
+      >
+        <XStack gap="$2" flex={1} items="center">
+          {selected?.icon}
+          <TamaguiSelect.Value placeholder={selected?.name || '-'} />
+        </XStack>
+      </TamaguiSelect.Trigger>
+
+      <Adapt when="maxMD" platform="touch">
+        <Sheet native={!!props.native} modal dismissOnSnapToBottom animation="medium">
+          <Sheet.Frame>
+            <Sheet.ScrollView>
+              <Adapt.Contents />
+            </Sheet.ScrollView>
+          </Sheet.Frame>
+          <Sheet.Overlay
+            bg="$shadowColor"
+            animation="lazy"
+            enterStyle={{ opacity: 0 }}
+            exitStyle={{ opacity: 0 }}
+          />
+        </Sheet>
+      </Adapt>
+
+      <TamaguiSelect.Content zIndex={3_500_000}>
+        <TamaguiSelect.ScrollUpButton
+          items="center"
+          justify="center"
+          position="relative"
+          width="100%"
+          height="$3"
+        >
+          <YStack z={10}>
+            <ChevronUp size={20} />
+          </YStack>
+          <LinearGradient
+            start={[0, 0]}
+            end={[0, 1]}
+            fullscreen
+            colors={['$background', 'transparent']}
+            rounded="$4"
+          />
+        </TamaguiSelect.ScrollUpButton>
+
+        <TamaguiSelect.Viewport maxW={200}>
+          {React.useMemo(
+            () =>
+              items.map((item, i) => {
+                return (
+                  <TamaguiSelect.Item index={i} key={item.id} value={item.id}>
+                    <XStack flex={1} overflow="hidden" gap="$2" items="center">
+                      {item.icon}
+                      <TamaguiSelect.ItemText ellipse>{item.name}</TamaguiSelect.ItemText>
+                    </XStack>
+                    <TamaguiSelect.ItemIndicator marginLeft="auto">
+                      <Check size={12} color="$color9" />
+                    </TamaguiSelect.ItemIndicator>
+                  </TamaguiSelect.Item>
+                )
+              }),
+            [items]
+          )}
+
+          {/* Native gets an extra icon */}
+          {props.native && (
+            <YStack
+              position="absolute"
+              r={0}
+              t={0}
+              b={0}
+              items="center"
+              justify="center"
+              width={'$4'}
+              pointerEvents="none"
+            >
+              <ChevronDown
+                size={getFontSize((props.size as FontSizeTokens) ?? '$true')}
+              />
+            </YStack>
+          )}
+        </TamaguiSelect.Viewport>
+
+        <TamaguiSelect.ScrollDownButton
+          items="center"
+          justify="center"
+          position="relative"
+          width="100%"
+          height="$3"
+        >
+          <YStack z={10}>
+            <ChevronDown size={20} />
+          </YStack>
+          <LinearGradient
+            start={[0, 0]}
+            end={[0, 1]}
+            fullscreen
+            colors={['transparent', '$background']}
+            rounded="$4"
+          />
+        </TamaguiSelect.ScrollDownButton>
+      </TamaguiSelect.Content>
+    </TamaguiSelect>
+  )
+}

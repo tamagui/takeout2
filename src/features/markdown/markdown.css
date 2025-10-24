@@ -1,0 +1,157 @@
+.chat-markdown {
+  padding: 10px;
+  font-family: var(--f-family);
+  line-height: var(--f-lineHeight-3);
+  font-size: var(--f-size-4);
+  word-wrap: break-word;
+}
+
+/* fix mentions getting cut off */
+.chat-markdown > span {
+  display: contents;
+}
+
+.chat-markdown ul,
+.chat-markdown ol {
+  padding-inline-start: 18px;
+  margin-block-start: 0px;
+  margin-block-end: 0px;
+}
+
+.chat-markdown li:has(input[type="checkbox"]) {
+  list-style-type: none;
+  margin-left: -15px;
+}
+
+.chat-markdown a,
+.t_dark .chat-markdown a {
+  text-decoration: underline;
+  text-decoration-color: var(--color5);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  color: var(--color12);
+}
+
+.chat-markdown a:hover,
+.t_dark .chat-markdown a:hover {
+  text-decoration-color: var(--color10);
+}
+
+.chat-markdown strong {
+  color: var(--color12);
+  font-weight: 600;
+}
+
+/* chat markdown code */
+
+.chat-markdown code,
+.chat-markdown pre {
+  border: 0.5px solid var(--color4);
+  background-color: var(--color2);
+}
+
+.chat-markdown code {
+  font-family: "JetBrains Mono", monospace;
+  max-width: 100%;
+  overflow: auto;
+  padding: 2px 3px;
+  margin: -2px -3px;
+  border-radius: 7px;
+  font-size: 13px;
+}
+
+.chat-markdown pre {
+  margin: 5px 0;
+  padding: 10px;
+  background-color: var(--color1);
+  border-radius: 10px;
+}
+
+.chat-markdown pre > code,
+.chat-markdown pre:has(.styled-block) {
+  width: 100%;
+  border: none;
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+  line-height: 13px;
+  display: flex;
+}
+
+/* shiki code blocks */
+
+.chat-markdown .shiki-code-block pre {
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  border-width: 0px;
+  background: transparent !important;
+}
+
+.chat-markdown .shiki-code-block {
+  margin: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.chat-markdown .shiki-code-block .line {
+  display: block;
+  white-space: pre;
+  margin: 2px 0;
+}
+
+.chat-markdown pre.shiki code {
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+}
+
+.chat-markdown p:first-child {
+  margin-top: 0px;
+}
+
+/* lists */
+
+.chat-markdown li {
+  margin: 0 0 3px 0;
+}
+
+/* table */
+
+.chat-markdown table {
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.chat-markdown td {
+  padding: 3px 4px;
+}
+/* 
+.chat-markdown td, .chat-markdown th {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+} */
+
+.chat-markdown thead {
+  background-color: var(--color3);
+}
+
+.chat-markdown thead th {
+  padding: 8px 5px;
+  font-size: 14px;
+}
+
+/* headings */
+
+.chat-markdown h1,
+.chat-markdown h2,
+.chat-markdown h3 {
+  color: var(--color12);
+}
+
+.chat-markdown h2 {
+  font-size: 20px;
+  margin: 1.5rem 0 0.75rem;
+}

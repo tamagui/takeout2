@@ -1,0 +1,1 @@
+ALTER TABLE "appInstall" ADD COLUMN "messageId" varchar;

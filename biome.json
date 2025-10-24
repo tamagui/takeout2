@@ -1,0 +1,121 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
+  "assist": { "actions": { "source": { "organizeImports": "off" } } },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "correctness": {
+        "noUnusedFunctionParameters": "off",
+        "useHookAtTopLevel": "error",
+        "useExhaustiveDependencies": "warn",
+        "noUnusedImports": "off",
+        "noInnerDeclarations": "off",
+        "noConstructorReturn": "off",
+        "noUnusedVariables": "off"
+      },
+      "suspicious": {
+        "noImplicitAnyLet": "off",
+        "noConfusingVoidType": "off",
+        "noEmptyInterface": "off",
+        "noExplicitAny": "off",
+        "noArrayIndexKey": "off",
+        "noDoubleEquals": "off",
+        "noAssignInExpressions": "off",
+        "noRedeclare": "off",
+        "noConsole": {
+          "level": "error",
+          "options": {
+            "allow": ["error", "warn", "info", "groupCollapsed", "groupEnd", "trace"]
+          }
+        }
+      },
+      "style": {
+        "noNonNullAssertion": "off",
+        "noUnusedTemplateLiteral": "off",
+        "useDefaultParameterLast": "off",
+        "useConst": "off",
+        "useEnumInitializers": "off",
+        "useTemplate": "off"
+      },
+      "security": {
+        "noDangerouslySetInnerHtml": "off",
+        "noDangerouslySetInnerHtmlWithChildren": "off"
+      },
+      "performance": {
+        "noDelete": "off",
+        "noAccumulatingSpread": "off"
+      },
+      "complexity": {
+        "noUselessFragments": "off",
+        "noForEach": "off",
+        "noBannedTypes": "off",
+        "useLiteralKeys": "off",
+        "useSimplifiedLogicExpression": "off",
+        "useOptionalChain": "off",
+        "noExtraBooleanCast": "off",
+        "noUselessContinue": "off",
+        "noArguments": "off"
+      },
+      "a11y": {
+        "noSvgWithoutTitle": "off",
+        "useMediaCaption": "off",
+        "noHeaderScope": "off",
+        "useAltText": "off",
+        "useButtonType": "off"
+      }
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 90,
+    "lineEnding": "lf",
+    "includes": [
+      "**",
+      "!**/*/generated-new.ts",
+      "!**/*/generated-v2.ts",
+      "!**/.tamagui",
+      "!**/package.json",
+      "!**/env-server.ts"
+    ]
+  },
+  "javascript": {
+    "formatter": {
+      "trailingCommas": "es5",
+      "jsxQuoteStyle": "double",
+      "semicolons": "asNeeded",
+      "quoteStyle": "single"
+    }
+  },
+  "files": {
+    "includes": [
+      "**",
+      "!**/.app.json",
+      "!.docker",
+      "!.dist",
+      "!**/.tamagui",
+      "!**/tmp-data",
+      "!**/.build",
+      "!storage",
+      "!**/.sst",
+      "!**/.output",
+      "!**/.vscode",
+      "!**/.claude",
+      "!src/database/migrations/meta/**/*",
+      "!src/database/migrate-dist.js",
+      "!src/tauri/target/**/*",
+      "!src/tauri/gen/**/*",
+      "!src/tamagui/themes-out.ts",
+      "!**/*.d.ts",
+      "!**/ios",
+      "!**/android",
+      "!**/dist/**/*",
+      "!**/tamagui.css",
+      "!**/package.json",
+      "!**/package.json",
+      "!**/.ultra.cache.json"
+    ]
+  }
+}

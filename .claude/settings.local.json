@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(bun add:*)",
+      "Bash(mkdir:*)",
+      "Bash(rg:*)",
+      "Bash(bun env:update:*)",
+      "Bash(rm:*)",
+      "Bash(bun db:migrate:add:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(bun run:*)",
+      "Bash(find:*)",
+      "Bash(bun types:check:*)",
+      "Bash(bun tsc:*)",
+      "Bash(bun lint:fix:*)",
+      "Bash(bun lint:*)",
+      "Bash(grep:*)",
+      "Bash(bun biome check:*)",
+      "Bash(bun test:*)",
+      "Bash(bun remove:*)",
+      "Bash(docker compose ps:*)",
+      "Bash(docker compose restart:*)",
+      "Bash(curl:*)",
+      "Bash(docker compose logs:*)",
+      "Bash(docker exec:*)",
+      "Bash(docker compose build:*)",
+      "Bash(docker compose:*)",
+      "Bash(tsc:*)",
+      "Bash(ls:*)",
+      "WebFetch(domain:docs.bunny.net)",
+      "WebFetch(domain:github.com)",
+      "Bash(./scripts/run.ts --help)",
+      "Bash(chmod:*)",
+      "Bash(bun:*)",
+      "Bash(cat:*)",
+      "Bash(echo $SHELL)",
+      "Bash(fnm:*)",
+      "Bash(fnm list:*)",
+      "Bash(fnm current:*)",
+      "Bash(source:*)",
+      "Bash(git config:*)",
+      "Bash(umask)",
+      "Bash(git clone:*)",
+      "Bash(aws cloudwatch:*)",
+      "Bash(aws:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:docs.github.com)",
+      "Bash(mv:*)",
+      "Bash(git stash:*)",
+      "Bash(touch:*)",
+      "Bash(node:*)",
+      "Bash(psql:*)",
+      "Bash(watchman:*)",
+      "Bash(docker build:*)",
+      "Bash(docker:*)",
+      "WebFetch(domain:developers.linear.app)",
+      "WebFetch(domain:linear.app)",
+      "WebSearch"
+    ],
+    "deny": []
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat docs/guide-agent.md"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "src/**/*.tsx",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat docs/guide-tamagui.md"
+          }
+        ]
+      },
+      {
+        "matcher": "src/zero/mutators/**/*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat docs/guide-zero-mutations.md"
+          }
+        ]
+      },
+      {
+        "matcher": "**/migrations/**",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'CRITICAL: Use `bun db:migrate:add` to generate migrations. Never manually create migration files unless absolutely necessary. See docs/guide-agent.md for details.'"
+          }
+        ]
+      },
+      {
+        "matcher": "src/features/website/**/*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat docs/guide-home.md"
+          }
+        ]
+      },
+      {
+        "matcher": "app/_/home.css",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat docs/guide-home.md"
+          }
+        ]
+      }
+    ]
+  }
+}

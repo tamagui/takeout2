@@ -1,0 +1,1 @@
+DROP INDEX "idx_channelActive_channel_user";

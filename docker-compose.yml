@@ -1,0 +1,140 @@
+services:
+  pgdb:
+    image: pgvector/pgvector:pg16
+    shm_size: 1g
+    restart: always
+    healthcheck:
+      test: 'pg_isready -U user --dbname=postgres'
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: password
+    command: |
+      postgres
+      -c wal_level=logical
+      -c max_wal_senders=10
+      -c max_replication_slots=5
+      -c hot_standby=on
+      -c max_connections=256
+    # for verbose logging when debugging (uncomment as needed):
+      # -c log_error_verbosity=default
+      # -c log_min_messages=info
+      # -c log_statement=all
+      # -c log_connections=on
+      # -c log_disconnections=on
+      # -c log_duration=on
+      # -c log_line_prefix='%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
+    volumes:
+      - ./.docker/pgdb:/var/lib/postgresql/data
+      - ./src/database/:/docker-entrypoint-initdb.d
+
+  migrate:
+    image: node:22.4-slim
+    depends_on:
+      pgdb:
+        condition: service_healthy
+    volumes:
+      - .:/app
+    working_dir: /app/src/database
+    environment:
+      - RUN=1
+      - ALLOW_MISSING_ENV=1
+      - ZERO_UPSTREAM_DB=postgresql://user:password@pgdb:5432/postgres
+      - ZERO_CVR_DB=postgresql://user:password@pgdb:5432/zero_cvr
+      - ZERO_CHANGE_DB=postgresql://user:password@pgdb:5432/zero_cdb
+    command: node migrate-dist.js
+
+  zero:
+    image: "rocicorp/zero:${ZERO_VERSION}"
+    depends_on:
+      - migrate
+      - pgdb
+    volumes:
+      - ./.docker/zero:/app
+    working_dir: /app
+    extra_hosts:
+      # This maps host.docker.internal to the host gateway IP on Linux
+      # On Mac/Windows Docker Desktop, this is already available
+      - "host.docker.internal:host-gateway"
+    environment:
+      - ZERO_LOG_LEVEL=${ZERO_LOG_LEVEL:-info}
+      # These URLs are provided via environment variables
+      # In CI, they'll be overridden with the correct Docker host IP
+      - ZERO_AUTH_JWKS_URL=${ZERO_AUTH_JWKS_URL:-http://host.docker.internal:8081/api/auth/jwks}
+      - ZERO_PUSH_URL=${ZERO_PUSH_URL:-http://host.docker.internal:8081/api/zero/push}
+      - ZERO_UPSTREAM_DB=postgresql://user:password@pgdb:5432/postgres
+      - ZERO_CVR_DB=postgresql://user:password@pgdb:5432/zero_cvr
+      - ZERO_CHANGE_DB=postgresql://user:password@pgdb:5432/zero_cdb
+      # putting this into /app seems to break things
+      - ZERO_REPLICA_FILE=/tmp/sync-replica.db
+      # note: i bumped CI to a 32 core machine and got this error:
+      # Error: Insufficient upstream connections (20) for 31 syncers.Increase ZERO_UPSTREAM_MAX_CONNS or decrease ZERO_NUM_SYNC_WORKERS (which defaults to available cores).
+      # then i got this error:
+      # pid 30 exiting with error Error: Insufficient cvr connections (30) for 31 syncers.Increase ZERO_CVR_MAX_CONNS or decrease ZERO_NUM_SYNC_WORKERS (which defaults to available cores).
+      # so i'm harcoding all three so they always work and should run fine on most machines
+      - ZERO_NUM_SYNC_WORKERS=8
+      - ZERO_CVR_MAX_CONNS=16
+      - ZERO_UPSTREAM_MAX_CONNS=32
+    ports:
+      - "4848:4848"
+
+  minio:
+    image: minio/minio
+    restart: always
+    entrypoint: sh
+    # create the 'chat' bucket before starting the service
+    command: -c 'mkdir -p /data/chat && minio server --address ":9000" --console-address ":9001" /data'
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio_password
+    ports:
+      - 9090:9000
+      - 127.0.0.1:9091:9001
+    volumes:
+      - ./.docker/minio:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+      start_period: 1s
+
+  minio-init:
+    image: minio/mc
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+        until mc alias set local http://minio:9000 minio minio_password; do
+          echo 'Waiting for MinIO...';
+          sleep 1;
+        done &&
+        mc mb --ignore-existing local/chat &&
+        mc anonymous set download local/chat &&
+        echo '✅ MinIO chat bucket ready and public';
+      "
+
+  jobs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      pgdb:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - ZERO_UPSTREAM_DB=postgresql://user:password@pgdb:5432/postgres
+    command: bun run src/jobs/index.ts
+    restart: always
+    stop_signal: SIGTERM
+    stop_grace_period: 10s

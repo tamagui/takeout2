@@ -1,0 +1,106 @@
+import { Image } from '~/interface/image/Image'
+import { memo } from 'react'
+import { Circle, styled, YStack, type CircleProps } from 'tamagui'
+import { getSimpleSize, type SimpleSize } from '../sizes'
+import { isNative } from '@vxrn/helpers'
+
+const hudImageOG =
+  'https://storage.start.chat/onechatimages/uploads/5dvhtbozp9w-avatar.png'
+const hudImage = isNative ? require('../../../assets/hud.webp') : '/hud.webp'
+
+export const Avatar = memo(
+  ({
+    image: imageIn,
+    size: sizeIn = 28,
+    active,
+    isOnline,
+    ...rest
+  }: CircleProps & {
+    image: string
+    size?: number | SimpleSize
+    active?: boolean
+    isOnline?: boolean | null
+  }) => {
+    const size = getSimpleSize(sizeIn)
+    const isBig = size > 40
+    const scale = isBig ? size / 42 : size / 21
+    const image = imageIn === hudImageOG ? hudImage : imageIn
+
+    return (
+      <YStack
+        pointerEvents="none"
+        width={size}
+        height={size}
+        position="relative"
+        outlineColor="$color01"
+        rounded={100}
+        outlineOffset={1}
+        outlineWidth={0.5}
+        outlineStyle="solid"
+      >
+        <SelectableCircle
+          active={active || false}
+          pressable={!!rest.onPress && !active}
+          size={size}
+          overflow="hidden"
+          className={
+            typeof isOnline === 'undefined'
+              ? ''
+              : isBig
+                ? 'avatar-cutout-big'
+                : 'avatar-cutout-small'
+          }
+          {...rest}
+        >
+          {image ? <Image src={image} width={size} height={size} /> : null}
+        </SelectableCircle>
+
+        {typeof isOnline === 'boolean' ? (
+          <Circle
+            position="absolute"
+            b={-1.1 * scale + (isBig ? 4.5 : 0)}
+            r={-1.1 * scale + (isBig ? 4.5 : 0)}
+            size={7 * scale}
+            opacity={1}
+            bg={isOnline ? '$green10' : '$color4'}
+          />
+        ) : null}
+      </YStack>
+    )
+  }
+)
+
+const SelectableCircle = styled(Circle, {
+  select: 'none',
+  bg: '$background02',
+
+  variants: {
+    active: {
+      true: {
+        outlineColor: '#fff',
+        outlineWidth: 2,
+        outlineStyle: 'solid',
+
+        pressStyle: {
+          outlineColor: '#ccc',
+        },
+      },
+    },
+
+    pressable: {
+      true: {
+        hoverStyle: {
+          outlineColor: '$color5',
+          outlineWidth: 2,
+          outlineStyle: 'solid',
+        },
+
+        pressStyle: {
+          outlineColor: '#fff',
+          outlineWidth: 2,
+          outlineStyle: 'solid',
+        },
+      },
+    },
+  } as const,
+})

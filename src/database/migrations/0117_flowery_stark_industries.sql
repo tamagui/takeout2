@@ -1,0 +1,1 @@
+ALTER TABLE "task" ADD COLUMN "version" integer DEFAULT 0;

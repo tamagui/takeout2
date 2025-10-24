@@ -1,0 +1,30 @@
+name: Generate Changelog
+description: Generate changelog from GitHub context
+
+outputs:
+  changelog:
+    description: The generated changelog
+    value: ${{ steps.generate-changelog.outputs.changelog }}
+
+runs:
+  using: composite
+  steps:
+    - name: Generate Changelog
+      id: generate-changelog
+      shell: bash
+      env:
+        GITHUB_CONTEXT: ${{ toJSON(github) }}
+      run: |
+        changelog=$(
+          node .github/actions/generate-changelog/generate-changelog-from-github-context.cjs "$GITHUB_CONTEXT"
+        )
+        echo 'changelog<<EOF' >> $GITHUB_OUTPUT
+        echo "$changelog" >> $GITHUB_OUTPUT
+        echo 'EOF' >> $GITHUB_OUTPUT
+    - name: Show Generated Changelog
+      shell: bash
+      env:
+        CHANGELOG: ${{ steps.generate-changelog.outputs.changelog }}
+      run: |
+        echo "Generated Changelog:"
+        echo "$CHANGELOG"

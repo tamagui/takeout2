@@ -1,0 +1,3 @@
+ALTER TABLE "channelTopicMessage" ADD COLUMN "serverId" varchar;--> statement-breakpoint
+ALTER TABLE "channelTopicMessage" ADD CONSTRAINT "channelTopicMessage_serverId_server_id_fk" FOREIGN KEY ("serverId") REFERENCES "public"."server"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "idx_channelTopicMessage_server" ON "channelTopicMessage" USING btree ("serverId");

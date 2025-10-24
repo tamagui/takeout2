@@ -1,0 +1,2 @@
+ALTER TABLE "meeting" ADD COLUMN "creatorId" varchar NOT NULL;--> statement-breakpoint
+ALTER TABLE "meeting" ADD CONSTRAINT "meeting_creatorId_userPublic_id_fk" FOREIGN KEY ("creatorId") REFERENCES "public"."userPublic"("id") ON DELETE cascade ON UPDATE no action;

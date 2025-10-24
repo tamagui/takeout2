@@ -1,0 +1,1 @@
+ALTER TABLE "plugin" ADD COLUMN "uid" varchar;

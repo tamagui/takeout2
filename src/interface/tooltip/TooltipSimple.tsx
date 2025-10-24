@@ -1,0 +1,195 @@
+import type { SizableStackProps } from '@tamagui/stacks'
+import { Paragraph } from '@tamagui/text'
+import { Children, memo, useState, type ReactElement, type ReactNode } from 'react'
+import { Tooltip, type TooltipProps } from 'tamagui'
+import { createEmitter, useEmitterSelector, useEmitterValue } from '@vxrn/helpers'
+import { isEqualIdentity } from '@vxrn/helpers'
+import { animationClamped } from '../animations/animationClamped'
+import { Z_INDICES } from '../constants'
+import { popoverEmitter, type PopoverName } from '../popover/Popover'
+
+export type TooltipSimpleProps = TooltipProps & {
+  disabled?: boolean
+  label?: React.ReactNode
+  children?: React.ReactNode
+  contentProps?: SizableStackProps
+  disableOnPopover?: string
+}
+
+export type TooltipWrapperProps = {
+  tooltip?: string
+  tooltipDelayed?: boolean
+  tooltipPlacement?: TooltipProps['placement']
+  popover?: PopoverName
+}
+
+export function wrapWithTooltip(
+  content: ReactElement,
+  { tooltip, tooltipDelayed, tooltipPlacement, popover }: TooltipWrapperProps
+): ReactElement {
+  if (!tooltip) {
+    return content
+  }
+
+  return (
+    <TooltipSimple
+      {...(tooltipDelayed && {
+        delay: { open: 400, close: 0 },
+        restMs: 400,
+      })}
+      allowFlip
+      stayInFrame
+      {...(tooltipPlacement && {
+        placement: tooltipPlacement,
+      })}
+      disableOnPopover={popover}
+      label={tooltip}
+    >
+      {content}
+    </TooltipSimple>
+  )
+}
+
+const isPopoverOpen = () => {
+  return popoverEmitter.value?.state === 'open'
+}
+
+const globalTooltip = createEmitter<TooltipSimpleProps>(
+  'global-tooltip',
+  {},
+  {
+    comparator: isEqualIdentity,
+  }
+)
+
+export const TooltipSimple: React.FC<TooltipSimpleProps> = memo((props) => {
+  const { children, label } = props
+  const child = Children.only(children)
+
+  return (
+    <Tooltip.Trigger
+      scope="tooltip"
+      {...(typeof label === 'string' && {
+        'aria-label': label,
+      })}
+      asChild="except-style"
+      onMouseEnter={() => {
+        globalTooltip.emit(props)
+      }}
+    >
+      {child}
+    </Tooltip.Trigger>
+  )
+})
+
+export const GlobalTooltipProvider = ({
+  children: providerChildren,
+}: {
+  children: ReactNode
+}) => {
+  const [open, setOpen] = useState(false)
+  // const openDelayed = useDebounceValue(open, 50)
+  const props = useEmitterValue(globalTooltip)
+  const {
+    label,
+    children,
+    contentProps,
+    disabled: disabledProp,
+    disableOnPopover,
+    ...tooltipProps
+  } = props
+  const disableFromPopover = useEmitterSelector(popoverEmitter, (popover) => {
+    if (!disableOnPopover) return false
+    return popover?.state === 'open' && popover?.name === disableOnPopover
+  })
+
+  const disabled = disableFromPopover || !label || disabledProp
+
+  return (
+    <Tooltip
+      scope="tooltip"
+      disableRTL
+      offset={20}
+      restMs={200}
+      delay={{ open: 200, close: 200 }}
+      open={open}
+      // ensure we do a state change so we can force close it if need be due to popover
+      onOpenChange={(open) => {
+        const popoverOpen = isPopoverOpen()
+
+        if (open && disableOnPopover && popoverEmitter.value?.name === disableOnPopover) {
+          setOpen(false)
+          return
+        }
+
+        // if a popover opens right after this, close this
+        if (!popoverOpen) {
+          setTimeout(() => {
+            if (isPopoverOpen()) {
+              setOpen(false)
+              return
+            }
+          }, 10)
+        }
+
+        setOpen(open)
+      }}
+      allowFlip
+      stayInFrame={{
+        padding: {
+          bottom: 14,
+          left: 14,
+          right: 14,
+          top: 14,
+        },
+      }}
+      {...tooltipProps}
+      {...(disabled ? { open: false } : null)}
+      // @ts-ignore
+      zIndex={Z_INDICES.tooltip}
+    >
+      {providerChildren}
+
+      <Tooltip.Content
+        // @ts-ignore
+        zIndex={Z_INDICES.tooltip}
+        enterStyle={{ x: 0, y: -3, opacity: 0 }}
+        exitStyle={{ x: 0, y: -3, opacity: 0 }}
+        x={0}
+        scale={1}
+        y={0}
+        borderWidth={0}
+        opacity={disabled ? 0 : 1}
+        pointerEvents="none"
+        py="$1.5"
+        px="$2"
+        rounded="$2"
+        animateOnly={['transform', 'opacity', 'width', 'height']}
+        // TODO this would make them really nice but it needs to avoid animation when re-targeting
+        enableAnimationForPositionChange
+        animation={disabled ? null : animationClamped('quickerLessBouncy')}
+        $theme-dark={{
+          shadowColor: '$shadow4',
+          shadowRadius: 3,
+          shadowOffset: { height: 2, width: 0 },
+        }}
+        $theme-light={{
+          shadowColor: '$shadow6',
+          shadowRadius: 20,
+          shadowOffset: { height: 7, width: 0 },
+        }}
+        {...contentProps}
+      >
+        <Tooltip.Arrow
+          size="$3"
+          shadowColor="$shadow4"
+          shadowRadius={1}
+          shadowOffset={{ height: 2, width: 2 }}
+        />
+        <Paragraph pointerEvents="none" fontFamily="$mono" size="$2">
+          {label}
+        </Paragraph>
+      </Tooltip.Content>
+    </Tooltip>
+  )
+}

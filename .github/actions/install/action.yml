@@ -1,0 +1,32 @@
+name: 'Install'
+description: 'Install and build packages'
+
+inputs:
+  workspace-focus:
+    required: false
+    description: 'Only install and build a specific workspace (and its dependencies)'
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version-file: '.bun-version'
+
+    - name: Install Dependencies
+      shell: bash
+      # touch .env so our postinstall doesn't create a fake env
+      run: |
+        touch .env
+        bun install
+
+    - name: Bootstrap
+      shell: bash
+      run: bun bootstrap

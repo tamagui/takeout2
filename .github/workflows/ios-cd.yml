@@ -1,0 +1,320 @@
+name: iOS CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '*'
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+
+jobs:
+  archive-ios-app:
+    if: github.event.pull_request.draft != true && contains(github.event.commits[0].message, 'native:')
+    name: Archive iOS App
+    uses: ./.github/workflows/build-ios-app-cached.yml
+    secrets: inherit
+    permissions:
+      contents: read
+      pull-requests: read
+    with:
+      destination: iOS
+      configuration: Release
+      type: archive
+
+  generate-changelog:
+    name: Generate Changelog
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      changelog: ${{ steps.generate-changelog.outputs.changelog }}
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 24.3.0
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        if: ${{ !startsWith(github.event.inputs.branch, 'pr/') }}
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref }}
+          fetch-depth: 0
+
+      - name: Generate Changelog
+        id: generate-changelog
+        uses: ./.github/actions/generate-changelog
+
+  sign-and-upload:
+    if: github.event.pull_request.draft != true && contains(github.event.commits[0].message, 'native:')
+    name: Sign & Upload
+    needs:
+      - archive-ios-app
+      - generate-changelog
+    # runs-on: ghcr.io/cirruslabs/macos-runner:sequoia
+    runs-on: [macOS, sequoia-xcode-beta]
+    timeout-minutes: 20
+    steps:
+      # - name: Download Built Archive
+      #   uses: actions/cache/restore@v4
+      #   with:
+      #     fail-on-cache-miss: true
+      #     key: ${{ needs.archive-ios-app.outputs.built-app-cache-key }}
+      #     path: ${{ needs.archive-ios-app.outputs.built-archive-path }}
+
+      - name: Download Built Archive
+        uses: actions/download-artifact@v5.0.0
+        with:
+          name: ${{ needs.archive-ios-app.outputs.output-artifact-name }}
+          path: ${{ needs.archive-ios-app.outputs.output-path }}
+
+      - name: Get App Info
+        id: get-app-info
+        env:
+          BUILT_ARCHIVE_PATH: ${{ needs.archive-ios-app.outputs.built-archive-path }}
+        run: |
+          echo "Built archive path: $BUILT_ARCHIVE_PATH"
+
+          built_archive_products_applications_path="$BUILT_ARCHIVE_PATH/Products/Applications"
+          built_app_path=$(find "$built_archive_products_applications_path" -name "*.app" -type d | head -n 1)
+          if [ -z "$built_app_path" ]; then
+            echo "Error: no .app found in $built_archive_products_applications_path"
+            exit 1
+          fi
+          echo "Built app path: $built_app_path"
+          echo "app-path=$built_app_path" >> $GITHUB_OUTPUT
+
+          bundle_id=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$built_app_path/Info.plist")
+          echo "Bundle ID: $bundle_id"
+          echo "bundle-id=$bundle_id" >> $GITHUB_OUTPUT
+
+          version_number=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$built_app_path/Info.plist")
+          echo "App version: $version_number"
+          echo "version=$version_number" >> $GITHUB_OUTPUT
+
+      - name: Install Fastlane
+        run: |
+          if ! command -v fastlane &> /dev/null; then
+            echo "Installing fastlane..."
+            gem install fastlane --no-document
+          else
+            echo "Fastlane is already installed, skipping installation"
+          fi
+
+      - name: Create Temporary Keychain
+        id: create-keychain
+        run: |
+          original_keychains=$(security list-keychains -d user | tr -d '"' | sed -e 's/^ *//' -e 's/"//g' -e '/^$/d')
+          echo "Original keychains: $original_keychains"
+          {
+            echo "original-keychains<<EOF"
+            printf '%s\n' "$original_keychains"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          keychain_name="temp-$(openssl rand -hex 6)"
+          keychain_password="$(openssl rand -base64 24)"
+          keychain_dir="$HOME/Library/Keychains"
+          keychain_path="$keychain_dir/$keychain_name-db"
+
+          security create-keychain -p "$keychain_password" "$keychain_name"
+          security unlock-keychain -p "$keychain_password" "$keychain_name"
+          security set-keychain-settings -t 3600 -l "$keychain_name"
+          printf '%s\n' "$keychain_path" $original_keychains \
+            | xargs security list-keychains -d user -s
+          security list-keychains -d user
+
+          echo "Keychain name: $keychain_name"
+          echo "keychain-name=$keychain_name" >> $GITHUB_OUTPUT
+          echo "Keychain path: $keychain_path"
+          echo "keychain-path=$keychain_path" >> $GITHUB_OUTPUT
+
+          echo "keychain-password=$keychain_password" >> $GITHUB_OUTPUT
+
+      - name: Sync Code Signing Identities
+        id: sync-code-signing
+        env:
+          APPLE_CODE_SIGNING_GIT_URL: ${{ secrets.APPLE_CODE_SIGNING_GIT_URL }}
+          APPLE_CODE_SIGNING_GIT_SSH_KEY: ${{ secrets.APPLE_CODE_SIGNING_GIT_SSH_KEY }}
+          APPLE_CODE_SIGNING_GIT_PASSPHRASE: ${{ secrets.APPLE_CODE_SIGNING_GIT_PASSPHRASE }}
+          KEYCHAIN_NAME: ${{ steps.create-keychain.outputs.keychain-name }}
+          KEYCHAIN_PASSWORD: ${{ steps.create-keychain.outputs.keychain-password }}
+          APP_BUNDLE_ID: ${{ steps.get-app-info.outputs.bundle-id }}
+        run: |
+          echo "Syncing code signing identities..."
+          rm -rf ./.apple-code-signing
+          MATCH_PASSWORD="$APPLE_CODE_SIGNING_GIT_PASSPHRASE" fastlane match run \
+            --type appstore \
+            --readonly \
+            --skip_certificate_matching true \
+            --git_url "$APPLE_CODE_SIGNING_GIT_URL" \
+            --git_private_key "$APPLE_CODE_SIGNING_GIT_SSH_KEY" \
+            --keychain_name "$KEYCHAIN_NAME" \
+            --keychain_password "$KEYCHAIN_PASSWORD" \
+            --output_path ./.apple-code-signing \
+            --app_identifier "$APP_BUNDLE_ID"
+
+          provision_profile_path=$(find ./.apple-code-signing -name "*.mobileprovision" -type f | head -n 1)
+          if [ -z "$provision_profile_path" ]; then
+            echo "Error: no .mobileprovision found in ./.apple-code-signing"
+            exit 1
+          fi
+
+          echo "Provisioning profile path: $provision_profile_path"
+          echo "provision-profile-path=$provision_profile_path" >> $GITHUB_OUTPUT
+
+          provision_profile_name=$(
+            security cms -D -i "$provision_profile_path" \
+              | plutil -extract Name raw -o - -
+          )
+          echo "Provisioning profile name: $provision_profile_name"
+          echo "provision-profile-name=$provision_profile_name" >> $GITHUB_OUTPUT
+
+          team_id=$(
+            security cms -D -i "$provision_profile_path" \
+              | plutil -extract TeamIdentifier.0 raw -o - -
+          )
+          echo "Team ID: $team_id"
+          echo "team-id=$team_id" >> $GITHUB_OUTPUT
+
+          # Prevent UI permission popup when code signing
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+
+      - name: Get App Store Connect Credentials
+        id: get-app-store-connect-credentials
+        env:
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+        run: |
+          api_key="{ \"key_id\": \"$APP_STORE_CONNECT_API_KEY_ID\", \"issuer_id\": \"$APP_STORE_CONNECT_API_KEY_ISSUER_ID\", \"key\": $(echo "$APP_STORE_CONNECT_API_KEY_P8" | jq -Rs .) }"
+          echo "api-key=$api_key" >> $GITHUB_OUTPUT
+
+      - name: Get Build Number
+        id: get-build-number
+        env:
+          APP_BUNDLE_ID: ${{ steps.get-app-info.outputs.bundle-id }}
+          APP_VERSION: ${{ steps.get-app-info.outputs.version }}
+          TEAM_ID: ${{ steps.sync-code-signing.outputs.team-id }}
+          API_KEY: ${{ steps.get-app-store-connect-credentials.outputs.api-key }}
+        run: |
+          latest_build_number=$(
+            NO_COLOR=1 FASTLANE_ITC_TEAM_ID="$TEAM_ID" FASTLANE_HIDE_TIMESTAMP=true fastlane run \
+              latest_testflight_build_number \
+              app_identifier:"$APP_BUNDLE_ID" \
+              version:"$APP_VERSION" \
+              api_key:"$API_KEY" \
+              | grep "Result:" | awk '{print $2}'
+            )
+
+          echo "Latest build number: $latest_build_number"
+          echo "latest-build-number=$latest_build_number" >> $GITHUB_OUTPUT
+
+          next_build_number=$(( 10#$latest_build_number + 2 ))
+
+          echo "Next build number: $next_build_number"
+          echo "next-build-number=$next_build_number" >> $GITHUB_OUTPUT
+
+      - name: Prepare App for Publishing
+        env:
+          BUILT_ARCHIVE_PATH: ${{ needs.archive-ios-app.outputs.built-archive-path }}
+          BUILT_APP_PATH: ${{ steps.get-app-info.outputs.app-path }}
+          BUILD_NUMBER: ${{ steps.get-build-number.outputs.next-build-number }}
+        run: |
+          echo "Updating build number to $BUILD_NUMBER..."
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" "$BUILT_APP_PATH/Info.plist"
+          /usr/libexec/PlistBuddy -c "Set :ApplicationProperties:CFBundleVersion $BUILD_NUMBER" "$BUILT_ARCHIVE_PATH/Info.plist"
+
+          app_build_number=$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$BUILT_APP_PATH/Info.plist")
+          archive_build_number=$(/usr/libexec/PlistBuddy -c "Print :ApplicationProperties:CFBundleVersion" "$BUILT_ARCHIVE_PATH/Info.plist")
+
+          echo "Updated app build number: $app_build_number"
+          echo "Updated archive build number: $archive_build_number"
+
+      - name: Code Sign
+        id: code-sign
+        env:
+          BUILT_ARCHIVE_PATH: ${{ needs.archive-ios-app.outputs.built-archive-path }}
+          KEYCHAIN_NAME: ${{ steps.create-keychain.outputs.keychain-name }}
+          # APPLE_DEVELOPER_TEAM_ID: ${{ secrets.APPLE_DEVELOPER_TEAM_ID }}
+          APP_BUNDLE_ID: ${{ steps.get-app-info.outputs.bundle-id }}
+          PROVISION_PROFILE_NAME: ${{ steps.sync-code-signing.outputs.provision-profile-name }}
+          TEAM_ID: ${{ steps.sync-code-signing.outputs.team-id }}
+        run: |
+          # if [ -z "$APPLE_DEVELOPER_TEAM_ID" ]; then
+          #   echo "Error: APPLE_DEVELOPER_TEAM_ID secret is not set"
+          #   echo "Please set the APPLE_DEVELOPER_TEAM_ID secret in your repository settings."
+          #   exit 1
+          # fi
+
+          cat > ./.apple-code-signing/export.plist <<PLIST
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+            "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+            <plist version="1.0">
+            <dict>
+              <key>method</key><string>app-store-connect</string>
+              <key>signingStyle</key><string>manual</string>
+              <key>teamID</key><string>$TEAM_ID</string>
+
+              <!-- Map each bundle id to the installed profile's *Name* -->
+              <key>provisioningProfiles</key>
+              <dict>
+                <key>$APP_BUNDLE_ID</key><string>$PROVISION_PROFILE_NAME</string>
+                <!-- TODO: may need to handle extensions too -->
+              </dict>
+
+              <!-- Make xcodebuild pick the proper distribution cert -->
+              <key>signingCertificate</key><string>Apple Distribution</string>
+
+              <!-- Optional but typical -->
+              <key>compileBitcode</key><false/>
+              <key>uploadSymbols</key><true/>
+              <key>stripSwiftSymbols</key><true/>
+            </dict>
+            </plist>
+          PLIST
+
+          rm -rf _export
+          mkdir _export
+
+          export OTHER_CODE_SIGN_FLAGS="--keychain $KEYCHAIN_NAME"
+
+          xcodebuild -exportArchive \
+            -archivePath "$BUILT_ARCHIVE_PATH" \
+            -exportOptionsPlist ./.apple-code-signing/export.plist \
+            -exportPath _export
+
+          ipa_path=$(find _export -name "*.ipa" -type f | head -n 1)
+          echo "Exported IPA path: $ipa_path"
+          echo "ipa-path=$ipa_path" >> $GITHUB_OUTPUT
+
+      - name: Upload iOS App
+        env:
+          IPA_PATH: ${{ steps.code-sign.outputs.ipa-path }}
+          API_KEY: ${{ steps.get-app-store-connect-credentials.outputs.api-key }}
+          CHANGELOG: ${{ needs.generate-changelog.outputs.changelog }}
+        run: |
+          fastlane pilot upload --ipa "$IPA_PATH" \
+            --api_key "$API_KEY" \
+            --skip_submission true \
+            --skip_waiting_for_build_processing true \
+            --distribute_external false \
+            --changelog "$CHANGELOG"
+
+      - name: Remove Temporary Keychain
+        if: always()
+        env:
+          KEYCHAIN_NAME: ${{ steps.create-keychain.outputs.keychain-name }}
+          ORIGINAL_KEYCHAINS: ${{ steps.create-keychain.outputs.original-keychains }}
+        run: |
+          printf '%s\n' $ORIGINAL_KEYCHAINS \
+            | xargs security list-keychains -d user -s
+          security list-keychains -d user
+
+          security delete-keychain "$KEYCHAIN_NAME"

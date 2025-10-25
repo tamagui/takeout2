@@ -1,0 +1,82 @@
+import { useMemo, useState } from 'react'
+import { useAuth } from '~/auth/client/authClient'
+import type { User } from '~/data/models'
+import { useQuery, zero } from '~/zero/client'
+
+interface UseBlockedUsersOptions {
+  pageSize?: number
+}
+
+export function useBlockedUsers(options?: UseBlockedUsersOptions) {
+  const { pageSize = 20 } = options || {}
+  const { user } = useAuth()
+  const [currentPage, setCurrentPage] = useState<number>(0)
+  const [allUsers, setAllUsers] = useState<User[]>([])
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
+  const [hasInitialLoad, setHasInitialLoad] = useState<boolean>(false)
+
+  // query blocks where I'm the blocker
+  const blocksQuery = useMemo(() => {
+    if (!user?.id) return null
+    return zero.query.block
+      .where('blockerId', user.id)
+      .orderBy('createdAt', 'desc')
+      .limit(pageSize * (currentPage + 1))
+      .related('blocked', (q) => q) // get the blocked user data
+  }, [user?.id, pageSize, currentPage])
+
+  const [blocks, status] = useQuery(blocksQuery!, {
+    enabled: Boolean(user?.id),
+  })
+
+  // extract blocked users from blocks
+  useMemo(() => {
+    if (blocks) {
+      const users = blocks.map((block) => block.blocked).filter(Boolean) as User[]
+      setAllUsers(users)
+      setIsLoadingMore(false)
+      if (!hasInitialLoad) {
+        setHasInitialLoad(true)
+      }
+    }
+  }, [blocks, hasInitialLoad])
+
+  const loadMore = () => {
+    const hasMore = blocks ? blocks.length === pageSize * (currentPage + 1) : false
+    if (!isLoadingMore && hasMore && hasInitialLoad) {
+      setIsLoadingMore(true)
+      setCurrentPage((prev) => prev + 1)
+    }
+  }
+
+  const refresh = () => {
+    setCurrentPage(0)
+    setHasInitialLoad(false)
+    setIsLoadingMore(false)
+  }
+
+  // unblock a user
+  const unblockUser = async (blockedUserId: string) => {
+    if (!user?.id) return
+
+    try {
+      await zero.mutate.block.delete_(blockedUserId)
+    } catch (error) {
+      console.error('Failed to unblock user:', error)
+    }
+  }
+
+  const isInitialLoading = status.type === 'unknown' && currentPage === 0
+  const hasMore = blocks ? blocks.length === pageSize * (currentPage + 1) : false
+
+  return {
+    blockedUsers: allUsers,
+    isLoading: isInitialLoading,
+    isLoadingMore,
+    hasMore,
+    loadMore,
+    refresh,
+    unblockUser,
+    isEmpty: allUsers.length === 0 && !isInitialLoading,
+  }
+}

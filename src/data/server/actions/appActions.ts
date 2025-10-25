@@ -1,11 +1,5 @@
-import { runApp } from '~/features/apps/runApp'
-
-async function migrateInitialApps() {
-  const { migrateInitialApps } = await import('~/apps/migrateInitialApps')
-  await migrateInitialApps()
-}
-
+// Simplified app actions for social media starter kit
 export const appActions = {
-  runApp,
-  migrateInitialApps,
+  // Empty for now - add app-specific actions as needed
+  // Previous version had chat app logic that doesn't apply to social media
 }

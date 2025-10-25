@@ -1,13 +1,10 @@
-import { getURL } from 'one'
 import { setDevGlobal } from '~/features/devtools/devGlobal'
+import { SERVER_URL } from '~/constants/server-urls'
 import { createBetterAuthClient } from './createAuthClient'
 import { plugins } from './plugins'
 
-let baseURL = getURL()
-// FIXME: [One] prod ONE_SERVER_URL not working in metro
-if (baseURL === 'http://one-server.example.com') {
-  baseURL = 'https://start.chat'
-}
+const baseURL = SERVER_URL
+
 console.info(`[better-auth] client baseURL`, baseURL)
 
 const betterAuthClient = createBetterAuthClient({
@@ -15,7 +12,6 @@ const betterAuthClient = createBetterAuthClient({
   plugins,
 })
 
-setDevGlobal(betterAuthClient, 'betterAuthClient')
 setDevGlobal(betterAuthClient.authClient, 'betterAuth')
 
 export const {

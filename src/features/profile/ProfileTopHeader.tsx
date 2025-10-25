@@ -1,0 +1,261 @@
+import { Link, router } from 'one'
+import { memo } from 'react'
+import { Alert } from 'react-native'
+import { SizableText, View, XStack } from 'tamagui'
+import * as DropdownMenu from 'zeego/dropdown-menu'
+import { images } from '~/constants/images'
+import { SERVER_URL } from '~/constants/server-urls'
+import type { User } from '~/data/models'
+import { FEATURE_FLAGS } from '~/features/feature-flags'
+import { useShareProfile } from '~/helpers/share/useShareProfile'
+import { Pressable } from '~/interface/buttons/Pressable'
+import { CaretDownIcon } from '~/interface/icons/phosphor/CaretDownIcon'
+import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
+import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
+import { GearIcon } from '~/interface/icons/phosphor/GearIcon'
+import { PlusIcon } from '~/interface/icons/phosphor/PlusIcon'
+import { RankingIcon } from '~/interface/icons/phosphor/RankingIcon'
+import { ShareFatIcon } from '~/interface/icons/phosphor/ShareFatIcon'
+import { ShieldCheckIcon } from '~/interface/icons/phosphor/ShieldCheckIcon'
+import { WarningCircleIcon } from '~/interface/icons/phosphor/WarningCircleIcon'
+import { Image } from '~/interface/image/Image'
+import { usePageHeader } from '~/interface/pages/PageHeader'
+import { showReportForUser } from '~/interface/sheet/reportSheetHelper'
+import { H4 } from '~/interface/text/Headings'
+import { showToast } from '~/interface/toast/helpers'
+import { useStatsigClient } from '~/features/feature-flags/usePostHog'
+import { zero } from '~/zero/client'
+import { CreateTabIcon } from '../main-tabs/CreateTabIcon'
+
+interface ProfileTopHeaderProps {
+  userInfo: User
+  isOwnProfile: boolean
+}
+
+export const ProfileTopHeader = memo<ProfileTopHeaderProps>(
+  ({ userInfo, isOwnProfile }) => {
+    const { top, headerHeight } = usePageHeader()
+    const { client } = useStatsigClient()
+    const { shareProfile } = useShareProfile()
+    const ranking = userInfo?.ranking
+    const isTop3 = ranking && ranking <= 3
+
+    const showAccountSwitching = client.checkGate(
+      FEATURE_FLAGS.PROFILE_ENABLE_ACCOUNT_SWITCHING
+    )
+
+    const getRankImage = () => {
+      switch (ranking) {
+        case 1:
+          return images.rank1
+        case 2:
+          return images.rank2
+        case 3:
+          return images.rank3
+        default:
+          return undefined
+      }
+    }
+
+    const handleReport = () => {
+      if (!userInfo) return
+      showReportForUser(userInfo.id, userInfo.username)
+    }
+
+    const handleShare = async () => {
+      if (!userInfo) return
+
+      const publicProfileUrl = `${SERVER_URL}/u/${userInfo.username}`
+      await shareProfile(userInfo, publicProfileUrl)
+    }
+
+    const handleBlock = () => {
+      if (!userInfo) return
+
+      Alert.alert(
+        'Block User',
+        `Are you sure you want to block @${userInfo.username}? You won't see their content anymore.`,
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Block',
+            style: 'destructive',
+            onPress: async () => {
+              try {
+                zero.mutate.block.insert({ blockedId: userInfo.id })
+                showToast(`Blocked @${userInfo.username}`, { type: 'success' })
+                router.back()
+              } catch (error) {
+                showToast('Failed to block user', { type: 'error' })
+              }
+            },
+          },
+        ],
+        { cancelable: true }
+      )
+    }
+
+    const renderRightIcons = () => {
+      const icons = []
+
+      // Add icon for own profile
+      if (isOwnProfile) {
+        icons.push(
+          <CreateTabIcon
+            key="create"
+            customIcon={<PlusIcon size={24} color="$color12" />}
+            style={{ flex: 0, marginTop: 0 }}
+          />
+        )
+      }
+
+      // Share icon (always visible)
+      icons.push(
+        <Pressable key="share" onPress={handleShare}>
+          <ShareFatIcon size={24} color="$color12" />
+        </Pressable>
+      )
+
+      // Settings/More icon
+      if (isOwnProfile) {
+        icons.push(
+          <Link key="settings" href="/profile/settings">
+            <GearIcon size={24} color="$color12" />
+          </Link>
+        )
+      } else {
+        // only show the dropdown menu if the feature flag is enabled
+        icons.push(
+          <DropdownMenu.Root key="more">
+            <DropdownMenu.Trigger asChild>
+              <Pressable>
+                <DotsThreeIcon size={24} color="$color12" />
+              </Pressable>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content>
+              <DropdownMenu.Item key="report" onSelect={handleReport}>
+                <DropdownMenu.ItemIcon
+                  ios={{
+                    name: 'exclamationmark.triangle',
+                    pointSize: 18,
+                  }}
+                >
+                  <WarningCircleIcon size={16} />
+                </DropdownMenu.ItemIcon>
+                <DropdownMenu.ItemTitle>Report User</DropdownMenu.ItemTitle>
+              </DropdownMenu.Item>
+
+              <DropdownMenu.Separator />
+
+              <DropdownMenu.Item key="block" onSelect={handleBlock}>
+                <DropdownMenu.ItemIcon
+                  ios={{
+                    name: 'hand.raised',
+                    pointSize: 18,
+                  }}
+                >
+                  <ShieldCheckIcon size={16} />
+                </DropdownMenu.ItemIcon>
+                <DropdownMenu.ItemTitle>Block User</DropdownMenu.ItemTitle>
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
+        )
+      }
+
+      return <XStack gap="$4">{icons}</XStack>
+    }
+
+    return (
+      <View
+        pt={top + 8}
+        px="$3"
+        pb="$2"
+        bg="$background"
+        height={headerHeight}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1001,
+        }}
+      >
+        <XStack items="center" justify="space-between">
+          <XStack gap="$2">
+            {isOwnProfile ? (
+              showAccountSwitching ? (
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger asChild>
+                    <Pressable>
+                      <XStack items="center" gap="$2">
+                        <H4>{userInfo?.username}</H4>
+                        <CaretDownIcon size={20} color="$color12" />
+                      </XStack>
+                    </Pressable>
+                  </DropdownMenu.Trigger>
+
+                  <DropdownMenu.Content>
+                    <DropdownMenu.Item key="switch-account">
+                      <DropdownMenu.ItemTitle>Switch Account</DropdownMenu.ItemTitle>
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item key="add-account">
+                      <DropdownMenu.ItemTitle>Add New Account</DropdownMenu.ItemTitle>
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Separator />
+                    <DropdownMenu.Item
+                      key="account-center"
+                      onSelect={() => router.push('/settings/account')}
+                    >
+                      <DropdownMenu.ItemTitle>Account Center</DropdownMenu.ItemTitle>
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu.Root>
+              ) : (
+                <H4>{userInfo?.username}</H4>
+              )
+            ) : (
+              <Pressable onPress={() => router.back()}>
+                <XStack items="center" gap="$2">
+                  <CaretLeftIcon size={20} color="$color12" />
+                  <H4>{userInfo?.username}</H4>
+                </XStack>
+              </Pressable>
+            )}
+
+            {ranking && (
+              <Pressable
+                theme={isTop3 ? 'green' : 'accent'}
+                borderWidth={1}
+                borderColor="$color9"
+                rounded={100}
+                minW={43}
+                minH={25}
+                items="center"
+                overflow="hidden"
+                // Todo: Enable this when we have a Ranking system
+                disabled={true}
+              >
+                {isTop3 && getRankImage() ? (
+                  <Image src={getRankImage()} width={43} height={25} objectFit="cover" />
+                ) : (
+                  <XStack items="center" gap="$2" px="$2">
+                    <RankingIcon size={16} color="$color9" />
+                    <SizableText size="$4" fontWeight="600" color="$color9">
+                      {ranking || 0}
+                    </SizableText>
+                  </XStack>
+                )}
+              </Pressable>
+            )}
+          </XStack>
+
+          {renderRightIcons()}
+        </XStack>
+      </View>
+    )
+  }
+)

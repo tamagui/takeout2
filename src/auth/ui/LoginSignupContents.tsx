@@ -1,19 +1,26 @@
-import { Mail } from '@tamagui/lucide-icons'
-import { memo, useState } from 'react'
-import { isClient, isWeb, YStack } from 'tamagui'
-import { authClient, clearAuthClientToken } from '~/auth/client/authClient'
-import { setLoginPopup } from '~/auth/client/AuthEffects'
-import { openCenteredPopup } from '@vxrn/helpers'
+import { useState, useRef } from 'react'
+import { SizableText, XStack, YStack } from 'tamagui'
+import { authClient } from '~/auth/client/authClient'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Input } from '~/interface/forms/Input'
-import { GithubLogoIcon } from '~/interface/icons/GithubLogoIcon'
-import { showNotification } from '~/interface/notification/Notification'
-import { showToast } from '~/interface/toast/Toast'
-import { isTauri } from '@vxrn/helpers'
+import { EnvelopeIcon } from '~/interface/icons/phosphor/EnvelopeIcon'
+import { showToast } from '~/interface/toast/helpers'
+import { Image } from '~/interface/image/Image'
+import { Logo } from '~/interface/brand/Logo'
+import { images } from '~/constants/images'
+import { getHumanReadableVersionString } from '~/helpers/getHumanReadableVersionString'
+import { RepeatedTapToShowDevTools } from '~/interface/interactions/RepeatedTapToShowDevTools'
+import { signInAsAdmin } from '../actions/signInAsAdmin'
+import { useAfterLoginRedirect } from '../hooks/useAfterLoginRedirect'
+import { LoginSheet } from './LoginSheet'
+import { isNative } from '~/helpers/constants'
 
-export const LoginSignupContents = memo(() => {
+export const LoginSignupContents = () => {
+  useAfterLoginRedirect()
+
   const [email, setEmail] = useState('')
   const [isSending, setIsSending] = useState(false)
+  const loginSheetRef = useRef<any>(null)
 
   const handleMagicLink = async () => {
     if (!email || isSending) return
@@ -22,12 +29,12 @@ export const LoginSignupContents = memo(() => {
     try {
       const result = await authClient.signIn.magicLink({
         email,
-        callbackURL: window.location.origin,
+        callbackURL: isNative ? undefined : window.location.origin,
       })
 
       if (result.error) {
-        showNotification('Failed to send login link', {
-          display: 'error',
+        showToast('Failed to send login link', {
+          type: 'error',
           description: result.error.message,
         })
       } else {
@@ -35,8 +42,8 @@ export const LoginSignupContents = memo(() => {
         setEmail('')
       }
     } catch (error) {
-      showNotification('Failed to send magic link', {
-        display: 'error',
+      showToast('Failed to send magic link', {
+        type: 'error',
         description: error instanceof Error ? error.message : 'Unknown error occurred',
       })
     } finally {
@@ -44,6 +51,62 @@ export const LoginSignupContents = memo(() => {
     }
   }
 
+  const handleGetStarted = () => {
+    if (isNative && loginSheetRef.current?.expand) {
+      loginSheetRef.current.expand()
+    }
+  }
+
+  // Native-style layout with background image
+  if (isNative) {
+    return (
+      <YStack flex={1}>
+        <YStack flex={1} fullscreen opacity={1}>
+          <Image
+            src={images.blurBlackground}
+            objectFit="cover"
+            width="100%"
+            height="100%"
+          />
+        </YStack>
+
+        {/* Group friends photo */}
+        <YStack self="center" pt="$4">
+          <Image src={images.group} width={300} height={280} objectFit="contain" />
+        </YStack>
+
+        <YStack flex={1} overflow="visible" items="center" transform="translateY(-10%)">
+          <YStack gap="$5" items="center" flex={1}>
+            <XStack items="center">
+              <LogoWithTapTrigger />
+            </XStack>
+            <SizableText text="center" fontSize={34} lineHeight={34} fontWeight="600">
+              {`Chat, create, and earn\nwith AI content`}
+            </SizableText>
+          </YStack>
+
+          <ButtonSimple
+            width="90%"
+            size="large"
+            variant="default"
+            onPress={handleGetStarted}
+          >
+            <ButtonSimple.Text>Get Started</ButtonSimple.Text>
+          </ButtonSimple>
+
+          <YStack opacity={0.5} pb="$2">
+            <SizableText size="$1" color="$color8" mt="$2">
+              {getHumanReadableVersionString()}
+            </SizableText>
+          </YStack>
+        </YStack>
+
+        <LoginSheet ref={loginSheetRef} />
+      </YStack>
+    )
+  }
+
+  // Web-style simple form layout
   return (
     <YStack
       flex={1}
@@ -54,6 +117,10 @@ export const LoginSignupContents = memo(() => {
       self="center"
       items="stretch"
     >
+      <YStack items="center" mb="$4">
+        <LogoWithTapTrigger />
+      </YStack>
+
       <form
         style={{
           display: 'contents',
@@ -76,12 +143,12 @@ export const LoginSignupContents = memo(() => {
         />
 
         <ButtonSimple
-          // @ts-ignore
+          // @ts-expect-error - type prop for web forms
           type="submit"
           width="100%"
-          size="medium"
+          size="large"
           scaleIcon={1.2}
-          icon={Mail}
+          icon={EnvelopeIcon}
           disabled={!email || isSending}
           onPress={handleMagicLink}
         >
@@ -89,97 +156,35 @@ export const LoginSignupContents = memo(() => {
         </ButtonSimple>
       </form>
 
-      <TauriOpenNewWindowLoginLink>
-        <ButtonSimple width="100%" size="medium" scaleIcon={1.3} icon={GithubLogoIcon}>
-          Login with Github
-        </ButtonSimple>
-      </TauriOpenNewWindowLoginLink>
-
-      {/* <ButtonSimple size="medium" scaleIcon={1.5} icon={AppleLogoIcon}>
-        Login with Apple
-      </ButtonSimple> */}
-
       {(process.env.NODE_ENV === 'development' ||
-        (isClient && window.location.search.includes('showAdmin'))) && (
+        (!isNative && window.location.search.includes('showAdmin'))) && (
         <ButtonSimple
           width="100%"
-          size="medium"
-          // hide in production for now
-          data-testid="login-as-admin"
-          onPress={async () => {
-            showToast(`Creating admin..`)
-
-            const { error } = await authClient.signUp.email({
-              name: `Admin`,
-              email: `admin@start.chat`,
-              password: `password123`,
-            })
-
-            // if already exists (422) just login
-            if (error && error.status !== 422) {
-              showNotification(error.statusText, {
-                display: 'error',
-                description: error.message,
-              })
-              return
-            }
-
-            const loginRes = await authClient.signIn.email({
-              email: `admin@start.chat`,
-              password: `password123`,
-            })
-
-            if (loginRes.error) {
-              showNotification(loginRes.error.statusText, {
-                display: 'error',
-                description: loginRes.error.message,
-              })
-              return
-            }
-
-            window.location.reload()
-          }}
+          size="small"
+          variant="outlined"
+          onPress={() => signInAsAdmin()}
         >
-          Login as Admin
+          Sign in as admin
         </ButtonSimple>
       )}
+
+      <YStack opacity={0.5} items="center">
+        <SizableText size="$1" color="$color8">
+          {getHumanReadableVersionString()}
+        </SizableText>
+      </YStack>
     </YStack>
   )
-})
+}
 
-export const TauriOpenNewWindowLoginLink = (props: { children: any }) => {
-  if (!isWeb && !isTauri) {
-    // TODO
-    return props.children
-  }
-
+function LogoWithTapTrigger() {
   return (
-    <a
-      target="_blank"
-      href={window.location.origin + '/_/login-github?from-tauri'}
-      style={{
-        textDecoration: 'none',
-      }}
-      rel="noreferrer"
-      onClick={(e) => {
-        if (!isTauri) {
-          e.preventDefault()
-
-          const origin = window.location.origin
-
-          // ensure we clear any stale info
-          clearAuthClientToken()
-
-          const popup = openCenteredPopup(origin + '/_/login-github', 'Login', 700, 800)
-          if (popup) {
-            e.preventDefault()
-            setLoginPopup(popup)
-          } else {
-            // let it continue
-          }
-        }
-      }}
-      {...props}
-    />
+    <RepeatedTapToShowDevTools>
+      {({ handleTap }: { handleTap: () => void }) => (
+        <XStack onPress={handleTap}>
+          <Logo />
+        </XStack>
+      )}
+    </RepeatedTapToShowDevTools>
   )
 }

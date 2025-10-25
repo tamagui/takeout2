@@ -76,6 +76,29 @@ class WebPostHog implements PostHogInstance {
       })
     }
   }
+
+  isFeatureEnabled(key: string, defaultValue = false): boolean {
+    if (!this.isInitialized) {
+      return defaultValue
+    }
+    return posthog.isFeatureEnabled(key, { fallback: defaultValue }) ?? defaultValue
+  }
+
+  getFeatureFlag(key: string): boolean | string | undefined {
+    if (!this.isInitialized) {
+      return undefined
+    }
+    return posthog.getFeatureFlag(key)
+  }
+
+  async reloadFeatureFlags(): Promise<void> {
+    if (!this.isInitialized) {
+      return
+    }
+    return new Promise((resolve) => {
+      posthog.reloadFeatureFlags(() => resolve())
+    })
+  }
 }
 
 export const postHog = new WebPostHog()

@@ -8,11 +8,31 @@ export type AnalyticsEvent =
       }
     }
   | {
-      type: 'message_sent'
+      type: 'post_created'
       properties: {
-        messageLength: number
-        hasAttachments: boolean
-        conversationId: string
+        postId: string
+        contentLength: number
+        hasMedia: boolean
+      }
+    }
+  | {
+      type: 'post_liked'
+      properties: {
+        postId: string
+        authorId: string
+      }
+    }
+  | {
+      type: 'user_followed'
+      properties: {
+        followedUserId: string
+      }
+    }
+  | {
+      type: 'feed_viewed'
+      properties: {
+        feedType: 'home' | 'profile' | 'explore'
+        postsLoaded: number
       }
     }
   | {

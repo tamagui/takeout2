@@ -1,165 +1,77 @@
 import type {
-  App,
-  AppInstall,
-  AppInstallPermission,
-  Attachment,
-  Channel,
-  ChannelActive,
-  ChannelPermission,
-  ChannelTopic,
-  Meeting,
-  MeetingUser,
-  Message,
-  MessageReaction,
-  MessageReactionStats,
-  Notification,
-  Pin,
-  Reaction,
-  Role,
-  Seen,
-  Server,
-  Task,
-  TaskRun,
-  Thread,
+  Block,
+  Device,
+  Follows,
+  Like,
+  Post,
+  PrivateBetaInvite,
+  Report,
   User,
+  UserState,
+  UserStats,
 } from '~/data/models'
 
 export type * from './models'
 
-export type MessageUpdate = Partial<Message> & {
+// Social media specific types
+export type PostWithUser = Post & {
+  user?: User
+}
+
+export type PostWithStats = Post & {
+  likes?: readonly Like[]
+  likeCount?: number
+  isLiked?: boolean
+}
+
+export type PostWithRelations = Post & {
+  user?: User
+  likes?: readonly Like[]
+  likeCount?: number
+  isLiked?: boolean
+}
+
+export type UserWithStats = User & {
+  stats?: UserStats
+  state?: UserState
+}
+
+export type UserWithRelations = User & {
+  stats?: UserStats
+  state?: UserState
+  posts?: readonly Post[]
+  followers?: readonly Follows[]
+  following?: readonly Follows[]
+  blocking?: readonly Block[]
+  blockedBy?: readonly Block[]
+}
+
+export type NotificationWithRelations = {
   id: string
-  // things needed by message side effects
-  serverId: string
-  channelId: string
-  creatorId: string
+  userId: string
+  type: 'like' | 'follow' | 'mention' | 'report'
+  actorId?: string
+  actor?: User
+  postId?: string
+  post?: Post
+  message?: string
+  read: boolean
   createdAt: number
-  content: string
-}
-export type SeenUpdate = Partial<Seen> & { id: string }
-
-const rolePermissionsKeys = [
-  'canAdmin',
-  'canEditChannel',
-  'canEditServer',
-] satisfies (keyof Role)[]
-
-export type RolePermissionsKeys = (typeof rolePermissionsKeys)[number]
-
-export type UserWithRoles = User & {
-  roles?: readonly Role[]
 }
 
-export type DraftMessage = Message & {
-  attachments?: readonly Attachment[]
+export type ReportWithRelations = Report & {
+  reporter?: User
+  reportedUser?: User
+  reportedPost?: Post
+  reviewer?: User
 }
 
-export type SendMessage = DraftMessage & {
-  nextDraftId: string
+export type FollowWithUsers = Follows & {
+  follower?: User
+  following?: User
 }
 
-export type MessageMinimal = Message & {
-  creator?: User
-  reactionStats?: readonly MessageReactionStatsWithReactions[]
-  replyingTo?: Message & { creator?: User }
-  attachments?: readonly Attachment[]
-  notification?: Notification
-}
-
-// how we get it from db
-export type MessageReactionWithUserReaction = MessageReaction & {
-  reaction?: Reaction
-}
-
-// how we normalize it
-export type ReactionWithUserMessageReaction = Reaction & {
-  userReaction?: MessageReaction
-}
-
-export type TaskWithRelations = Task & {
-  run?: TaskRun
-}
-
-export type MessageWithRelations = Message & {
-  pin?: Pin
-  channel?: Channel
-  thread?: Thread & {
-    appInstalls?: AppInstallWithRelations
-  }
-  creator?: UserWithRoles
-  replyingTo?: Message & { creator?: User }
-  attachments?: readonly Attachment[]
-  notification?: Notification
-  currentUserMessageReactions?: readonly MessageReactionWithUserReaction[]
-  reactionStats?: readonly MessageReactionStatsWithReactions[]
-  appInstall?: AppInstallWithRelations
-  task?: Task
-}
-
-export type MessageReactionStatsWithReactions = MessageReactionStats & {
-  reaction?: Reaction
-}
-
-export type NotificationFriendship = Omit<Notification, 'type'> & {
-  type: 'friendship'
-}
-
-export type NotificationMessage = Omit<Notification, 'type'> & {
-  type: 'message'
-  messageId: string
-  channelId: string
-  serverId: string
-}
-
-export type NotificationMessageWithRelations = NotificationMessage & {
-  messages?: readonly MessageWithRelations[]
-}
-
-export type ChannelWithMessagesWithRelations = Channel & {
-  messages?: readonly MessageWithRelations[]
-}
-
-export type UserWithState = User & {
-  roles?: readonly Role[]
-}
-export type ThreadWithRelations = Thread & {
-  app?: App
-  messages?: readonly Message[]
-}
-
-export type RoleWithRelations = Role & { members: readonly User[] }
-
-export type AppInstallWithRelations = AppInstall & {
-  app?: App
-  appInstallPermissions?: readonly AppInstallPermission[]
-}
-
-export type AppWithRelations = App & {
-  install?: AppInstall & {
-    appInstallPermissions?: readonly AppInstallPermission[]
-  }
-}
-
-export type MeetingWithRelations = Meeting & {
-  meetingUsers?: readonly (MeetingUser & { user?: User })[]
-}
-
-export type ChannelWithRelations = Channel & {
-  appInstalls?: readonly AppInstallWithRelations[]
-  permissions?: readonly (ChannelPermission & { role?: Role })[]
-  notifications?: readonly Notification[]
-  channelActive?: readonly (ChannelActive & { user?: User })[]
-  meeting?: MeetingWithRelations
-  topics?: readonly ChannelTopic[]
-}
-
-export type ServerWithRelations = Server & {
-  apps?: readonly (App & { install?: AppInstall })[]
-  members?: readonly User[]
-  member?: User
-  roles?: readonly Role[]
-  channel?: ChannelWithRelations
-}
-
-export type ServerWithMembership = Server & {
-  member?: User
+export type LikeWithUser = Like & {
+  user?: User
+  post?: Post
 }

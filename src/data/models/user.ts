@@ -1,19 +1,27 @@
-import { boolean, number, string, table } from '@rocicorp/zero'
+import { boolean, json, number, string, table } from '@rocicorp/zero'
 import { ensure } from '@vxrn/helpers'
-import type { TableInsertRow } from 'over-zero'
+import type { TableInsertRow, TableUpdateRow } from 'over-zero'
 import { ensureLoggedIn, mutations, where } from 'over-zero'
 
 export type User = TableInsertRow<typeof schema>
+export type UserUpdate = TableUpdateRow<typeof schema>
+export type UserSocialLinks = Record<string, string>
 
 export const schema = table('userPublic')
   .columns({
     id: string(),
+    email: string(),
     name: string(),
     username: string(),
     image: string(),
+    bio: string().optional(),
+    ranking: number().optional(),
+    walletAddress: string().optional(),
+    socialLinks: json<UserSocialLinks>().optional(),
     lastActive: number().optional(),
     joinedAt: number(),
     hasOnboarded: boolean(),
+    whitelisted: boolean(),
     migrationVersion: number(),
   })
   .primaryKey('id')
@@ -30,67 +38,75 @@ export const permissions = where('userPublic', (_, auth) => {
 })
 
 export const mutate = mutations(schema, permissions, {
-  completeSignup: async ({ server, can }, userId: string) => {
-    await can(permissions, 'write', userId)
-    await server?.actions.user.onboardUser(userId)
-  },
-
-  createUserServer: async (ctx) => {
-    if (ctx.server) {
-      const authData = ensureLoggedIn()
-      await ctx.server.actions.user.insertUserServer(ctx, authData.id)
-    }
-  },
-
-  // we have two - global and per-channel, could maybe be reduced
-  updatePresence: async (
-    { tx, authData, can },
-    { time, channelId }: { time: number; channelId: string }
-  ) => {
+  completeSignup: async ({ server, authData }, userId: string) => {
     ensure(authData)
-    const userId = authData.id
-    await can(permissions, 'write', userId)
-    await tx.mutate.userPublic.update({
-      id: userId,
-      lastActive: time,
-    })
-    await tx.mutate.channelActive.upsert({
-      userId,
-      channelId,
-      lastSeenAt: time,
-    })
+
+    if (server) {
+      server.asyncTasks.push(async () => {
+        if (await server.actions.userActions.onboardUser(authData, userId)) {
+          await server.actions
+            .analyticsActions()
+            .logEvent(authData.id, 'user_onboarded', {
+              userId: authData.id,
+              hasCompletedProfile: true,
+            })
+        }
+      })
+    }
   },
 
-  updateProfile: async (
-    { tx, authData, can, server },
-    updates: {
-      username?: string
-      image?: string
-      name?: string
+  validateUsername: async ({ environment, server }, username: string) => {
+    if (environment === 'server' && server) {
+      await server.actions.userActions.validateUsername(username)
     }
-  ) => {
+  },
+
+  update: async ({ authData, can, tx, environment, server }, user: UserUpdate) => {
     ensure(authData)
     await can(permissions, 'write', authData.id)
-    const userId = authData.id
-
-    const filteredUpdates = Object.fromEntries(
-      Object.entries(updates).filter(([, value]) => value !== undefined)
-    )
-
-    if (Object.keys(filteredUpdates).length === 0) {
-      throw new Error('No fields to update')
-    }
 
     // convert data URL to actual R2 upload
-    if (server && filteredUpdates.image?.startsWith('data:')) {
+    if (server && user.image?.startsWith('data:')) {
       const { uploadDataUrlToR2 } = await import('~/features/upload/uploadDataUrl')
-      filteredUpdates.image = await uploadDataUrlToR2(filteredUpdates.image)
+      user.image = await uploadDataUrlToR2(user.image)
     }
 
-    await tx.mutate.userPublic.update({
-      id: userId,
-      ...filteredUpdates,
-    })
+    if (environment === 'server' && server && user.username) {
+      await server.actions.userActions.validateUsername(user.username)
+    }
+
+    await tx.mutate.userPublic.update(user)
+
+    if (environment === 'server' && server) {
+      const fieldsUpdated = Object.keys(user).filter((key) => key !== 'id')
+      server.asyncTasks.push(() =>
+        server.actions.analyticsActions().logEvent(authData.id, 'profile_updated', {
+          fieldsUpdated,
+        })
+      )
+    }
+  },
+
+  delete: async ({ authData, server, can, environment }, _user: UserUpdate) => {
+    ensure(authData)
+    await can(permissions, 'write', authData.id)
+
+    // only perform deletion on server
+    if (environment === 'server' && server) {
+      // server will handle deletion of all user data
+      // except for likes and follows as specified
+      await server.actions.userActions.deleteAccount(authData.id)
+    }
+  },
+
+  whitelistUsers: async ({ authData, tx, environment, server }, emails: string[]) => {
+    ensure(authData)
+
+    // only perform on server
+    if (environment === 'server' && server) {
+      // Use serverActions to whitelist users by email
+      await server.actions.userActions.whitelistUsers(emails)
+    }
   },
 
   finishOnboarding: async ({ tx, can, authData }) => {

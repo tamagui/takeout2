@@ -1,0 +1,125 @@
+import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet'
+import {
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useRef,
+  type ReactNode,
+} from 'react'
+import { SizableText, useTheme, View, XStack, type ViewProps } from 'tamagui'
+import haptics from '~/helpers/haptics/haptics'
+import { XCircleIcon } from '~/interface/icons/phosphor/XCircleIcon'
+import { Pressable } from '../buttons/Pressable'
+
+export interface SheetProps {
+  onClose?: () => void
+  title?: string
+  children: ReactNode
+  snapPoints?: string[]
+  contentStyle?: ViewProps
+}
+
+export interface SheetRef {
+  expand: () => void
+  collapse: () => void
+}
+
+export const Sheet = forwardRef<SheetRef, SheetProps>(
+  ({ onClose, title, children, snapPoints, contentStyle }, ref) => {
+    const bottomSheetRef = useRef<BottomSheet>(null)
+    const theme = useTheme()
+
+    useImperativeHandle(ref, () => ({
+      expand: () => {
+        bottomSheetRef.current?.snapToIndex(0)
+        haptics.modalOpen()
+      },
+      collapse: () => {
+        bottomSheetRef.current?.close()
+      },
+    }))
+
+    const renderBackdrop = useCallback(
+      (props: any) => (
+        <BottomSheetBackdrop
+          {...props}
+          disappearsOnIndex={-1}
+          appearsOnIndex={0}
+          opacity={0.8}
+          pressBehavior="close"
+        />
+      ),
+      []
+    )
+
+    const handleSheetChanges = useCallback(
+      (index: number) => {
+        if (index === -1) {
+          onClose?.()
+          haptics.modalClose()
+        }
+      },
+      [onClose]
+    )
+
+    return (
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        {...(snapPoints ? { snapPoints } : {})}
+        onChange={handleSheetChanges}
+        backdropComponent={renderBackdrop}
+        enablePanDownToClose
+        enableDynamicSizing
+        backgroundComponent={({ style }) => (
+          <View
+            style={[
+              style,
+              { borderTopRightRadius: 28, borderTopLeftRadius: 28, overflow: 'hidden' },
+            ]}
+            bg="$color2"
+          />
+        )}
+        handleIndicatorStyle={{
+          backgroundColor: theme.color6?.val,
+          width: 36,
+          height: 5,
+          borderRadius: 3,
+        }}
+        style={{
+          borderTopLeftRadius: 28,
+          borderTopRightRadius: 28,
+        }}
+        bottomInset={0}
+      >
+        <BottomSheetView
+          style={{
+            flex: 1,
+            paddingBottom: 40,
+          }}
+        >
+          <View flex={1} px={14} gap="$4" {...contentStyle}>
+            {/* Header */}
+            {!!title && (
+              <XStack items="center" justify="space-between" px="$1">
+                <SizableText text="center" fontWeight="600" fontSize={20}>
+                  {title}
+                </SizableText>
+                <Pressable
+                  onPress={() => {
+                    bottomSheetRef.current?.close()
+                  }}
+                >
+                  <XCircleIcon size={28} color="$color" opacity={0.2} />
+                </Pressable>
+              </XStack>
+            )}
+
+            {/* Content */}
+            {children}
+          </View>
+        </BottomSheetView>
+      </BottomSheet>
+    )
+  }
+)

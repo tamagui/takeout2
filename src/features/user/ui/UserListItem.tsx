@@ -1,15 +1,11 @@
 import { memo } from 'react'
 import { XStack } from 'tamagui'
-import { isUserOnline } from '~/features/user/isUserOnline'
-import { pluralize } from '@vxrn/helpers'
 import { Avatar } from '~/interface/avatars/Avatar'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { ListItem, type ListItemProps } from '~/interface/lists/ListItem'
-import type { UserWithState } from '~/data/types'
-import { UserPopover } from './UserPopover'
+import type { User } from '~/data/types'
 
 export type UserListItemProps = ListItemProps & {
-  user: UserWithState
+  user: User
   action?: any
   active?: boolean
 }
@@ -33,25 +29,13 @@ export const UserRow = ({
 }: UserListItemProps) => {
   return (
     <>
-      <UserPopover user={user}>
-        <Avatar
-          isOnline={isUserOnline(user)}
-          size={size === 'large' ? 24 : 20}
-          image={user.image}
-        />
-      </UserPopover>
+      <Avatar size={size === 'large' ? 24 : 20} image={user.image} />
 
       <ListItem.Text fontFamily={fontFamily} size={size}>
         {user.username || user.name}
       </ListItem.Text>
 
       <XStack flex={1} />
-
-      {!!user.roles?.length && (
-        <ButtonSimple size="small" tooltip={user.roles.map((r) => r.name).join(', ')}>
-          {pluralize(user.roles.length, 'role', 'roles')}
-        </ButtonSimple>
-      )}
 
       {action}
 

@@ -1,7 +1,7 @@
 import { json, number, string, table } from '@rocicorp/zero'
 import type { TableInsertRow } from 'over-zero'
 import { mutations, where } from 'over-zero'
-import type { ChannelsState, ThreadsState, UserSettings } from 'start/types'
+import type { UserSettings } from 'start/types'
 
 export type UserState = TableInsertRow<typeof schema>
 
@@ -9,15 +9,6 @@ export const schema = table('userState')
   .columns({
     id: string(),
     userId: string(),
-    apiKey: string().optional(),
-    serversSort: json<string[]>().optional(),
-    activeServer: string().optional(),
-    lastPathname: string().optional(),
-    lastActiveChannel: json<Record<string, string>>().optional(),
-    channelState: json<ChannelsState>().optional(),
-    threadState: json<ThreadsState>().optional(),
-    messageEdits: json<[{ id: string; content: string }]>().optional(),
-    topReactions: json<string[]>().optional(),
     settings: json<UserSettings>().optional(),
     updatedAt: number().optional(),
     createdAt: number(),

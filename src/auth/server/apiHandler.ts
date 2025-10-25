@@ -1,4 +1,4 @@
-import { and, eq, gt } from 'drizzle-orm'
+import { and, eq, gt, or, isNull, sql } from 'drizzle-orm'
 import { getDb } from '~/database'
 import * as schema from '~/database/schema'
 import { prettyPrintResponse } from '@vxrn/helpers'
@@ -98,29 +98,24 @@ async function checkUserAccess(
   const db = getDb()
   const now = Date.now()
 
-  const acceptedInvite = await db.query.invite.findFirst({
-    where: and(eq(schema.invite.email, email), eq(schema.invite.accepted, true)),
-  })
-
-  if (acceptedInvite) {
-    return { allowed: true, serverId: acceptedInvite.serverId }
-  }
-
+  // Check if user has a valid invite
   const validInvite = await db.query.invite.findFirst({
     where: and(
-      eq(schema.invite.email, email),
-      eq(schema.invite.accepted, false),
-      gt(schema.invite.expiresAt, new Date(now).toISOString())
+      or(
+        eq(schema.invite.email, email),
+        isNull(schema.invite.email) // code-only invites
+      ),
+      or(
+        gt(schema.invite.maxUses, schema.invite.useCount),
+        eq(schema.invite.maxUses, -1) // unlimited uses
+      ),
+      or(isNull(schema.invite.expiresAt), gt(schema.invite.expiresAt, now))
     ),
   })
 
   if (validInvite) {
     await acceptInvite(db, validInvite.id, userId, now)
-
-    return {
-      allowed: true,
-      serverId: validInvite.serverId,
-    }
+    return { allowed: true }
   }
 
   const privateBetaInvite = await db.query.privateBetaInvite.findFirst({
@@ -140,13 +135,13 @@ async function acceptInvite(
   userId: string,
   timestamp: number
 ) {
+  // Increment use count for the invite
   await db
     .update(schema.invite)
     .set({
-      accepted: true,
-      acceptedAt: new Date(timestamp).toISOString(),
-      acceptedById: userId,
-      updatedAt: new Date(timestamp).toISOString(),
+      useCount: sql`${schema.invite.useCount} + 1`,
+      usedAt: timestamp,
+      usedBy: userId,
     })
     .where(eq(schema.invite.id, inviteId))
 }

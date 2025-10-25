@@ -1,0 +1,23 @@
+import { useTheme } from 'tamagui'
+import { getIconSize } from './helpers'
+import type { ColorTokens, SizeTokens } from 'tamagui'
+import type { IconProps } from './types'
+
+export const useIconProps = ({
+  size,
+  color = '$color11' as ColorTokens,
+  ...restProps
+}: IconProps) => {
+  const theme = useTheme()
+  const sizeValue = getIconSize(size)
+
+  // get the color value from theme
+  const colorValue = theme[color]?.val || (theme.color11 as any).val
+
+  return {
+    width: sizeValue,
+    height: sizeValue,
+    fill: colorValue,
+    ...restProps,
+  }
+}

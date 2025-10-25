@@ -41,3 +41,8 @@ export const INPUT_DEFAULT_HEIGHT = 69
 
 // for in-development features
 export const DEV_MODE = process.env.NODE_ENV === 'development'
+
+// Auth and legal URLs
+export const PRIVACY_POLICY_URL = 'https://example.com/privacy'
+export const TERMS_OF_SERVICE_URL = 'https://example.com/terms'
+export const SUPPORT_EMAIL = 'support@example.com'

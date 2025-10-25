@@ -1,7 +1,4 @@
-import { runTask } from '~/features/task/runTask'
-import { runTaskTriggersForData } from '~/features/task/runTaskTriggersForData'
-
+// Simplified task actions for social media starter kit
 export const taskActions = {
-  runTask,
-  runTaskTriggersForData,
+  // Empty for now - add task-specific actions as needed
 }

@@ -87,6 +87,30 @@ class NodePostHog implements PostHogInstance {
     this.posthog = null
     this.initialize()
   }
+
+  isFeatureEnabled(key: string, defaultValue = false): boolean {
+    if (!this.posthog) {
+      return defaultValue
+    }
+    // Note: PostHog Node doesn't have synchronous feature flags
+    // In a real app, you'd cache feature flags or use a different approach
+    // For now, return default value on server
+    return defaultValue
+  }
+
+  getFeatureFlag(key: string): boolean | string | undefined {
+    if (!this.posthog) {
+      return undefined
+    }
+    // Note: PostHog Node doesn't have synchronous feature flags
+    // In a real app, you'd cache feature flags or use a different approach
+    return undefined
+  }
+
+  async reloadFeatureFlags(): Promise<void> {
+    // No-op on server - feature flags are typically client-side
+    return
+  }
 }
 
 export const postHog = new NodePostHog()

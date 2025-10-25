@@ -1,5 +1,5 @@
-import { createGlobalContext, isNative } from '@vxrn/helpers'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { Animated } from 'react-native'
 import type {
   RadiusTokens,
   TabLayout,
@@ -9,19 +9,23 @@ import type {
 } from 'tamagui'
 import {
   AnimatePresence,
+  isWeb,
   SizableText,
   Tabs as TamaguiTabs,
-  useEvent,
+  useTheme,
   withStaticProperties,
   XStack,
   YStack,
 } from 'tamagui'
-import { Shortcut } from '~/features/shortcuts/shortcuts'
+import { isNative } from '~/constants/platform'
+import { createGlobalContext } from '@vxrn/helpers'
 import { animationClamped } from '../animations/animationClamped'
 
 const TabsDirection = createGlobalContext<0 | 1 | -1>('tabs/direction', 0)
 
 type ReactComponent = (props: any) => React.ReactNode
+
+const rounded: RadiusTokens = '$8'
 
 function TabsComponent({
   tabs,
@@ -37,7 +41,11 @@ function TabsComponent({
   onValueChange?: (value: string) => void
   tabsContainerProps?: XStackProps
 }) {
+  const theme = useTheme()
   const [selected, setSelected] = useState<string>(initialTab)
+  // native animated indicator
+  const animatedPosition = useRef(new Animated.Value(0)).current
+  const [tabWidth, setTabWidth] = useState(100)
 
   const [tabState, setTabState] = useState<{
     // Layout of the Tab user might intend to select (hovering / focusing)
@@ -79,32 +87,27 @@ function TabsComponent({
     }
   }
 
-  const switchTab = useEvent((direction: 'forward' | 'backward') => {
-    const currentIndex = tabs.findIndex((tab) => tab.value === selected)
-    let nextIndex = currentIndex
+  // animate to active tab
+  const animateToTab = (index: number) => {
+    Animated.spring(animatedPosition, {
+      toValue: index * tabWidth,
+      useNativeDriver: true,
+      tension: 50,
+      friction: 8,
+    }).start()
+  }
 
-    if (direction === 'forward') {
-      nextIndex = currentIndex + 1
-      if (nextIndex >= tabs.length) {
-        return
-      }
-    } else {
-      nextIndex = currentIndex - 1
-      if (nextIndex < 0) {
-        return
-      }
+  // update animation when tab changes
+  useEffect(() => {
+    const activeIndex = tabs.findIndex((tab) => tab.value === selected)
+    if (activeIndex >= 0 && tabWidth > 0) {
+      animateToTab(activeIndex)
     }
+    // biome-ignore lint/correctness/useExhaustiveDependencies: animateToTab is stable
+  }, [selected, tabWidth, tabs, animateToTab])
 
-    const nextTab = tabs[nextIndex]
-    if (nextTab) {
-      onValueChange?.(nextTab.value)
-      setSelected(nextTab.value)
-    }
-  })
-
-  const TabsContent = (
+  const tabsContent = (
     <TamaguiTabs
-      data-tauri-drag-region
       activationMode="manual"
       orientation="horizontal"
       size="$4"
@@ -121,10 +124,10 @@ function TabsComponent({
       flex={1}
       {...rest}
     >
-      <YStack data-tauri-drag-region flex={1} {...tabsContainerProps}>
-        <YStack z={100000} data-tauri-drag-region rounded="$5">
-          <XStack data-tauri-drag-region width="100%" gap="$6">
-            <XStack data-tauri-drag-region mb="$4" flex={1}>
+      <YStack flex={1} {...tabsContainerProps}>
+        <YStack z={100000} rounded="$5">
+          <XStack width="100%" gap="$6">
+            <XStack mb="$4" flex={1} bg="$color2" rounded={rounded} p="$1">
               <AnimatePresence initial={false}>
                 {intentAt && (
                   <TabIndicator
@@ -153,7 +156,24 @@ function TabsComponent({
                 loop={false}
                 aria-label="package manager"
                 gap="$2"
+                onLayout={(e) => {
+                  const width = e.nativeEvent.layout.width
+                  setTabWidth(width / tabs.length)
+                }}
               >
+                {!isWeb && (
+                  <Animated.View
+                    style={{
+                      position: 'absolute',
+                      height: '100%',
+                      backgroundColor: theme.color5.val,
+
+                      width: tabWidth,
+                      borderRadius: 14,
+                      transform: [{ translateX: animatedPosition }],
+                    }}
+                  />
+                )}
                 {tabs.map((tab) => {
                   return (
                     <Tab
@@ -177,27 +197,13 @@ function TabsComponent({
           </AnimatedYStack>
         </AnimatePresence> */}
 
-        {children}
+        <YStack position="relative">{children}</YStack>
       </YStack>
     </TamaguiTabs>
   )
 
-  return (
-    <TabsDirection.Provider value={direction}>
-      {!isNative ? (
-        <Shortcut whenFocused shortcut="Meta+[" onTrigger={() => switchTab('backward')}>
-          <Shortcut whenFocused shortcut="Meta+]" onTrigger={() => switchTab('forward')}>
-            {TabsContent}
-          </Shortcut>
-        </Shortcut>
-      ) : (
-        TabsContent
-      )}
-    </TabsDirection.Provider>
-  )
+  return <TabsDirection.Provider value={direction}>{tabsContent}</TabsDirection.Provider>
 }
-
-const rounded: RadiusTokens = '$4'
 
 function Tab({
   label,
@@ -215,7 +221,7 @@ function Tab({
   return (
     <TamaguiTabs.Tab
       unstyled
-      data-tauri-drag-region
+      active={false}
       pl="$2"
       pr="$2.5"
       py="$1.5"
@@ -242,15 +248,12 @@ function Tab({
         outlineColor: '$background02',
       }}
     >
-      <XStack data-tauri-drag-region gap="$1.5" items="center" justify="center">
+      <XStack gap="$1.5" items="center" justify="center">
         {!!Icon && <Icon size={12} mr={3} opacity={0.5} />}
         <SizableText
-          data-tauri-drag-region
-          fontFamily="$mono"
-          y={-0.5}
-          size="$2"
+          size="$3"
           color={active ? '$color12' : '$color11'}
-          fontWeight="500"
+          fontWeight="600"
           select="none"
         >
           {label}
@@ -265,7 +268,10 @@ function TabIndicator({ active, ...props }: { active?: boolean } & ViewProps) {
     <YStack
       position="absolute"
       bg="$color4"
-      opacity={0.7}
+      $theme-light={{
+        bg: '$color5',
+      }}
+      opacity={0.5}
       rounded={rounded}
       animation={animationClamped('quickerLessBouncy')}
       enterStyle={{

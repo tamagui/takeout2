@@ -5,38 +5,16 @@ import {
   useToastController,
   useToastState,
 } from '@tamagui/toast'
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { YStack } from 'tamagui'
-import { createEmitter, useEmitter } from '@vxrn/helpers'
+import { useEmitter, useEmitterValue } from '@vxrn/helpers'
 import { Z_INDICES } from '../constants'
-import type { ToastShowOptions } from './types'
+import { toastEmitter } from './emitter'
 
-export type ToastType = 'error' | 'warn' | 'info'
-type ToastOptions = ToastShowOptions & {
-  type?: ToastType
-}
+// Re-export from helpers for convenience
+export { showToast } from './helpers'
 
-const toastEmitter = createEmitter<
-  { type: 'show'; title: string; options: ToastOptions } | { type: 'hide' }
->('toast', {
-  type: 'hide',
-})
-
-let toastType: ToastType = 'info'
-
-export const showToast = (
-  title: string,
-  { type = 'info', ...options }: ToastOptions = {}
-) => {
-  toastEmitter.emit({ type: 'show', title, options })
-  toastType = type
-}
-
-export const hideToast = () => {
-  toastEmitter.emit({ type: 'hide' })
-}
-
-export const ToastProvider = ({ children }: { children: any }) => {
+export const ToastProvider = ({ children }: { children: ReactNode }) => {
   return (
     <TamaguiToastProvider swipeDirection="horizontal">
       <ToastDisplay />
@@ -65,13 +43,15 @@ const ToastDisplay = () => {
 
   const controller = useToastController()
 
+  const toast = useEmitterValue(toastEmitter)
+  const toastType = toast.type === 'show' ? toast.toast.type : null
+
   useEmitter(toastEmitter, (val) => {
     if (val.type === 'hide') {
       controller.hide()
     } else {
-      if (currentToast) {
-      }
-      controller.show(val.title, val.options)
+      const { toast } = val
+      controller.show(toast.title, toast.options)
     }
   })
 
@@ -100,7 +80,15 @@ const ToastDisplay = () => {
       bg="$color2"
       py="$1.5"
       px="$3"
-      theme={toastType === 'error' ? 'red' : toastType === 'warn' ? 'yellow' : null}
+      theme={
+        toastType === 'error'
+          ? 'red'
+          : toastType === 'warn'
+            ? 'yellow'
+            : toastType === 'success'
+              ? 'green'
+              : null
+      }
       shadowColor="$shadow1"
       shadowRadius={20}
       shadowOffset={{ height: 10, width: 0 }}

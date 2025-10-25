@@ -70,6 +70,27 @@ class NativePostHog implements PostHogInstance {
       })
     }
   }
+
+  isFeatureEnabled(key: string, defaultValue = false): boolean {
+    if (!this.posthog) {
+      return defaultValue
+    }
+    return this.posthog.isFeatureEnabled(key) ?? defaultValue
+  }
+
+  getFeatureFlag(key: string): boolean | string | undefined {
+    if (!this.posthog) {
+      return undefined
+    }
+    return this.posthog.getFeatureFlag(key)
+  }
+
+  async reloadFeatureFlags(): Promise<void> {
+    if (!this.posthog) {
+      return
+    }
+    return this.posthog.reloadFeatureFlags()
+  }
 }
 
 export const postHog = new NativePostHog()

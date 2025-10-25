@@ -3,6 +3,9 @@ export interface PostHogInstance {
   captureException(error: Error, properties?: Record<string, any>): Promise<void>
   identify(userId: string, properties?: Record<string, any>): Promise<void>
   reset(): Promise<void>
+  isFeatureEnabled(key: string, defaultValue?: boolean): boolean
+  getFeatureFlag(key: string): boolean | string | undefined
+  reloadFeatureFlags(): Promise<void>
 }
 
 export interface PostHogConfig {

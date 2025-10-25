@@ -20,7 +20,6 @@ import { NotificationProvider } from '~/interface/notification/Notification'
 import { ToastProvider } from '~/interface/toast/Toast'
 import { DragDropFile } from '~/interface/upload/DragDropFile'
 import { config } from '~/tamagui/tamagui.config'
-import { TauriEffects } from '~/tauri/TauriEffects'
 import { ProvideZero } from '~/zero/client'
 
 if (process.env.NODE_ENV === 'development') {
@@ -56,7 +55,6 @@ export function Layout() {
 
         <div style={{ display: 'contents' }} data-testid="app-container">
           <ProvideZero>
-            <TauriEffects />
             <TamaguiRootProvider>
               <ThemeMetaTag />
               <SafeAreaProvider>

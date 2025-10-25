@@ -1,345 +1,177 @@
 import { relations } from 'drizzle-orm/relations'
 import {
-  app,
-  appInstall,
-  appInstallPermission,
-  attachment,
-  channel,
-  channelPermission,
-  friendship,
-  indicator,
-  message,
-  messageReaction,
+  admin,
+  block,
+  device,
+  follows,
+  invite,
+  like,
   notification,
-  pin,
-  reaction,
-  role,
-  seen,
-  server,
-  serverMember,
-  thread,
+  post,
+  privateBetaInvite,
+  report,
   userPublic,
-  userRole,
+  userState,
+  userStats,
 } from './schema-public'
 
-export const userPublicRelations = relations(userPublic, ({ many }) => ({
-  channelPermissions: many(channelPermission),
-  threads: many(thread),
-  pins: many(pin),
-  attachments: many(attachment),
-  roles: many(role),
-  messages: many(message),
-  servers: many(server),
-  friendships_requestingId: many(friendship, {
-    relationName: 'friend_requests_sent',
+export const userPublicRelations = relations(userPublic, ({ one, many }) => ({
+  state: one(userState, {
+    fields: [userPublic.id],
+    references: [userState.userId],
   }),
-  friendships_acceptingId: many(friendship, {
-    relationName: 'friend_requests_received',
+  stats: one(userStats, {
+    fields: [userPublic.id],
+    references: [userStats.id],
   }),
-  serverMembers: many(serverMember),
-  userRoles_userId: many(userRole, {
-    relationName: 'assigned_roles',
+  posts: many(post),
+  likes: many(like),
+  following: many(follows, {
+    relationName: 'follower',
   }),
-  userRoles_granterId: many(userRole, {
-    relationName: 'granted_roles',
+  followers: many(follows, {
+    relationName: 'following',
   }),
-  messageReactions: many(messageReaction),
-  indicators: many(indicator),
-}))
-
-export const serverRelations = relations(server, ({ one, many }) => ({
-  channelPermissions: many(channelPermission),
-  appInstallPermissions: many(appInstallPermission),
-  pins: many(pin),
-  roles: many(role),
-  messages: many(message),
-  channels: many(channel),
-  creator: one(userPublic, {
-    fields: [server.creatorId],
-    references: [userPublic.id],
+  blocking: many(block, {
+    relationName: 'blocker',
   }),
-  serverMembers: many(serverMember),
-  userRoles: many(userRole),
-  appInstalls: many(appInstall),
-}))
-
-export const channelRelations = relations(channel, ({ one, many }) => ({
-  channelPermissions: many(channelPermission),
-  threads: many(thread),
-  pins: many(pin),
-  attachments: many(attachment),
-  messages: many(message),
-  server: one(server, {
-    fields: [channel.serverId],
-    references: [server.id],
+  blockedBy: many(block, {
+    relationName: 'blocked',
+  }),
+  reports: many(report, {
+    relationName: 'reporter',
+  }),
+  reportedReports: many(report, {
+    relationName: 'reported',
+  }),
+  devices: many(device),
+  notifications: many(notification),
+  invite: one(invite, {
+    fields: [userPublic.id],
+    references: [invite.usedBy],
   }),
 }))
 
-export const threadRelations = relations(thread, ({ one, many }) => ({
-  channel: one(channel, {
-    fields: [thread.channelId],
-    references: [channel.id],
-  }),
-  creator: one(userPublic, {
-    fields: [thread.creatorId],
-    references: [userPublic.id],
-  }),
-  messages: many(message),
-}))
-
-export const messageRelations = relations(message, ({ one, many }) => ({
-  pins: many(pin),
-  attachments: many(attachment),
-  server: one(server, {
-    fields: [message.serverId],
-    references: [server.id],
-  }),
-  channel: one(channel, {
-    fields: [message.channelId],
-    references: [channel.id],
-  }),
-  thread: one(thread, {
-    fields: [message.threadId],
-    references: [thread.id],
-  }),
-  creator: one(userPublic, {
-    fields: [message.creatorId],
-    references: [userPublic.id],
-  }),
-  messageReactions: many(messageReaction),
-  replyingTo: one(message, {
-    fields: [message.replyingToId],
-    references: [message.id],
-    relationName: 'message_replies',
-  }),
-  replies: many(message, {
-    relationName: 'message_replies',
-  }),
-  childThread: many(thread),
-}))
-
-export const attachmentRelations = relations(attachment, ({ one }) => ({
-  message: one(message, {
-    fields: [attachment.messageId],
-    references: [message.id],
-  }),
-  channel: one(channel, {
-    fields: [attachment.channelId],
-    references: [channel.id],
-  }),
+export const userStateRelations = relations(userState, ({ one }) => ({
   user: one(userPublic, {
-    fields: [attachment.userId],
+    fields: [userState.userId],
     references: [userPublic.id],
   }),
 }))
 
-export const roleRelations = relations(role, ({ one, many }) => ({
-  channelPermissions: many(channelPermission),
-  appInstallPermissions: many(appInstallPermission),
-  server: one(server, {
-    fields: [role.serverId],
-    references: [server.id],
-  }),
-  creator: one(userPublic, {
-    fields: [role.creatorId],
-    references: [userPublic.id],
-  }),
-  userRoles: many(userRole),
-}))
-
-export const channelPermissionRelations = relations(channelPermission, ({ one }) => ({
-  channel: one(channel, {
-    fields: [channelPermission.channelId],
-    references: [channel.id],
-  }),
-  server: one(server, {
-    fields: [channelPermission.serverId],
-    references: [server.id],
-  }),
-  role: one(role, {
-    fields: [channelPermission.roleId],
-    references: [role.id],
-  }),
-  granter: one(userPublic, {
-    fields: [channelPermission.granterId],
-    references: [userPublic.id],
-  }),
-}))
-
-export const pinRelations = relations(pin, ({ one }) => ({
-  channel: one(channel, {
-    fields: [pin.channelId],
-    references: [channel.id],
-  }),
-  server: one(server, {
-    fields: [pin.serverId],
-    references: [server.id],
-  }),
-  message: one(message, {
-    fields: [pin.messageId],
-    references: [message.id],
-  }),
-  creator: one(userPublic, {
-    fields: [pin.creatorId],
-    references: [userPublic.id],
-  }),
-}))
-
-export const friendshipRelations = relations(friendship, ({ one }) => ({
-  requesting: one(userPublic, {
-    fields: [friendship.requestingId],
-    references: [userPublic.id],
-    relationName: 'friend_requests_sent',
-  }),
-  accepting: one(userPublic, {
-    fields: [friendship.acceptingId],
-    references: [userPublic.id],
-    relationName: 'friend_requests_received',
-  }),
-}))
-
-export const serverMemberRelations = relations(serverMember, ({ one }) => ({
-  server: one(server, {
-    fields: [serverMember.serverId],
-    references: [server.id],
-  }),
+export const userStatsRelations = relations(userStats, ({ one }) => ({
   user: one(userPublic, {
-    fields: [serverMember.userId],
+    fields: [userStats.id],
     references: [userPublic.id],
   }),
 }))
 
-export const userRoleRelations = relations(userRole, ({ one }) => ({
-  server: one(server, {
-    fields: [userRole.serverId],
-    references: [server.id],
-  }),
-  role: one(role, {
-    fields: [userRole.roleId],
-    references: [role.id],
-  }),
+export const postRelations = relations(post, ({ one, many }) => ({
   user: one(userPublic, {
-    fields: [userRole.userId],
+    fields: [post.userId],
     references: [userPublic.id],
-    relationName: 'assigned_roles',
   }),
-  granter: one(userPublic, {
-    fields: [userRole.granterId],
+  likes: many(like),
+  reports: many(report),
+  notifications: many(notification),
+}))
+
+export const likeRelations = relations(like, ({ one }) => ({
+  user: one(userPublic, {
+    fields: [like.userId],
     references: [userPublic.id],
-    relationName: 'granted_roles',
+  }),
+  post: one(post, {
+    fields: [like.postId],
+    references: [post.id],
   }),
 }))
 
-export const messageReactionRelations = relations(messageReaction, ({ one }) => ({
-  message: one(message, {
-    fields: [messageReaction.messageId],
-    references: [message.id],
+export const followsRelations = relations(follows, ({ one }) => ({
+  follower: one(userPublic, {
+    fields: [follows.followerId],
+    references: [userPublic.id],
+    relationName: 'follower',
   }),
-  reaction: one(reaction, {
-    fields: [messageReaction.reactionId],
-    references: [reaction.id],
+  following: one(userPublic, {
+    fields: [follows.followingId],
+    references: [userPublic.id],
+    relationName: 'following',
   }),
-  creator: one(userPublic, {
-    fields: [messageReaction.creatorId],
+}))
+
+export const blockRelations = relations(block, ({ one }) => ({
+  blocker: one(userPublic, {
+    fields: [block.blockerId],
+    references: [userPublic.id],
+    relationName: 'blocker',
+  }),
+  blocked: one(userPublic, {
+    fields: [block.blockedId],
+    references: [userPublic.id],
+    relationName: 'blocked',
+  }),
+}))
+
+export const reportRelations = relations(report, ({ one }) => ({
+  reporter: one(userPublic, {
+    fields: [report.reporterId],
+    references: [userPublic.id],
+    relationName: 'reporter',
+  }),
+  reportedUser: one(userPublic, {
+    fields: [report.reportedUserId],
+    references: [userPublic.id],
+    relationName: 'reported',
+  }),
+  reportedPost: one(post, {
+    fields: [report.reportedPostId],
+    references: [post.id],
+  }),
+  reviewer: one(userPublic, {
+    fields: [report.reviewedBy],
+    references: [userPublic.id],
+    relationName: 'reviewer',
+  }),
+}))
+
+export const deviceRelations = relations(device, ({ one }) => ({
+  user: one(userPublic, {
+    fields: [device.userId],
     references: [userPublic.id],
   }),
-  channel: one(channel, {
-    fields: [messageReaction.channelId],
-    references: [channel.id],
+}))
+
+export const inviteRelations = relations(invite, ({ one }) => ({
+  usedByUser: one(userPublic, {
+    fields: [invite.usedBy],
+    references: [userPublic.id],
+  }),
+  createdByUser: one(userPublic, {
+    fields: [invite.createdBy],
+    references: [userPublic.id],
   }),
 }))
 
-export const reactionRelations = relations(reaction, ({ many }) => ({
-  messageReactions: many(messageReaction),
-}))
+// Alias for compatibility
+export const privateBetaInviteRelations = inviteRelations
 
-export const seenRelations = relations(seen, ({ one }) => ({
-  message: one(message, {
-    fields: [seen.messageId],
-    references: [message.id],
-  }),
-  channel: one(channel, {
-    fields: [seen.channelId],
-    references: [channel.id],
-  }),
+export const adminRelations = relations(admin, ({ one }) => ({
+  // Admin is a separate entity, not directly related to userPublic
+  // But could be linked via email if needed
 }))
 
 export const notificationRelations = relations(notification, ({ one }) => ({
-  message: one(message, {
-    fields: [notification.messageId],
-    references: [message.id],
-  }),
-  channel: one(channel, {
-    fields: [notification.channelId],
-    references: [channel.id],
-  }),
-  server: one(server, {
-    fields: [notification.serverId],
-    references: [server.id],
-  }),
   user: one(userPublic, {
     fields: [notification.userId],
     references: [userPublic.id],
   }),
-}))
-
-export const appRelations = relations(app, ({ one, many }) => ({
-  creator: one(userPublic, {
-    fields: [app.creatorId],
+  actor: one(userPublic, {
+    fields: [notification.actorId],
     references: [userPublic.id],
   }),
-  appInstalls: many(appInstall),
-}))
-
-export const appInstallRelations = relations(appInstall, ({ one, many }) => ({
-  app: one(app, {
-    fields: [appInstall.appId],
-    references: [app.id],
-  }),
-  server: one(server, {
-    fields: [appInstall.serverId],
-    references: [server.id],
-  }),
-  appInstallPermissions: many(appInstallPermission),
-}))
-
-export const appInstallPermissionRelations = relations(
-  appInstallPermission,
-  ({ one }) => ({
-    appInstall: one(appInstall, {
-      fields: [appInstallPermission.appInstallId],
-      references: [appInstall.id],
-    }),
-    server: one(server, {
-      fields: [appInstallPermission.serverId],
-      references: [server.id],
-    }),
-    role: one(role, {
-      fields: [appInstallPermission.roleId],
-      references: [role.id],
-    }),
-    granter: one(userPublic, {
-      fields: [appInstallPermission.granterId],
-      references: [userPublic.id],
-    }),
-  })
-)
-
-export const indicatorRelations = relations(indicator, ({ one }) => ({
-  user: one(userPublic, {
-    fields: [indicator.userId],
-    references: [userPublic.id],
-  }),
-  server: one(server, {
-    fields: [indicator.serverId],
-    references: [server.id],
-  }),
-  channel: one(channel, {
-    fields: [indicator.channelId],
-    references: [channel.id],
-  }),
-  thread: one(thread, {
-    fields: [indicator.threadId],
-    references: [thread.id],
+  post: one(post, {
+    fields: [notification.postId],
+    references: [post.id],
   }),
 }))

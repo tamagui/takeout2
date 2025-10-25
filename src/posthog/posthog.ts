@@ -82,6 +82,29 @@ export class PostHog implements PostHogInstance {
     }
     return instance.captureException(error, enhancedProperties)
   }
+
+  isFeatureEnabled(key: string, defaultValue = false): boolean {
+    // Feature flags need to be synchronous, so we check if instance is already loaded
+    if (this.instance) {
+      return this.instance.isFeatureEnabled(key, defaultValue)
+    }
+    // Return default if not initialized
+    return defaultValue
+  }
+
+  getFeatureFlag(key: string): boolean | string | undefined {
+    // Feature flags need to be synchronous, so we check if instance is already loaded
+    if (this.instance) {
+      return this.instance.getFeatureFlag(key)
+    }
+    // Return undefined if not initialized
+    return undefined
+  }
+
+  async reloadFeatureFlags(): Promise<void> {
+    const instance = await this.getInstance()
+    return instance.reloadFeatureFlags()
+  }
 }
 
 export const postHog = new PostHog()

@@ -1,7 +1,7 @@
 import { expo } from '@better-auth/expo'
 import { betterAuth } from 'better-auth'
-import { emailHarmony } from 'better-auth-harmony'
-import { admin, bearer, jwt, magicLink } from 'better-auth/plugins'
+import { emailHarmony, phoneHarmony } from 'better-auth-harmony'
+import { admin, bearer, jwt, magicLink, emailOTP, phoneNumber } from 'better-auth/plugins'
 import { database } from '~/database/database'
 import { sendMagicLinkEmail } from '~/features/email/actions/sendMagicLinkEmail'
 import { time } from '@vxrn/helpers'
@@ -74,9 +74,36 @@ export const authServer = betterAuth({
 
     admin(),
 
-    // avoid spam or duplicate emails
+    // avoid spam or duplicate emails and phone numbers
     // https://github.com/gekorm/better-auth-harmony
     emailHarmony(),
+    phoneHarmony(),
+
+    emailOTP({
+      async sendVerificationOTP({ email, otp, type }) {
+        // TODO: Create sendOTPEmail function
+        console.info('Sending OTP email to', email, 'with code', otp, 'for', type)
+        // sendOTPEmail(email, { type, otp })
+      },
+    }),
+
+    phoneNumber({
+      sendOTP: async ({ phoneNumber, code }) => {
+        // TODO: Create sendOTPSMS function
+        console.info('Sending OTP SMS to', phoneNumber, 'with code', code)
+        // await sendOTPSMS(phoneNumber, { otp: code })
+      },
+      signUpOnVerification: {
+        getTempEmail: (phoneNumber) => {
+          // Initial email for phone-only users
+          return `${phoneNumber}@phone.local`
+        },
+        getTempName: (phoneNumber) => {
+          // Initial name for the user
+          return ''
+        },
+      },
+    }),
   ],
 
   socialProviders: {

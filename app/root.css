@@ -2,7 +2,7 @@
 
 :root {
   color-scheme: light dark;
-  --bodyBgLight: #eee;
+  --bodyBgLight: #fff;
   --bodyBgLightTransparent: rgba(255, 255, 255, 0);
   --bodyBgDark: #000;
   --bodyBgDarkTransparent: rgba(0, 0, 0, 0);
@@ -30,38 +30,6 @@ a:focus,
   box-shadow: none !important;
 }
 
-/* when not in tauri we adjust a bit to have a similar visual look */
-:root.not_tauri {
-  --bodyBgLight: #eee;
-  --bodyBgDark: #0d0d0d;
-}
-
-/* Theme variant overrides - Stark theme */
-body.body_stark {
-  --bodyBgDark: #151515;
-}
-
-body.body_stark.not_tauri {
-  --bodyBgDark: #111;
-}
-
-body.body_stark.t_light {
-  --bodyBgLight: #e5e5e5;
-}
-
-/* Theme variant overrides - Subtle theme (default) */
-body.body_subtle {
-  --bodyBgDark: #000;
-}
-
-body.body_subtle.not_tauri {
-  --bodyBgDark: #0d0d0d;
-}
-
-body.body_subtle.t_light {
-  --bodyBgLight: #eee;
-}
-
 :root {
   --bodyBg: light-dark(var(--bodyBgLight), var(--bodyBgDark));
   --bodyBgTransparent: light-dark(
@@ -78,21 +46,14 @@ body.body_subtle.t_light {
   background-color: var(--bodyBgDark);
 }
 
-.not_tauri.t_dark,
+.t_dark,
 .t_dark .bodyBg {
   --bodyBg: var(--bodyBgDark);
-  --logoColor: var(--logoColorDark);
 }
 
-.not_tauri.t_light,
+.t_light,
 .t_light .bodyBg {
   --bodyBg: var(--bodyBgLight);
-  --logoColor: var(--logoColorLight);
-}
-
-:root .no_bg {
-  --bodyBgLight: transparent !important;
-  --bodyBgDark: transparent !important;
 }
 
 body {
@@ -101,12 +62,7 @@ body {
   max-width: 100vw;
   min-height: 100vh;
   overflow: hidden;
-  background-color: transparent;
-}
-
-:root:has(.body-transparent-bg),
-:root:has(.body-transparent-bg) body {
-  background-color: transparent !important;
+  background-color: var(--bodyBg);
 }
 
 /* fix safari adjusting some random font sizes bigger */
@@ -119,7 +75,7 @@ body {
 html,
 body {
   max-width: 100vw;
-  background: transparent;
+  background: var(--bodyBg);
   overflow: hidden;
 }
 
@@ -184,97 +140,15 @@ a {
 }
 
 .text-underline-none {
+  text-decoration: none;
   text-decoration-thickness: 0px !important;
 }
 
-a.is_Button,
-.text-underline-none {
+a.is_Button {
   text-decoration: none;
 }
 
-.text-glow {
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-}
-
-.path-glow:hover svg *,
-.path-glow-on svg * {
-  transition: filter ease-in 100ms;
-  filter: drop-shadow(0 0 4px #fff);
-}
-
-.path-glow-subtle > * {
-  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.6));
-}
-
-.path-glow:hover svg {
-  opacity: 1 !important;
-  overflow: visible;
-}
-
-.shining-text {
-  font-size: 5rem;
-  font-weight: bold;
-  color: #fff;
-
-  /* Create the alpha mask using a linear gradient.
-     The gradient goes from semi-transparent to opaque to semi-transparent. */
-  -webkit-mask-image: linear-gradient(
-    120deg,
-    rgba(0, 0, 0, 0.2) 0%,
-    rgba(0, 0, 0, 1) 50%,
-    rgba(0, 0, 0, 0.2) 100%
-  );
-  mask-image: linear-gradient(
-    120deg,
-    rgba(0, 0, 0, 0.2) 0%,
-    rgba(0, 0, 0, 1) 50%,
-    rgba(0, 0, 0, 0.2) 100%
-  );
-
-  /* Expand the mask so that it can animate across the text */
-  -webkit-mask-size: 200%;
-  mask-size: 200%;
-
-  /* Animate the mask position to create a shining effect */
-  -webkit-animation: shine 3s infinite linear;
-  animation: shine 3s infinite linear;
-}
-
-/* For WebKit-based browsers */
-@-webkit-keyframes shine {
-  from {
-    -webkit-mask-position: -100%;
-  }
-  to {
-    -webkit-mask-position: 100%;
-  }
-}
-
-/* Standard keyframes */
-@keyframes shine {
-  from {
-    mask-position: -100%;
-  }
-  to {
-    mask-position: 100%;
-  }
-}
-
-/* prevents selection highlights while dragging but causes a janky repaint right as you start dragging */
-.is-dragging-divider * {
-  user-select: none !important;
-  pointer-events: none !important;
-}
-
-.is-dragging-divider *::-webkit-scrollbar {
-  display: none;
-  scrollbar-width: none;
-}
-
-:root:root:root .disable-all-pointer-events * {
-  pointer-events: none !important;
-}
-
+/* Hide scrollbar utilities */
 .hide-scrollbar {
   scrollbar-width: none; /* Firefox */
 }
@@ -282,154 +156,7 @@ a.is_Button,
   display: none; /* Safari and Chrome */
 }
 
-:root:root .disable-effects * {
-  backdrop-filter: none !important;
-  mask: none !important;
-  transition: none !important;
-}
-
-.avatar-cutout-small-frame {
-  mask-image: radial-gradient(
-    circle at 80% 80%,
-    rgba(0, 0, 0, 0) 10%,
-    rgba(0, 0, 0, 0.1) 10.1%,
-    rgba(0, 0, 0, 0.2) 10.2%,
-    rgba(0, 0, 0, 0.3) 10.3%,
-    rgba(0, 0, 0, 0.4) 10.4%,
-    rgba(0, 0, 0, 0.5) 10.5%,
-    rgba(0, 0, 0, 0.6) 10.6%,
-    rgba(0, 0, 0, 0.7) 10.7%,
-    rgba(0, 0, 0, 0.8) 10.8%,
-    rgba(0, 0, 0, 0.9) 10.9%,
-    rgba(0, 0, 0, 1) 11%
-  );
-}
-
-.avatar-cutout-small {
-  mask-image: radial-gradient(
-    circle at 87% 87%,
-    rgba(0, 0, 0, 0) 20%,
-    rgba(0, 0, 0, 0.1) 20.1%,
-    rgba(0, 0, 0, 0.2) 20.2%,
-    rgba(0, 0, 0, 0.3) 20.3%,
-    rgba(0, 0, 0, 0.4) 20.4%,
-    rgba(0, 0, 0, 0.5) 20.5%,
-    rgba(0, 0, 0, 0.6) 20.6%,
-    rgba(0, 0, 0, 0.7) 20.7%,
-    rgba(0, 0, 0, 0.8) 20.8%,
-    rgba(0, 0, 0, 0.9) 20.9%,
-    rgba(0, 0, 0, 1) 21%
-  );
-}
-
-.avatar-cutout-big {
-  mask-image: radial-gradient(
-    circle at 87% 87%,
-    rgba(0, 0, 0, 0) 10%,
-    rgba(0, 0, 0, 0.1) 10.05%,
-    rgba(0, 0, 0, 0.2) 10.1%,
-    rgba(0, 0, 0, 0.3) 10.15%,
-    rgba(0, 0, 0, 0.4) 10.2%,
-    rgba(0, 0, 0, 0.5) 10.25%,
-    rgba(0, 0, 0, 0.6) 10.3%,
-    rgba(0, 0, 0, 0.7) 10.35%,
-    rgba(0, 0, 0, 0.8) 10.4%,
-    rgba(0, 0, 0, 0.9) 10.45%,
-    rgba(0, 0, 0, 1) 10.5%
-  );
-}
-
-.faded-edges {
-  position: relative;
-  background-color: var(--bg-color, rgba(255, 255, 255, 0.9));
-  border-radius: inherit;
-  overflow: hidden;
-
-  --feather: 100px; /* how far from the edge the fade begins */
-  --edge-opacity: 0; /* opacity at edges (0 = transparent) */
-
-  /* Create a combined fade from all four directions inward */
-  -webkit-mask-image:
-    linear-gradient(to top, rgba(0, 0, 0, var(--edge-opacity)) 0, black var(--feather)),
-    linear-gradient(to bottom, rgba(0, 0, 0, var(--edge-opacity)) 0, black var(--feather)),
-    linear-gradient(to left, rgba(0, 0, 0, var(--edge-opacity)) 0, black var(--feather)),
-    linear-gradient(to right, rgba(0, 0, 0, var(--edge-opacity)) 0, black var(--feather));
-  -webkit-mask-composite: intersect;
-  mask-image:
-    linear-gradient(to top, rgba(0, 0, 0, var(--edge-opacity)) 0, black var(--feather)),
-    linear-gradient(to bottom, rgba(0, 0, 0, var(--edge-opacity)) 0, black var(--feather)),
-    linear-gradient(to left, rgba(0, 0, 0, var(--edge-opacity)) 0, black var(--feather)),
-    linear-gradient(to right, rgba(0, 0, 0, var(--edge-opacity)) 0, black var(--feather));
-  mask-composite: intersect;
-  mask-mode: alpha;
-}
-
-/* we are disabling pe on virtuoso-scroller so tauri-drag-region works below it */
-/* but conditionally re-enable them on messages inside if hud not open  */
-/* .message-item {
-  pointer-events: auto;
-}
-.hide-messages .message-item {
-  pointer-events: none;
-} */
-
-/* Custom scrollbar for Virtuoso */
-
-.virtuoso-scroller {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color02) transparent;
-  /* disabling as it seems to make safair not scroll always */
-  /* pointer-events: none; */
-}
-
-.virtuoso-scroller::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-  transition: all 0.2s ease;
-}
-
-.virtuoso-scroller::-webkit-scrollbar-track {
-  background: transparent;
-  border-radius: 0;
-}
-
-.virtuoso-scroller::-webkit-scrollbar-thumb {
-  background-color: var(--color02);
-  border-radius: 0;
-  border: none;
-  transition: all 0.2s ease;
-}
-
-.virtuoso-scroller:hover::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
-}
-
-.virtuoso-scroller:hover::-webkit-scrollbar-thumb {
-  background-color: var(--color04);
-}
-
-.virtuoso-scroller::-webkit-scrollbar-thumb:hover {
-  background-color: var(--color04);
-}
-
-.virtuoso-scroller > div {
-  /* bugfix opening thread can not show for some reason */
-  visibility: visible !important;
-}
-
-.disable-scrollbar .virtuoso-scroller {
-  scrollbar-width: none;
-}
-
-.disable-scrollbar .virtuoso-scroller::-webkit-scrollbar {
-  display: none;
-}
-
-.fade-out-background {
-  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 30%, rgba(0, 0, 0, 0.2) 100%);
-}
-
+/* Ellipsis utilities */
 .ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -454,15 +181,6 @@ a.is_Button,
   text-overflow: ellipsis;
 }
 
-.ellipsis-4 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  line-clamp: 4;
-  -webkit-box-orient: vertical;
-  text-overflow: ellipsis;
-}
-
 /* Gradient border animation */
 @keyframes gradient-rotate {
   0% {
@@ -479,40 +197,7 @@ a.is_Button,
   inherits: false;
 }
 
-/* Stacked avatar styles */
-.stacked-avatars {
-  display: flex;
-  align-items: center;
-}
-
-.stacked-avatars > *:not(:first-child) {
-  margin-left: calc(var(--avatar-overlap) * -1);
-  position: relative;
-}
-
-.stacked-avatars > *:not(:first-child) > * {
-  -webkit-mask-image: radial-gradient(
-    circle at
-      calc(0px - var(--avatar-size) / 2 + var(--avatar-overlap) + var(--cutout-offset-x))
-      50%,
-    transparent calc(var(--avatar-size) / 2 + var(--cutout-offset-x)),
-    black calc(var(--avatar-size) / 2 + var(--cutout-offset-x) + 0.5px)
-  );
-  mask-image: radial-gradient(
-    circle at
-      calc(0px - var(--avatar-size) / 2 + var(--avatar-overlap) + var(--cutout-offset-x))
-      50%,
-    transparent calc(var(--avatar-size) / 2 + var(--cutout-offset-x)),
-    black calc(var(--avatar-size) / 2 + var(--cutout-offset-x) + 0.5px)
-  );
-}
-
-/* fix slate, upgrading to 0.118.1 caused issue where editor height was much larger */
-.slate-editor > span {
-  display: block !important;
-}
-
-/* mask fade utilities */
+/* Mask fade utilities */
 .mask-fade-to-bottom {
   mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
   -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);

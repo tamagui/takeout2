@@ -1,1 +1,0 @@
-ALTER TABLE "thread" ADD COLUMN "replyCount" integer DEFAULT 0 NOT NULL;

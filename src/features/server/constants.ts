@@ -1,1 +1,0 @@
-export const FRIENDSHIP_SERVER_NAME = '_IS_FRIENDSHIP_'

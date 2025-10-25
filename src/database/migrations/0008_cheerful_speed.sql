@@ -1,1 +1,0 @@
-ALTER TABLE "plugin" ADD COLUMN "installs" integer DEFAULT 0;

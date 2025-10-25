@@ -1,1 +1,0 @@
-ALTER TABLE "userState" ALTER COLUMN "apiKey" SET DEFAULT '';

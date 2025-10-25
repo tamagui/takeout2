@@ -1,1 +1,0 @@
-ALTER TABLE "notification" ALTER COLUMN "fromUserId" DROP NOT NULL;

@@ -90,33 +90,6 @@
             "command": "cat docs/guide-zero-mutations.md"
           }
         ]
-      },
-      {
-        "matcher": "**/migrations/**",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo 'CRITICAL: Use `bun db:migrate:add` to generate migrations. Never manually create migration files unless absolutely necessary. See docs/guide-agent.md for details.'"
-          }
-        ]
-      },
-      {
-        "matcher": "src/features/website/**/*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "cat docs/guide-home.md"
-          }
-        ]
-      },
-      {
-        "matcher": "app/_/home.css",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "cat docs/guide-home.md"
-          }
-        ]
       }
     ]
   }

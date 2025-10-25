@@ -6,21 +6,9 @@ export const useUser = () => {
   const auth = useAuth()
   const userId = auth.user?.id || ''
 
-  const [user, status] = useQuery(
-    zero.query.userPublic
-      .where('id', userId)
-      .one()
-      // TODO we should just store userServerId on user
-      .related('server', (q) =>
-        q.where('userId', userId).where('isPrivateChat', false).one()
-      )
-      .related('servers', (q) =>
-        q.where('isPrivateChat', '!=', true).where('userId', 'IS', null)
-      ),
-    {
-      enabled: !!userId,
-    }
-  )
+  const [user, status] = useQuery(zero.query.userPublic.where('id', userId).one(), {
+    enabled: !!userId,
+  })
 
   return {
     ...auth,

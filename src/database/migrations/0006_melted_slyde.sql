@@ -1,1 +1,0 @@
-ALTER TABLE "channel" ADD COLUMN "solo" boolean DEFAULT false;

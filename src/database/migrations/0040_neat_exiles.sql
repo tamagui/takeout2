@@ -1,1 +1,0 @@
-ALTER TABLE "userState" ADD COLUMN "settings" jsonb DEFAULT '{}'::jsonb;

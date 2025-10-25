@@ -1,1 +1,0 @@
-DROP TABLE "privateChatsStats" CASCADE;

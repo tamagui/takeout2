@@ -1,2 +1,0 @@
-ALTER TABLE "data" ADD COLUMN "appId" varchar;--> statement-breakpoint
-ALTER TABLE "data" ADD CONSTRAINT "data_appId_appInstall_id_fk" FOREIGN KEY ("appId") REFERENCES "public"."appInstall"("id") ON DELETE cascade ON UPDATE no action;

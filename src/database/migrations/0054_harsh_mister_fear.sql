@@ -1,1 +1,0 @@
-ALTER TABLE "attachment" ADD COLUMN "thumbnail" varchar;

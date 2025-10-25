@@ -1,1 +1,0 @@
-ALTER TABLE "app" ALTER COLUMN "name" SET DEFAULT '';

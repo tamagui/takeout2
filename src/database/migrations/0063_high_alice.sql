@@ -1,1 +1,0 @@
-ALTER TABLE "userPublic" ADD COLUMN "migrationVersion" integer DEFAULT 0 NOT NULL;

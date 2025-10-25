@@ -1,2 +1,0 @@
-ALTER TABLE "app" ADD COLUMN "threadId" varchar;--> statement-breakpoint
-ALTER TABLE "app" ADD CONSTRAINT "app_threadId_thread_id_fk" FOREIGN KEY ("threadId") REFERENCES "public"."thread"("id") ON DELETE cascade ON UPDATE no action;

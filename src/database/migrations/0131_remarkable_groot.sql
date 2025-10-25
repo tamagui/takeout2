@@ -1,2 +1,0 @@
-ALTER TABLE "taskRun" ADD COLUMN "serverId" varchar NOT NULL;--> statement-breakpoint
-ALTER TABLE "taskRun" ADD CONSTRAINT "taskRun_serverId_server_id_fk" FOREIGN KEY ("serverId") REFERENCES "public"."server"("id") ON DELETE cascade ON UPDATE no action;

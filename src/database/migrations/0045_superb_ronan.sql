@@ -1,1 +1,0 @@
-ALTER TABLE "appInstall" RENAME COLUMN "data" TO "settings";

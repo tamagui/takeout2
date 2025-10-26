@@ -12,13 +12,7 @@ export interface AlertOptions {
   buttons?: AlertButton[]
 }
 
-/**
- * Simple alert controller utility that wraps React Native's Alert API
- */
 export const alertController = {
-  /**
-   * Show a native alert dialog
-   */
   show: (options: AlertOptions) => {
     const { title, message, buttons = [{ text: 'OK' }] } = options
 
@@ -26,7 +20,7 @@ export const alertController = {
       // For web, use browser alert/confirm
       if (buttons.length === 1) {
         window.alert(message ? `${title}\n\n${message}` : title)
-        buttons[0].onPress?.()
+        buttons[0]?.onPress?.()
       } else {
         const confirmed = window.confirm(message ? `${title}\n\n${message}` : title)
         if (confirmed) {
@@ -42,9 +36,6 @@ export const alertController = {
     }
   },
 
-  /**
-   * Show a confirmation dialog with OK and Cancel buttons
-   */
   confirm: (
     title: string,
     message?: string,
@@ -68,9 +59,6 @@ export const alertController = {
     })
   },
 
-  /**
-   * Show a simple alert with just an OK button
-   */
   alert: (title: string, message?: string, onPress?: () => void) => {
     alertController.show({
       title,

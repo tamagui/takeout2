@@ -20,7 +20,11 @@ export type DialogDomainInstructions = {
 }
 
 // Simplified dialog types for social starter kit
-export type DialogType = DialogConfirmType | DialogClosedType | DialogSignupType | DialogDomainInstructions
+export type DialogType =
+  | DialogConfirmType
+  | DialogClosedType
+  | DialogSignupType
+  | DialogDomainInstructions
 
 export type DialogLayer2 = DialogConfirmType | DialogClosedType
 

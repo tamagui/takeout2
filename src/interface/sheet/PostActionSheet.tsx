@@ -62,15 +62,12 @@ export const PostActionSheet = forwardRef<PostActionSheetRef>((_, ref) => {
           onPress: async () => {
             try {
               await zero.mutate.block.insert({
-                id: `${user?.id}-${currentPost.userId}`,
-                blockerId: user?.id || '',
                 blockedId: currentPost.userId,
-                createdAt: Date.now(),
               })
-              showToast({ title: 'User blocked' })
+              showToast('User blocked')
               sheetRef.current?.collapse()
             } catch (error) {
-              showToast({ title: 'Failed to block user', preset: 'error' })
+              showToast('Failed to block user', { type: 'error' })
             }
           },
         },
@@ -86,10 +83,10 @@ export const PostActionSheet = forwardRef<PostActionSheetRef>((_, ref) => {
         id: currentPost.id,
         hiddenByAdmin: true,
       })
-      showToast({ title: 'Post hidden' })
+      showToast('Post hidden')
       sheetRef.current?.collapse()
     } catch (error) {
-      showToast({ title: 'Failed to hide post', preset: 'error' })
+      showToast('Failed to hide post', { type: 'error' })
     }
   }
 
@@ -98,24 +95,36 @@ export const PostActionSheet = forwardRef<PostActionSheetRef>((_, ref) => {
   return (
     <Sheet ref={sheetRef}>
       <YStack gap="$2" py="$2">
-        <PostActionSheetSharedItems post={currentPost} />
+        <PostActionSheetSharedItems currentPost={currentPost} sheetRef={sheetRef} />
 
-        <ListItem
-          Icon={UserCircleIcon}
-          title="View Profile"
-          onPress={handleViewProfile}
-        />
+        <ListItem onPress={handleViewProfile}>
+          <ListItem.Icon>
+            <UserCircleIcon />
+          </ListItem.Icon>
+          <ListItem.Text>View Profile</ListItem.Text>
+        </ListItem>
 
-        <ListItem Icon={WarningCircleIcon} title="Report" onPress={handleReport} />
+        <ListItem onPress={handleReport}>
+          <ListItem.Icon>
+            <WarningCircleIcon />
+          </ListItem.Icon>
+          <ListItem.Text>Report</ListItem.Text>
+        </ListItem>
 
-        <ListItem Icon={ShieldCheckIcon} title="Block User" onPress={handleBlock} />
+        <ListItem onPress={handleBlock}>
+          <ListItem.Icon>
+            <ShieldCheckIcon />
+          </ListItem.Icon>
+          <ListItem.Text>Block User</ListItem.Text>
+        </ListItem>
 
         {isAdmin && (
-          <ListItem
-            Icon={WarningCircleIcon}
-            title="Hide Post (Admin)"
-            onPress={handleAdminHide}
-          />
+          <ListItem onPress={handleAdminHide}>
+            <ListItem.Icon>
+              <WarningCircleIcon />
+            </ListItem.Icon>
+            <ListItem.Text>Hide Post (Admin)</ListItem.Text>
+          </ListItem>
         )}
       </YStack>
     </Sheet>

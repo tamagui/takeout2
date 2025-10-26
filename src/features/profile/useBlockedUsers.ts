@@ -15,21 +15,20 @@ export function useBlockedUsers(options?: UseBlockedUsersOptions) {
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
   const [hasInitialLoad, setHasInitialLoad] = useState<boolean>(false)
 
-  // query blocks where I'm the blocker
   const blocksQuery = useMemo(() => {
     if (!user?.id) return null
+
     return zero.query.block
       .where('blockerId', user.id)
       .orderBy('createdAt', 'desc')
       .limit(pageSize * (currentPage + 1))
-      .related('blocked', (q) => q) // get the blocked user data
+      .related('blocked')
   }, [user?.id, pageSize, currentPage])
 
   const [blocks, status] = useQuery(blocksQuery!, {
     enabled: Boolean(user?.id),
   })
 
-  // extract blocked users from blocks
   useMemo(() => {
     if (blocks) {
       const users = blocks.map((block) => block.blocked).filter(Boolean) as User[]
@@ -55,12 +54,11 @@ export function useBlockedUsers(options?: UseBlockedUsersOptions) {
     setIsLoadingMore(false)
   }
 
-  // unblock a user
   const unblockUser = async (blockedUserId: string) => {
     if (!user?.id) return
 
     try {
-      await zero.mutate.block.delete_(blockedUserId)
+      await zero.mutate.block.delete(blockedUserId).client
     } catch (error) {
       console.error('Failed to unblock user:', error)
     }

@@ -1,15 +1,14 @@
-import { forwardRef } from 'react'
 import { TextArea as TamaguiTextArea, styled } from 'tamagui'
 
 export const TextArea = styled(TamaguiTextArea, {
   name: 'TextArea',
   borderWidth: 1,
   borderColor: '$borderColor',
-  borderRadius: '$2',
-  paddingHorizontal: '$3',
-  paddingVertical: '$2',
+  rounded: '$2',
+  px: '$3',
+  py: '$2',
   fontSize: '$4',
-  minHeight: 100,
+  minH: 100,
   textAlignVertical: 'top',
 
   focusStyle: {
@@ -39,5 +38,3 @@ export const TextArea = styled(TamaguiTextArea, {
     size: 'medium',
   },
 })
-
-export default TextArea

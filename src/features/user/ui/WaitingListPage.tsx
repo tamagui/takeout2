@@ -1,17 +1,15 @@
-import { YStack, SizableText, XStack } from 'tamagui'
 import { router } from 'one'
+import { Linking } from 'react-native'
+import { XStack, YStack } from 'tamagui'
 import { authClient } from '~/auth/client/authClient'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { useAfterLoginRedirect } from '~/auth/hooks/useAfterLoginRedirect'
 import { BasicHeader } from '~/interface/headers/BasicHeader'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
-import { H2, H3 } from '~/interface/text/Headings'
 import { Image } from '~/interface/image/Image'
+import { RepeatedTapToShowDevTools } from '~/interface/interactions/RepeatedTapToShowDevTools'
 import { ProgressBar } from '~/interface/progress-bar/ProgressBar'
 import { MediumText } from '~/interface/text/Body'
-import { DiscordLogo } from '~/interface/social-media/DiscordLogo'
-import { Linking } from 'react-native'
-import { useAfterLoginRedirect } from '~/auth/hooks/useAfterLoginRedirect'
-import { RepeatedTapToShowDevTools } from '~/interface/interactions/RepeatedTapToShowDevTools'
+import { H3 } from '~/interface/text/Headings'
 
 export const WaitingListPage = () => {
   useAfterLoginRedirect()
@@ -64,9 +62,9 @@ export const WaitingListPage = () => {
         </YStack>
 
         <YStack gap="$3" width="100%">
-          <ButtonSimple size="large" onPress={onOpenDiscord} icon={DiscordLogo}>
+          {/* <ButtonSimple size="large" onPress={onOpenDiscord} icon={DiscordLogo}>
             <ButtonSimple.Text>Join Discord</ButtonSimple.Text>
-          </ButtonSimple>
+          </ButtonSimple> */}
         </YStack>
       </YStack>
     </YStack>

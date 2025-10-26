@@ -14,9 +14,9 @@ export const KeyboardStickyFooter = ({ children }: KeyboardStickyFooterProps) =>
     >
       <YStack
         position="absolute"
-        bottom={0}
-        left={0}
-        right={0}
+        b={0}
+        l={0}
+        r={0}
         bg="$background"
         px="$4"
         py="$3"

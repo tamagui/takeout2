@@ -33,14 +33,6 @@ export const ListItemFrame = styled(XStack, {
       compact: {
         py: '$2',
       },
-      sidebar: {
-        py: '$2',
-        px: '$3',
-        pl: '$3',
-        gap: '$2.5',
-        rounded: '$3',
-        mx: '$1',
-      },
     },
 
     editable: {

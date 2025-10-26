@@ -1,5 +1,6 @@
 quan:
 
+- remove lots more native dependencies
 - removing vibe-coded comments everywhere
 - review the entire codebase for cleaning up
 - generally getting it all working

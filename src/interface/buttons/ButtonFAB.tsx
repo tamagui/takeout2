@@ -13,7 +13,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { Text, View } from 'tamagui'
-import { kWidth } from '~/constants/deviceSizes'
+import { kWidth } from '~/interface/dimensions'
 
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity)
 const AnimatedView = Animated.createAnimatedComponent(View)

@@ -1,13 +1,13 @@
 import { memo } from 'react'
 import { Linking } from 'react-native'
 import { Circle, SizableText, useWindowDimensions, View, XStack, YStack } from 'tamagui'
-import { SERVER_URL } from '~/constants/server-urls'
+import { SERVER_URL } from '~/constants/urls'
 import type { User, UserStats } from '~/data/models'
 import { FEATURE_FLAGS } from '~/features/feature-flags'
+import { useStatsigClient } from '~/features/feature-flags/usePostHog'
 import { formatCount } from '~/helpers/number/formatNumber'
 import { useShareProfile } from '~/helpers/share/useShareProfile'
-import { useStatsigClient } from '~/features/feature-flags/usePostHog'
-import { SimpleAvatar } from '~/interface/avatars/SimpleAvatar'
+import { Avatar } from '~/interface/avatars/Avatar'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
@@ -78,8 +78,7 @@ export const ProfileHeader = memo(
         <YStack gap="$4">
           {/* Profile Info Section */}
           <XStack items="center" gap="$5">
-            {/* Avatar */}
-            <SimpleAvatar src={userInfo?.image} size={64} />
+            <Avatar image={userInfo?.image || ''} size={64} />
 
             <YStack gap="$1" flex={1} pr="$4">
               {/* Username */}
@@ -244,7 +243,7 @@ export const ProfileHeader = memo(
               {/* First row */}
               <XStack borderBottomWidth={1} borderColor="$borderColor" p="$3" gap="$3">
                 <XStack items="center">
-                  <SimpleAvatar src={userInfo?.image} size={44} />
+                  <Avatar image={userInfo?.image || ''} size={44} />
                 </XStack>
                 <YStack flex={1}>
                   <XStack justify="space-between">

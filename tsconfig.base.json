@@ -1,12 +1,6 @@
 {
   "compilerOptions": {
     "rootDir": ".",
-    "paths": {
-      "@vxrn/helpers": ["./packages/helpers/src/index.ts"],
-      "@vxrn/hooks": ["./packages/hooks/src/index.ts"],
-      "start": ["./src/start/src/index.ts"],
-      "start/*": ["./src/start/src/*"]
-    },
     "outDir": "dist",
     "importHelpers": true,
     "allowJs": false,

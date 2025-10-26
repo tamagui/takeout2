@@ -11,7 +11,7 @@ import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
 import { otpLogin, sendLoginOtpCode } from '../client/otpLogin'
 import { useAfterLoginRedirect } from '../hooks/useAfterLoginRedirect'
 import { OtpInput } from './OtpInput'
-import { isSmallScreen } from '~/constants/deviceSizes'
+import { isSmallScreen } from '~/interface/dimensions'
 
 export const OtpPage = () => {
   const [timerCount, resetTimer, pauseTimer] = useTimer()

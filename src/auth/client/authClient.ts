@@ -1,18 +1,13 @@
-import { setDevGlobal } from '~/features/devtools/devGlobal'
-import { SERVER_URL } from '~/constants/server-urls'
+import { SERVER_URL } from '~/constants/urls'
 import { createBetterAuthClient } from './createAuthClient'
 import { plugins } from './plugins'
 
-const baseURL = SERVER_URL
-
-console.info(`[better-auth] client baseURL`, baseURL)
+console.info(`[better-auth] client baseURL`, SERVER_URL)
 
 const betterAuthClient = createBetterAuthClient({
-  baseURL,
+  baseURL: SERVER_URL,
   plugins,
 })
-
-setDevGlobal(betterAuthClient.authClient, 'betterAuth')
 
 export const {
   setAuthClientToken,

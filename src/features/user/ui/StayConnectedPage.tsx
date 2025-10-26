@@ -9,7 +9,7 @@ import { EnvelopeSimpleIcon } from '~/interface/icons/phosphor/EnvelopeSimpleIco
 import { useUser } from '../useUser'
 import { OnboardingStepPageLayout } from './OnboardingStepPageLayout'
 import { authClient } from '~/auth/client/authClient'
-import { SERVER_URL } from '~/constants/server-urls'
+import { SERVER_URL } from '~/constants/urls'
 import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
 
 export const StayConnectedPage = () => {

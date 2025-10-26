@@ -1,4 +1,4 @@
-import type { AuthData } from 'start/types'
+import type { AuthData } from '~/auth/types'
 
 export const adminAuthData: AuthData = {
   id: '',

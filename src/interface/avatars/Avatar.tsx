@@ -1,16 +1,11 @@
-import { Image } from '~/interface/image/Image'
 import { memo } from 'react'
 import { Circle, styled, YStack, type CircleProps } from 'tamagui'
-import { getSimpleSize, type SimpleSize } from '../sizes'
-import { isNative } from '@vxrn/helpers'
-
-const hudImageOG =
-  'https://storage.start.chat/onechatimages/uploads/5dvhtbozp9w-avatar.png'
-const hudImage = isNative ? require('../../../assets/hud.webp') : '/hud.webp'
+import { Image } from '~/interface/image/Image'
+import { getSimpleSize, type SimpleSize } from './sizes'
 
 export const Avatar = memo(
   ({
-    image: imageIn,
+    image,
     size: sizeIn = 28,
     active,
     isOnline,
@@ -24,7 +19,6 @@ export const Avatar = memo(
     const size = getSimpleSize(sizeIn)
     const isBig = size > 40
     const scale = isBig ? size / 42 : size / 21
-    const image = imageIn === hudImageOG ? hudImage : imageIn
 
     return (
       <YStack

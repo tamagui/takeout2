@@ -1,18 +1,17 @@
 import { useRouter } from 'one'
 import { forwardRef, useImperativeHandle, useState } from 'react'
 import { SizableText, XStack, YStack } from 'tamagui'
-import { useOnboarding } from '~/contexts/OnboardingContext'
 import { FEATURE_FLAGS } from '~/features/feature-flags'
-import { useGoBackToHome } from '~/hooks/useGoBackToHome'
 import { useStatsig } from '~/features/feature-flags/usePostHog'
+import { isNative } from '~/helpers/constants'
+import { useGoBackToHome } from '~/hooks/useGoBackToHome'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { AppleIcon } from '~/interface/icons/AppleIcon'
 import { GoogleIcon } from '~/interface/icons/GoogleIcon'
 import { Sheet, type SheetRef } from '~/interface/sheet/Sheet'
+import { MediumText } from '~/interface/text/Body'
 import { showToast } from '~/interface/toast/helpers'
 import { signInAsAdmin } from '../actions/signInAsAdmin'
-import { MediumText } from '~/interface/text/Body'
-import { isNative } from '~/helpers/constants'
 
 interface LoginSheetProps {
   onClose?: () => void
@@ -25,7 +24,6 @@ export interface LoginSheetRef extends SheetRef {
 export const LoginSheet = forwardRef<LoginSheetRef, LoginSheetProps>(
   ({ onClose }, ref) => {
     const router = useRouter()
-    const { setSignupMethod } = useOnboarding()
     const statsig = useStatsig()
     const [isOpen, setIsOpen] = useState(false)
 
@@ -44,7 +42,6 @@ export const LoginSheet = forwardRef<LoginSheetRef, LoginSheetProps>(
     }))
 
     const handleSignInWithPhone = () => {
-      setSignupMethod('phone')
       router.push('/signup/phone')
     }
 
@@ -61,20 +58,15 @@ export const LoginSheet = forwardRef<LoginSheetRef, LoginSheetProps>(
 
     const handleSignInWithApple = async () => {
       showToast('Signing in as admin...')
-      // Apple sign-in will be handled differently (not through signup screen)
-      setSignupMethod('social')
       // TODO: Implement Apple sign-in
     }
 
     const handleSignInWithGoogle = () => {
-      // Google sign-in will be handled differently (not through signup screen)
-      setSignupMethod('social')
       console.info('Sign in with Google')
       goBackToHome()
     }
 
     const handleContinueWithEmail = () => {
-      setSignupMethod('email')
       router.push('/signup/email')
     }
 

@@ -89,19 +89,8 @@ export default {
       'vxrn/expo-plugin',
       'expo-secure-store',
       'expo-web-browser',
+      'react-native-quick-crypto',
       'react-native-bottom-tabs',
-      [
-        'react-native-share',
-        {
-          ios: ['fb', 'instagram', 'twitter', 'tiktoksharesdk'],
-          android: [
-            'com.facebook.katana',
-            'com.instagram.android',
-            'com.twitter.android',
-            'com.zhiliaoapp.musically',
-          ],
-        },
-      ],
       [
         'expo-build-properties',
         {
@@ -162,12 +151,11 @@ export default {
         },
       ],
       [
-        'react-native-bootsplash',
+        'expo-splash-screen',
         {
-          assetsDir: 'assets/bootsplash',
-          android: {
-            parentTheme: 'TransparentStatus',
-          },
+          backgroundColor: '#1c1d23',
+          image: './assets/splash/logo.png',
+          imageWidth: 80,
         },
       ],
       [

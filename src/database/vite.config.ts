@@ -6,7 +6,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '~': path.resolve(__dirname, '..'),
-      start: path.resolve(__dirname, '..', 'start/src'),
     },
   },
 

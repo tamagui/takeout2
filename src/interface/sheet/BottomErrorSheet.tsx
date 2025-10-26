@@ -5,7 +5,7 @@ import {
 } from '@gorhom/bottom-sheet'
 import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react'
 import { SizableText, useTheme, View, XStack, YStack } from 'tamagui'
-import haptics from '~/helpers/haptics/haptics'
+import { haptics } from '~/interface/haptics/haptics'
 import { ButtonSimple } from '../buttons/ButtonSimple'
 
 export interface ErrorSheetData {
@@ -36,7 +36,6 @@ export const BottomErrorSheet = forwardRef<BottomErrorSheetRef, BottomErrorSheet
       show: (data: ErrorSheetData) => {
         setErrorData(data)
         bottomSheetModalRef.current?.present()
-        haptics.modalOpen()
       },
       hide: () => {
         bottomSheetModalRef.current?.dismiss()

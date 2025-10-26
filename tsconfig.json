@@ -3,9 +3,7 @@
     "rootDir": ".",
     "outDir": "dist",
     "paths": {
-      "~/*": ["./src/*"],
-      "start": ["./src/start/src/index.ts"],
-      "start/*": ["./src/start/src/*"]
+      "~/*": ["./src/*"]
     },
     "forceConsistentCasingInFileNames": true,
     "verbatimModuleSyntax": true,

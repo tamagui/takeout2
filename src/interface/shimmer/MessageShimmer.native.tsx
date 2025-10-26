@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { View, XStack } from 'tamagui'
-import { kWidth } from '~/constants/deviceSizes'
+import { kWidth } from '~/interface/dimensions'
 import { CircleShimmer } from './CircleShimmer'
 import { LineShimmer } from './LineShimmer'
 

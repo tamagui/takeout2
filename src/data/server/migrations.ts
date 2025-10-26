@@ -1,6 +1,3 @@
-import { batchQuery } from 'over-zero'
-import { zeroServer } from '~/zero/server'
-
 export type ZeroMigration = {
   version: number
   name: string

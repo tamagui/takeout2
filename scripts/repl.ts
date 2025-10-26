@@ -5,7 +5,6 @@ import { promises as fs } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import repl from 'node:repl'
-import { aiActions } from '~/data/server/actions/aiActions'
 import { zeroServer } from '~/zero/server'
 import { loadEnv } from './helpers/env-load'
 
@@ -36,10 +35,6 @@ const _ = {
 
   // Database
   zeroServer,
-
-  // adding in our helpers
-  summarize: aiActions.summarize,
-  llm: aiActions.llm,
 
   // Environment info
   env: process.env.NODE_ENV,

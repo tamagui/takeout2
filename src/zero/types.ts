@@ -1,4 +1,4 @@
-import type { AuthData } from 'start/types'
+import type { AuthData } from '~/auth/types'
 import type { schema } from '~/data/schema'
 import type { ServerActions } from '~/data/server/createServerActions'
 

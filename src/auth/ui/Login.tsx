@@ -2,7 +2,7 @@ import { useRouter } from 'one'
 import { useEffect } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { H1, Text, YStack } from 'tamagui'
-import { kWidth } from '~/constants/deviceSizes'
+import { kWidth } from '~/interface/dimensions'
 import { useAuth } from '../client/authClient'
 
 export function Login() {

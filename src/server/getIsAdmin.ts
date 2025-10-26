@@ -1,4 +1,4 @@
-import type { AuthData } from 'start/types'
+import type { AuthData } from '~/auth/types'
 import { ensure } from '@vxrn/helpers'
 import { ADMIN_WHITELIST } from '~/server/constants-server'
 

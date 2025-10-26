@@ -1,3 +1,4 @@
+import { createGlobalContext } from '@vxrn/helpers'
 import { useEffect, useRef, useState } from 'react'
 import { Animated } from 'react-native'
 import type {
@@ -18,7 +19,6 @@ import {
   YStack,
 } from 'tamagui'
 import { isNative } from '~/constants/platform'
-import { createGlobalContext } from '@vxrn/helpers'
 import { animationClamped } from '../animations/animationClamped'
 
 const TabsDirection = createGlobalContext<0 | 1 | -1>('tabs/direction', 0)

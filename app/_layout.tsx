@@ -16,6 +16,7 @@ import { memo, useLayoutEffect } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { setupDev, TamaguiProvider, useTheme } from 'tamagui'
 import { AppProvider } from '~/features/apps/ui/AppProvider'
+import { HotUpdateAlertManager, HotUpdaterProvider } from '~/features/hot-updater'
 import { NotificationProvider } from '~/interface/notification/Notification'
 import { ToastProvider } from '~/interface/toast/Toast'
 import { DragDropFile } from '~/interface/upload/DragDropFile'
@@ -58,14 +59,17 @@ export function Layout() {
             <TamaguiRootProvider>
               <ThemeMetaTag />
               <SafeAreaProvider>
-                <ToastProvider>
-                  <NotificationProvider>
-                    <DragDropFile>
-                      {/* <MetaThemeName /> */}
-                      <Slot />
-                    </DragDropFile>
-                  </NotificationProvider>
-                </ToastProvider>
+                <HotUpdaterProvider>
+                  <ToastProvider>
+                    <NotificationProvider>
+                      <DragDropFile>
+                        <HotUpdateAlertManager />
+                        {/* <MetaThemeName /> */}
+                        <Slot />
+                      </DragDropFile>
+                    </NotificationProvider>
+                  </ToastProvider>
+                </HotUpdaterProvider>
               </SafeAreaProvider>
             </TamaguiRootProvider>
           </ProvideZero>

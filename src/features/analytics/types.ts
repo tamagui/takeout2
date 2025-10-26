@@ -7,24 +7,73 @@ export type AnalyticsEvent =
       }
     }
   | {
+      type: 'user_onboarded'
+      properties: {
+        userId: string
+        hasCompletedProfile: boolean
+      }
+    }
+  | {
+      type: 'profile_updated'
+      properties: {
+        fieldsUpdated: string[]
+      }
+    }
+  | {
       type: 'post_created'
       properties: {
         postId: string
-        contentLength: number
-        hasMedia: boolean
+        hasImage?: boolean
+        isDraft?: boolean
+        contentLength?: number
+        hasMedia?: boolean
+      }
+    }
+  | {
+      type: 'post_deleted'
+      properties: {
+        postId: string
+        postAge?: number
+        hasImage?: boolean
+        isDraft?: boolean
       }
     }
   | {
       type: 'post_liked'
       properties: {
         postId: string
-        authorId: string
+        authorId?: string
+      }
+    }
+  | {
+      type: 'post_unliked'
+      properties: {
+        postId: string
       }
     }
   | {
       type: 'user_followed'
       properties: {
-        followedUserId: string
+        targetUserId: string
+        followedUserId?: string
+      }
+    }
+  | {
+      type: 'user_unfollowed'
+      properties: {
+        targetUserId: string
+      }
+    }
+  | {
+      type: 'user_blocked'
+      properties: {
+        targetUserId: string
+      }
+    }
+  | {
+      type: 'user_unblocked'
+      properties: {
+        targetUserId: string
       }
     }
   | {

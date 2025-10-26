@@ -8,7 +8,7 @@ import {
   FileVideo,
   FileX,
 } from '@tamagui/lucide-icons'
-import type { AttachmentType } from 'start/data'
+import type { AttachmentType } from './types'
 import { MAX_FILE_SIZE, SUPPORTED_FILE_EXTENSIONS } from './types'
 
 export function getFileType(filename: string): AttachmentType {

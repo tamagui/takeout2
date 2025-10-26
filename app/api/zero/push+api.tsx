@@ -2,7 +2,7 @@
 // see: https://zero.rocicorp.dev/docs/custom-mutators
 
 import type { Endpoint } from 'one'
-import type { AuthData } from 'start/data'
+import type { AuthData } from '~/auth/types'
 import { getAuthHeader, NotAuthenticatedError } from '~/auth/validateAuthHeader'
 import { zeroServer } from '~/zero/server'
 

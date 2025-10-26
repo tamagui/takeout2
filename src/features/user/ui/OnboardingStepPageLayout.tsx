@@ -1,6 +1,6 @@
 import { useFocusEffect, useNavigation } from 'one'
 import { useState } from 'react'
-import { isSmallScreen } from '~/constants/deviceSizes'
+import { isSmallScreen } from '~/interface/dimensions'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 
 export function OnboardingStepPageLayout(

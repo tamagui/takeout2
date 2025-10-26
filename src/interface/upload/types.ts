@@ -1,4 +1,20 @@
-import type { AttachmentType } from 'start/data'
+export type AttachmentType =
+  | 'image/jpeg'
+  | 'image/png'
+  | 'image/gif'
+  | 'image/webp'
+  | 'video/mp4'
+  | 'video/webm'
+  | 'video/quicktime'
+  | 'text/plain'
+  | 'application/json'
+  | 'text/markdown'
+  | 'application/zip'
+  | 'application/vnd.ms-excel'
+  | 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  | 'application/pdf'
+  | 'application/octet-stream'
+  | 'unfurl'
 
 export type FileUpload = {
   uid: string

@@ -15,7 +15,8 @@ quan:
 pokai:
 
 - can we get app.config, react-native.config and .xcode-version by chance into a
-  sub-folder?
+  sub-folder? maybe .xcode-version into ios/\*?
+  - could we have ios/android folder build into maybe src/ios?
 - ci/cd for native apps
 - production sst deploy (merge in good parts from fleek)
 - hot update cleanup / into package ideally

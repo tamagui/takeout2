@@ -6,9 +6,10 @@
   "type": "module",
   "files": [],
   "engines": {
-    "node": "20.17.0",
+    "node": "24.3.0",
     "npm": "10.8.3"
   },
+  "packageManager": "bun@1.2.23",
   "scripts": {
     "android": "one run:android",
     "auth:migrate": "bunx @better-auth/cli migrate --config ./src/features/auth/server/auth.ts",

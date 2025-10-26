@@ -9,7 +9,7 @@ android
 .expo
 **/tmp-data
 **/tmp
-src/test/.output
+src/test
 src/tauri
 docs
 tests

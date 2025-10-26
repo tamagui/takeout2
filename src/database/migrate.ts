@@ -10,7 +10,7 @@
 
 import { basename } from 'node:path'
 import type { PoolClient } from 'pg'
-import { migrateInitialApps } from '../apps/migrateInitialApps'
+// Removed migrateInitialApps - not needed for social media starter
 import { getDBClient } from './helpers/getDBClient'
 
 // @ts-ignore
@@ -198,7 +198,7 @@ export async function main() {
   }
 
   await migrateZeroPermissions()
-  await migrateInitialApps()
+  // Initial apps migration not needed for social media starter
 
   console.info(`Releasing client connection...`)
   try {

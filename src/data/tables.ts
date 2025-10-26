@@ -1,15 +1,12 @@
 // this is separate from models as otherwise you end up with circular types :/
 
-// Core models
+export { schema as block } from '~/data/models/block'
 export { schema as device } from '~/data/models/device'
+export { schema as follows } from '~/data/models/follows'
+export { schema as like } from '~/data/models/like'
+export { schema as post } from '~/data/models/post'
 export { schema as privateBetaInvite } from '~/data/models/privateBetaInvite'
+export { schema as report } from '~/data/models/report'
 export { schema as userPublic } from '~/data/models/user'
 export { schema as userState } from '~/data/models/userState'
 export { schema as userStats } from '~/data/models/userStats'
-
-// Social features
-export { schema as post } from '~/data/models/post'
-export { schema as like } from '~/data/models/like'
-export { schema as follows } from '~/data/models/follows'
-export { schema as block } from '~/data/models/block'
-export { schema as report } from '~/data/models/report'

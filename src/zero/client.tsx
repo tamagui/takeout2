@@ -4,7 +4,7 @@ import { isClient, isWeb } from 'tamagui'
 import { useAuth } from '~/auth/client/authClient'
 import { models } from '~/data/models'
 import { schema } from '~/data/schema'
-import type { AuthData } from '~/start/src/types'
+import type { AuthData } from '~/data/types'
 
 const disable =
   typeof window !== 'undefined' &&

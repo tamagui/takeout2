@@ -6,8 +6,6 @@ import * as one from 'one'
  * a destroyer so on HMR it properly cleans up the last thing
  */
 
-// TODO we have ensureOne, likely merge the two
-
 type DestroyFn<X> = (instance: X) => void
 type DevGlobals = Record<string, any>
 type DevDestroys = Record<string, DestroyFn<any> | undefined>

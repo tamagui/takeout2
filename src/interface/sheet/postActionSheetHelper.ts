@@ -1,11 +1,11 @@
 import { createRef } from 'react'
-import type { PostActionSheetRef } from './PostActionSheet'
-import type { PostOwnerActionSheetRef } from './PostOwnerActionSheet'
 import type { Post } from '~/data/models'
+import type { PostActionSheetRef } from './PostActionSheet'
+// import type { PostOwnerActionSheetRef } from './PostOwnerActionSheet'
 
 // Global refs for the sheets
 export const postActionSheetRef = createRef<PostActionSheetRef>()
-export const postOwnerActionSheetRef = createRef<PostOwnerActionSheetRef>()
+// export const postOwnerActionSheetRef = createRef<PostOwnerActionSheetRef>()
 
 export type PostActionSheetOptions = {
   shouldNavigateBackOnDelete?: boolean
@@ -18,7 +18,7 @@ export const showPostActionSheet = (
   options?: PostActionSheetOptions
 ) => {
   if (isOwnProfile) {
-    postOwnerActionSheetRef.current?.show(data, options)
+    // postOwnerActionSheetRef.current?.show(data, options)
   } else {
     postActionSheetRef.current?.show(data)
   }
@@ -27,5 +27,5 @@ export const showPostActionSheet = (
 // Helper function to hide post action sheets
 export const hidePostActionSheet = () => {
   postActionSheetRef.current?.hide()
-  postOwnerActionSheetRef.current?.hide()
+  // postOwnerActionSheetRef.current?.hide()
 }

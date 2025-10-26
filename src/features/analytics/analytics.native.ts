@@ -1,9 +1,12 @@
 import { postHog } from '../../posthog/posthog'
-import type { Analytics, AnalyticsEvent } from './types'
+import type { Analytics, AnalyticsEvent, EventProperties } from './types'
 
 class NativeAnalytics implements Analytics {
-  track<T extends AnalyticsEvent>(event: T['type'], properties: T['properties']): void {
-    postHog.capture(event, properties)
+  track<T extends AnalyticsEvent['type']>(
+    event: T,
+    properties: EventProperties<T>
+  ): void {
+    postHog.capture(event, properties as any)
   }
 
   identify(userId: string, properties?: Record<string, any>): void {

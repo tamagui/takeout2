@@ -1,4 +1,3 @@
-// Typed events using discriminated unions
 export type AnalyticsEvent =
   | {
       type: 'user_signup'
@@ -80,8 +79,14 @@ export type AnalyticsEvent =
       }
     }
 
+// helper type to extract properties for a specific event type
+export type EventProperties<T extends AnalyticsEvent['type']> = Extract<
+  AnalyticsEvent,
+  { type: T }
+>['properties']
+
 export interface Analytics {
-  track<T extends AnalyticsEvent>(event: T['type'], properties: T['properties']): void
+  track<T extends AnalyticsEvent['type']>(event: T, properties: EventProperties<T>): void
   identify(userId: string, properties?: Record<string, any>): void
   reset(): void
 }

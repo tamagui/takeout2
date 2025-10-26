@@ -1,7 +1,5 @@
 import { Trash, X } from '@tamagui/lucide-icons'
-import { useState } from 'react'
 import { isWeb, Paragraph, Progress, XStack, YStack } from 'tamagui'
-import { generateRandomAvatar } from '~/helpers/image/generateRandomAvatar'
 import { Avatar } from '../avatars/Avatar'
 import { ButtonSimple } from '../buttons/ButtonSimple'
 import { useDropArea } from './DragDropFile'
@@ -19,14 +17,11 @@ export const AvatarUpload = ({
   currentImage?: string
   onChangeImage: (url: string) => void
 }) => {
-  const [rarity, setRarity] = useState<number | null>(null)
-
   const { viewProps, uploads, handleFileChange, dropOverlay, clear } = useDropArea({
     active: dropActive,
     onDropped: (uploads) => {
       if (uploads[0]?.url) {
         onChangeImage(uploads[0].url)
-        setRarity(null)
       }
     },
   })
@@ -60,32 +55,6 @@ export const AvatarUpload = ({
                 Pick
               </ButtonSimple>
             </label>
-
-            <YStack position="relative">
-              <ButtonSimple
-                size="small"
-                onPress={() => {
-                  const result = generateRandomAvatar(256)
-                  onChangeImage(result.dataUrl)
-                  setRarity(result.rarity)
-                }}
-              >
-                Random
-              </ButtonSimple>
-              {rarity !== null && (
-                <YStack
-                  position="absolute"
-                  y={32}
-                  width="100%"
-                  pointerEvents="none"
-                  items="center"
-                >
-                  <Paragraph fontSize={10} opacity={0.6}>
-                    Rarity: {rarity}
-                  </Paragraph>
-                </YStack>
-              )}
-            </YStack>
           </XStack>
 
           {!!(progress && progress !== 100) && (
@@ -107,7 +76,6 @@ export const AvatarUpload = ({
           onPress={() => {
             clear()
             onChangeImage?.(originalImage || '')
-            setRarity(null)
           }}
         />
       ) : (
@@ -121,7 +89,6 @@ export const AvatarUpload = ({
             onPress={() => {
               clear()
               onChangeImage?.('')
-              setRarity(null)
             }}
           />
         )

@@ -1,11 +1,8 @@
 import { router } from 'one'
 import { useEffect, useLayoutEffect } from 'react'
-import type { ChannelState, ThreadState, UserSettings } from 'start/types'
+import type { UserSettings } from 'start/types'
 import { debounce } from 'tamagui'
 import { merge } from 'ts-deepmerge'
-import { getLastChannelId, useCurrentChannelId } from '~/context/CurrentChannelContext'
-import { getLastThreadId, useCurrentThreadId } from '~/context/CurrentThreadContext'
-import { setDevGlobal } from '~/features/devtools/devGlobal'
 import { createEmitter, useEmitterSelector } from '@vxrn/helpers'
 import { isEqualDeepLite } from '@vxrn/helpers'
 import { isEqualNever } from '@vxrn/helpers'
@@ -18,16 +15,12 @@ import { getUser, setUser } from './getUser'
 import { useUser } from './useUser'
 
 /**
- * This file sort of evolved so it's possible it could be simplified
+ * This file manages user state for the social media app
+ *
  * We split user into a few parts:
- *
  *   - user = private, locked down, only accessible by backend, better-auth manages it
- *   - userPublic = public-facing (to the world) account info, created in user.completeSignup
- *   - userState = private to each user
- *
- * We could just use zero here honestly, but we used this originally to get granular re-rendering
- * and slightly easier updating (since it uses nested sub-objects)
- *
+ *   - userPublic = public-facing (to the world) account info
+ *   - userState = private to each user (settings, preferences)
  */
 
 type MutableUserState = Required<
@@ -38,247 +31,137 @@ type GlobalUserState = {
   [Key in keyof MutableUserState]: Exclude<MutableUserState[Key], null>
 }
 
-export const userStateEmitter = createEmitter<GlobalUserState>(
-  'userState',
-  {
-    settings: {
-      themeMode: 'system',
-      themeVariant: 'subtle',
-      serverTintOverrides: {},
-    },
-    lastActiveChannel: {},
-    serversSort: [],
-    activeServer: '',
-    apiKey: '',
-    channelState: {},
-    lastPathname: '',
-    messageEdits: [{ content: '', id: '' }],
-    threadState: {},
-    topReactions: [],
-  },
-  {
-    comparator: isEqualNever,
-  }
-)
+const userStateEmitter = createEmitter<GlobalUserState | null>(null)
 
-setDevGlobal(userStateEmitter, 'userState')
-
-// for now force a simple key selector as we almost never grab > 1
-export const useUserState = <Key extends keyof GlobalUserState>(key: Key) => {
-  return useEmitterSelector(userStateEmitter, (s) => s[key])
+export const useUserState = () => {
+  return userStateEmitter.useValue()
 }
 
-export const useUserStateSelector = useEmitterSelector.bind(null, userStateEmitter)
-
-let userStateData: UserState | null = null
-
-export const useUserStateManager = () => {
-  const { user: curUser } = useUser()
-  const [userStateRecord, status] = useQuery(
-    zero.query.userState.where('userId', curUser?.id || '').one(),
-    !!curUser?.id
+export const useUserStateSelector = <Selected = unknown>(
+  selector: (state: GlobalUserState) => Selected,
+  defaultValue: Selected,
+  keys?: any[]
+): Selected => {
+  return useEmitterSelector(
+    userStateEmitter,
+    (state) => {
+      if (!state) {
+        return defaultValue
+      }
+      return selector(state) ?? defaultValue
+    },
+    defaultValue,
+    keys,
+    isEqualDeepLite
   )
+}
 
-  // SYNC down
+export const getUserState = () => {
+  return userStateEmitter.value
+}
+
+export function SyncUserState() {
+  const user = useUser()
+  const userId = user?.id
+
+  const [userState] = useQuery(zero.query.userState.where('id', userId || '').one())
+
   useLayoutEffect(() => {
-    userStateData = userStateRecord || null
-
-    if (!userStateRecord) {
+    if (!userState) {
+      userStateEmitter.value = null
       return
     }
 
-    const userState = userStateEmitter.value
+    const prev = userStateEmitter.value
 
-    for (const key of objectKeys(userState)) {
-      if (!isEqualDeepLite(userState[key], userStateRecord[key])) {
-        // fallback to default value
-        userState[key] = (userStateRecord[key] as any) ?? userState[key]
+    const toHydrate = objectKeys(userState).reduce((acc, key) => {
+      const val = userState[key]
+      if (val == null) {
+        return acc
       }
+      acc[key] = val
+      return acc
+    }, {} as any)
+
+    if (!prev || !isEqualDeepLite(toHydrate, prev)) {
+      userStateEmitter.value = toHydrate
     }
+  }, [userState])
 
-    userStateEmitter.emit(userState)
-  }, [userStateRecord])
-
-  useLayoutEffect(() => {
-    setUser(curUser || null)
-  }, [curUser])
+  return null
 }
 
-export const updateUserSettings = async (next: Partial<UserSettings>) => {
-  const settings = {
-    ...userStateEmitter.value.settings,
-    ...next,
-  }
-  await updateUserState({
-    settings: JSON.parse(JSON.stringify(settings)),
-  })
-}
-
-export const updateUserState = async (next: Partial<GlobalUserState>) => {
-  if (!getUser()) {
-    await ensureSignedUp()
-    if (!getUser()) {
-      console.warn(`No user?`)
-    }
+const updateUserStateDebounced = debounce(async (updates: Partial<UserState>) => {
+  const currentUser = getUser()
+  if (!currentUser?.id) {
+    console.error('No user found for state update')
     return
   }
 
-  const current = userStateData
-  try {
-    if (!current) {
-      console.error(`No user state! Not loaded yet!`)
-    } else {
-      let hasChanged = false
-      for (const key in next) {
-        if (
-          next[key as keyof GlobalUserState] !== current[key as keyof GlobalUserState]
-        ) {
-          hasChanged = true
-        }
-      }
+  const userState = await zero.query.userState.where('id', currentUser.id).one()
+  const id = userState?.id || `${currentUser.id}-state`
 
-      if (hasChanged) {
-        const userState = {
-          id: current.id,
-          updatedAt: Date.now(),
-          ...next,
-        }
-        console.groupCollapsed(`[userState] update`, userState)
-        console.trace()
-        console.groupEnd()
-        await zero.mutate.userState.update(userState).client
-      }
+  try {
+    await zero.mutate.userState.upsert({
+      id,
+      userId: currentUser.id,
+      ...updates,
+      updatedAt: Date.now(),
+    })
+  } catch (err) {
+    console.error('Error updating user state:', err)
+  }
+}, 100)
+
+export async function updateUserState(
+  updates: Partial<UserState> | ((prev: UserState | null) => Partial<UserState>),
+  debounceMs?: number
+) {
+  try {
+    const user = getUser()
+    if (!user?.id) {
+      console.error('No user')
+      return
     }
+
+    const prev = getUserState()
+    const next = typeof updates === 'function' ? updates(prev) : updates
+
+    // optimistically update
+    userStateEmitter.value = {
+      ...prev,
+      ...next,
+    } as any
+
+    if (debounceMs && debounceMs > 0) {
+      updateUserStateDebounced.debounce(debounceMs)
+    } else {
+      updateUserStateDebounced.cancel()
+    }
+
+    await updateUserStateDebounced(next)
   } catch (err) {
     console.error(`error updating user state`, err)
   }
 }
 
-// helpers
-
-// thread state
-
-export const getCurrentThreadState = () => {
-  return userStateEmitter.value?.threadState?.[getLastThreadId() || '']
+// User settings helpers
+export const getUserSettings = (): UserSettings | null => {
+  return getUserState()?.settings || null
 }
 
-export const useUserCurrentThreadState = <Selected>(
-  selector: (state: ThreadState) => Selected,
-  args: any[] = []
-): Selected => {
-  const threadId = useCurrentThreadId()
-  return useUserStateSelector(
-    (state) => selector(state.threadState?.[threadId] || {}),
-    {},
-    [threadId, ...args]
-  ) as any
+export const useUserSettings = (): UserSettings | null => {
+  return useUserStateSelector((state) => state.settings, null, ['settings'])
 }
 
-export const updateUserCurrentThread = async (
-  next: Partial<ThreadState> | ((prev: Partial<ThreadState>) => Partial<ThreadState>),
-  shouldMerge = false
+export const updateUserSettings = async (
+  updates: Partial<UserSettings> | ((prev: UserSettings | null) => Partial<UserSettings>)
 ) => {
-  if (!getUser()) {
-    ensureSignedUp()
-    console.error(`No user`)
-    return
-  }
+  const prev = getUserSettings()
+  const next = typeof updates === 'function' ? updates(prev) : updates
+  const merged = merge(prev || {}, next)
 
-  const threadId = getLastThreadId()
-
-  if (!threadId) {
-    console.error(`No thread to update`, next)
-    return
-  }
-
-  const prev = userStateEmitter.value?.threadState?.[threadId] || {}
-
-  let final = typeof next === 'function' ? next(prev) : next
-
-  if (shouldMerge) {
-    final = merge(prev, final)
-  }
-
-  return await updateUserState({
-    threadState: {
-      ...userStateEmitter.value.threadState,
-      [threadId]: final,
-    },
-  })
-}
-
-// channel state
-
-export const useUserCurrentChannelState = <Selected>(
-  selector: (state: ChannelState) => Selected,
-  args: any[] = []
-): Selected => {
-  const channelId = useCurrentChannelId()
-  return useUserStateSelector(
-    (state) => selector(state?.channelState?.[channelId] || {}),
-    {},
-    [channelId, ...args]
-  ) as any
-}
-
-export const getCurrentChannelState = () => {
-  return userStateEmitter.value.channelState?.[getLastChannelId() || '']
-}
-
-export const updateUserCurrentChannel = async (
-  next: Partial<ChannelState> | ((prev: Partial<ChannelState>) => Partial<ChannelState>),
-  shouldMerge = false
-) => {
-  if (!getUser()) {
-    ensureSignedUp()
-    console.error(`No user`)
-    return
-  }
-  const channelId = getLastChannelId()
-  if (!channelId) {
-    console.error(`No channel to update`, next)
-    return
-  }
-
-  const prev = userStateEmitter.value.channelState?.[channelId] || {}
-
-  let final = typeof next === 'function' ? next(prev) : next
-
-  if (shouldMerge) {
-    final = merge(prev, final)
-  }
-
-  return await updateUserState({
-    channelState: {
-      ...userStateEmitter.value.channelState,
-      [channelId]: final,
-    },
-  })
-}
-
-export const updateUserCurrentChannelToggleMessageSelected = (messageId: string) => {
-  return updateUserCurrentChannel((prev) => {
-    const last = prev.selectedMessages?.[messageId]
-
-    if (last) {
-      const selectedMessages = { ...prev.selectedMessages }
-      delete selectedMessages[messageId]
-      return {
-        selectedMessages,
-      }
-    }
-
-    return {
-      selectedMessages: {
-        ...prev.selectedMessages,
-        [messageId]: true,
-      },
-    }
-  })
-}
-
-export const closeCurrentThread = () => {
-  router.setParams({
-    thread: '',
+  await updateUserState({
+    settings: merged as UserSettings,
   })
 }

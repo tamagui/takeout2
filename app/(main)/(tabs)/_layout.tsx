@@ -7,11 +7,8 @@ import { scrollToTopEmitter } from '~/features/main-tabs/scrollToTopEmitter'
 import { useTabIconSize } from '~/features/main-tabs/useTabIconSize'
 import { HouseIcon } from '~/interface/icons/phosphor/HouseIcon'
 import { PostActionSheet } from '~/interface/sheet/PostActionSheet'
-import { PostOwnerActionSheet } from '~/interface/sheet/PostOwnerActionSheet'
-import {
-  postActionSheetRef,
-  postOwnerActionSheetRef,
-} from '~/interface/sheet/postActionSheetHelper'
+// import { PostOwnerActionSheet } from '~/interface/sheet/PostOwnerActionSheet'
+import { postActionSheetRef } from '~/interface/sheet/postActionSheetHelper'
 import { HapticTab } from '~/interface/tabs/HapticTab'
 import { TabBarBackground } from '~/interface/tabs/TabBarBackground'
 
@@ -73,7 +70,7 @@ export default function TabsLayout() {
         />
       </Tabs>
       <PostActionSheet ref={postActionSheetRef} />
-      <PostOwnerActionSheet ref={postOwnerActionSheetRef} />
+      {/* <PostOwnerActionSheet ref={postOwnerActionSheetRef} /> */}
       <CreateSheet />
     </>
   )

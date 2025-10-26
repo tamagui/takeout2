@@ -14,7 +14,6 @@ import { XIcon } from '~/interface/icons/phosphor/XIcon'
 import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter'
 import { MediumText, TinyText } from '~/interface/text/Body'
 import { showToast } from '~/interface/toast/helpers'
-import { AvatarUpload } from '~/interface/upload/AvatarUpload'
 import { useQuery, zero } from '~/zero/client'
 import { useUser } from '../user/useUser'
 
@@ -25,11 +24,10 @@ function checkUsernameValid(username: string) {
 }
 
 export const ProfileEditPage = () => {
-  const { user, loading, update } = useUser()
+  const { user, isLoading, update } = useUser()
   const navigation = useNavigation()
   const [isSaving, setIsSaving] = useState<boolean>(false)
 
-  // Initialize with user values
   const [username, setUsername] = useState<string>(user?.username || '')
   const [name, setName] = useState<string>(user?.name || '')
   const [bio, setBio] = useState<string>(user?.bio || '')
@@ -171,7 +169,8 @@ export const ProfileEditPage = () => {
       >
         <YStack px="$3" pt="$3" gap="$3">
           <YStack py="$3" justify="center" items="center">
-            <AvatarUpload currentImageUrl={user?.image} onUpload={handleAvatarUpload} />
+            {/* TODO */}
+            {/* <AvatarUpload currentImageUrl={user?.image} onUpload={handleAvatarUpload} /> */}
           </YStack>
           <YStack>
             <XStack justify="space-between" items="center" mb="$2">
@@ -256,8 +255,9 @@ export const ProfileEditPage = () => {
         <ButtonSimple
           onPress={handleSave}
           disabled={!canSave}
-          variant={!canSave || isSaving ? 'default' : 'highlight'}
-          loading={loading || isCheckingAvailability || isSaving}
+          variant={!canSave || isSaving ? 'default' : 'floating'}
+          // TODO
+          // loading={isLoading || isCheckingAvailability || isSaving}
         >
           Save
         </ButtonSimple>

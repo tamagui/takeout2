@@ -1,10 +1,8 @@
 import type {
   Block,
-  Device,
   Follows,
   Like,
   Post,
-  PrivateBetaInvite,
   Report,
   User,
   UserState,
@@ -13,7 +11,13 @@ import type {
 
 export type * from './models'
 
-// Social media specific types
+export type AuthData = {
+  id: string
+  email?: string
+  name?: string
+  image?: string
+}
+
 export type PostWithUser = Post & {
   user?: User
 }

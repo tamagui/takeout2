@@ -3,10 +3,7 @@ import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import { Alert } from 'react-native'
 import { YStack } from 'tamagui'
 import type { Post } from '~/data/models'
-import { createConversation } from '~/features/conversation/createConversation'
-import { useStudioCreate } from '~/features/studio/StudioCreateContext'
 import { useUser } from '~/features/user/useUser'
-import { MagicWandIcon } from '~/interface/icons/phosphor/MagicWandIcon'
 import { ShieldCheckIcon } from '~/interface/icons/phosphor/ShieldCheckIcon'
 import { UserCircleIcon } from '~/interface/icons/phosphor/UserCircleIcon'
 import { WarningCircleIcon } from '~/interface/icons/phosphor/WarningCircleIcon'
@@ -25,9 +22,9 @@ export interface PostActionSheetRef {
 export const PostActionSheet = forwardRef<PostActionSheetRef>((_, ref) => {
   const sheetRef = useRef<SheetRef>(null)
   const [currentPost, setCurrentPost] = useState<Post | null>(null)
-  const { setSelectedRemixPhoto } = useStudioCreate()
 
-  const { userRole, user } = useUser({ includeRole: true })
+  const { user } = useUser()
+  const isAdmin = false // Simple admin check - you can implement proper role checking
 
   useImperativeHandle(ref, () => ({
     show: (post: Post) => {
@@ -41,168 +38,88 @@ export const PostActionSheet = forwardRef<PostActionSheetRef>((_, ref) => {
 
   const handleViewProfile = () => {
     if (!currentPost) return
-
     sheetRef.current?.collapse()
-    setTimeout(() => {
-      router.push(`/home/profile/${currentPost?.userId}`)
-    }, 250)
-  }
-
-  const handleRemix = async () => {
-    if (!currentPost) return
-
-    sheetRef.current?.collapse()
-    setSelectedRemixPhoto(currentPost.image)
-    const conversationId = await createConversation({
-      type: 'remix',
-    })
-    setTimeout(() => {
-      router.push(`/studio/conversation/${conversationId}`)
-    }, 250)
+    router.push(`/profile/${currentPost.userId}`)
   }
 
   const handleReport = () => {
     if (!currentPost) return
     sheetRef.current?.collapse()
-    setTimeout(() => {
-      showReportForPost(currentPost.id)
-    }, 250)
+    showReportForPost(currentPost.id)
   }
 
-  const handleBlock = () => {
+  const handleBlock = async () => {
     if (!currentPost) return
 
     Alert.alert(
       'Block User',
-      `Are you sure you want to block this user? You won't see their content anymore.`,
+      "Are you sure you want to block this user? You won't see their posts anymore.",
       [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
+        { text: 'Cancel', style: 'cancel' },
         {
           text: 'Block',
           style: 'destructive',
           onPress: async () => {
             try {
-              zero.mutate.block.insert({ blockedId: currentPost.userId })
-              showToast(`User blocked`, { type: 'success' })
-              sheetRef.current?.collapse()
-            } catch (error) {
-              console.error('Failed to block user', error)
-            }
-          },
-        },
-      ],
-      { cancelable: true }
-    )
-  }
-
-  const handleAdminHide = () => {
-    if (!currentPost) return
-
-    Alert.alert(
-      'Hide Post for Everyone',
-      `Are you sure you want to use your admin powers to hide this post for everyone?`,
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Hide',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              zero.mutate.post.update({
-                id: currentPost.id,
-                draft: true, // TODO[hiddenByAdmin][3]: we set this for backwards compatibility so that user's don't need to update their client to not see the post anymore. We can remove this in a future release when all clients have the hiddenByAdmin field
-                hiddenByAdmin: true,
+              await zero.mutate.block.insert({
+                id: `${user?.id}-${currentPost.userId}`,
+                blockerId: user?.id || '',
+                blockedId: currentPost.userId,
+                createdAt: Date.now(),
               })
-              showToast(`Post hidden`, { type: 'success' })
+              showToast({ title: 'User blocked' })
               sheetRef.current?.collapse()
             } catch (error) {
-              console.error('Failed to hide post', error)
-              showToast(
-                `Failed: ${error instanceof Error ? error.message : 'unknown error'}`,
-                { type: 'error' }
-              )
+              showToast({ title: 'Failed to block user', preset: 'error' })
             }
           },
         },
-      ],
-      { cancelable: true }
+      ]
     )
   }
+
+  const handleAdminHide = async () => {
+    if (!currentPost || !isAdmin) return
+
+    try {
+      await zero.mutate.post.update({
+        id: currentPost.id,
+        hiddenByAdmin: true,
+      })
+      showToast({ title: 'Post hidden' })
+      sheetRef.current?.collapse()
+    } catch (error) {
+      showToast({ title: 'Failed to hide post', preset: 'error' })
+    }
+  }
+
+  if (!currentPost) return null
 
   return (
-    <Sheet ref={sheetRef} title="Actions">
-      <YStack gap="$2">
+    <Sheet ref={sheetRef}>
+      <YStack gap="$2" py="$2">
+        <PostActionSheetSharedItems post={currentPost} />
+
         <ListItem
+          Icon={UserCircleIcon}
+          title="View Profile"
           onPress={handleViewProfile}
-          size="large"
-          bg="$color3"
-          pressStyle={{ bg: '$color2' }}
-          height={50}
-        >
-          <UserCircleIcon size={22} color="$color10" />
-          <ListItem.Text fontWeight="600">View Profile</ListItem.Text>
-        </ListItem>
+        />
 
-        <ListItem
-          onPress={handleRemix}
-          size="large"
-          bg="$color3"
-          pressStyle={{ bg: '$color2' }}
-          height={50}
-        >
-          <MagicWandIcon size={22} color="$color10" />
-          <ListItem.Text fontWeight="600">Remix</ListItem.Text>
-        </ListItem>
+        <ListItem Icon={WarningCircleIcon} title="Report" onPress={handleReport} />
 
-        <PostActionSheetSharedItems currentPost={currentPost} sheetRef={sheetRef} />
+        <ListItem Icon={ShieldCheckIcon} title="Block User" onPress={handleBlock} />
 
-        <ListItem
-          onPress={handleReport}
-          size="large"
-          bg="$color3"
-          pressStyle={{ bg: '$color2' }}
-          height={50}
-        >
-          <WarningCircleIcon size={22} color="$red10" />
-          <ListItem.Text fontWeight="600" color="$red10">
-            Report
-          </ListItem.Text>
-        </ListItem>
-
-        <ListItem
-          onPress={handleBlock}
-          size="large"
-          bg="$color3"
-          pressStyle={{ bg: '$color2' }}
-          height={50}
-        >
-          <ShieldCheckIcon size={22} color="$red10" />
-          <ListItem.Text fontWeight="600" color="$red10">
-            Block User
-          </ListItem.Text>
-        </ListItem>
-
-        {userRole === 'admin' && (
+        {isAdmin && (
           <ListItem
+            Icon={WarningCircleIcon}
+            title="Hide Post (Admin)"
             onPress={handleAdminHide}
-            size="large"
-            bg="$color3"
-            pressStyle={{ bg: '$color2' }}
-            height={50}
-          >
-            <WarningCircleIcon size={22} color="$red10" />
-            <ListItem.Text fontWeight="600" color="$red10">
-              Admin: Hide Post for Everyone
-            </ListItem.Text>
-          </ListItem>
+          />
         )}
       </YStack>
     </Sheet>
   )
 })
+
+PostActionSheet.displayName = 'PostActionSheet'

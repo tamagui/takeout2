@@ -1,52 +1,103 @@
-// Image picker helper for web and native
-// This is a simplified version - in production, you'd use expo-image-picker or similar
+import * as ImagePicker from 'expo-image-picker'
+import { Alert, Platform } from 'react-native'
 
-export interface ImagePickerResult {
-  uri: string
-  width?: number
-  height?: number
-  type?: string
-}
+// Type that matches expo-image-picker's return type
+export type ImagePickerResult = ImagePicker.ImagePickerResult
 
-export async function pickImageFromLibrary(): Promise<ImagePickerResult | null> {
-  // Web implementation
-  if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-    return new Promise((resolve) => {
-      const input = document.createElement('input')
-      input.type = 'file'
-      input.accept = 'image/*'
-
-      input.onchange = (event: any) => {
-        const file = event.target?.files?.[0]
-        if (!file) {
-          resolve(null)
-          return
-        }
-
-        const uri = URL.createObjectURL(file)
-        resolve({ uri, type: file.type })
-      }
-
-      input.click()
+export const pickImageFromLibrary = async (
+  allowsEditing = true
+): Promise<ImagePickerResult | null> => {
+  // Web implementation using expo-image-picker
+  if (Platform.OS === 'web') {
+    // Expo image picker works on web too
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing,
+      aspect: [1, 1],
+      quality: 0.8,
     })
+
+    if (!result.canceled) {
+      return result
+    }
+    return null
   }
 
-  // Native would use expo-image-picker
-  console.warn('Image picker not implemented for this platform')
+  // Native implementation
+  const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync()
+
+  if (!permissionResult.granted) {
+    console.info('Permission to access media library was denied')
+    Alert.alert(
+      'Photo Access Required',
+      'This feature requires photo access. You can enable it in your device settings.',
+      [
+        {
+          text: 'OK',
+          style: 'cancel',
+        },
+      ]
+    )
+    return null
+  }
+
+  // launch image picker
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing,
+    aspect: [1, 1],
+    quality: 0.8,
+  })
+
+  if (!result.canceled) {
+    return result
+  }
+
   return null
 }
 
-export async function takePhoto(): Promise<ImagePickerResult | null> {
-  // This would use camera on native
-  console.warn('Camera not implemented for this platform')
-  return null
-}
+export const takePhotoWithCamera = async (
+  allowsEditing = true
+): Promise<ImagePickerResult | null> => {
+  // Web doesn't support camera directly via expo-image-picker
+  if (Platform.OS === 'web') {
+    console.warn('Camera not supported on web')
+    return pickImageFromLibrary(allowsEditing)
+  }
 
-export async function takePhotoWithCamera(): Promise<ImagePickerResult | null> {
-  // This would use camera on native
-  console.warn('Camera not implemented for this platform')
+  // request permission
+  const permissionResult = await ImagePicker.requestCameraPermissionsAsync()
+
+  if (!permissionResult.granted) {
+    console.info('Permission to access camera was denied')
+    Alert.alert(
+      'Camera Access Required',
+      'This feature requires camera access. You can enable it in your device settings.',
+      [
+        {
+          text: 'OK',
+          style: 'cancel',
+        },
+      ]
+    )
+    return null
+  }
+
+  // launch camera
+  const result = await ImagePicker.launchCameraAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing,
+    aspect: [1, 1],
+    quality: 0.8,
+  })
+
+  if (!result.canceled) {
+    return result
+  }
+
   return null
 }
 
 // Alias for compatibility
 export const launchImageLibrary = pickImageFromLibrary
+export const takePhoto = takePhotoWithCamera

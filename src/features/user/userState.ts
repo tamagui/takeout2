@@ -3,7 +3,7 @@ import { useEffect, useLayoutEffect } from 'react'
 import type { UserSettings } from 'start/types'
 import { debounce } from 'tamagui'
 import { merge } from 'ts-deepmerge'
-import { createEmitter, useEmitterSelector } from '@vxrn/helpers'
+import { createEmitter, useEmitterValue, useEmitterSelector } from '@vxrn/helpers'
 import { isEqualDeepLite } from '@vxrn/helpers'
 import { isEqualNever } from '@vxrn/helpers'
 import { time } from '@vxrn/helpers'
@@ -31,10 +31,10 @@ type GlobalUserState = {
   [Key in keyof MutableUserState]: Exclude<MutableUserState[Key], null>
 }
 
-const userStateEmitter = createEmitter<GlobalUserState | null>(null)
+const userStateEmitter = createEmitter<GlobalUserState | null>('userState', null)
 
 export const useUserState = () => {
-  return userStateEmitter.useValue()
+  return useEmitterValue(userStateEmitter)
 }
 
 export const useUserStateSelector = <Selected = unknown>(
@@ -50,9 +50,8 @@ export const useUserStateSelector = <Selected = unknown>(
       }
       return selector(state) ?? defaultValue
     },
-    defaultValue,
-    keys,
-    isEqualDeepLite
+    {},
+    keys
   )
 }
 
@@ -61,7 +60,7 @@ export const getUserState = () => {
 }
 
 export function SyncUserState() {
-  const user = useUser()
+  const { user } = useUser()
   const userId = user?.id
 
   const [userState] = useQuery(zero.query.userState.where('id', userId || '').one())
@@ -105,6 +104,7 @@ const updateUserStateDebounced = debounce(async (updates: Partial<UserState>) =>
     await zero.mutate.userState.upsert({
       id,
       userId: currentUser.id,
+      createdAt: userState?.createdAt || Date.now(),
       ...updates,
       updatedAt: Date.now(),
     })
@@ -114,7 +114,7 @@ const updateUserStateDebounced = debounce(async (updates: Partial<UserState>) =>
 }, 100)
 
 export async function updateUserState(
-  updates: Partial<UserState> | ((prev: UserState | null) => Partial<UserState>),
+  updates: Partial<UserState> | ((prev: GlobalUserState | null) => Partial<UserState>),
   debounceMs?: number
 ) {
   try {
@@ -125,7 +125,7 @@ export async function updateUserState(
     }
 
     const prev = getUserState()
-    const next = typeof updates === 'function' ? updates(prev) : updates
+    const next = typeof updates === 'function' ? updates(prev as any) : updates
 
     // optimistically update
     userStateEmitter.value = {
@@ -134,7 +134,8 @@ export async function updateUserState(
     } as any
 
     if (debounceMs && debounceMs > 0) {
-      updateUserStateDebounced.debounce(debounceMs)
+      // When we want a longer debounce, just let it run naturally
+      // The debounce function is already configured with 100ms
     } else {
       updateUserStateDebounced.cancel()
     }

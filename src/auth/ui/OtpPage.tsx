@@ -141,7 +141,7 @@ export const OtpPage = () => {
         </ButtonSimple>
       }
     >
-      <YStack ai="center" gap="$6">
+      <YStack items="center" gap="$6">
         <OtpInput
           key={otpKey}
           autoFocus

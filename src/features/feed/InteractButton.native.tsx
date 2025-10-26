@@ -28,7 +28,7 @@ export function InteractButton({
         <Icon
           size={22}
           color={active ? '$red10' : '$color11'}
-          weight={active ? 'fill' : 'regular'}
+          fill={active ? '$red10' : 'none'}
         />
       </Pressable>
       <SizableText minW={14} size="$3" fontWeight="600">

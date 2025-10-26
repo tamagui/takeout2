@@ -1,8 +1,6 @@
-import type { FriendshipPrimaryIds } from '~/data/models/friendship'
-
 export const PRIVATE_CHAT_SEPARATOR = `~~~~~`
 
-export const getPrivateChatId = (friendship: FriendshipPrimaryIds) => {
-  const [aId, bId] = [friendship.acceptingId, friendship.requestingId].sort()
+export const getPrivateChatId = (params: { userId1: string; userId2: string }) => {
+  const [aId, bId] = [params.userId1, params.userId2].sort()
   return `${aId}${PRIVATE_CHAT_SEPARATOR}${bId}`
 }

@@ -23,7 +23,7 @@ function checkUsernameValid(username: string) {
 
 export const ProfileSetupPage = () => {
   const { from } = useParams()
-  const { user, loading, update } = useUser()
+  const { user, update } = useUser()
   const [username, setUsername] = useState<string>('')
   const [isValidating, setIsValidating] = useState(false)
   // const [name, setName] = useState<string>('')
@@ -107,10 +107,8 @@ export const ProfileSetupPage = () => {
           size="large"
           onPress={handleContinue}
           disabled={!canContinue || isValidating}
-          variant={!canContinue ? 'default' : 'highlight'}
-          loading={loading || isValidating}
         >
-          <ButtonSimple.Text>Next</ButtonSimple.Text>
+          <ButtonSimple.Text>{isValidating ? 'Validating...' : 'Next'}</ButtonSimple.Text>
         </ButtonSimple>
       }
     >

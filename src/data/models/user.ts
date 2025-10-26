@@ -38,12 +38,12 @@ export const permissions = where('userPublic', (_, auth) => {
 })
 
 export const mutate = mutations(schema, permissions, {
-  completeSignup: async ({ server, authData }, userId: string) => {
+  completeSignup: async ({ server, authData, tx }, userId: string) => {
     ensure(authData)
 
     if (server) {
       server.asyncTasks.push(async () => {
-        if (await server.actions.userActions.onboardUser(authData, userId)) {
+        if (await server.actions.userActions.onboardUser(tx, authData, userId)) {
           await server.actions
             .analyticsActions()
             .logEvent(authData.id, 'user_onboarded', {
@@ -55,9 +55,9 @@ export const mutate = mutations(schema, permissions, {
     }
   },
 
-  validateUsername: async ({ environment, server }, username: string) => {
+  validateUsername: async ({ environment, server, tx }, username: string) => {
     if (environment === 'server' && server) {
-      await server.actions.userActions.validateUsername(username)
+      await server.actions.userActions.validateUsername(tx, username)
     }
   },
 
@@ -65,17 +65,20 @@ export const mutate = mutations(schema, permissions, {
     ensure(authData)
     await can(permissions, 'write', authData.id)
 
+    // Create a mutable copy for modification
+    let updateData = { ...user }
+
     // convert data URL to actual R2 upload
-    if (server && user.image?.startsWith('data:')) {
+    if (server && updateData.image?.startsWith('data:')) {
       const { uploadDataUrlToR2 } = await import('~/features/upload/uploadDataUrl')
-      user.image = await uploadDataUrlToR2(user.image)
+      updateData.image = await uploadDataUrlToR2(updateData.image)
     }
 
-    if (environment === 'server' && server && user.username) {
-      await server.actions.userActions.validateUsername(user.username)
+    if (environment === 'server' && server && updateData.username) {
+      await server.actions.userActions.validateUsername(tx, updateData.username)
     }
 
-    await tx.mutate.userPublic.update(user)
+    await tx.mutate.userPublic.update(updateData)
 
     if (environment === 'server' && server) {
       const fieldsUpdated = Object.keys(user).filter((key) => key !== 'id')
@@ -87,7 +90,7 @@ export const mutate = mutations(schema, permissions, {
     }
   },
 
-  delete: async ({ authData, server, can, environment }, _user: UserUpdate) => {
+  delete: async ({ authData, server, can, environment, tx }, _user: UserUpdate) => {
     ensure(authData)
     await can(permissions, 'write', authData.id)
 
@@ -95,7 +98,7 @@ export const mutate = mutations(schema, permissions, {
     if (environment === 'server' && server) {
       // server will handle deletion of all user data
       // except for likes and follows as specified
-      await server.actions.userActions.deleteAccount(authData.id)
+      await server.actions.userActions.deleteAccount(tx, authData.id)
     }
   },
 
@@ -105,7 +108,7 @@ export const mutate = mutations(schema, permissions, {
     // only perform on server
     if (environment === 'server' && server) {
       // Use serverActions to whitelist users by email
-      await server.actions.userActions.whitelistUsers(emails)
+      await server.actions.userActions.whitelistUsers(tx, emails)
     }
   },
 

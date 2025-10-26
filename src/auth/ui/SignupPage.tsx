@@ -78,7 +78,7 @@ export const SignupPage = memo(() => {
     }, 1000)
 
     try {
-      if (shouldUsePasswordOnlyAuth(inputValue.trim())) {
+      if (shouldUsePasswordOnlyAuth) {
         router.push(
           `/login/password?method=${method}&value=${encodeURIComponent(inputValue)}`
         )
@@ -116,18 +116,16 @@ export const SignupPage = memo(() => {
         p="$2"
       >
         <XStack gap="$3" items="flex-start">
-          <XStack style={{ alignItems: 'center', alignSelf: 'stretch' }}>
-            <Checkbox
-              size="$7"
-              checked={smsConsent}
-              onCheckedChange={(val) => setSmsConsent(!!val)}
-              overflow="hidden"
-            >
-              <Checkbox.Indicator backgroundColor="#AB4ABA" padding={8}>
-                <CheckIcon />
-              </Checkbox.Indicator>
-            </Checkbox>
-          </XStack>
+          <Checkbox
+            size="$7"
+            checked={smsConsent}
+            onCheckedChange={(val) => setSmsConsent(!!val)}
+            overflow="hidden"
+          >
+            <Checkbox.Indicator backgroundColor="#AB4ABA" padding={8}>
+              <CheckIcon />
+            </Checkbox.Indicator>
+          </Checkbox>
           <YStack gap="$2" flex={1}>
             <SizableText fontSize={14} color="$accent8">
               You agree to receive transactional texts from Fleek. Frequency varies. Msg &
@@ -216,7 +214,7 @@ export const SignupPage = memo(() => {
             disabled={!inputValue.trim() || (isPhone && !smsConsent)}
             variant="default"
           >
-            <ButtonSimple.Text>{loading ? 'Processing...' : 'Next'}</ButtonSimple.Text>
+            {loading ? 'Processing...' : 'Next'}
           </ButtonSimple>
         </YStack>
       }

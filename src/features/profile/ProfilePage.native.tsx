@@ -56,14 +56,13 @@ export const ProfilePage = memo(() => {
   const { user: currentUser } = useUser()
 
   // Get profile user data with all stats
-  const {
-    user: profileUser,
-    stats,
-    followersCount,
-    followingCount,
-    postsCount,
-    isLoading: isLoadingUser,
-  } = useUserStats(userId)
+  const { stats, isLoading: isLoadingUser } = useUserStats()
+
+  // Mock user data for now
+  const profileUser = userId ? null : null
+  const followersCount = 0
+  const followingCount = 0
+  const postsCount = 0
 
   // Determine if viewing own profile
   const isOwnProfile = !userId || userId === currentUser?.id
@@ -324,12 +323,12 @@ export const ProfilePage = memo(() => {
 
         <ScrollView showsVerticalScrollIndicator={false}>
           <ProfileHeader
-            userInfo={userInfo}
+            userInfo={userInfo || undefined}
             isOwnProfile={isOwnProfile}
             followersCount={followersCount}
             followingCount={followingCount}
             postsCount={postsCount}
-            stats={stats}
+            stats={stats || undefined}
           />
 
           {renderTabBar()}

@@ -10,5 +10,5 @@ export const ProfileTabIcon = memo(() => {
 
   if (!user?.image) return <Circle size={smallerIconSize} bg="$color4" />
 
-  return <Avatar outlined size={smallerIconSize} image={user.image} />
+  return <Avatar size={smallerIconSize} image={user.image} />
 })

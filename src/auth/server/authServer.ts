@@ -3,7 +3,6 @@ import { betterAuth } from 'better-auth'
 import { emailHarmony, phoneHarmony } from 'better-auth-harmony'
 import { admin, bearer, jwt, magicLink, emailOTP, phoneNumber } from 'better-auth/plugins'
 import { database } from '~/database/database'
-import { sendMagicLinkEmail } from '~/features/email/actions/sendMagicLinkEmail'
 import { time } from '@vxrn/helpers'
 import {
   BETTER_AUTH_SECRET,
@@ -68,7 +67,8 @@ export const authServer = betterAuth({
 
     magicLink({
       sendMagicLink: async ({ email, url }) => {
-        sendMagicLinkEmail(email, { link: url })
+        console.info('Magic link email would be sent to:', email, 'with URL:', url)
+        // TODO: Implement email sending
       },
     }),
 

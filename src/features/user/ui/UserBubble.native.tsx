@@ -1,29 +1,14 @@
 import { memo } from 'react'
 import Svg, { Defs, Path, Text, TextPath } from 'react-native-svg'
-import {
-  AnimatePresence,
-  Circle,
-  SizableText,
-  styled,
-  useTheme,
-  View,
-  XStack,
-} from 'tamagui'
-import { formatMentionsToText } from '~/features/message/formatMentionsToText'
-import { getMessageLink } from '~/features/message/getMessageLink'
+import { Circle, styled, useTheme, View } from 'tamagui'
 import { isUserOnline } from '~/features/user/isUserOnline'
-import { ellipsis } from '@vxrn/helpers'
 import { animationClamped } from '~/interface/animations/animationClamped'
-import { Link } from '~/interface/app/Link'
 import { Avatar } from '~/interface/avatars/Avatar'
-import Glint from '~/interface/effects/Glint'
-import type { NotificationMessageWithRelations, UserWithStats } from '~/data/types'
-import { useUser } from '../useUser'
+import type { UserWithStats } from '~/data/types'
 
 export type UserBubbleProps = {
   user: UserWithStats
   active?: boolean
-  notification?: NotificationMessageWithRelations
   circleSize?: number
 }
 
@@ -58,8 +43,6 @@ export const UserBubble = memo((props: UserBubbleProps) => {
 
   return (
     <View group="item" containerType="normal" p={3} contain="layout">
-      <NotificationBubble notification={props.notification} />
-
       {/* background hover effect */}
       <View
         animation={animationClamped('quickerLessBouncy')}
@@ -151,82 +134,3 @@ const BackgroundCircle = styled(Circle, {
     opacity: 0.8,
   },
 })
-
-const NotificationBubble = memo(
-  ({ notification }: { notification?: NotificationMessageWithRelations }) => {
-    const { user } = useUser()
-    const message = notification?.messages?.[0]
-
-    return (
-      <AnimatePresence>
-        {notification && !notification.seenAt && message && (
-          <Link href={getMessageLink(message)}>
-            <XStack
-              animation={animationClamped('quickLessBouncy')}
-              animateOnly={['transform']}
-              position="absolute"
-              t={19}
-              l={-10}
-              backdropFilter="blur(10px)"
-              py={6}
-              px={7}
-              maxW="93%"
-              maxH={55}
-              overflow="hidden"
-              rounded={14}
-              shadowColor="$shadow4"
-              shadowRadius={5}
-              shadowOffset={{ height: 4, width: 0 }}
-              z={1000000}
-              $theme-light={{
-                bg: '$white04',
-              }}
-              $theme-dark={{
-                bg: '$shadow4',
-              }}
-              enterStyle={{
-                opacity: 0,
-                y: -5,
-              }}
-              exitStyle={{
-                opacity: 0,
-                y: -5,
-              }}
-              hoverStyle={{
-                outlineWidth: 2,
-                outlineColor: '$white02',
-                outlineStyle: 'solid',
-                scale: 1.04,
-              }}
-              pressStyle={{
-                scale: 0.9,
-              }}
-            >
-              <Glint rounded={14} bottomShadow />
-
-              <SizableText
-                color="$color12"
-                opacity={0.8}
-                fontWeight="500"
-                fontSize={10}
-                lineHeight={13}
-                numberOfLines={2}
-                $theme-dark={{
-                  opacity: 0.6,
-                }}
-              >
-                {ellipsis(
-                  formatMentionsToText(notification.messages?.[0]?.content || '').replace(
-                    `@${user?.username}`,
-                    ''
-                  ),
-                  30
-                )}
-              </SizableText>
-            </XStack>
-          </Link>
-        )}
-      </AnimatePresence>
-    )
-  }
-)

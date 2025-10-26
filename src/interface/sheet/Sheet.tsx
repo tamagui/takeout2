@@ -7,7 +7,6 @@ import {
   type ReactNode,
 } from 'react'
 import { SizableText, useTheme, View, XStack, type ViewProps } from 'tamagui'
-import haptics from '~/helpers/haptics/haptics'
 import { XCircleIcon } from '~/interface/icons/phosphor/XCircleIcon'
 import { Pressable } from '../buttons/Pressable'
 
@@ -32,7 +31,6 @@ export const Sheet = forwardRef<SheetRef, SheetProps>(
     useImperativeHandle(ref, () => ({
       expand: () => {
         bottomSheetRef.current?.snapToIndex(0)
-        haptics.modalOpen()
       },
       collapse: () => {
         bottomSheetRef.current?.close()
@@ -56,7 +54,6 @@ export const Sheet = forwardRef<SheetRef, SheetProps>(
       (index: number) => {
         if (index === -1) {
           onClose?.()
-          haptics.modalClose()
         }
       },
       [onClose]

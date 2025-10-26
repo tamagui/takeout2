@@ -3,7 +3,6 @@ import type React from 'react'
 import { memo, useLayoutEffect, useState } from 'react'
 import { Separator, useDebounceValue, XStack, YStack } from 'tamagui'
 import { LinearGradient } from 'tamagui/linear-gradient'
-import { useAppTheme } from '~/features/app/AppTheme'
 import { useShowFloatingSidePane } from '~/features/app/useShowFloatingSidePane'
 import { animationClamped } from '~/interface/animations/animationClamped'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
@@ -12,10 +11,8 @@ import {
   MAIN_PAD_PANE,
   TOP_BAR_HEIGHT,
 } from '~/interface/constants'
-import { DraggableVerticalSeparator } from '~/interface/dividers/DraggableVerticalSeparator'
-import { useDraggableDivider } from '~/interface/dividers/useDraggableDivider'
 import { useHoverGlow } from '~/interface/effects/HoverGlow'
-import { updateInstanceState, useInstanceState } from '~/state/instanceState'
+import { useInstanceState } from '~/state/instanceState'
 import Glint from '../effects/Glint'
 
 type Props = {
@@ -32,7 +29,7 @@ type Props = {
 
 export const SidePanel = (props: Props) => {
   const { open } = props
-  const { sidebarWidth, sidePanelAdjustX } = useInstanceState((s) => s)
+  const { sidebarWidth } = useInstanceState((s) => s)
   const openDebounced = useDebounceValue(open, 500)
   const isFullyClosed = !open && !openDebounced
   const [closedWidth, setClosedWidth] = useState(sidebarWidth)
@@ -50,7 +47,6 @@ export const SidePanel = (props: Props) => {
       isFullyClosed={isFullyClosed}
       open={open}
       sidebarWidth={isFullyClosed ? closedWidth : sidebarWidth}
-      sidePanelAdjustX={sidePanelAdjustX}
     />
   )
 }
@@ -66,18 +62,15 @@ const SidePanelContents = memo(
     onToggleMaximized,
     sidebarWidth,
     onSetFloating,
-    sidePanelAdjustX,
     open,
     isFullyClosed,
   }: Props & {
     sidebarWidth: number
-    sidePanelAdjustX: number
     open: boolean
     isFullyClosed: boolean
   }) => {
     // const isSidebarCollapsed = useSidebarCollapsed()
     const isFloating = useShowFloatingSidePane()
-    const { colors } = useAppTheme()
 
     const HoverGlow = useHoverGlow({
       background: 'var(--background0)',
@@ -167,7 +160,7 @@ const SidePanelContents = memo(
             ...(open
               ? {
                   width: '100%',
-                  maxW: `calc(41.666666% - ${sidePanelAdjustX}px)`,
+                  maxW: '41.666666%',
                   flex: 1.5,
                   opacity: 1,
                   shadowColor: '$shadow4',
@@ -182,17 +175,11 @@ const SidePanelContents = memo(
                 }),
           })}
         >
-          {open && !isFloating && (
-            <YStack fullscreen pointerEvents="none" x={-3}>
-              <SidePanelDraggableDivider />
-            </YStack>
-          )}
-
           {/* non-floating background */}
           <YStack
             rounded={MAIN_CONTENT_RADIUS_INSET}
             fullscreen
-            bg={colors.mainLayoutBackground}
+            bg="$background0"
             opacity={isFloating ? 0 : 0.9}
           />
 
@@ -209,14 +196,14 @@ const SidePanelContents = memo(
           >
             <YStack>
               <LinearGradient
-                colors={['$background0', colors.mainLayoutBackground]}
+                colors={['$background0', '$background0']}
                 pointerEvents="none"
                 height={85}
                 z={1}
               />
               <HoverGlow.Component />
             </YStack>
-            <YStack flex={1} bg={colors.mainLayoutBackground} />
+            <YStack flex={1} bg="$background0" />
           </YStack>
 
           {/* topbar */}
@@ -317,43 +304,6 @@ const SidePanelContents = memo(
     )
   }
 )
-
-const DRAG_HANDLE_WIDTH = 6
-const ALLOW_ADJUST_AMOUNT = 400
-
-const SidePanelDraggableDivider = memo(() => {
-  const sidePanelAdjustX = useInstanceState((s) => s.sidePanelAdjustX)
-
-  const { dragHandleProps, isDragging, dragDirection } = useDraggableDivider({
-    initialWidth: sidePanelAdjustX + ALLOW_ADJUST_AMOUNT / 2,
-    minWidth: 0,
-    maxWidth: ALLOW_ADJUST_AMOUNT,
-    onDrag: (newWidth) => {
-      updateInstanceState({ sidePanelAdjustX: newWidth - ALLOW_ADJUST_AMOUNT / 2 })
-    },
-  })
-
-  return (
-    <YStack
-      z={10000000}
-      transition="all ease-in-out 150ms 120ms"
-      px={DRAG_HANDLE_WIDTH / 2}
-      mx={-DRAG_HANDLE_WIDTH / 2}
-      width={10}
-      x={-2}
-      group="item"
-      containerType="normal"
-      t={0}
-      b={0}
-      position="absolute"
-      pointerEvents="auto"
-      // Spread the drag handle props from our hook here
-      {...dragHandleProps}
-    >
-      <DraggableVerticalSeparator isDragging={isDragging} dragDirection={dragDirection} />
-    </YStack>
-  )
-})
 
 // @ts-expect-error
 globalThis['GlobalElement'] ||= {}

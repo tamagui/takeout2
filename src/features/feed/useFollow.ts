@@ -28,9 +28,8 @@ export const useFollow = (targetUserId: string | undefined, targetUsername?: str
 
       // log analytics for unfollow action
       analytics.track('feature_used', {
-        feature: 'user_unfollowed',
-        targetUserId: targetUserId!,
-        source: 'profile',
+        featureName: 'user_unfollowed',
+        context: 'profile',
       })
 
       const message = targetUsername
@@ -49,8 +48,7 @@ export const useFollow = (targetUserId: string | undefined, targetUsername?: str
 
       // log analytics for follow action
       analytics.track('user_followed', {
-        targetUserId: targetUserId!,
-        source: 'profile',
+        followedUserId: targetUserId!,
       })
 
       const message = targetUsername

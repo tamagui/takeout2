@@ -101,18 +101,16 @@ export const ProfileEditSocial = () => {
               <YStack gap="$3">
                 {connectedPlatforms.map(([platformKey, url]) => {
                   const platform = SOCIAL_PLATFORMS[platformKey]
-                  const Icon = platform?.icon
+                  const icon = platform?.icon
 
                   if (editingPlatform === platformKey) {
                     return (
                       <ListItem key={platformKey} bg="$color2" rounded="$4" height={60}>
                         <XStack flex={1} items="center" gap="$3">
-                          {Icon && <Icon width={24} height={24} />}
+                          {icon && <MediumText fontSize={24}>{icon}</MediumText>}
 
                           <XStack flex={1} items="center" gap="$2">
-                            <MediumText color="$color12">
-                              {platform?.displayName}:
-                            </MediumText>
+                            <MediumText color="$color12">{platform?.name}:</MediumText>
                             <Input
                               flex={1}
                               value={editValue ? `@${editValue}` : ''}
@@ -153,7 +151,7 @@ export const ProfileEditSocial = () => {
                         height={50}
                       >
                         <XStack flex={1} items="center" gap="$3">
-                          {Icon && <Icon width={24} height={24} />}
+                          {icon && <MediumText fontSize={24}>{icon}</MediumText>}
 
                           <YStack flex={1} gap="$0.5">
                             <MediumText color="$color12">
@@ -177,7 +175,7 @@ export const ProfileEditSocial = () => {
               <YStack gap="$3">
                 {availablePlatforms.map((platformKey) => {
                   const platform = SOCIAL_PLATFORMS[platformKey]
-                  const Icon = platform?.icon
+                  const icon = platform?.icon
 
                   if (editingPlatform === platformKey) {
                     return (
@@ -189,12 +187,10 @@ export const ProfileEditSocial = () => {
                         height={60}
                       >
                         <XStack flex={1} items="center" gap="$3">
-                          {Icon && <Icon width={24} height={24} />}
+                          {icon && <MediumText fontSize={24}>{icon}</MediumText>}
 
                           <XStack flex={1} items="center" gap="$2">
-                            <MediumText color="$color12">
-                              {platform?.displayName}:
-                            </MediumText>
+                            <MediumText color="$color12">{platform?.name}:</MediumText>
                             <Input
                               flex={1}
                               value={editValue ? `@${editValue}` : ''}
@@ -237,12 +233,10 @@ export const ProfileEditSocial = () => {
                         pointerEvents="none"
                       >
                         <XStack flex={1} items="center" gap="$3">
-                          {Icon && <Icon width={24} height={24} />}
+                          {icon && <MediumText fontSize={24}>{icon}</MediumText>}
 
                           <YStack flex={1} gap="$0.5">
-                            <MediumText color="$color12">
-                              {platform?.displayName}
-                            </MediumText>
+                            <MediumText color="$color12">{platform?.name}</MediumText>
                           </YStack>
 
                           <MediumText color="$color9">Connect</MediumText>

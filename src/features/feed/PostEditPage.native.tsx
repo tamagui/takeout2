@@ -11,10 +11,8 @@ import { type Input, TextArea, useWindowDimensions, View, YStack } from 'tamagui
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { BasicHeader } from '~/interface/headers/BasicHeader'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
-import { ChatDotsIcon } from '~/interface/icons/phosphor/ChatDotsIcon'
-import { ImageSquareIcon } from '~/interface/icons/phosphor/ImageSquareIcon'
-import { LabeledDropdown } from '~/interface/headers/LabeledDropdown'
 import { showToast } from '~/interface/toast/helpers'
+import { SizableText } from 'tamagui'
 import { useQuery, zero } from '~/zero/client'
 
 export const PostEditPage = () => {
@@ -91,7 +89,9 @@ export const PostEditPage = () => {
       <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
         <YStack flex={1} px={14}>
           {/* Display post image (read-only) */}
-          <LabeledDropdown icon={<ImageSquareIcon />} label="Post image" />
+          <SizableText size="$3" color="$color11" fontWeight="600" mb="$2">
+            Post image
+          </SizableText>
           {post?.image && (
             <Animated.View entering={FadeIn.duration(300)}>
               <YStack
@@ -112,7 +112,9 @@ export const PostEditPage = () => {
           )}
 
           {/* Caption editor */}
-          <LabeledDropdown icon={<ChatDotsIcon />} label="Caption" />
+          <SizableText size="$3" color="$color11" fontWeight="600" mb="$2">
+            Caption
+          </SizableText>
           <YStack>
             <TextArea
               ref={textAreaRef}
@@ -135,14 +137,9 @@ export const PostEditPage = () => {
         <ButtonSimple
           onPress={handleSave}
           disabled={!captionText.trim() || captionText.trim() === post?.caption}
-          variant={
-            !captionText.trim() || captionText.trim() === post?.caption
-              ? 'default'
-              : 'highlight'
-          }
-          loading={isSaving}
+          variant="default"
         >
-          Save Changes
+          {isSaving ? 'Saving...' : 'Save Changes'}
         </ButtonSimple>
       </View>
     </View>

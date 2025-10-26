@@ -18,3 +18,21 @@ export const hapticNotification = (type = Haptics.NotificationFeedbackType.Succe
     Haptics.notificationAsync(type)
   }
 }
+
+// Modal-specific haptics
+export const modalOpen = () => {
+  hapticImpact(Haptics.ImpactFeedbackStyle.Light)
+}
+
+export const modalClose = () => {
+  hapticSelection()
+}
+
+// Default export for backward compatibility
+export default {
+  hapticImpact,
+  hapticSelection,
+  hapticNotification,
+  modalOpen,
+  modalClose,
+}

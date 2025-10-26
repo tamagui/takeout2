@@ -81,7 +81,8 @@ class WebPostHog implements PostHogInstance {
     if (!this.isInitialized) {
       return defaultValue
     }
-    return posthog.isFeatureEnabled(key, { fallback: defaultValue }) ?? defaultValue
+    // posthog-js v1.96+ uses isFeatureEnabled without options
+    return posthog.isFeatureEnabled(key) ?? defaultValue
   }
 
   getFeatureFlag(key: string): boolean | string | undefined {
@@ -95,9 +96,8 @@ class WebPostHog implements PostHogInstance {
     if (!this.isInitialized) {
       return
     }
-    return new Promise((resolve) => {
-      posthog.reloadFeatureFlags(() => resolve())
-    })
+    // posthog.reloadFeatureFlags doesn't take a callback in newer versions
+    await posthog.reloadFeatureFlags()
   }
 }
 

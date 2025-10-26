@@ -1,6 +1,4 @@
-import { useSaveUserLastPage } from './RedirectUserToLastPage'
-
 export const UserEffects = () => {
-  useSaveUserLastPage()
+  // User effects placeholder
   return null
 }

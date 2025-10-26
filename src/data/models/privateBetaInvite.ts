@@ -25,12 +25,6 @@ export const mutate = mutations(schema, permissions, {
   insert: async ({ tx, server }, privateBetaInvite: PrivateBetaInvite) => {
     await tx.mutate.privateBetaInvite.insert(privateBetaInvite)
 
-    if (server) {
-      server.asyncTasks.push(async () => {
-        await server.actions.email.sendPrivateBetaInvite({
-          email: privateBetaInvite.email,
-        })
-      })
-    }
+    // Email functionality removed
   },
 })

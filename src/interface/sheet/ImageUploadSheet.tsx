@@ -77,7 +77,7 @@ export const ImageUploadSheet = forwardRef<ImageUploadSheetRef>((_, ref) => {
         ? await takePhotoWithCamera(allowsEditing)
         : await pickImageFromLibrary(allowsEditing)
 
-    if (imageResult && imageResult.assets?.[0]) {
+    if (imageResult && !imageResult.canceled && imageResult.assets?.[0]) {
       const asset = imageResult.assets[0]
 
       // create a pseudo-file object for native

@@ -1,7 +1,7 @@
 import { router, useParams } from 'one'
 import { useEffect, useState } from 'react'
 import { ScrollView, SizableText, TextArea, View, YStack } from 'tamagui'
-import { showAlert } from '~/interface/alert/controller'
+import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { BasicHeader } from '~/interface/headers/BasicHeader'
 import { Image } from '~/interface/image/Image'
@@ -31,14 +31,13 @@ export const PostEditPage = () => {
 
   const handleBack = () => {
     if (hasUnsavedChanges()) {
-      showAlert({
+      showErrorSheet({
         title: 'Unsaved Changes',
         description:
           'You have unsaved changes. Are you sure you want to leave without saving?',
-        confirmText: 'Leave',
+        buttonText: 'Leave',
         cancelText: 'Stay',
-        variant: 'warning',
-        onConfirm: () => {
+        buttonAction: () => {
           router.back()
         },
       })
@@ -122,9 +121,8 @@ export const PostEditPage = () => {
             theme="accent"
             disabled={isLoading || caption.length < 1 || caption === (post.caption || '')}
             onPress={handleSave}
-            loading={isLoading}
           >
-            Save Changes
+            {isLoading ? 'Saving...' : 'Save Changes'}
           </ButtonSimple>
         </YStack>
       </ScrollView>

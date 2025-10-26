@@ -1,7 +1,11 @@
 import { useQuery, zero } from '~/zero/client'
 import { analytics } from '~/features/analytics/analytics'
 
-export const useLike = (userId: string | undefined, postId: string | undefined) => {
+export const useLike = (
+  userId: string | undefined,
+  postId: string | undefined,
+  authorId?: string
+) => {
   const [likes, status] = useQuery(
     zero.query.like
       .where('userId', userId || '')
@@ -25,10 +29,12 @@ export const useLike = (userId: string | undefined, postId: string | undefined) 
     }).client
 
     // log analytics for like action
-    analytics.track('post_liked', {
-      postId,
-      action: hasLiked ? 'unliked' : 'liked',
-    })
+    if (authorId) {
+      analytics.track('post_liked', {
+        postId,
+        authorId,
+      })
+    }
   }
 
   return {

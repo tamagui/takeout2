@@ -1,14 +1,12 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '~/auth/client/authClient'
-import type { Character, Post } from '~/data/models'
+import type { Post } from '~/data/models'
 import { useQuery, zero } from '~/zero/client'
 
 interface UsePostsOptions {
   limit?: number
   offset?: number
 }
-
-type PostWithCharacter = Post & { character?: Character | null }
 
 // simple query with fixed limit - for static lists, not infinite scroll
 export function usePosts(options?: UsePostsOptions) {
@@ -25,7 +23,7 @@ export function usePosts(options?: UsePostsOptions) {
   const [posts, status] = useQuery(query)
 
   return {
-    posts: (posts || []) as PostWithCharacter[],
+    posts: (posts || []) as Post[],
     isLoading: status.type === 'unknown',
     isEmpty: posts ? posts.length === 0 : true,
     hasMore: posts ? posts.length === limit : false,
@@ -35,7 +33,7 @@ export function usePosts(options?: UsePostsOptions) {
 // cursor-based pagination with .start() - efficient like zbugs
 export function usePostsPaginated(pageSize = 10) {
   const { user } = useAuth()
-  const [allPosts, setAllPosts] = useState<PostWithCharacter[]>([])
+  const [allPosts, setAllPosts] = useState<Post[]>([])
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
   const [hasInitialLoad, setHasInitialLoad] = useState<boolean>(false)
   const [cursor, setCursor] = useState<Post | null>(null)
@@ -92,9 +90,9 @@ export function usePostsPaginated(pageSize = 10) {
     if (posts && posts.length > 0) {
       setAllPosts((prev) => {
         if (!cursor) {
-          return posts as PostWithCharacter[]
+          return posts as Post[]
         }
-        const newPosts = posts as PostWithCharacter[]
+        const newPosts = posts as Post[]
         const existingIds = new Set(prev.map((p) => p.id))
         const uniqueNewPosts = newPosts.filter((p) => !existingIds.has(p.id))
         return [...prev, ...uniqueNewPosts]
@@ -140,7 +138,7 @@ export function usePostsPaginated(pageSize = 10) {
 
 // cursor-based pagination for user posts
 export function usePostsByUserId(userId: string, pageSize = 12) {
-  const [allPosts, setAllPosts] = useState<PostWithCharacter[]>([])
+  const [allPosts, setAllPosts] = useState<Post[]>([])
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
   const [hasInitialLoad, setHasInitialLoad] = useState<boolean>(false)
   const [cursor, setCursor] = useState<Post | null>(null)
@@ -167,9 +165,9 @@ export function usePostsByUserId(userId: string, pageSize = 12) {
     if (posts && posts.length > 0) {
       setAllPosts((prev) => {
         if (!cursor) {
-          return posts as PostWithCharacter[]
+          return posts as Post[]
         }
-        const newPosts = posts as PostWithCharacter[]
+        const newPosts = posts as Post[]
         const existingIds = new Set(prev.map((p) => p.id))
         const uniqueNewPosts = newPosts.filter((p) => !existingIds.has(p.id))
         return [...prev, ...uniqueNewPosts]

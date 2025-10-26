@@ -1,5 +1,7 @@
-import * as MediaLibrary from 'expo-media-library'
-import { Alert, Platform } from 'react-native'
+import { Platform } from 'react-native'
+
+// Re-export saveRemoteImage for compatibility
+export { saveRemoteImage, saveRemoteImageWithProxy } from './saveRemoteImage'
 
 export async function saveImageToDevice(imageUrl: string): Promise<boolean> {
   try {
@@ -12,20 +14,11 @@ export async function saveImageToDevice(imageUrl: string): Promise<boolean> {
       return true
     }
 
-    // Request permission to save to media library
-    const { status } = await MediaLibrary.requestPermissionsAsync()
-    if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Please allow access to save images')
-      return false
-    }
-
-    // Save the image
-    await MediaLibrary.saveToLibraryAsync(imageUrl)
-    Alert.alert('Success', 'Image saved to gallery')
-    return true
+    // Native image saving functionality removed
+    console.warn('Native image saving not implemented')
+    return false
   } catch (error) {
     console.error('Error saving image:', error)
-    Alert.alert('Error', 'Failed to save image')
     return false
   }
 }

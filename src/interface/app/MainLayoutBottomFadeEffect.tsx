@@ -1,14 +1,11 @@
 import { memo } from 'react'
 import { YStack } from 'tamagui'
 import { IS_SAFARI } from '@vxrn/helpers'
-import { useAppTheme } from '~/features/app/AppTheme'
 import { GradientBlurDown } from '~/interface/effects/GradientBlur'
 import { MAIN_CONTENT_RADIUS, MAIN_CONTENT_RADIUS_LEFT } from '../constants'
 import { LinearGradient } from '@tamagui/linear-gradient'
 
 export const MainLayoutBottomFadeEffect = memo(() => {
-  const { colors } = useAppTheme()
-
   return (
     <YStack
       pointerEvents="none"

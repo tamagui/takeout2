@@ -97,7 +97,7 @@ export const AvatarSetupPage = () => {
     const imageResult =
       type === 'camera' ? await takePhotoWithCamera() : await pickImageFromLibrary()
 
-    if (imageResult && imageResult.assets[0]) {
+    if (imageResult && !imageResult.canceled && imageResult.assets?.[0]) {
       const asset = imageResult.assets[0]
       setLocalImageUri(asset.uri)
 
@@ -158,7 +158,7 @@ export const AvatarSetupPage = () => {
               size="large"
               onPress={goToNextStep}
               disabled={!localImageUri}
-              variant={localImageUri ? 'highlight' : 'default'}
+              theme={localImageUri ? 'accent' : undefined}
             >
               <ButtonSimple.Text>Next</ButtonSimple.Text>
             </ButtonSimple>

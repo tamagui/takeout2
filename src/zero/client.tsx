@@ -29,12 +29,16 @@ export const {
   disable,
 })
 
-const ZERO_SERVER: string =
+const ZERO_SERVER =
   typeof location !== 'undefined'
     ? location.host === 'start.chat'
       ? 'https://zero.start.chat'
       : import.meta.env.VITE_PUBLIC_ZERO_SERVER
     : import.meta.env.VITE_PUBLIC_ZERO_SERVER
+
+if (!ZERO_SERVER) {
+  throw new Error(`No zero server`)
+}
 
 export const ProvideZero = ({ children }: { children: ReactNode }) => {
   const auth = useAuth()

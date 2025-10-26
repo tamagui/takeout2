@@ -16,7 +16,7 @@ export const StayConnectedPage = () => {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [isUpdating, setIsUpdating] = useState(false)
-  const { user, loading, update } = useUser()
+  const { user, update } = useUser()
 
   const goToNextStep = useGoToNextOnboardingStep(['email'])
 
@@ -72,8 +72,6 @@ export const StayConnectedPage = () => {
           size="large"
           onPress={handleContinue}
           disabled={!email.trim() || !isValidEmail(email.trim()) || isUpdating}
-          variant={email.trim() && isValidEmail(email.trim()) ? 'highlight' : 'default'}
-          loading={loading || undefined}
         >
           <ButtonSimple.Text>{isUpdating ? 'Saving...' : 'Next'}</ButtonSimple.Text>
         </ButtonSimple>

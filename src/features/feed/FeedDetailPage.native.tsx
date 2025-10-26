@@ -21,12 +21,11 @@ export const FeedDetailPage = memo(() => {
   const { feedId } = useParams()
   const { user } = useAuth()
   const { post } = usePostById({ postId: feedId })
-  const { user: profileUser } = useUserStats(post?.userId)
   const [imageAspectRatio, setImageAspectRatio] = useState<number>(1)
-  const { hasLiked, toggleLike } = useLike(user?.id, post?.id)
+  const { hasLiked, toggleLike } = useLike(user?.id, post?.id, post?.userId)
   const isOwnProfile = post?.userId === user?.id
 
-  if (!post || !profileUser) {
+  if (!post || !user) {
     return null
   }
 
@@ -37,11 +36,11 @@ export const FeedDetailPage = memo(() => {
       <ScrollView flex={1} showsVerticalScrollIndicator={false}>
         <XStack items="center" justify="space-between" pb="$2" px="$3">
           <XStack items="center" gap="$3">
-            <Avatar image={profileUser.image as string} size={32} />
+            <Avatar image={user.image as string} size={32} />
             <YStack flex={1}>
               <XStack items="center" gap="$2">
                 <SizableText size="$4" fontWeight="600">
-                  {profileUser.name || profileUser.username}
+                  {user.name}
                 </SizableText>
                 <Spacer flex />
               </XStack>

@@ -11,12 +11,13 @@ import { usePostsPaginated } from './usePosts'
 export const FeedPage = memo(() => {
   const safeAreaInsets = useSafeAreaInsets()
   const listRef = useRef<FlatList<any>>(null)
-  const { posts, loadMore, refresh, isLoading, isRefreshing, hasMore } =
-    usePostsPaginated()
+  const { posts, loadMore, refresh, isLoading, hasMore } = usePostsPaginated()
 
   // Handle scroll to top
-  useEmitter(scrollToTopEmitter, 'home', () => {
-    listRef.current?.scrollToOffset({ offset: 0, animated: true })
+  useEmitter(scrollToTopEmitter, (tab) => {
+    if (tab === 'home') {
+      listRef.current?.scrollToOffset({ offset: 0, animated: true })
+    }
   })
 
   const renderItem = useCallback(({ item }: any) => {
@@ -28,13 +29,13 @@ export const FeedPage = memo(() => {
   const renderEmpty = useCallback(() => {
     if (isLoading) {
       return (
-        <YStack flex={1} ai="center" jc="center" padding="$4">
+        <YStack flex={1} items="center" justify="center" p="$4">
           <Spinner size="large" />
         </YStack>
       )
     }
     return (
-      <YStack flex={1} ai="center" jc="center" padding="$4">
+      <YStack flex={1} items="center" justify="center" p="$4">
         <SizableText size="$5" color="$color10">
           No posts yet
         </SizableText>
@@ -48,7 +49,7 @@ export const FeedPage = memo(() => {
   const renderFooter = useCallback(() => {
     if (!hasMore || posts.length === 0) return null
     return (
-      <YStack padding="$4" ai="center">
+      <YStack p="$4" items="center">
         <Spinner size="small" />
       </YStack>
     )
@@ -66,7 +67,7 @@ export const FeedPage = memo(() => {
         ListFooterComponent={renderFooter}
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
-        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />}
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refresh} />}
         contentContainerStyle={{
           paddingBottom: safeAreaInsets.bottom + 100,
         }}

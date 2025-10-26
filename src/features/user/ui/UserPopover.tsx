@@ -1,7 +1,6 @@
 import { Popover } from '~/interface/popover/Popover'
 import type { UserWithStats } from '~/data/types'
 import { globalUserPopoverHover } from './GlobalUserPopover'
-import { messageHoverPrevent } from '~/features/message/constants'
 
 export const UserPopover = ({
   user,
@@ -15,7 +14,6 @@ export const UserPopover = ({
       asChild
       scope="user-popover"
       onMouseEnter={() => {
-        if (messageHoverPrevent.value) return
         if (user) {
           globalUserPopoverHover.emit(user)
         }

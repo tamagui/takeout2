@@ -44,7 +44,7 @@ interface SettingSection {
 export const ProfileSettingsPage = () => {
   const { client } = useStatsigClient()
   const showWallet = client.checkGate(FEATURE_FLAGS.PROFILE_ENABLE_WALLET)
-  const { userRole } = useUser({ includeRole: true })
+  const { isAdmin } = useUser()
 
   const handleLogout = () => {
     Alert.alert(
@@ -75,7 +75,9 @@ export const ProfileSettingsPage = () => {
   }
 
   const handleDeleteAccount = () => {
-    confirmDeleteAccount()
+    Alert.alert('Delete Account', 'Account deletion is not currently available.', [
+      { text: 'OK' },
+    ])
   }
 
   const allSections: SettingSection[] = [
@@ -154,7 +156,7 @@ export const ProfileSettingsPage = () => {
         },
       ],
     },
-    ...(userRole === 'admin'
+    ...(isAdmin
       ? [
           {
             title: 'Admin',
@@ -211,17 +213,6 @@ export const ProfileSettingsPage = () => {
     }
   }
 
-  const handleNotificationToggle = (value: boolean) => {
-    handleToggle(
-      () => {
-        // onGranted callback - notifications were successfully enabled/disabled
-      },
-      {
-        isForSetting: !value, // If turning off, open settings
-      }
-    )
-  }
-
   const renderItem = (item: SettingItem) => {
     const Icon = item.icon
 
@@ -247,14 +238,7 @@ export const ProfileSettingsPage = () => {
               {item.title}
             </SizableText>
           </XStack>
-          <Switch
-            size="$3"
-            checked={item.id === 'notifications' ? notificationsEnabled : false}
-            onCheckedChange={
-              item.id === 'notifications' ? handleNotificationToggle : undefined
-            }
-            bg={notificationsEnabled ? '$green9' : '$color4'}
-          />
+          <Switch size="$3" checked={false} onCheckedChange={undefined} bg="$color4" />
         </XStack>
       )
     }

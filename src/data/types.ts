@@ -14,8 +14,7 @@ export type * from './models'
 export type AuthData = {
   id: string
   email?: string
-  name?: string
-  image?: string
+  role?: 'admin'
 }
 
 export type PostWithUser = Post & {

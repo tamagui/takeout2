@@ -130,7 +130,7 @@ export const ProfileHeader = memo(
                   const platform = SOCIAL_PLATFORMS[platformId]
                   if (!platform) return null
 
-                  const Icon = platform.icon
+                  const icon = platform.icon
                   return (
                     <Pressable
                       key={platformId}
@@ -153,7 +153,7 @@ export const ProfileHeader = memo(
                         items="center"
                         justify="center"
                       >
-                        <Icon width={16} height={16} />
+                        <SizableText fontSize={16}>{icon}</SizableText>
                       </Circle>
                     </Pressable>
                   )
@@ -261,7 +261,7 @@ export const ProfileHeader = memo(
               <XStack px="$3">
                 <YStack justify="center" items="center" py="$3" flex={1}>
                   <H4 theme="green" color="$color10" fontWeight="500">
-                    ${formatCount(stats?.totalEarnings || 0)}
+                    $0
                   </H4>
                   <BodyText color="$color9">Market Cap</BodyText>
                 </YStack>
@@ -274,13 +274,13 @@ export const ProfileHeader = memo(
                   flex={1}
                 >
                   <H4 color="$color12" fontWeight="500">
-                    ${formatCount(stats?.totalEarnings || 0)}
+                    $0
                   </H4>
                   <BodyText color="$color9">Volume</BodyText>
                 </YStack>
                 <YStack justify="center" items="center" flex={1}>
                   <H4 color="$color12" fontWeight="500">
-                    ${formatCount(stats?.totalTokensHeld || 0)}
+                    $0
                   </H4>
                   <BodyText color="$color9">Holders</BodyText>
                 </YStack>

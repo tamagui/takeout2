@@ -45,7 +45,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
   // For now, only show author information
   const avatarUrl = author?.image
   const username = author?.username
-  const { hasLiked, toggleLike } = useLike(user?.id, post.id)
+  const { hasLiked, toggleLike } = useLike(user?.id, post.id, post.userId)
   const [isTruncated, setIsTruncated] = useState<boolean>(false)
 
   // check if viewing own content (own user profile)

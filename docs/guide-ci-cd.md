@@ -1,10 +1,12 @@
 # CI/CD Pipeline Guide
 
-This guide explains the continuous integration and deployment pipeline for this project.
+This guide explains the continuous integration and deployment pipeline for this
+project.
 
 ## Overview
 
 The CI/CD pipeline is configured using GitHub Actions and handles:
+
 - Automated testing and linting
 - Building and deploying web, mobile, and desktop applications
 - Hot update deployments for React Native
@@ -14,11 +16,13 @@ The CI/CD pipeline is configured using GitHub Actions and handles:
 
 ## GitHub Actions Workflow
 
-The main CI workflow (`.github/workflows/ci.yml`) runs on every push and includes:
+The main CI workflow (`.github/workflows/ci.yml`) runs on every push and
+includes:
 
 ### 1. Tauri Build Check
 
 For main branch commits, checks if Tauri desktop app needs rebuilding:
+
 - Compares file hashes to detect changes
 - Checks if update manifest exists
 - Triggers build only when necessary
@@ -26,6 +30,7 @@ For main branch commits, checks if Tauri desktop app needs rebuilding:
 ### 2. Build, Test & Deploy
 
 Runs on all branches with different configurations:
+
 - **Main branch**: Full deployment with high-performance runners
 - **Other branches**: Build and test only with standard runners
 
@@ -34,6 +39,7 @@ Runs on all branches with different configurations:
 ### Web Application
 
 Deployed to Cloudflare Workers using SST:
+
 ```bash
 bun run ci  # Runs full CI pipeline including deployment
 ```
@@ -41,6 +47,7 @@ bun run ci  # Runs full CI pipeline including deployment
 ### Mobile Applications (iOS/Android)
 
 Built using EAS Build:
+
 ```bash
 # Development builds
 eas build --profile development --platform all
@@ -55,6 +62,7 @@ eas build --profile production --platform all
 ### Desktop Application (Tauri)
 
 Built and distributed with auto-updates:
+
 ```bash
 # Build Tauri app
 bun ./src/tauri/scripts/build-tauri-ci.ts
@@ -68,6 +76,7 @@ bun ./src/tauri/scripts/create-version-bump-pr.ts [major|minor|patch]
 ### React Native Hot Updates
 
 Configured using `@hot-updater/react-native`:
+
 - Automatic OTA updates for React Native apps
 - Channel-based distribution (development, preview, production)
 - Controlled via feature flags
@@ -75,6 +84,7 @@ Configured using `@hot-updater/react-native`:
 ### Tauri Auto-Updates
 
 Desktop app checks for updates every 30 minutes:
+
 - Update manifest served from Cloudflare R2
 - Automatic download and installation
 - User notification when updates are available
@@ -84,6 +94,7 @@ Desktop app checks for updates every 30 minutes:
 ### Environment Variables
 
 Managed through `bun env:update`:
+
 ```bash
 # Pull latest environment variables
 bun env:pull
@@ -95,6 +106,7 @@ bun env:update
 ### Secrets Management
 
 All secrets are stored in GitHub Actions secrets and include:
+
 - API keys (Anthropic, OpenAI, etc.)
 - Cloud service credentials (AWS, Cloudflare)
 - OAuth client credentials
@@ -110,9 +122,6 @@ bun db:migrate:add migration-name
 
 # Run migrations locally
 bun migrate
-
-# Generate Drizzle schema
-bun db:generate
 ```
 
 ### Production Database

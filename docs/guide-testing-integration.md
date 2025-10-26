@@ -79,7 +79,7 @@ src/integration/
 
 ### Playwright Configuration
 
-The test configuration is defined in `playwright.config.ts`:
+The test configuration is defined in `src/integration/playwright.config.ts`:
 
 ```typescript
 export default defineConfig({

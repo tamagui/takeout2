@@ -21,7 +21,6 @@ tests
 .prettierrc
 .eslintrc
 docker-compose.yml
-playwright.config.ts
 vitest.config.ts
 tsconfig.tsbuildinfo
 src/database/migrate-dist.js

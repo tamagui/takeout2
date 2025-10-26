@@ -1,3 +1,5 @@
+// run this with bun ./src/interface/fonts/subset.ts to re-generate
+
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { basename, join } from 'node:path'
 import subsetFont from 'subset-font'

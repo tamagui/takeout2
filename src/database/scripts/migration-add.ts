@@ -45,4 +45,6 @@ export async function up(client: PoolClient) {
 writeFileSync(newFilePath, templateContent)
 
 console.info(`Created custom migration: ${newFilePath}`)
-console.info(`For Drizzle schema migrations, simply run 'npm run db:generate'`)
+console.info(
+  `For Drizzle schema migrations, simply run 'bun migrate' after changing schema`
+)

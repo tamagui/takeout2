@@ -20,3 +20,4 @@ nate:
 
 - split scripts/\* into package?
   - sst/aws/github helpers are nice
+- migrations stuff could maybe be a package

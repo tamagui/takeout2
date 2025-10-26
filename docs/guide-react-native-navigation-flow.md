@@ -52,13 +52,7 @@ routing system.
 - Renders the current route content
 - Similar to React Router's `<Outlet />`
 
-### 2. Drawer Component
-
-- From `react-native-drawer-layout`
-- Provides sliding sidebar on mobile
-- Contains server list and channels
-
-### 3. Navigation Hooks
+### 2. Navigation Hooks
 
 ```typescript
 // get current route parameters

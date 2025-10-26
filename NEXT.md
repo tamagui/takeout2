@@ -15,3 +15,8 @@ general:
 - new zero query style
 - zero migrations needs improvement
 - job system should be here
+
+nate:
+
+- split scripts/\* into package?
+  - sst/aws/github helpers are nice

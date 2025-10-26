@@ -1,20 +1,30 @@
 #!/usr/bin/env bun
 
-import '../../../scripts/ensure-tunnel'
+const upstreamDb = process.env.ZERO_UPSTREAM_DB
 
-import { Resource } from 'sst'
+if (!upstreamDb) {
+  console.error('ZERO_UPSTREAM_DB not found in environment')
+  console.error('Make sure to run with bun run:dev or bun run:prod')
+  process.exit(1)
+}
 
-console.info(`Connecting to postgres`, Resource.Postgres2)
+// Parse the DATABASE_URL format
+const url = new URL(upstreamDb)
 
-Bun.spawnSync([`psql`], {
+console.info(`Connecting to dev postgres at ${url.hostname}`)
+
+// Pass any additional arguments to psql
+const args = process.argv.slice(2)
+
+// If QUERY env var is set, use it as a -c argument
+if (process.env.QUERY) {
+  args.unshift('-c', process.env.QUERY)
+}
+
+const proc = Bun.spawnSync(['psql', upstreamDb, ...args], {
   stdin: 'ignore',
   stdout: 'inherit',
   stderr: 'inherit',
-  env: {
-    ...process.env,
-    PGPASSWORD: Resource.Postgres2.password,
-    PGUSER: Resource.Postgres2.username,
-    PGHOST: Resource.Postgres2.host,
-    PGDATABASE: Resource.Postgres2.database,
-  } as any,
-})
+} as const)
+
+process.exit(proc.exitCode || 0)

@@ -18,7 +18,7 @@ bun ci:start-dev
 bun test:integration
 
 # or run a specific test file
-bun test:integration src/integration/search.test.ts
+bun test:integration src/test/search.test.ts
 ```
 
 You can also run in production mode (like CI does) if you've run `bun web:build`
@@ -63,7 +63,7 @@ state. This is critical because:
 ### Directory Structure
 
 ```
-src/integration/
+src/test/
 ├── .output/              # test results and traces
 ├── global-setup.ts       # global test setup
 ├── helpers.ts            # shared helper functions
@@ -79,13 +79,13 @@ src/integration/
 
 ### Playwright Configuration
 
-The test configuration is defined in `src/integration/playwright.config.ts`:
+The test configuration is defined in `src/test/playwright.config.ts`:
 
 ```typescript
 export default defineConfig({
-  testDir: './src/integration',
-  outputDir: './src/integration/.output/test-results',
-  globalSetup: './src/integration/global-setup.ts',
+  testDir: './src/test',
+  outputDir: './src/test/.output/test-results',
+  globalSetup: './src/test/global-setup.ts',
   timeout: 30 * 1000,
   expect: {
     timeout: 5000,
@@ -443,7 +443,7 @@ test.use({
 View traces:
 
 ```bash
-bunx playwright show-trace src/integration/.output/test-results/*/trace.zip
+bunx playwright show-trace src/test/.output/test-results/*/trace.zip
 ```
 
 ## Best Practices
@@ -465,13 +465,13 @@ bunx playwright show-trace src/integration/.output/test-results/*/trace.zip
 To run a single test file:
 
 ```bash
-bun test:integration src/integration/search.test.ts
+bun test:integration src/test/search.test.ts
 ```
 
 To run tests with debugging output:
 
 ```bash
-PWDEBUG=1 bun test:integration src/integration/search.test.ts --headed
+PWDEBUG=1 bun test:integration src/test/search.test.ts --headed
 ```
 
 ## Advanced Topics

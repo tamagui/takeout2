@@ -9,8 +9,8 @@ import { defineConfig, devices } from '@playwright/test'
 // },
 
 export default defineConfig({
-  testDir: './src/integration',
-  outputDir: './src/integration/.output/test-results',
+  testDir: './integration',
+  outputDir: './integration/.output/test-results',
   timeout: 20 * 1000,
   expect: {
     timeout: 5000,

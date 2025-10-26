@@ -518,7 +518,7 @@ async function prebuildDockerImage() {
   const fullImageUri = `${imageUri}:${imageTag}`
 
   console.info(`Building Docker image: ${fullImageUri}...`)
-  await run(`docker buildx build --platform linux/arm64 -t ${fullImageUri} --load .`, {
+  await run(`bun web:build-docker -t ${fullImageUri} --load .`, {
     prefix: 'docker-build',
     timeout: time.ms.minutes(10),
   })

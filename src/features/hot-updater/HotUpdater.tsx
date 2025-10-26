@@ -5,7 +5,10 @@ import type { HotUpdaterContextValue, HotUpdaterProviderProps } from './types'
  * Web version of HotUpdaterProvider - no-op implementation
  * Hot updates are only supported on native platforms
  */
-export function HotUpdaterProvider({ children, authData = null }: HotUpdaterProviderProps) {
+export function HotUpdaterProvider({
+  children,
+  authData = null,
+}: HotUpdaterProviderProps) {
   const contextValue: HotUpdaterContextValue = {
     isUpdateAvailable: false,
     isDownloading: false,

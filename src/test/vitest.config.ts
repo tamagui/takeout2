@@ -1,18 +1,18 @@
-import { defineConfig } from 'vitest/config'
 import { tamaguiPlugin } from '@tamagui/vite-plugin'
-import path from 'node:path'
+import { join, resolve } from 'node:path'
+import { defineConfig } from 'vitest/config'
+
+const rootDir = resolve(__dirname, '..', '..')
 
 export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    exclude: [
-      'node_modules/**',
-      'src/integration/**',
-      '**/dist',
-      '.sst/**',
-      'src/apps/stripe/stripe-app/**',
-    ],
+    include: ['src/test/unit/**/*.test.ts', 'src/test/unit/**/*.test.tsx'],
+    outputFile: {
+      json: 'src/test/unit/.output/results.json',
+    },
+    reporters: ['default', 'json'],
     logHeapUsage: false,
     disableConsoleIntercept: true,
     testTimeout: 10_000,
@@ -20,8 +20,7 @@ export default defineConfig({
 
   resolve: {
     alias: {
-      '~': path.resolve(__dirname, './src'),
-      start: path.resolve(__dirname, './start/src'),
+      '~': resolve(rootDir, 'src'),
     },
   },
 
@@ -32,7 +31,7 @@ export default defineConfig({
       disableInitialBuild: true,
       useReactNativeWebLite: true,
       components: ['tamagui'],
-      config: './src/tamagui/tamagui.config.ts',
+      config: join(rootDir, 'tamagui/tamagui.config.ts'),
     }),
   ],
 })

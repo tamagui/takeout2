@@ -11,7 +11,10 @@ import type { HotUpdaterContextValue, HotUpdaterProviderProps } from './types'
 /**
  * Native version of HotUpdaterProvider - actual implementation
  */
-export function HotUpdaterProvider({ children, authData = null }: HotUpdaterProviderProps) {
+export function HotUpdaterProvider({
+  children,
+  authData = null,
+}: HotUpdaterProviderProps) {
   const [isUpdateAvailable, setIsUpdateAvailable] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
   const [downloadProgress, setDownloadProgress] = useState(0)

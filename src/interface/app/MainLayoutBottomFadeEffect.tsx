@@ -1,9 +1,11 @@
 import { memo } from 'react'
 import { YStack } from 'tamagui'
-import { IS_SAFARI } from '@vxrn/helpers'
+import { IS_SAFARI, isTauri } from '@vxrn/helpers'
 import { GradientBlurDown } from '~/interface/effects/GradientBlur'
-import { MAIN_CONTENT_RADIUS, MAIN_CONTENT_RADIUS_LEFT } from '../constants'
 import { LinearGradient } from '@tamagui/linear-gradient'
+
+const MAIN_CONTENT_RADIUS = isTauri ? 9 : 11
+const MAIN_CONTENT_RADIUS_LEFT = MAIN_CONTENT_RADIUS + 3
 
 export const MainLayoutBottomFadeEffect = memo(() => {
   return (

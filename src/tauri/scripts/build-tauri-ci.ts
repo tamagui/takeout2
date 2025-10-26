@@ -1,140 +1,122 @@
 #!/usr/bin/env bun
-/**
- * Build Tauri app in CI environment
- * Handles version management and artifact uploads
- */
 
-import { execSync } from 'node:child_process'
-import { existsSync, readFileSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
-import crypto from 'node:crypto'
+import { $ } from 'bun'
+import { writeFileSync } from 'node:fs'
+import { setupExitHandlers } from '~/helpers/setupExitHandlers'
 
-const CLOUDFLARE_R2_BUCKET = 'onechatimages'
-const RELEASES_PATH = 'releases'
+console.info('Starting Tauri CI build process...')
 
-interface TauriConfig {
-  package: {
-    version: string
+async function setupAppleCertificates() {
+  // Set up Apple certificate for code signing if available
+  if (process.env.APPLE_CERTIFICATE && process.env.APPLE_CERTIFICATE_PASSWORD) {
+    console.info('Setting up Apple certificate for code signing...')
+
+    // Decode base64 certificate
+    const certPath = '/tmp/apple-cert.p12'
+    const certBase64 = process.env.APPLE_CERTIFICATE
+    await $`echo "${certBase64}" | base64 -d > ${certPath}`
+
+    // Create temporary keychain
+    const keychainName = 'tauri-build.keychain'
+    const keychainPassword = 'temporary-password'
+
+    await $`security create-keychain -p "${keychainPassword}" ${keychainName}`
+    await $`security default-keychain -s ${keychainName}`
+    await $`security unlock-keychain -p "${keychainPassword}" ${keychainName}`
+
+    // Import certificate
+    await $`security import ${certPath} -k ${keychainName} -P "${process.env.APPLE_CERTIFICATE_PASSWORD}" -T /usr/bin/codesign -T /usr/bin/productsign`
+    await $`security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "${keychainPassword}" ${keychainName}`
+
+    // Clean up certificate file
+    await $`rm -f ${certPath}`
   }
-  tauri: {
-    updater?: {
-      endpoints: string[]
-    }
+
+  // Set up Apple API key for notarization if available
+  if (process.env.APPLE_API_KEY_CONTENTS) {
+    console.info('Setting up Apple API key for notarization...')
+
+    // Write API key contents to a temporary file
+    const apiKeyPath = '/tmp/apple-api-key.p8'
+    writeFileSync(apiKeyPath, process.env.APPLE_API_KEY_CONTENTS)
+
+    // Set the environment variable that Tauri expects
+    process.env.APPLE_API_KEY_PATH = apiKeyPath
+
+    console.info(`Apple API key written to: ${apiKeyPath}`)
   }
 }
 
-async function uploadToR2(localPath: string, remotePath: string) {
-  const command = `aws s3 cp ${localPath} s3://${CLOUDFLARE_R2_BUCKET}/${remotePath} --endpoint-url ${process.env.CLOUDFLARE_R2_ENDPOINT}`
-
-  console.info(`Uploading ${localPath} to ${remotePath}...`)
-  execSync(command, { stdio: 'inherit' })
+async function cleanupAppleFiles() {
+  if (process.env.APPLE_API_KEY_CONTENTS) {
+    await $`rm -f /tmp/apple-api-key.p8`.quiet()
+  }
 }
 
-async function generateHash(filePath: string): Promise<string> {
-  const content = readFileSync(filePath)
-  return crypto.createHash('sha256').update(content).digest('hex')
-}
-
-async function buildTauri() {
-  console.info('Building Tauri app...')
-
-  // ensure tauri.conf.json exists
-  const tauriConfigPath = join(process.cwd(), 'tauri.conf.json')
-  if (!existsSync(tauriConfigPath)) {
-    console.error('tauri.conf.json not found!')
-    process.exit(1)
-  }
-
-  // read current version from tauri.conf.json
-  const config: TauriConfig = JSON.parse(readFileSync(tauriConfigPath, 'utf-8'))
-  const version = config.package.version
-
-  console.info(`Building version ${version}`)
-
-  // build for production
-  execSync('bun tauri build', {
-    stdio: 'inherit',
-    env: {
-      ...process.env,
-      NODE_ENV: 'production',
-    },
-  })
-
-  // find built artifacts
-  const platform = process.platform
-  let artifactPath = ''
-  let hashPath = ''
-
-  if (platform === 'darwin') {
-    artifactPath = `src-tauri/target/release/bundle/dmg/takeout_${version}_x64.dmg`
-    hashPath = `${artifactPath}.sha256`
-  } else if (platform === 'linux') {
-    artifactPath = `src-tauri/target/release/bundle/appimage/takeout_${version}_amd64.AppImage`
-    hashPath = `${artifactPath}.sha256`
-  } else if (platform === 'win32') {
-    artifactPath = `src-tauri/target/release/bundle/msi/takeout_${version}_x64.msi`
-    hashPath = `${artifactPath}.sha256`
-  }
-
-  if (!existsSync(artifactPath)) {
-    console.error(`Built artifact not found at ${artifactPath}`)
-    process.exit(1)
-  }
-
-  // generate hash
-  const hash = await generateHash(artifactPath)
-  writeFileSync(hashPath, hash)
-
-  // upload to R2
-  const remoteArtifactPath = `${RELEASES_PATH}/${platform}/${version}/${artifactPath.split('/').pop()}`
-  const remoteHashPath = `${remoteArtifactPath}.sha256`
-
-  await uploadToR2(artifactPath, remoteArtifactPath)
-  await uploadToR2(hashPath, remoteHashPath)
-
-  // create/update update manifest
-  const manifestPath = 'tauri-update.json'
-  const manifest = {
-    version,
-    platforms: {
-      [platform]: {
-        url: `${process.env.CLOUDFLARE_R2_PUBLIC_URL}/${CLOUDFLARE_R2_BUCKET}/${remoteArtifactPath}`,
-        sha256: hash,
-      },
-    },
-  }
-
-  writeFileSync(manifestPath, JSON.stringify(manifest, null, 2))
-  await uploadToR2(manifestPath, `${RELEASES_PATH}/tauri-update.json`)
-
-  // save build hash for change detection
-  execSync('bun ./src/tauri/scripts/check-tauri-changed.ts')
-
-  console.info('Tauri build and upload complete!')
-}
+const { exit } = setupExitHandlers({
+  onExit: cleanupAppleFiles,
+  processName: 'Tauri CI build',
+})
 
 async function main() {
-  // check required env vars
-  const required = [
-    'CLOUDFLARE_R2_ENDPOINT',
-    'CLOUDFLARE_R2_PUBLIC_URL',
-    'AWS_ACCESS_KEY_ID',
-    'AWS_SECRET_ACCESS_KEY',
-  ]
+  try {
+    // Validate tauri.conf.json is in production mode
+    const tauriConfigPath = './src/tauri/tauri.conf.json'
+    const tauriConfig = JSON.parse(await $`cat ${tauriConfigPath}`.text())
 
-  for (const key of required) {
-    if (!process.env[key]) {
-      console.error(`Missing required environment variable: ${key}`)
-      process.exit(1)
+    if (tauriConfig.productName !== 'start.chat') {
+      throw new Error(
+        `Invalid productName in tauri.conf.json: ${tauriConfig.productName}. Expected 'start.chat' for production build.`
+      )
     }
+
+    if (tauriConfig.build.frontendDist !== './shell-prod') {
+      throw new Error(
+        `Invalid frontendDist in tauri.conf.json: ${tauriConfig.build.frontendDist}. Expected './shell-prod' for production build.`
+      )
+    }
+
+    console.info('✅ Tauri configuration validated for production build')
+
+    // Generate hash file BEFORE version bump
+    // IMPORTANT: This must happen before auto-bump-version.ts modifies files
+    // The hash represents the source code state that triggered the build
+    // This ensures the next CI check will correctly detect if source code changed
+    console.info('\nGenerating Tauri hash for current source state...')
+    await $`bun ./src/tauri/scripts/check-tauri-changed.ts --update`
+
+    // Auto bump minor version
+    console.info('Auto-bumping Tauri version...')
+    await $`bun ./src/tauri/scripts/auto-bump-version.ts`
+
+    // Set up Apple certificates
+    await setupAppleCertificates()
+
+    // Build the production Tauri app
+    console.info('\nBuilding Tauri app...')
+    await $`bun run tauri:build:prod`
+
+    // Upload to R2 storage (DMG and hash file)
+    console.info('\nUploading to R2 storage...')
+    await $`bun run tauri:upload-release`
+
+    // Generate and upload the update manifest
+    console.info('\nGenerating update manifest...')
+    await $`bun run:dev ./src/tauri/scripts/generate-tauri-manifest.ts`
+
+    console.info('\n✅ Tauri build completed successfully!')
+    console.info(
+      'The hash file has been uploaded and will be used for future build checks.'
+    )
+  } catch (error) {
+    console.error('\n❌ Tauri build failed:', error)
+    throw error
+  } finally {
+    // Clean up Apple API key
+    await cleanupAppleFiles()
   }
-
-  await buildTauri()
 }
 
-if (import.meta.main) {
-  main().catch((error) => {
-    console.error('Build failed:', error)
-    process.exit(1)
-  })
-}
+main().catch((error) => {
+  exit(1)
+})

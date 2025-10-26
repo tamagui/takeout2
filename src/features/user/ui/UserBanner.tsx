@@ -1,9 +1,10 @@
 import { H1, Spacer, XStack, YStack } from 'tamagui'
 import { Avatar } from '~/interface/avatars/Avatar'
-import { TOP_BAR_HEIGHT } from '~/interface/constants'
 import type { User } from '~/data/types'
 import { isUserOnline } from '../isUserOnline'
 import { UserFriendButton } from './UserFriendButton'
+
+const TOP_BAR_HEIGHT = 46
 
 export const UserBanner = ({ user }: { user: User }) => {
   if (!user) {

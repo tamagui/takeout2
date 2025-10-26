@@ -45,5 +45,11 @@
   },
   "[sql]": {
     "editor.defaultFormatter": "adpyke.vscode-sql-formatter"
+  },
+  "files.exclude": {
+    ".sst": true,
+    ".tamagui": true,
+    ".expo": true,
+    ".docker": true
   }
 }

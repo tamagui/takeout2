@@ -1,84 +1,203 @@
 #!/usr/bin/env bun
-/**
- * Check if Tauri-related files have changed since last build
- * Used by CI to determine if a new Tauri build is needed
- */
 
-import { execSync } from 'node:child_process'
-import { existsSync, readFileSync } from 'node:fs'
-import { join } from 'node:path'
-import crypto from 'node:crypto'
+import { readFileSync, existsSync, writeFileSync, readdirSync, statSync } from 'node:fs'
+import { join, relative } from 'node:path'
+import { createHash } from 'node:crypto'
 
-const TAURI_FILES = [
-  'src/tauri/**/*',
-  'package.json',
-  'tauri.conf.json',
-  'src-tauri/**/*',
-  'src/helpers/tauri/**/*',
+const HASH_FILE_PATH = '.tauri-hash'
+const TAURI_DIR = join(__dirname, '..')
+const ROOT_DIR = join(TAURI_DIR, '..', '..')
+
+// Files and directories to include in the hash
+const PATHS_TO_CHECK = [
+  // Tauri config and capabilities
+  join(TAURI_DIR, 'tauri.conf.json'),
+  join(TAURI_DIR, 'capabilities'),
+
+  // Rust/Cargo files
+  join(TAURI_DIR, 'Cargo.toml'),
+  join(TAURI_DIR, 'Cargo.lock'),
+  join(TAURI_DIR, 'build.rs'),
+  join(TAURI_DIR, 'rust-toolchain'),
+  join(TAURI_DIR, 'rust-toolchain.toml'),
+
+  // Native Rust source code
+  join(TAURI_DIR, 'src'),
 ]
 
-const HASH_FILE = '.tauri-build-hash'
+// Patterns to check in package.json - only Tauri packages/dependencies
+const TAURI_PACKAGE_PATTERNS = ['@tauri-apps/', 'tauri']
 
-function getCurrentHash(): string {
-  // get hash of all tauri-related files
-  const files = TAURI_FILES.map((pattern) => {
-    try {
-      return execSync(`git ls-files ${pattern}`, {
-        encoding: 'utf-8',
-      }).trim()
-    } catch {
-      return ''
-    }
-  })
-    .join('\n')
-    .split('\n')
-    .filter(Boolean)
+function getAllFiles(dir: string, extension?: string): string[] {
+  const files: string[] = []
 
-  const hasher = crypto.createHash('sha256')
+  if (!existsSync(dir)) {
+    return files
+  }
 
-  for (const file of files) {
-    if (existsSync(file)) {
-      const content = readFileSync(file)
-      hasher.update(content)
+  const entries = readdirSync(dir)
+
+  for (const entry of entries) {
+    const fullPath = join(dir, entry)
+    const stat = statSync(fullPath)
+
+    if (stat.isDirectory()) {
+      // Skip build directories
+      if (entry === 'target' || entry === 'node_modules' || entry === '.git') {
+        continue
+      }
+      files.push(...getAllFiles(fullPath, extension))
+    } else {
+      // If extension filter is provided, only include matching files
+      if (!extension || fullPath.endsWith(extension)) {
+        files.push(fullPath)
+      }
     }
   }
 
-  return hasher.digest('hex')
+  return files
 }
 
-function getLastBuildHash(): string | null {
-  if (existsSync(HASH_FILE)) {
-    return readFileSync(HASH_FILE, 'utf-8').trim()
+function extractTauriRelatedContent(packageJson: any): Record<string, any> {
+  const tauriDeps: Record<string, any> = {}
+
+  // Extract Tauri-related dependencies only
+  for (const depType of ['dependencies', 'devDependencies']) {
+    if (packageJson[depType]) {
+      for (const [pkg, version] of Object.entries(packageJson[depType])) {
+        if (TAURI_PACKAGE_PATTERNS.some((pattern) => pkg.includes(pattern))) {
+          tauriDeps[pkg] = version as string
+        }
+      }
+    }
+  }
+
+  return tauriDeps
+}
+
+function calculateHash(): string {
+  const hash = createHash('sha256')
+
+  // Get all files to check
+  const filesToCheck = new Set<string>()
+
+  for (const path of PATHS_TO_CHECK) {
+    if (existsSync(path)) {
+      const stat = statSync(path)
+      if (stat.isDirectory()) {
+        // For src directory, only include .rs files
+        const extension = path.endsWith('/src') ? '.rs' : undefined
+        getAllFiles(path, extension).forEach((file) => filesToCheck.add(file))
+      } else {
+        filesToCheck.add(path)
+      }
+    }
+  }
+
+  // Sort files for consistent hashing
+  const sortedFiles = Array.from(filesToCheck).sort()
+
+  // Hash each file
+  for (const file of sortedFiles) {
+    const content = readFileSync(file)
+    const relativePath = relative(ROOT_DIR, file)
+
+    // Include file path in hash to detect renames
+    hash.update(relativePath)
+    hash.update('\0')
+    hash.update(content)
+    hash.update('\0')
+  }
+
+  // Handle package.json separately - only hash Tauri-related content
+  const packageJsonPath = join(ROOT_DIR, 'package.json')
+  if (existsSync(packageJsonPath)) {
+    try {
+      const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'))
+      const tauriContent = extractTauriRelatedContent(packageJson)
+      hash.update('package.json-tauri-content')
+      hash.update('\0')
+      hash.update(JSON.stringify(tauriContent, null, 2))
+      hash.update('\0')
+    } catch (error) {
+      console.warn('Could not parse package.json:', error)
+    }
+  }
+
+  return hash.digest('hex')
+}
+
+async function fetchRemoteHash(): Promise<string | null> {
+  try {
+    const response = await fetch(
+      'https://storage.start.chat/onechatimages/releases/macos/latest-hash.txt'
+    )
+    if (response.ok) {
+      const hash = await response.text()
+      return hash.trim()
+    } else {
+      console.error(`Not ok response`)
+    }
+  } catch (error) {
+    console.warn('Could not fetch remote hash:', error)
   }
   return null
 }
 
 async function main() {
-  const args = process.argv.slice(2)
-  const checkOnly = args.includes('--check')
+  const currentHash = calculateHash()
 
-  const currentHash = getCurrentHash()
-  const lastHash = getLastBuildHash()
+  // Check if hash file exists locally
+  const hashFilePath = join(ROOT_DIR, HASH_FILE_PATH)
+  let previousHash: string | null = null
 
-  if (checkOnly) {
-    // exit with 0 if unchanged, 1 if changed
-    if (currentHash === lastHash) {
-      console.info('Tauri files have not changed since last build')
-      process.exit(0)
+  // Try to get the hash from local file first
+  if (existsSync(hashFilePath)) {
+    previousHash = readFileSync(hashFilePath, 'utf-8').trim()
+  }
+
+  // If no local hash or in CI environment, try to fetch from remote
+  if (!previousHash || process.env.CI === 'true') {
+    const remoteHash = await fetchRemoteHash()
+    if (remoteHash) {
+      previousHash = remoteHash
+      // Save the remote hash locally for future use
+      if (!existsSync(hashFilePath) || process.env.CI === 'true') {
+        writeFileSync(hashFilePath, remoteHash)
+      }
+    }
+  }
+
+  const hasChanged = previousHash !== currentHash
+
+  if (process.argv.includes('--update')) {
+    writeFileSync(hashFilePath, currentHash)
+    console.info('Tauri hash updated locally to', currentHash)
+    console.info('Note: Remember to upload the hash file when releasing')
+  } else if (process.argv.includes('--check')) {
+    if (hasChanged) {
+      console.info('Tauri has changed')
+      console.info(`Previous hash: ${previousHash || 'none'}`)
+      console.info(`Current hash:  ${currentHash}`)
+      if (process.env.CI === 'true') {
+        console.info('(Hash fetched from remote in CI environment)')
+      }
+      process.exit(1) // Exit with error to indicate change
     } else {
-      console.info('Tauri files have changed, rebuild needed')
-      console.info(`Current hash: ${currentHash}`)
-      console.info(`Last hash: ${lastHash || 'none'}`)
-      process.exit(1)
+      console.info('Tauri has not changed')
+      if (process.env.CI === 'true' && previousHash) {
+        console.info('(Hash fetched from remote in CI environment)')
+      }
+      process.exit(0)
     }
   } else {
-    // save current hash
-    const fs = await import('node:fs')
-    fs.writeFileSync(HASH_FILE, currentHash)
-    console.info(`Saved build hash: ${currentHash}`)
+    // Default behavior - just output whether it changed
+    console.info(hasChanged ? 'true' : 'false')
+    process.exit(hasChanged ? 1 : 0)
   }
 }
 
-if (import.meta.main) {
-  main()
-}
+main().catch((error) => {
+  console.error('Error checking Tauri changes:', error)
+  process.exit(1)
+})

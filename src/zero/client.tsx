@@ -2,9 +2,9 @@ import { createZeroClient } from 'over-zero'
 import { useMemo, type ReactNode } from 'react'
 import { isClient, isWeb } from 'tamagui'
 import { useAuth } from '~/auth/client/authClient'
+import type { AuthData } from '~/auth/types'
 import { models } from '~/data/models'
 import { schema } from '~/data/schema'
-import type { AuthData } from '~/data/types'
 
 const disable =
   typeof window !== 'undefined' &&

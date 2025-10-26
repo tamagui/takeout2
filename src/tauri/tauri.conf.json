@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "start.chat",
+  "version": "0.1.0",
+  "identifier": "chat.start",
+  "build": {
+    "beforeDevCommand": "bun run dev",
+    "devUrl": "http://localhost:8081",
+    "frontendDist": "./shell-prod"
+  },
+  "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": ["start-chat"]
+      }
+    },
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDNCQzlDQzUwMzA1NkFFQjYKUldTMnJsWXdVTXpKTzR4RkszOGdTa3Q3RTR5cEVJbVFPUkdJLzZtQ2ZuWXdrQk9UZE1PYVNWUzkK",
+      "endpoints": ["https://start.chat/api/tauri-update"]
+    }
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "macOSPrivateApi": true,
+    "windows": [
+      {
+        "title": "test",
+        "width": 1100,
+        "height": 750,
+        "hiddenTitle": true,
+        "titleBarStyle": "Overlay",
+        "transparent": true
+      }
+    ],
+    "security": {
+      "csp": {
+        "default-src": "'self' 'unsafe-inline' 'unsafe-eval' start-chat: asset: ipc: http://ipc.localhost https://ipc.localhost",
+        "connect-src": "ipc: http://ipc.localhost https://ipc.localhost http://localhost:8081 https://start.chat https://storage.start.chat",
+        "font-src": ["http://localhost:8081", "https://start.chat"],
+        "img-src": "'self' asset: http://localhost:8081 https://start.chat https://storage.start.chat blob: data:",
+        "script-src": "'self' 'unsafe-inline' 'unsafe-eval' ipc: http://ipc.localhost https://ipc.localhost"
+      }
+    }
+  },
+  "bundle": {
+    "createUpdaterArtifacts": true,
+    "active": true,
+    "externalBin": ["binaries/sidecar"],
+    "targets": ["app", "dmg"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}

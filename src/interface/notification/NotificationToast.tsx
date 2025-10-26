@@ -4,9 +4,11 @@ import { AnimatePresence, XStack, YStack } from 'tamagui'
 import { createEmitter, useEmitter } from '@vxrn/helpers'
 import { ButtonAction } from '../buttons/ButtonAction'
 import { ButtonSimple } from '../buttons/ButtonSimple'
-import { MESSAGE_LIST_BOTTOM_PAD, Z_INDICES } from '../constants'
+import { Z_INDICES } from '../constants'
 import Glint from '../effects/Glint'
 import type { ToastShowOptions } from '../toast/types'
+
+const MESSAGE_LIST_BOTTOM_PAD = 92
 
 export type NotificationToastDisplay = 'error' | 'warn' | 'info'
 

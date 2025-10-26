@@ -1,149 +1,90 @@
 #!/usr/bin/env bun
-/**
- * Create a PR to bump the version in tauri.conf.json
- * Used for automated version management
- */
-
-import { execSync } from 'node:child_process'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { $ } from 'bun'
+import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-interface TauriConfig {
-  package: {
-    version: string
-  }
-  tauri: {
-    updater?: {
-      endpoints: string[]
+async function createVersionBumpPR() {
+  try {
+    // read the current version from tauri.conf.json
+    const tauriConfigPath = join(process.cwd(), 'src/tauri/tauri.conf.json')
+    const tauriConfig = JSON.parse(await readFile(tauriConfigPath, 'utf-8'))
+    const version = tauriConfig.version
+
+    // check if we have any uncommitted changes
+    const gitStatus = await $`git status --porcelain`.text()
+
+    if (!gitStatus.trim()) {
+      process.exit(0)
     }
+
+    // create a new branch for the PR
+    const branchName = `auto/version-bump-${version}`
+
+    // configure git
+    await $`git config user.name "github-actions[bot]"`
+    await $`git config user.email "github-actions[bot]@users.noreply.github.com"`
+
+    // check if remote branch exists
+    const remoteBranches = await $`git ls-remote --heads origin ${branchName}`.text()
+
+    if (remoteBranches.trim()) {
+      process.exit(0)
+    }
+
+    // create and checkout new branch
+    await $`git checkout -b ${branchName}`
+
+    // add only the version-related files
+    const filesToAdd = [
+      'src/tauri/tauri.conf.json',
+      'src/tauri/Cargo.toml',
+      'src/tauri/Cargo.lock',
+    ]
+
+    for (const file of filesToAdd) {
+      // check if file exists and has changes
+      const fileStatus = await $`git status --porcelain ${file}`.text()
+      if (fileStatus.trim()) {
+        await $`git add ${file}`
+      }
+    }
+
+    // create commit
+    await $`git commit -m "chore: bump tauri version to ${version}"`
+
+    // push branch
+    await $`git push origin ${branchName}`
+
+    // create PR using GitHub CLI
+    const prBody = `## Automated Version Bump
+
+This PR was automatically created by the CI pipeline after a successful Tauri build.
+
+### Changes
+- Bumped Tauri app version to \`${version}\`
+- Updated \`tauri.conf.json\`
+- Updated \`Cargo.toml\` and \`Cargo.lock\`
+
+### Notes
+- These changes were made during the Tauri build process
+- The build artifacts have already been uploaded to the release storage
+- This PR ensures the version changes are committed back to the repository
+
+---
+*This is an automated PR created by the Tauri CI workflow.*`
+
+    const prUrl = await $`gh pr create \
+      --title "chore: bump tauri version to ${version}" \
+      --body "${prBody}" \
+      --base main \
+      --head ${branchName} \
+      --label "automated" \
+      --label "version-bump"`.text()
+  } catch (error) {
+    console.error('failed to create version bump PR:', error)
+    // don't fail the CI if PR creation fails
+    process.exit(0)
   }
 }
 
-function getCurrentVersion(): string {
-  const tauriConfigPath = join(process.cwd(), 'tauri.conf.json')
-  const config: TauriConfig = JSON.parse(readFileSync(tauriConfigPath, 'utf-8'))
-  return config.package.version
-}
-
-function bumpVersion(version: string, type: 'major' | 'minor' | 'patch'): string {
-  const parts = version.split('.').map(Number)
-  const major = parts[0] || 0
-  const minor = parts[1] || 0
-  const patch = parts[2] || 0
-
-  switch (type) {
-    case 'major':
-      return `${major + 1}.0.0`
-    case 'minor':
-      return `${major}.${minor + 1}.0`
-    case 'patch':
-      return `${major}.${minor}.${patch + 1}`
-  }
-}
-
-function updateVersion(newVersion: string) {
-  // update tauri.conf.json
-  const tauriConfigPath = join(process.cwd(), 'tauri.conf.json')
-  const config: TauriConfig = JSON.parse(readFileSync(tauriConfigPath, 'utf-8'))
-  config.package.version = newVersion
-  writeFileSync(tauriConfigPath, JSON.stringify(config, null, 2) + '\n')
-
-  // update app.config.ts
-  const appConfigPath = join(process.cwd(), 'app.config.ts')
-  let appConfig = readFileSync(appConfigPath, 'utf-8')
-  appConfig = appConfig.replace(
-    /const version = ['"][\d.]+['"]/,
-    `const version = '${newVersion}'`
-  )
-  writeFileSync(appConfigPath, appConfig)
-
-  // update package.json
-  const packagePath = join(process.cwd(), 'package.json')
-  const packageJson = JSON.parse(readFileSync(packagePath, 'utf-8'))
-  packageJson.version = newVersion
-  writeFileSync(packagePath, JSON.stringify(packageJson, null, 2) + '\n')
-}
-
-async function createPR(version: string, newVersion: string) {
-  const branchName = `bump-tauri-version-${newVersion}`
-
-  // create new branch
-  execSync(`git checkout -b ${branchName}`)
-
-  // commit changes
-  execSync('git add -A')
-  execSync(`git commit -m "chore: bump Tauri version to ${newVersion}"`)
-
-  // push branch
-  execSync(`git push origin ${branchName}`)
-
-  // create PR using gh cli
-  const prBody = `
-## Version Bump: ${version} → ${newVersion}
-
-This PR automatically bumps the Tauri desktop app version.
-
-### Changes:
-- Updated \`tauri.conf.json\` version
-- Updated \`app.config.ts\` version constant
-- Updated \`package.json\` version
-
-### Next Steps:
-1. Review the changes
-2. Merge this PR to trigger a new Tauri build
-3. The CI will automatically build and upload the new version
-  `.trim()
-
-  execSync(
-    `gh pr create --title "chore: bump Tauri version to ${newVersion}" --body "${prBody}" --base main`
-  )
-}
-
-async function main() {
-  const args = process.argv.slice(2)
-  const bumpType = (args[0] as 'major' | 'minor' | 'patch') || 'patch'
-
-  if (!['major', 'minor', 'patch'].includes(bumpType)) {
-    console.error('Invalid bump type. Use: major, minor, or patch')
-    process.exit(1)
-  }
-
-  // ensure we're on main branch with no uncommitted changes
-  const currentBranch = execSync('git branch --show-current', {
-    encoding: 'utf-8',
-  }).trim()
-  if (currentBranch !== 'main') {
-    console.error('Must be on main branch to create version bump PR')
-    process.exit(1)
-  }
-
-  const status = execSync('git status --porcelain', { encoding: 'utf-8' }).trim()
-  if (status) {
-    console.error('Working directory has uncommitted changes')
-    process.exit(1)
-  }
-
-  // get current version and bump it
-  const currentVersion = getCurrentVersion()
-  const newVersion = bumpVersion(currentVersion, bumpType)
-
-  console.info(`Bumping version: ${currentVersion} → ${newVersion}`)
-
-  // update version in files
-  updateVersion(newVersion)
-
-  // create PR
-  await createPR(currentVersion, newVersion)
-
-  console.info(`PR created for version ${newVersion}`)
-
-  // switch back to main
-  execSync('git checkout main')
-}
-
-if (import.meta.main) {
-  main().catch((error) => {
-    console.error('Failed to create version bump PR:', error)
-    process.exit(1)
-  })
-}
+createVersionBumpPR()

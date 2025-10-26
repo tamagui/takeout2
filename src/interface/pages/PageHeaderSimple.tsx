@@ -21,19 +21,9 @@ export const PageHeader = memo(({ Icon, title, after }: PageHeaderProps) => {
   const { top } = useSafeAreaInsets()
 
   return (
-    <YStack
-      backgroundColor="$background"
-      borderBottomWidth={1}
-      borderBottomColor="$borderColor"
-    >
-      <XStack
-        height={50}
-        paddingTop={top}
-        paddingHorizontal="$4"
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <XStack alignItems="center" gap="$2" flex={1}>
+    <YStack bg="$background" borderBottomWidth={1} borderBottomColor="$borderColor">
+      <XStack height={50} pt={top} px="$4" ai="center" jc="space-between">
+        <XStack ai="center" gap="$2" flex={1}>
           {Icon && <Icon size={24} color="$color" />}
           <SizableText size="$6" fontWeight="600" numberOfLines={1}>
             {title}

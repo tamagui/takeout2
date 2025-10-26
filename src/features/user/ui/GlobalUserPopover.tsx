@@ -5,12 +5,12 @@ import { useAsyncEffect } from '@vxrn/helpers'
 import { createEmitter, useEmitterValue } from '@vxrn/helpers'
 import { Avatar } from '~/interface/avatars/Avatar'
 import { Popover } from '~/interface/popover/Popover'
-import type { UserWithState } from '~/data/types'
+import type { UserWithStats } from '~/data/types'
 import { UserFriendButton } from './UserFriendButton'
 import { animationClamped } from '~/interface/animations/animationClamped'
 import { isEqualNever } from '@vxrn/helpers'
 
-export const globalUserPopoverHover = createEmitter<UserWithState | null>(
+export const globalUserPopoverHover = createEmitter<UserWithStats | null>(
   'global-user-popover',
   null,
   {

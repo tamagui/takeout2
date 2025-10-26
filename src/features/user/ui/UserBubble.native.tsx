@@ -17,11 +17,11 @@ import { animationClamped } from '~/interface/animations/animationClamped'
 import { Link } from '~/interface/app/Link'
 import { Avatar } from '~/interface/avatars/Avatar'
 import Glint from '~/interface/effects/Glint'
-import type { NotificationMessageWithRelations, UserWithState } from '~/data/types'
+import type { NotificationMessageWithRelations, UserWithStats } from '~/data/types'
 import { useUser } from '../useUser'
 
 export type UserBubbleProps = {
-  user: UserWithState
+  user: UserWithStats
   active?: boolean
   notification?: NotificationMessageWithRelations
   circleSize?: number

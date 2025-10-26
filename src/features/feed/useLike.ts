@@ -1,8 +1,7 @@
-import { useAnalytics } from '~/statsig/useAnalytics'
 import { useQuery, zero } from '~/zero/client'
+import { analytics } from '~/features/analytics/analytics'
 
 export const useLike = (userId: string | undefined, postId: string | undefined) => {
-  const analytics = useAnalytics()
   const [likes, status] = useQuery(
     zero.query.like
       .where('userId', userId || '')
@@ -24,6 +23,12 @@ export const useLike = (userId: string | undefined, postId: string | undefined) 
       userId,
       postId,
     }).client
+
+    // log analytics for like action
+    analytics.track('post_liked', {
+      postId,
+      action: hasLiked ? 'unliked' : 'liked',
+    })
   }
 
   return {

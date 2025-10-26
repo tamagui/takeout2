@@ -28,17 +28,17 @@ export const FeedPage = memo(() => {
   const renderEmpty = useCallback(() => {
     if (isLoading) {
       return (
-        <YStack flex={1} alignItems="center" justifyContent="center" padding="$4">
+        <YStack flex={1} ai="center" jc="center" padding="$4">
           <Spinner size="large" />
         </YStack>
       )
     }
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4">
+      <YStack flex={1} ai="center" jc="center" padding="$4">
         <SizableText size="$5" color="$color10">
           No posts yet
         </SizableText>
-        <SizableText size="$3" color="$color8" marginTop="$2">
+        <SizableText size="$3" color="$color8" mt="$2">
           Pull to refresh
         </SizableText>
       </YStack>
@@ -48,14 +48,14 @@ export const FeedPage = memo(() => {
   const renderFooter = useCallback(() => {
     if (!hasMore || posts.length === 0) return null
     return (
-      <YStack padding="$4" alignItems="center">
+      <YStack padding="$4" ai="center">
         <Spinner size="small" />
       </YStack>
     )
   }, [hasMore, posts.length])
 
   return (
-    <YStack flex={1} backgroundColor="$background">
+    <YStack flex={1} bg="$background">
       <PageHeader title="Home" />
       <FlatList
         ref={listRef}

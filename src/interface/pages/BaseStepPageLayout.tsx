@@ -40,18 +40,15 @@ export const BaseStepPageLayout = ({
         keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
       >
-        <YStack
-          flex={1}
-          pt={!hideBackButton ? top + 24 : 0}
-        >
+        <YStack flex={1} pt={!hideBackButton ? top + 24 : 0}>
           {progressBar && progressBar.showProgressBar && (
             <YStack px="$4" py="$2">
               {/* Progress bar would go here */}
-              <YStack height={4} bg="$color4" borderRadius="$2">
+              <YStack height={4} bg="$color4" rounded="$2">
                 <YStack
                   height={4}
                   bg="$color8"
-                  borderRadius="$2"
+                  rounded="$2"
                   width={`${(progressBar.currentStep / progressBar.totalSteps) * 100}%`}
                 />
               </YStack>

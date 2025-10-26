@@ -17,9 +17,9 @@ export const KeyboardStickyFooter = ({ children }: KeyboardStickyFooterProps) =>
         bottom={0}
         left={0}
         right={0}
-        backgroundColor="$background"
-        paddingHorizontal="$4"
-        paddingVertical="$3"
+        bg="$background"
+        px="$4"
+        py="$3"
         borderTopWidth={1}
         borderTopColor="$borderColor"
       >

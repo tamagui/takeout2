@@ -3,9 +3,7 @@ import { Alert, Linking } from 'react-native'
 import { ScrollView, SizableText, View, XStack, YStack } from 'tamagui'
 import { authClient, clearAuthClientToken } from '~/auth/client/authClient'
 import { FEATURE_FLAGS } from '~/features/feature-flags'
-import { useNotificationStatus } from '~/features/push-notifications/useNotificationsStatus'
 import { useUser } from '~/features/user/useUser'
-import { useUserDelete } from '~/features/user/useUserDelete'
 import { getHumanReadableVersionString } from '~/helpers/getHumanReadableVersionString'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { Switch } from '~/interface/forms/Switch'
@@ -46,8 +44,6 @@ interface SettingSection {
 export const ProfileSettingsPage = () => {
   const { client } = useStatsigClient()
   const showWallet = client.checkGate(FEATURE_FLAGS.PROFILE_ENABLE_WALLET)
-  const { isToggleActive: notificationsEnabled, handleToggle } = useNotificationStatus()
-  const { confirmDeleteAccount } = useUserDelete()
   const { userRole } = useUser({ includeRole: true })
 
   const handleLogout = () => {

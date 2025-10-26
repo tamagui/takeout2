@@ -1,10 +1,6 @@
-// Need .native because lottie-react-native is being used
-
 import { Image } from 'expo-image'
-import type LottieView from 'lottie-react-native'
-import { router } from 'one'
-import { memo, useMemo, useRef, useState } from 'react'
-import { Accordion, SizableText, Spacer, Theme, View, XStack, YStack } from 'tamagui'
+import { memo, useMemo, useState } from 'react'
+import { Accordion, SizableText, Spacer, View, XStack, YStack } from 'tamagui'
 import type { Post } from '~/data/models'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
@@ -20,11 +16,7 @@ import { showPostActionSheet } from '~/interface/sheet/postActionSheetHelper'
 import { BodyText } from '~/interface/text/Body'
 import { useQuery, zero } from '~/zero/client'
 import { useStatsigClient } from '~/features/feature-flags/usePostHog'
-import { useAnalytics } from '~/statsig/useAnalytics'
-import { createConversation } from '../conversation/createConversation'
-import { useCharacter } from '../create-character/useCharacter'
 import { FEATURE_FLAGS } from '../feature-flags'
-import { useStudioCreate } from '../studio/StudioCreateContext'
 import { useUser } from '../user/useUser'
 import { AvatarWithMenu } from './AvatarWithMenu'
 import { InteractButton } from './InteractButton'
@@ -43,10 +35,7 @@ interface PostCardProps {
 
 export const PostCard = memo(({ post }: PostCardProps) => {
   const { user } = useUser()
-  const { setSelectedRemixPhoto } = useStudioCreate()
-  const { character } = useCharacter(post.characterId || '')
   const { client } = useStatsigClient()
-  const analytics = useAnalytics()
   const authorId = post.userId
   // Always load author since we're not showing character info for now
   const [author] = useQuery(zero.query.userPublic.where('id', authorId).one(), {
@@ -56,13 +45,11 @@ export const PostCard = memo(({ post }: PostCardProps) => {
   // For now, only show author information
   const avatarUrl = author?.image
   const username = author?.username
-  const animationRef = useRef<LottieView>(null)
   const { hasLiked, toggleLike } = useLike(user?.id, post.id)
   const [isTruncated, setIsTruncated] = useState<boolean>(false)
 
-  // check if viewing own content (own user profile or own character)
-  const isOwnProfile =
-    authorId === user?.id || (character && character.userId === user?.id)
+  // check if viewing own content (own user profile)
+  const isOwnProfile = authorId === user?.id
 
   // use the real follow functionality with username for better toast messages
   const { isFollowing, toggleFollow } = useFollow(authorId, username)
@@ -81,20 +68,6 @@ export const PostCard = memo(({ post }: PostCardProps) => {
     showCryptoEarnings: client.checkGate(FEATURE_FLAGS.CRYPTO_SHOW_EARNINGS),
     showCommentButton: client.checkGate(FEATURE_FLAGS.FEED_SHOW_COMMENT_BUTTON),
     showMagicWandButton: client.checkGate(FEATURE_FLAGS.FEED_SHOW_MAGIC_WAND),
-  }
-
-  const handleRemix = async () => {
-    setSelectedRemixPhoto(post.image)
-    const conversationId = await createConversation({
-      type: 'remix',
-    })
-
-    analytics.logEvent('post_remixed', {
-      postId: post.id,
-      characterId: post.characterId || undefined,
-    })
-
-    router.push(`/studio/conversation/${conversationId}`)
   }
 
   return (
@@ -148,13 +121,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
       <View width="100%" position="relative">
         <DoubleTap
           onDoubleTap={() => {
-            if (hasLiked) {
-              toggleLike()
-            } else {
-              toggleLike()
-              // Play animation immediately (LottieView is always mounted now)
-              animationRef.current?.play()
-            }
+            toggleLike()
           }}
         >
           <Image
@@ -173,16 +140,8 @@ export const PostCard = memo(({ post }: PostCardProps) => {
           <InteractButton
             icon={HeartIcon}
             count={post.likesCount}
-            onPress={() => {
-              toggleLike()
-              // Play animation only when liking (not unliking)
-              if (!hasLiked) {
-                animationRef.current?.play()
-              }
-            }}
+            onPress={toggleLike}
             active={hasLiked}
-            lottieSource={require('../../../assets/lotties/heart.json')}
-            lottieRef={animationRef}
           />
           {features.showCommentButton && (
             <InteractButton
@@ -195,13 +154,6 @@ export const PostCard = memo(({ post }: PostCardProps) => {
           )}
         </XStack>
         <XStack gap="$2">
-          <Theme name="purple">
-            <ButtonSimple size="small" px="$3" onPress={handleRemix}>
-              <ButtonSimple.Text size="small" color="$color11">
-                Remix
-              </ButtonSimple.Text>
-            </ButtonSimple>
-          </Theme>
           <ButtonSimple
             circular
             variant="outlined"

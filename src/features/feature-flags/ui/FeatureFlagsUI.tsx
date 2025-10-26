@@ -12,7 +12,7 @@ export function FeatureFlagsUI() {
 
   return (
     <ScrollView>
-      <YStack gap="$4" paddingHorizontal="$4" paddingVertical="$4">
+      <YStack gap="$4" px="$4" py="$4">
         <BasicHeader title="Feature Flags" />
         <PageHeading title="Feature Flags" />
 
@@ -21,13 +21,7 @@ export function FeatureFlagsUI() {
             Active Features
           </Text>
           {Object.entries(FEATURE_FLAGS).map(([key, flag]) => (
-            <YStack
-              key={key}
-              paddingHorizontal="$2"
-              paddingVertical="$2"
-              backgroundColor="$background"
-              borderRadius="$2"
-            >
+            <YStack key={key} px="$2" py="$2" bg="$background" rounded="$2">
               <Text fontSize="$3" fontWeight="500">
                 {key}
               </Text>
@@ -45,13 +39,7 @@ export function FeatureFlagsUI() {
         </ButtonSimple>
 
         {showDetails && (
-          <YStack
-            gap="$2"
-            paddingHorizontal="$3"
-            paddingVertical="$3"
-            backgroundColor="$color2"
-            borderRadius="$2"
-          >
+          <YStack gap="$2" px="$3" py="$3" bg="$color2" rounded="$2">
             <Text fontSize="$2" fontFamily="$mono">
               PostHog Debug Info
             </Text>

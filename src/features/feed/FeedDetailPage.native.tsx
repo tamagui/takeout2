@@ -1,9 +1,8 @@
 import { Galeria } from '@nandorojo/galeria'
 import { Image } from 'expo-image'
-import type LottieView from 'lottie-react-native'
-import { router, useParams } from 'one'
-import { memo, useRef, useState } from 'react'
-import { ScrollView, SizableText, Spacer, Theme, XStack, YStack } from 'tamagui'
+import { useParams } from 'one'
+import { memo, useState } from 'react'
+import { ScrollView, SizableText, Spacer, XStack, YStack } from 'tamagui'
 import { useAuth } from '~/auth/client/authClient'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
 import { Avatar } from '~/interface/avatars/Avatar'
@@ -13,8 +12,6 @@ import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
 import { HeartIcon } from '~/interface/icons/phosphor/HeartIcon'
 import { showPostActionSheet } from '~/interface/sheet/postActionSheetHelper'
 import { BodyText } from '~/interface/text/Body'
-import { createConversation } from '../conversation/createConversation'
-import { useStudioCreate } from '../studio/StudioCreateContext'
 import { useUserStats } from '../user/useUserStats'
 import { InteractButton } from './InteractButton'
 import { useLike } from './useLike'
@@ -26,21 +23,11 @@ export const FeedDetailPage = memo(() => {
   const { post } = usePostById({ postId: feedId })
   const { user: profileUser } = useUserStats(post?.userId)
   const [imageAspectRatio, setImageAspectRatio] = useState<number>(1)
-  const animationRef = useRef<LottieView>(null)
   const { hasLiked, toggleLike } = useLike(user?.id, post?.id)
   const isOwnProfile = post?.userId === user?.id
-  const { setSelectedRemixPhoto } = useStudioCreate()
 
   if (!post || !profileUser) {
     return null
-  }
-
-  const handleRemix = async () => {
-    setSelectedRemixPhoto(post.image)
-    const conversationId = await createConversation({
-      type: 'remix',
-    })
-    router.push(`/studio/conversation/${conversationId}`)
   }
 
   return (
@@ -87,26 +74,11 @@ export const FeedDetailPage = memo(() => {
             <InteractButton
               icon={HeartIcon}
               count={post.likesCount}
-              onPress={() => {
-                toggleLike()
-                // Play animation only when liking (not unliking)
-                if (!hasLiked) {
-                  animationRef.current?.play()
-                }
-              }}
+              onPress={toggleLike}
               active={hasLiked}
-              lottieSource={require('../../../assets/lotties/heart.json')}
-              lottieRef={animationRef}
             />
           </XStack>
           <XStack gap="$2">
-            <Theme name="purple">
-              <ButtonSimple size="small" px="$3" onPress={handleRemix}>
-                <ButtonSimple.Text size="small" color="$color11">
-                  Remix
-                </ButtonSimple.Text>
-              </ButtonSimple>
-            </Theme>
             <ButtonSimple
               circular
               variant="outlined"

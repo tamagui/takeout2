@@ -1,5 +1,5 @@
 import { Popover } from '~/interface/popover/Popover'
-import type { UserWithState } from '~/data/types'
+import type { UserWithStats } from '~/data/types'
 import { globalUserPopoverHover } from './GlobalUserPopover'
 import { messageHoverPrevent } from '~/features/message/constants'
 
@@ -7,7 +7,7 @@ export const UserPopover = ({
   user,
   children,
 }: {
-  user?: UserWithState
+  user?: UserWithStats
   children: any
 }) => {
   return (

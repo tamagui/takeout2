@@ -1,6 +1,5 @@
-import { FlashList } from '@shopify/flash-list'
 import { useCallback } from 'react'
-import { Alert } from 'react-native'
+import { Alert, FlatList } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ListItem, Spinner, View, YStack } from 'tamagui'
 import { images } from '~/constants/images'
@@ -110,7 +109,7 @@ export const ProfileBlockedUsersPage = () => {
           <Spinner size="large" color="$color10" />
         </YStack>
       ) : (
-        <FlashList
+        <FlatList
           data={blockedUsers}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
@@ -121,7 +120,6 @@ export const ProfileBlockedUsersPage = () => {
           ItemSeparatorComponent={() => <View height={8} />}
           contentContainerStyle={{
             marginTop: 16,
-
             paddingBottom: bottom + 20,
           }}
         />

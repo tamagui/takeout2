@@ -1,5 +1,3 @@
-import type LottieView from 'lottie-react-native'
-import type { RefObject } from 'react'
 import type { IconProps } from '~/interface/icons/types'
 
 export interface InteractButtonProps {
@@ -7,9 +5,6 @@ export interface InteractButtonProps {
   count: number
   onPress?: () => void
   active?: boolean
-  lottieSource?: any
-  lottieRef?: RefObject<LottieView | null>
-  lottieScale?: number
 }
 
 export function InteractButton({
@@ -17,9 +12,6 @@ export function InteractButton({
   count,
   onPress,
   active = false,
-  lottieSource,
-  lottieRef,
-  lottieScale = 2.5,
 }: InteractButtonProps) {
   return null
 }

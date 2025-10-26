@@ -6,9 +6,6 @@ import { homedir } from 'node:os'
 import { join } from 'node:path'
 import repl from 'node:repl'
 import { aiActions } from '~/data/server/actions/aiActions'
-import { getApnsToken } from '~/features/push-notifications/server/getApnsToken'
-import { sendApnsNotification } from '~/features/push-notifications/server/sendApnsNotification'
-import { sendPushNotificationToUser } from '~/features/push-notifications/server/sendPushNotificationToUser'
 import { zeroServer } from '~/zero/server'
 import { loadEnv } from './helpers/env-load'
 
@@ -53,11 +50,6 @@ const _ = {
   stringify: (obj: any) => JSON.stringify(obj, null, 2),
   parse: (str: string) => JSON.parse(str),
   pretty: (obj: any) => console.info(JSON.stringify(obj, null, 2)),
-
-  // Push notifications
-  getApnsToken,
-  sendApnsNotification,
-  sendPushNotificationToUser,
 
   // Help function - auto-generated from available properties
   help: function () {

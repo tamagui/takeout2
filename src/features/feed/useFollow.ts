@@ -2,11 +2,10 @@ import { Alert } from 'react-native'
 import { useQuery, zero } from '~/zero/client'
 import { useUser } from '~/features/user/useUser'
 import { showToast } from '~/interface/toast/helpers'
-import { useAnalytics } from '~/statsig/useAnalytics'
+import { analytics } from '~/features/analytics/analytics'
 
 export const useFollow = (targetUserId: string | undefined, targetUsername?: string) => {
   const { user: currentUser } = useUser()
-  const analytics = useAnalytics()
 
   // check if current user follows the target user
   const [followRelation, status] = useQuery(
@@ -28,7 +27,8 @@ export const useFollow = (targetUserId: string | undefined, targetUsername?: str
       await zero.mutate.follows.unfollow(targetUserId!)
 
       // log analytics for unfollow action
-      analytics.logEvent('user_unfollowed', {
+      analytics.track('feature_used', {
+        feature: 'user_unfollowed',
         targetUserId: targetUserId!,
         source: 'profile',
       })
@@ -48,7 +48,7 @@ export const useFollow = (targetUserId: string | undefined, targetUsername?: str
       await zero.mutate.follows.follow(targetUserId!)
 
       // log analytics for follow action
-      analytics.logEvent('user_followed', {
+      analytics.track('user_followed', {
         targetUserId: targetUserId!,
         source: 'profile',
       })

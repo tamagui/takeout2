@@ -1,21 +1,11 @@
-// Need to use .native because react-native-collapsible-tab-view is used
-
 import { Image as ExpoImage } from 'expo-image'
 import { router, useParams } from 'one'
 import { memo, useCallback, useMemo, useRef, useState } from 'react'
-import {
-  MaterialTabBar,
-  Tabs,
-  type CollapsibleRef,
-  type TabBarProps,
-} from 'react-native-collapsible-tab-view'
-import type {
-  TabItemProps,
-  TabName,
-} from 'react-native-collapsible-tab-view/lib/typescript/src/types'
+import { FlatList, ScrollView } from 'react-native'
 import {
   AnimatePresence,
   Spinner,
+  Tabs,
   useTheme,
   useWindowDimensions,
   View,
@@ -42,12 +32,13 @@ import { TransactionRow } from './TransactionRow'
 
 const DEFAULT_HEADER_HEIGHT = 300
 
+type TabType = 'grid' | 'transactions' | 'analytics'
+
 export const ProfilePage = memo(() => {
-  const tabsRef = useRef<CollapsibleRef>(null)
   const { headerHeight } = usePageHeader()
   const theme = useTheme()
   const { client } = useStatsigClient()
-  const [measuredHeaderHeight, setMeasuredHeaderHeight] = useState(DEFAULT_HEADER_HEIGHT)
+  const [activeTab, setActiveTab] = useState<TabType>('grid')
 
   const { width } = useWindowDimensions()
   const imageSize = (width - 4) / 3
@@ -121,49 +112,48 @@ export const ProfilePage = memo(() => {
       !userInfo?.bio ||
       userInfo.bio.trim() === '')
 
-  const makeLabel = useCallback(
-    <T extends TabName>(label: string) =>
-      (props: TabItemProps<T>) => (
-        <TabItem index={props.index} indexDecimal={props.indexDecimal} label={label} />
-      ),
-    []
-  )
+  const renderTabBar = useCallback(() => {
+    if (!showTradingTabs) return null
 
-  const handleHeaderLayout = useCallback((event: any) => {
-    const { height } = event.nativeEvent.layout
-    setMeasuredHeaderHeight(height)
-  }, [])
-
-  const renderTabBar = (props: TabBarProps) => (
-    <>
-      {showTradingTabs ? (
-        <>
-          <MaterialTabBar
-            {...props}
-            style={{
-              backgroundColor: theme.background.val,
-            }}
-            indicatorStyle={{
-              backgroundColor: theme.color.val,
-              height: 2,
-              position: 'absolute',
-              zIndex: 999,
-              bottom: 0,
-            }}
-            labelStyle={{ color: theme.color11.val }}
-          />
-          <View
-            position="absolute"
-            b={0}
-            z={0}
-            width="100%"
-            height={2}
-            bg="rgba(255,255,255,0.1)"
-          />
-        </>
-      ) : null}
-    </>
-  )
+    return (
+      <XStack
+        bg="$background"
+        borderBottomWidth={1}
+        borderBottomColor="rgba(255,255,255,0.1)"
+      >
+        <Tabs.Tab
+          value="grid"
+          flex={1}
+          py="$3"
+          borderBottomWidth={2}
+          borderBottomColor={activeTab === 'grid' ? '$color' : 'transparent'}
+          onPress={() => setActiveTab('grid')}
+        >
+          <TabItem label="Grid" isActive={activeTab === 'grid'} />
+        </Tabs.Tab>
+        <Tabs.Tab
+          value="transactions"
+          flex={1}
+          py="$3"
+          borderBottomWidth={2}
+          borderBottomColor={activeTab === 'transactions' ? '$color' : 'transparent'}
+          onPress={() => setActiveTab('transactions')}
+        >
+          <TabItem label="ArrowDownUp" isActive={activeTab === 'transactions'} />
+        </Tabs.Tab>
+        <Tabs.Tab
+          value="analytics"
+          flex={1}
+          py="$3"
+          borderBottomWidth={2}
+          borderBottomColor={activeTab === 'analytics' ? '$color' : 'transparent'}
+          onPress={() => setActiveTab('analytics')}
+        >
+          <TabItem label="ChartBar" isActive={activeTab === 'analytics'} />
+        </Tabs.Tab>
+      </XStack>
+    )
+  }, [showTradingTabs, activeTab])
 
   const renderPostsEmpty = useCallback(() => {
     return (
@@ -193,6 +183,119 @@ export const ProfilePage = memo(() => {
     )
   }, [])
 
+  const renderGridContent = () => {
+    if (profileIncomplete) {
+      return (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <ProfileCompletionCards userInfo={userInfo!} postsCount={postsCount} />
+        </ScrollView>
+      )
+    }
+
+    return (
+      <FlatList
+        key={`profile-grid-${userId || currentUser?.id}`}
+        data={memoizedPosts}
+        renderItem={({ item }) => (
+          <Pressable
+            onPress={() => {
+              if (isOwnProfile) {
+                router.push(`profile/post/${item.id}`)
+              } else {
+                router.push(`home/profile/post/${item.id}`)
+              }
+            }}
+            width={imageSize}
+            height={imageSize}
+            overflow="hidden"
+            pressStyle={{ opacity: 1 }}
+          >
+            <ExpoImage
+              source={item.image}
+              style={{
+                width: '100%',
+                height: '100%',
+              }}
+              contentFit="cover"
+              transition={200}
+            />
+          </Pressable>
+        )}
+        numColumns={3}
+        style={{
+          marginTop: showTradingTabs ? 0 : 24,
+        }}
+        contentContainerStyle={{
+          gap: 2,
+          paddingBottom: 100,
+        }}
+        columnWrapperStyle={{
+          gap: 2,
+        }}
+        showsVerticalScrollIndicator={false}
+        onEndReached={loadMoreItems}
+        onEndReachedThreshold={0.1}
+        onRefresh={refresh}
+        refreshing={isLoading}
+        ListEmptyComponent={renderPostsEmpty}
+        ListFooterComponent={renderFooter}
+      />
+    )
+  }
+
+  const renderTransactionsContent = () => (
+    <FlatList
+      data={mockTransactionData}
+      keyExtractor={(item) => item.id}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{
+        paddingHorizontal: 14,
+      }}
+      renderItem={({ item }) => (
+        <TransactionRow
+          avatar={item.avatar}
+          name={item.name}
+          change={item.change}
+          amount={item.amount}
+          time={item.time}
+          onBuyPress={() => {
+            // Handle buy press
+          }}
+        />
+      )}
+      ListEmptyComponent={() => (
+        <YStack p="$4" items="center" justify="center" mt="$4">
+          <Image src={images.iconCreditCard} width={78} height={78} />
+          <H5 mt="$3">No transactions yet</H5>
+        </YStack>
+      )}
+    />
+  )
+
+  const renderAnalyticsContent = () => (
+    <FlatList
+      data={[]}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingVertical: 16 }}
+      renderItem={({ item }) => (
+        <XStack
+          px="$4"
+          py="$3"
+          items="center"
+          justify="space-between"
+          borderBottomWidth={1}
+          borderBottomColor="$borderColor"
+        ></XStack>
+      )}
+      ListEmptyComponent={() => (
+        <YStack p="$4" items="center" justify="center" mt="$4">
+          <Image src={images.iconChart} width={78} height={78} />
+          <H5 mt="$3">No analytics yet</H5>
+        </YStack>
+      )}
+    />
+  )
+
   return (
     <YStack flex={1}>
       <ProfileTopHeader userInfo={userInfo!} isOwnProfile={isOwnProfile} />
@@ -219,141 +322,24 @@ export const ProfilePage = memo(() => {
           )}
         </AnimatePresence>
 
-        <Tabs.Container
-          ref={tabsRef}
-          headerHeight={measuredHeaderHeight}
-          renderHeader={() => (
-            <View onLayout={handleHeaderLayout}>
-              <ProfileHeader
-                userInfo={userInfo}
-                isOwnProfile={isOwnProfile}
-                followersCount={followersCount}
-                followingCount={followingCount}
-                postsCount={postsCount}
-                stats={stats}
-              />
-            </View>
-          )}
-          revealHeaderOnScroll
-          snapThreshold={0.5}
-          renderTabBar={renderTabBar}
-        >
-          <Tabs.Tab name="grid" label={makeLabel('Grid')}>
-            {profileIncomplete ? (
-              <Tabs.ScrollView showsVerticalScrollIndicator={false}>
-                <ProfileCompletionCards userInfo={userInfo!} postsCount={postsCount} />
-              </Tabs.ScrollView>
-            ) : (
-              <>
-                <Tabs.FlatList
-                  key={`profile-grid-${userId || currentUser?.id}`}
-                  data={memoizedPosts}
-                  renderItem={({ item }) => (
-                    <Pressable
-                      onPress={() => {
-                        if (isOwnProfile) {
-                          router.push(`profile/post/${item.id}`)
-                        } else {
-                          router.push(`home/profile/post/${item.id}`)
-                        }
-                      }}
-                      width={imageSize}
-                      height={imageSize}
-                      overflow="hidden"
-                      pressStyle={{ opacity: 1 }}
-                    >
-                      <ExpoImage
-                        source={item.image}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                        }}
-                        contentFit="cover"
-                        transition={200}
-                      />
-                    </Pressable>
-                  )}
-                  numColumns={3}
-                  style={{
-                    marginTop: showTradingTabs ? 0 : 24,
-                  }}
-                  contentContainerStyle={{
-                    gap: 2,
-                    paddingBottom: 100,
-                  }}
-                  columnWrapperStyle={{
-                    gap: 2,
-                  }}
-                  showsVerticalScrollIndicator={false}
-                  onEndReached={loadMoreItems}
-                  onEndReachedThreshold={0.1}
-                  onRefresh={refresh}
-                  refreshing={isLoading}
-                  ListEmptyComponent={renderPostsEmpty}
-                  ListFooterComponent={renderFooter}
-                />
-              </>
-            )}
-          </Tabs.Tab>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <ProfileHeader
+            userInfo={userInfo}
+            isOwnProfile={isOwnProfile}
+            followersCount={followersCount}
+            followingCount={followingCount}
+            postsCount={postsCount}
+            stats={stats}
+          />
 
-          {/* The Tab render logic looks wierd but Tabs doesn't allow <Fragment> */}
-          {showTradingTabs ? (
-            <Tabs.Tab name="arrowDownUp" label={makeLabel('ArrowDownUp')}>
-              <Tabs.FlatList
-                data={mockTransactionData}
-                keyExtractor={(item) => item.id}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{
-                  paddingHorizontal: 14,
-                }}
-                renderItem={({ item }) => (
-                  <TransactionRow
-                    avatar={item.avatar}
-                    name={item.name}
-                    change={item.change}
-                    amount={item.amount}
-                    time={item.time}
-                    onBuyPress={() => {
-                      // Handle buy press
-                    }}
-                  />
-                )}
-                ListEmptyComponent={() => (
-                  <YStack p="$4" items="center" justify="center" mt="$4">
-                    <Image src={images.iconCreditCard} width={78} height={78} />
-                    <H5 mt="$3">No transactions yet</H5>
-                  </YStack>
-                )}
-              />
-            </Tabs.Tab>
-          ) : null}
+          {renderTabBar()}
 
-          {showTradingTabs ? (
-            <Tabs.Tab name="chartBar" label={makeLabel('ChartBar')}>
-              <Tabs.FlatList
-                data={[]}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingVertical: 16 }}
-                renderItem={({ item }) => (
-                  <XStack
-                    px="$4"
-                    py="$3"
-                    items="center"
-                    justify="space-between"
-                    borderBottomWidth={1}
-                    borderBottomColor="$borderColor"
-                  ></XStack>
-                )}
-                ListEmptyComponent={() => (
-                  <YStack p="$4" items="center" justify="center" mt="$4">
-                    <Image src={images.iconChart} width={78} height={78} />
-                    <H5 mt="$3">No analytics yet</H5>
-                  </YStack>
-                )}
-              />
-            </Tabs.Tab>
-          ) : null}
-        </Tabs.Container>
+          <View flex={1}>
+            {activeTab === 'grid' && renderGridContent()}
+            {activeTab === 'transactions' && renderTransactionsContent()}
+            {activeTab === 'analytics' && renderAnalyticsContent()}
+          </View>
+        </ScrollView>
       </View>
     </YStack>
   )

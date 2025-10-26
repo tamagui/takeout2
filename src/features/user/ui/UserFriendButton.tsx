@@ -2,13 +2,13 @@ import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { dialogConfirm } from '~/interface/dialogs/actions'
 import { ensureSignedUp } from '~/interface/dialogs/isSignedUpEmitter'
 import { zero } from '~/zero/client'
-import type { UserWithState } from '~/data/types'
+import type { UserWithStats } from '~/data/types'
 import { removeFriendship } from '../removeFriendship'
 import { useFriendship } from '../useFriendship'
 import { useUser } from '../useUser'
 import { friendRequestIcons } from './friendRequestIcons'
 
-export const UserFriendButton = ({ user }: { user: UserWithState }) => {
+export const UserFriendButton = ({ user }: { user: UserWithStats }) => {
   const { user: currentUser } = useUser()
 
   const [friendship, status] = useFriendship(user, currentUser)

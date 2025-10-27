@@ -230,7 +230,8 @@
     "sst": "3.17.10",
     "subset-font": "^2.4.0",
     "typescript": "^5.8.3",
-    "vitest": "^3.2.4"
+    "vite": "^7.1.12",
+    "vitest": "^4.0.3"
   },
   "trustedDependencies": [
     "@rocicorp/zero-sqlite3"

@@ -11,7 +11,7 @@ export default {
   },
 
   ssr: {
-    noExternal: ['better-auth-harmony', 'validator'],
+    noExternal: ['better-auth-harmony', 'validator', 'react-native'],
   },
 
   optimizeDeps: {
@@ -22,8 +22,7 @@ export default {
           setup(build) {
             build.onLoad(
               {
-                filter:
-                  /node_modules\/(expo-camera|expo-liquid-glass-view|expo-ios-popover-tip|expo-ios-text-animations|expo-ios-mesh-gradient|@expo\/ui).*\.js$/,
+                filter: /node_modules\/(expo-|@expo\/).*\.js$/,
               },
               async (args) => ({
                 contents: await fs.readFile(args.path, 'utf8'),
@@ -60,39 +59,51 @@ export default {
         compiler: true,
       },
 
-      ...(!process.env.DISABLE_METRO && {
-        native: {
-          bundler: 'metro', // Use Metro bundler for better React Native compatibility
-          bundlerOptions: {
-            defaultConfigOverrides: (config) => {
-              return {
-                ...config,
-                resolver: {
-                  ...config?.resolver,
-                  useWatchman: false, // We are encountering various issues with Watchman so we are disabling it for now
-                  resolveRequest: (context, moduleName, platform) => {
-                    const defaultResolveRequest =
-                      config?.resolver?.resolveRequest || context.resolveRequest
-
-                    // Workaround: resolve these to empty module because they will break the build
-                    // We may want to refactor and make this not be imported at all in the RN build
-                    if (moduleName === 'node:http2' || moduleName === 'jsonwebtoken') {
-                      return defaultResolveRequest(
-                        context,
-                        '@vxrn/vite-plugin-metro/empty',
-                        platform
-                      )
-                    }
-
-                    const res = defaultResolveRequest(context, moduleName, platform)
-                    return res
-                  },
-                },
-              }
-            },
-          },
+      ssr: {
+        autoDepsOptimization: {
+          exclude: [
+            '*/zlib/*',
+            '*/@nandorojo/galeria/*',
+            '*/expo-video/*',
+            '*/@hot-updater/*',
+            '*/expo/internal/*',
+          ],
         },
-      }),
+      },
+
+      // ...(!process.env.DISABLE_METRO && {
+      //   native: {
+      //     bundler: 'metro', // Use Metro bundler for better React Native compatibility
+      //     bundlerOptions: {
+      //       defaultConfigOverrides: (config) => {
+      //         return {
+      //           ...config,
+      //           resolver: {
+      //             ...config?.resolver,
+      //             useWatchman: false, // We are encountering various issues with Watchman so we are disabling it for now
+      //             resolveRequest: (context, moduleName, platform) => {
+      //               const defaultResolveRequest =
+      //                 config?.resolver?.resolveRequest || context.resolveRequest
+
+      //               // Workaround: resolve these to empty module because they will break the build
+      //               // We may want to refactor and make this not be imported at all in the RN build
+      //               if (moduleName === 'node:http2' || moduleName === 'jsonwebtoken') {
+      //                 return defaultResolveRequest(
+      //                   context,
+      //                   '@vxrn/vite-plugin-metro/empty',
+      //                   platform
+      //                 )
+      //               }
+
+      //               const res = defaultResolveRequest(context, moduleName, platform)
+      //               return res
+      //             },
+      //           },
+      //         }
+      //       },
+      //     },
+      //   },
+      // }),
 
       setupFile: './src/setupClient.ts',
 
@@ -107,12 +118,14 @@ export default {
       },
 
       optimization: {
-        autoEntriesScanning: false,
+        // autoEntriesScanning: false,
       },
 
       deps: {
         pg: true,
         validator: true,
+        zlib: false,
+        'expo/internal/unstable-autolinking-exports': false,
 
         '@expo/cli': {
           'build/src/export/embed/exportEmbedAsync.js': (contents) => {
@@ -137,6 +150,7 @@ export default {
         'expo-liquid-glass-view': {
           '**/*.js': ['jsx'],
         },
+
         '@expo/ui': {
           '**/*.js': ['jsx'],
         },
@@ -149,13 +163,9 @@ export default {
             build: {
               rollupOptions: {
                 external: [
-                  'ai',
                   '@rocicorp/zero',
-                  'crawlee',
                   'better-auth',
                   'better-auth/plugins',
-                  '@xenova/transformers',
-                  '@statsig/statsig-node-core',
                   'sharp',
                 ],
               },

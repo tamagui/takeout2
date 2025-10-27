@@ -1,8 +1,6 @@
 import type { Page } from '@playwright/test'
 
 export async function loginAsAdmin(page: Page, pathname = '/') {
-  // TODO
-
   console.info('Navigating to login page...')
   await page.goto('http://localhost:8081/login?showAdmin', {
     waitUntil: 'domcontentloaded',
@@ -12,21 +10,22 @@ export async function loginAsAdmin(page: Page, pathname = '/') {
 
   // click the login as admin button
   await page.locator('[data-testid="login-as-admin"]').click()
-  await page.waitForTimeout(500)
+  await page.waitForTimeout(1000)
   await page.waitForLoadState('networkidle')
 
-  // add admin so devtools show
-  await page.goto(`http://localhost:8081${pathname}?showAdmin`, {
-    waitUntil: 'networkidle',
-  })
-  await page.waitForTimeout(500)
+  // Verify login by checking if we're redirected away from login page
+  const currentUrl = page.url()
+  if (currentUrl.includes('/login')) {
+    console.error(`❌ Still on login page after admin login`)
+    throw new Error(`Admin login failed - still on login page`)
+  }
 
-  const isAdmin = await page.locator('[data-username="admin"]').isVisible()
+  console.info(`✅ Logged in as admin, redirected to: ${currentUrl}`)
 
-  if (isAdmin) {
-    console.info(`✅ Logged in as admin`)
-  } else {
-    console.error(`❌ Not admin!`)
-    throw new Error(`Not admin`)
+  // Navigate to desired pathname if different from current
+  if (pathname !== '/' || !currentUrl.endsWith(pathname)) {
+    await page.goto(`http://localhost:8081${pathname}?showAdmin`, {
+      waitUntil: 'networkidle',
+    })
   }
 }

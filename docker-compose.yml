@@ -93,8 +93,8 @@ services:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio_password
     ports:
-      - 9090:9000
-      - 127.0.0.1:9091:9001
+      - 9200:9000
+      - 127.0.0.1:9201:9001
     volumes:
       - ./.docker/minio:/data
     healthcheck:
@@ -119,22 +119,3 @@ services:
         mc anonymous set download local/chat &&
         echo '✅ MinIO chat bucket ready and public';
       "
-
-  jobs:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    depends_on:
-      pgdb:
-        condition: service_healthy
-      migrate:
-        condition: service_completed_successfully
-    env_file:
-      - .env
-    environment:
-      - NODE_ENV=development
-      - ZERO_UPSTREAM_DB=postgresql://user:password@pgdb:5432/postgres
-    command: bun run src/jobs/index.ts
-    restart: always
-    stop_signal: SIGTERM
-    stop_grace_period: 10s

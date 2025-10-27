@@ -81,6 +81,10 @@ export interface IOtpInput {
    * Default value for OTP input
    */
   defaultValue?: string
+  /**
+   * Test ID for testing
+   */
+  'data-testid'?: string
 }
 
 export interface IOtpContext extends IOtpInput {
@@ -95,6 +99,7 @@ export interface IOtpContext extends IOtpInput {
   autoFocus: boolean
   currentIndex: number
   isError: boolean
+  testId?: string
   rest?: Omit<TextInputProps, 'style'>
 }
 
@@ -121,6 +126,7 @@ const OtpItem = ({ i }: { i: number }) => {
     enteringAnimated,
     exitingAnimated,
     isError,
+    testId,
     rest,
   } = useContext(OtpContext)
 
@@ -146,6 +152,7 @@ const OtpItem = ({ i }: { i: number }) => {
   return (
     <View key={i} style={[inputContainerStyle]}>
       <TextInput
+        testID={testId ? `${testId}-${i}` : undefined}
         style={[{ width: inputWidth, height: inputWidth }, inputStyle]}
         caretHidden
         keyboardType="number-pad"
@@ -205,6 +212,7 @@ export const OtpInput = memo(
     onCodeChanged,
     isError = false,
     defaultValue = '',
+    'data-testid': testId,
     ...rest
   }: IOtpInput) => {
     const inputRef = useRef<any[]>([])
@@ -318,6 +326,7 @@ export const OtpInput = memo(
       enteringAnimated,
       exitingAnimated,
       isError,
+      testId,
       rest,
     }
 

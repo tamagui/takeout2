@@ -70,6 +70,7 @@ export const PasswordPage = () => {
       descriptionSecondLine={displayValue}
       bottom={
         <ButtonSimple
+          data-testid="submit-password-button"
           size="large"
           onPress={handleContinue}
           disabled={!password || loading}
@@ -81,6 +82,7 @@ export const PasswordPage = () => {
     >
       <YStack>
         <Input
+          data-testid="password-input"
           secureTextEntry
           autoFocus
           value={password}

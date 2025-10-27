@@ -43,7 +43,7 @@ dist
 ./src/tauri/binaries
 
 # Playwright output
-src/test/.output
+.output
 
 # Logs
 .logs/

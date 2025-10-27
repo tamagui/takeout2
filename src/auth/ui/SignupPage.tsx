@@ -109,6 +109,7 @@ export const SignupPage = memo(() => {
 
     return (
       <Pressable
+        data-testid="sms-consent-container"
         onPress={() => setSmsConsent((v) => !v)}
         borderWidth={1}
         borderColor="$color6"
@@ -117,6 +118,7 @@ export const SignupPage = memo(() => {
       >
         <XStack gap="$3" items="flex-start">
           <Checkbox
+            data-testid="sms-consent-checkbox"
             size="$7"
             checked={smsConsent}
             onCheckedChange={(val) => setSmsConsent(!!val)}
@@ -128,8 +130,8 @@ export const SignupPage = memo(() => {
           </Checkbox>
           <YStack gap="$2" flex={1}>
             <SizableText fontSize={14} color="$accent8">
-              You agree to receive transactional texts from {APP_NAME}. Frequency varies. Msg &
-              data rates may apply. Reply STOP to unsubscribe.
+              You agree to receive transactional texts from {APP_NAME}. Frequency varies.
+              Msg & data rates may apply. Reply STOP to unsubscribe.
             </SizableText>
             <XStack gap="$2" flexWrap="wrap">
               <Link
@@ -164,6 +166,7 @@ export const SignupPage = memo(() => {
     return (
       <YStack gap="$4">
         <Input
+          data-testid={isPhone ? 'phone-input' : 'email-input'}
           ref={inputRef}
           placeholder={placeholder}
           value={isPhone ? formatPhoneNumber(inputValue) : inputValue}
@@ -209,6 +212,7 @@ export const SignupPage = memo(() => {
       bottom={
         <YStack gap="$6">
           <ButtonSimple
+            data-testid="next-button"
             size="large"
             onPress={handleContinue}
             disabled={!inputValue.trim() || (isPhone && !smsConsent)}

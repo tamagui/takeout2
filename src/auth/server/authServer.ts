@@ -4,10 +4,7 @@ import { emailHarmony, phoneHarmony } from 'better-auth-harmony'
 import { admin, bearer, jwt, magicLink, emailOTP, phoneNumber } from 'better-auth/plugins'
 import { database } from '~/database/database'
 import { time } from '@vxrn/helpers'
-import {
-  BETTER_AUTH_SECRET,
-  BETTER_AUTH_URL,
-} from '~/server/env-server'
+import { BETTER_AUTH_SECRET, BETTER_AUTH_URL } from '~/server/env-server'
 import { APP_SCHEME } from '../constants'
 import { afterCreateUser } from './afterCreateUser'
 

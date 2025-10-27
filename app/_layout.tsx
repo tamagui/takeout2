@@ -3,6 +3,7 @@ import './root.css'
 
 import { Slot } from 'one'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { useAuth } from '~/auth/client/authClient'
 import { HotUpdateAlertManager, HotUpdaterProvider } from '~/features/hot-updater'
 import { NotificationProvider } from '~/interface/notification/Notification'
 import { ToastProvider } from '~/interface/toast/Toast'
@@ -15,6 +16,8 @@ import { ProvideZero } from '~/zero/client'
  */
 
 export function Layout() {
+  const { user } = useAuth()
+
   return (
     <html data-tauri-drag-region lang="en-US">
       <head>
@@ -34,6 +37,14 @@ export function Layout() {
 
       <body>
         <div style={{ display: 'contents' }} data-testid="app-container">
+          {/* Hidden element for test identification */}
+          {user?.username && (
+            <div
+              data-username={user.username}
+              style={{ display: 'none' }}
+              aria-hidden="true"
+            />
+          )}
           <ProvideZero>
             <TamaguiRootProvider>
               <SafeAreaProvider>

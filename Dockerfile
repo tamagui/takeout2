@@ -3,28 +3,27 @@
 
 FROM node:22.4-slim
 
-# for healthchecks and bun installation
-RUN apt-get update && apt-get install -y curl unzip && rm -rf /var/lib/apt/lists/*
+# for healthchecks, bun installation, and sharp dependencies
+RUN apt-get update && apt-get install -y \
+  curl \
+  unzip \
+  libvips-dev \
+  libheif-dev \
+  && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://bun.sh/install | bash
 ENV PATH="/root/.bun/bin:${PATH}"
 
-# Set CI environment variable to skip bootstrap during install
-ENV CI=true
-
 WORKDIR /app
 
 COPY package.json bun.lock ./
-COPY packages ./packages
-COPY scripts/node-version-check.ts ./scripts/
-COPY scripts/bootstrap.ts ./scripts/
-COPY scripts/helpers/zero-get-version.ts ./scripts/helpers/
-COPY src/start/package.json ./src/start/
 
-RUN bun install --production --frozen-lockfile
+RUN PRODUCTION=1 bun install --production --frozen-lockfile
 
 COPY . .
 
-EXPOSE 8081
+RUN test -d dist || (echo "dist/ not found, did you build the app before building docker?" && exit 1)
+
+EXPOSE 3533
 
 CMD ["bun", "run", "web:serve"]

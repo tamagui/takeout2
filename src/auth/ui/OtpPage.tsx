@@ -132,6 +132,7 @@ export const OtpPage = () => {
       descriptionSecondLine={displayValue}
       bottom={
         <ButtonSimple
+          data-testid="verify-otp-button"
           size="large"
           // No need func here because we have onCodeFilled in OtpInput
           disabled={otpCode.length !== 6 || loading}
@@ -143,6 +144,7 @@ export const OtpPage = () => {
     >
       <YStack items="center" gap="$6">
         <OtpInput
+          data-testid="otp-input"
           key={otpKey}
           autoFocus
           otpCount={6}
@@ -160,7 +162,7 @@ export const OtpPage = () => {
             Resend Code in ({timerCount})
           </SizableText>
         ) : (
-          <Pressable onPress={handleResendOtp}>
+          <Pressable data-testid="resend-otp-button" onPress={handleResendOtp}>
             <SizableText textDecorationLine="underline" fontWeight="500">
               Resend
             </SizableText>

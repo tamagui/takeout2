@@ -9,6 +9,7 @@ quan:
 - get auth flows working
 - get home/tabs working
 - remove lots more native dependencies
+- replace a lot of one-off deps with expo versions if we can
 - removing vibe-coded comments everywhere
 - review the entire codebase and cleanup
 

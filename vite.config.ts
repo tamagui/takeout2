@@ -14,16 +14,6 @@ export default {
     noExternal: ['better-auth-harmony', 'validator'],
   },
 
-  ...(process.env.DISABLE_MINIFICATION && {
-    build: {
-      minify: false,
-      terserOptions: {
-        compress: false,
-        mangle: false,
-      },
-    },
-  }),
-
   optimizeDeps: {
     esbuildOptions: {
       plugins: [

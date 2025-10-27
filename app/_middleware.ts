@@ -37,8 +37,7 @@ export default createMiddleware(async ({ request, next }) => {
       console.error('Failed to parse error response body:', error)
     }
 
-    // log API error to analytics
-    await analytics.track('api_error', {
+    analytics.track('api_error', {
       status: response.status,
       errorCode,
       errorMessage: errorMessage || `HTTP ${response.status}`,

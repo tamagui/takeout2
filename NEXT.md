@@ -14,6 +14,7 @@ quan:
 
 pokai:
 
+- import '~/setupServer' (setupFile support web(server+client)/native)
 - [TODO one], cleanup vite.config as much as can via one itself
 - can we get app.config, react-native.config and .xcode-version by chance into a
   sub-folder? maybe .xcode-version into ios/\*?

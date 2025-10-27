@@ -1,33 +1,14 @@
 import '~/features/devtools/devGlobals'
-import '~/interface/fonts/jetbrains.css'
-import '~/tamagui/tamagui.css'
-import './effects.css'
-import './gradient-blur.css'
 import './root.css'
 
-import {
-  MetaTheme,
-  SchemeProvider,
-  setSchemeSetting,
-  useColorScheme,
-} from '@vxrn/color-scheme'
-import { Slot, usePathname } from 'one'
-import { memo, useLayoutEffect } from 'react'
+import { Slot } from 'one'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
-import { setupDev, TamaguiProvider, useTheme } from 'tamagui'
-import { AppProvider } from '~/features/apps/ui/AppProvider'
 import { HotUpdateAlertManager, HotUpdaterProvider } from '~/features/hot-updater'
 import { NotificationProvider } from '~/interface/notification/Notification'
 import { ToastProvider } from '~/interface/toast/Toast'
 import { DragDropFile } from '~/interface/upload/DragDropFile'
-import { config } from '~/tamagui/tamagui.config'
+import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
 import { ProvideZero } from '~/zero/client'
-
-if (process.env.NODE_ENV === 'development') {
-  setupDev({
-    visualizer: true,
-  })
-}
 
 /**
  * The root _layout.tsx filters <html /> and <body /> out on native
@@ -52,19 +33,15 @@ export function Layout() {
       </head>
 
       <body>
-        {/* <LoadProgressBar startDelay={1_000} /> */}
-
         <div style={{ display: 'contents' }} data-testid="app-container">
           <ProvideZero>
             <TamaguiRootProvider>
-              <ThemeMetaTag />
               <SafeAreaProvider>
                 <HotUpdaterProvider>
                   <ToastProvider>
                     <NotificationProvider>
                       <DragDropFile>
                         <HotUpdateAlertManager />
-                        {/* <MetaThemeName /> */}
                         <Slot />
                       </DragDropFile>
                     </NotificationProvider>
@@ -77,34 +54,4 @@ export function Layout() {
       </body>
     </html>
   )
-}
-
-const TamaguiRootProvider = memo(({ children }: { children: any }) => {
-  const [scheme] = useColorScheme()
-  const pathname = usePathname()
-  const forceDark = pathname.startsWith('/_/')
-
-  useLayoutEffect(() => {
-    if (forceDark) {
-      setSchemeSetting('dark')
-    } else {
-      setSchemeSetting('system')
-    }
-  }, [forceDark])
-
-  return (
-    <TamaguiProvider
-      disableInjectCSS
-      config={config}
-      defaultTheme={forceDark ? 'dark' : scheme}
-    >
-      {forceDark && <div className="body-dark" />}
-      <SchemeProvider>{children}</SchemeProvider>
-    </TamaguiProvider>
-  )
-})
-
-const ThemeMetaTag = () => {
-  const theme = useTheme()
-  return <MetaTheme color={theme.background.val} darkColor={'#000'} lightColor="#fff" />
 }

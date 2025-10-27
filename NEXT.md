@@ -14,6 +14,8 @@ quan:
 
 pokai:
 
+- deps optimization is a mess took me forever to fix issues and nothing worked
+  like i expected (setting ssr.external/noExternal etc)
 - import '~/setupServer' (setupFile support web(server+client)/native)
 - [TODO one], cleanup vite.config as much as can via one itself
 - can we get app.config, react-native.config and .xcode-version by chance into a

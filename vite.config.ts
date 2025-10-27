@@ -147,15 +147,6 @@ export default {
         'expo-liquid-glass-view': {
           '**/*.js': ['jsx'],
         },
-        'expo-ios-popover-tip': {
-          '**/*.js': ['jsx'],
-        },
-        'expo-ios-text-animations': {
-          '**/*.js': ['jsx'],
-        },
-        'expo-ios-mesh-gradient': {
-          '**/*.js': ['jsx'],
-        },
         '@expo/ui': {
           '**/*.js': ['jsx'],
         },

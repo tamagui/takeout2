@@ -14,6 +14,7 @@ quan:
 
 pokai:
 
+- [TODO one], cleanup vite.config as much as can via one itself
 - can we get app.config, react-native.config and .xcode-version by chance into a
   sub-folder? maybe .xcode-version into ios/\*?
   - could we have ios/android folder build into maybe src/ios?

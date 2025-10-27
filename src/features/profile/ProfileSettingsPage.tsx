@@ -25,6 +25,13 @@ import { RepeatedTapToShowDevTools } from '~/interface/interactions/RepeatedTapT
 import { H4 } from '~/interface/text/Headings'
 import { showToast } from '~/interface/toast/helpers'
 import { useStatsigClient } from '~/features/feature-flags/usePostHog'
+import {
+  APP_NAME_LOWERCASE,
+  HELP_REQUESTS_URL,
+  HELP_ROADMAP_URL,
+  TERMS_OF_SERVICE_URL,
+  PRIVACY_POLICY_URL,
+} from '~/constants/app'
 
 interface SettingItem {
   id: string
@@ -128,25 +135,25 @@ export const ProfileSettingsPage = () => {
           id: 'get-help',
           title: 'Get Help',
           icon: ChatCircleIcon,
-          url: 'https://help.fleek.xyz/requests',
+          url: HELP_REQUESTS_URL,
         },
         {
           id: 'request-feature',
           title: 'Request Feature',
           icon: ShootingStarIcon,
-          url: 'https://help.fleek.xyz/roadmap',
+          url: HELP_ROADMAP_URL,
         },
         {
           id: 'terms',
           title: 'Terms of Service',
           icon: FileIcon,
-          url: 'https://fleek.xyz/terms-and-services',
+          url: TERMS_OF_SERVICE_URL,
         },
         {
           id: 'privacy',
           title: 'Privacy Policy',
           icon: LockIcon,
-          url: 'https://fleek.xyz/privacy-policy',
+          url: PRIVACY_POLICY_URL,
         },
         {
           id: 'delete',
@@ -315,7 +322,7 @@ function LogoAndVersion() {
               tintColor="grey"
             />
             <H4 color="$color8" fontWeight="600">
-              fleek
+              {APP_NAME_LOWERCASE}
             </H4>
           </XStack>
           <SizableText size="$1" color="$color8" mt="$2">

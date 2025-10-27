@@ -1,11 +1,10 @@
-import type { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs'
-import { PlatformPressable } from '@react-navigation/elements'
 import * as Haptics from 'expo-haptics'
+import { View, type ViewProps } from 'tamagui'
 import { isIos } from '~/constants/platform'
 
-export const HapticTab = (props: BottomTabBarButtonProps) => {
+export const HapticTab = (props: ViewProps) => {
   return (
-    <PlatformPressable
+    <View
       {...props}
       onPressIn={(ev) => {
         if (isIos) {

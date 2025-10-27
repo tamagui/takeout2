@@ -11,7 +11,7 @@ import { GoogleIcon } from '~/interface/icons/GoogleIcon'
 import { Sheet, type SheetRef } from '~/interface/sheet/Sheet'
 import { MediumText } from '~/interface/text/Body'
 import { showToast } from '~/interface/toast/helpers'
-import { signInAsAdmin } from '../actions/signInAsAdmin'
+import { signInAsAdmin } from '../signInAsAdmin'
 
 interface LoginSheetProps {
   onClose?: () => void

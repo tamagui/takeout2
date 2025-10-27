@@ -3,6 +3,7 @@ import { Linking } from 'react-native'
 import { XStack, YStack } from 'tamagui'
 import { authClient } from '~/auth/client/authClient'
 import { useAfterLoginRedirect } from '~/auth/hooks/useAfterLoginRedirect'
+import { DISCORD_INVITE_URL } from '~/constants/app'
 import { BasicHeader } from '~/interface/headers/BasicHeader'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { Image } from '~/interface/image/Image'
@@ -25,7 +26,7 @@ export const WaitingListPage = () => {
   }
 
   const onOpenDiscord = () => {
-    Linking.openURL('https://discord.com/invite/fleek')
+    Linking.openURL(DISCORD_INVITE_URL)
   }
 
   return (

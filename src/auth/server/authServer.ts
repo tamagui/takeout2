@@ -7,10 +7,6 @@ import { time } from '@vxrn/helpers'
 import {
   BETTER_AUTH_SECRET,
   BETTER_AUTH_URL,
-  LINEAR_OAUTH_CLIENT_ID,
-  LINEAR_OAUTH_SECRET,
-  ONECHAT_GITHUB_CLIENT_ID,
-  ONECHAT_GITHUB_CLIENT_SECRET,
 } from '~/server/env-server'
 import { APP_SCHEME } from '../constants'
 import { afterCreateUser } from './afterCreateUser'
@@ -107,16 +103,18 @@ export const authServer = betterAuth({
   ],
 
   socialProviders: {
-    github: {
-      enabled: true,
-      clientId: ONECHAT_GITHUB_CLIENT_ID,
-      clientSecret: ONECHAT_GITHUB_CLIENT_SECRET,
-    },
-    linear: {
-      enabled: true,
-      clientId: LINEAR_OAUTH_CLIENT_ID,
-      clientSecret: LINEAR_OAUTH_SECRET,
-    },
+    // Uncomment and configure when you have GitHub OAuth credentials
+    // github: {
+    //   enabled: true,
+    //   clientId: process.env.GITHUB_CLIENT_ID!,
+    //   clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    // },
+    // Uncomment and configure when you have Linear OAuth credentials
+    // linear: {
+    //   enabled: true,
+    //   clientId: process.env.LINEAR_OAUTH_CLIENT_ID!,
+    //   clientSecret: process.env.LINEAR_OAUTH_SECRET!,
+    // },
   },
 
   logger: {

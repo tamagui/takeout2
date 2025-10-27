@@ -3,7 +3,7 @@ import { memo, useLayoutEffect, useRef, useState } from 'react'
 import { Keyboard } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Checkbox, SizableText, XStack, YStack } from 'tamagui'
-import { PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '~/features/legal/legal-urls'
+import { APP_NAME, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '~/constants/app'
 import { Link } from '~/features/routing/Link'
 import { formatPhoneNumber } from '~/helpers/number/formatNumber'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
@@ -128,7 +128,7 @@ export const SignupPage = memo(() => {
           </Checkbox>
           <YStack gap="$2" flex={1}>
             <SizableText fontSize={14} color="$accent8">
-              You agree to receive transactional texts from Fleek. Frequency varies. Msg &
+              You agree to receive transactional texts from {APP_NAME}. Frequency varies. Msg &
               data rates may apply. Reply STOP to unsubscribe.
             </SizableText>
             <XStack gap="$2" flexWrap="wrap">

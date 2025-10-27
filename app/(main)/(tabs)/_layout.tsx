@@ -22,6 +22,7 @@ export default function TabsLayout() {
           tabBarActiveTintColor: '#fff',
           tabBarInactiveTintColor: '#B4B4B4',
           headerShown: false,
+          // @ts-expect-error its ok
           tabBarButton: HapticTab,
           tabBarBackground: TabBarBackground,
           tabBarShowLabel: false,

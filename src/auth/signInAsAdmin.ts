@@ -1,9 +1,10 @@
 import { authClient } from '~/auth/client/authClient'
+import { ADMIN_EMAIL } from '~/constants/app'
 
 export const signInAsAdmin = async () => {
   const { error } = await authClient.signUp.email({
     name: `Admin`,
-    email: `admin@fleek.xyz`,
+    email: ADMIN_EMAIL,
     password: `password123`,
   })
 
@@ -13,7 +14,7 @@ export const signInAsAdmin = async () => {
   }
 
   const loginRes = await authClient.signIn.email({
-    email: `admin@fleek.xyz`,
+    email: ADMIN_EMAIL,
     password: `password123`,
   })
 

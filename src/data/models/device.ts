@@ -1,7 +1,9 @@
 import { enumeration, number, string, table } from '@rocicorp/zero'
 import type { TableInsertRow } from 'over-zero'
 import { mutations, where } from 'over-zero'
-import type { DeviceType } from 'start/types'
+
+// TODO
+type DeviceType = string
 
 export type Device = TableInsertRow<typeof schema>
 

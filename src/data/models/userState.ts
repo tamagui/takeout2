@@ -1,7 +1,10 @@
 import { json, number, string, table } from '@rocicorp/zero'
 import type { TableInsertRow } from 'over-zero'
 import { mutations, where } from 'over-zero'
-import type { UserSettings } from 'start/types'
+
+type UserSettings = {
+  //
+}
 
 export type UserState = TableInsertRow<typeof schema>
 

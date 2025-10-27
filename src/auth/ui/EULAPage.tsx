@@ -3,6 +3,7 @@ import { BasicHeader } from '~/interface/headers/BasicHeader'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { BodyText } from '~/interface/text/Body'
 import { H3, H5 } from '~/interface/text/Headings'
+import { APP_NAME } from '~/constants/app'
 
 export const EULAPage = () => {
   return (
@@ -14,15 +15,15 @@ export const EULAPage = () => {
           <H3 text="center">End User License Agreement (EULA)</H3>
 
           <BodyText color="$color11" lineHeight={24}>
-            Welcome to Fleek! Before using the app, please review this agreement. By
-            continuing to use Fleek, you agree to comply with the following terms:
+            Welcome to {APP_NAME}! Before using the app, please review this agreement. By
+            continuing to use {APP_NAME}, you agree to comply with the following terms:
           </BodyText>
 
           <YStack gap="$3">
             <YStack gap="$2">
               <H5 color="$color12">1. User-Generated Content</H5>
               <BodyText color="$color11">
-                All content you create or share must follow Fleek's rules.
+                All content you create or share must follow {APP_NAME}'s rules.
               </BodyText>
               <BodyText color="$color11">
                 Objectionable, abusive, or illegal content is strictly prohibited.
@@ -51,7 +52,7 @@ export const EULAPage = () => {
             <YStack gap="$2">
               <H5 color="$color12">3. Account Suspension & Removal</H5>
               <BodyText color="$color11">
-                Fleek reserves the right to remove content, suspend accounts, or take
+                {APP_NAME} reserves the right to remove content, suspend accounts, or take
                 other action for violations at any time.
               </BodyText>
             </YStack>
@@ -59,7 +60,7 @@ export const EULAPage = () => {
             <YStack gap="$2">
               <H5 color="$color12">4. Acceptance</H5>
               <BodyText color="$color11">
-                By using Fleek, you agree to this EULA and our Terms of Service and
+                By using {APP_NAME}, you agree to this EULA and our Terms of Service and
                 Privacy Policy.
               </BodyText>
             </YStack>

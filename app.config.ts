@@ -1,6 +1,6 @@
 import type { ExpoConfig } from 'expo/config'
 
-const appName = 'Fleek'
+const appName = 'Takeout'
 const appId = appName.toLowerCase()
 
 const { APP_VARIANT = 'development' } = process.env
@@ -16,7 +16,7 @@ if (
 const IS_DEV = APP_VARIANT === 'development'
 
 const getBundleId = () => {
-  const base = `xyz.${appId}.sensenet`
+  const base = `com.${appId}.app`
 
   if (APP_VARIANT === 'development') {
     return `${base}.dev`

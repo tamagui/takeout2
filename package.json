@@ -1,5 +1,5 @@
 {
-  "name": "start-chat",
+  "name": "takeout",
   "version": "0.0.0",
   "private": true,
   "sideEffects": false,
@@ -11,6 +11,7 @@
   },
   "packageManager": "bun@1.2.23",
   "scripts": {
+    "onboard": "takeout onboard",
     "android": "one run:android",
     "auth:migrate": "bunx @better-auth/cli migrate --config ./src/features/auth/server/auth.ts",
     "aws:clear-logs": "./scripts/aws/configure-aws-prod.ts --clear-logs",
@@ -150,6 +151,7 @@
     "@vxrn/color-scheme": "1.1.538",
     "@vxrn/helpers": "0.0.9",
     "@vxrn/hooks": "0.0.9",
+    "@vxrn/takeout-cli": "^0.0.10",
     "async-retry": "^1.3.3",
     "better-auth": "^1.3.32",
     "better-auth-harmony": "^1.2.5",

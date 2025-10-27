@@ -46,6 +46,7 @@
         "@vxrn/color-scheme": "1.1.538",
         "@vxrn/helpers": "0.0.9",
         "@vxrn/hooks": "0.0.9",
+        "@vxrn/takeout-cli": "^0.0.10",
         "async-retry": "^1.3.3",
         "better-auth": "^1.3.32",
         "better-auth-harmony": "^1.2.5",
@@ -517,6 +518,10 @@
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.1.2", "", { "os": "win32", "cpu": "x64" }, "sha512-9zajnk59PMpjBkty3bK2IrjUsUHvqe9HWwyAWQBjGLE7MIBjbX2vwv1XPEhmO2RRuGoTkVx3WCanHrjAytICLA=="],
 
     "@bottom-tabs/react-navigation": ["@bottom-tabs/react-navigation@1.0.2", "", { "dependencies": { "color": "^5.0.0" }, "peerDependencies": { "@react-navigation/native": ">=7", "react": "*", "react-native": "*", "react-native-bottom-tabs": "*" } }, "sha512-OrCw8s2NzFxO1TO5W2vyr7HNvh1Yjy00f72D/0BIPtImc0aj5CRrT9nFRE7YP0FWZb0AY5+0QU9jaoph1rBlSg=="],
+
+    "@clack/core": ["@clack/core@0.3.5", "", { "dependencies": { "picocolors": "^1.0.0", "sisteransi": "^1.0.5" } }, "sha512-5cfhQNH+1VQ2xLQlmzXMqUoiaH0lRBq9/CLW9lTyMbuKLC3+xEK01tHVvyut++mLOn5urSHmkm6I0Lg9MaJSTQ=="],
+
+    "@clack/prompts": ["@clack/prompts@0.8.2", "", { "dependencies": { "@clack/core": "0.3.5", "picocolors": "^1.0.0", "sisteransi": "^1.0.5" } }, "sha512-6b9Ab2UiZwJYA9iMyboYyW9yJvAO9V753ZhS+DHKEjZRKAxPPOb7MXXu84lsPFG+vZt6FRFniZ8rXi+zCIw4yQ=="],
 
     "@colors/colors": ["@colors/colors@1.5.0", "", {}, "sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ=="],
 
@@ -1811,6 +1816,8 @@
     "@vxrn/resolve": ["@vxrn/resolve@1.1.538", "", {}, "sha512-JkRt094dibvCV6XKEVh7/9q4wCIngyAtaUVyEWm00e16Az3wf4YFbZUBatiHCe+4e7ra3+l7s+ZINM+BW28rcQ=="],
 
     "@vxrn/safe-area": ["@vxrn/safe-area@1.1.538", "", {}, "sha512-ZYrs6bigI8t4hHyeyJfjE9vm2DGoBbEXbSyHUOZ7MqnVMSlO1sZtP041mi5djQ0d1dyOCl/H1cQr3A6AsXTNFg=="],
+
+    "@vxrn/takeout-cli": ["@vxrn/takeout-cli@0.0.10", "", { "dependencies": { "@clack/prompts": "^0.8.2", "citty": "^0.1.6", "picocolors": "^1.1.1" }, "bin": { "takeout": "dist/esm/cli.mjs" } }, "sha512-5js3f1TtL3tV0/sv9r2CbktYHqMyVzV3PPqBSFl44t4hEdkWAHP4FqE0O9okcNhC423TI8Uo4b/w/DdxiAbOCg=="],
 
     "@vxrn/tslib-lite": ["@vxrn/tslib-lite@1.1.538", "", {}, "sha512-oaneiclHZCITy6/7BnspONlVKDa9tNF/8BnJaVU40rsV0fQ4FQLaSIrTEfhKKBbzPdqOJibU0Jc+MS0XQ58h0g=="],
 

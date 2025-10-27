@@ -1,6 +1,8 @@
 /// <reference path="./.sst/platform/config.d.ts" />
 
-const appName = 'start-dot-chat'
+import { APP_NAME_LOWERCASE } from './src/constants/app'
+
+const appName = APP_NAME_LOWERCASE
 
 export default $config({
   app(input) {
@@ -23,6 +25,7 @@ export default $config({
     const { readFileSync } = await import('node:fs')
     const { execSync } = await import('node:child_process')
     const { loadEnv } = await import('./scripts/helpers/env-load')
+    const { DOMAIN } = await import('./src/constants/app')
     const stage = $dev ? 'development' : 'production'
 
     const { ONE_SERVER_URL } = process.env
@@ -50,7 +53,7 @@ export default $config({
       throw new Error(`No zero version found`)
     }
 
-    const domain = 'start.chat'
+    const domain = DOMAIN
 
     // Zero Backup
     const replicationBucket = new sst.aws.Bucket(`ZeroReplicationBucket4`, {
@@ -153,7 +156,7 @@ export default $config({
     const commonEnv = {
       ...serverEnv,
       ...dbEnv,
-      BETTER_AUTH_URL: 'https://start.chat',
+      BETTER_AUTH_URL: `https://${DOMAIN}`,
       ZERO_LITESTREAM_BACKUP_URL: $interpolate`s3://${replicationBucket.name}/backup`,
       GIT_SHA: execSync('git rev-parse HEAD').toString().trim(),
     }
@@ -281,7 +284,7 @@ export default $config({
 
     $resolve([webApp.url]).apply(([url]) => {
       console.info(`Web app internal URL: ${url}`)
-      // this is https://start.chat with our current domain
+      // this is https://${DOMAIN} in production
     })
 
     const zeroReplication = $dev

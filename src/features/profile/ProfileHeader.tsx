@@ -19,13 +19,7 @@ interface ProfileHeaderProps {
 }
 
 export const ProfileHeader = memo(
-  ({
-    userInfo,
-    isOwnProfile,
-    postsCount,
-    profile,
-  }: ProfileHeaderProps) => {
-
+  ({ userInfo, isOwnProfile, postsCount, profile }: ProfileHeaderProps) => {
     const { width } = useWindowDimensions()
     const { shareProfile } = useShareProfile()
 
@@ -65,12 +59,7 @@ export const ProfileHeader = memo(
 
           {/* Action Buttons */}
           <XStack gap="$2">
-            <ButtonSimple
-              size="small"
-              flex={1}
-              icon={ShareFatIcon}
-              onPress={handleShare}
-            >
+            <ButtonSimple size="small" flex={1} icon={ShareFatIcon} onPress={handleShare}>
               Share
             </ButtonSimple>
             {isOwnProfile && (

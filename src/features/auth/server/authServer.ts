@@ -7,6 +7,7 @@ import { time } from '@vxrn/helpers'
 import { BETTER_AUTH_SECRET, BETTER_AUTH_URL } from '~/server/env-server'
 import { APP_SCHEME } from '../constants'
 import { afterCreateUser } from './afterCreateUser'
+import { storeOTP } from './lastOTP'
 
 console.info(`[better-auth] server`, BETTER_AUTH_SECRET.slice(0, 3), BETTER_AUTH_URL)
 
@@ -73,7 +74,12 @@ export const authServer = betterAuth({
 
     emailOTP({
       async sendVerificationOTP({ email, otp, type }) {
-        console.info('Sending OTP email to', email, 'with code', otp, 'for', type)
+        console.info(`\n${'='.repeat(60)}`)
+        console.info(`📧 OTP CODE for ${email}: ${otp}`)
+        console.info(`${'='.repeat(60)}\n`)
+
+        // Store in dev for testing
+        storeOTP(email, otp)
       },
     }),
 

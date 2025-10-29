@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { SizableText, XStack, YStack } from 'tamagui'
+import { router } from 'one'
 import { authClient } from '~/features/auth/client/authClient'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Input } from '~/interface/forms/Input'
@@ -11,6 +12,8 @@ import { RepeatedTapToShowDevTools } from '~/interface/interactions/RepeatedTapT
 import { signInAsAdmin } from '../client/signInAsAdmin'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { isNative } from '~/constants/platform'
+import { sendLoginOtpCode } from '../client/otpLogin'
+import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
 
 export const LoginSignupContents = () => {
   useOnboarding()
@@ -18,27 +21,24 @@ export const LoginSignupContents = () => {
   const [email, setEmail] = useState('')
   const [isSending, setIsSending] = useState(false)
 
-  const handleMagicLink = async () => {
+  const handleSendOTP = async () => {
     if (!email || isSending) return
 
     setIsSending(true)
     try {
-      const result = await authClient.signIn.magicLink({
-        email,
-        callbackURL: isNative ? undefined : window.location.origin,
-      })
+      const { success, error } = await sendLoginOtpCode('email', email)
 
-      if (result.error) {
-        showToast('Failed to send login link', {
-          type: 'error',
-          description: result.error.message,
-        })
+      if (success) {
+        // Redirect to OTP verification page
+        router.push(`/signup/otp?method=email&value=${encodeURIComponent(email)}`)
       } else {
-        showToast('Check your email for the login link!')
-        setEmail('')
+        showErrorSheet({
+          title: error.title,
+          description: error.message,
+        })
       }
     } catch (error) {
-      showToast('Failed to send magic link', {
+      showToast('Failed to send code', {
         type: 'error',
         description: error instanceof Error ? error.message : 'Unknown error occurred',
       })
@@ -67,7 +67,7 @@ export const LoginSignupContents = () => {
         }}
         onSubmit={(e) => {
           e.preventDefault()
-          handleMagicLink()
+          handleSendOTP()
         }}
       >
         <Input
@@ -92,9 +92,9 @@ export const LoginSignupContents = () => {
           scaleIcon={1.2}
           icon={EnvelopeIcon}
           disabled={!email || isSending}
-          onPress={handleMagicLink}
+          onPress={handleSendOTP}
         >
-          {isSending ? 'Sending...' : 'Send Login Link'}
+          {isSending ? 'Sending...' : 'Send Code'}
         </ButtonSimple>
       </form>
 

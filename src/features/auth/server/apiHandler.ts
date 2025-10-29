@@ -10,16 +10,15 @@ export function authAPIHandler(method: 'GET' | 'POST') {
     try {
       const url = new URL(req.url)
 
-      // Handle sign-up for existing users - automatically try to sign in instead
       if (url.pathname.includes('/api/auth/sign-up/email')) {
+        const clonedReq = req.clone()
+        const body = await clonedReq.json()
+
         const res = await authServer.handler(req)
 
-        // If sign-up fails because user already exists (422), try to sign them in
         if (res.status === 422) {
-          const body = await req.clone().json()
           console.info(`Sign-up attempt for existing email: ${body.email}`)
 
-          // Attempt to sign in with the same credentials
           const signInUrl = url.toString().replace('/sign-up/email', '/sign-in/email')
           const signInReq = new Request(signInUrl, {
             method: 'POST',
@@ -31,7 +30,10 @@ export function authAPIHandler(method: 'GET' | 'POST') {
           })
 
           const signInRes = await authServer.handler(signInReq)
-          console.info(`[auth] Auto sign-in for existing user ${signInRes.status}`, signInUrl)
+          console.info(
+            `[auth] Auto sign-in for existing user ${signInRes.status}`,
+            signInUrl
+          )
 
           if (process.env.DEBUG || signInRes.status >= 400) {
             prettyPrintResponse(signInRes)
@@ -60,8 +62,11 @@ export function authAPIHandler(method: 'GET' | 'POST') {
 
       return processedResponse
     } catch (err) {
-      console.error(`Error: ${err}`)
-      return new Response(`Error`, { status: 500 })
+      console.error(`[auth] Error in ${method} ${req.url}:`, err)
+      if (err instanceof Error) {
+        console.error('Error stack:', err.stack)
+      }
+      return new Response(`Error: ${err}`, { status: 500 })
     }
   }
 }

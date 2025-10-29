@@ -1,11 +1,4 @@
-import type {
-  Block,
-  Post,
-  Report,
-  User,
-  UserState,
-  UserProfile,
-} from '~/data/models'
+import type { Block, Post, Report, User, UserState, UserProfile } from '~/data/models'
 
 export type * from './models'
 

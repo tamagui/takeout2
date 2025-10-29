@@ -66,28 +66,25 @@ export function useOnboarding() {
     }
   }, [user, router, goBackToHome])
 
-  // Auto-redirect after login to appropriate onboarding step
   useFocusEffect(() => {
     if (!isLoading && isLoggedIn && user) {
       const nextRoute = getNextOnboardingStep(user, {
         waitingListEnabled: false,
-        userRole: user.username === 'nate' || user.username === 'admin' ? 'admin' : 'user',
+        userRole:
+          user.username === 'nate' || user.username === 'admin' ? 'admin' : 'user',
       })
 
       if (nextRoute) {
-        // Prevent redundant navigation if we're already on the correct page
         if (pathname === nextRoute) {
           return
         }
         router.push(nextRoute)
       } else if (!user.hasOnboarded) {
-        // Onboarding complete but not marked - mark it and go home
         ;(async () => {
           await zero.mutate.userPublic.completeSignup(user.id)
           goBackToHome()
         })()
       } else {
-        // Already onboarded, go home
         goBackToHome()
       }
     }

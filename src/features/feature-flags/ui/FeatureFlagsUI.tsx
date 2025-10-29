@@ -38,7 +38,8 @@ export function FeatureFlagsUI() {
             PostHog Integration
           </Text>
           <Text fontSize="$1" color="$color8">
-            Feature flags are managed via PostHog. Configure them in the PostHog dashboard.
+            Feature flags are managed via PostHog. Configure them in the PostHog
+            dashboard.
           </Text>
         </YStack>
       </YStack>

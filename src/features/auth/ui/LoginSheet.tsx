@@ -75,7 +75,11 @@ export const LoginSheet = forwardRef<LoginSheetRef, LoginSheetProps>(
         {/* Sign in options */}
         <YStack gap={8} flex={1}>
           <YStack gap={8} flex={1}>
-            <ButtonSimple size="large" variant="default" onPress={handleContinueWithEmail}>
+            <ButtonSimple
+              size="large"
+              variant="default"
+              onPress={handleContinueWithEmail}
+            >
               Continue with Email
             </ButtonSimple>
 

@@ -1,0 +1,1 @@
+ALTER TABLE "userPublic" ALTER COLUMN "joinedAt" SET DATA TYPE bigint;

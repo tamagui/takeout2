@@ -50,11 +50,7 @@ export const ProfileBlockedUsersPage = () => {
   const renderItem = useCallback(
     ({ item }: { item: User }) => (
       <ListItem bg="$background" hoverTheme pressTheme px="$4" py="$3">
-        <Avatar
-          image={item.image}
-          size={44}
-          mr="$3"
-        />
+        <Avatar image={item.image} size={44} mr="$3" />
 
         <YStack gap="$1" flex={1}>
           <BodyText color="$color10" fontSize="$3" numberOfLines={1}>

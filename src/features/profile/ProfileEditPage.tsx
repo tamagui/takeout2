@@ -68,8 +68,7 @@ export const ProfileEditPage = () => {
     !!existingUser
 
   const hasUnsavedChanges =
-    trimmedUsername !== user?.username ||
-    name.trim() !== user?.name
+    trimmedUsername !== user?.username || name.trim() !== user?.name
 
   const canSave =
     isUsernameValid && !isCheckingAvailability && !isUnavailable && hasUnsavedChanges

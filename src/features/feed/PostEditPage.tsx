@@ -5,7 +5,14 @@ import { Alert } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
 import Animated, { FadeIn } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { type Input, SizableText, TextArea, useWindowDimensions, View, YStack } from 'tamagui'
+import {
+  type Input,
+  SizableText,
+  TextArea,
+  useWindowDimensions,
+  View,
+  YStack,
+} from 'tamagui'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { BasicHeader } from '~/interface/headers/BasicHeader'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'

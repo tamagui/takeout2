@@ -1,20 +1,28 @@
 import { useEffect, useRef, useState } from 'react'
-import { Circle, SizableText, Spinner, YStack } from 'tamagui'
+import { Circle, isWeb, SizableText, Spinner, YStack } from 'tamagui'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { images } from '~/constants/images'
-import { pickImageFromLibrary, takePhotoWithCamera } from '~/helpers/media/imagePicker'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { CameraIcon } from '~/interface/icons/phosphor/CameraIcon'
-import { ImageIcon } from '~/interface/icons/phosphor/ImageIcon'
 import { PencilSimpleIcon } from '~/interface/icons/phosphor/PencilSimpleIcon'
 import { Image } from '~/interface/image/Image'
-import { ListItem } from '~/interface/lists/ListItem'
 import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
-import { Sheet, type SheetRef } from '~/interface/sheet/Sheet'
 import { useUploadFiles } from '~/interface/upload/uploadFile'
 import { useUser } from '../useUser'
 import { OnboardingStepPageLayout } from './OnboardingStepPageLayout'
+
+let Sheet: any, ListItem: any, ImageIcon: any
+let pickImageFromLibrary: any, takePhotoWithCamera: any
+
+if (!isWeb) {
+  Sheet = require('~/interface/sheet/Sheet').Sheet
+  ListItem = require('~/interface/lists/ListItem').ListItem
+  ImageIcon = require('~/interface/icons/phosphor/ImageIcon').ImageIcon
+  const picker = require('~/helpers/media/imagePicker')
+  pickImageFromLibrary = picker.pickImageFromLibrary
+  takePhotoWithCamera = picker.takePhotoWithCamera
+}
 
 const MAX_IMAGE_SIZE = 600
 const IMAGE_QUALITY = 0.9
@@ -23,18 +31,18 @@ export const AvatarSetupPage = () => {
   const [localImageUri, setLocalImageUri] = useState<string | null>(null)
   const { user, update } = useUser()
 
-  const sheetRef = useRef<SheetRef>(null)
+  const sheetRef = useRef<any>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { uploads, handleUpload } = useUploadFiles({
     onChange: async (uploads) => {
       if (uploads[0]?.url && user?.id) {
-        // update user profile with new avatar
         try {
-          update({
+          await update({
             image: uploads[0].url,
           })
         } catch (error) {
-          console.info('failed to update user avatar:', error)
+          console.info('Failed to update user avatar:', error)
           showErrorSheet({
             title: 'Error',
             description: 'Failed to update user avatar',
@@ -46,7 +54,7 @@ export const AvatarSetupPage = () => {
       maxWidth: MAX_IMAGE_SIZE,
       maxHeight: MAX_IMAGE_SIZE,
       quality: IMAGE_QUALITY,
-      maxSizeInBytes: 1000 * 1024, // 1mb max for avatars
+      maxSizeInBytes: 1000 * 1024,
     },
   })
 
@@ -54,6 +62,7 @@ export const AvatarSetupPage = () => {
   const progress = latestUpload?.progress
   const errorMessage = latestUpload?.error
   const isUploading = latestUpload?.status === 'uploading'
+  const uploadedUrl = latestUpload?.url
 
   useEffect(() => {
     if (errorMessage) {
@@ -64,8 +73,26 @@ export const AvatarSetupPage = () => {
     }
   }, [errorMessage])
 
+  useEffect(() => {
+    if (uploadedUrl) {
+      setLocalImageUri(uploadedUrl)
+    }
+  }, [uploadedUrl])
+
+  const handleWebFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setLocalImageUri(URL.createObjectURL(file))
+      handleUpload([file])
+    }
+  }
+
   const handleOpenSheet = () => {
-    sheetRef.current?.expand()
+    if (isWeb) {
+      fileInputRef.current?.click()
+    } else {
+      sheetRef.current?.expand()
+    }
   }
 
   const handleChooseImage = async (type: 'camera' | 'library') => {
@@ -78,9 +105,6 @@ export const AvatarSetupPage = () => {
       const asset = imageResult.assets[0]
       setLocalImageUri(asset.uri)
 
-      // create a pseudo-File object for native
-      // the useUploadFiles hook expects File objects
-      // but we'll handle the native case in uploadFileData
       const pseudoFile = {
         uri: asset.uri,
         name: asset.fileName || `avatar-${Date.now()}.jpg`,
@@ -93,12 +117,6 @@ export const AvatarSetupPage = () => {
     }
   }
 
-  const handleUseEmoji = () => {
-    sheetRef.current?.collapse()
-    // TODO: Implement emoji selection
-    console.info('Use emoji selected')
-  }
-
   const avatarOptions = [
     { icon: CameraIcon, label: 'Take Photo', onPress: () => handleChooseImage('camera') },
     {
@@ -106,14 +124,22 @@ export const AvatarSetupPage = () => {
       label: 'Choose Image',
       onPress: () => handleChooseImage('library'),
     },
-    // TODO: Implement emoji selection
-    // { icon: SmileyIcon, label: 'Use Emoji', onPress: handleUseEmoji },
   ]
 
   const { goToNextStep } = useOnboarding()
 
   return (
     <>
+      {isWeb && (
+        <input
+          ref={fileInputRef as any}
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleWebFileChange}
+        />
+      )}
+
       <OnboardingStepPageLayout
         title="Set Avatar"
         Icon={CameraIcon}
@@ -134,10 +160,12 @@ export const AvatarSetupPage = () => {
             <ButtonSimple
               size="large"
               onPress={goToNextStep}
-              disabled={!localImageUri}
+              disabled={!localImageUri || isUploading}
               theme={localImageUri ? 'accent' : undefined}
             >
-              <ButtonSimple.Text>Next</ButtonSimple.Text>
+              <ButtonSimple.Text>
+                {isUploading ? 'Uploading...' : 'Next'}
+              </ButtonSimple.Text>
             </ButtonSimple>
           </YStack>
         }
@@ -146,7 +174,9 @@ export const AvatarSetupPage = () => {
           {!localImageUri && (
             <YStack mb="$4">
               <YStack items="center" px="$4" py="$2" bg="$color2" rounded="$6">
-                <SizableText color="$color11">Tap to add an avatar</SizableText>
+                <SizableText color="$color11">
+                  {isWeb ? 'Click to add an avatar' : 'Tap to add an avatar'}
+                </SizableText>
                 <YStack
                   position="absolute"
                   b={-8}
@@ -164,7 +194,7 @@ export const AvatarSetupPage = () => {
           )}
 
           <YStack>
-            <Pressable onPress={handleOpenSheet} disabled={localImageUri !== null}>
+            <Pressable onPress={handleOpenSheet} disabled={isUploading}>
               <YStack
                 animation="bouncy"
                 scale={localImageUri ? 1 : 0.9}
@@ -179,7 +209,6 @@ export const AvatarSetupPage = () => {
                   <Image src={images.avatarContainer} width={220} height={220} />
                 )}
 
-                {/* Progress indicator in the middle of avatar */}
                 {isUploading && (
                   <YStack
                     position="absolute"
@@ -206,29 +235,38 @@ export const AvatarSetupPage = () => {
               </Pressable>
             )}
           </YStack>
+
+          {isWeb && progress && progress < 100 && (
+            <YStack mt="$4" width={220}>
+              <SizableText size="$2" color="$color10" text="center">
+                Uploading: {progress}%
+              </SizableText>
+            </YStack>
+          )}
         </YStack>
       </OnboardingStepPageLayout>
 
-      {/* Avatar Selection Sheet */}
-      <Sheet ref={sheetRef} title="Select Option">
-        <YStack gap="$2">
-          {avatarOptions.map(({ icon: Icon, label, onPress }) => (
-            <ListItem
-              key={label}
-              onPress={onPress}
-              size="large"
-              bg="$color3"
-              pressStyle={{ bg: '$color2' }}
-              height={50}
-            >
-              <Icon size={22} color="$color10" />
-              <ListItem.Text fontWeight="600" color="$color">
-                {label}
-              </ListItem.Text>
-            </ListItem>
-          ))}
-        </YStack>
-      </Sheet>
+      {!isWeb && (
+        <Sheet ref={sheetRef} title="Select Option">
+          <YStack gap="$2">
+            {avatarOptions.map(({ icon: Icon, label, onPress }) => (
+              <ListItem
+                key={label}
+                onPress={onPress}
+                size="large"
+                bg="$color3"
+                pressStyle={{ bg: '$color2' }}
+                height={50}
+              >
+                <Icon size={22} color="$color10" />
+                <ListItem.Text fontWeight="600" color="$color">
+                  {label}
+                </ListItem.Text>
+              </ListItem>
+            ))}
+          </YStack>
+        </Sheet>
+      )}
     </>
   )
 }

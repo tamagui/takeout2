@@ -13,9 +13,6 @@ interface UseFeatureFlagOptions {
  * @example
  * const isEnabled = useFeatureFlag('my_feature', { defaultValue: true })
  */
-export function useFeatureFlag(
-  flag: string,
-  opts?: UseFeatureFlagOptions
-): boolean {
+export function useFeatureFlag(flag: string, opts?: UseFeatureFlagOptions): boolean {
   return postHog.isFeatureEnabled(flag, opts?.defaultValue ?? false)
 }

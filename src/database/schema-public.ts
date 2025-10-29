@@ -1,11 +1,19 @@
-import { boolean, index, integer, pgTable, text, unique } from 'drizzle-orm/pg-core'
+import {
+  bigint,
+  boolean,
+  index,
+  integer,
+  pgTable,
+  text,
+  unique,
+} from 'drizzle-orm/pg-core'
 
 export const userPublic = pgTable('userPublic', (t) => ({
   id: text('id').primaryKey(),
   name: text('name'),
   username: text('username'),
   image: text('image'),
-  joinedAt: integer('joinedAt').notNull(),
+  joinedAt: bigint('joinedAt', { mode: 'number' }).notNull(),
   hasOnboarded: boolean('hasOnboarded').notNull().default(false),
   whitelisted: boolean('whitelisted').notNull().default(false),
   migrationVersion: integer('migrationVersion').notNull().default(0),

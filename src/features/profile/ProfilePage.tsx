@@ -2,13 +2,7 @@ import { Image as ExpoImage } from 'expo-image'
 import { router, useParams } from 'one'
 import { memo, useCallback, useMemo, useRef } from 'react'
 import { FlatList, ScrollView } from 'react-native'
-import {
-  AnimatePresence,
-  Spinner,
-  useWindowDimensions,
-  View,
-  YStack,
-} from 'tamagui'
+import { AnimatePresence, Spinner, useWindowDimensions, View, YStack } from 'tamagui'
 import { images } from '~/constants/images'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { Image } from '~/interface/image/Image'
@@ -170,7 +164,6 @@ export const ProfilePage = memo(() => {
       />
     )
   }
-
 
   return (
     <YStack flex={1}>

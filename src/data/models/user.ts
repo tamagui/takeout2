@@ -34,17 +34,17 @@ export const mutate = mutations(schema, permissions, {
   completeSignup: async ({ server, authData, tx }, userId: string) => {
     ensure(authData)
 
+    await tx.mutate.userPublic.update({
+      id: userId,
+      hasOnboarded: true,
+    })
+
     if (server) {
       server.asyncTasks.push(async () => {
-        const onboarded = await server.actions.userActions.onboardUser(authData, userId)
-        if (onboarded) {
-          await server.actions
-            .analyticsActions()
-            .logEvent(authData.id, 'user_onboarded', {
-              userId: authData.id,
-              hasCompletedProfile: true,
-            })
-        }
+        await server.actions.analyticsActions().logEvent(authData.id, 'user_onboarded', {
+          userId: authData.id,
+          hasCompletedProfile: true,
+        })
       })
     }
   },

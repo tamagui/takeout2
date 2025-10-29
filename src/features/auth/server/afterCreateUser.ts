@@ -5,107 +5,119 @@ import { user as userTable, whitelist } from '~/database/schema-private'
 import { userPublic, userState, userProfile } from '~/database/schema-public'
 
 export async function afterCreateUser(user: { id: string; email: string }) {
-  const db = getDb()
-  const userId = user.id
-  const email = user.email
+  try {
+    const db = getDb()
+    const userId = user.id
+    const email = user.email
 
-  // check if user exists in userPublic table
-  const existingUser = await db
-    .select()
-    .from(userPublic)
-    .where(eq(userPublic.id, userId))
-    .limit(1)
+    console.info(`[afterCreateUser] Creating user records for ${email}`)
 
-  // get user data from private user table
-  const [userPrivate] = await db
-    .select({
-      name: userTable.name,
-      username: userTable.username,
-      email: userTable.email,
-      image: userTable.image,
-      createdAt: userTable.createdAt,
-    })
-    .from(userTable)
-    .where(eq(userTable.id, userId))
+    // check if user exists in userPublic table
+    const existingUser = await db
+      .select()
+      .from(userPublic)
+      .where(eq(userPublic.id, userId))
+      .limit(1)
 
-  if (existingUser.length === 1) {
-    return userPrivate
-  }
+    // get user data from private user table
+    const [userPrivate] = await db
+      .select({
+        name: userTable.name,
+        username: userTable.username,
+        email: userTable.email,
+        image: userTable.image,
+        createdAt: userTable.createdAt,
+      })
+      .from(userTable)
+      .where(eq(userTable.id, userId))
 
-  if (!userPrivate) {
-    return
-  }
+    if (existingUser.length === 1) {
+      console.info(`[afterCreateUser] User ${email} already exists`)
+      return userPrivate
+    }
 
-  // check if userState exists, if not create it with defaults
-  const existingUserState = await db
-    .select()
-    .from(userState)
-    .where(eq(userState.userId, userId))
-    .limit(1)
+    if (!userPrivate) {
+      console.error(`[afterCreateUser] No user data found in private table for ${email}`)
+      return
+    }
 
-  if (existingUserState.length === 0) {
-    await db.insert(userState).values({
-      userId,
-      darkMode: false,
-      locale: 'en',
-      timeZone: 'UTC',
-      onlineStatus: 'online',
-    })
-  }
+    // check if userState exists, if not create it with defaults
+    const existingUserState = await db
+      .select()
+      .from(userState)
+      .where(eq(userState.userId, userId))
+      .limit(1)
 
-  let { name, username, image, createdAt } = userPrivate
+    if (existingUserState.length === 0) {
+      await db.insert(userState).values({
+        userId,
+        darkMode: false,
+        locale: 'en',
+        timeZone: 'UTC',
+        onlineStatus: 'online',
+      })
+    }
 
-  // Check if user's email is in the whitelist
-  const whitelistEntry = await db
-    .select()
-    .from(whitelist)
-    .where(eq(whitelist.email, email))
-    .limit(1)
+    let { name, username, image, createdAt } = userPrivate
 
-  const isWhitelisted = whitelistEntry.length > 0
+    // Check if user's email is in the whitelist
+    const whitelistEntry = await db
+      .select()
+      .from(whitelist)
+      .where(eq(whitelist.email, email))
+      .limit(1)
 
-  // Handle admin promotion if needed
-  if (email === 'admin@fleek.xyz') {
-    // Uncomment if you need to promote to admin
-    // console.info(`Promoting to admin...`)
-    // image = 'https://your-admin-image-url'
-    // username = 'admin'
-    // await db
-    //   .update(userTable)
-    //   .set({
-    //     role: 'admin',
-    //     username: 'admin',
-    //     image: 'https://your-admin-image-url',
-    //   })
-    //   .where(eq(userTable.id, userId))
-  }
+    const isWhitelisted = whitelistEntry.length > 0
 
-  const userRow = {
-    id: userId,
-    name: name || '',
-    username: username || '',
-    image: image || '',
-    joinedAt: createdAt ? new Date(createdAt).getTime() : Date.now(),
-    hasOnboarded: false,
-    whitelisted: isWhitelisted,
-    migrationVersion: 0,
-  }
+    // Handle admin promotion if needed
+    if (email === 'admin@fleek.xyz') {
+      // Uncomment if you need to promote to admin
+      // console.info(`Promoting to admin...`)
+      // image = 'https://your-admin-image-url'
+      // username = 'admin'
+      // await db
+      //   .update(userTable)
+      //   .set({
+      //     role: 'admin',
+      //     username: 'admin',
+      //     image: 'https://your-admin-image-url',
+      //   })
+      //   .where(eq(userTable.id, userId))
+    }
 
-  await db.insert(userPublic).values(userRow)
-
-  // Initialize userProfile for the new user
-  const existingUserProfile = await db
-    .select()
-    .from(userProfile)
-    .where(eq(userProfile.id, userId))
-    .limit(1)
-
-  if (existingUserProfile.length === 0) {
-    await db.insert(userProfile).values({
+    const userRow = {
       id: userId,
-      postsCount: 0,
-    })
-  }
+      name: name || '',
+      username: username || '',
+      image: image || '',
+      joinedAt: createdAt ? new Date(createdAt).getTime() : Date.now(),
+      hasOnboarded: false,
+      whitelisted: isWhitelisted,
+      migrationVersion: 0,
+    }
 
-  return userPrivate
+    console.info(`[afterCreateUser] Creating userPublic record`)
+    await db.insert(userPublic).values(userRow)
+
+    // Initialize userProfile for the new user
+    const existingUserProfile = await db
+      .select()
+      .from(userProfile)
+      .where(eq(userProfile.id, userId))
+      .limit(1)
+
+    if (existingUserProfile.length === 0) {
+      console.info(`[afterCreateUser] Creating userProfile record`)
+      await db.insert(userProfile).values({
+        id: userId,
+        postsCount: 0,
+      })
+    }
+
+    console.info(`[afterCreateUser] ✅ User ${email} setup complete`)
+    return userPrivate
+  } catch (error) {
+    console.error(`[afterCreateUser] ❌ Error creating user records:`, error)
+    throw error
+  }
 }

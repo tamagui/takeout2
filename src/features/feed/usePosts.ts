@@ -13,10 +13,7 @@ export function usePosts(options?: UsePostsOptions) {
   const { limit = 20 } = options || {}
 
   const query = useMemo(() => {
-    return zero.query.post
-      .orderBy('createdAt', 'desc')
-      .orderBy('id', 'desc')
-      .limit(limit)
+    return zero.query.post.orderBy('createdAt', 'desc').orderBy('id', 'desc').limit(limit)
   }, [limit])
 
   const [posts, status] = useQuery(query)

@@ -1,8 +1,8 @@
-import avatarContainer from '../../public/images/avatar-container/avatar-container.webp'
-import iconBoy from '../../public/images/icon-boy/icon-boy.webp'
-import iconCamera from '../../public/images/icon-camera/icon-camera.webp'
-import iconPencil from '../../public/images/icon-pencil/icon-pencil.webp'
-import iconPicture from '../../public/images/icon-picture/icon-picture.webp'
+import avatarContainer from '/images/avatar-container/avatar-container.webp?url'
+import iconBoy from '/images/icon-boy/icon-boy.webp?url'
+import iconCamera from '/images/icon-camera/icon-camera.webp?url'
+import iconPencil from '/images/icon-pencil/icon-pencil.webp?url'
+import iconPicture from '/images/icon-picture/icon-picture.webp?url'
 
 export const images = {
   avatarContainer,

@@ -159,7 +159,9 @@ async function validateUsername(username?: string) {
 
   // Check if username matches allowed pattern (alphanumeric, underscore, hyphen)
   if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
-    throw new Error('Username can only contain letters, numbers, underscores, and hyphens')
+    throw new Error(
+      'Username can only contain letters, numbers, underscores, and hyphens'
+    )
   }
 
   const db = getDb()

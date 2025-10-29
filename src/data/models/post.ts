@@ -10,8 +10,6 @@ export const schema = table('post')
     userId: string(),
     image: string(),
     caption: string().optional(),
-    draft: boolean(),
-    likesCount: number(),
     hiddenByAdmin: boolean(),
     createdAt: number(),
     updatedAt: number().optional(),
@@ -34,7 +32,6 @@ export const mutate = mutations(schema, permissions, {
         server.actions.analyticsActions().logEvent(authData.id, 'post_created', {
           postId: post.id,
           hasImage: Boolean(post.image),
-          isDraft: post.draft,
         })
       )
     }
@@ -51,7 +48,6 @@ export const mutate = mutations(schema, permissions, {
           postId: obj.id,
           postAge: post.createdAt ? Date.now() - post.createdAt : undefined,
           hasImage: Boolean(post.image),
-          isDraft: post.draft,
         })
       )
     }

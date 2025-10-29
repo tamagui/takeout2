@@ -1,4 +1,4 @@
-import { json, number, string, table } from '@rocicorp/zero'
+import { boolean, json, number, string, table } from '@rocicorp/zero'
 import type { TableInsertRow } from 'over-zero'
 import { mutations, where } from 'over-zero'
 
@@ -11,7 +11,7 @@ export type UserState = TableInsertRow<typeof schema>
 export const schema = table('userState')
   .columns({
     userId: string(),
-    darkMode: number(), // boolean stored as integer
+    darkMode: boolean(),
     locale: string(),
     timeZone: string(),
     onlineStatus: string(),

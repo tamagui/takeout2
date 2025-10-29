@@ -9,11 +9,8 @@ import { Avatar } from '~/interface/avatars/Avatar'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { BasicHeader } from '~/interface/headers/BasicHeader'
 import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
-import { HeartIcon } from '~/interface/icons/phosphor/HeartIcon'
 import { showPostActionSheet } from '~/interface/sheet/postActionSheetHelper'
 import { BodyText } from '~/interface/text/Body'
-import { InteractButton } from './InteractButton'
-import { useLike } from './useLike'
 import { usePostById } from './usePostById'
 
 export const FeedDetailPage = memo(() => {
@@ -21,7 +18,6 @@ export const FeedDetailPage = memo(() => {
   const { user } = useAuth()
   const { post } = usePostById({ postId: feedId })
   const [imageAspectRatio, setImageAspectRatio] = useState<number>(1)
-  const { hasLiked, toggleLike } = useLike(user?.id, post?.id, post?.userId)
   const isOwnProfile = post?.userId === user?.id
 
   if (!post || !user) {
@@ -60,27 +56,17 @@ export const FeedDetailPage = memo(() => {
             />
           </Galeria.Image>
         </Galeria>
-        <XStack px="$3" items="center" gap="$3" py="$2.5" justify="space-between">
-          <XStack gap="$3">
-            <InteractButton
-              icon={HeartIcon}
-              count={post.likesCount}
-              onPress={toggleLike}
-              active={hasLiked}
-            />
-          </XStack>
-          <XStack gap="$2">
-            <ButtonSimple
-              circular
-              variant="outlined"
-              icon={<DotsThreeIcon size={16} color="$color12" />}
-              onPress={() =>
-                showPostActionSheet(post, isOwnProfile, {
-                  shouldNavigateBackOnDelete: true,
-                })
-              }
-            />
-          </XStack>
+        <XStack px="$3" items="center" gap="$3" py="$2.5" justify="flex-end">
+          <ButtonSimple
+            circular
+            variant="outlined"
+            icon={<DotsThreeIcon size={16} color="$color12" />}
+            onPress={() =>
+              showPostActionSheet(post, isOwnProfile, {
+                shouldNavigateBackOnDelete: true,
+              })
+            }
+          />
         </XStack>
         <XStack justify="space-between" flex={1} px="$3">
           <YStack flex={1}>

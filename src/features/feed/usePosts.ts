@@ -14,7 +14,6 @@ export function usePosts(options?: UsePostsOptions) {
 
   const query = useMemo(() => {
     return zero.query.post
-      .where('draft', false)
       .orderBy('createdAt', 'desc')
       .orderBy('id', 'desc')
       .limit(limit)
@@ -51,21 +50,18 @@ export function usePostsPaginated(pageSize = 10) {
   const query = useMemo(() => {
     let q = zero.query.post
       .where((eb) => {
-        const draftCondition = eb.cmp('draft', false)
-
         if (!user?.id) {
-          return draftCondition
+          return eb.cmp('id', '!=', '')
         }
 
         const blockedByMeIds = blockedByMe?.map((b) => b.blockedId) || []
         const allBlockedIds = [...blockedByMeIds]
 
         if (allBlockedIds.length > 0) {
-          const notFromBlockedUsers = eb.not(eb.cmp('userId', 'IN', allBlockedIds))
-          return eb.and(draftCondition, notFromBlockedUsers)
+          return eb.not(eb.cmp('userId', 'IN', allBlockedIds))
         }
 
-        return draftCondition
+        return eb.cmp('id', '!=', '')
       })
       .orderBy('createdAt', 'desc')
       .orderBy('id', 'desc')
@@ -141,7 +137,6 @@ export function usePostsByUserId(userId: string, pageSize = 12) {
   const query = useMemo(() => {
     let q = zero.query.post
       .where('userId', userId)
-      .where('draft', false)
       .orderBy('createdAt', 'desc')
       .orderBy('id', 'desc')
       .limit(pageSize)

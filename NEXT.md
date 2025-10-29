@@ -12,6 +12,9 @@ quan:
 - replace a lot of one-off deps with expo versions if we can
 - removing vibe-coded comments everywhere
 - review the entire codebase and cleanup
+- `eb.and(draftCondition, notFromBlockedUsers)` cant bring blocked down to
+  client like this
+  - we'd need to have a separate generated feed need to discuss
 
 pokai:
 

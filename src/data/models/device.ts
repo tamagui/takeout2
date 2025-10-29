@@ -1,4 +1,4 @@
-import { enumeration, number, string, table } from '@rocicorp/zero'
+import { boolean, enumeration, number, string, table } from '@rocicorp/zero'
 import type { TableInsertRow } from 'over-zero'
 import { mutations, where } from 'over-zero'
 
@@ -16,7 +16,7 @@ export const schema = table('device')
     platformVersion: string().optional(),
     appVersion: string().optional(),
     pushToken: string().optional(),
-    pushEnabled: number(), // boolean stored as integer
+    pushEnabled: boolean(),
     lastActiveAt: number().optional(),
     createdAt: number(),
     updatedAt: number().optional(),

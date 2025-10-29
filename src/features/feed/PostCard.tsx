@@ -5,16 +5,12 @@ import type { Post } from '~/data/models'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
-import { HeartIcon } from '~/interface/icons/phosphor/HeartIcon'
-import { DoubleTap } from '~/interface/interactions/DoubleTap'
 import { LinearGradientSeparator } from '~/interface/separators/LinearGradientSeparator'
 import { showPostActionSheet } from '~/interface/sheet/postActionSheetHelper'
 import { BodyText } from '~/interface/text/Body'
 import { useQuery, zero } from '~/zero/client'
 import { useAuth } from '~/features/auth/client/authClient'
 import { AvatarWithMenu } from './AvatarWithMenu'
-import { InteractButton } from './InteractButton'
-import { useLike } from './useLike'
 
 interface PostCardProps {
   post: Post
@@ -28,7 +24,6 @@ export const PostCard = memo(({ post }: PostCardProps) => {
   })
   const avatarUrl = author?.image
   const username = author?.username
-  const { hasLiked, toggleLike } = useLike(user?.id, post.id, post.userId)
   const [isTruncated, setIsTruncated] = useState<boolean>(false)
 
   const isOwnProfile = authorId === user?.id
@@ -54,38 +49,22 @@ export const PostCard = memo(({ post }: PostCardProps) => {
       </XStack>
 
       <View width="100%" position="relative">
-        <DoubleTap
-          onDoubleTap={() => {
-            toggleLike()
-          }}
-        >
-          <Image
-            source={post.image}
-            style={{ width: '100%', aspectRatio: 3 / 4 }}
-            contentFit="cover"
-            transition={200}
-            recyclingKey={post.id}
-          />
-        </DoubleTap>
+        <Image
+          source={post.image}
+          style={{ width: '100%', aspectRatio: 3 / 4 }}
+          contentFit="cover"
+          transition={200}
+          recyclingKey={post.id}
+        />
       </View>
 
-      <XStack px="$3" items="center" gap="$3" py="$2.5" justify="space-between">
-        <XStack gap="$3">
-          <InteractButton
-            icon={HeartIcon}
-            count={post.likesCount}
-            onPress={toggleLike}
-            active={hasLiked}
-          />
-        </XStack>
-        <XStack gap="$2">
-          <ButtonSimple
-            circular
-            variant="outlined"
-            icon={<DotsThreeIcon size={16} color="$color12" />}
-            onPress={() => showPostActionSheet(post, isOwnProfile)}
-          />
-        </XStack>
+      <XStack px="$3" items="center" gap="$3" py="$2.5" justify="flex-end">
+        <ButtonSimple
+          circular
+          variant="outlined"
+          icon={<DotsThreeIcon size={16} color="$color12" />}
+          onPress={() => showPostActionSheet(post, isOwnProfile)}
+        />
       </XStack>
 
       <XStack justify="space-between" flex={1} px="$3" gap="$1">

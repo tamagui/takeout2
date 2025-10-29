@@ -9,11 +9,13 @@ export const schema = table('report')
   .columns({
     id: string(),
     reporterId: string(),
-    targetType: string(), // 'post' or 'user'
-    targetId: string(), // postId or userId
-    reason: string(), // 'inappropriate', 'spam', 'harassment', 'other'
-    details: string(), // optional details
-    resolved: boolean(),
+    reportedUserId: string().optional(),
+    reportedPostId: string().optional(),
+    reason: string(),
+    details: string().optional(),
+    status: string(), // pending, reviewed, resolved
+    reviewedBy: string().optional(),
+    reviewedAt: number().optional(),
     createdAt: number(),
   })
   .primaryKey('id')
@@ -28,30 +30,6 @@ export const permissions = where('report', (_, auth) => {
 
 // mutations
 export const mutate = mutations(schema, permissions, {
-  // generic insert for reports
-  insert: async (
-    { tx, authData },
-    report: {
-      targetType: 'post' | 'user'
-      targetId: string
-      reason: string
-      details?: string
-    }
-  ) => {
-    if (!authData) throw new Error('Not authenticated')
-
-    await tx.mutate.report.insert({
-      id: randomId(),
-      reporterId: authData.id,
-      targetType: report.targetType,
-      targetId: report.targetId,
-      reason: report.reason,
-      details: report.details || '',
-      resolved: false,
-      createdAt: Date.now(),
-    })
-  },
-
   // report a post
   reportPost: async (
     { tx, authData },
@@ -66,11 +44,13 @@ export const mutate = mutations(schema, permissions, {
     await tx.mutate.report.insert({
       id: randomId(),
       reporterId: authData.id,
-      targetType: 'post',
-      targetId: data.postId,
+      reportedPostId: data.postId,
+      reportedUserId: undefined,
       reason: data.reason,
-      details: data.details || '',
-      resolved: false,
+      details: data.details,
+      status: 'pending',
+      reviewedBy: undefined,
+      reviewedAt: undefined,
       createdAt: Date.now(),
     })
   },
@@ -89,11 +69,13 @@ export const mutate = mutations(schema, permissions, {
     await tx.mutate.report.insert({
       id: randomId(),
       reporterId: authData.id,
-      targetType: 'user',
-      targetId: data.userId,
+      reportedUserId: data.userId,
+      reportedPostId: undefined,
       reason: data.reason,
-      details: data.details || '',
-      resolved: false,
+      details: data.details,
+      status: 'pending',
+      reviewedBy: undefined,
+      reviewedAt: undefined,
       createdAt: Date.now(),
     })
   },

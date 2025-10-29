@@ -1,11 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated'
 import { Circle, SizableText, Spinner, YStack } from 'tamagui'
 import { useGoToNextOnboardingStep } from '~/auth/hooks/useGoToNextOnboardingStep'
 import { images } from '~/constants/images'
@@ -28,7 +21,6 @@ const IMAGE_QUALITY = 0.9
 
 export const AvatarSetupPage = () => {
   const [localImageUri, setLocalImageUri] = useState<string | null>(null)
-  const translateY = useSharedValue(0)
   const { user, update } = useUser()
 
   const sheetRef = useRef<SheetRef>(null)
@@ -64,15 +56,6 @@ export const AvatarSetupPage = () => {
   const isUploading = latestUpload?.status === 'uploading'
 
   useEffect(() => {
-    // Create a smooth up-down looping animation for tooltip
-    translateY.value = withRepeat(
-      withSequence(withTiming(-8, { duration: 1000 }), withTiming(0, { duration: 1000 })),
-      -1, // infinite repeat
-      false // don't reverse
-    )
-  }, [translateY])
-
-  useEffect(() => {
     if (errorMessage) {
       showErrorSheet({
         title: 'Error',
@@ -80,12 +63,6 @@ export const AvatarSetupPage = () => {
       })
     }
   }, [errorMessage])
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: translateY.value }],
-    }
-  })
 
   const handleOpenSheet = () => {
     sheetRef.current?.expand()
@@ -167,7 +144,7 @@ export const AvatarSetupPage = () => {
       >
         <YStack items="center" mt="$10">
           {!localImageUri && (
-            <Animated.View style={[animatedStyle, { marginBottom: 16 }]}>
+            <YStack mb="$4">
               <YStack items="center" px="$4" py="$2" bg="$color2" rounded="$6">
                 <SizableText color="$color11">Tap to add an avatar</SizableText>
                 <YStack
@@ -183,7 +160,7 @@ export const AvatarSetupPage = () => {
                   borderTopColor="$color2"
                 />
               </YStack>
-            </Animated.View>
+            </YStack>
           )}
 
           <YStack>

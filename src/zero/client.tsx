@@ -6,12 +6,7 @@ import type { AuthData } from '~/auth/types'
 import { models } from '~/data/models'
 import { schema } from '~/data/schema'
 
-const disable =
-  typeof window !== 'undefined' &&
-  window.location?.pathname.startsWith('/_/') &&
-  // whitelist pages to allow zero
-  window.location?.pathname !== '/_/login-success' &&
-  !window.location?.pathname.startsWith('/_/app')
+const disable = false
 
 if (disable) {
   console.info(`0️⃣ Zero disabled on this page`)

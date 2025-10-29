@@ -10,13 +10,14 @@ export type UserState = TableInsertRow<typeof schema>
 
 export const schema = table('userState')
   .columns({
-    id: string(),
     userId: string(),
-    settings: json<UserSettings>().optional(),
-    updatedAt: number().optional(),
-    createdAt: number(),
+    darkMode: number(), // boolean stored as integer
+    locale: string(),
+    timeZone: string(),
+    onlineStatus: string(),
+    lastNotificationReadAt: number().optional(),
   })
-  .primaryKey('id')
+  .primaryKey('userId')
 
 export const permissions = where('userState', (_, auth) => {
   const userId = auth?.id || ''

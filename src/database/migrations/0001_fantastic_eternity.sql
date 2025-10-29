@@ -21,7 +21,7 @@ CREATE TABLE "jwks" (
 	"createdAt" timestamp NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "migrations" (
+CREATE TABLE IF NOT EXISTS "migrations" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" varchar(255) NOT NULL,
 	"run_on" timestamp DEFAULT now() NOT NULL

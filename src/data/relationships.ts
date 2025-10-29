@@ -118,12 +118,12 @@ export const reportRelationships = relationships(tables.report, ({ one }) => ({
     destField: ['id'],
   }),
   post: one({
-    sourceField: ['targetId'],
+    sourceField: ['reportedPostId'],
     destSchema: tables.post,
     destField: ['id'],
   }),
   reportedUser: one({
-    sourceField: ['targetId'],
+    sourceField: ['reportedUserId'],
     destSchema: tables.userPublic,
     destField: ['id'],
   }),

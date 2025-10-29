@@ -7,83 +7,23 @@ import React, {
   useState,
 } from 'react'
 import type { StyleProp, TextInputProps, TextStyle, ViewStyle } from 'react-native'
-import { Clipboard, Pressable, StyleSheet, TextInput } from 'react-native'
-import Animated, {
-  FadeInDown,
-  FadeOut,
-  type LinearTransition,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated'
-import { SizableText, useTheme, useWindowDimensions, View, XStack, YStack } from 'tamagui'
+import { Clipboard, Pressable, StyleSheet, TextInput, View, Text } from 'react-native'
+import { SizableText, useTheme, useWindowDimensions, XStack, YStack } from 'tamagui'
 
 export interface IOtpInput {
-  /**
-   * Digits of pins in the OTP
-   */
   otpCount: number
-  /**
-   * Style of the container
-   */
   containerStyle?: StyleProp<ViewStyle>
-  /**
-   * Style of the input container
-   */
   inputContainerStyle?: StyleProp<ViewStyle>
-  /**
-   * Style of the input fields
-   */
   inputStyle?: StyleProp<TextStyle>
-  /**
-   * Style of the input mask
-   */
   inputMaskStyle?: StyleProp<ViewStyle>
-  /**
-   * Style of text for input fields
-   */
   textStyle?: StyleProp<TextStyle>
-  /**
-   * Color of border color when focused
-   */
   focusColor?: string
-  /**
-   * If keyboard is automatically brought up when OTP is loaded.
-   */
   autoFocus?: boolean
-  /**
-   * Set editable for inputs
-   */
   editable?: boolean
-  /**
-   * Callback function
-   * Trigger when all text input fields are fulfill
-   */
   onCodeFilled?: (code: string) => void
-  /**
-   * Callback function
-   * Trigger when a field of the OTP is changed
-   */
   onCodeChanged?: (codes: string) => void
-  /**
-   * Entering animation using reanimated layout
-   */
-  enteringAnimated?: typeof LinearTransition
-  /**
-   * Exiting animation using reanimated layout
-   */
-  exitingAnimated?: typeof LinearTransition
-  /**
-   * If the input is an error
-   */
   isError?: boolean
-  /**
-   * Default value for OTP input
-   */
   defaultValue?: string
-  /**
-   * Test ID for testing
-   */
   'data-testid'?: string
 }
 
@@ -108,23 +48,16 @@ const OtpContext = createContext<IOtpContext>({} as IOtpContext)
 const OtpItem = ({ i }: { i: number }) => {
   const {
     inputRef,
-    onPress,
     otpValue,
     onFocusNext,
     onFocusPrevious,
-    setFocus,
-    setOtpValue,
     focus,
-    focusColor,
     autoFocus,
     inputContainerStyle,
     inputStyle,
     inputMaskStyle,
     textStyle,
     otpCount,
-    editable,
-    enteringAnimated,
-    exitingAnimated,
     isError,
     testId,
     rest,
@@ -134,20 +67,10 @@ const OtpItem = ({ i }: { i: number }) => {
   const { width } = useWindowDimensions()
 
   const inputWidth = (width - 58) / otpCount
+  const isFocused = focus === i
 
-  const isFocused = useSharedValue(0)
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <no need>
-  useEffect(() => {
-    isFocused.value = withTiming(focus === i ? 1 : 0, { duration: 150 })
-  }, [focus])
-
-  const borderStyle = useAnimatedStyle(() => {
-    return {
-      borderColor: isError ? red10.val : isFocused.value ? color02.val : 'transparent',
-      borderWidth: 1,
-    }
-  }, [focus, isFocused, isError])
+  // Simple border style based on state
+  const borderColor = isError ? red10.val : isFocused ? color02.val : 'transparent'
 
   return (
     <View key={i} style={[inputContainerStyle]}>
@@ -164,7 +87,7 @@ const OtpItem = ({ i }: { i: number }) => {
         autoFocus={autoFocus && i === 0}
         {...rest}
       />
-      <Animated.View
+      <View
         style={[
           styles.overlay,
           {
@@ -174,23 +97,22 @@ const OtpItem = ({ i }: { i: number }) => {
             height: inputWidth,
             backgroundColor: color2.val,
             borderRadius: 12,
+            borderColor,
+            borderWidth: 1,
           },
           inputMaskStyle,
-          borderStyle,
         ]}
         pointerEvents="none"
       >
         {otpValue[i] !== '' && (
-          <Animated.Text
+          <Text
             key={`otp-text-${i}-${otpValue[i]}`}
-            entering={enteringAnimated}
-            exiting={exitingAnimated}
             style={[styles.text, { color: color.val, position: 'absolute' }, textStyle]}
           >
             {otpValue[i]}
-          </Animated.Text>
+          </Text>
         )}
-      </Animated.View>
+      </View>
     </View>
   )
 }
@@ -206,8 +128,6 @@ export const OtpInput = memo(
     focusColor = 'transparent',
     autoFocus = false,
     editable = true,
-    enteringAnimated = FadeInDown,
-    exitingAnimated = FadeOut,
     onCodeFilled,
     onCodeChanged,
     isError = false,
@@ -323,8 +243,6 @@ export const OtpInput = memo(
       focusColor,
       otpCount,
       editable,
-      enteringAnimated,
-      exitingAnimated,
       isError,
       testId,
       rest,

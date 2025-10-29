@@ -10,7 +10,6 @@ export type UserSocialLinks = Record<string, string>
 export const schema = table('userPublic')
   .columns({
     id: string(),
-    email: string(),
     name: string(),
     username: string(),
     image: string(),

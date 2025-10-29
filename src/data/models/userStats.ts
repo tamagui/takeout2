@@ -9,8 +9,6 @@ export const schema = table('userStats')
     followersCount: number(),
     followingCount: number(),
     postsCount: number(),
-    totalLikes: number(),
-    updatedAt: number(),
   })
   .primaryKey('id')
 
@@ -29,8 +27,6 @@ export const mutate = mutations(schema, permissions, {
       followersCount: 0,
       followingCount: 0,
       postsCount: 0,
-      totalLikes: 0,
-      updatedAt: Date.now(),
     })
   },
 
@@ -64,7 +60,6 @@ export const mutate = mutations(schema, permissions, {
     await tx.mutate.userStats.update({
       id: authData.id,
       ...updates,
-      updatedAt: Date.now(),
     })
   },
 })

@@ -11,13 +11,13 @@ export const schema = table('device')
   .columns({
     id: string(),
     userId: string(),
-    sessionId: string(),
-    type: enumeration<DeviceType>(),
     name: string().optional(),
-    appBundleId: string(),
-    deviceToken: string(),
-    brand: string().optional(),
-    model: string().optional(),
+    platform: string(), // ios, android, web
+    platformVersion: string().optional(),
+    appVersion: string().optional(),
+    pushToken: string().optional(),
+    pushEnabled: number(), // boolean stored as integer
+    lastActiveAt: number().optional(),
     createdAt: number(),
     updatedAt: number().optional(),
   })

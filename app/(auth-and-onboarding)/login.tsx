@@ -4,7 +4,7 @@ import { YStack } from 'tamagui'
 import { useAuth } from '~/auth/client/authClient'
 import { LoginSignupContents } from '~/auth/ui/LoginSignupContents'
 
-export const LoginPage = () => {
+export default function LoginPage() {
   const { session } = useAuth()
 
   useEffect(() => {

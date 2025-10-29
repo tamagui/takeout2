@@ -36,7 +36,8 @@ export const mutate = mutations(schema, permissions, {
 
     if (server) {
       server.asyncTasks.push(async () => {
-        if (await server.actions.userActions.onboardUser(tx, authData, userId)) {
+        const onboarded = await server.actions.userActions.onboardUser(authData, userId)
+        if (onboarded) {
           await server.actions
             .analyticsActions()
             .logEvent(authData.id, 'user_onboarded', {
@@ -50,7 +51,7 @@ export const mutate = mutations(schema, permissions, {
 
   validateUsername: async ({ environment, server, tx }, username: string) => {
     if (environment === 'server' && server) {
-      await server.actions.userActions.validateUsername(tx, username)
+      await server.actions.userActions.validateUsername(username)
     }
   },
 
@@ -68,7 +69,7 @@ export const mutate = mutations(schema, permissions, {
     }
 
     if (environment === 'server' && server && updateData.username) {
-      await server.actions.userActions.validateUsername(tx, updateData.username)
+      await server.actions.userActions.validateUsername(updateData.username)
     }
 
     await tx.mutate.userPublic.update(updateData)
@@ -91,7 +92,7 @@ export const mutate = mutations(schema, permissions, {
     if (environment === 'server' && server) {
       // server will handle deletion of all user data
       // except for likes and follows as specified
-      await server.actions.userActions.deleteAccount(tx, authData.id)
+      await server.actions.userActions.deleteAccount(authData.id)
     }
   },
 
@@ -101,7 +102,7 @@ export const mutate = mutations(schema, permissions, {
     // only perform on server
     if (environment === 'server' && server) {
       // Use serverActions to whitelist users by email
-      await server.actions.userActions.whitelistUsers(tx, emails)
+      await server.actions.userActions.whitelistUsers(emails)
     }
   },
 

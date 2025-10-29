@@ -4,7 +4,7 @@ import type {
   Report,
   User,
   UserState,
-  UserStats,
+  UserProfile,
 } from '~/data/models'
 
 export type * from './models'
@@ -17,13 +17,13 @@ export type PostWithRelations = Post & {
   user?: User
 }
 
-export type UserWithStats = User & {
-  stats?: UserStats
+export type UserWithProfile = User & {
+  profile?: UserProfile
   state?: UserState
 }
 
 export type UserWithRelations = User & {
-  stats?: UserStats
+  profile?: UserProfile
   state?: UserState
   posts?: readonly Post[]
   blocking?: readonly Block[]

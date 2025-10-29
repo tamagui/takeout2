@@ -4,11 +4,10 @@ import {
   device,
   invite,
   post,
-  privateBetaInvite,
   report,
   userPublic,
   userState,
-  userStats,
+  userProfile,
 } from './schema-public'
 
 export const userPublicRelations = relations(userPublic, ({ one, many }) => ({
@@ -16,9 +15,9 @@ export const userPublicRelations = relations(userPublic, ({ one, many }) => ({
     fields: [userPublic.id],
     references: [userState.userId],
   }),
-  stats: one(userStats, {
+  profile: one(userProfile, {
     fields: [userPublic.id],
-    references: [userStats.id],
+    references: [userProfile.id],
   }),
   posts: many(post),
   blocking: many(block, {
@@ -47,9 +46,9 @@ export const userStateRelations = relations(userState, ({ one }) => ({
   }),
 }))
 
-export const userStatsRelations = relations(userStats, ({ one }) => ({
+export const userProfileRelations = relations(userProfile, ({ one }) => ({
   user: one(userPublic, {
-    fields: [userStats.id],
+    fields: [userProfile.id],
     references: [userPublic.id],
   }),
 }))
@@ -113,8 +112,4 @@ export const inviteRelations = relations(invite, ({ one }) => ({
     fields: [invite.createdBy],
     references: [userPublic.id],
   }),
-}))
-
-export const privateBetaInviteRelations = relations(privateBetaInvite, ({ one }) => ({
-  // No relations needed for privateBetaInvite as it's a simple whitelist table
 }))

@@ -1,4 +1,3 @@
-import '~/features/devtools/devGlobals'
 import './root.css'
 
 import { Slot } from 'one'

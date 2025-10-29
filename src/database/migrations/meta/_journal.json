@@ -8,6 +8,20 @@
       "when": 1761604080339,
       "tag": "0000_fantastic_eternity",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1761769524427,
+      "tag": "0001_futuristic_screwball",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1761771953019,
+      "tag": "0002_far_zarek",
+      "breakpoints": true
     }
   ]
 }

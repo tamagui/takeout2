@@ -1,7 +1,111 @@
-import { zeroServer } from '~/zero/server'
+import { randomId } from '@vxrn/helpers'
+import { eq } from 'drizzle-orm'
+import { getDb } from '~/database'
+import { user as userTable, whitelist } from '~/database/schema-private'
+import { userPublic, userState, userProfile } from '~/database/schema-public'
 
 export async function afterCreateUser(user: { id: string; email: string }) {
-  await zeroServer.mutate(async (tx, mutate) => {
-    await mutate.userPublic.completeSignup(tx, user.id)
-  })
+  const db = getDb()
+  const userId = user.id
+  const email = user.email
+
+  // check if user exists in userPublic table
+  const existingUser = await db
+    .select()
+    .from(userPublic)
+    .where(eq(userPublic.id, userId))
+    .limit(1)
+
+  // get user data from private user table
+  const [userPrivate] = await db
+    .select({
+      name: userTable.name,
+      username: userTable.username,
+      email: userTable.email,
+      image: userTable.image,
+      createdAt: userTable.createdAt,
+    })
+    .from(userTable)
+    .where(eq(userTable.id, userId))
+
+  if (existingUser.length === 1) {
+    return userPrivate
+  }
+
+  if (!userPrivate) {
+    return
+  }
+
+  // check if userState exists, if not create it with defaults
+  const existingUserState = await db
+    .select()
+    .from(userState)
+    .where(eq(userState.userId, userId))
+    .limit(1)
+
+  if (existingUserState.length === 0) {
+    await db.insert(userState).values({
+      userId,
+      darkMode: false,
+      locale: 'en',
+      timeZone: 'UTC',
+      onlineStatus: 'online',
+    })
+  }
+
+  let { name, username, image, createdAt } = userPrivate
+
+  // Check if user's email is in the whitelist
+  const whitelistEntry = await db
+    .select()
+    .from(whitelist)
+    .where(eq(whitelist.email, email))
+    .limit(1)
+
+  const isWhitelisted = whitelistEntry.length > 0
+
+  // Handle admin promotion if needed
+  if (email === 'admin@fleek.xyz') {
+    // Uncomment if you need to promote to admin
+    // console.info(`Promoting to admin...`)
+    // image = 'https://your-admin-image-url'
+    // username = 'admin'
+    // await db
+    //   .update(userTable)
+    //   .set({
+    //     role: 'admin',
+    //     username: 'admin',
+    //     image: 'https://your-admin-image-url',
+    //   })
+    //   .where(eq(userTable.id, userId))
+  }
+
+  const userRow = {
+    id: userId,
+    name: name || '',
+    username: username || '',
+    image: image || '',
+    joinedAt: createdAt ? new Date(createdAt).getTime() : Date.now(),
+    hasOnboarded: false,
+    whitelisted: isWhitelisted,
+    migrationVersion: 0,
+  }
+
+  await db.insert(userPublic).values(userRow)
+
+  // Initialize userProfile for the new user
+  const existingUserProfile = await db
+    .select()
+    .from(userProfile)
+    .where(eq(userProfile.id, userId))
+    .limit(1)
+
+  if (existingUserProfile.length === 0) {
+    await db.insert(userProfile).values({
+      id: userId,
+      postsCount: 0,
+    })
+  }
+
+  return userPrivate
 }

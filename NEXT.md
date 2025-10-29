@@ -29,6 +29,7 @@ pokai:
 
 nate:
 
+- server.asyncTasks => pushTask()
 - new zero query style
 - split scripts/\* into package?
   - sst/aws/github helpers are nice

@@ -1,13 +1,54 @@
-import { and, eq, gt, or, isNull, sql } from 'drizzle-orm'
+import { prettyPrintResponse } from '@vxrn/helpers'
+import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
 import { getDb } from '~/database'
 import * as schema from '~/database/schema'
-import { prettyPrintResponse } from '@vxrn/helpers'
 import { ADMIN_WHITELIST } from '~/server/constants-server'
 import { authServer } from './authServer'
 
 export function authAPIHandler(method: 'GET' | 'POST') {
   return async (req: Request) => {
     try {
+      const url = new URL(req.url)
+
+      // Handle sign-up for existing users - automatically try to sign in instead
+      if (url.pathname.includes('/api/auth/sign-up/email')) {
+        const res = await authServer.handler(req)
+
+        // If sign-up fails because user already exists (422), try to sign them in
+        if (res.status === 422) {
+          const body = await req.clone().json()
+          console.info(`Sign-up attempt for existing email: ${body.email}`)
+
+          // Attempt to sign in with the same credentials
+          const signInUrl = url.toString().replace('/sign-up/email', '/sign-in/email')
+          const signInReq = new Request(signInUrl, {
+            method: 'POST',
+            headers: req.headers,
+            body: JSON.stringify({
+              email: body.email,
+              password: body.password,
+            }),
+          })
+
+          const signInRes = await authServer.handler(signInReq)
+          console.info(`[auth] Auto sign-in for existing user ${signInRes.status}`, signInUrl)
+
+          if (process.env.DEBUG || signInRes.status >= 400) {
+            prettyPrintResponse(signInRes)
+          }
+
+          return signInRes
+        }
+
+        console.info(`[auth] ${method} ${res.status}`, req.url)
+
+        if (process.env.DEBUG || res.status >= 400) {
+          prettyPrintResponse(res)
+        }
+
+        return res
+      }
+
       const res = await authServer.handler(req)
       console.info(`[auth] ${method} ${res.status}`, req.url)
 
@@ -115,14 +156,6 @@ async function checkUserAccess(
 
   if (validInvite) {
     await acceptInvite(db, validInvite.id, userId, now)
-    return { allowed: true }
-  }
-
-  const privateBetaInvite = await db.query.privateBetaInvite.findFirst({
-    where: eq(schema.privateBetaInvite.email, email),
-  })
-
-  if (privateBetaInvite) {
     return { allowed: true }
   }
 

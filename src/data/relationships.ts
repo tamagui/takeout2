@@ -7,9 +7,9 @@ export const userRelationships = relationships(tables.userPublic, ({ many, one }
     destSchema: tables.userState,
     destField: ['userId'],
   }),
-  stats: one({
+  profile: one({
     sourceField: ['id'],
-    destSchema: tables.userStats,
+    destSchema: tables.userProfile,
     destField: ['id'],
   }),
   posts: many({
@@ -99,7 +99,7 @@ export const userStateRelationships = relationships(tables.userState, ({ one }) 
   }),
 }))
 
-export const userStatsRelationships = relationships(tables.userStats, ({ one }) => ({
+export const userProfileRelationships = relationships(tables.userProfile, ({ one }) => ({
   user: one({
     sourceField: ['id'],
     destSchema: tables.userPublic,
@@ -114,5 +114,5 @@ export const allRelationships = [
   reportRelationships,
   deviceRelationships,
   userStateRelationships,
-  userStatsRelationships,
+  userProfileRelationships,
 ]

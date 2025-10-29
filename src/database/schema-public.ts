@@ -20,7 +20,7 @@ export const userState = pgTable('userState', (t) => ({
   lastNotificationReadAt: integer('lastNotificationReadAt'),
 }))
 
-export const userStats = pgTable('userStats', (t) => ({
+export const userProfile = pgTable('userProfile', (t) => ({
   id: text('id').primaryKey(),
   postsCount: integer('postsCount').notNull().default(0),
 }))
@@ -120,19 +120,5 @@ export const invite = pgTable(
   (table) => ({
     codeIdx: unique('invite_code_idx').on(table.code),
     emailIdx: index('invite_email_idx').on(table.email),
-  })
-)
-
-export const privateBetaInvite = pgTable(
-  'privateBetaInvite',
-  (t) => ({
-    id: text('id').primaryKey(),
-    email: text('email').notNull(),
-    accepted: boolean('accepted').notNull().default(false),
-    createdAt: integer('createdAt').notNull(),
-    updatedAt: integer('updatedAt'),
-  }),
-  (table) => ({
-    emailIdx: index('privateBetaInvite_email_idx').on(table.email),
   })
 )

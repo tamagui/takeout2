@@ -76,3 +76,11 @@ export const verification = pgTable('verification', (t) => ({
   createdAt: t.timestamp('createdAt', { mode: 'string' }),
   updatedAt: t.timestamp('updatedAt', { mode: 'string' }),
 }))
+
+export const whitelist = pgTable('whitelist', (t) => ({
+  id: t.text('id').primaryKey().notNull(),
+  email: t.varchar('email', { length: 200 }).notNull().unique(),
+  createdAt: t.timestamp('createdAt', { mode: 'string' }).defaultNow(),
+}))
+
+export type Whitelist = InferSelectModel<typeof whitelist>

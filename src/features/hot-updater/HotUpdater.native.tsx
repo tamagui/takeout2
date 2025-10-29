@@ -4,7 +4,7 @@ import { HotUpdater } from '@hot-updater/react-native'
 import { useCallback, useEffect, useState } from 'react'
 import { Alert, AppState, Platform } from 'react-native'
 import { DYNAMIC_CONFIGS, FEATURE_FLAGS } from '~/features/feature-flags/featureFlags'
-import { usePostHog } from '~/features/feature-flags/usePostHog'
+import { usePostHogClient } from '~/features/feature-flags/usePostHog'
 import { HotUpdaterContext } from './context'
 import type { HotUpdaterContextValue, HotUpdaterProviderProps } from './types'
 
@@ -20,7 +20,7 @@ export function HotUpdaterProvider({
   const [downloadProgress, setDownloadProgress] = useState(0)
   const [lastCheckTime, setLastCheckTime] = useState<Date | null>(null)
 
-  const posthog = usePostHog()
+  const posthog = usePostHogClient()
 
   // check if hot updates are enabled
   const isEnabled = posthog?.isFeatureEnabled(FEATURE_FLAGS.ENABLE_HOT_UPDATES) ?? false

@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { mutateThemes } from 'tamagui'
-import { setAuthClientToken } from '~/auth/client/authClient'
+import { setAuthClientToken } from '~/features/auth/client/authClient'
 import { useAsyncEffect } from '@vxrn/helpers'
 import { emptyFn } from '@vxrn/helpers'
 import { isTauri } from '@vxrn/helpers'

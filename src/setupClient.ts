@@ -1,3 +1,4 @@
+import '~/helpers/crypto/polyfill'
 import '~/features/analytics/analytics'
 import '~/posthog/posthog'
 import '~/zero/helpers/setupClientGlobalEffects'

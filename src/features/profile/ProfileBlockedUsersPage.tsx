@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ListItem, Spinner, View, YStack } from 'tamagui'
 import { images } from '~/constants/images'
 import type { User } from '~/data/models'
+import { Avatar } from '~/interface/avatars/Avatar'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { BasicHeader } from '~/interface/headers/BasicHeader'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
@@ -49,12 +50,9 @@ export const ProfileBlockedUsersPage = () => {
   const renderItem = useCallback(
     ({ item }: { item: User }) => (
       <ListItem bg="$background" hoverTheme pressTheme px="$4" py="$3">
-        <Image
-          src={item.image}
-          width={44}
-          height={44}
-          rounded="$10"
-          objectFit="cover"
+        <Avatar
+          image={item.image}
+          size={44}
           mr="$3"
         />
 

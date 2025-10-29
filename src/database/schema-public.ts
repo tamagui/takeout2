@@ -1,27 +1,10 @@
-import type { InferSelectModel } from 'drizzle-orm'
-import {
-  boolean,
-  index,
-  integer,
-  json,
-  pgTable,
-  text,
-  timestamp,
-  unique,
-  varchar,
-} from 'drizzle-orm/pg-core'
+import { boolean, index, integer, pgTable, text, unique } from 'drizzle-orm/pg-core'
 
-// Core user table
 export const userPublic = pgTable('userPublic', (t) => ({
   id: text('id').primaryKey(),
   name: text('name'),
   username: text('username'),
   image: text('image'),
-  bio: text('bio'),
-  ranking: integer('ranking'),
-  walletAddress: text('walletAddress'),
-  socialLinks: json('socialLinks'),
-  lastActive: integer('lastActive'),
   joinedAt: integer('joinedAt').notNull(),
   hasOnboarded: boolean('hasOnboarded').notNull().default(false),
   whitelisted: boolean('whitelisted').notNull().default(false),
@@ -38,22 +21,17 @@ export const userState = pgTable('userState', (t) => ({
 }))
 
 export const userStats = pgTable('userStats', (t) => ({
-  id: text('id').primaryKey(), // userId foreign key
-  followersCount: integer('followersCount').notNull().default(0),
-  followingCount: integer('followingCount').notNull().default(0),
+  id: text('id').primaryKey(),
   postsCount: integer('postsCount').notNull().default(0),
 }))
 
-// Social models
 export const post = pgTable(
   'post',
   (t) => ({
     id: text('id').primaryKey(),
     userId: text('userId').notNull(),
     image: text('image').notNull(),
-    likesCount: integer('likesCount').notNull().default(0),
     caption: text('caption'),
-    draft: boolean('draft').notNull().default(false),
     hiddenByAdmin: boolean('hiddenByAdmin').notNull().default(false),
     createdAt: integer('createdAt').notNull(),
     updatedAt: integer('updatedAt'),
@@ -61,39 +39,6 @@ export const post = pgTable(
   (table) => ({
     userIdIdx: index('post_userId_idx').on(table.userId),
     createdAtIdx: index('post_createdAt_idx').on(table.createdAt),
-  })
-)
-
-export const like = pgTable(
-  'like',
-  (t) => ({
-    id: text('id').primaryKey(),
-    userId: text('userId').notNull(),
-    postId: text('postId').notNull(),
-    createdAt: integer('createdAt').notNull(),
-  }),
-  (table) => ({
-    userPostUnique: unique('like_user_post_unique').on(table.userId, table.postId),
-    userIdIdx: index('like_userId_idx').on(table.userId),
-    postIdIdx: index('like_postId_idx').on(table.postId),
-  })
-)
-
-export const follows = pgTable(
-  'follows',
-  (t) => ({
-    id: text('id').primaryKey(),
-    followerId: text('followerId').notNull(), // user who is following
-    followingId: text('followingId').notNull(), // user being followed
-    createdAt: integer('createdAt').notNull(),
-  }),
-  (table) => ({
-    followerFollowingUnique: unique('follows_follower_following_unique').on(
-      table.followerId,
-      table.followingId
-    ),
-    followerIdIdx: index('follows_followerId_idx').on(table.followerId),
-    followingIdIdx: index('follows_followingId_idx').on(table.followingId),
   })
 )
 
@@ -137,7 +82,6 @@ export const report = pgTable(
   })
 )
 
-// Utility models
 export const device = pgTable(
   'device',
   (t) => ({
@@ -159,7 +103,6 @@ export const device = pgTable(
   })
 )
 
-// Named 'invite' for compatibility with auth system
 export const invite = pgTable(
   'invite',
   (t) => ({
@@ -180,48 +123,16 @@ export const invite = pgTable(
   })
 )
 
-// Export with both names for compatibility
-export const privateBetaInvite = invite
-
-// Admin table for special admin users
-export const admin = pgTable('admin', (t) => ({
-  id: text('id').primaryKey(),
-  name: text('name').notNull(),
-  email: text('email').notNull().unique(),
-  createdAt: integer('createdAt').notNull(),
-}))
-
-// Notification table for the social app
-export const notification = pgTable(
-  'notification',
+export const privateBetaInvite = pgTable(
+  'privateBetaInvite',
   (t) => ({
     id: text('id').primaryKey(),
-    userId: text('userId').notNull(),
-    type: text('type').notNull(), // like, follow, mention, report
-    actorId: text('actorId'), // user who triggered the notification
-    postId: text('postId'),
-    message: text('message'),
-    read: boolean('read').notNull().default(false),
+    email: text('email').notNull(),
+    accepted: boolean('accepted').notNull().default(false),
     createdAt: integer('createdAt').notNull(),
+    updatedAt: integer('updatedAt'),
   }),
   (table) => ({
-    userIdIdx: index('notification_userId_idx').on(table.userId),
-    readIdx: index('notification_read_idx').on(table.read),
-    createdAtIdx: index('notification_createdAt_idx').on(table.createdAt),
+    emailIdx: index('privateBetaInvite_email_idx').on(table.email),
   })
 )
-
-// Type exports
-export type UserPublic = InferSelectModel<typeof userPublic>
-export type UserState = InferSelectModel<typeof userState>
-export type UserStats = InferSelectModel<typeof userStats>
-export type Post = InferSelectModel<typeof post>
-export type Like = InferSelectModel<typeof like>
-export type Follows = InferSelectModel<typeof follows>
-export type Block = InferSelectModel<typeof block>
-export type Report = InferSelectModel<typeof report>
-export type Device = InferSelectModel<typeof device>
-export type Invite = InferSelectModel<typeof invite>
-export type PrivateBetaInvite = Invite
-export type Admin = InferSelectModel<typeof admin>
-export type Notification = InferSelectModel<typeof notification>

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Circle, SizableText, Spinner, YStack } from 'tamagui'
-import { useGoToNextOnboardingStep } from '~/auth/hooks/useGoToNextOnboardingStep'
+import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { images } from '~/constants/images'
 import { pickImageFromLibrary, takePhotoWithCamera } from '~/helpers/media/imagePicker'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
@@ -110,7 +110,7 @@ export const AvatarSetupPage = () => {
     // { icon: SmileyIcon, label: 'Use Emoji', onPress: handleUseEmoji },
   ]
 
-  const goToNextStep = useGoToNextOnboardingStep(['image'])
+  const { goToNextStep } = useOnboarding()
 
   return (
     <>

@@ -52,19 +52,6 @@ export type AnalyticsEvent =
       }
     }
   | {
-      type: 'user_followed'
-      properties: {
-        targetUserId: string
-        followedUserId?: string
-      }
-    }
-  | {
-      type: 'user_unfollowed'
-      properties: {
-        targetUserId: string
-      }
-    }
-  | {
       type: 'user_blocked'
       properties: {
         targetUserId: string

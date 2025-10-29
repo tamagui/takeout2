@@ -1,7 +1,7 @@
 import { useParams } from 'one'
 import { useEffect, useRef, useState } from 'react'
 import { Spinner, useDebounceValue, XStack, YStack } from 'tamagui'
-import { useGoToNextOnboardingStep } from '~/auth/hooks/useGoToNextOnboardingStep'
+import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Input } from '~/interface/forms/Input'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
@@ -75,7 +75,7 @@ export const ProfileSetupPage = () => {
     return () => clearTimeout(timer)
   }, [fromOtp])
 
-  const goToNextStep = useGoToNextOnboardingStep(['name', 'username'])
+  const { goToNextStep } = useOnboarding()
 
   const handleContinue = async () => {
     if (!user || !canContinue) return

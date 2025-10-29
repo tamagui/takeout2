@@ -50,18 +50,14 @@ interface ProfileCompletionCardsProps {
 export const ProfileCompletionCards = memo(
   ({ userInfo, postsCount }: ProfileCompletionCardsProps) => {
     const router = useRouter()
-    const hasNoSocialLinks =
-      !userInfo?.socialLinks || Object.keys(userInfo.socialLinks).length === 0
     const hasNoPosts = postsCount === 0
-    const hasNoBio = !userInfo?.bio || userInfo.bio.trim() === ''
     const hasNoDisplayName = !userInfo?.name || userInfo.name.trim() === ''
 
     const { width } = useWindowDimensions()
 
     const CARD_SIZE = (width - 36) / 2
 
-    const showCompletionCards =
-      hasNoSocialLinks || hasNoPosts || hasNoBio || hasNoDisplayName
+    const showCompletionCards = hasNoPosts || hasNoDisplayName
 
     if (!showCompletionCards) {
       return null
@@ -74,17 +70,6 @@ export const ProfileCompletionCards = memo(
           <TinyText color="$color9">Just a few things to do to get you ready!</TinyText>
         </YStack>
         <XStack gap={8} flexWrap="wrap">
-          {hasNoSocialLinks && (
-            <CardItem
-              icon={images.iconAt}
-              title="Connect socials"
-              description="Posting content is through other social platforms."
-              buttonText="Connect socials"
-              onPress={() => router.push('/user/profile-edit-socials')}
-              width={CARD_SIZE}
-              height={CARD_SIZE * 0.9}
-            />
-          )}
           {hasNoPosts && (
             <CardItem
               icon={images.iconPicture}
@@ -92,17 +77,6 @@ export const ProfileCompletionCards = memo(
               description="Make your first post by editing in the content studio."
               buttonText="Create content"
               onPress={() => router.push('/studio/create-content')}
-              width={CARD_SIZE}
-              height={CARD_SIZE * 0.9}
-            />
-          )}
-          {hasNoBio && (
-            <CardItem
-              icon={images.iconChatBubble}
-              title="Add bio"
-              description="Tell your followers a little bit about what you post."
-              buttonText="Add bio"
-              onPress={() => router.push('user/profile-edit')}
               width={CARD_SIZE}
               height={CARD_SIZE * 0.9}
             />

@@ -2,8 +2,11 @@
 // see: https://zero.rocicorp.dev/docs/custom-mutators
 
 import type { Endpoint } from 'one'
-import type { AuthData } from '~/auth/types'
-import { getAuthHeader, NotAuthenticatedError } from '~/auth/validateAuthHeader'
+import type { AuthData } from '~/features/auth/types'
+import {
+  getAuthHeader,
+  NotAuthenticatedError,
+} from '~/features/auth/server/validateAuthHeader'
 import { zeroServer } from '~/zero/server'
 
 export const POST: Endpoint = async (request) => {

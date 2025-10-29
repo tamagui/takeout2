@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { XStack, YStack } from 'tamagui'
 import { useUser } from '~/features/user/useUser'
-import { LoginSignupContents } from '../../auth/ui/LoginSignupContents'
+import { LoginSignupContents } from '../../features/auth/ui/LoginSignupContents'
 import { ButtonSimple } from '../buttons/ButtonSimple'
 import { Dialog } from './Dialog'
 import { isSignedUpEmitter } from './isSignedUpEmitter'

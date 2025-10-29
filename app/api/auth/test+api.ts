@@ -1,4 +1,4 @@
-import { authServer } from '~/auth/server/authServer'
+import { authServer } from '~/features/auth/server/authServer'
 
 export default async (req: Request) => {
   const out = await authServer.api.getSession({

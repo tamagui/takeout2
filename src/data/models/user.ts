@@ -1,23 +1,17 @@
-import { boolean, json, number, string, table } from '@rocicorp/zero'
+import { boolean, number, string, table } from '@rocicorp/zero'
 import { ensure } from '@vxrn/helpers'
 import type { TableInsertRow, TableUpdateRow } from 'over-zero'
-import { ensureLoggedIn, mutations, where } from 'over-zero'
+import { mutations, where } from 'over-zero'
 
 export type User = TableInsertRow<typeof schema>
 export type UserUpdate = TableUpdateRow<typeof schema>
-export type UserSocialLinks = Record<string, string>
 
 export const schema = table('userPublic')
   .columns({
     id: string(),
-    name: string(),
-    username: string(),
-    image: string(),
-    bio: string().optional(),
-    ranking: number().optional(),
-    walletAddress: string().optional(),
-    socialLinks: json<UserSocialLinks>().optional(),
-    lastActive: number().optional(),
+    name: string().optional(),
+    username: string().optional(),
+    image: string().optional(),
     joinedAt: number(),
     hasOnboarded: boolean(),
     whitelisted: boolean(),

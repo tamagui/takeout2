@@ -306,6 +306,37 @@ const instance = new Zero({
 })
 ```
 
+### Choosing Between useAuth and useUser
+
+We have two hooks for accessing user data, each optimized for different use cases:
+
+**useAuth** - Fast, localStorage-based auth state:
+```tsx
+import { useAuth } from '~/features/auth/client/authClient'
+
+const { user } = useAuth()
+
+// Use when threading userId into queries
+const [posts] = useQuery(
+  zero.query.post.where('userId', user?.id || ''),
+  { enabled: !!user?.id }
+)
+```
+
+**useUser** - Synced user data from Zero:
+```tsx
+import { useUser } from '~/features/user/useUser'
+
+const { user } = useUser()
+
+// Use when displaying user data in UI
+return <Text>{user?.name}</Text>
+```
+
+**Rule of thumb:**
+- `useAuth`: When you need `user.id` for query conditions (fast, no sync overhead)
+- `useUser`: When you need to display user properties like name, image, etc.
+
 ### Debug Proxy
 
 In development, queries are wrapped with a debug proxy for logging:

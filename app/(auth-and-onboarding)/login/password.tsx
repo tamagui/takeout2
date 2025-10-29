@@ -1,3 +1,3 @@
-import { PasswordPage } from '~/auth/ui/PasswordPage'
+import { PasswordPage } from '~/features/auth/ui/PasswordPage'
 
 export default PasswordPage

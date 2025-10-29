@@ -1,7 +1,7 @@
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { useEffect } from 'react'
 import { YStack } from 'tamagui'
-import { setAuthClientToken, useAuth } from '~/auth/client/authClient'
+import { setAuthClientToken, useAuth } from '~/features/auth/client/authClient'
 
 export function LoginSuccess() {
   const { session, token, user } = useAuth()

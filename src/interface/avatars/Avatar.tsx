@@ -11,7 +11,7 @@ export const Avatar = memo(
     isOnline,
     ...rest
   }: CircleProps & {
-    image: string
+    image: string | null | undefined
     size?: number | SimpleSize
     active?: boolean
     isOnline?: boolean | null

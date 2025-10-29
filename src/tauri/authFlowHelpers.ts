@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useAuth } from '~/auth/client/authClient'
+import { useAuth } from '~/features/auth/client/authClient'
 import { DESKTOP_APP_SCHEME } from './constants'
 
 const key = 'CHAT_CAME_FROM_TAURI'

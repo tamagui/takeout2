@@ -1,7 +1,7 @@
 import { $ } from 'bun'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { setupExitHandlers } from '~/helpers/setupExitHandlers'
+import { setupExitHandlers } from '~/helpers/process/setupExitHandlers'
 
 // run from ./src/tauri
 $.cwd(join(__dirname, '..'))

@@ -1,5 +1,4 @@
 import { useQuery, zero } from '~/zero/client'
-import { analytics } from '~/features/analytics/analytics'
 
 export const useLike = (
   userId: string | undefined,
@@ -22,19 +21,9 @@ export const useLike = (
   const toggleLike = async () => {
     if (!userId || !postId) return
 
-    // use the new atomic toggle mutation
     await zero.mutate.like.toggle({
-      userId,
       postId,
     }).client
-
-    // log analytics for like action
-    if (authorId) {
-      analytics.track('post_liked', {
-        postId,
-        authorId,
-      })
-    }
   }
 
   return {

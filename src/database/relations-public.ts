@@ -1,12 +1,8 @@
 import { relations } from 'drizzle-orm/relations'
 import {
-  admin,
   block,
   device,
-  follows,
   invite,
-  like,
-  notification,
   post,
   privateBetaInvite,
   report,
@@ -25,13 +21,6 @@ export const userPublicRelations = relations(userPublic, ({ one, many }) => ({
     references: [userStats.id],
   }),
   posts: many(post),
-  likes: many(like),
-  following: many(follows, {
-    relationName: 'follower',
-  }),
-  followers: many(follows, {
-    relationName: 'following',
-  }),
   blocking: many(block, {
     relationName: 'blocker',
   }),
@@ -45,7 +34,6 @@ export const userPublicRelations = relations(userPublic, ({ one, many }) => ({
     relationName: 'reported',
   }),
   devices: many(device),
-  notifications: many(notification),
   invite: one(invite, {
     fields: [userPublic.id],
     references: [invite.usedBy],
@@ -71,33 +59,7 @@ export const postRelations = relations(post, ({ one, many }) => ({
     fields: [post.userId],
     references: [userPublic.id],
   }),
-  likes: many(like),
   reports: many(report),
-  notifications: many(notification),
-}))
-
-export const likeRelations = relations(like, ({ one }) => ({
-  user: one(userPublic, {
-    fields: [like.userId],
-    references: [userPublic.id],
-  }),
-  post: one(post, {
-    fields: [like.postId],
-    references: [post.id],
-  }),
-}))
-
-export const followsRelations = relations(follows, ({ one }) => ({
-  follower: one(userPublic, {
-    fields: [follows.followerId],
-    references: [userPublic.id],
-    relationName: 'follower',
-  }),
-  following: one(userPublic, {
-    fields: [follows.followingId],
-    references: [userPublic.id],
-    relationName: 'following',
-  }),
 }))
 
 export const blockRelations = relations(block, ({ one }) => ({
@@ -153,25 +115,6 @@ export const inviteRelations = relations(invite, ({ one }) => ({
   }),
 }))
 
-// Alias for compatibility
-export const privateBetaInviteRelations = inviteRelations
-
-export const adminRelations = relations(admin, ({ one }) => ({
-  // Admin is a separate entity, not directly related to userPublic
-  // But could be linked via email if needed
-}))
-
-export const notificationRelations = relations(notification, ({ one }) => ({
-  user: one(userPublic, {
-    fields: [notification.userId],
-    references: [userPublic.id],
-  }),
-  actor: one(userPublic, {
-    fields: [notification.actorId],
-    references: [userPublic.id],
-  }),
-  post: one(post, {
-    fields: [notification.postId],
-    references: [post.id],
-  }),
+export const privateBetaInviteRelations = relations(privateBetaInvite, ({ one }) => ({
+  // No relations needed for privateBetaInvite as it's a simple whitelist table
 }))

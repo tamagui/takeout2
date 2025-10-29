@@ -2,7 +2,7 @@
 
 import { $ } from 'bun'
 import { writeFileSync } from 'node:fs'
-import { setupExitHandlers } from '~/helpers/setupExitHandlers'
+import { setupExitHandlers } from '~/helpers/process/setupExitHandlers'
 
 console.info('Starting Tauri CI build process...')
 

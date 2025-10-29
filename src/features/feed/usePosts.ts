@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useAuth } from '~/auth/client/authClient'
+import { useAuth } from '~/features/auth/client/authClient'
 import type { Post } from '~/data/models'
 import { useQuery, zero } from '~/zero/client'
 
@@ -51,11 +51,6 @@ export function usePostsPaginated(pageSize = 10) {
   const query = useMemo(() => {
     let q = zero.query.post
       .where((eb) => {
-        // TODO[hiddenByAdmin][2]: enable this after the third deploy when we have the hiddenByAdmin field fully rolled out
-        // const draftCondition = eb.and(
-        //   eb.cmp('draft', false),
-        //   eb.cmp('hiddenByAdmin', false)
-        // )
         const draftCondition = eb.cmp('draft', false)
 
         if (!user?.id) {

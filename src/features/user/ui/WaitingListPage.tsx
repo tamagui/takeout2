@@ -1,8 +1,8 @@
 import { router } from 'one'
 import { Linking } from 'react-native'
 import { XStack, YStack } from 'tamagui'
-import { authClient } from '~/auth/client/authClient'
-import { useAfterLoginRedirect } from '~/auth/hooks/useAfterLoginRedirect'
+import { authClient } from '~/features/auth/client/authClient'
+import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { DISCORD_INVITE_URL } from '~/constants/app'
 import { BasicHeader } from '~/interface/headers/BasicHeader'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
@@ -13,7 +13,7 @@ import { MediumText } from '~/interface/text/Body'
 import { H3 } from '~/interface/text/Headings'
 
 export const WaitingListPage = () => {
-  useAfterLoginRedirect()
+  useOnboarding()
 
   const handleLogout = async () => {
     try {

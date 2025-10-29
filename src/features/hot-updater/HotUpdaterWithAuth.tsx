@@ -1,5 +1,5 @@
-import { useAuth } from '~/auth/client/authClient'
-import type { AuthData } from '~/auth/types'
+import { useAuth } from '~/features/auth/client/authClient'
+import type { AuthData } from '~/features/auth/types'
 import { HotUpdaterProvider } from './HotUpdater'
 
 export function HotUpdaterWithAuth({ children }: { children: React.ReactNode }) {

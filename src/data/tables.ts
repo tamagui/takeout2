@@ -2,7 +2,6 @@
 
 export { schema as block } from '~/data/models/block'
 export { schema as device } from '~/data/models/device'
-export { schema as follows } from '~/data/models/follows'
 export { schema as like } from '~/data/models/like'
 export { schema as post } from '~/data/models/post'
 export { schema as privateBetaInvite } from '~/data/models/privateBetaInvite'

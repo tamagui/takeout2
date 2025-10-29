@@ -39,8 +39,3 @@ export const usePostHogClient = () => {
     reloadFeatureFlags,
   }
 }
-
-// Alias for backward compatibility with old code
-export const useStatsigClient = usePostHogClient
-export const useStatsig = usePostHogClient
-export const usePostHog = usePostHogClient

@@ -1,1 +1,2 @@
-export { FEATURE_FLAGS, featureFlags, type FeatureFlag } from './featureFlags'
+export { FEATURE_FLAGS, type FeatureFlag } from './featureFlags'
+export { useFeatureFlag } from './useFeatureFlag'

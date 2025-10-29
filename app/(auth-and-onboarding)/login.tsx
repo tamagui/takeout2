@@ -1,8 +1,8 @@
 import { router } from 'one'
 import { useEffect } from 'react'
 import { YStack } from 'tamagui'
-import { useAuth } from '~/auth/client/authClient'
-import { LoginSignupContents } from '~/auth/ui/LoginSignupContents'
+import { useAuth } from '~/features/auth/client/authClient'
+import { LoginSignupContents } from '~/features/auth/ui/LoginSignupContents'
 
 export default function LoginPage() {
   const { session } = useAuth()

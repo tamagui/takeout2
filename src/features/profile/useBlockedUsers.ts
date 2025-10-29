@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useAuth } from '~/auth/client/authClient'
+import { useAuth } from '~/features/auth/client/authClient'
 import type { User } from '~/data/models'
 import { useQuery, zero } from '~/zero/client'
 

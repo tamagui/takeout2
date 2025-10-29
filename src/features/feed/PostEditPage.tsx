@@ -1,46 +1,57 @@
+import { Image } from 'expo-image'
 import { router, useParams } from 'one'
-import { useEffect, useState } from 'react'
-import { ScrollView, SizableText, TextArea, View, YStack } from 'tamagui'
-import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
+import { useEffect, useRef, useState } from 'react'
+import { Alert } from 'react-native'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
+import Animated, { FadeIn } from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { type Input, SizableText, TextArea, useWindowDimensions, View, YStack } from 'tamagui'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { BasicHeader } from '~/interface/headers/BasicHeader'
-import { Image } from '~/interface/image/Image'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { showToast } from '~/interface/toast/helpers'
 import { useQuery, zero } from '~/zero/client'
 
 export const PostEditPage = () => {
   const { postId } = useParams<{ postId: string }>()
-  const [caption, setCaption] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const textAreaRef = useRef<Input>(null)
+  const { bottom } = useSafeAreaInsets()
+  const [captionText, setCaptionText] = useState<string>('')
+  const [isSaving, setIsSaving] = useState<boolean>(false)
+  const { width } = useWindowDimensions()
 
-  // Fetch the post data
   const [post] = useQuery(zero.query.post.where('id', postId || '').one(), {
     enabled: Boolean(postId),
   })
 
   useEffect(() => {
-    if (post) {
-      setCaption(post.caption || '')
+    if (post?.caption) {
+      setCaptionText(post.caption)
     }
-  }, [post])
+  }, [post?.caption])
 
   const hasUnsavedChanges = () => {
-    return caption.trim() !== (post?.caption || '').trim()
+    return captionText.trim() !== (post?.caption || '').trim()
   }
 
   const handleBack = () => {
     if (hasUnsavedChanges()) {
-      showErrorSheet({
-        title: 'Unsaved Changes',
-        description:
-          'You have unsaved changes. Are you sure you want to leave without saving?',
-        buttonText: 'Leave',
-        cancelText: 'Stay',
-        buttonAction: () => {
-          router.back()
-        },
-      })
+      Alert.alert(
+        'Unsaved Changes',
+        'You have unsaved changes. Are you sure you want to leave without saving?',
+        [
+          {
+            text: 'Stay',
+            style: 'cancel',
+          },
+          {
+            text: 'Leave',
+            style: 'destructive',
+            onPress: () => router.back(),
+          },
+        ],
+        { cancelable: true }
+      )
     } else {
       router.back()
     }
@@ -49,83 +60,81 @@ export const PostEditPage = () => {
   const handleSave = async () => {
     if (!post || !postId) return
 
-    setIsLoading(true)
+    setIsSaving(true)
     try {
-      // Update the post
       await zero.mutate.post.update({
         id: postId,
-        caption: caption,
+        caption: captionText.trim(),
       })
 
-      showToast('Post updated successfully', { type: 'success' })
+      showToast('Caption updated', { type: 'success' })
       router.back()
     } catch (error) {
-      console.error('Failed to update post:', error)
-      showToast('Failed to update post', { type: 'error' })
+      console.error('Error updating caption:', error)
+      showToast('Failed to update caption', { type: 'error' })
     } finally {
-      setIsLoading(false)
+      setIsSaving(false)
     }
   }
 
-  if (!post) {
-    return (
-      <YStack flex={1} bg="$background">
-        <BasicHeader title="Edit Post" BackIcon={CaretLeftIcon} />
-        <View flex={1} items="center" justify="center">
-          <SizableText color="$color10">Loading...</SizableText>
-        </View>
-      </YStack>
-    )
-  }
-
   return (
-    <YStack flex={1} bg="$background">
+    <View flex={1} bg="$color1">
       <BasicHeader title="Edit Post" BackIcon={CaretLeftIcon} onClose={handleBack} />
 
-      <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-        <YStack p="$4" gap="$4">
-          {/* Post Image */}
-          {post.image && (
-            <View rounded="$4" overflow="hidden">
-              <Image src={post.image} width="100%" height={300} objectFit="cover" />
-            </View>
+      <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+        <YStack flex={1} px={14}>
+          <SizableText size="$3" color="$color11" fontWeight="600" mb="$2">
+            Post image
+          </SizableText>
+          {post?.image && (
+            <Animated.View entering={FadeIn.duration(300)}>
+              <YStack
+                rounded="$6"
+                overflow="hidden"
+                width={width - 28}
+                height={width - 28}
+                bg="$color2"
+                mb="$3"
+              >
+                <Image
+                  source={post.image}
+                  style={{ width: '100%', height: '100%' }}
+                  transition={200}
+                />
+              </YStack>
+            </Animated.View>
           )}
 
-          {/* Caption Editor */}
-          <YStack gap="$2">
-            <SizableText size="$2" color="$color10" fontWeight="600">
-              CAPTION
-            </SizableText>
+          <SizableText size="$3" color="$color11" fontWeight="600" mb="$2">
+            Caption
+          </SizableText>
+          <YStack>
             <TextArea
-              value={caption}
+              ref={textAreaRef}
               verticalAlign="top"
-              onChangeText={setCaption}
-              placeholder="Write a caption..."
-              height={120}
+              rows={6}
+              size="$4"
+              fontWeight="500"
+              placeholder="Enter a caption..."
+              rounded={12}
               bg="$color2"
-              borderWidth={1}
-              borderColor="$borderColor"
-              rounded="$3"
-              p="$3"
-              fontSize="$4"
-              disabled={isLoading}
+              borderColor="$color6"
+              value={captionText}
+              onChangeText={setCaptionText}
             />
-            <SizableText size="$1" color="$color9" text="right">
-              {caption.length} characters
-            </SizableText>
           </YStack>
-
-          {/* Save Button */}
-          <ButtonSimple
-            size="large"
-            theme="accent"
-            disabled={isLoading || caption.length < 1 || caption === (post.caption || '')}
-            onPress={handleSave}
-          >
-            {isLoading ? 'Saving...' : 'Save Changes'}
-          </ButtonSimple>
         </YStack>
-      </ScrollView>
-    </YStack>
+      </KeyboardAwareScrollView>
+
+      <View px="$4" pb={bottom + 8} pt="$2">
+        <ButtonSimple
+          onPress={handleSave}
+          disabled={!captionText.trim() || captionText.trim() === post?.caption}
+          variant="default"
+        >
+          {isSaving ? 'Saving...' : 'Save Changes'}
+        </ButtonSimple>
+      </View>
+    </View>
   )
 }

@@ -1,20 +1,21 @@
-import { useState } from 'react'
 import { ScrollView, YStack, Text } from 'tamagui'
 import { FEATURE_FLAGS } from '~/features/feature-flags'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { BasicHeader } from '~/interface/headers/BasicHeader'
 import { PageHeading } from '~/interface/text/PageHeading'
-import { usePostHog } from '~/features/feature-flags/usePostHog'
+import { usePostHogClient } from '~/features/feature-flags/usePostHog'
 
 export function FeatureFlagsUI() {
-  const posthog = usePostHog()
-  const [showDetails, setShowDetails] = useState(false)
+  const posthog = usePostHogClient()
 
   return (
     <ScrollView>
       <YStack gap="$4" px="$4" py="$4">
         <BasicHeader title="Feature Flags" />
         <PageHeading title="Feature Flags" />
+
+        <Text fontSize="$3" color="$color9">
+          Minimal feature flag configuration for demo app
+        </Text>
 
         <YStack gap="$2">
           <Text fontSize="$5" fontWeight="600">
@@ -32,23 +33,14 @@ export function FeatureFlagsUI() {
           ))}
         </YStack>
 
-        <ButtonSimple size="large" onPress={() => setShowDetails(!showDetails)}>
-          <ButtonSimple.Text>
-            {showDetails ? 'Hide' : 'Show'} Debug Info
-          </ButtonSimple.Text>
-        </ButtonSimple>
-
-        {showDetails && (
-          <YStack gap="$2" px="$3" py="$3" bg="$color2" rounded="$2">
-            <Text fontSize="$2" fontFamily="$mono">
-              PostHog Debug Info
-            </Text>
-            <Text fontSize="$1" color="$color8">
-              Feature flags are managed by PostHog. Check the PostHog dashboard for
-              configuration.
-            </Text>
-          </YStack>
-        )}
+        <YStack gap="$2" px="$3" py="$3" bg="$color2" rounded="$2">
+          <Text fontSize="$2" fontFamily="$mono">
+            PostHog Integration
+          </Text>
+          <Text fontSize="$1" color="$color8">
+            Feature flags are managed via PostHog. Configure them in the PostHog dashboard.
+          </Text>
+        </YStack>
       </YStack>
     </ScrollView>
   )

@@ -6,7 +6,6 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
 import { Spinner, useDebounceValue, View, XStack, YStack } from 'tamagui'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Input } from '~/interface/forms/Input'
-import { TextArea } from '~/interface/forms/TextArea'
 import { BasicHeader } from '~/interface/headers/BasicHeader'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
@@ -30,7 +29,6 @@ export const ProfileEditPage = () => {
 
   const [username, setUsername] = useState<string>(user?.username || '')
   const [name, setName] = useState<string>(user?.name || '')
-  const [bio, setBio] = useState<string>(user?.bio || '')
   const [isUsernameBlocked, setIsUsernameBlocked] = useState<boolean>(false)
 
   // Debounce username for availability check
@@ -71,8 +69,7 @@ export const ProfileEditPage = () => {
 
   const hasUnsavedChanges =
     trimmedUsername !== user?.username ||
-    name.trim() !== user?.name ||
-    bio.trim() !== (user?.bio || '')
+    name.trim() !== user?.name
 
   const canSave =
     isUsernameValid && !isCheckingAvailability && !isUnavailable && hasUnsavedChanges
@@ -88,7 +85,6 @@ export const ProfileEditPage = () => {
       await update({
         username: username.trim(),
         name: name.trim(),
-        bio: bio.trim(),
       }).server
 
       showToast('Profile updated', {
@@ -121,12 +117,6 @@ export const ProfileEditPage = () => {
       if (isUsernameBlocked) {
         setIsUsernameBlocked(false)
       }
-    }
-  }
-
-  const handleBioChange = (text: string) => {
-    if (text.length <= 75) {
-      setBio(text)
     }
   }
 
@@ -224,29 +214,6 @@ export const ProfileEditPage = () => {
                 Must be 3+ chars, start with letter, only letters/numbers/_
               </TinyText>
             ) : null}
-          </YStack>
-          <YStack>
-            <XStack justify="space-between" items="center" mb="$2">
-              <MediumText fontWeight="500" color="$color11">
-                Bio
-              </MediumText>
-              <MediumText color="$color9">{bio.length}/75</MediumText>
-            </XStack>
-            <TextArea
-              width="100%"
-              verticalAlign="top"
-              placeholder="Tell us about yourself"
-              value={bio}
-              onChangeText={handleBioChange}
-              maxLength={75}
-              height={150}
-              p="$3"
-              bg="$color2"
-              borderWidth={1}
-              borderColor="$borderColor"
-              rounded="$4"
-              placeholderTextColor="$color10"
-            />
           </YStack>
         </YStack>
       </KeyboardAwareScrollView>

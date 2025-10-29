@@ -4,7 +4,6 @@
 
 export type { Block } from '~/data/models/block'
 export type { Device } from '~/data/models/device'
-export type { Follows } from '~/data/models/follows'
 export type { Like } from '~/data/models/like'
 export type { Post } from '~/data/models/post'
 export type { Report } from '~/data/models/report'
@@ -14,7 +13,6 @@ export type { UserStats } from '~/data/models/userStats'
 
 import * as block from '~/data/models/block'
 import * as device from '~/data/models/device'
-import * as follows from '~/data/models/follows'
 import * as like from '~/data/models/like'
 import * as post from '~/data/models/post'
 import * as report from '~/data/models/report'
@@ -28,8 +26,7 @@ export const models = {
   userState,
   userStats,
   post,
-  like,
-  follows,
   block,
+  like,
   report,
 }

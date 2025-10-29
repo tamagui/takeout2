@@ -17,21 +17,6 @@ export const userRelationships = relationships(tables.userPublic, ({ many, one }
     destSchema: tables.post,
     destField: ['userId'],
   }),
-  likes: many({
-    sourceField: ['id'],
-    destSchema: tables.like,
-    destField: ['userId'],
-  }),
-  following: many({
-    sourceField: ['id'],
-    destSchema: tables.follows,
-    destField: ['followerId'],
-  }),
-  followers: many({
-    sourceField: ['id'],
-    destSchema: tables.follows,
-    destField: ['followingId'],
-  }),
   blocking: many({
     sourceField: ['id'],
     destSchema: tables.block,
@@ -60,41 +45,10 @@ export const postRelationships = relationships(tables.post, ({ one, many }) => (
     destSchema: tables.userPublic,
     destField: ['id'],
   }),
-  likes: many({
-    sourceField: ['id'],
-    destSchema: tables.like,
-    destField: ['postId'],
-  }),
   reports: many({
     sourceField: ['id'],
     destSchema: tables.report,
-    destField: ['targetId'],
-  }),
-}))
-
-export const likeRelationships = relationships(tables.like, ({ one }) => ({
-  user: one({
-    sourceField: ['userId'],
-    destSchema: tables.userPublic,
-    destField: ['id'],
-  }),
-  post: one({
-    sourceField: ['postId'],
-    destSchema: tables.post,
-    destField: ['id'],
-  }),
-}))
-
-export const followsRelationships = relationships(tables.follows, ({ one }) => ({
-  follower: one({
-    sourceField: ['followerId'],
-    destSchema: tables.userPublic,
-    destField: ['id'],
-  }),
-  following: one({
-    sourceField: ['followingId'],
-    destSchema: tables.userPublic,
-    destField: ['id'],
+    destField: ['reportedPostId'],
   }),
 }))
 
@@ -156,8 +110,6 @@ export const userStatsRelationships = relationships(tables.userStats, ({ one }) 
 export const allRelationships = [
   userRelationships,
   postRelationships,
-  likeRelationships,
-  followsRelationships,
   blockRelationships,
   reportRelationships,
   deviceRelationships,

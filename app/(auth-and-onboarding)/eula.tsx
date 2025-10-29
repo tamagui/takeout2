@@ -1,3 +1,3 @@
-import { EULAPage } from '~/auth/ui/EULAPage'
+import { EULAPage } from '~/features/auth/ui/EULAPage'
 
 export default EULAPage

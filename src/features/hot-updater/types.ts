@@ -1,4 +1,4 @@
-import type { AuthData } from '~/auth/types'
+import type { AuthData } from '~/features/auth/types'
 
 export interface HotUpdaterContextValue {
   isUpdateAvailable: boolean

@@ -2,13 +2,13 @@ import { useRouter } from 'one'
 import { useState } from 'react'
 import { Pressable } from 'react-native'
 import { SizableText } from 'tamagui'
-import { useGoToNextOnboardingStep } from '~/auth/hooks/useGoToNextOnboardingStep'
+import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Input } from '~/interface/forms/Input'
 import { EnvelopeSimpleIcon } from '~/interface/icons/phosphor/EnvelopeSimpleIcon'
 import { useUser } from '../useUser'
 import { OnboardingStepPageLayout } from './OnboardingStepPageLayout'
-import { authClient } from '~/auth/client/authClient'
+import { authClient } from '~/features/auth/client/authClient'
 import { SERVER_URL } from '~/constants/urls'
 import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
 
@@ -18,7 +18,7 @@ export const StayConnectedPage = () => {
   const [isUpdating, setIsUpdating] = useState(false)
   const { user, update } = useUser()
 
-  const goToNextStep = useGoToNextOnboardingStep(['email'])
+  const { goToNextStep } = useOnboarding()
 
   const isValidEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -45,13 +45,6 @@ export const StayConnectedPage = () => {
   }
 
   const handleSkip = () => {
-    // TODO: mark email step as skipped with a better way?
-    // TODO: `userPublic.email` is deprecated so we need another way to mark this step as skipped
-    if (user?.id) {
-      // update({
-      //   email: 'unknown@skipped.example.com',
-      // })
-    }
     goToNextStep()
   }
 

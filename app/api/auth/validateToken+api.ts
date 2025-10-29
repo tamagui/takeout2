@@ -1,5 +1,5 @@
 import type { Endpoint } from 'one'
-import { validateToken } from '~/auth/validateToken'
+import { validateToken } from '~/features/auth/server/validateToken'
 
 export const POST: Endpoint = async (req) => {
   const body = await req.json()

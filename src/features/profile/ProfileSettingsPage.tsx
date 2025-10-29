@@ -1,8 +1,7 @@
 import { router } from 'one'
 import { Alert, Linking } from 'react-native'
 import { ScrollView, SizableText, View, XStack, YStack } from 'tamagui'
-import { authClient, clearAuthClientToken } from '~/auth/client/authClient'
-import { FEATURE_FLAGS } from '~/features/feature-flags'
+import { authClient, clearAuthClientToken } from '~/features/auth/client/authClient'
 import { useUser } from '~/features/user/useUser'
 import { getHumanReadableVersionString } from '~/helpers/getHumanReadableVersionString'
 import { Pressable } from '~/interface/buttons/Pressable'
@@ -19,12 +18,10 @@ import { LockIcon } from '~/interface/icons/phosphor/LockIcon'
 import { ShieldCheckIcon } from '~/interface/icons/phosphor/ShieldCheckIcon'
 import { ShootingStarIcon } from '~/interface/icons/phosphor/ShootingStarIcon'
 import { UserIcon } from '~/interface/icons/phosphor/UserIcon'
-import { WalletIcon } from '~/interface/icons/phosphor/WalletIcon'
 import { Image } from '~/interface/image/Image'
 import { RepeatedTapToShowDevTools } from '~/interface/interactions/RepeatedTapToShowDevTools'
 import { H4 } from '~/interface/text/Headings'
 import { showToast } from '~/interface/toast/helpers'
-import { useStatsigClient } from '~/features/feature-flags/usePostHog'
 import {
   APP_NAME_LOWERCASE,
   HELP_REQUESTS_URL,
@@ -49,8 +46,6 @@ interface SettingSection {
 }
 
 export const ProfileSettingsPage = () => {
-  const { client } = useStatsigClient()
-  const showWallet = client.checkGate(FEATURE_FLAGS.PROFILE_ENABLE_WALLET)
   const { isAdmin } = useUser()
 
   const handleLogout = () => {
@@ -91,12 +86,6 @@ export const ProfileSettingsPage = () => {
     {
       title: 'Account',
       items: [
-        // {
-        //   id: 'notifications',
-        //   title: 'Notifications',
-        //   icon: BellIcon,
-        //   hasSwitch: true,
-        // },
         {
           id: 'profile',
           title: 'Profile',
@@ -108,23 +97,6 @@ export const ProfileSettingsPage = () => {
           title: 'Blocked Users',
           icon: ShieldCheckIcon,
           route: '/user/profile-blocked-users',
-        },
-        // {
-        //   id: 'preferences',
-        //   title: 'Preferences',
-        //   icon: ListDashesIcon,
-        //   route: '/settings/preferences',
-        // },
-      ],
-    },
-    {
-      title: 'Wallet',
-      items: [
-        {
-          id: 'export',
-          title: 'Export Wallet',
-          icon: WalletIcon,
-          route: '/settings/export-wallet',
         },
       ],
     },
@@ -203,11 +175,6 @@ export const ProfileSettingsPage = () => {
     },
   ]
 
-  // Filter sections based on feature flags
-  const sections = showWallet
-    ? allSections
-    : allSections.filter((section) => section.title !== 'Wallet')
-
   const handleItemPress = (item: SettingItem) => {
     if (item.action) {
       item.action()
@@ -283,7 +250,7 @@ export const ProfileSettingsPage = () => {
 
       <ScrollView flex={1} showsVerticalScrollIndicator={false}>
         <YStack flex={1} pb="$10">
-          {sections.map((section, sectionIndex) => (
+          {allSections.map((section, sectionIndex) => (
             <YStack key={section.title} mb="$6">
               <SizableText
                 size="$2"

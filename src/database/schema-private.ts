@@ -1,13 +1,7 @@
-import { pgTable } from 'drizzle-orm/pg-core'
 import type { InferSelectModel } from 'drizzle-orm'
+import { pgTable } from 'drizzle-orm/pg-core'
 
-export const migrations = pgTable('migrations', (t) => ({
-  id: t.serial('id').primaryKey(),
-  name: t.varchar('name', { length: 255 }).notNull(),
-  runOn: t.timestamp('run_on', { mode: 'string' }).defaultNow().notNull(),
-}))
-
-export type Migration = InferSelectModel<typeof migrations>
+export type Whitelist = InferSelectModel<typeof whitelist>
 
 export const user = pgTable('user', (t) => ({
   id: t.varchar('id').primaryKey(),
@@ -82,5 +76,3 @@ export const whitelist = pgTable('whitelist', (t) => ({
   email: t.varchar('email', { length: 200 }).notNull().unique(),
   createdAt: t.timestamp('createdAt', { mode: 'string' }).defaultNow(),
 }))
-
-export type Whitelist = InferSelectModel<typeof whitelist>

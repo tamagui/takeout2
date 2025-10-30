@@ -2,7 +2,7 @@ import { useFocusEffect, usePathname, useRouter } from 'one'
 import { useCallback, useMemo } from 'react'
 import { zero } from '~/zero/client'
 import { useUser } from '~/features/user/useUser'
-import { useGoBackToHome } from '~/hooks/useGoBackToHome'
+import { useGoBackToHome } from '~/helpers/useGoBackToHome'
 import { getNextOnboardingStep } from './getNextOnboardingStep'
 import type { OnboardingStep } from './types'
 

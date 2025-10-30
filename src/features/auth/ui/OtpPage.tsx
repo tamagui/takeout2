@@ -1,17 +1,17 @@
 import { useParams } from 'one'
 import { useEffect, useState } from 'react'
 import { Keyboard } from 'react-native'
-import { SizableText, YStack } from 'tamagui'
-import { useTimer } from '~/hooks/useTimer'
+import { SizableText, useEvent, YStack } from 'tamagui'
+import { useOnboarding } from '~/features/onboarding/useOnboarding'
+import { useTimer } from '~/helpers/time/useTimer'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
+import { isSmallScreen } from '~/interface/dimensions'
 import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
 import { otpLogin, sendLoginOtpCode } from '../client/otpLogin'
-import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { OtpInput } from './OtpInput'
-import { isSmallScreen } from '~/interface/dimensions'
 
 export const OtpPage = () => {
   const [timerCount, resetTimer, pauseTimer] = useTimer()
@@ -27,10 +27,6 @@ export const OtpPage = () => {
 
   const displayValue =
     params.value || (isPhone ? '1 (203) 962-2415' : 'example@gmail.com')
-
-  const onResetTimer = () => {
-    resetTimer(30, true)
-  }
 
   const handleResendOtp = async () => {
     if (!params.method || !params.value) {
@@ -68,12 +64,7 @@ export const OtpPage = () => {
     }
   }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <no need>
-  useEffect(() => {
-    onResetTimer()
-  }, [])
-
-  const handleContinue = async () => {
+  const handleContinue = useEvent(async () => {
     if (!params.method || !params.value) {
       showErrorSheet({
         title: 'Error',
@@ -110,14 +101,13 @@ export const OtpPage = () => {
       setLoading(false)
       throw err
     }
-  }
+  })
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <no need handleContinue>
   useEffect(() => {
     if (otpCode.length === 6) {
       handleContinue()
     }
-  }, [otpCode])
+  }, [handleContinue, otpCode])
 
   return (
     <StepPageLayout

@@ -28,7 +28,7 @@ export const OtpPage = () => {
   const displayValue =
     params.value || (isPhone ? '1 (203) 962-2415' : 'example@gmail.com')
 
-  const handleResendOtp = async () => {
+  const handleResendOtp = useEvent(async () => {
     if (!params.method || !params.value) {
       showErrorSheet({
         title: 'Error',
@@ -52,17 +52,19 @@ export const OtpPage = () => {
         })
       }
 
-      if (error) {
-        setIsError(true)
-      } else {
-        setIsError(false)
-      }
-
+      setIsError(!!error)
       resetTimer(30, true)
     } finally {
       setLoading(false)
     }
-  }
+  })
+
+  const handleCodeChanged = useEvent((code: string) => {
+    setOtpCode(code)
+    if (isError && code.length < 6) {
+      setIsError(false)
+    }
+  })
 
   const handleContinue = useEvent(async () => {
     if (!params.method || !params.value) {
@@ -138,12 +140,7 @@ export const OtpPage = () => {
           key={otpKey}
           autoFocus
           otpCount={6}
-          onCodeChanged={(code) => {
-            setOtpCode(code)
-            if (isError && code.length < 6) {
-              setIsError(false)
-            }
-          }}
+          onCodeChanged={handleCodeChanged}
           defaultValue={otpCode}
           isError={isError}
         />

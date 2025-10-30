@@ -1,10 +1,13 @@
 import { useFocusEffect, usePathname, useRouter } from 'one'
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
+import { useEvent } from 'tamagui'
 import { zero } from '~/zero/client'
 import { useUser } from '~/features/user/useUser'
 import { useGoBackToHome } from '~/helpers/useGoBackToHome'
 import { getNextOnboardingStep } from './getNextOnboardingStep'
 import type { OnboardingStep } from './types'
+
+const isAdminUser = (username?: string) => username === 'nate' || username === 'admin'
 
 /**
  * A single hook to manage the entire onboarding flow.
@@ -23,14 +26,19 @@ export function useOnboarding() {
   const pathname = usePathname()
   const goBackToHome = useGoBackToHome()
 
+  const onboardingConfig = useMemo(
+    () => ({
+      waitingListEnabled: false,
+      userRole: isAdminUser(user?.username ?? undefined) ? 'admin' : ('user' as const),
+    }),
+    [user?.username]
+  )
+
   // Calculate the current step based on user data
   const currentStep = useMemo<OnboardingStep | null>(() => {
     if (!user) return null
 
-    const nextRoute = getNextOnboardingStep(user, {
-      waitingListEnabled: false,
-      userRole: user.username === 'nate' || user.username === 'admin' ? 'admin' : 'user',
-    })
+    const nextRoute = getNextOnboardingStep(user, onboardingConfig)
 
     if (nextRoute === null) {
       return 'complete'
@@ -44,18 +52,15 @@ export function useOnboarding() {
     if (nextRoute === '/notifications') return 'notifications'
 
     return null
-  }, [user])
+  }, [user, onboardingConfig])
 
   const isComplete = currentStep === 'complete'
 
   // Navigate to the next onboarding step
-  const goToNextStep = useCallback(async () => {
+  const goToNextStep = useEvent(async () => {
     if (!user) return
 
-    const nextRoute = getNextOnboardingStep(user, {
-      waitingListEnabled: false,
-      userRole: user.username === 'nate' || user.username === 'admin' ? 'admin' : 'user',
-    })
+    const nextRoute = getNextOnboardingStep(user, onboardingConfig)
 
     if (nextRoute) {
       router.push(nextRoute)
@@ -64,15 +69,17 @@ export function useOnboarding() {
       await zero.mutate.userPublic.completeSignup(user.id)
       goBackToHome()
     }
-  }, [user, router, goBackToHome])
+  })
 
-  useFocusEffect(() => {
+  const completeSignupAndGoHome = useEvent(async () => {
+    if (!user) return
+    await zero.mutate.userPublic.completeSignup(user.id)
+    goBackToHome()
+  })
+
+  const handleFocusEffect = useEvent(() => {
     if (!isLoading && isLoggedIn && user) {
-      const nextRoute = getNextOnboardingStep(user, {
-        waitingListEnabled: false,
-        userRole:
-          user.username === 'nate' || user.username === 'admin' ? 'admin' : 'user',
-      })
+      const nextRoute = getNextOnboardingStep(user, onboardingConfig)
 
       if (nextRoute) {
         if (pathname === nextRoute) {
@@ -80,15 +87,14 @@ export function useOnboarding() {
         }
         router.push(nextRoute)
       } else if (!user.hasOnboarded) {
-        ;(async () => {
-          await zero.mutate.userPublic.completeSignup(user.id)
-          goBackToHome()
-        })()
+        completeSignupAndGoHome()
       } else {
         goBackToHome()
       }
     }
-  }, [isLoading, isLoggedIn, user, router, goBackToHome, pathname])
+  })
+
+  useFocusEffect(handleFocusEffect, [])
 
   return {
     currentStep,

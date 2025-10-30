@@ -2,7 +2,7 @@ import { useParams, useRouter } from 'one'
 import { memo, useLayoutEffect, useRef, useState } from 'react'
 import { Keyboard } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Checkbox, SizableText, XStack, YStack } from 'tamagui'
+import { Checkbox, SizableText, useEvent, XStack, YStack } from 'tamagui'
 import { APP_NAME, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '~/constants/app'
 import { Link } from '~/features/routing/Link'
 import { formatPhoneNumber } from '~/helpers/number/formatNumber'
@@ -64,7 +64,14 @@ export const SignupPage = memo(() => {
     return ''
   }
 
-  const handleContinue = async () => {
+  const toggleSmsConsent = useEvent(() => setSmsConsent((v) => !v))
+  const handleSmsConsentChange = useEvent((val: boolean | 'indeterminate') =>
+    setSmsConsent(!!val)
+  )
+  const stopPropagation = useEvent((e: any) => e.stopPropagation())
+  const handleGoBack = useEvent(() => router.back())
+
+  const handleContinue = useEvent(async () => {
     if (!method) {
       showErrorSheet({
         title: 'Error',
@@ -102,7 +109,7 @@ export const SignupPage = memo(() => {
       clearTimeout(tm)
       setLoading(false)
     }
-  }
+  })
 
   const renderSmsConsent = () => {
     if (!isPhone) return null
@@ -110,7 +117,7 @@ export const SignupPage = memo(() => {
     return (
       <Pressable
         data-testid="sms-consent-container"
-        onPress={() => setSmsConsent((v) => !v)}
+        onPress={toggleSmsConsent}
         borderWidth={1}
         borderColor="$color6"
         rounded="$6"
@@ -121,7 +128,7 @@ export const SignupPage = memo(() => {
             data-testid="sms-consent-checkbox"
             size="$7"
             checked={smsConsent}
-            onCheckedChange={(val) => setSmsConsent(!!val)}
+            onCheckedChange={handleSmsConsentChange}
             overflow="hidden"
           >
             <Checkbox.Indicator backgroundColor="#AB4ABA" padding={8}>
@@ -136,7 +143,7 @@ export const SignupPage = memo(() => {
             <XStack gap="$2" flexWrap="wrap">
               <Link
                 href={PRIVACY_POLICY_URL}
-                onPress={(e) => e.stopPropagation()}
+                onPress={stopPropagation}
                 textDecorationLine="underline"
                 fontSize={14}
                 color="$accent8"
@@ -146,7 +153,7 @@ export const SignupPage = memo(() => {
               <SizableText opacity={0.3}>|</SizableText>
               <Link
                 href={TERMS_OF_SERVICE_URL}
-                onPress={(e) => e.stopPropagation()}
+                onPress={stopPropagation}
                 textDecorationLine="underline"
                 fontSize={14}
                 color="$accent8"
@@ -190,7 +197,7 @@ export const SignupPage = memo(() => {
     return (
       <YStack flex={1} bg="$background" pt={top} px="$4">
         <XStack items="center" gap="$3">
-          <Pressable onPress={() => router.back()}>
+          <Pressable onPress={handleGoBack}>
             <CaretLeftIcon size={24} />
           </Pressable>
         </XStack>

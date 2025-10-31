@@ -65,7 +65,7 @@ export default {
             '*/zlib/*',
             '*/@nandorojo/galeria/*',
             '*/expo-video/*',
-            '*/@hot-updater/*',
+            '*/hot-updater/*',
             '*/expo/internal/*',
           ],
         },
@@ -126,6 +126,16 @@ export default {
         validator: true,
         zlib: false,
         'expo/internal/unstable-autolinking-exports': false,
+
+        '@hot-updater/plugin-core': {
+          'dist/index.cjs': (contents) => {
+            // patch require('mime') to use dynamic import workaround
+            return contents?.replace(
+              'let mime = require("mime");',
+              'let mime = { getType: () => "application/octet-stream", getExtension: () => null };'
+            )
+          },
+        },
 
         '@expo/cli': {
           'build/src/export/embed/exportEmbedAsync.js': (contents) => {

@@ -1,4 +1,4 @@
-import '~/features/crypto/setup' // `better-auth/client/plugins` uses `@better-auth/utils` which requires `crypto` in globalThis
+import '~/helpers/crypto/polyfill.native' // `better-auth/client/plugins` uses `@better-auth/utils` which requires `crypto` in globalThis
 
 import { expoClient } from '@better-auth/expo/client'
 import type { BetterAuthClientPlugin } from 'better-auth'

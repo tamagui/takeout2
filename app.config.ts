@@ -16,7 +16,7 @@ if (
 const IS_DEV = APP_VARIANT === 'development'
 
 const getBundleId = () => {
-  const base = `com.${appId}.app`
+  const base = `com.takeout.app`
 
   if (APP_VARIANT === 'development') {
     return `${base}.dev`
@@ -28,7 +28,7 @@ const getBundleId = () => {
 }
 
 const getAppIcon = () => {
-  return './assets/apps/app-icon.png'
+  return './assets/icon.png'
 }
 
 const version = '0.0.6'
@@ -45,8 +45,8 @@ export default {
           return ''
       }
     })()}`,
-    slug: 'fxy-vxrn',
-    owner: `${appId}_labs`,
+    slug: 'takeout',
+    owner: 'takeout',
     scheme: appId,
     version,
     runtimeVersion: version, // must be set to use hot-updater "appVersion" update strategy
@@ -78,10 +78,9 @@ export default {
       package: getBundleId().replaceAll('-', '_'),
       icon: getAppIcon(),
       adaptiveIcon: {
-        foregroundImage: './assets/apps/foregroundImage.png',
-        backgroundImage: './assets/apps/backgroundImage.png',
+        foregroundImage: './assets/adaptive-icon.png',
+        backgroundColor: '#ecd20d',
       },
-      edgeToEdgeEnabled: false,
       permissions: ['android.permission.RECORD_AUDIO'],
     },
     primaryColor: '#FFFFFF',
@@ -89,7 +88,6 @@ export default {
       'vxrn/expo-plugin',
       'expo-secure-store',
       'expo-web-browser',
-      'react-native-quick-crypto',
       'react-native-bottom-tabs',
       [
         'expo-build-properties',
@@ -134,30 +132,30 @@ export default {
           ],
         },
       ],
-      [
-        'expo-font',
-        {
-          fonts: [
-            './assets/fonts/Inter-Black.ttf',
-            './assets/fonts/Inter-Bold.ttf',
-            './assets/fonts/Inter-Light.ttf',
-            './assets/fonts/Inter-Medium.ttf',
-            './assets/fonts/Inter-Regular.ttf',
-            './assets/fonts/Inter-SemiBold.ttf',
-            './assets/fonts/inter-tight/InterTight-Light.ttf',
-            './assets/fonts/inter-tight/InterTight-Medium.ttf',
-            './assets/fonts/inter-tight/InterTight-SemiBold.ttf',
-          ],
-        },
-      ],
+      // Custom fonts
+      // [
+      //   'expo-font',
+      //   {
+      //     fonts: [
+      //       './assets/fonts/Inter-Black.ttf',
+      //       './assets/fonts/Inter-Bold.ttf',
+      //       './assets/fonts/Inter-Light.ttf',
+      //       './assets/fonts/Inter-Medium.ttf',
+      //       './assets/fonts/Inter-Regular.ttf',
+      //       './assets/fonts/Inter-SemiBold.ttf',
+      //     ],
+      //   },
+      // ],
       [
         'expo-splash-screen',
         {
-          backgroundColor: '#1c1d23',
-          image: './assets/splash/logo.png',
+          backgroundColor: '#ecd20d',
+          image: './assets/logo.png',
           imageWidth: 80,
+          imageHeight: 80,
         },
       ],
+      // temporarily disabled due to module compatibility issue with mime package
       [
         '@hot-updater/react-native',
         {
@@ -167,7 +165,7 @@ export default {
     ],
     extra: {
       eas: {
-        projectId: '3fb17679-9226-4a55-bf26-25ab9c3473e8',
+        projectId: '9c6754b4-4688-4f51-8c28-55f0b018bc32',
       },
     },
   } satisfies ExpoConfig,

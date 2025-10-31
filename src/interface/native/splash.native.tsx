@@ -1,23 +1,23 @@
 import MaskedView from '@react-native-masked-view/masked-view'
+import * as SplashScreen from 'expo-splash-screen'
 import type { ReactNode } from 'react'
 import { Fragment, useEffect, useState } from 'react'
 import { StyleSheet } from 'react-native'
-import * as SplashScreen from 'expo-splash-screen'
 import Animated, {
   Easing,
   useAnimatedStyle,
   useSharedValue,
   withDelay,
   withTiming,
-  runOnJS,
 } from 'react-native-reanimated'
-import { View, Image } from 'tamagui'
+import { runOnJS } from 'react-native-worklets'
+import { View } from 'tamagui'
 
 // prevent auto-hiding the splash screen
 SplashScreen.preventAutoHideAsync()
 
 const manifest = {
-  background: '#1c1d23',
+  background: '#ecd20d',
   logo: {
     width: 80,
     height: 80,

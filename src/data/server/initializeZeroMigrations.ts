@@ -1,4 +1,4 @@
-import { sql } from '@vxrn/postgres'
+import { sql } from '~/database/helpers'
 import { handleError } from '~/features/errors/handleError'
 import { migrations } from './migrations'
 

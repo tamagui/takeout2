@@ -1,11 +1,5 @@
-import { boolean, enumeration, number, string, table } from '@rocicorp/zero'
-import type { TableInsertRow } from 'over-zero'
+import { boolean, number, string, table } from '@rocicorp/zero'
 import { mutations, where } from 'over-zero'
-
-// TODO
-type DeviceType = string
-
-export type Device = TableInsertRow<typeof schema>
 
 export const schema = table('device')
   .columns({

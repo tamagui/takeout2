@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '~/features/auth/client/authClient'
-import type { User } from '~/data/models'
+import type { User } from '~/data/types'
 import { useQuery, zero } from '~/zero/client'
+import { blockedByUser } from '~/data/generated/queries'
 
 interface UseBlockedUsersOptions {
   pageSize?: number
@@ -15,19 +16,13 @@ export function useBlockedUsers(options?: UseBlockedUsersOptions) {
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
   const [hasInitialLoad, setHasInitialLoad] = useState<boolean>(false)
 
-  const blocksQuery = useMemo(() => {
-    if (!user?.id) return null
-
-    return zero.query.block
-      .where('blockerId', user.id)
-      .orderBy('createdAt', 'desc')
-      .limit(pageSize * (currentPage + 1))
-      .related('blocked')
-  }, [user?.id, pageSize, currentPage])
-
-  const [blocks, status] = useQuery(blocksQuery!, {
-    enabled: Boolean(user?.id),
-  })
+  const [blocks, status] = useQuery(
+    blockedByUser,
+    { userId: user?.id || '', limit: pageSize * (currentPage + 1) },
+    {
+      enabled: Boolean(user?.id),
+    }
+  )
 
   useMemo(() => {
     if (blocks) {

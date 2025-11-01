@@ -65,7 +65,6 @@ const ListItemComponent = ({
             menuInstance.popup()
           },
         })}
-      // @ts-expect-error
       {...(props.editable && {
         onKeyDown: (e: KeyboardEvent) => {
           setStartEdit(Date.now())

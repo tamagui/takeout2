@@ -1,4 +1,4 @@
-import type { Post } from '~/data/models'
+import type { Post } from '~/data/types'
 import { saveRemoteImage } from '~/helpers/media/saveImage'
 import type { SheetRef } from '~/interface/sheet/Sheet'
 import { isNative } from '~/constants/platform'

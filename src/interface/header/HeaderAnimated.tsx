@@ -1,10 +1,10 @@
 import type React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import Animated, { useAnimatedStyle } from 'react-native-reanimated'
+import Animated, { type SharedValue, useAnimatedStyle } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 interface HeaderAnimatedProps {
-  headerOpacity: Animated.SharedValue<number>
+  headerOpacity: SharedValue<number>
   headerTitle?: string
   headerSubtitle?: string
   onBackPress?: () => void

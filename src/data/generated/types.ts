@@ -1,5 +1,5 @@
 import type { TableInsertRow, TableUpdateRow } from 'over-zero'
-import type * as schema from '../tables'
+import type * as schema from './tables'
 
 export type Block = TableInsertRow<typeof schema.block>
 export type BlockUpdate = TableUpdateRow<typeof schema.block>

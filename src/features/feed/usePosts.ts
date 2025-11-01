@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '~/features/auth/client/authClient'
-import type { Post } from '~/data/models'
+import type { Post } from '~/data/types'
 import { useQuery, zero } from '~/zero/client'
+import { allPosts, postsByUserId } from '~/data/generated/queries'
 
 interface UsePostsOptions {
   limit?: number
@@ -12,11 +13,7 @@ interface UsePostsOptions {
 export function usePosts(options?: UsePostsOptions) {
   const { limit = 20 } = options || {}
 
-  const query = useMemo(() => {
-    return zero.query.post.orderBy('createdAt', 'desc').orderBy('id', 'desc').limit(limit)
-  }, [limit])
-
-  const [posts, status] = useQuery(query)
+  const [posts, status] = useQuery(allPosts, { limit })
 
   return {
     posts: (posts || []) as Post[],

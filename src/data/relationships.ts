@@ -1,5 +1,5 @@
 import { relationships } from '@rocicorp/zero'
-import * as tables from './tables'
+import * as tables from './generated/tables'
 
 export const userRelationships = relationships(tables.userPublic, ({ many, one }) => ({
   state: one({

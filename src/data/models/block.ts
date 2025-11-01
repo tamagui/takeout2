@@ -1,8 +1,6 @@
 import { number, string, table } from '@rocicorp/zero'
 import { randomId } from '@vxrn/helpers'
-import { ensureLoggedIn, mutations, where, type TableInsertRow } from 'over-zero'
-
-export type Block = TableInsertRow<typeof schema>
+import { ensureLoggedIn, mutations, where } from 'over-zero'
 
 export const schema = table('block')
   .columns({
@@ -44,6 +42,7 @@ export const mutate = mutations(schema, permissions, {
       .where('blockerId', authData.id)
       .where('blockedId', blockedUserId)
       .one()
+      .run()
 
     if (block?.id) {
       await tx.mutate.block.delete({ id: block.id })

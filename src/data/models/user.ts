@@ -1,10 +1,7 @@
 import { boolean, number, string, table } from '@rocicorp/zero'
 import { ensure } from '@vxrn/helpers'
-import type { TableInsertRow, TableUpdateRow } from 'over-zero'
 import { mutations, where } from 'over-zero'
-
-export type User = TableInsertRow<typeof schema>
-export type UserUpdate = TableUpdateRow<typeof schema>
+import type { UserUpdate } from '../types'
 
 export const schema = table('userPublic')
   .columns({

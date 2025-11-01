@@ -3,7 +3,7 @@ import { useMemo, type ReactNode } from 'react'
 import { isClient, isWeb } from 'tamagui'
 import { useAuth } from '~/features/auth/client/authClient'
 import type { AuthData } from '~/features/auth/types'
-import { models } from '~/data/models'
+import { models } from '~/data/generated/models'
 import { schema } from '~/data/schema'
 
 const disable = false

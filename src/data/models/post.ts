@@ -1,8 +1,6 @@
 import { boolean, number, string, table } from '@rocicorp/zero'
-import { mutations, where, type TableInsertRow } from 'over-zero'
-import { isUsersOwn } from './queries/isUsersOwn'
-
-export type Post = TableInsertRow<typeof schema>
+import { mutations, where } from 'over-zero'
+import type { Post } from '../types'
 
 export const schema = table('post')
   .columns({
@@ -35,18 +33,20 @@ export const mutate = mutations(schema, permissions, {
   },
 
   delete: async ({ tx, environment, server, authData }, obj: { id: string }) => {
-    const post = await tx.query.post.where('id', obj.id).one()
-
     await tx.mutate.post.delete({ id: obj.id })
 
-    if (environment === 'server' && server && authData && post) {
-      server.asyncTasks.push(() =>
-        server.actions.analyticsActions().logEvent(authData.id, 'post_deleted', {
-          postId: obj.id,
-          postAge: post?.createdAt ? Date.now() - post.createdAt : undefined,
-          hasImage: Boolean(post?.image),
-        })
-      )
+    if (environment === 'server' && server && authData) {
+      const post = await tx.query.post.where('id', obj.id).one().run()
+
+      if (post) {
+        server.asyncTasks.push(() =>
+          server.actions.analyticsActions().logEvent(authData.id, 'post_deleted', {
+            postId: obj.id,
+            postAge: post?.createdAt ? Date.now() - post.createdAt : undefined,
+            hasImage: Boolean(post?.image),
+          })
+        )
+      }
     }
   },
 })

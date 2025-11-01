@@ -1,10 +1,7 @@
-import { boolean, number, string, table } from '@rocicorp/zero'
-import { mutations, where, type TableInsertRow } from 'over-zero'
+import { number, string, table } from '@rocicorp/zero'
 import { randomId } from '@vxrn/helpers'
+import { mutations, where } from 'over-zero'
 
-export type Report = TableInsertRow<typeof schema>
-
-// schema for content and user reports
 export const schema = table('report')
   .columns({
     id: string(),
@@ -20,14 +17,11 @@ export const schema = table('report')
   })
   .primaryKey('id')
 
-// permissions - reports are private, only accessible via mutations
 const permissions = where('report', (_, auth) => {
   return _.cmpLit(auth?.role || '', '=', 'admin')
 })
 
-// mutations
 export const mutate = mutations(schema, permissions, {
-  // report a post
   reportPost: async (
     { tx, authData },
     data: {
@@ -52,7 +46,6 @@ export const mutate = mutations(schema, permissions, {
     })
   },
 
-  // report a user
   reportUser: async (
     { tx, authData },
     data: {

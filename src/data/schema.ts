@@ -1,6 +1,6 @@
 import { createSchema } from '@rocicorp/zero'
 import { allRelationships } from './relationships'
-import * as tables from './tables'
+import * as tables from './generated/tables'
 
 const allTables = Object.values(tables)
 

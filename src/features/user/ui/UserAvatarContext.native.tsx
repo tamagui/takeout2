@@ -2,7 +2,7 @@ import { memo, type ReactNode } from 'react'
 import { ContextMenu, Button } from '@expo/ui/swift-ui'
 import { showToast } from '~/interface/toast/Toast'
 import { useUser } from '~/features/user/useUser'
-import type { User } from '~/data/models'
+import type { User } from '~/data/types'
 
 interface UserAvatarContextProps {
   targetUser: User | null

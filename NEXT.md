@@ -1,3 +1,5 @@
+- invite pavel to repo for uncloud integration
+
 general:
 
 - zero migrations needs improvement - lambda / part of migrate likely

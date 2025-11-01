@@ -239,7 +239,7 @@ async function updatePackages(packagesToUpdate: string[], cwd: string) {
     console.info("✅ Final 'bun install' completed successfully.")
   } catch (error: any) {
     const errorMessage = error.message?.split('\n')[0]
-    console.error(`🚨 Final \'bun install\' failed. Error: ${errorMessage}`)
+    console.error(`🚨 Final 'bun install' failed. Error: ${errorMessage}`)
     console.error(
       'Your dependencies might be in an inconsistent state. Please check manually.'
     )

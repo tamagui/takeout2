@@ -1,4 +1,4 @@
-// @ts-ignore - no hot-updater types
+// @ts-expect-error - no hot-updater types
 import { HotUpdater } from '@hot-updater/react-native'
 
 import { useCallback, useEffect, useState } from 'react'

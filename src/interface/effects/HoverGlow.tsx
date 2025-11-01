@@ -119,9 +119,9 @@ export function useHoverGlow(props: HoverGlowProps) {
 
         if (process.env.NODE_ENV === 'development' && props.debug) {
           if (parentNode) {
-            // @ts-ignore
+            // @ts-expect-error
             if (!parentNode['originalBorderStyle']) {
-              // @ts-ignore
+              // @ts-expect-error
               parentNode['originalBorderStyle'] = parentNode.style.border || 'none'
             }
             Object.assign(parentNode.style, {
@@ -158,7 +158,7 @@ height: ${parentBounds.height}`
       if (!props.debug) {
         if (!parentNode) return
         Object.assign(parentNode.style, {
-          // @ts-ignore
+          // @ts-expect-error
           border: parentNode['originalBorderStyle'],
         })
       }

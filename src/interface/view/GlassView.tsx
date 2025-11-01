@@ -74,7 +74,7 @@ export const GlassView = memo(
             borderColor="rgba(255, 255, 255, 0.2)"
             z={2}
             pointerEvents="none"
-            // @ts-ignore - CSS properties for web
+            // @ts-expect-error - CSS properties for web
             style={{
               boxShadow: `
               inset 1px 1px 0.5px 0 rgba(255, 255, 255, 0.5),

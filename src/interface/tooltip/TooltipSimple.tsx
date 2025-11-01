@@ -145,13 +145,13 @@ export const GlobalTooltipProvider = ({
       }}
       {...tooltipProps}
       {...(disabled ? { open: false } : null)}
-      // @ts-ignore
+      // @ts-expect-error
       zIndex={Z_INDICES.tooltip}
     >
       {providerChildren}
 
       <Tooltip.Content
-        // @ts-ignore
+        // @ts-expect-error
         zIndex={Z_INDICES.tooltip}
         enterStyle={{ x: 0, y: -3, opacity: 0 }}
         exitStyle={{ x: 0, y: -3, opacity: 0 }}

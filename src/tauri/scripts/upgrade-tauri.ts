@@ -70,11 +70,11 @@ function compareVersions(npmVersion: string, cargoVersion: string): boolean {
   const cargoParts = cargoVersion.split('.')
 
   // compare major and minor versions
-  const npmMajor = parseInt(npmParts[0] || '0')
-  const npmMinor = parseInt(npmParts[1] || '0')
+  const npmMajor = parseInt(npmParts[0] || '0', 10)
+  const npmMinor = parseInt(npmParts[1] || '0', 10)
 
-  const cargoMajor = parseInt(cargoParts[0] || '0')
-  const cargoMinor = parseInt(cargoParts[1] || '0')
+  const cargoMajor = parseInt(cargoParts[0] || '0', 10)
+  const cargoMinor = parseInt(cargoParts[1] || '0', 10)
 
   return npmMajor === cargoMajor && npmMinor === cargoMinor
 }

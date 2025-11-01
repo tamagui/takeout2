@@ -147,8 +147,8 @@ async function getConnectionLimits(client: PoolClient): Promise<[number, number]
   )
 
   return [
-    Number.parseInt(maxConnectionsResult.rows[0].max_connections),
-    Number.parseInt(reservedConnectionResult.rows[0].superuser_reserved_connections),
+    Number.parseInt(maxConnectionsResult.rows[0].max_connections, 10),
+    Number.parseInt(reservedConnectionResult.rows[0].superuser_reserved_connections, 10),
   ]
 }
 
@@ -160,7 +160,10 @@ async function getOpenedConnections(client: PoolClient): Promise<number> {
     'SELECT numbackends as opened_connections FROM pg_stat_database WHERE datname = $1',
     [dbName]
   )
-  const result = Number.parseInt(openConnectionsResult.rows[0]?.opened_connections || 0)
+  const result = Number.parseInt(
+    openConnectionsResult.rows[0]?.opened_connections || 0,
+    10
+  )
   console.info(`Opened connections: ${result}`)
   return result
 }

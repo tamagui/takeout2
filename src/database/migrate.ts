@@ -13,13 +13,13 @@ import type { PoolClient } from 'pg'
 // Removed migrateInitialApps - not needed for social media starter
 import { getDBClient } from './helpers/getDBClient'
 
-// @ts-ignore
+// @ts-expect-error
 import zeroPermissionsSql from './migrations/permissions.sql?raw'
-// @ts-ignore
+// @ts-expect-error
 const migrationsTS = import.meta.glob(`./migrations/*.ts`)
 
 // vite tries to eval this at build time :/
-// @ts-ignore
+// @ts-expect-error
 const PROCESS_ENV = globalThis['process']['env']
 type Migration = {
   name: string

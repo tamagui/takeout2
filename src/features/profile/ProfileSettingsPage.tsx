@@ -283,11 +283,11 @@ function LogoAndVersion() {
         <YStack items="center" pb={100} pt="$4" onPress={handleTap}>
           <XStack>
             <Image
-              src={require('../../../assets/apps/logo-white.png')}
+              src={require('../../../assets/logo.png')}
               width={20}
               height={24}
               objectFit="contain"
-              tintColor="grey"
+              tintColor="white"
             />
             <H4 color="$color8" fontWeight="600">
               {APP_NAME_LOWERCASE}

@@ -40,11 +40,11 @@ export const WaitingListPage = () => {
           <RepeatedTapToShowDevTools>
             {({ handleTap }) => (
               <Image
-                src={require('../../../../assets/apps/logo-white.png')}
+                src={require('../../../../assets/logo.png')}
                 width={22}
                 height={56}
                 objectFit="contain"
-                tintColor="$color12"
+                tintColor="white"
                 onPress={handleTap}
               />
             )}

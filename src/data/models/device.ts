@@ -23,11 +23,8 @@ export const schema = table('device')
   })
   .primaryKey('id')
 
-export const permissions = where('device', (_, auth) => {
-  return {
-    read: _.cmp('userId', auth?.id || ''),
-    write: _.cmp('userId', auth?.id || ''),
-  }
+const permissions = where('device', (_, auth) => {
+  return _.cmp('userId', auth?.id || '')
 })
 
 export const mutate = mutations(schema, permissions)

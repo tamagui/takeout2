@@ -26,8 +26,8 @@ button:focus,
 a:focus,
 [tabindex]:focus,
 [contenteditable]:focus {
-  outline: none !important;
-  box-shadow: none !important;
+  outline: none;
+  box-shadow: none;
 }
 
 :root {
@@ -90,9 +90,9 @@ body
   > :is(.css-175oi2r, .css-view-175oi2r)
   > span
   > :is(.css-175oi2r, .css-view-175oi2r) {
-  height: 100vh !important;
-  width: 100vw !important;
-  overflow: hidden !important;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
 }
 
 /* default links to not underline */
@@ -141,7 +141,7 @@ a {
 
 .text-underline-none {
   text-decoration: none;
-  text-decoration-thickness: 0px !important;
+  text-decoration-thickness: 0px;
 }
 
 a.is_Button {

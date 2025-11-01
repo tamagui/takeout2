@@ -1,9 +1,9 @@
 import { isTauri } from '@vxrn/helpers'
 
 async function saveInTauri(data: string | Blob, filename: string) {
-  // @ts-ignore - tauri plugins only available in tauri environment
+  // @ts-expect-error - tauri plugins only available in tauri environment
   const { save } = await import('@tauri-apps/plugin-dialog')
-  // @ts-ignore - tauri plugins only available in tauri environment
+  // @ts-expect-error - tauri plugins only available in tauri environment
   const { writeTextFile, writeBinaryFile } = await import('@tauri-apps/plugin-fs')
 
   const extension = filename.split('.').pop() || ''

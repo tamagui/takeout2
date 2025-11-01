@@ -38,7 +38,7 @@ async function getNextVersion(): Promise<string> {
   }
 
   const [, major, minor, patch, suffix = ''] = versionParts
-  const newMinor = parseInt(minor!) + 1
+  const newMinor = parseInt(minor!, 10) + 1
   const newVersion = `${major}.${newMinor}.0${suffix}`
 
   console.info(`Next version: ${newVersion}`)

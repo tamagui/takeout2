@@ -13,12 +13,8 @@ export const schema = table('block')
   })
   .primaryKey('id')
 
-export const permissions = where('block', (eb, auth) => {
-  // TODO
-  return {
-    read: true,
-    write: true,
-  }
+const permissions = where('block', (_, auth) => {
+  return true
 })
 
 export const mutate = mutations(schema, permissions, {
@@ -49,7 +45,7 @@ export const mutate = mutations(schema, permissions, {
       .where('blockedId', blockedUserId)
       .one()
 
-    if (block) {
+    if (block?.id) {
       await tx.mutate.block.delete({ id: block.id })
 
       if (environment === 'server' && server) {

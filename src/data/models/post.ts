@@ -16,11 +16,8 @@ export const schema = table('post')
   })
   .primaryKey('id')
 
-export const permissions = where('post', (_, auth) => {
-  return {
-    read: true,
-    write: isUsersOwn(_, auth),
-  }
+const permissions = where('post', (_, auth) => {
+  return true
 })
 
 export const mutate = mutations(schema, permissions, {
@@ -46,8 +43,8 @@ export const mutate = mutations(schema, permissions, {
       server.asyncTasks.push(() =>
         server.actions.analyticsActions().logEvent(authData.id, 'post_deleted', {
           postId: obj.id,
-          postAge: post.createdAt ? Date.now() - post.createdAt : undefined,
-          hasImage: Boolean(post.image),
+          postAge: post?.createdAt ? Date.now() - post.createdAt : undefined,
+          hasImage: Boolean(post?.image),
         })
       )
     }

@@ -21,11 +21,8 @@ export const schema = table('report')
   .primaryKey('id')
 
 // permissions - reports are private, only accessible via mutations
-export const permissions = where('report', (_, auth) => {
-  return {
-    read: _.cmpLit(auth?.role || '', '=', 'admin'), // reports are private, only admins can read
-    write: _.cmpLit(auth?.role || '', '=', 'admin'), // only admin can do direct write, other users should use mutation
-  }
+const permissions = where('report', (_, auth) => {
+  return _.cmpLit(auth?.role || '', '=', 'admin')
 })
 
 // mutations

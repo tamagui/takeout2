@@ -10,11 +10,8 @@ export const schema = table('userProfile')
   })
   .primaryKey('id')
 
-export const permissions = where('userProfile', (_, auth) => {
-  return {
-    read: true, // Everyone can read profile
-    write: _.cmp('id', auth?.id || ''), // Only user can update their own profile
-  }
+const permissions = where('userProfile', (_, auth) => {
+  return _.cmp('id', auth?.id || '')
 })
 
 export const mutate = mutations(schema, permissions, {
@@ -33,14 +30,15 @@ export const mutate = mutations(schema, permissions, {
     amount = 1
   ) => {
     if (!authData) throw new Error('Not authenticated')
-    await can(permissions, 'write', authData.id)
+    await can(permissions, authData.id)
 
     const profile = await tx.query.userProfile.one().where('id', authData.id)
     if (!profile) throw new Error('User profile not found')
 
+    const currentValue = profile[stat as keyof typeof profile] as number | undefined
     await tx.mutate.userProfile.update({
       id: authData.id,
-      [stat]: (profile[stat] as number) + amount,
+      [stat]: (currentValue || 0) + amount,
     })
   },
 
@@ -50,7 +48,7 @@ export const mutate = mutations(schema, permissions, {
     updates: Partial<Omit<UserProfile, 'id'>>
   ) => {
     if (!authData) throw new Error('Not authenticated')
-    await can(permissions, 'write', authData.id)
+    await can(permissions, authData.id)
 
     await tx.mutate.userProfile.update({
       id: authData.id,

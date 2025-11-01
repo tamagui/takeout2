@@ -19,13 +19,8 @@ export const schema = table('userState')
   })
   .primaryKey('userId')
 
-export const permissions = where('userState', (_, auth) => {
-  const userId = auth?.id || ''
-
-  return {
-    read: _.cmp('userId', userId), // only user can read their own state
-    write: _.cmp('userId', userId), // only user can edit their own state
-  }
+const permissions = where('userState', (_, auth) => {
+  return _.cmp('userId', auth?.id || '')
 })
 
 export const mutate = mutations(schema, permissions)

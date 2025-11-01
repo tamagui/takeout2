@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 
-import { getDockerHost } from '../helpers/get-docker-host'
-import { getTestEnv } from '../helpers/get-test-env'
-import { handleProcessExit } from '../helpers/handleProcessExit'
-import { run } from '../helpers/run'
+import { getDockerHost } from '@vxrn/scripts/helpers/get-docker-host'
+import { getTestEnv } from '@vxrn/scripts/helpers/get-test-env'
+import { handleProcessExit } from '@vxrn/scripts/helpers/handleProcessExit'
+import { run } from '@vxrn/scripts/helpers/run'
 
 export async function getTestWebEnv() {
   const testEnv = await getTestEnv()

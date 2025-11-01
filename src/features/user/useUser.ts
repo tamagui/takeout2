@@ -1,6 +1,7 @@
 import { ensure } from '@vxrn/helpers'
+import { userById } from '~/data/queries/user'
+import type { User } from '~/data/types'
 import { useAuth } from '~/features/auth/client/authClient'
-import type { User } from '~/data/models'
 import { useQuery, zero } from '~/zero/client'
 import { isUserOnline } from './isUserOnline'
 
@@ -8,9 +9,13 @@ export const useUser = () => {
   const auth = useAuth()
   const userId = auth.user?.id || ''
 
-  const [user, status] = useQuery(zero.query.userPublic.where('id', userId).one(), {
-    enabled: !!userId,
-  })
+  const [user, status] = useQuery(
+    userById,
+    { userId },
+    {
+      enabled: !!userId,
+    }
+  )
 
   return {
     ...auth,

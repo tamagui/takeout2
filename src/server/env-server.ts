@@ -25,3 +25,5 @@ export const VITE_POSTHOG_HOST = ensureEnv('VITE_POSTHOG_HOST', "")
 
 // all of the env in this block is set by sst, which calls loadEnv do not ensureEnv here:
 export const ZERO_UPSTREAM_DB = process.env.ZERO_UPSTREAM_DB || ''
+export const ZERO_CVR_DB = process.env.ZERO_CVR_DB || ''
+export const ZERO_CHANGE_DB = process.env.ZERO_CHANGE_DB || ''

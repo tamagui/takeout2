@@ -1,10 +1,7 @@
 import { boolean, number, string, table } from '@rocicorp/zero'
 import { ensure } from '@vxrn/helpers'
-import type { TableInsertRow, TableUpdateRow } from 'over-zero'
 import { mutations, where } from 'over-zero'
-
-export type User = TableInsertRow<typeof schema>
-export type UserUpdate = TableUpdateRow<typeof schema>
+import type { UserUpdate } from '../types'
 
 export const schema = table('userPublic')
   .columns({
@@ -19,15 +16,8 @@ export const schema = table('userPublic')
   })
   .primaryKey('id')
 
-export const permissions = where('userPublic', (_, auth) => {
-  return {
-    read: true,
-    write: _.or(
-      // indent
-      _.cmpLit(auth?.role || '', '=', 'admin'),
-      _.cmp('id', auth?.id || '')
-    ),
-  }
+const permissions = where('userPublic', (_, auth) => {
+  return _.or(_.cmpLit(auth?.role || '', '=', 'admin'), _.cmp('id', auth?.id || ''))
 })
 
 export const mutate = mutations(schema, permissions, {
@@ -57,7 +47,7 @@ export const mutate = mutations(schema, permissions, {
 
   update: async ({ authData, can, tx, environment, server }, user: UserUpdate) => {
     ensure(authData)
-    await can(permissions, 'write', authData.id)
+    await can(permissions, authData.id)
 
     // Create a mutable copy for modification
     let updateData = { ...user }
@@ -86,7 +76,7 @@ export const mutate = mutations(schema, permissions, {
 
   delete: async ({ authData, server, can, environment, tx }, _user: UserUpdate) => {
     ensure(authData)
-    await can(permissions, 'write', authData.id)
+    await can(permissions, authData.id)
 
     // only perform deletion on server
     if (environment === 'server' && server) {
@@ -108,7 +98,7 @@ export const mutate = mutations(schema, permissions, {
 
   finishOnboarding: async ({ tx, can, authData }) => {
     ensure(authData)
-    await can(permissions, 'write', authData.id)
+    await can(permissions, authData.id)
     await tx.mutate.userPublic.update({
       id: authData.id,
       hasOnboarded: true,

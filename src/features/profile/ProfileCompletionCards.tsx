@@ -2,7 +2,7 @@ import { useRouter } from 'one'
 import { memo } from 'react'
 import { useWindowDimensions, XStack, YStack } from 'tamagui'
 import { images } from '~/constants/images'
-import type { User } from '~/data/models'
+import type { User } from '~/data/types'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Image } from '~/interface/image/Image'
 import { MediumText, TinyText } from '~/interface/text/Body'
@@ -70,7 +70,7 @@ export const ProfileCompletionCards = memo(
           <TinyText color="$color9">Just a few things to do to get you ready!</TinyText>
         </YStack>
         <XStack gap={8} flexWrap="wrap">
-          {hasNoPosts && (
+          {/* {hasNoPosts && (
             <CardItem
               icon={images.iconPicture}
               title="Create content"
@@ -80,14 +80,14 @@ export const ProfileCompletionCards = memo(
               width={CARD_SIZE}
               height={CARD_SIZE * 0.9}
             />
-          )}
+          )} */}
           {hasNoDisplayName && (
             <CardItem
               icon={images.iconPencil}
               title="Edit name"
               description="Allow people to discover you by your real name or anything."
               buttonText="Edit name"
-              onPress={() => router.push('user/profile-edit')}
+              onPress={() => router.push('/user/profile-edit')}
               width={CARD_SIZE}
               height={CARD_SIZE * 0.9}
             />

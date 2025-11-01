@@ -1,8 +1,8 @@
 import type { BetterAuthClientPlugin } from 'better-auth'
 import {
   adminClient,
-  magicLinkClient,
   emailOTPClient,
+  magicLinkClient,
   phoneNumberClient,
 } from 'better-auth/client/plugins'
 import { platformClient } from './platformClient'

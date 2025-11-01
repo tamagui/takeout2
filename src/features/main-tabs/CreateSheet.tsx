@@ -11,12 +11,12 @@ let sheetRef: SheetRef | null = null
 export const CreateSheet = () => {
   const handleNewPost = () => {
     sheetRef?.collapse()
-    router.push(`/studio/draft/new`)
+    // router.push(`/studio/draft/new`)
   }
 
   const handleNewContent = () => {
     sheetRef?.collapse()
-    router.push('/studio/create-content')
+    // router.push('/studio/create-content')
   }
 
   const options = [

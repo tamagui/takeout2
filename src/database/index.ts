@@ -1,5 +1,5 @@
 import { drizzle } from 'drizzle-orm/node-postgres'
-import pg from 'pg' // esm compat import
+import { Pool } from 'pg'
 import { ZERO_UPSTREAM_DB } from '~/server/env-server'
 import * as schemaPrivate from './schema-private'
 import * as schemaPublic from './schema-public'
@@ -10,7 +10,7 @@ const schema = {
 }
 
 export const createPool = (connectionString?: string) => {
-  return new pg.Pool({
+  return new Pool({
     connectionString: connectionString || ZERO_UPSTREAM_DB,
   })
 }

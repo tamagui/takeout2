@@ -1,4 +1,4 @@
-import { router } from 'one'
+import { router, type Href } from 'one'
 import { Alert, Linking } from 'react-native'
 import { ScrollView, SizableText, View, XStack, YStack } from 'tamagui'
 import { authClient, clearAuthClientToken } from '~/features/auth/client/authClient'
@@ -35,7 +35,7 @@ interface SettingItem {
   title: string
   icon?: React.ComponentType<any>
   action?: () => void
-  route?: string
+  route?: Href
   url?: string
   hasSwitch?: boolean
 }
@@ -135,44 +135,45 @@ export const ProfileSettingsPage = () => {
         },
       ],
     },
-    ...(isAdmin
-      ? [
-          {
-            title: 'Admin',
-            items: [
-              {
-                id: 'admin',
-                title: 'Admin Panel',
-                icon: GearIcon,
-                route: '/admin',
-              },
-              {
-                id: 'whitelist',
-                title: 'Manage Whitelist',
-                icon: ShieldCheckIcon,
-                route: '/admin/whitelist',
-              },
-              {
-                id: 'user-reports',
-                title: 'User Reports',
-                icon: ShieldCheckIcon,
-                route: '/admin/user-reports',
-              },
-            ],
-          },
-        ]
-      : []),
-    {
-      title: 'Other',
-      items: [
-        {
-          id: 'logout',
-          title: 'Log Out',
-          icon: DoorIcon,
-          action: handleLogout,
-        },
-      ],
-    },
+    // TODO
+    // ...(isAdmin
+    //   ? [
+    //       {
+    //         title: 'Admin',
+    //         items: [
+    //           {
+    //             id: 'admin',
+    //             title: 'Admin Panel',
+    //             icon: GearIcon,
+    //             route: '/admin',
+    //           },
+    //           {
+    //             id: 'whitelist',
+    //             title: 'Manage Whitelist',
+    //             icon: ShieldCheckIcon,
+    //             route: '/admin/whitelist',
+    //           },
+    //           {
+    //             id: 'user-reports',
+    //             title: 'User Reports',
+    //             icon: ShieldCheckIcon,
+    //             route: '/admin/user-reports',
+    //           },
+    //         ],
+    //       },
+    //     ]
+    //   : []),
+    // {
+    //   title: 'Other',
+    //   items: [
+    //     {
+    //       id: 'logout',
+    //       title: 'Log Out',
+    //       icon: DoorIcon,
+    //       action: handleLogout,
+    //     },
+    //   ],
+    // },
   ]
 
   const handleItemPress = (item: SettingItem) => {

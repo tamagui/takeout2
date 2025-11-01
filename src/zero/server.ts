@@ -1,6 +1,6 @@
 import { assertString } from '@vxrn/helpers'
 import { createZeroServer } from 'over-zero/server'
-import { models } from '~/data/models'
+import { models } from '~/data/generated/models'
 import { schema } from '~/data/schema'
 import { createServerActions } from '~/data/server/createServerActions'
 

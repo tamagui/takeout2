@@ -1,7 +1,7 @@
 import { Image } from 'expo-image'
 import { memo, useState } from 'react'
 import { Accordion, SizableText, View, XStack, YStack } from 'tamagui'
-import type { Post } from '~/data/models'
+import type { Post } from '~/data/types'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'

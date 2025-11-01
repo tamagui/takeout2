@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { Share, Platform } from 'react-native'
-import type { User } from '~/data/models'
+import type { User } from '~/data/types'
 import { showToast } from '~/interface/toast/helpers'
 
 export function useShareProfile() {

@@ -33,7 +33,7 @@ export const CreateTabIcon = ({
       ]}
       onPress={() => {
         // sheetRef?.expand()
-        router.push('/studio/create-content')
+        // router.push('/studio/create-content')
       }}
     >
       {customIcon ? customIcon : <PlusCircleIcon size={smallerIconSize} />}

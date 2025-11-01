@@ -1,10 +1,8 @@
 import { isTauri } from '@vxrn/helpers'
 
 async function saveInTauri(data: string | Blob, filename: string) {
-  // @ts-expect-error - tauri plugins only available in tauri environment
   const { save } = await import('@tauri-apps/plugin-dialog')
-  // @ts-expect-error - tauri plugins only available in tauri environment
-  const { writeTextFile, writeBinaryFile } = await import('@tauri-apps/plugin-fs')
+  const { writeTextFile, writeFile } = await import('@tauri-apps/plugin-fs')
 
   const extension = filename.split('.').pop() || ''
   const filePath = await save({
@@ -22,7 +20,7 @@ async function saveInTauri(data: string | Blob, filename: string) {
       await writeTextFile(filePath, data)
     } else {
       const arrayBuffer = await data.arrayBuffer()
-      await writeBinaryFile(filePath, new Uint8Array(arrayBuffer))
+      await writeFile(filePath, new Uint8Array(arrayBuffer))
     }
   }
 }

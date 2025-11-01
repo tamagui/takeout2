@@ -1,5 +1,5 @@
 import { createRef } from 'react'
-import type { Post } from '~/data/models'
+import type { Post } from '~/data/types'
 import type { PostActionSheetRef } from './PostActionSheet'
 // import type { PostOwnerActionSheetRef } from './PostOwnerActionSheet'
 

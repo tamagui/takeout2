@@ -62,6 +62,7 @@ services:
       # On Mac/Windows Docker Desktop, this is already available
       - "host.docker.internal:host-gateway"
     environment:
+      - ZERO_ADMIN_PASSWORD=dev-mode
       - ZERO_LOG_LEVEL=${ZERO_LOG_LEVEL:-info}
       # These URLs are provided via environment variables
       # In CI, they'll be overridden with the correct Docker host IP

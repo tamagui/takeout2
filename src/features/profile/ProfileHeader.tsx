@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { SizableText, useWindowDimensions, View, XStack, YStack } from 'tamagui'
 import { SERVER_URL } from '~/constants/urls'
-import type { User, UserProfile } from '~/data/models'
+import type { User, UserProfile } from '~/data/types'
 import { formatCount } from '~/helpers/number/formatNumber'
 import { useShareProfile } from '~/helpers/share/useShareProfile'
 import { Avatar } from '~/interface/avatars/Avatar'

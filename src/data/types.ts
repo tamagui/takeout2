@@ -1,6 +1,6 @@
-import type { Block, Post, Report, User, UserState, UserProfile } from '~/data/models'
+import type { Block, Post, Report, User, UserProfile, UserState } from './generated/types'
 
-export type * from './models'
+export type * from './generated/types'
 
 export type PostWithUser = Post & {
   user?: User

@@ -1,8 +1,6 @@
-// @ts-expect-error - no hot-updater types
 import { HotUpdater } from '@hot-updater/react-native'
-
 import { useCallback, useEffect, useState } from 'react'
-import { Alert, AppState, Platform } from 'react-native'
+import { Alert, AppState } from 'react-native'
 import { DYNAMIC_CONFIGS, FEATURE_FLAGS } from '~/features/feature-flags/featureFlags'
 import { usePostHogClient } from '~/features/feature-flags/usePostHog'
 import { HotUpdaterContext } from './context'

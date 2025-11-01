@@ -14,11 +14,17 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { parseArgs } from 'node:util'
-import { checkPort } from '../helpers/check-port'
-import { getTestEnv } from '../helpers/get-test-env'
-import { handleProcessExit } from '../helpers/handleProcessExit'
-import { printTiming, run, runInline, runParallel, waitForRun } from '../helpers/run'
-import { waitForPort } from '../helpers/wait-for-port'
+import { checkPort } from '@vxrn/scripts/helpers/check-port'
+import { getTestEnv } from '@vxrn/scripts/helpers/get-test-env'
+import { handleProcessExit } from '@vxrn/scripts/helpers/handleProcessExit'
+import {
+  printTiming,
+  run,
+  runInline,
+  runParallel,
+  waitForRun,
+} from '@vxrn/scripts/helpers/run'
+import { waitForPort } from '@vxrn/scripts/helpers/wait-for-port'
 
 if (process.env.ONE_SERVER_URL?.includes('localhost')) {
   throw new Error(

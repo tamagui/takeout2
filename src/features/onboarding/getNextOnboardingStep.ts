@@ -1,5 +1,5 @@
 import type { OneRouter } from 'one'
-import type { User } from '../../data/models'
+import type { User } from '~/data/types'
 
 /**
  * Get the next onboarding step for the user.

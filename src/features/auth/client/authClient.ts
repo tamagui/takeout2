@@ -1,13 +1,4 @@
-/**
- * App-specific authentication client
- *
- * This wraps the @vxrn/better-auth package with app-specific functionality:
- * - User state management via setUser
- * - Toast notifications for auth errors
- * - Custom user type with role field
- */
-
-import { createBetterAuthClient } from '@vxrn/better-auth'
+import { createBetterAuthClient } from '@vxrn/better-auth-utils'
 import type { User } from 'better-auth'
 import { SERVER_URL } from '~/constants/urls'
 import { setUser } from '~/features/user/getUser'
@@ -21,7 +12,7 @@ console.info(`[better-auth] client baseURL`, SERVER_URL)
 const betterAuthClient = createBetterAuthClient({
   baseURL: SERVER_URL,
   plugins,
-  createUser: (user) => user as AppUser,
+  createUser: (user: any) => user as AppUser,
   onAuthStateChange: (state) => {
     setUser(state.user)
   },
@@ -37,6 +28,5 @@ export const {
   clearAuthClientToken,
   authState,
   authClient,
-  getAuth,
   useAuth,
 } = betterAuthClient

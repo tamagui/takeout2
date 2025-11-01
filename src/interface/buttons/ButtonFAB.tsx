@@ -2,6 +2,7 @@ import { BlurView } from 'expo-blur'
 import type React from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import Animated, {
+  type SharedValue,
   Easing,
   FadeIn,
   FadeOut,
@@ -28,7 +29,7 @@ interface MenuItemProps {
   title: string
   subtitle: string
   index: number
-  isExpanded: Animated.SharedValue<boolean>
+  isExpanded: SharedValue<boolean>
   onPress?: () => void
 }
 

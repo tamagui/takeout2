@@ -122,9 +122,9 @@ export const ProfilePage = memo(() => {
           <Pressable
             onPress={() => {
               if (isOwnProfile) {
-                router.push(`profile/post/${item.id}`)
+                // router.push(`profile/post/${item.id}`)
               } else {
-                router.push(`home/profile/post/${item.id}`)
+                // router.push(`home/profile/post/${item.id}`)
               }
             }}
             width={imageSize}

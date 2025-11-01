@@ -38,9 +38,10 @@ export const LoginSheet = forwardRef<LoginSheetRef>((_, ref) => {
     router.push('/signup/email')
   })
 
+  // TODO this should just be a Link
   const openTermsOfService = useEvent(() => {
     if (isNative) {
-      router.push('/terms')
+      // router.push('/terms')
     } else {
       window.open('https://example.com/terms', '_blank')
     }
@@ -48,7 +49,7 @@ export const LoginSheet = forwardRef<LoginSheetRef>((_, ref) => {
 
   const openPrivacyPolicy = useEvent(() => {
     if (isNative) {
-      router.push('/privacy')
+      // router.push('/privacy')
     } else {
       window.open('https://example.com/privacy', '_blank')
     }

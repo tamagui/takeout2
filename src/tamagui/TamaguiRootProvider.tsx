@@ -8,7 +8,7 @@ import {
 } from '@vxrn/color-scheme'
 import { usePathname } from 'one'
 import { memo, useLayoutEffect } from 'react'
-import { TamaguiProvider, useTheme } from 'tamagui'
+import { isWeb, TamaguiProvider, useTheme } from 'tamagui'
 import { config } from './tamagui.config'
 
 export const TamaguiRootProvider = memo(({ children }: { children: any }) => {
@@ -30,8 +30,8 @@ export const TamaguiRootProvider = memo(({ children }: { children: any }) => {
       config={config}
       defaultTheme={forceDark ? 'dark' : scheme}
     >
-      <ThemeMetaTag />
-      {forceDark && <div className="body-dark" />}
+      {isWeb && <ThemeMetaTag />}
+      {forceDark && isWeb && <div className="body-dark" />}
       <SchemeProvider>{children}</SchemeProvider>
     </TamaguiProvider>
   )

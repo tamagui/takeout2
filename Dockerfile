@@ -16,7 +16,7 @@ ENV PATH="/root/.bun/bin:${PATH}"
 
 WORKDIR /app
 
-COPY package.json bun.lock ./
+COPY package.json bun.lock vite.config.ts ./
 
 RUN PRODUCTION=1 bun install --production --frozen-lockfile
 

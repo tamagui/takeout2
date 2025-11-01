@@ -1,9 +1,9 @@
 import { useFocusEffect, usePathname, useRouter } from 'one'
 import { useMemo } from 'react'
 import { useEvent } from 'tamagui'
-import { zero } from '~/zero/client'
 import { useUser } from '~/features/user/useUser'
 import { useGoBackToHome } from '~/helpers/useGoBackToHome'
+import { zero } from '~/zero/client'
 import { getNextOnboardingStep } from './getNextOnboardingStep'
 import type { OnboardingStep } from './types'
 
@@ -20,8 +20,7 @@ const isAdminUser = (username?: string) => username === 'nate' || username === '
  * Also handles auto-redirect after login by checking onboarding status on page focus.
  */
 export function useOnboarding() {
-  const { state, user, isLoading } = useUser()
-  const isLoggedIn = state === 'logged-in'
+  const { user, isLoading } = useUser()
   const router = useRouter()
   const pathname = usePathname()
   const goBackToHome = useGoBackToHome()
@@ -48,8 +47,8 @@ export function useOnboarding() {
     if (nextRoute === '/waiting-list') return 'waiting-list'
     if (nextRoute === '/profile-setup') return 'profile-setup'
     if (nextRoute === '/avatar-setup') return 'avatar-setup'
-    if (nextRoute === '/stay-connected') return 'notifications' // Map to notifications for now
-    if (nextRoute === '/notifications') return 'notifications'
+    // if (nextRoute === '/stay-connected') return 'notifications' // Map to notifications for now
+    // if (nextRoute === '/notifications') return 'notifications'
 
     return null
   }, [user, onboardingConfig])
@@ -78,7 +77,7 @@ export function useOnboarding() {
   })
 
   const handleFocusEffect = useEvent(() => {
-    if (!isLoading && isLoggedIn && user) {
+    if (!isLoading && user) {
       const nextRoute = getNextOnboardingStep(user, onboardingConfig)
 
       if (nextRoute) {

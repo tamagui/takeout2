@@ -159,7 +159,7 @@
     "@tauri-apps/plugin-window-state": "~2.4.0",
     "@types/async-retry": "^1.4.9",
     "@types/jsonwebtoken": "^9.0.10",
-    "@vxrn/better-auth": "1.1.541",
+    "@vxrn/better-auth": "0.0.18",
     "@vxrn/color-scheme": "1.1.541",
     "@vxrn/helpers": "0.0.18",
     "@vxrn/hooks": "0.0.18",

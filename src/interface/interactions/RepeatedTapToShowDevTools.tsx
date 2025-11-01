@@ -24,7 +24,7 @@ export function RepeatedTapToShowDevTools({
   useEffect(() => {
     if (tapsRemaining === 0) {
       setTapsRemaining(TAPS_NEEDED)
-      router.push('/version-manager')
+      // router.push('/version-manager')
     }
   }, [tapsRemaining, router])
 

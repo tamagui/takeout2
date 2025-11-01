@@ -42,7 +42,7 @@
         "@tauri-apps/plugin-window-state": "~2.4.0",
         "@types/async-retry": "^1.4.9",
         "@types/jsonwebtoken": "^9.0.10",
-        "@vxrn/better-auth": "1.1.541",
+        "@vxrn/better-auth": "0.0.18",
         "@vxrn/color-scheme": "1.1.541",
         "@vxrn/helpers": "0.0.18",
         "@vxrn/hooks": "0.0.18",
@@ -1791,15 +1791,13 @@
 
     "@vitest/utils": ["@vitest/utils@4.0.6", "", { "dependencies": { "@vitest/pretty-format": "4.0.6", "tinyrainbow": "^3.0.3" } }, "sha512-bG43VS3iYKrMIZXBo+y8Pti0O7uNju3KvNn6DrQWhQQKcLavMB+0NZfO1/QBAEbq0MaQ3QjNsnnXlGQvsh0Z6A=="],
 
-    "@vxrn/better-auth": ["@vxrn/better-auth@1.1.541", "", { "dependencies": { "@vxrn/emitter": "1.1.541", "better-auth": "^1.2.8", "react": "~19.0.0" } }, "sha512-vd/Phxu4tZRWF329eIctCVR5QYVHcwf9JnftQ2ZVpNXDkOsMvg7Jm+bglEFin8vJ+upoKF32swSZdSTL7qGjcg=="],
+    "@vxrn/better-auth": ["@vxrn/better-auth@0.0.18", "", { "dependencies": { "@vxrn/helpers": "0.0.18", "better-auth": "^1.3.28" }, "peerDependencies": { "react": "*" } }, "sha512-UU507NaQrvNsYAOzPfqKbpU4Y7e0oJE2j8wXkvhtU+vcgVOfAN0NVXS+r2v5nm2MUklJy25zRKSOP9bxaAJyeA=="],
 
     "@vxrn/color-scheme": ["@vxrn/color-scheme@1.1.541", "", { "dependencies": { "@vxrn/universal-color-scheme": "1.1.541", "@vxrn/use-isomorphic-layout-effect": "1.1.541" }, "peerDependencies": { "react": "*", "react-native": "*" } }, "sha512-e3vHNssAYIEH1ylo3sKOEE7/ImYIKge4sjsw1SGfSkhMaiPhjHcBcN+Ap/urYlNx9tIauIFvLDsumQkoO2kJPw=="],
 
     "@vxrn/compiler": ["@vxrn/compiler@1.1.541", "", { "dependencies": { "@babel/core": "~7.26.8", "@babel/plugin-transform-destructuring": "~7.25.9", "@babel/plugin-transform-private-methods": "~7.25.9", "@babel/plugin-transform-react-jsx": "~7.25.9", "@babel/plugin-transform-regenerator": "~7.25.9", "@swc/core": "^1.10.4", "@vxrn/utils": "1.1.541", "@vxrn/vite-native-client": "1.1.541", "babel-plugin-react-compiler": "^19.1.0-rc.3", "react-native-css-interop": "^0.1.22", "ts-deepmerge": "^7.0.2", "vite": "^7.1.12" }, "peerDependencies": { "react-native": "*" } }, "sha512-SmUnsW31MOd7SQiYWjfnbNswLfkZ8XzEmsU1HcVshv1I6Jlfnqc/NqKfpWIYMshckFyMjIZbHKWVyvgnh5GBDA=="],
 
     "@vxrn/debug": ["@vxrn/debug@1.1.541", "", { "dependencies": { "debug": "^4.3.7" } }, "sha512-ue3u9i69+piuWgOvhdgGVrWMiEdvlC9tGE/vFpqBZyIZlXjZ/y17c+Wqu32nAqCm3fZXtd/W8R/KDG0LAs/YMg=="],
-
-    "@vxrn/emitter": ["@vxrn/emitter@1.1.541", "", { "dependencies": { "react": "~19.0.0" } }, "sha512-ovWxskcj/XB9VYNrvpss/f/wi5nVPjQo9eGp2VvQknPdTQLSG/CIGBZvVsYLczWptSuQxwlpLUgCprGMz2wEMQ=="],
 
     "@vxrn/helpers": ["@vxrn/helpers@0.0.18", "", { "dependencies": { "@tamagui/constants": "*", "dequal": "^2.0.3", "fuse.js": "^7.1.0" }, "peerDependencies": { "@rocicorp/zero": "*", "react": "*", "react-native": "*" } }, "sha512-E33pWjKF0JowmK6W68A6i9YxtLTMVG0CGA2MK9Za9YOWgabLc3Llfjryv9LQKx+/pRWRvA94P7qmSomJa/N8Ig=="],
 

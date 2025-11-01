@@ -1,33 +1,35 @@
-// We need to make this into a module not only for easy re-use, but also
+// we need to make this into a module not only for easy re-use, but also
 // to workaround the issue of imports being hoisted above other code, so
 // something like this can work:
 //
 // ```
-// import '~/native/install-react-native-quick-crypto'
-// import * as utils from '@better-auth/utils' // A module that is using crypto from global scope
+// import '~/native/install-expo-crypto'
+// import * as utils from '@better-auth/utils' // a module that is using crypto from global scope
 // ```
 //
-// While this cannot:
+// while this cannot:
 //
 // ```
-// import { install } from 'react-native-quick-crypto'
+// import * as Crypto from 'expo-crypto'
 // if (typeof crypto === 'undefined') {
-//  install()
+//  globalThis.crypto = Crypto
 // }
-// import * as utils from '@better-auth/utils' // A module that is using crypto from global scope
+// import * as utils from '@better-auth/utils' // a module that is using crypto from global scope
 // ```
 //
-// Since the above code will be transformed to something equivalent to:
+// since the above code will be transformed to something equivalent to:
 //
 // ```
-// import { install } from 'react-native-quick-crypto'
-// import * as utils from '@better-auth/utils' // A module that is using crypto from global scope
+// import * as Crypto from 'expo-crypto'
+// import * as utils from '@better-auth/utils' // a module that is using crypto from global scope
 // if (typeof crypto === 'undefined') {
-//  install()
+//  globalThis.crypto = Crypto
 // }
 // ```
 
-import { install } from 'react-native-quick-crypto'
+import * as Crypto from 'expo-crypto'
+
 if (typeof crypto === 'undefined') {
-  install()
+  // polyfill crypto for better-auth
+  globalThis.crypto = Crypto as any
 }

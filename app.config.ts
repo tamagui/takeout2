@@ -31,7 +31,7 @@ const getAppIcon = () => {
   return './assets/icon.png'
 }
 
-const version = '0.0.6'
+const version = '0.0.1'
 
 export default {
   expo: {
@@ -89,6 +89,12 @@ export default {
       'expo-secure-store',
       'expo-web-browser',
       'react-native-bottom-tabs',
+      [
+        'expo-plugin-ios-static-libraries',
+        {
+          libraries: ['RNPermissions', 'op-sqlite'],
+        },
+      ],
       [
         'expo-build-properties',
         {

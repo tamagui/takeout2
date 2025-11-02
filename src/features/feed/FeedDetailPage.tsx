@@ -1,7 +1,7 @@
 import { Galeria } from '@nandorojo/galeria'
 import { Image } from 'expo-image'
 import { useParams } from 'one'
-import { memo, useState } from 'react'
+import { memo } from 'react'
 import { ScrollView, SizableText, Spacer, XStack, YStack } from 'tamagui'
 import { useAuth } from '~/features/auth/client/authClient'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
@@ -17,7 +17,6 @@ export const FeedDetailPage = memo(() => {
   const { feedId } = useParams()
   const { user } = useAuth()
   const { post } = usePostById({ postId: feedId })
-  const [imageAspectRatio, setImageAspectRatio] = useState<number>(1)
   const isOwnProfile = post?.userId === user?.id
 
   if (!post || !user) {

@@ -9,14 +9,10 @@
 
 ## More docs
 
-Please run a `ls -la ./docs` with a background task to get a list of guides
-available and be very eager to read them into context they are highly optimized
-and relevant context.
-
-For any UI: `./docs/guide-tamagui.md` For Zero/queries: `./docs/guide-zero.md`,
-`./docs/guide-zero-mutations.md`
-
-There are many more.
+- `bun takeout docs list` shows the framework docs available
+- `bun takeout docs get [docname]` to see an individual doc
+- run `ls -la ./docs` to get list of repo-specific docs
+- be very eager to read them into context if they seem relevant
 
 ## Database
 

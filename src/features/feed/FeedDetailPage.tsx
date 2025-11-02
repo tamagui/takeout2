@@ -2,11 +2,13 @@ import { Galeria } from '@nandorojo/galeria'
 import { Image } from 'expo-image'
 import { useParams } from 'one'
 import { memo } from 'react'
+import { Pressable } from 'react-native'
 import { ScrollView, SizableText, Spacer, XStack, YStack } from 'tamagui'
 import { useAuth } from '~/features/auth/client/authClient'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
 import { Avatar } from '~/interface/avatars/Avatar'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
 import { BasicHeader } from '~/interface/headers/BasicHeader'
 import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
 import { showPostActionSheet } from '~/interface/sheet/postActionSheetHelper'
@@ -43,16 +45,25 @@ export const FeedDetailPage = memo(() => {
         </XStack>
         <Galeria urls={[post.image]}>
           <Galeria.Image>
-            <Image
-              key={`${post.id.toString()}`}
-              source={post.image}
-              style={{
-                width: '100%',
-                aspectRatio: 3 / 4,
+            <Pressable
+              onPress={() => {
+                galleryEmitter.emit({
+                  items: [{ id: post.id.toString(), url: post.image }],
+                  firstItem: post.id.toString(),
+                })
               }}
-              contentFit="cover"
-              transition={500}
-            />
+            >
+              <Image
+                key={`${post.id.toString()}`}
+                source={post.image}
+                style={{
+                  width: '100%',
+                  aspectRatio: 3 / 4,
+                }}
+                contentFit="cover"
+                transition={500}
+              />
+            </Pressable>
           </Galeria.Image>
         </Galeria>
         <XStack px="$3" items="center" gap="$3" py="$2.5" justify="flex-end">

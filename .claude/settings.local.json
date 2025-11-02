@@ -67,7 +67,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cat docs/guide-agent.md"
+            "command": "cat docs/agent.md"
           }
         ]
       }
@@ -78,16 +78,16 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cat docs/guide-tamagui.md"
+            "command": "bun takeout docs get tamagui"
           }
         ]
       },
       {
-        "matcher": "src/zero/mutators/**/*",
+        "matcher": "src/data/**/*",
         "hooks": [
           {
             "type": "command",
-            "command": "cat docs/guide-zero-mutations.md"
+            "command": "bun takeout docs get zero"
           }
         ]
       }

@@ -4,6 +4,7 @@ import { Slot } from 'one'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { useAuth } from '~/features/auth/client/authClient'
 import { HotUpdateAlertManager, HotUpdaterProvider } from '~/features/hot-updater'
+import { Gallery } from '~/interface/gallery/Gallery'
 import { NotificationProvider } from '~/interface/notification/Notification'
 import { BottomErrorSheet } from '~/interface/sheet/BottomErrorSheet'
 import { errorSheetRef } from '~/interface/sheet/errorSheetHelper'
@@ -47,6 +48,7 @@ export function Layout() {
                       <DragDropFile>
                         <HotUpdateAlertManager />
                         <BottomErrorSheet ref={errorSheetRef} />
+                        <Gallery />
                         <Slot />
                       </DragDropFile>
                     </NotificationProvider>

@@ -143,6 +143,22 @@ export default {
         zlib: false,
         'expo/internal/unstable-autolinking-exports': false,
 
+        'react-native-bottom-tabs': {
+          'lib/module/package.json': () => {
+            // remove "type": "module" to prevent ES module errors
+            return '{}'
+          },
+          'lib/module/expo.js': (contents) => {
+            // fix @expo/config-plugins import - convert to namespace import for compatibility
+            return contents
+              ?.replace(/^"use strict";\s*\n?/m, '')
+              .replace(
+                /import\s+\w+\s+from\s+['"]@expo\/config-plugins['"];?\s*\nconst\s+\{([^}]+)\}\s*=\s*\w+;?/s,
+                'import * as configPlugins from "@expo/config-plugins";\nconst {$1} = configPlugins;'
+              )
+          },
+        },
+
         '@hot-updater/plugin-core': {
           'dist/index.cjs': (contents) => {
             // patch require('mime') to use dynamic import workaround
@@ -180,6 +196,7 @@ export default {
         '@expo/ui': {
           '**/*.js': ['jsx'],
         },
+
         // end [TODO one]
       },
 

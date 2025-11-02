@@ -125,13 +125,14 @@ try {
         await ensureAwsCredentials()
       },
     },
-    {
-      name: 'backup-database',
-      condition: () => !values['skip-deploy'],
-      fn: async () => {
-        await backupProductionDatabase()
-      },
-    },
+    // TODO: re-enable database backup once backup script is available
+    // {
+    //   name: 'backup-database',
+    //   condition: () => !values['skip-deploy'],
+    //   fn: async () => {
+    //     await backupProductionDatabase()
+    //   },
+    // },
     {
       name: 'tests',
       condition: () => !values['skip-tests'],
@@ -409,32 +410,33 @@ async function deployProduction() {
   }
 }
 
-async function backupProductionDatabase() {
-  console.info('\nBacking up production database...')
-
-  try {
-    await run('bun sst shell --stage=production ./src/database/scripts/backup.ts', {
-      prefix: 'backup',
-      timeout: time.ms.minutes(6), // 6 minutes to account for 5 minute pg_dump timeout + overhead
-      timing: 'database backup',
-    })
-  } catch (error: any) {
-    const errorMessage = error?.message || String(error)
-
-    // check if it's a timeout or connection issue
-    if (errorMessage.includes('timeout') || errorMessage.includes('connection')) {
-      console.warn(
-        '⚠️ Database backup failed due to timeout or connection issue (non-critical)'
-      )
-      console.warn('   This may indicate a large database or network issues.')
-      console.warn('   Consider running backup manually if needed.')
-    } else {
-      console.warn('⚠️ Database backup failed (non-critical):', errorMessage)
-    }
-
-    failures.push({ task: 'database backup (non-critical)', error })
-  }
-}
+// TODO: re-enable once backup script is available
+// async function backupProductionDatabase() {
+//   console.info('\nBacking up production database...')
+//
+//   try {
+//     await run('bun sst shell --stage=production ./src/database/scripts/backup.ts', {
+//       prefix: 'backup',
+//       timeout: time.ms.minutes(6), // 6 minutes to account for 5 minute pg_dump timeout + overhead
+//       timing: 'database backup',
+//     })
+//   } catch (error: any) {
+//     const errorMessage = error?.message || String(error)
+//
+//     // check if it's a timeout or connection issue
+//     if (errorMessage.includes('timeout') || errorMessage.includes('connection')) {
+//       console.warn(
+//         '⚠️ Database backup failed due to timeout or connection issue (non-critical)'
+//       )
+//       console.warn('   This may indicate a large database or network issues.')
+//       console.warn('   Consider running backup manually if needed.')
+//     } else {
+//       console.warn('⚠️ Database backup failed (non-critical):', errorMessage)
+//     }
+//
+//     failures.push({ task: 'database backup (non-critical)', error })
+//   }
+// }
 
 async function ensureAwsCredentials() {
   const awsDir = join(homedir(), '.aws')

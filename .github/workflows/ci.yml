@@ -49,7 +49,9 @@ jobs:
   build-test-and-deploy:
     if: "!contains(github.event.commits[0].message, 'docs:')"
     timeout-minutes: 18
-    runs-on: ${{ github.ref == 'refs/heads/main' && 'warp-ubuntu-latest-arm64-32x' || 'warp-ubuntu-latest-arm64-8x' }}
+    # TODO: Switch back to Warp runners once configured
+    # runs-on: ${{ github.ref == 'refs/heads/main' && 'warp-ubuntu-latest-arm64-32x' || 'warp-ubuntu-latest-arm64-8x' }}
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
@@ -93,7 +95,9 @@ jobs:
     needs: check-tauri
     if: "needs.check-tauri.outputs.needs-build == 'true' && !contains(github.event.commits[0].message, 'docs:')"
     timeout-minutes: 30
-    runs-on: warp-macos-15-arm64-6x
+    # TODO: Switch back to Warp runners once configured
+    # runs-on: warp-macos-15-arm64-6x
+    runs-on: macos-latest
 
     steps:
       - name: Checkout

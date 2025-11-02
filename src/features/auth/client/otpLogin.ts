@@ -1,3 +1,4 @@
+import { sleep } from '@vxrn/helpers'
 import { authClient } from './authClient'
 import { standardizeBetterAuthError } from './passwordLogin'
 
@@ -11,7 +12,27 @@ type Result =
 /**
  * Asks the server to send a login OTP code to the given email or phone number.
  */
-export async function sendLoginOtpCode(
+export function validateLoginOtpCode(
+  method: 'email' | 'phone',
+  to: string,
+  timeoutAfterMs = 8000
+): Promise<Result> {
+  return Promise.race([
+    validateLoginOtpCodeInfinite(method, to),
+    sleep(timeoutAfterMs).then(() => {
+      return {
+        error: {
+          code: `TIMEOUT`,
+          title: `Timed out`,
+          message: `Timed out verifying OTP code.`,
+        },
+        success: false,
+      } satisfies Result
+    }),
+  ])
+}
+
+async function validateLoginOtpCodeInfinite(
   method: 'email' | 'phone',
   to: string
 ): Promise<Result> {

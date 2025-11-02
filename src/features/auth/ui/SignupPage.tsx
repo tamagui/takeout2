@@ -16,7 +16,7 @@ import { DeviceMobileSpeakerIcon } from '~/interface/icons/phosphor/DeviceMobile
 import { EnvelopeSimpleIcon } from '~/interface/icons/phosphor/EnvelopeSimpleIcon'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
-import { sendLoginOtpCode } from '../client/otpLogin'
+import { validateLoginOtpCode } from '../client/otpLogin'
 import { shouldUsePasswordOnlyAuth } from '../constants'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
 
@@ -92,7 +92,7 @@ export const SignupPage = memo(() => {
         return
       }
 
-      const { success, error } = await sendLoginOtpCode(method, inputValue)
+      const { success, error } = await validateLoginOtpCode(method, inputValue)
 
       if (success) {
         router.push(

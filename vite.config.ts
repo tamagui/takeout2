@@ -14,6 +14,12 @@ export default {
     noExternal: ['better-auth-harmony', 'validator', 'react-native'],
   },
 
+  esbuild: {
+    // for `over-zero`, may change how we do things here since it depends on function.name
+    // i can see the argument that this is a standard JS feature tho so this is a fine default
+    minifyIdentifiers: false,
+  },
+
   optimizeDeps: {
     esbuildOptions: {
       plugins: [
@@ -142,6 +148,7 @@ export default {
         validator: true,
         zlib: false,
         'expo/internal/unstable-autolinking-exports': false,
+        '@gorhom/bottom-sheet': true,
 
         'react-native-bottom-tabs': {
           'lib/module/package.json': () => {

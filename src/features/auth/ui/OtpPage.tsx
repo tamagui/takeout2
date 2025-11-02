@@ -10,15 +10,15 @@ import { isSmallScreen } from '~/interface/dimensions'
 import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
-import { otpLogin, sendLoginOtpCode } from '../client/otpLogin'
+import { otpLogin, validateLoginOtpCode } from '../client/otpLogin'
 import { OtpInput } from './OtpInput'
 
 export const OtpPage = () => {
-  const [timerCount, resetTimer, pauseTimer] = useTimer()
+  const timer = useTimer()
   const params = useParams<{ method?: 'phone' | 'email'; value?: string }>()
-  const [otpCode, setOtpCode] = useState<string>('')
-  const [isError, setIsError] = useState<boolean>(false)
-  const [loading, setLoading] = useState<boolean>(false)
+  const [otpCode, setOtpCode] = useState('')
+  const [isError, setIsError] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [otpKey, setOtpKey] = useState(0)
 
   useOnboarding()
@@ -42,7 +42,9 @@ export const OtpPage = () => {
     setOtpCode('')
     setOtpKey(Math.random())
     try {
-      const { error } = await sendLoginOtpCode(params.method, params.value)
+      const { error, success } = await validateLoginOtpCode(params.method, params.value)
+
+      console.info(error, success)
 
       if (error) {
         showErrorSheet({
@@ -53,7 +55,7 @@ export const OtpPage = () => {
       }
 
       setIsError(!!error)
-      resetTimer(30, true)
+      timer.start(30, true)
     } finally {
       setLoading(false)
     }
@@ -95,7 +97,7 @@ export const OtpPage = () => {
         })
         return
       } else {
-        pauseTimer()
+        timer.pause()
         // Keep loading state active - useAfterLoginRedirect will handle navigation
         // Loading will be cleared when component unmounts due to navigation
       }
@@ -144,9 +146,9 @@ export const OtpPage = () => {
           defaultValue={otpCode}
           isError={isError}
         />
-        {timerCount > 0 ? (
+        {timer.count > 0 ? (
           <SizableText fontSize={16} opacity={0.6}>
-            Resend Code in ({timerCount})
+            Resend Code in ({timer.count})
           </SizableText>
         ) : (
           <Pressable data-testid="resend-otp-button" onPress={handleResendOtp}>

@@ -1,19 +1,18 @@
+import { router } from 'one'
 import { useState } from 'react'
 import { SizableText, XStack, YStack } from 'tamagui'
-import { router } from 'one'
-import { authClient } from '~/features/auth/client/authClient'
+import { isNative } from '~/constants/platform'
+import { useOnboarding } from '~/features/onboarding/useOnboarding'
+import { getHumanReadableVersionString } from '~/helpers/getHumanReadableVersionString'
+import { Logo } from '~/interface/brand/Logo'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Input } from '~/interface/forms/Input'
 import { EnvelopeIcon } from '~/interface/icons/phosphor/EnvelopeIcon'
-import { showToast } from '~/interface/toast/helpers'
-import { Logo } from '~/interface/brand/Logo'
-import { getHumanReadableVersionString } from '~/helpers/getHumanReadableVersionString'
 import { RepeatedTapToShowDevTools } from '~/interface/interactions/RepeatedTapToShowDevTools'
-import { signInAsAdmin } from '../client/signInAsAdmin'
-import { useOnboarding } from '~/features/onboarding/useOnboarding'
-import { isNative } from '~/constants/platform'
-import { sendLoginOtpCode } from '../client/otpLogin'
 import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
+import { showToast } from '~/interface/toast/helpers'
+import { validateLoginOtpCode } from '../client/otpLogin'
+import { signInAsAdmin } from '../client/signInAsAdmin'
 
 export const LoginSignupContents = () => {
   useOnboarding()
@@ -26,7 +25,7 @@ export const LoginSignupContents = () => {
 
     setIsSending(true)
     try {
-      const { success, error } = await sendLoginOtpCode('email', email)
+      const { success, error } = await validateLoginOtpCode('email', email)
 
       if (success) {
         // Redirect to OTP verification page

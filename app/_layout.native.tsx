@@ -18,13 +18,14 @@ SplashScreen.setOptions({
 SplashScreen.preventAutoHideAsync()
 
 export function Layout() {
-  const { user, loading } = useAuth()
+  const { state } = useAuth()
+  const isLoading = state !== 'loading'
 
   useEffect(() => {
-    if (!loading) {
+    if (!isLoading) {
       SplashScreen.hide()
     }
-  }, [loading])
+  }, [isLoading])
 
   return (
     <ProvideZero>

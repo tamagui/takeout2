@@ -92,7 +92,7 @@
     "tauri:upload-release": "bun ./src/tauri/scripts/upload-release.ts",
     "test:unit": "bun run:dev vitest run -c ./src/test/vitest.config.ts",
     "test:integration": "bun run:dev playwright test -c ./src/test/playwright.config.ts",
-    "test": "bun run test:app",
+    "test": "takeout script run run test:unit test:integration",
     "types:check": "TSGO=1 takeout script run typescript",
     "types:watch": "bun types:check --watch",
     "unfurl": "takeout script run unfurl",

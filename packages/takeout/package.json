@@ -1,0 +1,75 @@
+{
+  "name": "@vxrn/takeout",
+  "version": "0.0.22",
+  "description": "CLI tools for Takeout starter kit - interactive onboarding and project setup",
+  "type": "module",
+  "sideEffects": false,
+  "source": "src/index.ts",
+  "main": "dist/cjs",
+  "module": "dist/esm",
+  "types": "./types/index.d.ts",
+  "bin": {
+    "takeout": "./dist/esm/cli.mjs"
+  },
+  "files": [
+    "src",
+    "types",
+    "dist",
+    "docs",
+    "scripts"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs"
+    },
+    "./withOpSqliteStatic": "./src/withOpSqliteStatic.cjs"
+  },
+  "scripts": {
+    "build": "tamagui-build",
+    "watch": "tamagui-build --watch",
+    "lint": "biome check src",
+    "lint:fix": "biome check --write src",
+    "clean": "tamagui-build clean",
+    "clean:build": "tamagui-build clean:build",
+    "dev": "bun --watch src/cli.ts"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.8.2",
+    "@vxrn/scripts": "workspace:*",
+    "citty": "^0.1.6",
+    "picocolors": "^1.1.1"
+  },
+  "peerDependencies": {
+    "@expo/config-plugins": "*"
+  },
+  "peerDependenciesMeta": {
+    "@expo/config-plugins": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.1.2",
+    "@tamagui/build": "1.135.2",
+    "@types/node": "24.0.3",
+    "bun-types": "latest"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "cli",
+    "starter-kit",
+    "onboarding",
+    "setup",
+    "takeout"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/natew/chat",
+    "directory": "packages/takeout"
+  }
+}

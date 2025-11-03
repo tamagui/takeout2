@@ -3,7 +3,13 @@
     "rootDir": ".",
     "outDir": "dist",
     "paths": {
-      "~/*": ["./src/*"]
+      "~/*": ["./src/*"],
+      "@vxrn/better-auth-utils": ["./packages/better-auth-utils/src/index.ts"],
+      "@vxrn/helpers": ["./packages/helpers/src/index.ts"],
+      "@vxrn/hooks": ["./packages/hooks/src/index.ts"],
+      "@vxrn/postgres": ["./packages/postgres/src/index.ts"],
+      "@vxrn/scripts": ["./packages/scripts/src/index.ts"],
+      "@vxrn/takeout": ["./packages/takeout/src/index.ts"]
     },
     "forceConsistentCasingInFileNames": true,
     "verbatimModuleSyntax": true,

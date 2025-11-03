@@ -23,6 +23,7 @@
         "noAssignInExpressions": "off",
         "noRedeclare": "off",
         "useIterableCallbackReturn": "off",
+        "noCommentText": "off",
         "noConsole": {
           "level": "error",
           "options": {

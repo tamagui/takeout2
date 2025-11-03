@@ -1,0 +1,54 @@
+{
+  "name": "@vxrn/hooks",
+  "version": "0.0.22",
+  "sideEffects": false,
+  "source": "src/index.ts",
+  "type": "module",
+  "main": "dist/cjs",
+  "module": "dist/esm",
+  "types": "./src/index.ts",
+  "files": [
+    "src",
+    "types",
+    "dist"
+  ],
+  "scripts": {
+    "build": "tamagui-build --skip-types",
+    "watch": "tamagui-build --skip-types --watch",
+    "lint": "biome check src",
+    "lint:fix": "biome check --write src",
+    "clean": "tamagui-build clean",
+    "clean:build": "tamagui-build clean:build"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "react-native": {
+        "import": "./dist/esm/index.native.js",
+        "require": "./dist/cjs/index.native.js"
+      },
+      "types": "./src/index.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs",
+      "default": "./dist/cjs/index.native.js"
+    }
+  },
+  "dependencies": {
+    "react": "*",
+    "@vxrn/helpers": "workspace:*",
+    "tamagui": "*"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "tamagui": "*"
+  },
+  "devDependencies": {
+    "@tamagui/build": "*",
+    "react": "*",
+    "react-native": "*"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

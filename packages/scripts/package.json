@@ -1,0 +1,27 @@
+{
+  "name": "@vxrn/scripts",
+  "version": "0.0.22",
+  "type": "module",
+  "main": "./src/index.ts",
+  "sideEffects": false,
+  "exports": {
+    "./package.json": "./package.json",
+    "./helpers/*": {
+      "types": "./src/helpers/*.ts",
+      "default": "./src/helpers/*.ts"
+    },
+    "./*": {
+      "types": "./src/*.ts",
+      "default": "./src/*.ts"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@vxrn/helpers": "workspace:*"
+  },
+  "devDependencies": {
+    "vxrn": "*"
+  }
+}

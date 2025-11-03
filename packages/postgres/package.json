@@ -1,0 +1,66 @@
+{
+  "name": "@vxrn/postgres",
+  "version": "0.0.22",
+  "sideEffects": false,
+  "source": "src/index.ts",
+  "main": "dist/cjs",
+  "module": "dist/esm",
+  "type": "module",
+  "types": "./src/index.ts",
+  "bin": {
+    "postgres": "./dist/cjs/cli.cjs"
+  },
+  "files": [
+    "src",
+    "types",
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tamagui-build",
+    "watch": "tamagui-build --watch",
+    "lint": "biome check src",
+    "lint:fix": "biome check --write src",
+    "clean": "tamagui-build clean",
+    "clean:build": "tamagui-build clean:build"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs",
+      "default": "./dist/esm/index.mjs"
+    },
+    "./migrate": {
+      "types": "./src/migrate.ts",
+      "import": "./dist/esm/migrate.mjs",
+      "require": "./dist/cjs/migrate.cjs"
+    },
+    "./build": {
+      "types": "./src/build.ts",
+      "import": "./dist/esm/build.mjs",
+      "require": "./dist/cjs/build.cjs"
+    }
+  },
+  "dependencies": {
+    "@vxrn/helpers": "workspace:*",
+    "async-retry": "^1.3.3",
+    "citty": "^0.1.6",
+    "vite": "^6.0.11"
+  },
+  "peerDependencies": {
+    "drizzle-orm": "*",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.1.2",
+    "@tamagui/build": "*",
+    "@types/async-retry": "^1.4.8",
+    "@types/node": "24.0.3",
+    "drizzle-kit": "^0.30.5",
+    "drizzle-orm": "^0.40.0"
+  }
+}

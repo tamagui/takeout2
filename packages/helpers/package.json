@@ -1,0 +1,77 @@
+{
+  "name": "@vxrn/helpers",
+  "version": "0.0.22",
+  "sideEffects": false,
+  "type": "module",
+  "source": "src/index.ts",
+  "main": "dist/cjs",
+  "module": "dist/esm",
+  "types": "./types/index.d.ts",
+  "files": [
+    "src",
+    "types",
+    "dist"
+  ],
+  "scripts": {
+    "build": "tamagui-build",
+    "watch": "tamagui-build --watch",
+    "lint": "biome check src",
+    "lint:fix": "biome check --write src",
+    "clean": "tamagui-build clean",
+    "clean:build": "tamagui-build clean:build"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "react-native": {
+        "import": "./dist/esm/index.native.js",
+        "require": "./dist/cjs/index.native.js"
+      },
+      "types": "./types/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs",
+      "default": "./dist/esm/index.mjs"
+    },
+    "./server-only": {
+      "react-native": {
+        "import": "./dist/esm/server-only.native.js",
+        "require": "./dist/cjs/server-only.native.js"
+      },
+      "types": "./types/server-only.d.ts",
+      "import": "./dist/esm/server-only.mjs",
+      "require": "./dist/cjs/server-only.cjs",
+      "default": "./dist/esm/server-only.mjs"
+    },
+    "./client-only": {
+      "react-native": {
+        "import": "./dist/esm/client-only.native.js",
+        "require": "./dist/cjs/client-only.native.js"
+      },
+      "types": "./types/client-only.d.ts",
+      "import": "./dist/esm/client-only.mjs",
+      "require": "./dist/cjs/client-only.cjs",
+      "default": "./dist/esm/client-only.mjs"
+    }
+  },
+  "dependencies": {
+    "@tamagui/constants": "*",
+    "dequal": "^2.0.3",
+    "fuse.js": "^7.1.0"
+  },
+  "peerDependencies": {
+    "@rocicorp/zero": "*",
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.1.2",
+    "@tamagui/build": "1.135.2",
+    "@types/node": "24.0.3",
+    "@types/react": "^19.0.8",
+    "react": "*",
+    "react-native": "*"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -104,3 +104,46 @@ for smooth animations across web and native.
 
 There are composable component primitives like ListItem and Button that work as
 building blocks for more complex UI.
+
+## Native Dependencies
+
+The project includes several native dependencies that enhance mobile capabilities:
+
+**UI & Gestures**
+- react-native-reanimated for performant animations across platforms
+- react-native-gesture-handler for comprehensive gesture support
+- @gorhom/bottom-sheet for native bottom sheet modals
+- react-native-bottom-tabs for tab navigation with native feel
+- @bottom-tabs/react-navigation for React Navigation integration
+- react-native-keyboard-controller for advanced keyboard handling
+- react-native-safe-area-context for safe area insets
+
+**Media & Graphics**
+- @shopify/react-native-skia for 2D graphics and animations
+- expo-image for optimized image loading
+- expo-image-picker for camera and photo library access
+- @nandorojo/galeria for image galleries
+- react-native-svg for SVG rendering
+
+**Data & Storage**
+- @op-engineering/op-sqlite for local SQLite database (used by Zero)
+- react-native-mmkv for fast key-value storage
+- expo-secure-store for encrypted credential storage
+- react-native-quick-crypto for cryptographic operations
+
+**Permissions & System**
+- react-native-permissions for runtime permission handling (camera, photo library, microphone, notifications)
+- expo-notifications for push notifications
+- expo-haptics for haptic feedback
+- burnt for native toast notifications
+- zeego for native context menus
+
+**Other Native Features**
+- @react-native-masked-view/masked-view for view masking effects
+- expo-blur for native blur effects
+- expo-linear-gradient for gradient support
+- expo-glass-effect for frosted glass UI effects
+- expo-liquid-glass-view for advanced glass morphism
+- react-native-worklets for running JS on UI thread
+
+All native dependencies are configured in app.config.ts with appropriate iOS and Android permissions and build settings. The project uses static frameworks on iOS for faster builds and better compatibility.

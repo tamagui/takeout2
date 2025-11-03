@@ -1,7 +1,8 @@
 import { H1, YStack } from 'tamagui'
+import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { Link } from '~/features/routing/Link'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
-import { useOnboarding } from '~/features/onboarding/useOnboarding'
+import { useAuth } from '../src/features/auth/client/authClient'
 
 export default function IndexPage() {
   useOnboarding()
@@ -9,9 +10,17 @@ export default function IndexPage() {
   return (
     <YStack flex={1} items="center" justify="center">
       <H1>Welcome</H1>
-      <Link href="/login">
-        <ButtonSimple>Login</ButtonSimple>
-      </Link>
+      <LoginButton />
     </YStack>
+  )
+}
+
+const LoginButton = () => {
+  const { state } = useAuth()
+
+  return (
+    <Link href={state === 'logged-in' ? '/home' : '/login'}>
+      <ButtonSimple>{state === 'logged-in' ? 'Account' : 'Login'}</ButtonSimple>
+    </Link>
   )
 }

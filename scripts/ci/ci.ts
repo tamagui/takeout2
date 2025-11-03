@@ -112,11 +112,7 @@ try {
     {
       name: 'playwright-install',
       async fn() {
-        await run('bunx playwright install --with-deps chromium', {
-          prefix: 'playwright',
-          timeout: time.ms.minutes(5),
-          timing: 'playwright install',
-        })
+        await ensurePlaywrightBrowsers()
       },
     },
     {
@@ -437,6 +433,37 @@ async function deployProduction() {
 //     failures.push({ task: 'database backup (non-critical)', error })
 //   }
 // }
+
+async function ensurePlaywrightBrowsers() {
+  console.info('Checking Playwright browsers...')
+
+  // check if chromium is installed by running playwright install --dry-run
+  try {
+    const { stdout } = await run('bunx playwright install --dry-run chromium', {
+      captureOutput: true,
+      silent: true,
+      timeout: time.ms.seconds(30),
+    })
+
+    // if output contains "is already installed", we're good
+    if (
+      stdout.includes('is already installed') ||
+      stdout.includes('browsers are already installed')
+    ) {
+      console.info('✅ Playwright chromium browser already installed')
+      return
+    }
+  } catch {
+    // dry-run failed or browsers not installed, continue to install
+  }
+
+  console.info('Installing Playwright chromium browser...')
+  await run('bunx playwright install chromium', {
+    prefix: 'playwright',
+    timeout: time.ms.minutes(5),
+    timing: 'playwright install',
+  })
+}
 
 async function ensureAwsCredentials() {
   const awsDir = join(homedir(), '.aws')

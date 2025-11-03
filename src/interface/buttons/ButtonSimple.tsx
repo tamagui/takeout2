@@ -1,4 +1,5 @@
 import type { IconProps } from '@tamagui/helpers-icon'
+import { IS_SAFARI, sleep } from '@vxrn/helpers'
 import { createElement, forwardRef, isValidElement } from 'react'
 import type { FontFamilyTokens, RadiusTokens } from 'tamagui'
 import {
@@ -12,12 +13,11 @@ import {
   withStaticProperties,
   XStack,
 } from 'tamagui'
-import { IS_SAFARI } from '@vxrn/helpers'
 import { useIsDark } from '~/features/theme/useIsDark'
-import { sleep } from '@vxrn/helpers'
 import Glint from '../effects/Glint'
 import { type TooltipWrapperProps, wrapWithTooltip } from '../tooltip/TooltipSimple'
 import { closeOpenTooltips } from '../tooltip/closeOpenTooltips'
+import { GlassView, type GlassViewProps } from '../view/GlassView'
 import { wrapChildrenInText } from './wrapChildrenInText'
 
 type ButtonSimpleAdditionalProps = {
@@ -26,6 +26,7 @@ type ButtonSimpleAdditionalProps = {
   disableBackground?: boolean
   fixedWidth?: boolean
   fontFamily?: string
+  glass?: boolean | Partial<GlassViewProps>
   glow?: boolean
   icon?: any
   iconAfter?: boolean
@@ -146,7 +147,7 @@ const ButtonFrame = styled(XStack, {
         px: '$2.5',
       },
       large: {
-        minH: 36,
+        minH: 42,
         minW: buttonWidths.large,
         rounded: buttonBorderRadius.large,
         gap: '$3',
@@ -216,6 +217,7 @@ const ButtonText = styled(Text, {
   color: '$color11',
   cursor: 'default',
   fontFamily: '$mono',
+  fontWeight: '500',
   select: 'none',
   y: IS_SAFARI ? 1 : 0,
 
@@ -321,6 +323,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
       disableGlint,
       disableBackground,
       fontFamily = '$mono',
+      glass,
       glow,
       icon,
       iconAfter,
@@ -377,6 +380,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
         })}
       >
         {!disableGlint &&
+          !glass &&
           variant !== 'transparent' &&
           variant !== 'subtle' &&
           rest.size !== 'square' && <ButtonGlint bottomShadow />}
@@ -393,7 +397,24 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
       </ButtonFrame>
     )
 
-    return wrapWithTooltip(buttonElement, {
+    // wrap with glass view if requested
+    const glassWrappedElement = glass ? (
+      <GlassView
+        glassEffectStyle="clear"
+        containerStyle={{
+          width: '100%',
+          items: 'center',
+          justify: 'center',
+          ...(typeof glass === 'object' ? glass.containerStyle : {}),
+        }}
+      >
+        {buttonElement}
+      </GlassView>
+    ) : (
+      buttonElement
+    )
+
+    return wrapWithTooltip(glassWrappedElement, {
       tooltip,
       tooltipDelayed,
       tooltipPlacement,

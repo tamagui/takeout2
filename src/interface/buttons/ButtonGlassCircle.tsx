@@ -1,9 +1,9 @@
 import { isIos } from '@vxrn/helpers'
-import { CornerStyle, LiquidGlassType } from 'expo-liquid-glass-view'
 import type { ReactNode } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { View } from 'tamagui'
 import { GlassView } from '../view/GlassView'
+import { Pressable } from './Pressable'
 
 interface ButtonGlassCircleProps {
   onPress?: () => void
@@ -18,45 +18,25 @@ export function ButtonGlassCircle({
   borderRadius = 16,
   children,
 }: ButtonGlassCircleProps) {
-  const button = (
-    <View items="center" justify="center" width={size} height={size}>
-      {children}
-    </View>
-  )
-
-  if (!isIos) {
-    // android fallback with regular view
-    return (
-      <TouchableOpacity onPress={onPress}>
-        <View
-          width={size}
-          height={size}
-          items="center"
-          justify="center"
-          bg="$background"
-          rounded="$10"
-          borderWidth={0.5}
-          borderColor="$borderColor"
-        >
-          {children}
-        </View>
-      </TouchableOpacity>
-    )
-  }
-
-  const glassButton = (
+  return (
     <GlassView
       borderRadius={borderRadius || size / 2}
-      cornerStyle={CornerStyle.Circular}
-      liquidGlassType={LiquidGlassType.Clear}
+      glassEffectStyle="clear"
+      containerStyle={{ width: size, height: size }}
     >
-      {button}
+      <Pressable
+        width={size}
+        height={size}
+        items="center"
+        justify="center"
+        bg="$background"
+        rounded="$10"
+        borderWidth={0.5}
+        borderColor="$borderColor"
+        onPress={onPress}
+      >
+        {children}
+      </Pressable>
     </GlassView>
   )
-
-  if (onPress) {
-    return <TouchableOpacity onPress={onPress}>{glassButton}</TouchableOpacity>
-  }
-
-  return glassButton
 }

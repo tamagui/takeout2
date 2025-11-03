@@ -20,7 +20,7 @@ export const StepPageLayout = ({
   disableBackButton = false,
   hideBackButton = false,
   disableScroll = false,
-  hideHeader = false,
+
   linearGradientFooter = false,
   progressBar,
   disableKeyboardAvoidingView = false,
@@ -38,7 +38,6 @@ export const StepPageLayout = ({
   disableBackButton?: boolean
   hideBackButton?: boolean
   disableScroll?: boolean
-  hideHeader?: boolean
   linearGradientFooter?: boolean
   progressBar?: ProgressBarConfig
   disableKeyboardAvoidingView?: boolean
@@ -58,9 +57,6 @@ export const StepPageLayout = ({
     >
       <YStack
         animation="200ms"
-        opacity={hideHeader ? 0 : 1}
-        y={hideHeader ? -20 : 0}
-        pointerEvents={hideHeader ? 'none' : 'auto'}
         onLayout={(e) => {
           headerHeight.current = e.nativeEvent.layout.height
         }}
@@ -95,12 +91,7 @@ export const StepPageLayout = ({
         </YStack>
       </YStack>
 
-      <YStack
-        animation="300ms"
-        pt={hideHeader ? 0 : '$5'}
-        y={hideHeader ? -headerHeight.current : 0}
-        flex={1}
-      >
+      <YStack animation="300ms" pt={'$5'} flex={1}>
         <View flex={1}>{children}</View>
       </YStack>
     </BaseStepPageLayout>

@@ -138,6 +138,7 @@ export const OtpInput = memo(function OtpInput({
                   testID={testId ? `${testId}-${i}` : undefined}
                   width={inputWidth}
                   height={inputWidth}
+                  rounded={12}
                   caretHidden
                   keyboardType="number-pad"
                   ref={(ref) => {

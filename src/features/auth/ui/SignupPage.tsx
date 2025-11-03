@@ -4,6 +4,7 @@ import { Keyboard } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Checkbox, SizableText, useEvent, XStack, YStack } from 'tamagui'
 import { APP_NAME, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '~/constants/app'
+import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { Link } from '~/features/routing/Link'
 import { formatPhoneNumber } from '~/helpers/number/formatNumber'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
@@ -18,7 +19,6 @@ import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
 import { validateLoginOtpCode } from '../client/otpLogin'
 import { shouldUsePasswordOnlyAuth } from '../constants'
-import { useOnboarding } from '~/features/onboarding/useOnboarding'
 
 export const SignupPage = memo(() => {
   useOnboarding()
@@ -219,6 +219,7 @@ export const SignupPage = memo(() => {
       bottom={
         <YStack gap="$6">
           <ButtonSimple
+            glass
             data-testid="next-button"
             size="large"
             onPress={handleContinue}

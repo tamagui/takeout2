@@ -108,6 +108,10 @@ export const OtpPage = () => {
   })
 
   useEffect(() => {
+    resetTimer(30, true)
+  }, [resetTimer])
+
+  useEffect(() => {
     if (otpCode.length === 6) {
       handleContinue()
     }

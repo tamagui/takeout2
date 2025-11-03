@@ -1,114 +1,183 @@
 import { router } from 'one'
-import { useState } from 'react'
-import { SizableText, XStack, YStack } from 'tamagui'
-import { isNative } from '~/constants/platform'
+import {
+  Separator,
+  SizableText,
+  Text,
+  useWindowDimensions,
+  XStack,
+  YStack,
+} from 'tamagui'
+import { isIos, isNative } from '~/constants/platform'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { getHumanReadableVersionString } from '~/helpers/getHumanReadableVersionString'
-import { Logo } from '~/interface/brand/Logo'
+import { useGoBackToHome } from '~/helpers/useGoBackToHome'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
-import { Input } from '~/interface/forms/Input'
-import { EnvelopeIcon } from '~/interface/icons/phosphor/EnvelopeIcon'
-import { RepeatedTapToShowDevTools } from '~/interface/interactions/RepeatedTapToShowDevTools'
-import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
+import { AppleIcon } from '~/interface/icons/AppleIcon'
+import { GoogleIcon } from '~/interface/icons/GoogleIcon'
+import { H1 } from '~/interface/text/Headings'
 import { showToast } from '~/interface/toast/helpers'
-import { validateLoginOtpCode } from '../client/otpLogin'
 import { signInAsAdmin } from '../client/signInAsAdmin'
+import { Image } from '~/interface/image/Image'
 
 export const LoginSignupContents = () => {
   useOnboarding()
 
-  const [email, setEmail] = useState('')
-  const [isSending, setIsSending] = useState(false)
+  const { width } = useWindowDimensions()
 
-  const handleSendOTP = async () => {
-    if (!email || isSending) return
+  const goBackToHome = useGoBackToHome()
 
-    setIsSending(true)
-    try {
-      const { success, error } = await validateLoginOtpCode('email', email)
-
-      if (success) {
-        // Redirect to OTP verification page
-        router.push(`/signup/otp?method=email&value=${encodeURIComponent(email)}`)
-      } else {
-        showErrorSheet({
-          title: error.title,
-          description: error.message,
-        })
-      }
-    } catch (error) {
-      showToast('Failed to send code', {
-        type: 'error',
-        description: error instanceof Error ? error.message : 'Unknown error occurred',
-      })
-    } finally {
-      setIsSending(false)
+  const handleSignInAdmin = async () => {
+    const res = await signInAsAdmin()
+    if (res.success) {
+      showToast(`Signed in!`, { type: 'info' })
+      goBackToHome()
+    } else {
+      console.error(res.error)
+      showToast(`Error!`, { type: 'error' })
     }
   }
+
+  const handleContinueWithEmail = () => {
+    router.push('/signup/email')
+  }
+
+  const handleSocialLogin = async (provider: 'google' | 'apple') => {
+    showToast(`${provider} login coming soon!`, { type: 'info' })
+  }
+
+  // const handleSendOTP = async () => {
+  //   if (!email || isSending) return
+
+  //   setIsSending(true)
+  //   try {
+  //     const { success, error } = await sendLoginOtpCode('email', email)
+
+  //     if (success) {
+  //       // Redirect to OTP verification page
+  //       router.push(`/signup/otp?method=email&value=${encodeURIComponent(email)}`)
+  //     } else {
+  //       showErrorSheet({
+  //         title: error.title,
+  //         description: error.message,
+  //       })
+  //     }
+  //   } catch (error) {
+  //     showToast('Failed to send code', {
+  //       type: 'error',
+  //       description: error instanceof Error ? error.message : 'Unknown error occurred',
+  //     })
+  //   } finally {
+  //     setIsSending(false)
+  //   }
+  // }
 
   return (
     <YStack
       flex={1}
       justify="center"
       gap="$4"
-      width={300}
+      width={width * 0.8}
       maxW="90%"
       self="center"
       items="stretch"
     >
-      <YStack items="center" mb="$4">
-        <LogoWithTapTrigger />
-      </YStack>
-
-      <form
-        style={{
-          display: 'contents',
-        }}
-        onSubmit={(e) => {
-          e.preventDefault()
-          handleSendOTP()
-        }}
+      <YStack
+        key="welcome-content"
+        gap="$2"
+        items="center"
+        width="100%"
+        animation="medium"
+        enterStyle={{ opacity: 0, y: -20 }}
+        exitStyle={{ opacity: 0, y: 20 }}
       >
-        <Input
-          data-testid="email-input"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoCorrect={false}
-          autoComplete="email"
-          textContentType="emailAddress"
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          disabled={isSending}
-        />
-
-        <ButtonSimple
-          data-testid="send-magic-link-button"
-          // @ts-expect-error - type prop for web forms
-          type="submit"
-          width="100%"
-          size="large"
-          scaleIcon={1.2}
-          icon={EnvelopeIcon}
-          disabled={!email || isSending}
-          onPress={handleSendOTP}
+        <YStack
+          animation="200ms"
+          enterStyle={{ scale: 0.5, opacity: 0 }}
+          exitStyle={{ scale: 0.5, opacity: 0 }}
+          items="center"
+          gap="$3"
         >
-          {isSending ? 'Sending...' : 'Send Code'}
-        </ButtonSimple>
-      </form>
+          <Image
+            src={require('../../../../public/icon-takeout.png')}
+            width={80}
+            height={80}
+          />
+          <H1 size="$9" fontFamily="$heading" text="center" color="$color">
+            Welcome back!
+          </H1>
+        </YStack>
 
-      {(process.env.NODE_ENV === 'development' ||
-        (!isNative && window.location.search.includes('showAdmin'))) && (
-        <ButtonSimple
-          data-testid="login-as-admin"
-          width="100%"
-          size="small"
-          variant="outlined"
-          onPress={() => signInAsAdmin()}
-        >
-          Sign in as admin
-        </ButtonSimple>
-      )}
+        {/* Email Login Form */}
+        <YStack width="100%" gap="$3">
+          <ButtonSimple
+            glass
+            size="large"
+            onPress={handleContinueWithEmail}
+            width="100%"
+            bg="transparent"
+            pressStyle={{
+              scale: 0.98,
+            }}
+          >
+            Continue with Email
+          </ButtonSimple>
+          {/* In dev mode - admin sign on visible */}
+          {(process.env.NODE_ENV === 'development' ||
+            (!isNative && window.location.search.includes('showAdmin'))) && (
+            <ButtonSimple
+              theme="accent"
+              size="large"
+              onPress={handleSignInAdmin}
+              width="100%"
+              pressStyle={{
+                scale: 0.98,
+              }}
+            >
+              Continue as admin (dev)
+            </ButtonSimple>
+          )}
+        </YStack>
+
+        {/* Divider */}
+        <XStack width="100%" items="center" gap="$3" py="$2">
+          <Separator flex={1} />
+          <Text color="$color9" fontSize="$3" fontFamily="$mono">
+            OR
+          </Text>
+          <Separator flex={1} />
+        </XStack>
+
+        {/* Social Login Buttons */}
+        <YStack width="100%" gap="$3" enterStyle={{ opacity: 0 }}>
+          <ButtonSimple
+            glass
+            size="large"
+            onPress={() => handleSocialLogin('google')}
+            width="100%"
+            pressStyle={{
+              scale: 0.98,
+            }}
+            icon={<GoogleIcon size={16} />}
+          >
+            Continue with Google
+          </ButtonSimple>
+
+          {isIos && (
+            <ButtonSimple
+              glass
+              size="large"
+              onPress={() => handleSocialLogin('apple')}
+              width="100%"
+              pressStyle={{
+                scale: 0.98,
+              }}
+              icon={<AppleIcon size={20} />}
+            >
+              Continue with Apple
+            </ButtonSimple>
+          )}
+        </YStack>
+      </YStack>
 
       <YStack opacity={0.5} items="center">
         <SizableText size="$1" color="$color8">
@@ -116,17 +185,5 @@ export const LoginSignupContents = () => {
         </SizableText>
       </YStack>
     </YStack>
-  )
-}
-
-function LogoWithTapTrigger() {
-  return (
-    <RepeatedTapToShowDevTools>
-      {({ handleTap }: { handleTap: () => void }) => (
-        <XStack onPress={handleTap}>
-          <Logo />
-        </XStack>
-      )}
-    </RepeatedTapToShowDevTools>
   )
 }

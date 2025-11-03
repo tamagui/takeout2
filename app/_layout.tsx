@@ -6,8 +6,6 @@ import { useAuth } from '~/features/auth/client/authClient'
 import { HotUpdateAlertManager, HotUpdaterProvider } from '~/features/hot-updater'
 import { Gallery } from '~/interface/gallery/Gallery'
 import { NotificationProvider } from '~/interface/notification/Notification'
-import { BottomErrorSheet } from '~/interface/sheet/BottomErrorSheet'
-import { errorSheetRef } from '~/interface/sheet/errorSheetHelper'
 import { ToastProvider } from '~/interface/toast/Toast'
 import { DragDropFile } from '~/interface/upload/DragDropFile'
 import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
@@ -47,7 +45,7 @@ export function Layout() {
                     <NotificationProvider>
                       <DragDropFile>
                         <HotUpdateAlertManager />
-                        <BottomErrorSheet ref={errorSheetRef} />
+                        {/* <BottomErrorSheet ref={errorSheetRef} /> */}
                         <Gallery />
                         <Slot />
                       </DragDropFile>

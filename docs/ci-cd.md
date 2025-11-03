@@ -198,7 +198,7 @@ Key CI/CD scripts in `scripts/` directory:
 2. **Use feature branches** for development
 3. **Run linting and type checking** before commits:
    ```bash
-   bun lint:fix && bun types:check:fast
+   bun lint:fix && bun types:check
    ```
 4. **Monitor deployments** after merging to main
 5. **Check CI logs** if builds fail

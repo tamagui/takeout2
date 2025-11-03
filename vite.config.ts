@@ -148,7 +148,6 @@ export default {
         validator: true,
         zlib: false,
         'expo/internal/unstable-autolinking-exports': false,
-        '@gorhom/bottom-sheet': true,
 
         'react-native-bottom-tabs': {
           'lib/module/package.json': () => {

@@ -1,6 +1,6 @@
 # Principles
 
-- always run `bun lint:fix && bun types:check:fast` after code changes
+- always run `bun lint:fix && bun types:check` after code changes
 - use `~` alias for non-relative imports, prefer it always
 - use `console.info()` instead of `console.log()`
 - use `node:` prefix for built-in modules

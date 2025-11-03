@@ -1,3 +1,5 @@
+- can we prevent vscode autocomplete of extenral overlaps:
+  - Image, Link, Dialog
 - invite pavel to repo for uncloud integration
 
 general:
@@ -5,7 +7,8 @@ general:
 - zero migrations needs improvement - lambda / part of migrate likely
 - job system should be here
 - get tests working
-- re-enable database backup in ci.ts once ./src/database/scripts/backup.ts is available
+- re-enable database backup in ci.ts once ./src/database/scripts/backup.ts is
+  available
 
 quan:
 

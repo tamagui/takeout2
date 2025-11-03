@@ -1,8 +1,8 @@
-import { CornerStyle, ExpoLiquidGlassView, LiquidGlassType } from 'expo-liquid-glass-view'
+import { isIos } from '@vxrn/helpers'
+import { CornerStyle, LiquidGlassType } from 'expo-liquid-glass-view'
+import type { ReactNode } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { View } from 'tamagui'
-import { isIos } from '@vxrn/helpers'
-import type { ReactNode } from 'react'
 import { GlassView } from '../view/GlassView'
 
 interface ButtonGlassCircleProps {

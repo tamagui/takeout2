@@ -1,5 +1,3 @@
-import { Galeria } from '@nandorojo/galeria'
-import { Image } from 'expo-image'
 import { useParams } from 'one'
 import { memo } from 'react'
 import { Pressable } from 'react-native'
@@ -11,6 +9,7 @@ import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
 import { BasicHeader } from '~/interface/headers/BasicHeader'
 import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
+import { Image } from '~/interface/image/Image'
 import { showPostActionSheet } from '~/interface/sheet/postActionSheetHelper'
 import { BodyText } from '~/interface/text/Body'
 import { usePostById } from './usePostById'
@@ -43,29 +42,22 @@ export const FeedDetailPage = memo(() => {
             </YStack>
           </XStack>
         </XStack>
-        <Galeria urls={[post.image]}>
-          <Galeria.Image>
-            <Pressable
-              onPress={() => {
-                galleryEmitter.emit({
-                  items: [{ id: post.id.toString(), url: post.image }],
-                  firstItem: post.id.toString(),
-                })
-              }}
-            >
-              <Image
-                key={`${post.id.toString()}`}
-                source={post.image}
-                style={{
-                  width: '100%',
-                  aspectRatio: 3 / 4,
-                }}
-                contentFit="cover"
-                transition={500}
-              />
-            </Pressable>
-          </Galeria.Image>
-        </Galeria>
+        <Pressable
+          onPress={() => {
+            galleryEmitter.emit({
+              items: [{ id: post.id.toString(), url: post.image }],
+              firstItem: post.id.toString(),
+            })
+          }}
+        >
+          <Image
+            key={`${post.id.toString()}`}
+            src={post.image}
+            width="100%"
+            aspectRatio={3 / 4}
+            objectFit="cover"
+          />
+        </Pressable>
         <XStack px="$3" items="center" gap="$3" py="$2.5" justify="flex-end">
           <ButtonSimple
             circular

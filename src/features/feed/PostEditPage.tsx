@@ -13,6 +13,7 @@ import {
   View,
   YStack,
 } from 'tamagui'
+import { postById } from '~/data/queries/post'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { BasicHeader } from '~/interface/headers/BasicHeader'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
@@ -27,9 +28,11 @@ export const PostEditPage = () => {
   const [isSaving, setIsSaving] = useState<boolean>(false)
   const { width } = useWindowDimensions()
 
-  const [post] = useQuery(zero.query.post.where('id', postId || '').one(), {
-    enabled: Boolean(postId),
-  })
+  const [post] = useQuery(
+    postById,
+    { postId: postId || '' },
+    { enabled: Boolean(postId) }
+  )
 
   useEffect(() => {
     if (post?.caption) {

@@ -23,3 +23,7 @@ export const userWithState = (props: { userId: string }) => {
     .one()
     .related('state', (q) => q.where('userId', props.userId).one())
 }
+
+export const userByUsername = (props: { username: string }) => {
+  return zql.userPublic.where(permission).where('username', props.username).one()
+}

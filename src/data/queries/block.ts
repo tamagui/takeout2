@@ -1,7 +1,7 @@
 import { where, zql } from 'over-zero'
 
-const permission = where('block', () => {
-  return true
+const permission = where('block', (_, auth) => {
+  return _.cmp('blockerId', auth?.id || '')
 })
 
 export const blockedByUser = (props: { userId: string; limit?: number }) => {

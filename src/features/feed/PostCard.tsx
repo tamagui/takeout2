@@ -1,6 +1,7 @@
 import { Image } from 'expo-image'
 import { memo, useState } from 'react'
 import { Accordion, SizableText, View, XStack, YStack } from 'tamagui'
+import { userById } from '~/data/queries/user'
 import type { Post } from '~/data/types'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
@@ -8,7 +9,7 @@ import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
 import { LinearGradientSeparator } from '~/interface/separators/LinearGradientSeparator'
 import { showPostActionSheet } from '~/interface/sheet/postActionSheetHelper'
 import { BodyText } from '~/interface/text/Body'
-import { useQuery, zero } from '~/zero/client'
+import { useQuery } from '~/zero/client'
 import { useAuth } from '~/features/auth/client/authClient'
 import { AvatarWithMenu } from './AvatarWithMenu'
 
@@ -19,9 +20,7 @@ interface PostCardProps {
 export const PostCard = memo(({ post }: PostCardProps) => {
   const { user } = useAuth()
   const authorId = post.userId
-  const [author] = useQuery(zero.query.userPublic.where('id', authorId).one(), {
-    enabled: !!authorId,
-  })
+  const [author] = useQuery(userById, { userId: authorId }, { enabled: !!authorId })
   const avatarUrl = author?.image
   const username = author?.username
   const [isTruncated, setIsTruncated] = useState<boolean>(false)

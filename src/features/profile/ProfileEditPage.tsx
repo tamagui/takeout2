@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Alert, Keyboard } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
 import { Spinner, useDebounceValue, View, XStack, YStack } from 'tamagui'
+import { userByUsername } from '~/data/queries/user'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Input } from '~/interface/forms/Input'
 import { BasicHeader } from '~/interface/headers/BasicHeader'
@@ -38,7 +39,8 @@ export const ProfileEditPage = () => {
   const isUsernameInvalid = (debouncedUsername && !isUsernameValid) || isUsernameBlocked
   // Query to check if username exists
   const [existingUser, availabilityStatus] = useQuery(
-    zero.query.userPublic.where('username', debouncedUsername).one(),
+    userByUsername,
+    { username: debouncedUsername },
     {
       enabled: isUsernameValid && debouncedUsername !== user?.username,
     }

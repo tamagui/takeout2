@@ -127,11 +127,6 @@ CREATE TABLE "report" (
 	"createdAt" integer NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "userProfile" (
-	"id" text PRIMARY KEY NOT NULL,
-	"postsCount" integer DEFAULT 0 NOT NULL
-);
---> statement-breakpoint
 CREATE TABLE "userPublic" (
 	"id" text PRIMARY KEY NOT NULL,
 	"name" text,
@@ -140,7 +135,8 @@ CREATE TABLE "userPublic" (
 	"joinedAt" bigint NOT NULL,
 	"hasOnboarded" boolean DEFAULT false NOT NULL,
 	"whitelisted" boolean DEFAULT false NOT NULL,
-	"migrationVersion" integer DEFAULT 0 NOT NULL
+	"migrationVersion" integer DEFAULT 0 NOT NULL,
+	"postsCount" integer DEFAULT 0 NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "userState" (

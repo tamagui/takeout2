@@ -16,8 +16,5 @@ export type ReportUpdate = TableUpdateRow<typeof schema.report>
 export type User = TableInsertRow<typeof schema.userPublic>
 export type UserUpdate = TableUpdateRow<typeof schema.userPublic>
 
-export type UserProfile = TableInsertRow<typeof schema.userProfile>
-export type UserProfileUpdate = TableUpdateRow<typeof schema.userProfile>
-
 export type UserState = TableInsertRow<typeof schema.userState>
 export type UserStateUpdate = TableUpdateRow<typeof schema.userState>

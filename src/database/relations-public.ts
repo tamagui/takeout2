@@ -7,17 +7,12 @@ import {
   report,
   userPublic,
   userState,
-  userProfile,
 } from './schema-public'
 
 export const userPublicRelations = relations(userPublic, ({ one, many }) => ({
   state: one(userState, {
     fields: [userPublic.id],
     references: [userState.userId],
-  }),
-  profile: one(userProfile, {
-    fields: [userPublic.id],
-    references: [userProfile.id],
   }),
   posts: many(post),
   blocking: many(block, {
@@ -42,13 +37,6 @@ export const userPublicRelations = relations(userPublic, ({ one, many }) => ({
 export const userStateRelations = relations(userState, ({ one }) => ({
   user: one(userPublic, {
     fields: [userState.userId],
-    references: [userPublic.id],
-  }),
-}))
-
-export const userProfileRelations = relations(userProfile, ({ one }) => ({
-  user: one(userPublic, {
-    fields: [userProfile.id],
     references: [userPublic.id],
   }),
 }))

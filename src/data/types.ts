@@ -1,4 +1,4 @@
-import type { Block, Post, Report, User, UserProfile, UserState } from './generated/types'
+import type { Block, Post, Report, User, UserState } from './generated/types'
 
 export type * from './generated/types'
 
@@ -11,12 +11,10 @@ export type PostWithRelations = Post & {
 }
 
 export type UserWithProfile = User & {
-  profile?: UserProfile
   state?: UserState
 }
 
 export type UserWithRelations = User & {
-  profile?: UserProfile
   state?: UserState
   posts?: readonly Post[]
   blocking?: readonly Block[]

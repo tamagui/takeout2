@@ -8,14 +8,6 @@ export const userById = (props: { userId: string }) => {
   return zql.userPublic.where(permission).where('id', props.userId).one()
 }
 
-export const userWithProfile = (props: { userId: string }) => {
-  return zql.userPublic
-    .where(permission)
-    .where('id', props.userId)
-    .one()
-    .related('profile', (q) => q.where('id', props.userId).one())
-}
-
 export const userWithState = (props: { userId: string }) => {
   return zql.userPublic
     .where(permission)
@@ -23,6 +15,9 @@ export const userWithState = (props: { userId: string }) => {
     .one()
     .related('state', (q) => q.where('userId', props.userId).one())
 }
+
+// Legacy alias - deprecated, use userWithState instead
+export const userWithProfile = userWithState
 
 export const userByUsername = (props: { username: string }) => {
   return zql.userPublic.where(permission).where('username', props.username).one()

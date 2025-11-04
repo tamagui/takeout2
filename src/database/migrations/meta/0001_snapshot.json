@@ -1,5 +1,5 @@
 {
-  "id": "b9e07781-d751-4df9-98d9-5fcc413c98e0",
+  "id": "e3a36d90-1f3f-4112-ab65-cd71086b400f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -943,32 +943,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.userProfile": {
-      "name": "userProfile",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "postsCount": {
-          "name": "postsCount",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.userPublic": {
       "name": "userPublic",
       "schema": "",
@@ -1019,6 +993,13 @@
         },
         "migrationVersion": {
           "name": "migrationVersion",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "postsCount": {
+          "name": "postsCount",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,

@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { SizableText, useWindowDimensions, View, XStack, YStack } from 'tamagui'
 import { SERVER_URL } from '~/constants/urls'
-import type { User, UserProfile } from '~/data/types'
+import type { User } from '~/data/types'
 import { formatCount } from '~/helpers/number/formatNumber'
 import { useShareProfile } from '~/helpers/share/useShareProfile'
 import { Avatar } from '~/interface/avatars/Avatar'
@@ -15,11 +15,10 @@ interface ProfileHeaderProps {
   userInfo?: User
   isOwnProfile: boolean
   postsCount?: number
-  profile?: UserProfile
 }
 
 export const ProfileHeader = memo(
-  ({ userInfo, isOwnProfile, postsCount, profile }: ProfileHeaderProps) => {
+  ({ userInfo, isOwnProfile, postsCount }: ProfileHeaderProps) => {
     const { width } = useWindowDimensions()
     const { shareProfile } = useShareProfile()
 

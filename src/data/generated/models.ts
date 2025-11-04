@@ -4,7 +4,6 @@ import * as device from '../models/device'
 import * as post from '../models/post'
 import * as report from '../models/report'
 import * as userPublic from '../models/user'
-import * as userProfile from '../models/userProfile'
 import * as userState from '../models/userState'
 
 export const models = {
@@ -12,7 +11,6 @@ export const models = {
   device,
   post,
   report,
-  userProfile,
   userPublic,
   userState,
 }

@@ -13,6 +13,7 @@ export const schema = table('userPublic')
     hasOnboarded: boolean(),
     whitelisted: boolean(),
     migrationVersion: number(),
+    postsCount: number(),
   })
   .primaryKey('id')
 

@@ -17,6 +17,7 @@ export const userPublic = pgTable('userPublic', (t) => ({
   hasOnboarded: boolean('hasOnboarded').notNull().default(false),
   whitelisted: boolean('whitelisted').notNull().default(false),
   migrationVersion: integer('migrationVersion').notNull().default(0),
+  postsCount: integer('postsCount').notNull().default(0),
 }))
 
 export const userState = pgTable('userState', (t) => ({
@@ -26,11 +27,6 @@ export const userState = pgTable('userState', (t) => ({
   timeZone: text('timeZone').notNull().default('UTC'),
   onlineStatus: text('onlineStatus').notNull().default('online'),
   lastNotificationReadAt: integer('lastNotificationReadAt'),
-}))
-
-export const userProfile = pgTable('userProfile', (t) => ({
-  id: text('id').primaryKey(),
-  postsCount: integer('postsCount').notNull().default(0),
 }))
 
 export const post = pgTable(

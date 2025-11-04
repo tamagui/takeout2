@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm'
 import type { AuthData } from '~/features/auth/types'
 import { getDb } from '~/database'
 import { user as userTable, whitelist } from '~/database/schema-private'
-import { userPublic, userState, userProfile, post } from '~/database/schema-public'
+import { userPublic, userState, post } from '~/database/schema-public'
 import { getIsAdmin } from '~/server/getIsAdmin'
 
 export const userActions = {
@@ -98,23 +98,10 @@ async function onboardUser(authData: AuthData, userId: string) {
     hasOnboarded: false,
     whitelisted: isWhitelisted,
     migrationVersion: 0,
+    postsCount: 0,
   }
 
   await db.insert(userPublic).values(userRow)
-
-  // Initialize userProfile for the new user
-  const existingUserProfile = await db
-    .select()
-    .from(userProfile)
-    .where(eq(userProfile.id, userId))
-    .limit(1)
-
-  if (existingUserProfile.length === 0) {
-    await db.insert(userProfile).values({
-      id: userId,
-      postsCount: 0,
-    })
-  }
 
   if (isAdmin) {
     await db.update(userTable).set({ role: 'admin' }).where(eq(userTable.id, userId))
@@ -130,9 +117,8 @@ async function deleteAccount(userId: string) {
     // delete all user-generated content
     await db.delete(post).where(eq(post.userId, userId))
 
-    // delete user state and profile
+    // delete user state
     await db.delete(userState).where(eq(userState.userId, userId))
-    await db.delete(userProfile).where(eq(userProfile.id, userId))
 
     // delete user from private user table (authentication data)
     await db.delete(userTable).where(eq(userTable.id, userId))

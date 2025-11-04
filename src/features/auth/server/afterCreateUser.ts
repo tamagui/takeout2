@@ -2,7 +2,7 @@ import { randomId } from '@vxrn/helpers'
 import { eq } from 'drizzle-orm'
 import { getDb } from '~/database'
 import { user as userTable, whitelist } from '~/database/schema-private'
-import { userPublic, userState, userProfile } from '~/database/schema-public'
+import { userPublic, userState } from '~/database/schema-public'
 
 export async function afterCreateUser(user: { id: string; email: string }) {
   try {
@@ -94,25 +94,11 @@ export async function afterCreateUser(user: { id: string; email: string }) {
       hasOnboarded: false,
       whitelisted: isWhitelisted,
       migrationVersion: 0,
+      postsCount: 0,
     }
 
     console.info(`[afterCreateUser] Creating userPublic record`)
     await db.insert(userPublic).values(userRow)
-
-    // Initialize userProfile for the new user
-    const existingUserProfile = await db
-      .select()
-      .from(userProfile)
-      .where(eq(userProfile.id, userId))
-      .limit(1)
-
-    if (existingUserProfile.length === 0) {
-      console.info(`[afterCreateUser] Creating userProfile record`)
-      await db.insert(userProfile).values({
-        id: userId,
-        postsCount: 0,
-      })
-    }
 
     console.info(`[afterCreateUser] ✅ User ${email} setup complete`)
     return userPrivate

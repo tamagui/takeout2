@@ -22,7 +22,7 @@ export interface GlassViewProps {
 
 // ios 26+ supports native glass effect
 const isIOS26Plus = Device.osVersion
-  ? Number.parseInt(Device.osVersion.split('.')[0] ?? '0') >= 26
+  ? Number.parseInt(Device.osVersion.split('.')[0] ?? '0', 10) >= 26
   : false
 
 export const GlassView = memo(

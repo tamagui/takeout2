@@ -20,7 +20,6 @@ import { EnvelopeSimpleIcon } from '~/interface/icons/phosphor/EnvelopeSimpleIco
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
 
-
 export const SignupPage = memo(() => {
   useOnboarding()
 

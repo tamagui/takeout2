@@ -10,8 +10,8 @@ import { isSmallScreen } from '~/interface/dimensions'
 import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
-  import { otpLogin, validateLoginOtpCode } from '~/features/auth/client/otpLogin'
-  import { OtpInput } from '~/features/auth/ui/OtpInput'
+import { otpLogin, validateLoginOtpCode } from '~/features/auth/client/otpLogin'
+import { OtpInput } from '~/features/auth/ui/OtpInput'
 
 export const OtpPage = () => {
   const timer = useTimer()

@@ -130,6 +130,14 @@ function updateEnvFile(): void {
     // atomic replace
     renameSync(ENV_TEMP_PATH, ENV_PATH)
 
+    if (existsSync(ENV_BACKUP_PATH)) {
+      try {
+        unlinkSync(ENV_BACKUP_PATH)
+      } catch {
+        // ignore cleanup errors
+      }
+    }
+
     console.info('Updated .env auto-generated section')
   } catch (error) {
     console.error('Failed to update .env file:', error)

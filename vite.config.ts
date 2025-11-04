@@ -65,67 +65,54 @@ export default {
         compiler: true,
       },
 
-      ssr: {
-        autoDepsOptimization: {
-          exclude: [
-            '*/zlib/*',
-            '*/@nandorojo/galeria/*',
-            '*/expo-video/*',
-            '*/hot-updater/*',
-            '*/@hot-updater/*',
-            '*/expo/internal/*',
-          ],
-        },
-      },
+      native: process.env.DISABLE_METRO
+        ? {}
+        : {
+            bundler: 'metro', // Use Metro bundler for better React Native compatibility
+            bundlerOptions: {
+              defaultConfigOverrides: (config) => {
+                return {
+                  ...config,
+                  resolver: {
+                    ...config?.resolver,
+                    useWatchman: false, // We are encountering various issues with Watchman so we are disabling it for now
+                    resolveRequest: (context, moduleName, platform) => {
+                      const defaultResolveRequest =
+                        config?.resolver?.resolveRequest || context.resolveRequest
 
-      ...(!process.env.DISABLE_METRO && {
-        native: {
-          bundler: 'metro', // Use Metro bundler for better React Native compatibility
-          bundlerOptions: {
-            defaultConfigOverrides: (config) => {
-              return {
-                ...config,
-                resolver: {
-                  ...config?.resolver,
-                  useWatchman: false, // We are encountering various issues with Watchman so we are disabling it for now
-                  resolveRequest: (context, moduleName, platform) => {
-                    const defaultResolveRequest =
-                      config?.resolver?.resolveRequest || context.resolveRequest
+                      // Workaround: resolve these to empty module because they will break the build
+                      // We may want to refactor and make this not be imported at all in the RN build
+                      if (
+                        moduleName === 'node:http2' ||
+                        moduleName === 'jsonwebtoken' ||
+                        moduleName.startsWith('@aws-sdk/')
+                      ) {
+                        return defaultResolveRequest(
+                          context,
+                          '@vxrn/vite-plugin-metro/empty',
+                          platform
+                        )
+                      }
 
-                    // Workaround: resolve these to empty module because they will break the build
-                    // We may want to refactor and make this not be imported at all in the RN build
-                    if (
-                      moduleName === 'node:http2' ||
-                      moduleName === 'jsonwebtoken' ||
-                      moduleName.startsWith('@aws-sdk/')
-                    ) {
-                      return defaultResolveRequest(
-                        context,
-                        '@vxrn/vite-plugin-metro/empty',
-                        platform
-                      )
-                    }
-
-                    const res = defaultResolveRequest(context, moduleName, platform)
-                    return res
+                      const res = defaultResolveRequest(context, moduleName, platform)
+                      return res
+                    },
                   },
-                },
-              }
-            },
-            babelConfigOverrides: (config) => {
-              return {
-                ...config,
-                plugins: [
-                  ...(config?.plugins || []),
-                  // Hot Updater (React Native OTA solution)
-                  // https://github.com/gronxb/hot-updater/blob/main/packages/hot-updater/src/plugins/babel.ts
-                  'hot-updater/babel-plugin',
-                ],
-              }
+                }
+              },
+              babelConfigOverrides: (config) => {
+                return {
+                  ...config,
+                  plugins: [
+                    ...(config?.plugins || []),
+                    // Hot Updater (React Native OTA solution)
+                    // https://github.com/gronxb/hot-updater/blob/main/packages/hot-updater/src/plugins/babel.ts
+                    'hot-updater/babel-plugin',
+                  ],
+                }
+              },
             },
           },
-        },
-      }),
 
       setupFile: './src/setupClient.ts',
 

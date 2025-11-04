@@ -131,7 +131,9 @@ export default {
         validator: true,
         zlib: false,
         'expo/internal/unstable-autolinking-exports': false,
-
+        '@react-native/debugger-shell': false,
+        '@hot-updater/plugin-core': false,
+        '@react-navigation/elements': false,
         'react-native-reanimated': {
           'lib/module/createAnimatedComponent/createAnimatedComponent.js': (contents) => {
             // if not using layout animations, this saves a super expensive repaint that happens often

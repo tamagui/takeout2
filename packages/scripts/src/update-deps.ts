@@ -23,6 +23,8 @@ for (const arg of args) {
     console.error('Correct usage: --tag=canary')
     console.error('Example: bun update-deps.ts --tag=canary react react-dom')
     process.exit(1)
+  } else if (arg === '--canary') {
+    globalTag = 'canary'
   } else {
     packagePatterns.push(arg)
   }

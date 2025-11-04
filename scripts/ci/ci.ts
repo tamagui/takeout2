@@ -134,7 +134,7 @@ try {
       condition: () => !values['skip-tests'],
       fn: async () => {
         await setupBackend()
-        await runTests()
+        await runUnitTests()
       },
     },
     {
@@ -313,7 +313,7 @@ async function waitForBackend() {
   throw new Error(`Migrations failed to complete within timeout`)
 }
 
-async function runTests() {
+async function runUnitTests() {
   if (values['skip-tests']) {
     return
   }
@@ -321,7 +321,7 @@ async function runTests() {
   const testEnv = await getTestEnv()
 
   try {
-    await run('bun run test', {
+    await run('bun run test:unit', {
       env: testEnv,
       prefix: 'tests',
       timeout: time.ms.minutes(5),

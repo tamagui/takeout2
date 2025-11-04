@@ -5,7 +5,6 @@ import type { FontFamilyTokens, RadiusTokens } from 'tamagui'
 import {
   createStyledContext,
   type GetProps,
-  isWeb,
   styled,
   type TamaguiElement,
   Text,
@@ -15,10 +14,11 @@ import {
   XStack,
 } from 'tamagui'
 import { useIsDark } from '~/features/theme/useIsDark'
+import { GlassView } from '../effects/GlassView'
+import type { GlassViewProps } from '../effects/GlassViewProps'
 import Glint from '../effects/Glint'
 import { type TooltipWrapperProps, wrapWithTooltip } from '../tooltip/TooltipSimple'
 import { closeOpenTooltips } from '../tooltip/closeOpenTooltips'
-import { GlassView, type GlassViewProps } from '../view/GlassView'
 import { wrapChildrenInText } from './wrapChildrenInText'
 
 type ButtonSimpleAdditionalProps = {
@@ -399,22 +399,21 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
     )
 
     // wrap with glass view if requested (not supported on web)
-    const glassWrappedElement =
-      glass && !isWeb ? (
-        <GlassView
-          glassEffectStyle="clear"
-          containerStyle={{
-            width: '100%',
-            items: 'center',
-            justify: 'center',
-            ...(typeof glass === 'object' ? glass.containerStyle : {}),
-          }}
-        >
-          {buttonElement}
-        </GlassView>
-      ) : (
-        buttonElement
-      )
+    const glassWrappedElement = glass ? (
+      <GlassView
+        glassEffectStyle="clear"
+        containerStyle={{
+          width: '100%',
+          items: 'center',
+          justify: 'center',
+          ...(typeof glass === 'object' ? glass.containerStyle : {}),
+        }}
+      >
+        {buttonElement}
+      </GlassView>
+    ) : (
+      buttonElement
+    )
 
     return wrapWithTooltip(glassWrappedElement, {
       tooltip,

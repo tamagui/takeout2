@@ -1,24 +1,9 @@
-import { BlurView, type BlurViewProps } from 'expo-blur'
+import { BlurView } from 'expo-blur'
 import * as Device from 'expo-device'
 import { GlassView as ExpoGlassView } from 'expo-glass-effect'
 import { memo } from 'react'
-import { View, type ViewStyle } from 'tamagui'
-
-export interface GlassViewProps {
-  width?: number
-  height?: number
-  borderRadius?: number
-  intensity?: number
-  tint?: BlurViewProps['tint']
-  containerStyle?: ViewStyle
-  children?: React.ReactNode
-  glassEffectStyle?: 'clear' | 'regular'
-  style?: ViewStyle
-  isFallback?: boolean
-  backgroundColor?: string
-  tintColor?: string
-  isInteractive?: boolean
-}
+import { View } from 'tamagui'
+import type { GlassViewProps } from './GlassViewProps'
 
 // ios 26+ supports native glass effect
 const isIOS26Plus = Device.osVersion

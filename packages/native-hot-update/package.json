@@ -1,0 +1,63 @@
+{
+  "name": "@vxrn/native-hot-update",
+  "version": "0.0.1",
+  "type": "module",
+  "sideEffects": false,
+  "license": "MIT",
+  "source": "src/index.ts",
+  "main": "dist/cjs",
+  "module": "dist/esm",
+  "types": "./src/index.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "react-native": {
+        "import": "./dist/esm/index.native.js",
+        "require": "./dist/cjs/index.native.js"
+      },
+      "types": "./src/index.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs"
+    },
+    "./mmkv": {
+      "types": "./src/mmkv.ts",
+      "import": "./dist/esm/mmkv.mjs",
+      "require": "./dist/cjs/mmkv.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tamagui-build --skip-types",
+    "watch": "tamagui-build --skip-types --watch",
+    "clean": "tamagui-build clean",
+    "lint": "biome check src/",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hot-updater/react-native": "^0.20.11"
+  },
+  "peerDependencies": {
+    "expo-application": "*",
+    "react": "*",
+    "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native-mmkv": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@tamagui/build": "*",
+    "@types/react": "^18.3.18",
+    "react": "*",
+    "react-native": "*",
+    "react-native-mmkv": "^3.1.0",
+    "typescript": "^5.7.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

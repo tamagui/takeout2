@@ -197,6 +197,26 @@
         "tamagui": "*",
       },
     },
+    "packages/native-hot-update": {
+      "name": "@vxrn/native-hot-update",
+      "version": "0.0.1",
+      "dependencies": {
+        "@hot-updater/react-native": "^0.20.11",
+      },
+      "devDependencies": {
+        "@tamagui/build": "*",
+        "@types/react": "^18.3.18",
+        "react": "*",
+        "react-native": "*",
+        "react-native-mmkv": "^3.1.0",
+        "typescript": "^5.7.3",
+      },
+      "peerDependencies": {
+        "expo-application": "*",
+        "react": "*",
+        "react-native": "*",
+      },
+    },
     "packages/postgres": {
       "name": "@vxrn/postgres",
       "version": "0.0.22",
@@ -1900,6 +1920,8 @@
 
     "@types/phoenix": ["@types/phoenix@1.6.6", "", {}, "sha512-PIzZZlEppgrpoT2QgbnDU+MMzuR6BbCjllj0bM70lWoejMeNJAxCchxnv7J3XFkI8MpygtRpzXrIlmWUBclP5A=="],
 
+    "@types/prop-types": ["@types/prop-types@15.7.15", "", {}, "sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw=="],
+
     "@types/react": ["@types/react@19.1.17", "", { "dependencies": { "csstype": "^3.0.2" } }, "sha512-Qec1E3mhALmaspIrhWt9jkQMNdw6bReVu64mjvhbhq2NFPftLPVr+l1SZgmw/66WwBNpDh7ao5AT6gF5v41PFA=="],
 
     "@types/react-dom": ["@types/react-dom@19.1.11", "", { "peerDependencies": { "@types/react": "^19.0.0" } }, "sha512-3BKc/yGdNTYQVVw4idqHtSOcFsgGuBbMveKCOgF8wQ5QtrYOc3jDIlzg3jef04zcXFIHLelyGlj0T+BJ8+KN+w=="],
@@ -1973,6 +1995,8 @@
     "@vxrn/helpers": ["@vxrn/helpers@workspace:packages/helpers"],
 
     "@vxrn/hooks": ["@vxrn/hooks@workspace:packages/hooks"],
+
+    "@vxrn/native-hot-update": ["@vxrn/native-hot-update@workspace:packages/native-hot-update"],
 
     "@vxrn/postgres": ["@vxrn/postgres@workspace:packages/postgres"],
 
@@ -4284,6 +4308,10 @@
 
     "@vxrn/helpers/@types/react": ["@types/react@19.2.2", "", { "dependencies": { "csstype": "^3.0.2" } }, "sha512-6mDvHUFSjyT2B2yeNx2nUgMxh9LtOWvkhIU3uePn2I2oyNymUAX1NIsdgviM4CH+JSrp2D2hsMvJOkxY+0wNRA=="],
 
+    "@vxrn/native-hot-update/@hot-updater/react-native": ["@hot-updater/react-native@0.20.15", "", { "dependencies": { "@hot-updater/core": "0.20.15", "@hot-updater/js": "0.20.15", "@hot-updater/plugin-core": "0.20.15", "use-sync-external-store": "1.5.0" }, "peerDependencies": { "expo": ">=50.0.0", "hot-updater": "*", "react": "*", "react-native": "*" }, "optionalPeers": ["expo", "hot-updater"] }, "sha512-R0o8Gl/xcTaXR/YcnJb6XkLVuJNezhAWMtIZFDwRD8dBiQ4nbwBoGW1a0UJB8NbZQ6uFW05Z2G7F7QRw81EWfg=="],
+
+    "@vxrn/native-hot-update/@types/react": ["@types/react@18.3.26", "", { "dependencies": { "@types/prop-types": "*", "csstype": "^3.0.2" } }, "sha512-RFA/bURkcKzx/X9oumPG9Vp3D3JUgus/d0b67KB0t5S/raciymilkOa66olh78MUI92QLbEJevO7rvqU/kjwKA=="],
+
     "@vxrn/postgres/vite": ["vite@6.4.1", "", { "dependencies": { "esbuild": "^0.25.0", "fdir": "^6.4.4", "picomatch": "^4.0.2", "postcss": "^8.5.3", "rollup": "^4.34.9", "tinyglobby": "^0.2.13" }, "optionalDependencies": { "fsevents": "~2.3.3" }, "peerDependencies": { "@types/node": "^18.0.0 || ^20.0.0 || >=22.0.0", "jiti": ">=1.21.0", "less": "*", "lightningcss": "^1.21.0", "sass": "*", "sass-embedded": "*", "stylus": "*", "sugarss": "*", "terser": "^5.16.0", "tsx": "^4.8.1", "yaml": "^2.4.2" }, "optionalPeers": ["@types/node", "jiti", "less", "lightningcss", "sass", "sass-embedded", "stylus", "sugarss", "terser", "tsx", "yaml"], "bin": { "vite": "bin/vite.js" } }, "sha512-+Oxm7q9hDoLMyJOYfUYBuHQo+dkAloi33apOPP56pzj+vsdJDzr+j1NISE5pyaAuKL4A3UD34qd0lx5+kfKp2g=="],
 
     "@vxrn/react-native-prebuilt/esbuild": ["esbuild@0.24.2", "", { "optionalDependencies": { "@esbuild/aix-ppc64": "0.24.2", "@esbuild/android-arm": "0.24.2", "@esbuild/android-arm64": "0.24.2", "@esbuild/android-x64": "0.24.2", "@esbuild/darwin-arm64": "0.24.2", "@esbuild/darwin-x64": "0.24.2", "@esbuild/freebsd-arm64": "0.24.2", "@esbuild/freebsd-x64": "0.24.2", "@esbuild/linux-arm": "0.24.2", "@esbuild/linux-arm64": "0.24.2", "@esbuild/linux-ia32": "0.24.2", "@esbuild/linux-loong64": "0.24.2", "@esbuild/linux-mips64el": "0.24.2", "@esbuild/linux-ppc64": "0.24.2", "@esbuild/linux-riscv64": "0.24.2", "@esbuild/linux-s390x": "0.24.2", "@esbuild/linux-x64": "0.24.2", "@esbuild/netbsd-arm64": "0.24.2", "@esbuild/netbsd-x64": "0.24.2", "@esbuild/openbsd-arm64": "0.24.2", "@esbuild/openbsd-x64": "0.24.2", "@esbuild/sunos-x64": "0.24.2", "@esbuild/win32-arm64": "0.24.2", "@esbuild/win32-ia32": "0.24.2", "@esbuild/win32-x64": "0.24.2" }, "bin": { "esbuild": "bin/esbuild" } }, "sha512-+9egpBW8I3CD5XPe0n6BfT5fxLzxrlDzqydF3aviG+9ni1lDC/OvMHcxqEFV0+LANZG5R1bFMWfUrjVsdwxJvA=="],
@@ -4899,6 +4927,12 @@
     "@vxrn/helpers/@tamagui/build/esbuild": ["esbuild@0.25.11", "", { "optionalDependencies": { "@esbuild/aix-ppc64": "0.25.11", "@esbuild/android-arm": "0.25.11", "@esbuild/android-arm64": "0.25.11", "@esbuild/android-x64": "0.25.11", "@esbuild/darwin-arm64": "0.25.11", "@esbuild/darwin-x64": "0.25.11", "@esbuild/freebsd-arm64": "0.25.11", "@esbuild/freebsd-x64": "0.25.11", "@esbuild/linux-arm": "0.25.11", "@esbuild/linux-arm64": "0.25.11", "@esbuild/linux-ia32": "0.25.11", "@esbuild/linux-loong64": "0.25.11", "@esbuild/linux-mips64el": "0.25.11", "@esbuild/linux-ppc64": "0.25.11", "@esbuild/linux-riscv64": "0.25.11", "@esbuild/linux-s390x": "0.25.11", "@esbuild/linux-x64": "0.25.11", "@esbuild/netbsd-arm64": "0.25.11", "@esbuild/netbsd-x64": "0.25.11", "@esbuild/openbsd-arm64": "0.25.11", "@esbuild/openbsd-x64": "0.25.11", "@esbuild/openharmony-arm64": "0.25.11", "@esbuild/sunos-x64": "0.25.11", "@esbuild/win32-arm64": "0.25.11", "@esbuild/win32-ia32": "0.25.11", "@esbuild/win32-x64": "0.25.11" }, "bin": { "esbuild": "bin/esbuild" } }, "sha512-KohQwyzrKTQmhXDW1PjCv3Tyspn9n5GcY2RTDqeORIdIJY8yKIF7sTSopFmn/wpMPW4rdPXI0UE5LJLuq3bx0Q=="],
 
     "@vxrn/helpers/@tamagui/build/oxc-transform": ["oxc-transform@0.74.0", "", { "optionalDependencies": { "@oxc-transform/binding-android-arm64": "0.74.0", "@oxc-transform/binding-darwin-arm64": "0.74.0", "@oxc-transform/binding-darwin-x64": "0.74.0", "@oxc-transform/binding-freebsd-x64": "0.74.0", "@oxc-transform/binding-linux-arm-gnueabihf": "0.74.0", "@oxc-transform/binding-linux-arm-musleabihf": "0.74.0", "@oxc-transform/binding-linux-arm64-gnu": "0.74.0", "@oxc-transform/binding-linux-arm64-musl": "0.74.0", "@oxc-transform/binding-linux-riscv64-gnu": "0.74.0", "@oxc-transform/binding-linux-s390x-gnu": "0.74.0", "@oxc-transform/binding-linux-x64-gnu": "0.74.0", "@oxc-transform/binding-linux-x64-musl": "0.74.0", "@oxc-transform/binding-wasm32-wasi": "0.74.0", "@oxc-transform/binding-win32-arm64-msvc": "0.74.0", "@oxc-transform/binding-win32-x64-msvc": "0.74.0" } }, "sha512-7ew8F2RsDWg/uJL8nzuzDJFGRKmblusYmQYzifOusNYar+SH0vtKpSSrXDbMFTN3KxtGPJXCtrhaEdCrjDuLSg=="],
+
+    "@vxrn/native-hot-update/@hot-updater/react-native/@hot-updater/core": ["@hot-updater/core@0.20.15", "", {}, "sha512-2db9Zyy8+Jrp7Kbya5s3TluPgsW1xh9CbVUoLUVIxW/zKlS9Gms9vK6I/ZbkQ6CL59wPr7XAd8C0StZ2MMIwtg=="],
+
+    "@vxrn/native-hot-update/@hot-updater/react-native/@hot-updater/js": ["@hot-updater/js@0.20.15", "", { "dependencies": { "@hot-updater/core": "0.20.15" } }, "sha512-zraNwernCiHyX2ZlMUSVT5RVGaoHyHXUKCSPQLxtNcT0gXe/n/n7st9+Sqa7XQjp0jmPcGGXcoOZ0o7GjFaVzw=="],
+
+    "@vxrn/native-hot-update/@hot-updater/react-native/@hot-updater/plugin-core": ["@hot-updater/plugin-core@0.20.15", "", { "dependencies": { "@hot-updater/core": "0.20.15", "cosmiconfig": "9.0.0", "cosmiconfig-typescript-loader": "5.0.0", "fast-glob": "3.3.3", "oxc-transform": "0.82.1", "semver": "^7.7.2" } }, "sha512-IDmf2sqro3l4Rv70iGr9yfLXukl3887VpLBFOBXWSrPMCst0Rgt5CurRTff5m5yl6VGwCtuylPcg2QMv2VqBRA=="],
 
     "@vxrn/postgres/vite/esbuild": ["esbuild@0.25.11", "", { "optionalDependencies": { "@esbuild/aix-ppc64": "0.25.11", "@esbuild/android-arm": "0.25.11", "@esbuild/android-arm64": "0.25.11", "@esbuild/android-x64": "0.25.11", "@esbuild/darwin-arm64": "0.25.11", "@esbuild/darwin-x64": "0.25.11", "@esbuild/freebsd-arm64": "0.25.11", "@esbuild/freebsd-x64": "0.25.11", "@esbuild/linux-arm": "0.25.11", "@esbuild/linux-arm64": "0.25.11", "@esbuild/linux-ia32": "0.25.11", "@esbuild/linux-loong64": "0.25.11", "@esbuild/linux-mips64el": "0.25.11", "@esbuild/linux-ppc64": "0.25.11", "@esbuild/linux-riscv64": "0.25.11", "@esbuild/linux-s390x": "0.25.11", "@esbuild/linux-x64": "0.25.11", "@esbuild/netbsd-arm64": "0.25.11", "@esbuild/netbsd-x64": "0.25.11", "@esbuild/openbsd-arm64": "0.25.11", "@esbuild/openbsd-x64": "0.25.11", "@esbuild/openharmony-arm64": "0.25.11", "@esbuild/sunos-x64": "0.25.11", "@esbuild/win32-arm64": "0.25.11", "@esbuild/win32-ia32": "0.25.11", "@esbuild/win32-x64": "0.25.11" }, "bin": { "esbuild": "bin/esbuild" } }, "sha512-KohQwyzrKTQmhXDW1PjCv3Tyspn9n5GcY2RTDqeORIdIJY8yKIF7sTSopFmn/wpMPW4rdPXI0UE5LJLuq3bx0Q=="],
 
@@ -5598,6 +5632,8 @@
 
     "@vxrn/helpers/@tamagui/build/oxc-transform/@oxc-transform/binding-win32-x64-msvc": ["@oxc-transform/binding-win32-x64-msvc@0.74.0", "", { "os": "win32", "cpu": "x64" }, "sha512-um8EIapzTmnr2g4qoWD0WSlDO06JMmherXS66Qpe/BaJj17cKuOc99PJ6OnYSy/LKXlojuIo3lUTPNb81wr1Xw=="],
 
+    "@vxrn/native-hot-update/@hot-updater/react-native/@hot-updater/plugin-core/oxc-transform": ["oxc-transform@0.82.1", "", { "optionalDependencies": { "@oxc-transform/binding-android-arm64": "0.82.1", "@oxc-transform/binding-darwin-arm64": "0.82.1", "@oxc-transform/binding-darwin-x64": "0.82.1", "@oxc-transform/binding-freebsd-x64": "0.82.1", "@oxc-transform/binding-linux-arm-gnueabihf": "0.82.1", "@oxc-transform/binding-linux-arm-musleabihf": "0.82.1", "@oxc-transform/binding-linux-arm64-gnu": "0.82.1", "@oxc-transform/binding-linux-arm64-musl": "0.82.1", "@oxc-transform/binding-linux-riscv64-gnu": "0.82.1", "@oxc-transform/binding-linux-s390x-gnu": "0.82.1", "@oxc-transform/binding-linux-x64-gnu": "0.82.1", "@oxc-transform/binding-linux-x64-musl": "0.82.1", "@oxc-transform/binding-wasm32-wasi": "0.82.1", "@oxc-transform/binding-win32-arm64-msvc": "0.82.1", "@oxc-transform/binding-win32-x64-msvc": "0.82.1" } }, "sha512-LS9WMAA+Y0TMgQWnSZyU3O/5XV5dhXzXcziy9agbsimHN42kzHHz0ai90BvQwox2kpS7VfWDicppwi/VbnwXyQ=="],
+
     "@vxrn/postgres/vite/esbuild/@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.25.11", "", { "os": "aix", "cpu": "ppc64" }, "sha512-Xt1dOL13m8u0WE8iplx9Ibbm+hFAO0GsU2P34UNoDGvZYkY8ifSiy6Zuc1lYxfG7svWE2fzqCUmFp5HCn51gJg=="],
 
     "@vxrn/postgres/vite/esbuild/@esbuild/android-arm": ["@esbuild/android-arm@0.25.11", "", { "os": "android", "cpu": "arm" }, "sha512-uoa7dU+Dt3HYsethkJ1k6Z9YdcHjTrSb5NUy66ZfZaSV8hEYGD5ZHbEMXnqLFlbBflLsl89Zke7CAdDJ4JI+Gg=="],
@@ -5887,6 +5923,36 @@
     "@vxrn/better-auth-utils/@tamagui/build/oxc-transform/@oxc-transform/binding-wasm32-wasi/@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@0.2.12", "", { "dependencies": { "@emnapi/core": "^1.4.3", "@emnapi/runtime": "^1.4.3", "@tybys/wasm-util": "^0.10.0" } }, "sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ=="],
 
     "@vxrn/helpers/@tamagui/build/oxc-transform/@oxc-transform/binding-wasm32-wasi/@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@0.2.12", "", { "dependencies": { "@emnapi/core": "^1.4.3", "@emnapi/runtime": "^1.4.3", "@tybys/wasm-util": "^0.10.0" } }, "sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ=="],
+
+    "@vxrn/native-hot-update/@hot-updater/react-native/@hot-updater/plugin-core/oxc-transform/@oxc-transform/binding-android-arm64": ["@oxc-transform/binding-android-arm64@0.82.1", "", { "os": "android", "cpu": "arm64" }, "sha512-Ox6tS6x+GNuKz1l73eDJplwiJvgQhrXdK1KHCItSq3MgSFBWc3BgaC41xh4mHQrS1pJjHuU+DsRfqxHsgMYqpw=="],
+
+    "@vxrn/native-hot-update/@hot-updater/react-native/@hot-updater/plugin-core/oxc-transform/@oxc-transform/binding-darwin-arm64": ["@oxc-transform/binding-darwin-arm64@0.82.1", "", { "os": "darwin", "cpu": "arm64" }, "sha512-S/7jvllb3seTZAcGoZWl0kHxl3+m9DM8JgwiF/C8wGjeq+MVDeaUcWXP2emGqCgYK9HenCwq9xMCu1uPiaP4zg=="],
+
+    "@vxrn/native-hot-update/@hot-updater/react-native/@hot-updater/plugin-core/oxc-transform/@oxc-transform/binding-darwin-x64": ["@oxc-transform/binding-darwin-x64@0.82.1", "", { "os": "darwin", "cpu": "x64" }, "sha512-35Sw9c51dTNtORMwxZqfoH58Bi3cHAjtjZdmp0ZeRKJCKtXtel9cEYlN5+jK4ooTB1lGeujSZd/X7sazmKM9aA=="],
+
+    "@vxrn/native-hot-update/@hot-updater/react-native/@hot-updater/plugin-core/oxc-transform/@oxc-transform/binding-freebsd-x64": ["@oxc-transform/binding-freebsd-x64@0.82.1", "", { "os": "freebsd", "cpu": "x64" }, "sha512-Z5wKiD0pk///VSA+e5Z9PrDjkL8NKUP7BHvIOvrdUJODnvEr18YJCRkSenGBHHrP/XsKLAR4kDzncD6u1mC5nQ=="],
+
+    "@vxrn/native-hot-update/@hot-updater/react-native/@hot-updater/plugin-core/oxc-transform/@oxc-transform/binding-linux-arm-gnueabihf": ["@oxc-transform/binding-linux-arm-gnueabihf@0.82.1", "", { "os": "linux", "cpu": "arm" }, "sha512-CiI7O0UiwHsu13ROkCTYm2rekEIIj66sHodm3bFr71lwyVk5Q2wLRmjKD7dlycXof3nQnDt2L7FK3RKXv2OmkA=="],
+
+    "@vxrn/native-hot-update/@hot-updater/react-native/@hot-updater/plugin-core/oxc-transform/@oxc-transform/binding-linux-arm-musleabihf": ["@oxc-transform/binding-linux-arm-musleabihf@0.82.1", "", { "os": "linux", "cpu": "arm" }, "sha512-rydZWcwpIUVtMmV8YufVQxsbbBOS808m03sjz3YLAuZe0t5+NoePV4UAacEAjqhChk/DfHYLjBxFrV2iVBggLA=="],
+
+    "@vxrn/native-hot-update/@hot-updater/react-native/@hot-updater/plugin-core/oxc-transform/@oxc-transform/binding-linux-arm64-gnu": ["@oxc-transform/binding-linux-arm64-gnu@0.82.1", "", { "os": "linux", "cpu": "arm64" }, "sha512-Dz3UN6LgHHKziudKPF6QdStYSaBEBi12RLI9KJNvO0xIc19g42/uAuUSBLY59rZw2rKztP5Vpgs+bnVlwAyTIw=="],
+
+    "@vxrn/native-hot-update/@hot-updater/react-native/@hot-updater/plugin-core/oxc-transform/@oxc-transform/binding-linux-arm64-musl": ["@oxc-transform/binding-linux-arm64-musl@0.82.1", "", { "os": "linux", "cpu": "arm64" }, "sha512-NuoEvfNYipnsNK/seeojB2o319p6fxiLHbUKkxsTesG5G4z6/XNktmRDLcOehtVHZxO8TwsoNC+5HN12/IEn8A=="],
+
+    "@vxrn/native-hot-update/@hot-updater/react-native/@hot-updater/plugin-core/oxc-transform/@oxc-transform/binding-linux-riscv64-gnu": ["@oxc-transform/binding-linux-riscv64-gnu@0.82.1", "", { "os": "linux", "cpu": "none" }, "sha512-YyzchyTgdoTmNENcRAF9rF+WcDSfXUd4bvuRvp+dB5hwGA/Q9lnuPJw5Mljs9f5crxq0f4/veh7Gt4eo+nh5AA=="],
+
+    "@vxrn/native-hot-update/@hot-updater/react-native/@hot-updater/plugin-core/oxc-transform/@oxc-transform/binding-linux-s390x-gnu": ["@oxc-transform/binding-linux-s390x-gnu@0.82.1", "", { "os": "linux", "cpu": "s390x" }, "sha512-RM3n6/m33dOhzFRhYC0A1+gCnFrCfh0AW+eL2GkAh5jdlfWJdInNI1oOl0W3zxUmuXQKmuJGQtk7oDM/EC/Agg=="],
+
+    "@vxrn/native-hot-update/@hot-updater/react-native/@hot-updater/plugin-core/oxc-transform/@oxc-transform/binding-linux-x64-gnu": ["@oxc-transform/binding-linux-x64-gnu@0.82.1", "", { "os": "linux", "cpu": "x64" }, "sha512-ljIj2f5Vatk1Pcf0eNBCRw8bWcNyHsYMnIh8EjcCaHvT6PFt5ToZepwDFuq7nDTowVTpuIQtcASOKgIUYvOi+w=="],
+
+    "@vxrn/native-hot-update/@hot-updater/react-native/@hot-updater/plugin-core/oxc-transform/@oxc-transform/binding-linux-x64-musl": ["@oxc-transform/binding-linux-x64-musl@0.82.1", "", { "os": "linux", "cpu": "x64" }, "sha512-XbqwQ5RSxR101W0HNldEo1nW24rA0dq0QjyzNYVA9/Pt4SPuj85YwB699hZwJirmsRPWG52x3Yj+e7WzJQF67Q=="],
+
+    "@vxrn/native-hot-update/@hot-updater/react-native/@hot-updater/plugin-core/oxc-transform/@oxc-transform/binding-wasm32-wasi": ["@oxc-transform/binding-wasm32-wasi@0.82.1", "", { "dependencies": { "@napi-rs/wasm-runtime": "^1.0.3" }, "cpu": "none" }, "sha512-snIudOVieyU+3CvgJ3Ya0miCSuXYSma2URa0oHQZ+eYbTq6UMq9/z7Pa2gEuNuzEVbuQO6SbL/JfhPsD3jcHng=="],
+
+    "@vxrn/native-hot-update/@hot-updater/react-native/@hot-updater/plugin-core/oxc-transform/@oxc-transform/binding-win32-arm64-msvc": ["@oxc-transform/binding-win32-arm64-msvc@0.82.1", "", { "os": "win32", "cpu": "arm64" }, "sha512-ekq8V/jaJX52nIok2tf9oT3rsxSl7agNBZQFHq15etj7DcYwowLdmyCWEGtsqv6m4IxmbpKTRHdFY/5rMKSf9g=="],
+
+    "@vxrn/native-hot-update/@hot-updater/react-native/@hot-updater/plugin-core/oxc-transform/@oxc-transform/binding-win32-x64-msvc": ["@oxc-transform/binding-win32-x64-msvc@0.82.1", "", { "os": "win32", "cpu": "x64" }, "sha512-8CkzYkgu/FhqIgcSmWhoBRVEhRBFEuTCXW9tEkcF7tQ45svd30Gu7XtQn1X7jh3jfE8RI3xP6iUUx/9B7UX1QA=="],
 
     "@vxrn/takeout/@tamagui/build/oxc-transform/@oxc-transform/binding-wasm32-wasi/@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@0.2.12", "", { "dependencies": { "@emnapi/core": "^1.4.3", "@emnapi/runtime": "^1.4.3", "@tybys/wasm-util": "^0.10.0" } }, "sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ=="],
 

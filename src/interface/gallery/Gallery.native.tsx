@@ -1,6 +1,6 @@
 import { Galeria } from '@nandorojo/galeria'
 import { useEmitterValue } from '@vxrn/helpers'
-import { Image } from 'expo-image'
+import { Image } from '~/interface/image/Image'
 import { galleryEmitter } from './galleryEmitter'
 
 export const Gallery = () => {
@@ -17,13 +17,12 @@ export const Gallery = () => {
       {items.map((item) => (
         <Galeria.Image key={item.id}>
           <Image
-            source={item.url}
+            src={item.url}
             style={{
               width: '100%',
               aspectRatio: 3 / 4,
             }}
-            contentFit="cover"
-            transition={500}
+            objectFit="cover"
           />
         </Galeria.Image>
       ))}

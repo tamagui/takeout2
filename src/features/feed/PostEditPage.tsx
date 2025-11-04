@@ -1,4 +1,4 @@
-import { Image } from 'expo-image'
+import { Image } from '~/interface/image/Image'
 import { router, useParams } from 'one'
 import { useEffect, useRef, useState } from 'react'
 import { Alert } from 'react-native'
@@ -106,11 +106,7 @@ export const PostEditPage = () => {
                 bg="$color2"
                 mb="$3"
               >
-                <Image
-                  source={post.image}
-                  style={{ width: '100%', height: '100%' }}
-                  transition={200}
-                />
+                <Image src={post.image} style={{ width: '100%', height: '100%' }} />
               </YStack>
             </Animated.View>
           )}

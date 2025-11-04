@@ -1,4 +1,4 @@
-import { Image } from 'expo-image'
+import { Image } from '~/interface/image/Image'
 import { router } from 'one'
 import { memo } from 'react'
 import { View } from 'tamagui'
@@ -37,9 +37,8 @@ export const AvatarWithMenu = memo(
           pressStyle={{ opacity: 0.8 }}
         >
           <Image
-            source={{ uri: avatarUrl }}
+            src={avatarUrl || ''}
             style={{ width: 32, height: 32, borderRadius: 100 }}
-            recyclingKey={userId}
           />
         </Pressable>
       </View>

@@ -1,4 +1,3 @@
-import { Image as ExpoImage } from 'expo-image'
 import { router, useParams } from 'one'
 import { memo, useCallback, useMemo, useRef } from 'react'
 import { FlatList, ScrollView } from 'react-native'
@@ -132,14 +131,13 @@ export const ProfilePage = memo(() => {
             overflow="hidden"
             pressStyle={{ opacity: 1 }}
           >
-            <ExpoImage
-              source={item.image}
+            <Image
+              src={item.image}
               style={{
                 width: '100%',
                 height: '100%',
               }}
-              contentFit="cover"
-              transition={200}
+              objectFit="cover"
             />
           </Pressable>
         )}

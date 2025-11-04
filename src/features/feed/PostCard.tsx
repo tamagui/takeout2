@@ -1,4 +1,4 @@
-import { Image } from 'expo-image'
+import { Image } from '~/interface/image/Image'
 import { memo, useState } from 'react'
 import { Accordion, SizableText, View, XStack, YStack } from 'tamagui'
 import { userById } from '~/data/queries/user'
@@ -49,11 +49,9 @@ export const PostCard = memo(({ post }: PostCardProps) => {
 
       <View width="100%" position="relative">
         <Image
-          source={post.image}
+          src={post.image}
           style={{ width: '100%', aspectRatio: 3 / 4 }}
-          contentFit="cover"
-          transition={200}
-          recyclingKey={post.id}
+          objectFit="cover"
         />
       </View>
 

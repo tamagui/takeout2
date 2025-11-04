@@ -1,6 +1,5 @@
 import { Slot } from 'one'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
-import { HotUpdateAlertManager, HotUpdaterProvider } from '~/features/hot-updater'
 import { NotificationProvider } from '~/interface/notification/Notification'
 import { ToastProvider } from '~/interface/toast/Toast'
 import { DragDropFile } from '~/interface/upload/DragDropFile'
@@ -13,16 +12,13 @@ export function PlatformSpecificProvider() {
       <ProvideZero>
         <TamaguiRootProvider>
           <SafeAreaProvider>
-            <HotUpdaterProvider>
-              <ToastProvider>
-                <NotificationProvider>
-                  <DragDropFile>
-                    <HotUpdateAlertManager />
-                    <Slot />
-                  </DragDropFile>
-                </NotificationProvider>
-              </ToastProvider>
-            </HotUpdaterProvider>
+            <ToastProvider>
+              <NotificationProvider>
+                <DragDropFile>
+                  <Slot />
+                </DragDropFile>
+              </NotificationProvider>
+            </ToastProvider>
           </SafeAreaProvider>
         </TamaguiRootProvider>
       </ProvideZero>

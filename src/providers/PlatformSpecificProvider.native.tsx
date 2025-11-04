@@ -10,7 +10,8 @@ import {
   ROOT_MAIN_ROUTE_NAME,
 } from '~/constants/navigation'
 import { useAuth } from '~/features/auth/client/authClient'
-import { HotUpdateAlertManager, HotUpdaterProvider } from '~/features/hot-updater'
+import { HotUpdaterSplash } from '~/features/hot-updater'
+
 import { NotificationProvider } from '~/interface/notification/Notification'
 import { ToastProvider } from '~/interface/toast/Toast'
 import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
@@ -37,20 +38,19 @@ export function PlatformSpecificProvider({ children }: { children: ReactNode }) 
     <ProvideZero>
       <TamaguiRootProvider>
         <SafeAreaProvider>
-          <HotUpdaterProvider>
+          <HotUpdaterSplash>
             <ToastProvider>
               <NotificationProvider>
                 <KeyboardProvider>
                   <GestureHandlerRootView style={{ flex: 1 }}>
                     <View flex={1}>
-                      <HotUpdateAlertManager />
                       <NavigationContent />
                     </View>
                   </GestureHandlerRootView>
                 </KeyboardProvider>
               </NotificationProvider>
             </ToastProvider>
-          </HotUpdaterProvider>
+          </HotUpdaterSplash>
         </SafeAreaProvider>
       </TamaguiRootProvider>
     </ProvideZero>

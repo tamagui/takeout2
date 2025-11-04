@@ -10,15 +10,15 @@ import { isSmallScreen } from '~/interface/dimensions'
 import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
-import { otpLogin, validateLoginOtpCode } from '../client/otpLogin'
+import { otpLogin, sendLoginOtpCode } from '../client/otpLogin'
 import { OtpInput } from './OtpInput'
 
 export const OtpPage = () => {
-  const timer = useTimer()
+  const [timerCount, resetTimer, pauseTimer] = useTimer()
   const params = useParams<{ method?: 'phone' | 'email'; value?: string }>()
-  const [otpCode, setOtpCode] = useState('')
-  const [isError, setIsError] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [otpCode, setOtpCode] = useState<string>('')
+  const [isError, setIsError] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
   const [otpKey, setOtpKey] = useState(0)
 
   useOnboarding()
@@ -42,9 +42,7 @@ export const OtpPage = () => {
     setOtpCode('')
     setOtpKey(Math.random())
     try {
-      const { error, success } = await validateLoginOtpCode(params.method, params.value)
-
-      console.info(error, success)
+      const { error } = await sendLoginOtpCode(params.method, params.value)
 
       if (error) {
         showErrorSheet({
@@ -55,7 +53,7 @@ export const OtpPage = () => {
       }
 
       setIsError(!!error)
-      timer.start(30, true)
+      resetTimer(30, true)
     } finally {
       setLoading(false)
     }
@@ -97,9 +95,8 @@ export const OtpPage = () => {
         })
         return
       } else {
-        timer.pause()
-        // Keep loading state active - useAfterLoginRedirect will handle navigation
-        // Loading will be cleared when component unmounts due to navigation
+        pauseTimer()
+        // useOnboarding hook will handle navigation
       }
     } catch (err) {
       setLoading(false)
@@ -130,13 +127,14 @@ export const OtpPage = () => {
       descriptionSecondLine={displayValue}
       bottom={
         <ButtonSimple
+          glass
+          width="100%"
           data-testid="verify-otp-button"
           size="large"
           // No need func here because we have onCodeFilled in OtpInput
           disabled={otpCode.length !== 6 || loading}
-          variant="default"
         >
-          <ButtonSimple.Text>{loading ? 'Verifying...' : 'Next'}</ButtonSimple.Text>
+          {loading ? 'Verifying...' : 'Next'}
         </ButtonSimple>
       }
     >
@@ -150,9 +148,9 @@ export const OtpPage = () => {
           defaultValue={otpCode}
           isError={isError}
         />
-        {timer.count > 0 ? (
+        {timerCount > 0 ? (
           <SizableText fontSize={16} opacity={0.6}>
-            Resend Code in ({timer.count})
+            Resend Code in ({timerCount})
           </SizableText>
         ) : (
           <Pressable data-testid="resend-otp-button" onPress={handleResendOtp}>

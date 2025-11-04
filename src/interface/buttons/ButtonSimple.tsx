@@ -5,6 +5,7 @@ import type { FontFamilyTokens, RadiusTokens } from 'tamagui'
 import {
   createStyledContext,
   type GetProps,
+  isWeb,
   styled,
   type TamaguiElement,
   Text,
@@ -397,22 +398,23 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
       </ButtonFrame>
     )
 
-    // wrap with glass view if requested
-    const glassWrappedElement = glass ? (
-      <GlassView
-        glassEffectStyle="clear"
-        containerStyle={{
-          width: '100%',
-          items: 'center',
-          justify: 'center',
-          ...(typeof glass === 'object' ? glass.containerStyle : {}),
-        }}
-      >
-        {buttonElement}
-      </GlassView>
-    ) : (
-      buttonElement
-    )
+    // wrap with glass view if requested (not supported on web)
+    const glassWrappedElement =
+      glass && !isWeb ? (
+        <GlassView
+          glassEffectStyle="clear"
+          containerStyle={{
+            width: '100%',
+            items: 'center',
+            justify: 'center',
+            ...(typeof glass === 'object' ? glass.containerStyle : {}),
+          }}
+        >
+          {buttonElement}
+        </GlassView>
+      ) : (
+        buttonElement
+      )
 
     return wrapWithTooltip(glassWrappedElement, {
       tooltip,

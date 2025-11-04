@@ -1,23 +1,5 @@
-import { router } from 'one'
-import { useEffect } from 'react'
-import { YStack } from 'tamagui'
-import { useAuth } from '~/features/auth/client/authClient'
 import { LoginSignupContents } from '~/features/auth/ui/LoginSignupContents'
 
 export default function LoginPage() {
-  const { session } = useAuth()
-
-  useEffect(() => {
-    if (session) {
-      router.push('/')
-    }
-  }, [session])
-
-  return (
-    <>
-      <YStack py="$6" flex={1} items="center" justify="center">
-        <LoginSignupContents />
-      </YStack>
-    </>
-  )
+  return <LoginSignupContents />
 }

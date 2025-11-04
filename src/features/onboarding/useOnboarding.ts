@@ -1,5 +1,5 @@
 import { useFocusEffect, usePathname, useRouter } from 'one'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useEvent } from 'tamagui'
 import { useUser } from '~/features/user/useUser'
 import { useGoBackToHome } from '~/helpers/useGoBackToHome'
@@ -47,8 +47,6 @@ export function useOnboarding() {
     if (nextRoute === '/waiting-list') return 'waiting-list'
     if (nextRoute === '/profile-setup') return 'profile-setup'
     if (nextRoute === '/avatar-setup') return 'avatar-setup'
-    // if (nextRoute === '/stay-connected') return 'notifications' // Map to notifications for now
-    // if (nextRoute === '/notifications') return 'notifications'
 
     return null
   }, [user, onboardingConfig])
@@ -57,6 +55,10 @@ export function useOnboarding() {
 
   // Navigate to the next onboarding step
   const goToNextStep = useEvent(async () => {
+    console.info('[onboarding:goToNextStep]', {
+      user,
+      onboardingConfig,
+    })
     if (!user) return
 
     const nextRoute = getNextOnboardingStep(user, onboardingConfig)
@@ -77,23 +79,40 @@ export function useOnboarding() {
   })
 
   const handleFocusEffect = useEvent(() => {
+    console.info('[onboarding:focus]', {
+      isLoading,
+      hasUser: !!user,
+      pathname,
+      userId: user?.id,
+    })
+
     if (!isLoading && user) {
       const nextRoute = getNextOnboardingStep(user, onboardingConfig)
 
+      console.info('[onboarding:redirect]', {
+        nextRoute,
+        currentPath: pathname,
+        hasOnboarded: user.hasOnboarded,
+      })
+
       if (nextRoute) {
         if (pathname === nextRoute) {
+          console.info('[onboarding:skip] already on target route')
           return
         }
+        console.info('[onboarding:navigate]', { to: nextRoute })
         router.push(nextRoute)
       } else if (!user.hasOnboarded) {
+        console.info('[onboarding:complete] completing signup and going home')
         completeSignupAndGoHome()
       } else {
+        console.info('[onboarding:home] going to home')
         goBackToHome()
       }
     }
   })
 
-  useFocusEffect(handleFocusEffect, [])
+  useFocusEffect(handleFocusEffect, [isLoading, user?.id, pathname])
 
   return {
     currentStep,

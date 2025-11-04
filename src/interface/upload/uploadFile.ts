@@ -1,9 +1,8 @@
+import { AbortError, createGlobalContext, useAsyncEffect } from '@vxrn/helpers'
 import type React from 'react'
 import { useContext, useEffect, useState } from 'react'
 import { useEvent } from 'tamagui'
-import { useAsyncEffect } from '@vxrn/helpers'
-import { AbortError } from '@vxrn/helpers'
-import { createGlobalContext } from '@vxrn/helpers'
+import { SERVER_URL } from '~/constants/urls'
 import { getFileType, isImageFile, isVideoFile, validateFile } from './helpers'
 import { prepareImageForUpload } from './resizeImage'
 import type { FileUpload } from './types'
@@ -14,7 +13,7 @@ interface UploadResponse {
   thumbnail?: string | null
 }
 
-export const uploadEndpoint = '/api/file/upload'
+export const uploadEndpoint = `${SERVER_URL}/api/file/upload`
 
 export function uploadFileData(
   fileData: File | Blob,

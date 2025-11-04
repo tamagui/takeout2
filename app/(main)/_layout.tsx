@@ -1,17 +1,22 @@
 import { Redirect, Slot } from 'one'
-import { useAuth } from '~/features/auth/client/authClient'
+import { getNextOnboardingStep } from '~/features/onboarding/getNextOnboardingStep'
+import { useUser } from '~/features/user/useUser'
 import { Dialogs } from '~/interface/dialogs/Dialogs'
 
 export default function AppLayout() {
-  const { state } = useAuth()
+  const { user, state } = useUser()
 
-  // redirect to login when logged out
   if (state === 'logged-out') {
     return <Redirect href="/login" />
   }
 
-  if (state === 'loading') {
+  if (state === 'loading' || !user) {
     return null
+  }
+
+  const nextStep = getNextOnboardingStep(user)
+  if (nextStep) {
+    return <Redirect href={nextStep} />
   }
 
   return (

@@ -7,6 +7,7 @@ import {
   XStack,
   YStack,
 } from 'tamagui'
+import { images } from '~/constants/images'
 import { isIos, isNative } from '~/constants/platform'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { getHumanReadableVersionString } from '~/helpers/getHumanReadableVersionString'
@@ -14,10 +15,10 @@ import { useGoBackToHome } from '~/helpers/useGoBackToHome'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { AppleIcon } from '~/interface/icons/AppleIcon'
 import { GoogleIcon } from '~/interface/icons/GoogleIcon'
+import { Image } from '~/interface/image/Image'
 import { H1 } from '~/interface/text/Headings'
 import { showToast } from '~/interface/toast/helpers'
 import { signInAsAdmin } from '../client/signInAsAdmin'
-import { Image } from '~/interface/image/Image'
 
 export const LoginSignupContents = () => {
   useOnboarding()
@@ -45,32 +46,6 @@ export const LoginSignupContents = () => {
     showToast(`${provider} login coming soon!`, { type: 'info' })
   }
 
-  // const handleSendOTP = async () => {
-  //   if (!email || isSending) return
-
-  //   setIsSending(true)
-  //   try {
-  //     const { success, error } = await sendLoginOtpCode('email', email)
-
-  //     if (success) {
-  //       // Redirect to OTP verification page
-  //       router.push(`/signup/otp?method=email&value=${encodeURIComponent(email)}`)
-  //     } else {
-  //       showErrorSheet({
-  //         title: error.title,
-  //         description: error.message,
-  //       })
-  //     }
-  //   } catch (error) {
-  //     showToast('Failed to send code', {
-  //       type: 'error',
-  //       description: error instanceof Error ? error.message : 'Unknown error occurred',
-  //     })
-  //   } finally {
-  //     setIsSending(false)
-  //   }
-  // }
-
   return (
     <YStack
       flex={1}
@@ -97,11 +72,7 @@ export const LoginSignupContents = () => {
           items="center"
           gap="$3"
         >
-          <Image
-            src={require('../../../../public/icon-takeout.png')}
-            width={80}
-            height={80}
-          />
+          <Image src={images.iconTakeout} width={80} height={80} />
           <H1 size="$9" fontFamily="$heading" text="center" color="$color">
             Welcome back!
           </H1>
@@ -179,11 +150,13 @@ export const LoginSignupContents = () => {
         </YStack>
       </YStack>
 
-      <YStack opacity={0.5} items="center">
-        <SizableText size="$1" color="$color8">
-          {getHumanReadableVersionString()}
-        </SizableText>
-      </YStack>
+      {isNative && (
+        <YStack opacity={0.5} items="center">
+          <SizableText size="$1" color="$color8">
+            {getHumanReadableVersionString()}
+          </SizableText>
+        </YStack>
+      )}
     </YStack>
   )
 }

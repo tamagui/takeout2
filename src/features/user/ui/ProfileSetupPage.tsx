@@ -106,6 +106,7 @@ export const ProfileSetupPage = () => {
       description="Choose a unique username for your account."
       bottom={
         <ButtonSimple
+          glass
           size="large"
           onPress={handleContinue}
           disabled={!canContinue || isValidating}
@@ -115,29 +116,8 @@ export const ProfileSetupPage = () => {
       }
     >
       <YStack gap="$4">
-        {/* name input */}
-        {/* <YStack gap="$2">
-          <SubTitle size="$3" fontWeight="600">
-            Your Name
-          </SubTitle>
-          <Input
-            ref={nameInputRef}
-            placeholder="John Doe"
-            // autoFocus={true}
-            value={name}
-            onChangeText={setName}
-            autoCapitalize="words"
-            autoCorrect={false}
-            fontWeight="600"
-            rounded="$5"
-          />
-        </YStack> */}
-
         {/* username input */}
         <YStack gap="$2">
-          {/* <SubTitle size="$3" fontWeight="600">
-            Username
-          </SubTitle> */}
           <XStack items="center" gap="$2">
             <Input
               placeholder="johndoe"

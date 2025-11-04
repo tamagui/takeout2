@@ -217,18 +217,15 @@ export const SignupPage = memo(() => {
       description={getMethodDescription()}
       disableScroll={!isSmallScreen}
       bottom={
-        <YStack gap="$6">
-          <ButtonSimple
-            glass
-            data-testid="next-button"
-            size="large"
-            onPress={handleContinue}
-            disabled={!inputValue.trim() || (isPhone && !smsConsent)}
-            variant="default"
-          >
-            {loading ? 'Processing...' : 'Next'}
-          </ButtonSimple>
-        </YStack>
+        <ButtonSimple
+          glass
+          data-testid="next-button"
+          size="large"
+          onPress={handleContinue}
+          disabled={!inputValue.trim() || (isPhone && !smsConsent)}
+        >
+          {loading ? 'Processing...' : 'Next'}
+        </ButtonSimple>
       }
     >
       {renderContent()}

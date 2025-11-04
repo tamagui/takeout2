@@ -1,3 +1,4 @@
+import iconTakeout from '../../public/icon-takeout.png'
 import avatarContainer from '../../public/images/avatar-container/avatar-container.webp'
 import iconBoy from '../../public/images/icon-boy/icon-boy.webp'
 import iconCamera from '../../public/images/icon-camera/icon-camera.webp'
@@ -10,6 +11,7 @@ export const images = {
   iconCamera,
   iconPencil,
   iconPicture,
+  iconTakeout,
 }
 
 export type ImagesType = keyof typeof images

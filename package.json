@@ -125,6 +125,7 @@
     "motion": "12.23.22",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "@expo/fingerprint": "0.15.3",
     "sharp": "npm:@tamagui/proxy-worm@1.123.14"
   },
   "expo": {
@@ -179,7 +180,7 @@
     "@types/async-retry": "^1.4.9",
     "@types/jsonwebtoken": "^9.0.10",
     "@vxrn/better-auth-utils": "workspace:*",
-    "@vxrn/color-scheme": "^1.2.4",
+    "@vxrn/color-scheme": "^1.2.5",
     "@vxrn/helpers": "workspace:*",
     "@vxrn/hooks": "workspace:*",
     "@vxrn/postgres": "workspace:*",
@@ -215,7 +216,7 @@
     "hot-updater": "^0.21.4",
     "jose": "^6.0.11",
     "jsonwebtoken": "^9.0.2",
-    "one": "^1.2.4",
+    "one": "^1.2.5",
     "over-zero": "^0.0.23",
     "pg": "^8.16.3",
     "posthog-js": "^1.252.0",

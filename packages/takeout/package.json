@@ -3,6 +3,7 @@
   "version": "0.0.22",
   "description": "CLI tools for Takeout starter kit - interactive onboarding and project setup",
   "type": "module",
+  "private": true,
   "sideEffects": false,
   "source": "src/index.ts",
   "main": "dist/cjs",
@@ -55,9 +56,6 @@
     "@tamagui/build": "1.135.2",
     "@types/node": "24.0.3",
     "bun-types": "latest"
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "keywords": [
     "cli",

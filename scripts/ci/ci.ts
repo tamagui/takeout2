@@ -130,15 +130,11 @@ try {
     //   },
     // },
     {
-      name: 'tests',
+      name: 'unit-tests',
       condition: () => !values['skip-tests'],
       fn: async () => {
         await setupBackend()
         await runTests()
-        if (values['skip-build']) {
-          // if we skip build we still run integration tests
-          await printTiming('production build tests', () => runIntegrationTests())
-        }
       },
     },
     {
@@ -345,7 +341,7 @@ async function runIntegrationTests() {
   console.info('\nRunning production integration tests...')
 
   try {
-    await Promise.all([waitForRun('playwright install'), waitForRun('backend')])
+    await waitForRun('playwright install')
 
     void run(`bun ci:frontend-prod`, {
       detached: true,

@@ -1,15 +1,20 @@
 import { useMemo, useState } from 'react'
-import { allPosts } from '~/data/queries/post'
+import { blockedByUser } from '~/data/queries/block'
+import {
+  allPosts,
+  postsWithBlocking,
+  postsPaginated,
+  userPostsPaginated,
+} from '~/data/queries/post'
 import type { Post } from '~/data/types'
 import { useAuth } from '~/features/auth/client/authClient'
-import { useQuery, zero } from '~/zero/client'
+import { useQuery } from '~/zero/client'
 
 interface UsePostsOptions {
   limit?: number
   offset?: number
 }
 
-// simple query with fixed limit - for static lists, not infinite scroll
 export function usePosts(options?: UsePostsOptions) {
   const { limit = 20 } = options || {}
 
@@ -23,57 +28,37 @@ export function usePosts(options?: UsePostsOptions) {
   }
 }
 
-// cursor-based pagination with .start() - efficient like zbugs
 export function usePostsPaginated(pageSize = 10) {
   const { user } = useAuth()
-  const [allPosts, setAllPosts] = useState<Post[]>([])
+  const [allPostsData, setAllPostsData] = useState<Post[]>([])
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
   const [hasInitialLoad, setHasInitialLoad] = useState<boolean>(false)
   const [cursor, setCursor] = useState<Post | null>(null)
 
-  // query blocks where I'm the blocker
-  const blockedByMeQuery = useMemo(() => {
-    return zero.query.block.where('blockerId', user?.id || 'no-user').limit(100)
-  }, [user?.id])
+  // Query blocked users
+  const [blockedByMe] = useQuery(
+    blockedByUser,
+    { userId: user?.id || 'no-user', limit: 100 },
+    { enabled: Boolean(user?.id) }
+  )
 
-  const [blockedByMe] = useQuery(blockedByMeQuery, {
-    enabled: Boolean(user?.id),
+  // Get blocked user IDs
+  const blockedUserIds = useMemo(() => {
+    return blockedByMe?.map((b) => b.blockedId) || []
+  }, [blockedByMe])
+
+  // Query posts with blocking filter
+  const [posts, status] = useQuery(postsWithBlocking, {
+    userId: user?.id,
+    blockedUserIds,
+    pageSize,
+    cursor,
   })
 
-  // post filtering with blocking - cursor-based pagination
-  const query = useMemo(() => {
-    let q = zero.query.post
-      .where((eb) => {
-        if (!user?.id) {
-          return eb.cmp('id', '!=', '')
-        }
-
-        const blockedByMeIds = blockedByMe?.map((b) => b.blockedId) || []
-        const allBlockedIds = [...blockedByMeIds]
-
-        if (allBlockedIds.length > 0) {
-          return eb.not(eb.cmp('userId', 'IN', allBlockedIds))
-        }
-
-        return eb.cmp('id', '!=', '')
-      })
-      .orderBy('createdAt', 'desc')
-      .orderBy('id', 'desc')
-      .limit(pageSize)
-
-    if (cursor) {
-      q = q.start(cursor)
-    }
-
-    return q
-  }, [pageSize, user?.id, blockedByMe, cursor])
-
-  const [posts, status] = useQuery(query)
-
-  // accumulate posts when new data arrives
+  // Accumulate posts when new data arrives
   useMemo(() => {
     if (posts && posts.length > 0) {
-      setAllPosts((prev) => {
+      setAllPostsData((prev) => {
         if (!cursor) {
           return posts as Post[]
         }
@@ -103,7 +88,7 @@ export function usePostsPaginated(pageSize = 10) {
 
   const refresh = () => {
     setCursor(null)
-    setAllPosts([])
+    setAllPostsData([])
     setHasInitialLoad(false)
     setIsLoadingMore(false)
   }
@@ -112,7 +97,7 @@ export function usePostsPaginated(pageSize = 10) {
   const hasMore = posts ? posts.length === pageSize : false
 
   return {
-    posts: allPosts,
+    posts: allPostsData,
     isLoading: isInitialLoading,
     isLoadingMore,
     hasMore,
@@ -121,33 +106,27 @@ export function usePostsPaginated(pageSize = 10) {
   }
 }
 
-// cursor-based pagination for user posts
+// Cursor-based pagination for user posts
 export function usePostsByUserId(userId: string, pageSize = 12) {
-  const [allPosts, setAllPosts] = useState<Post[]>([])
+  const [allPostsData, setAllPostsData] = useState<Post[]>([])
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
   const [hasInitialLoad, setHasInitialLoad] = useState<boolean>(false)
   const [cursor, setCursor] = useState<Post | null>(null)
 
-  const query = useMemo(() => {
-    let q = zero.query.post
-      .where('userId', userId)
-      .orderBy('createdAt', 'desc')
-      .orderBy('id', 'desc')
-      .limit(pageSize)
+  const [posts, status] = useQuery(
+    userPostsPaginated,
+    {
+      userId,
+      pageSize,
+      cursor,
+    },
+    { enabled: Boolean(userId) }
+  )
 
-    if (cursor) {
-      q = q.start(cursor)
-    }
-
-    return q
-  }, [userId, pageSize, cursor])
-
-  const [posts, status] = useQuery(query, { enabled: Boolean(userId) })
-
-  // accumulate posts when new data arrives
+  // Accumulate posts when new data arrives
   useMemo(() => {
     if (posts && posts.length > 0) {
-      setAllPosts((prev) => {
+      setAllPostsData((prev) => {
         if (!cursor) {
           return posts as Post[]
         }
@@ -177,7 +156,7 @@ export function usePostsByUserId(userId: string, pageSize = 12) {
 
   const refresh = () => {
     setCursor(null)
-    setAllPosts([])
+    setAllPostsData([])
     setHasInitialLoad(false)
     setIsLoadingMore(false)
   }
@@ -186,7 +165,7 @@ export function usePostsByUserId(userId: string, pageSize = 12) {
   const hasMore = posts ? posts.length === pageSize : false
 
   return {
-    posts: allPosts,
+    posts: allPostsData,
     isLoading: isInitialLoading,
     isLoadingMore,
     hasMore,

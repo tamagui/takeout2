@@ -1,4 +1,5 @@
 import { where, zql } from 'over-zero'
+import type { Post } from '~/data/types'
 
 const permission = where('post', () => {
   return true
@@ -23,4 +24,70 @@ export const postsByUserId = (props: { userId: string; limit?: number }) => {
     .orderBy('createdAt', 'desc')
     .orderBy('id', 'desc')
     .limit(props.limit || 20)
+}
+
+// Paginated posts query with cursor support
+export const postsPaginated = (props: { pageSize: number; cursor?: Post | null }) => {
+  let query = zql.post
+    .where(permission)
+    .orderBy('createdAt', 'desc')
+    .orderBy('id', 'desc')
+    .limit(props.pageSize)
+
+  if (props.cursor) {
+    query = query.start(props.cursor)
+  }
+
+  return query
+}
+
+// User posts with pagination
+export const userPostsPaginated = (props: {
+  userId: string
+  pageSize: number
+  cursor?: Post | null
+}) => {
+  let query = zql.post
+    .where(permission)
+    .where('userId', props.userId)
+    .orderBy('createdAt', 'desc')
+    .orderBy('id', 'desc')
+    .limit(props.pageSize)
+
+  if (props.cursor) {
+    query = query.start(props.cursor)
+  }
+
+  return query
+}
+
+// Posts filtered with blocking logic
+export const postsWithBlocking = (props: {
+  userId?: string
+  blockedUserIds: string[]
+  pageSize: number
+  cursor?: Post | null
+}) => {
+  let query = zql.post
+    .where(permission)
+    .where((eb) => {
+      if (!props.userId) {
+        return eb.cmp('id', '!=', '')
+      }
+
+      if (props.blockedUserIds.length > 0) {
+        return eb.not(eb.cmp('userId', 'IN', props.blockedUserIds))
+      }
+
+      return eb.cmp('id', '!=', '')
+    })
+    .orderBy('createdAt', 'desc')
+    .orderBy('id', 'desc')
+    .limit(props.pageSize)
+
+  if (props.cursor) {
+    query = query.start(props.cursor)
+  }
+
+  return query
 }

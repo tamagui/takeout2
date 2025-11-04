@@ -18,7 +18,7 @@ export const schema = table('report')
   .primaryKey('id')
 
 const permissions = where('report', (_, auth) => {
-  return _.cmpLit(auth?.role || '', '=', 'admin')
+  return _.cmp('reporterId', auth?.id || '')
 })
 
 export const mutate = mutations(schema, permissions, {

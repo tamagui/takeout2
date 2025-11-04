@@ -15,7 +15,7 @@ export const schema = table('post')
   .primaryKey('id')
 
 const permissions = where('post', (_, auth) => {
-  return true
+  return _.cmp('userId', auth?.id || '')
 })
 
 export const mutate = mutations(schema, permissions, {

@@ -12,7 +12,7 @@ export const schema = table('block')
   .primaryKey('id')
 
 const permissions = where('block', (_, auth) => {
-  return true
+  return _.cmp('blockerId', auth?.id || '')
 })
 
 export const mutate = mutations(schema, permissions, {

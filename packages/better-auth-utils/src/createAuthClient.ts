@@ -281,7 +281,7 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
   subscribeToAuthEffect()
 
   // cleanup on unmount
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && window.addEventListener) {
     const cleanup = () => {
       dispose?.()
       if (retryTimer) {

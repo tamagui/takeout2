@@ -1,6 +1,6 @@
+import { isActiveElementFormField, isWeb } from '@vxrn/helpers'
 import { useEffect } from 'react'
 import { useEvent } from 'tamagui'
-import { isActiveElementFormField } from '@vxrn/helpers'
 import { dialogEmitter } from '~/interface/dialogs/shared'
 
 /**
@@ -118,6 +118,8 @@ export function handleKeyboardEscape() {
  */
 export const KeyboardEscapeHandler = () => {
   useEffect(() => {
+    if (!isWeb) return
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         const handled = handleKeyboardEscape()

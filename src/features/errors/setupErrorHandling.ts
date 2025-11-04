@@ -1,3 +1,4 @@
+import { isWeb } from 'tamagui'
 import { postHog } from '../../posthog/posthog'
 import type { ErrorReport } from './types'
 
@@ -8,6 +9,11 @@ let handlersSetup = false
 export function initializeErrorHandling(): void {
   if (process.env.NODE_ENV === 'development') {
     // avoid all error tracking in development
+    return
+  }
+
+  if (!isWeb) {
+    // TODO we need to setup native
     return
   }
 

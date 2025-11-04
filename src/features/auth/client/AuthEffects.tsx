@@ -5,7 +5,7 @@ import { setAuthClientToken } from './authClient'
 const disableAuthBrowser =
   !isWeb || isTauri || (typeof window !== 'undefined' && window.opener)
 
-if (isClient && !disableAuthBrowser) {
+if (isWeb && isClient && !disableAuthBrowser) {
   // Listen for messages from the popup
   window.addEventListener('message', async (event) => {
     if (event.origin !== origin) return

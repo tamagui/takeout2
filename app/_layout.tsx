@@ -45,7 +45,6 @@ export function Layout() {
                     <NotificationProvider>
                       <DragDropFile>
                         <HotUpdateAlertManager />
-                        {/* <BottomErrorSheet ref={errorSheetRef} /> */}
                         <Gallery />
                         <Slot />
                       </DragDropFile>

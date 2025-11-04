@@ -139,34 +139,10 @@ export default {
         defaultRenderMode: 'spa',
       },
 
-      optimization: {
-        // autoEntriesScanning: false,
-      },
-
       deps: {
-        pg: true,
         validator: true,
         zlib: false,
         'expo/internal/unstable-autolinking-exports': false,
-
-        '@hot-updater/plugin-core': {
-          'dist/index.cjs': (contents) => {
-            // patch require('mime') to use dynamic import workaround
-            return contents?.replace(
-              'let mime = require("mime");',
-              'let mime = { getType: () => "application/octet-stream", getExtension: () => null };'
-            )
-          },
-        },
-
-        '@expo/cli': {
-          'build/src/export/embed/exportEmbedAsync.js': (contents) => {
-            return contents?.replace(
-              'exportEmbedAsync(projectRoot, options) {',
-              'exportEmbedAsync(projectRoot, options) { console.warn("[one] skipping expo export:embed since it will not work properly, we just let the JS bundle build during the native build process where VxRN has control"); return;'
-            )
-          },
-        },
 
         'react-native-reanimated': {
           'lib/module/createAnimatedComponent/createAnimatedComponent.js': (contents) => {
@@ -177,17 +153,6 @@ export default {
             )
           },
         },
-
-        // [TODO one] These are required when running with `vite` CLI (i.e. non-CLI mode)
-        'expo-liquid-glass-view': {
-          '**/*.js': ['jsx'],
-        },
-
-        '@expo/ui': {
-          '**/*.js': ['jsx'],
-        },
-
-        // end [TODO one]
       },
 
       build: {

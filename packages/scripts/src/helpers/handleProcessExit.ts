@@ -138,6 +138,11 @@ export function handleProcessExit({
         }
       }
 
+      // skip cleanup if no processes to clean up
+      if (processes.length === 0) {
+        return
+      }
+
       await Promise.all(
         processes.map(async (proc) => {
           if (proc.pid) {
@@ -153,7 +158,7 @@ export function handleProcessExit({
       )
 
       // wait a bit for processes to exit gracefully
-      await new Promise((res) => setTimeout(res, 500))
+      await new Promise((res) => setTimeout(res, 300))
 
       // force kill any remaining processes
       for (const proc of processes) {
@@ -167,9 +172,10 @@ export function handleProcessExit({
       }
     })()
 
+    let timeoutId: NodeJS.Timeout | undefined
     const timeoutPromise = new Promise<void>((resolve) => {
-      setTimeout(() => {
-        console.error('Cleanup timed out after 3s, forcing exit')
+      timeoutId = setTimeout(() => {
+        console.error('Cleanup timed out after 10s, forcing exit')
         // force kill all tracked processes
         for (const proc of processes) {
           try {
@@ -181,10 +187,15 @@ export function handleProcessExit({
           }
         }
         resolve()
-      }, 3000)
+      }, 10000)
     })
 
-    await Promise.race([cleanupPromise, timeoutPromise])
+    await Promise.race([
+      cleanupPromise.finally(() => {
+        if (timeoutId) clearTimeout(timeoutId)
+      }),
+      timeoutPromise,
+    ])
   }
 
   const addChildProcess = (proc: ProcessType) => {
@@ -195,23 +206,20 @@ export function handleProcessExit({
     if (pid) {
       allChildPids.add(pid)
 
-      // for child processes, capture descendants
-      // poll multiple times to catch spawned children
+      // for child processes, capture descendants once after a brief delay
       if (isChildProcess(proc)) {
-        const pollChildPids = async (attempts = 3) => {
-          for (let i = 0; i < attempts; i++) {
-            await new Promise((res) => setTimeout(res, 200))
-            if (proc.pid) {
+        setTimeout(async () => {
+          if (proc.pid) {
+            try {
               const childPids = await getChildPids(proc.pid)
               for (const childPid of childPids) {
                 allChildPids.add(childPid)
               }
+            } catch {
+              // ignore errors in background polling
             }
           }
-        }
-        pollChildPids().catch(() => {
-          // ignore errors in background polling
-        })
+        }, 300)
       }
     }
   }

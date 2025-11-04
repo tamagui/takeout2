@@ -186,35 +186,24 @@ async function updatePackages(packagesToUpdate: string[], cwd: string) {
   }
 
   if (globalTag) {
-    // Sequential updates when using tags (with specific versions)
+    // Use bun add with tag for better peer dependency resolution
     console.info(`
-📦 Sequentially updating ${packagesToUpdate.length} package(s) with specific versions using --ignore-scripts...
+📦 Updating ${packagesToUpdate.length} package(s) with tag '${globalTag}' using --ignore-scripts...
 `)
 
-    let updateSucceededCount = 0
-    let updateFailedCount = 0
+    const packageNamesWithTags = packagesToUpdate.map((pkg) => `${pkg}@${globalTag}`)
+    const addCommand = `bun add ${packageNamesWithTags.join(' ')} --ignore-scripts`
+    console.info(`\n🪄 Running: ${addCommand}\n`)
 
-    for (const packageSpecifier of packagesToUpdate) {
-      if (!packageSpecifier.trim()) {
-        continue
-      }
-
-      const updateCommand = `bun update ${packageSpecifier} --ignore-scripts`
-      console.info(`\n🪄 Running: ${updateCommand}\n`)
-      try {
-        await $`bun update ${packageSpecifier} --ignore-scripts`
-        console.info(`✅ Updated ${packageSpecifier} (scripts ignored)`)
-        updateSucceededCount++
-      } catch (error: any) {
-        const errorMessage = error.message?.split('\n')[0]
-        console.warn(`⚠️ Failed to update ${packageSpecifier}. Error: ${errorMessage}`)
-        updateFailedCount++
-      }
+    try {
+      await $`bun add ${packageNamesWithTags} --ignore-scripts`
+      console.info(
+        `✅ Successfully updated all packages with tag '${globalTag}' (scripts ignored)`
+      )
+    } catch (error: any) {
+      const errorMessage = error.message?.split('\n')[0]
+      console.warn(`⚠️ Failed to update packages. Error: ${errorMessage}`)
     }
-
-    console.info(
-      `\n🔧 ${updateSucceededCount} package(s) updated, ${updateFailedCount} failed (pre-install step).`
-    )
   } else {
     // Bulk update when not using tags
     console.info(`
@@ -309,36 +298,12 @@ async function main() {
     return
   }
 
-  let packagesForBunUpdate: string[] = []
+  const packagesForBunUpdate: string[] = [...matchingDependencies]
 
   if (globalTag) {
     console.info(
-      `🏷️ Global tag '${globalTag}' specified. Fetching specific versions from npm...`
+      `🏷️ Using tag '${globalTag}' for ${packagesForBunUpdate.length} package(s)`
     )
-    const versionPromises = matchingDependencies.map((pkg) =>
-      fetchPackageVersionFromTag(pkg, globalTag)
-    )
-    const resolvedPackageVersions = await Promise.all(versionPromises)
-
-    for (let i = 0; i < matchingDependencies.length; i++) {
-      const pkgName = matchingDependencies[i]
-      const version = resolvedPackageVersions[i]
-      if (version) {
-        packagesForBunUpdate.push(`${pkgName}@${version}`)
-      } else {
-        console.warn(
-          `↪️ Skipping ${pkgName} as its version for tag '${globalTag}' could not be determined.`
-        )
-      }
-    }
-    if (packagesForBunUpdate.length === 0) {
-      console.info(
-        `ℹ️ No packages could be resolved to a specific version using tag '${globalTag}'. Nothing to update.`
-      )
-      return
-    }
-  } else {
-    packagesForBunUpdate = [...matchingDependencies]
   }
 
   await updatePackages(packagesForBunUpdate, rootDir)

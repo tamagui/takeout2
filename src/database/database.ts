@@ -13,6 +13,11 @@ database.on('error', (error) => {
   console.error(`[postgres] database error`, error)
 })
 
-process.on('exit', async () => {
-  await database.end()
-})
+// cleanup function that can be called during shutdown
+export async function closeDatabase() {
+  try {
+    await database.end()
+  } catch (error) {
+    console.error(`[postgres] error closing database:`, error)
+  }
+}

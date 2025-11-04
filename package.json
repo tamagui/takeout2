@@ -181,7 +181,7 @@
     "@types/async-retry": "^1.4.9",
     "@types/jsonwebtoken": "^9.0.10",
     "@vxrn/better-auth-utils": "workspace:*",
-    "@vxrn/color-scheme": "1.1.547",
+    "@vxrn/color-scheme": "1.1.547-1762235181981",
     "@vxrn/helpers": "workspace:*",
     "@vxrn/hooks": "workspace:*",
     "@vxrn/postgres": "workspace:*",

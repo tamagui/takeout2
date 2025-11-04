@@ -45,7 +45,7 @@
         "@types/async-retry": "^1.4.9",
         "@types/jsonwebtoken": "^9.0.10",
         "@vxrn/better-auth-utils": "workspace:*",
-        "@vxrn/color-scheme": "1.1.547",
+        "@vxrn/color-scheme": "1.1.547-1762235181981",
         "@vxrn/helpers": "workspace:*",
         "@vxrn/hooks": "workspace:*",
         "@vxrn/postgres": "workspace:*",
@@ -1960,7 +1960,7 @@
 
     "@vxrn/better-auth-utils": ["@vxrn/better-auth-utils@workspace:packages/better-auth-utils"],
 
-    "@vxrn/color-scheme": ["@vxrn/color-scheme@1.1.547", "", { "dependencies": { "@vxrn/universal-color-scheme": "1.1.547", "@vxrn/use-isomorphic-layout-effect": "1.1.547" }, "peerDependencies": { "react": "*", "react-native": "*" } }, "sha512-ZdaSNbg/CwwcVsKeLiT8FIOpEC4LusDXBxWvqwdnJYb0yq5j7CeSPGu4u65OSNX4vu1RyZO4HQh9WcQqDkMZhg=="],
+    "@vxrn/color-scheme": ["@vxrn/color-scheme@1.1.547-1762235181981", "", { "dependencies": { "@vxrn/universal-color-scheme": "1.1.547-1762235181981", "@vxrn/use-isomorphic-layout-effect": "1.1.547-1762235181981" }, "peerDependencies": { "react": "*", "react-native": "*" } }, "sha512-7sWHYDoWsFnrAKhtzsNn0y8Z8gPx7hnP6jnt2/JQLLw6mggKW2e52C6Sa5hKv7kiF44s27bLdZbLCWzq6kw8rQ=="],
 
     "@vxrn/compiler": ["@vxrn/compiler@1.1.547", "", { "dependencies": { "@babel/core": "^7.28.5", "@babel/plugin-transform-destructuring": "^7.28.5", "@babel/plugin-transform-react-jsx": "^7.27.1", "@babel/plugin-transform-regenerator": "^7.28.4", "@swc/core": "^1.10.4", "@vxrn/utils": "1.1.547", "@vxrn/vite-native-client": "1.1.547", "babel-plugin-react-compiler": "^19.1.0-rc.3", "react-native-css-interop": "^0.1.22", "ts-deepmerge": "^7.0.2", "vite": "^7.1.12" }, "peerDependencies": { "react-native": "*" } }, "sha512-DntHEQQUAuI9gYA2bCYQYJZCmgvmzuCXy0xwsgbhd9vvuW+V9i/y8FJqQUirvSKW0eyvgjC3ppvzbfL/HA6dww=="],
 
@@ -1988,11 +1988,11 @@
 
     "@vxrn/tslib-lite": ["@vxrn/tslib-lite@1.1.547", "", {}, "sha512-0BflySxuQqQtRHYS/8MK/Wj2j1SCW1K+qAJEsqU7C+JsqxL8erZ2dJUUSxLjBoXxTfEtBqhFRWIhf5ewc8naAg=="],
 
-    "@vxrn/universal-color-scheme": ["@vxrn/universal-color-scheme@1.1.547", "", { "dependencies": { "@vxrn/use-isomorphic-layout-effect": "1.1.547", "react": "~19.0.0" }, "peerDependencies": { "react-native": "*" } }, "sha512-irbap2X+8BtutBvkuCqT4xNsRdhaKmGAPFJTiH/kBoeG+WPKtjeJJ/7WZd1SyfHv+Sk1/QFieYDtwxZX57BnSA=="],
+    "@vxrn/universal-color-scheme": ["@vxrn/universal-color-scheme@1.1.547-1762235181981", "", { "dependencies": { "@vxrn/use-isomorphic-layout-effect": "1.1.547-1762235181981", "react": "19.1.0" }, "peerDependencies": { "react-native": "*" } }, "sha512-jeuGuFyL+okLtw5++5LbTak1nNjJadtBI5EFh5M0AdguOAP1QJIwogX1GAJgAmPYL9qZGHjypHuzIObUP7X90Q=="],
 
     "@vxrn/url-parse": ["@vxrn/url-parse@1.1.547", "", { "dependencies": { "url-parse": "^1.5.10" } }, "sha512-7OA868rV48k0wsH70ghW6I3kVlrdgZrKz92CDMN3ZJniI8zTxE8UFFllSDJGxWyIurB3TUu6d1CyZbRC9tdj3Q=="],
 
-    "@vxrn/use-isomorphic-layout-effect": ["@vxrn/use-isomorphic-layout-effect@1.1.547", "", { "dependencies": { "react": "~19.0.0" } }, "sha512-HdSATgT2guR1nuQ7oD6wlxHwuRr0FVrc5XsZdeCpaeX8LnBEcpYr6WWuVMep79wbaIILoW1haxHGqFTu2hKmLQ=="],
+    "@vxrn/use-isomorphic-layout-effect": ["@vxrn/use-isomorphic-layout-effect@1.1.547-1762235181981", "", { "dependencies": { "react": "19.1.0" } }, "sha512-Izh2tjEIDTig+LAtUkxGvqe25MdTGRXDFrJjfsUnpDHo8XBTK73YGqbiBWJskpQlRFHat4v3FPFyRWGBd6UWnA=="],
 
     "@vxrn/utils": ["@vxrn/utils@1.1.547", "", { "dependencies": { "@vxrn/debug": "1.1.547", "@vxrn/resolve": "1.1.547" } }, "sha512-moh8+SoOBsE1mzFUlLC6ai04fxE2ulS3jqAR1nxddRDCq6c+LrmhBDoNNm+QuAIAK1zPyFhAPbVTZHd17JFWCw=="],
 
@@ -4483,6 +4483,10 @@
     "node-dir/minimatch": ["minimatch@3.1.2", "", { "dependencies": { "brace-expansion": "^1.1.7" } }, "sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw=="],
 
     "npm-package-arg/validate-npm-package-name": ["validate-npm-package-name@5.0.1", "", {}, "sha512-OljLrQ9SQdOUqTaQxqL5dEfZWrXExyyWsozYlAWFawPVNuD83igl7uJD2RTkNMbniIYgt8l81eCJGIdQF7avLQ=="],
+
+    "one/@vxrn/universal-color-scheme": ["@vxrn/universal-color-scheme@1.1.547", "", { "dependencies": { "@vxrn/use-isomorphic-layout-effect": "1.1.547", "react": "~19.0.0" }, "peerDependencies": { "react-native": "*" } }, "sha512-irbap2X+8BtutBvkuCqT4xNsRdhaKmGAPFJTiH/kBoeG+WPKtjeJJ/7WZd1SyfHv+Sk1/QFieYDtwxZX57BnSA=="],
+
+    "one/@vxrn/use-isomorphic-layout-effect": ["@vxrn/use-isomorphic-layout-effect@1.1.547", "", { "dependencies": { "react": "~19.0.0" } }, "sha512-HdSATgT2guR1nuQ7oD6wlxHwuRr0FVrc5XsZdeCpaeX8LnBEcpYr6WWuVMep79wbaIILoW1haxHGqFTu2hKmLQ=="],
 
     "one/expo-modules-core": ["expo-modules-core@2.5.0", "", { "dependencies": { "invariant": "^2.2.4" } }, "sha512-aIbQxZE2vdCKsolQUl6Q9Farlf8tjh/ROR4hfN1qT7QBGPl1XrJGnaOKkcgYaGrlzCPg/7IBe0Np67GzKMZKKQ=="],
 

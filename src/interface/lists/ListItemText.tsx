@@ -55,12 +55,13 @@ export const ListItemText = forwardRef<TamaguiElement, ListItemTextProps>(
             onEditComplete?.(e.nativeEvent.text || '')
           }}
           onBlur={(e) => {
-            const value = e.nativeEvent.text || ''
+            // TODO nativeEvent we need to fix for new RN version?
+            const value = (e.nativeEvent as any).text || ''
             if (!value.trim()) {
               setEditing?.(false)
               onEditCancel?.()
             } else {
-              // Non-empty value on blur will be handled by the parent component
+              // non-empty value on blur will be handled by the parent component
               onEditComplete?.(value)
             }
           }}

@@ -88,6 +88,7 @@ export default {
       'vxrn/expo-plugin',
       'expo-secure-store',
       'expo-web-browser',
+      'expo-font',
       'react-native-bottom-tabs',
       [
         'expo-plugin-ios-static-libraries',

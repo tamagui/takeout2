@@ -4,12 +4,12 @@ Minimal, headless React Native hot update library.
 
 ## Features
 
-- 🎯 Simple instance-based API
-- 📦 Pluggable storage (MMKV, AsyncStorage, custom)
-- ⚡ Timeout protection (5s + 20s hard limit)
-- 🔐 Pre-release testing workflow
-- 📱 Works with Expo & React Native
-- 🪶 Zero UI - bring your own components
+- Simple instance-based API
+- Pluggable storage (MMKV, AsyncStorage, custom)
+- Timeout protection (5s + 20s hard limit)
+- Pre-release testing workflow
+- Works with Expo & React Native
+- Zero UI - bring your own components
 
 ## Installation
 
@@ -135,9 +135,11 @@ export function DevUpdateTools() {
 Creates a hot updater instance.
 
 **Config:**
+
 - `serverUrl` (string): Your hot update server URL
 - `storage` (HotUpdateStorage): Storage adapter for persisting state
-- `updateStrategy` ('appVersion' | 'fingerprint'): Update strategy (default: 'appVersion')
+- `updateStrategy` ('appVersion' | 'fingerprint'): Update strategy (default:
+  'appVersion')
 
 **Returns:** `HotUpdaterInstance`
 
@@ -146,11 +148,13 @@ Creates a hot updater instance.
 React hook for automatic update checking.
 
 **Options:**
+
 - `enabled` (boolean): Enable/disable update checking (default: true)
 - `onUpdateDownloaded` (function): Callback when update is downloaded
 - `onError` (function): Callback on error
 
 **Returns:**
+
 - `userClearedForAccess` (boolean): Whether user can access app
 - `progress` (number): Download progress (0-100)
 - `isUpdatePending` (boolean): Whether update will apply on restart
@@ -168,7 +172,7 @@ React hook for automatic update checking.
 
 ## Storage Adapters
 
-### MMKV (Recommended)
+### MMKV
 
 ```ts
 import { MMKV } from 'react-native-mmkv'
@@ -187,7 +191,3 @@ const storage = {
   delete: (key) => localStorage.removeItem(key),
 }
 ```
-
-## License
-
-MIT

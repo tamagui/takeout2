@@ -5,7 +5,6 @@
  */
 
 export const FEATURE_FLAGS = {
-  // Hot updates for development
   ENABLE_HOT_UPDATES: 'enable_hot_updates',
 } as const
 

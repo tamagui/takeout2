@@ -1,0 +1,86 @@
+name: Deploy Hot Update
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform to deploy'
+        required: true
+        type: choice
+        options:
+          - both
+          - ios
+          - android
+        default: both
+      channel:
+        description: 'Channel to deploy to'
+        required: true
+        type: choice
+        options:
+          - production-pre
+          - production
+        default: production-pre
+      critical:
+        description: 'Critical update (force reload)'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  deploy-hot-update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: '.bun-version'
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Get app version
+        id: version
+        run: echo "APP_VERSION=$(bun get:app-version)" >> $GITHUB_OUTPUT
+
+      - name: Deploy iOS
+        if: inputs.platform == 'ios' || inputs.platform == 'both'
+        run: |
+          bunx hot-updater deploy \
+            --platform ios \
+            --channel ${{ inputs.channel }} \
+            --target:app-version ${{ steps.version.outputs.APP_VERSION }} \
+            ${{ inputs.critical && '--critical' || '' }}
+        env:
+          METRO_RESET_CACHE: 'true'
+          HOT_UPDATER_SUPABASE_URL: ${{ secrets.HOT_UPDATER_SUPABASE_URL }}
+          HOT_UPDATER_SUPABASE_ANON_KEY: ${{ secrets.HOT_UPDATER_SUPABASE_ANON_KEY }}
+          HOT_UPDATER_SUPABASE_BUCKET_NAME: ${{ secrets.HOT_UPDATER_SUPABASE_BUCKET_NAME }}
+
+      - name: Deploy Android
+        if: inputs.platform == 'android' || inputs.platform == 'both'
+        run: |
+          bunx hot-updater deploy \
+            --platform android \
+            --channel ${{ inputs.channel }} \
+            --target:app-version ${{ steps.version.outputs.APP_VERSION }} \
+            ${{ inputs.critical && '--critical' || '' }}
+        env:
+          METRO_RESET_CACHE: 'true'
+          HOT_UPDATER_SUPABASE_URL: ${{ secrets.HOT_UPDATER_SUPABASE_URL }}
+          HOT_UPDATER_SUPABASE_ANON_KEY: ${{ secrets.HOT_UPDATER_SUPABASE_ANON_KEY }}
+          HOT_UPDATER_SUPABASE_BUCKET_NAME: ${{ secrets.HOT_UPDATER_SUPABASE_BUCKET_NAME }}
+
+      - name: Summary
+        if: success()
+        run: |
+          echo "### Hot Update Deployed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Platform: ${{ inputs.platform }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Channel: ${{ inputs.channel }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Version: ${{ steps.version.outputs.APP_VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Critical: ${{ inputs.critical }}" >> $GITHUB_STEP_SUMMARY

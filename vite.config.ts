@@ -140,6 +140,7 @@ export default {
       },
 
       deps: {
+        pg: true,
         validator: true,
         zlib: false,
         'expo/internal/unstable-autolinking-exports': false,

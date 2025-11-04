@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
-import { postHog } from '~/posthog/posthog'
 import { analytics } from '~/features/analytics/analytics'
+import { postHog } from '~/posthog/posthog'
 
 /**
  * React hook for PostHog feature flags and analytics
@@ -12,7 +12,6 @@ export const usePostHogClient = () => {
   }, [])
 
   const logEvent = useCallback((event: string, value?: any) => {
-    // Log to analytics
     analytics.track('feature_used', {
       featureName: event,
       context: value ? JSON.stringify(value) : undefined,
@@ -29,13 +28,6 @@ export const usePostHogClient = () => {
     getFeatureFlag: (key: string) => postHog.getFeatureFlag(key),
     isFeatureEnabled: (key: string, defaultValue?: boolean) =>
       postHog.isFeatureEnabled(key, defaultValue),
-    client: {
-      checkGate,
-      logEvent,
-      getFeatureFlag: (key: string) => postHog.getFeatureFlag(key),
-      isFeatureEnabled: (key: string, defaultValue?: boolean) =>
-        postHog.isFeatureEnabled(key, defaultValue),
-    },
     reloadFeatureFlags,
   }
 }

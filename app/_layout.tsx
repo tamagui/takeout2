@@ -3,7 +3,6 @@ import './root.css'
 import { Slot } from 'one'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { useAuth } from '~/features/auth/client/authClient'
-import { HotUpdateAlertManager, HotUpdaterProvider } from '~/features/hot-updater'
 import { Gallery } from '~/interface/gallery/Gallery'
 import { NotificationProvider } from '~/interface/notification/Notification'
 import { ToastProvider } from '~/interface/toast/Toast'
@@ -40,17 +39,14 @@ export function Layout() {
           <ProvideZero>
             <TamaguiRootProvider>
               <SafeAreaProvider>
-                <HotUpdaterProvider>
-                  <ToastProvider>
-                    <NotificationProvider>
-                      <DragDropFile>
-                        <HotUpdateAlertManager />
-                        <Gallery />
-                        <Slot />
-                      </DragDropFile>
-                    </NotificationProvider>
-                  </ToastProvider>
-                </HotUpdaterProvider>
+                <ToastProvider>
+                  <NotificationProvider>
+                    <DragDropFile>
+                      <Gallery />
+                      <Slot />
+                    </DragDropFile>
+                  </NotificationProvider>
+                </ToastProvider>
               </SafeAreaProvider>
             </TamaguiRootProvider>
           </ProvideZero>

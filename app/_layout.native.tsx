@@ -3,7 +3,7 @@ import { Slot } from 'one'
 import { useEffect } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { useAuth } from '~/features/auth/client/authClient'
-import { HotUpdateAlertManager, HotUpdaterProvider } from '~/features/hot-updater'
+import { HotUpdaterSplash } from '~/features/hot-updater/HotUpdaterSplash'
 import { NotificationProvider } from '~/interface/notification/Notification'
 import { ToastProvider } from '~/interface/toast/Toast'
 import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
@@ -31,14 +31,13 @@ export function Layout() {
     <ProvideZero>
       <TamaguiRootProvider>
         <SafeAreaProvider>
-          <HotUpdaterProvider>
+          <HotUpdaterSplash>
             <ToastProvider>
               <NotificationProvider>
-                <HotUpdateAlertManager />
                 <Slot />
               </NotificationProvider>
             </ToastProvider>
-          </HotUpdaterProvider>
+          </HotUpdaterSplash>
         </SafeAreaProvider>
       </TamaguiRootProvider>
     </ProvideZero>

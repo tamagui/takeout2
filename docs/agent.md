@@ -1,45 +1,27 @@
-# Principles
+# Guidelines for AI Agents
 
-- always run `bun lint:fix && bun types:check` after code changes
-- use `~` alias for non-relative imports, prefer it always
-- use `console.info()` instead of `console.log()`
-- use `node:` prefix for built-in modules
-- write few comments, code should be self-documenting, write comments lowercase
-- never git commit or push code without explicit user permission
+## Import Patterns
 
-## More docs
+Packages use barrel files (index.ts) for clean exports.
 
-- `bun takeout docs list` shows the framework docs available
-- `bun takeout docs get [docname]` to see an individual doc
-- run `ls -la ./docs` to get list of repo-specific docs
-- be very eager to read them into context if they seem relevant
+```ts
+// packages/hooks/src/index.ts
+export { useDebounce } from './useDebounce'
 
-## Database
+// Usage:
+import { useDebounce } from '@vxrn/hooks'
+```
 
-For changes that can happen at Drizzle schema level, just update schema-public
-or schema-private. For any other migration, you need to run
-`bun db:migrate:add migration-name`. We don't do down migrations. Don't auto
-migrate, but if you do use `bun migrate` not `db:push`.
+Features use full paths. Avoid barrel files in src/features.
 
-## Zero
+```ts
+// Good
+import { HotUpdaterSplash } from '~/features/hot-updater/HotUpdaterSplash'
+import { useAuth } from '~/features/auth/client/authClient'
 
-All mutations receive MutatorContext as the first argument. Whatever client
-inserts should also be inserted the same by server ideally, otherwise it will
-rebase.
+// Bad
+import { HotUpdaterSplash } from '~/features/hot-updater'
+import { useAuth } from '~/features/auth'
+```
 
-Avoid randomness inside custom mutators, instead client passes in anything
-needed like randomId() for id, or Date.now() for dates. If you create another
-model inside a mutator, you can usually do the pattern of using the parent
-related item id, eg doing: `${messageId}-task` for a task you insert based off a
-message.
-
-Don't do anything long-running in a mutation, as it leaves the database
-transaction open, instead on server you usually add a serverAction and then push
-it into asyncTasks to run after the mutation - these are both available on
-MutatorContext.
-
-## Environment
-
-Never modify `/src/server/env-server.ts` - it's auto-generated. To add env vars,
-add to `env` section in `package.json`, run `bun env:update`, and optionally add
-example to `.env.development`.
+Full paths improve code navigation and make dependencies explicit.

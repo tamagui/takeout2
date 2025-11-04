@@ -90,20 +90,6 @@ export const userByUsername = syncedQuery(
   }
 )
 
-export const userWithProfile = syncedQuery(
-  'userWithProfile',
-  v.parser(
-    v.tuple([
-      v.object({
-        userId: v.string(),
-      }),
-    ])
-  ),
-  (arg) => {
-    return userQueries.userWithProfile(arg)
-  }
-)
-
 export const userWithState = syncedQuery(
   'userWithState',
   v.parser(

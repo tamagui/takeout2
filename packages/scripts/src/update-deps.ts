@@ -186,12 +186,30 @@ async function updatePackages(packagesToUpdate: string[], cwd: string) {
   }
 
   if (globalTag) {
-    // Use bun add with tag for better peer dependency resolution
+    // check which packages actually have the tag
+    console.info(`🔍 Checking which packages have tag '${globalTag}'...\n`)
+    const packagesWithTag: string[] = []
+
+    for (const pkg of packagesToUpdate) {
+      try {
+        await $`npm view ${pkg}@${globalTag} version --json`.quiet()
+        packagesWithTag.push(pkg)
+        console.info(`  ✓ ${pkg}@${globalTag} exists`)
+      } catch {
+        console.info(`  ⊘ ${pkg}@${globalTag} not found, skipping`)
+      }
+    }
+
+    if (packagesWithTag.length === 0) {
+      console.info(`\n⚠️ No packages found with tag '${globalTag}'`)
+      return
+    }
+
     console.info(`
-📦 Updating ${packagesToUpdate.length} package(s) with tag '${globalTag}' using --ignore-scripts...
+📦 Updating ${packagesWithTag.length} package(s) with tag '${globalTag}' using --ignore-scripts...
 `)
 
-    const packageNamesWithTags = packagesToUpdate.map((pkg) => `${pkg}@${globalTag}`)
+    const packageNamesWithTags = packagesWithTag.map((pkg) => `${pkg}@${globalTag}`)
     const addCommand = `bun add ${packageNamesWithTags.join(' ')} --ignore-scripts`
     console.info(`\n🪄 Running: ${addCommand}\n`)
 

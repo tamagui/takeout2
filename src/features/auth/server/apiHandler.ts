@@ -142,7 +142,7 @@ async function checkUserAccess(
   }
 
   const db = getDb()
-  const now = Date.now()
+  const now = new Date()
 
   // Check if user has a valid invite
   const validInvite = await db.query.invite.findFirst({
@@ -155,7 +155,7 @@ async function checkUserAccess(
         gt(schema.invite.maxUses, schema.invite.useCount),
         eq(schema.invite.maxUses, -1) // unlimited uses
       ),
-      or(isNull(schema.invite.expiresAt), gt(schema.invite.expiresAt, now))
+      or(isNull(schema.invite.expiresAt), gt(schema.invite.expiresAt, now.toISOString()))
     ),
   })
 
@@ -171,14 +171,14 @@ async function acceptInvite(
   db: ReturnType<typeof getDb>,
   inviteId: string,
   userId: string,
-  timestamp: number
+  timestamp: Date
 ) {
   // Increment use count for the invite
   await db
     .update(schema.invite)
     .set({
       useCount: sql`${schema.invite.useCount} + 1`,
-      usedAt: timestamp,
+      usedAt: timestamp.toISOString(),
       usedBy: userId,
     })
     .where(eq(schema.invite.id, inviteId))

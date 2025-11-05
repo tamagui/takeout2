@@ -94,7 +94,7 @@ async function onboardUser(authData: AuthData, userId: string) {
     name: name || '',
     username: username || '',
     image: image || '',
-    joinedAt: createdAt ? new Date(createdAt).getTime() : Date.now(),
+    joinedAt: createdAt ? new Date(createdAt).toISOString() : new Date().toISOString(),
     hasOnboarded: false,
     whitelisted: isWhitelisted,
     migrationVersion: 0,

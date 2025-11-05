@@ -10,7 +10,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { SizableText, Spinner, View, YStack } from 'tamagui'
+import { AnimatePresence, SizableText, Spinner, View, YStack } from 'tamagui'
 import { scrollToTopEmitter } from '../main-tabs/scrollToTopEmitter'
 import { mockPosts } from './mockData'
 import { PostCard } from './PostCard'
@@ -18,6 +18,7 @@ import { usePostsPaginated } from './usePosts'
 import { ButtonGlassCircle } from '~/interface/buttons/ButtonGlassCircle'
 import { ArrowUpIcon } from '~/interface/icons/phosphor/ArrowUpIcon'
 import { runOnJS, scheduleOnRN } from 'react-native-worklets'
+import { HomeShimmer } from '~/interface/shimmer/HomeShimmer'
 
 const AnimatedLegendList = Animated.createAnimatedComponent(LegendList)
 
@@ -99,6 +100,26 @@ export const FeedPage = memo(() => {
 
   return (
     <View style={{ flex: 1 }}>
+      <AnimatePresence>
+        {isLoading && (
+          <YStack
+            key="studio-shimmer"
+            animation="200ms"
+            exitStyle={{
+              opacity: 0,
+            }}
+            opacity={1}
+            z={999}
+            position="absolute"
+            t={headerHeight}
+            l={0}
+            r={0}
+            b={0}
+          >
+            <HomeShimmer />
+          </YStack>
+        )}
+      </AnimatePresence>
       <AnimatedLegendList
         ref={listRef}
         data={displayPosts}

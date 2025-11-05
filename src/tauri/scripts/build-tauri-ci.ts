@@ -94,11 +94,11 @@ async function main() {
 
     // Build the production Tauri app
     console.info('\nBuilding Tauri app...')
-    await $`bun run tauri:build:prod`
+    await $`bun tko tauri build:prod`
 
     // Upload to R2 storage (DMG and hash file)
     console.info('\nUploading to R2 storage...')
-    await $`bun run tauri:upload-release`
+    await $`bun tko tauri upload-release`
 
     // Generate and upload the update manifest
     console.info('\nGenerating update manifest...')

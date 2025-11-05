@@ -1,5 +1,5 @@
 /**
- * Script command - run scripts from the package
+ * Enhanced Script command - hybrid script runner with filesystem discovery
  */
 
 import { defineCommand } from 'citty'
@@ -10,16 +10,28 @@ import {
   readFileSync,
   writeFileSync,
   mkdirSync,
-  copyFileSync,
 } from 'node:fs'
-import { join, relative, dirname, basename } from 'node:path'
-import { spawn } from 'node:child_process'
+import { join, relative, dirname, basename, extname } from 'node:path'
 import pc from 'picocolors'
+import { homedir } from 'node:os'
+
+// cache configuration
+const CACHE_DIR = join(homedir(), '.takeout')
+const CACHE_FILE = join(CACHE_DIR, 'script-cache.json')
+
+interface ScriptMetadata {
+  description?: string
+  args?: string[]
+  mtime?: number
+}
+
+interface ScriptCache {
+  [path: string]: ScriptMetadata
+}
 
 // find scripts package root using import.meta.resolve
-function findScriptsPackageRoot(): string {
+function findScriptsPackageRoot(): string | null {
   try {
-    // resolve to package.json to get package root easily
     const resolved = import.meta.resolve('@vxrn/scripts/package.json')
     const packageJsonPath = new URL(resolved).pathname
     const packageRoot = join(packageJsonPath, '..')
@@ -29,16 +41,100 @@ function findScriptsPackageRoot(): string {
       return srcPath
     }
   } catch (err) {
-    // if import.meta.resolve fails, fall through to error
+    // scripts package not found, that's ok for hybrid mode
   }
 
-  throw new Error('Could not find @vxrn/scripts package')
+  return null
 }
 
-const SCRIPTS_DIR = findScriptsPackageRoot()
+// get local scripts directory
+export function getLocalScriptsDir(): string {
+  return join(process.cwd(), 'scripts')
+}
 
-function getAllScripts(dir: string, baseDir: string = dir): string[] {
-  const scripts: string[] = []
+// extract metadata from script file
+function extractMetadata(filePath: string): ScriptMetadata {
+  try {
+    const content = readFileSync(filePath, 'utf-8')
+    const lines = content.split('\n').slice(0, 20) // check first 20 lines
+
+    const metadata: ScriptMetadata = {}
+
+    for (const line of lines) {
+      // look for @description comment
+      const descMatch = line.match(/@description\s+(.+)/)
+      if (descMatch && descMatch[1]) {
+        metadata.description = descMatch[1].trim()
+      }
+
+      // look for @args comment
+      const argsMatch = line.match(/@args\s+(.+)/)
+      if (argsMatch && argsMatch[1]) {
+        metadata.args = argsMatch[1].split(',').map((a) => a.trim())
+      }
+    }
+
+    // add file modification time
+    const stat = statSync(filePath)
+    metadata.mtime = stat.mtimeMs
+
+    return metadata
+  } catch (err) {
+    return {}
+  }
+}
+
+// load or create cache
+function loadCache(): ScriptCache {
+  try {
+    if (existsSync(CACHE_FILE)) {
+      return JSON.parse(readFileSync(CACHE_FILE, 'utf-8'))
+    }
+  } catch (err) {
+    // ignore cache errors
+  }
+  return {}
+}
+
+// save cache
+function saveCache(cache: ScriptCache) {
+  try {
+    if (!existsSync(CACHE_DIR)) {
+      mkdirSync(CACHE_DIR, { recursive: true })
+    }
+    writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2))
+  } catch (err) {
+    // ignore cache write errors
+  }
+}
+
+// get metadata for a script (with caching)
+export function getScriptMetadata(filePath: string): ScriptMetadata {
+  const cache = loadCache()
+  const stat = statSync(filePath)
+
+  // check if cache is valid
+  if (cache[filePath] && cache[filePath].mtime === stat.mtimeMs) {
+    return cache[filePath]
+  }
+
+  // extract fresh metadata
+  const metadata = extractMetadata(filePath)
+
+  // update cache
+  cache[filePath] = metadata
+  saveCache(cache)
+
+  return metadata
+}
+
+// discover scripts in a directory
+export function discoverScripts(dir: string, baseDir: string = dir): Map<string, string> {
+  const scripts = new Map<string, string>()
+
+  if (!existsSync(dir)) {
+    return scripts
+  }
 
   try {
     const entries = readdirSync(dir)
@@ -48,300 +144,391 @@ function getAllScripts(dir: string, baseDir: string = dir): string[] {
       const stat = statSync(fullPath)
 
       if (stat.isDirectory()) {
-        scripts.push(...getAllScripts(fullPath, baseDir))
+        // recursively discover in subdirectories
+        const subScripts = discoverScripts(fullPath, baseDir)
+        for (const [name, path] of subScripts) {
+          scripts.set(name, path)
+        }
       } else if (entry.endsWith('.ts') || entry.endsWith('.js')) {
+        // create script name relative to base
         const relativePath = relative(baseDir, fullPath)
-        scripts.push(relativePath)
+        const scriptName = relativePath.replace(/\.(ts|js)$/, '')
+        scripts.set(scriptName, fullPath)
       }
     }
   } catch (err) {
-    console.error(pc.red(`Error reading directory ${dir}: ${err}`))
+    // ignore directory read errors
   }
 
   return scripts
 }
 
-const listCommand = defineCommand({
+// find a script by name (checks both built-in and local)
+export function findScript(name: string): string | null {
+  // normalize name: convert colons to slashes for consistency
+  const normalizedName = name.replace(/:/g, '/')
+
+  // 1. check local scripts first (they override built-ins)
+  const localDir = getLocalScriptsDir()
+
+  // try direct file path with normalized name
+  for (const ext of ['.ts', '.js', '']) {
+    const localPath = join(localDir, `${normalizedName}${ext}`)
+    if (existsSync(localPath)) {
+      return localPath
+    }
+  }
+
+  // 2. check built-in scripts
+  const builtInDir = findScriptsPackageRoot()
+  if (builtInDir) {
+    for (const ext of ['.ts', '.js', '']) {
+      const builtInPath = join(builtInDir, `${normalizedName}${ext}`)
+      if (existsSync(builtInPath)) {
+        return builtInPath
+      }
+    }
+  }
+
+  return null
+}
+
+// format script listing
+function formatScriptList(
+  title: string,
+  scripts: Map<string, string>,
+  showDescriptions: boolean = false
+): void {
+  if (scripts.size === 0) return
+
+  console.info()
+  console.info(pc.bold(pc.cyan(title)))
+  console.info()
+
+  // group by category
+  const categories = new Map<string, Array<[string, string]>>()
+  const rootScripts: Array<[string, string]> = []
+
+  for (const [name, path] of scripts) {
+    if (name.includes('/')) {
+      const parts = name.split('/')
+      if (parts.length > 0 && parts[0]) {
+        const category = parts[0]
+        if (!categories.has(category)) {
+          categories.set(category, [])
+        }
+        categories.get(category)!.push([name, path])
+      }
+    } else {
+      rootScripts.push([name, path])
+    }
+  }
+
+  // display root scripts
+  for (const [name, path] of rootScripts) {
+    let line = `  ${pc.green(name)}`
+
+    if (showDescriptions) {
+      const metadata = getScriptMetadata(path)
+      if (metadata.description) {
+        line += pc.dim(` - ${metadata.description}`)
+      }
+    }
+
+    console.info(line)
+  }
+
+  // display categorized scripts
+  for (const [category, categoryScripts] of categories) {
+    console.info()
+    console.info(`  ${pc.yellow(category)}/`)
+
+    for (const [name, path] of categoryScripts) {
+      const shortName = name.startsWith(`${category}/`)
+        ? name.substring(category.length + 1)
+        : name
+      let line = `    ${pc.green(shortName)}`
+
+      if (showDescriptions) {
+        const metadata = getScriptMetadata(path)
+        if (metadata.description) {
+          line += pc.dim(` - ${metadata.description}`)
+        }
+      }
+
+      console.info(line)
+    }
+  }
+}
+
+// run a script
+async function runScript(scriptPath: string, args: string[]): Promise<void> {
+  console.info(pc.dim(`Running: ${relative(process.cwd(), scriptPath)}`))
+  console.info()
+
+  try {
+    const { $ } = await import('bun')
+    await $`bun ${scriptPath} ${args}`
+  } catch (err) {
+    console.error(pc.red(`✗ Error running script: ${err}`))
+    process.exit(1)
+  }
+}
+
+// new command for creating scripts
+const newCommand = defineCommand({
   meta: {
-    name: 'list',
-    description: 'List all available scripts',
+    name: 'new',
+    description: 'Create a new script from template',
   },
-  async run() {
-    if (!existsSync(SCRIPTS_DIR)) {
-      console.error(pc.red('✗ Scripts directory not found'))
+  args: {
+    path: {
+      type: 'positional',
+      description: 'Path for the new script (e.g., ci/test)',
+      required: true,
+    },
+  },
+  async run({ args }) {
+    const scriptPath = args.path
+    const localDir = getLocalScriptsDir()
+
+    // determine full path
+    const fullPath = join(localDir, `${scriptPath}.ts`)
+    const dir = dirname(fullPath)
+
+    // create directory if needed
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true })
+    }
+
+    // check if file exists
+    if (existsSync(fullPath)) {
+      console.error(
+        pc.red(`✗ Script already exists: ${relative(process.cwd(), fullPath)}`)
+      )
       process.exit(1)
     }
 
-    const scripts = getAllScripts(SCRIPTS_DIR).sort()
+    // create template
+    const template = `#!/usr/bin/env bun
 
-    console.info()
-    console.info(pc.bold(pc.cyan('⚙️  Available Scripts')))
-    console.info()
+/**
+ * @description TODO: Add description
+ * @args --verbose, --dry-run
+ */
 
-    for (const script of scripts) {
-      const name = script.replace(/\.(ts|js)$/, '')
-      console.info(`  ${pc.green(name)}`)
-    }
+import { parseArgs } from 'node:util'
 
-    console.info()
-    console.info(pc.dim(`Use 'takeout script run <name> [args...]' to run a script`))
-    console.info()
+const { values } = parseArgs({
+  args: process.argv.slice(2),
+  options: {
+    verbose: {
+      type: 'boolean',
+      short: 'v',
+    },
+    'dry-run': {
+      type: 'boolean',
+    },
   },
 })
 
-const runCommand = defineCommand({
+async function main() {
+  console.info('Running ${basename(scriptPath)}...')
+
+  if (values.verbose) {
+    console.info('Verbose mode enabled')
+  }
+
+  if (values['dry-run']) {
+    console.info('Dry run mode - no changes will be made')
+  }
+
+  // TODO: Implement your script logic here
+}
+
+main().catch(console.error)
+`
+
+    writeFileSync(fullPath, template)
+    console.info(pc.green(`✓ Created new script: ${relative(process.cwd(), fullPath)}`))
+    console.info()
+    console.info(pc.dim(`Edit the script and update the TODO sections`))
+  },
+})
+
+// run subcommand for backwards compatibility
+const runSubCommand = defineCommand({
   meta: {
     name: 'run',
-    description: 'Run a specific script',
+    description: 'Run a script (for backwards compatibility)',
   },
   args: {
     name: {
       type: 'positional',
-      description: 'Name of the script to run (without extension)',
+      description: 'Script name',
       required: true,
-    },
-    args: {
-      type: 'positional',
-      description: 'Arguments to pass to the script',
-      required: false,
     },
   },
   async run({ args, rawArgs }) {
-    const scriptName = args.name
-    let scriptPath: string | null = null
+    // Find and run the script
+    const scriptPath = findScript(args.name)
 
-    // try to find the script with various extensions
-    for (const ext of ['.ts', '.js', '']) {
-      const testPath = join(SCRIPTS_DIR, `${scriptName}${ext}`)
-      if (existsSync(testPath)) {
-        scriptPath = testPath
-        break
-      }
+    if (!scriptPath) {
+      console.error(pc.red(`✗ Script not found: ${args.name}`))
+      console.info()
+      console.info(pc.dim(`Run 'tko script' to see available scripts`))
+      process.exit(1)
     }
+
+    // Extract args after the script name
+    const scriptArgs = rawArgs.slice(rawArgs.indexOf(args.name) + 1)
+
+    await runScript(scriptPath, scriptArgs)
+  },
+})
+
+// main script command (handles both list and run)
+export const scriptCommand = defineCommand({
+  meta: {
+    name: 'script',
+    description: 'Hybrid script runner with filesystem discovery',
+  },
+  args: {
+    name: {
+      type: 'positional',
+      description: 'Script name or category to run/list',
+      required: false,
+    },
+  },
+  subCommands: {
+    new: newCommand,
+    run: runSubCommand, // Add run subcommand for compatibility
+  },
+  async run({ args, rawArgs }) {
+    const scriptName = args.name
+
+    // if no name provided, list all available scripts
+    if (!scriptName) {
+      const localScripts = discoverScripts(getLocalScriptsDir())
+      const builtInDir = findScriptsPackageRoot()
+      const builtInScripts = builtInDir ? discoverScripts(builtInDir) : new Map()
+
+      if (localScripts.size > 0) {
+        formatScriptList('📁 Local Scripts', localScripts, true)
+      }
+
+      if (builtInScripts.size > 0) {
+        formatScriptList('📦 Built-in Scripts', builtInScripts, true)
+      }
+
+      if (localScripts.size === 0 && builtInScripts.size === 0) {
+        console.info(pc.yellow('No scripts found'))
+        console.info()
+        console.info(
+          pc.dim(`Create scripts in ${relative(process.cwd(), getLocalScriptsDir())}/`)
+        )
+        console.info(pc.dim(`Or install @vxrn/scripts package for built-in scripts`))
+      }
+
+      console.info()
+      console.info(pc.dim(`Run: takeout script <name> [args...] to execute a script`))
+      console.info(pc.dim(`Run: takeout script new <path> to create a new script`))
+      console.info()
+      return
+    }
+
+    // check if this is a category listing (e.g., "takeout script ci")
+    const localDir = getLocalScriptsDir()
+    const categoryPath = join(localDir, scriptName)
+
+    if (existsSync(categoryPath) && statSync(categoryPath).isDirectory()) {
+      // list scripts in this category
+      const categoryScripts = discoverScripts(categoryPath)
+
+      if (categoryScripts.size > 0) {
+        console.info()
+        console.info(pc.bold(pc.cyan(`📁 ${scriptName} Scripts`)))
+        console.info()
+
+        for (const [name, path] of categoryScripts) {
+          const shortName = name.replace(`${scriptName}/`, '')
+          const metadata = getScriptMetadata(path)
+          let line = `  ${pc.green(shortName)}`
+
+          if (metadata.description) {
+            line += pc.dim(` - ${metadata.description}`)
+          }
+
+          if (metadata.args && metadata.args.length > 0) {
+            line += pc.dim(` [${metadata.args.join(', ')}]`)
+          }
+
+          console.info(line)
+        }
+
+        console.info()
+        console.info(
+          pc.dim(`Run: takeout script ${scriptName}/<name> [args...] to execute`)
+        )
+        console.info()
+      } else {
+        console.info(pc.yellow(`No scripts found in ${scriptName}/`))
+      }
+
+      return
+    }
+
+    // find and run the script
+    const scriptPath = findScript(scriptName)
 
     if (!scriptPath) {
       console.error(pc.red(`✗ Script not found: ${scriptName}`))
       console.info()
-      console.info(pc.dim(`Use 'takeout script list' to see available scripts`))
+      console.info(pc.dim(`Run 'takeout script' to see available scripts`))
       process.exit(1)
     }
 
     // extract args after the script name
     const scriptArgs = rawArgs.slice(rawArgs.indexOf(scriptName) + 1)
 
-    console.info(pc.dim(`Running: ${relative(process.cwd(), scriptPath)}`))
-    console.info()
-
-    // run the script using bun
-    const child = spawn('bun', [scriptPath, ...scriptArgs], {
-      stdio: 'inherit',
-      cwd: process.cwd(),
-      env: process.env,
-    })
-
-    return new Promise<void>((resolve, reject) => {
-      child.on('exit', (code) => {
-        if (code !== 0) {
-          process.exit(code || 1)
-        }
-        resolve()
-      })
-
-      child.on('error', (err) => {
-        console.error(pc.red(`✗ Error running script: ${err}`))
-        reject(err)
-      })
-    })
+    await runScript(scriptPath, scriptArgs)
   },
 })
 
-const pathCommand = defineCommand({
-  meta: {
-    name: 'path',
-    description: 'Get the absolute path to a script file',
-  },
-  args: {
-    name: {
-      type: 'positional',
-      description: 'Name of the script (without extension)',
-      required: false,
+// shorthand command that skips "script" subcommand
+export function createShorthandCommand(name: string) {
+  return defineCommand({
+    meta: {
+      name,
+      description: 'Run script directly',
     },
-  },
-  async run({ args }) {
-    if (!args.name) {
-      // return scripts directory path
-      console.info(SCRIPTS_DIR)
-      return
-    }
-
-    let scriptPath: string | null = null
-
-    // try to find the script with various extensions
-    for (const ext of ['.ts', '.js', '']) {
-      const testPath = join(SCRIPTS_DIR, `${args.name}${ext}`)
-      if (existsSync(testPath)) {
-        scriptPath = testPath
-        break
-      }
-    }
-
-    if (!scriptPath) {
-      console.error(pc.red(`✗ Script not found: ${args.name}`))
-      process.exit(1)
-    }
-
-    console.info(scriptPath)
-  },
-})
-
-const sourceCommand = defineCommand({
-  meta: {
-    name: 'source',
-    description: 'Display the source code of a script',
-  },
-  args: {
-    name: {
-      type: 'positional',
-      description: 'Name of the script (without extension)',
-      required: true,
+    args: {
+      args: {
+        type: 'positional',
+        description: 'Script and arguments',
+        required: false,
+      },
     },
-  },
-  async run({ args }) {
-    let scriptPath: string | null = null
+    async run({ rawArgs }) {
+      // if no args provided, list scripts in this category
+      const scriptName = rawArgs.length > 0 ? `${name}/${rawArgs[0]}` : name
+      const scriptArgs =
+        rawArgs.length > 0
+          ? ['script', scriptName, ...rawArgs.slice(1)]
+          : ['script', name]
 
-    // try to find the script with various extensions
-    for (const ext of ['.ts', '.js', '']) {
-      const testPath = join(SCRIPTS_DIR, `${args.name}${ext}`)
-      if (existsSync(testPath)) {
-        scriptPath = testPath
-        break
+      // delegate to script command
+      const { run } = scriptCommand
+      if (run) {
+        await run({
+          args: {
+            name: scriptName,
+            _: rawArgs.slice(1),
+          } as any,
+          rawArgs: scriptArgs,
+          cmd: scriptCommand,
+        } as any)
       }
-    }
-
-    if (!scriptPath) {
-      console.error(pc.red(`✗ Script not found: ${args.name}`))
-      console.info()
-      console.info(pc.dim(`Use 'takeout script list' to see available scripts`))
-      process.exit(1)
-    }
-
-    const source = readFileSync(scriptPath, 'utf-8')
-    console.info(source)
-  },
-})
-
-const ejectCommand = defineCommand({
-  meta: {
-    name: 'eject',
-    description:
-      'Eject a script to local scripts/ folder and update package.json references',
-  },
-  args: {
-    name: {
-      type: 'positional',
-      description: 'Name of the script to eject (without extension)',
-      required: true,
     },
-  },
-  async run({ args }) {
-    const scriptName = args.name
-    let scriptPath: string | null = null
-    let scriptExt = ''
-
-    // try to find the script with various extensions
-    for (const ext of ['.ts', '.js']) {
-      const testPath = join(SCRIPTS_DIR, `${scriptName}${ext}`)
-      if (existsSync(testPath)) {
-        scriptPath = testPath
-        scriptExt = ext
-        break
-      }
-    }
-
-    if (!scriptPath) {
-      console.error(pc.red(`✗ Script not found: ${scriptName}`))
-      console.info()
-      console.info(pc.dim(`Use 'takeout script list' to see available scripts`))
-      process.exit(1)
-    }
-
-    const cwd = process.cwd()
-    const localScriptsDir = join(cwd, 'scripts')
-
-    // check if script has a subdirectory (e.g., aws/configure-aws-prod)
-    const scriptRelativePath = relative(SCRIPTS_DIR, scriptPath)
-    const scriptDir = dirname(scriptRelativePath)
-    const scriptBasename = basename(scriptPath)
-
-    // create scripts directory and subdirectories if needed
-    const targetDir =
-      scriptDir !== '.' ? join(localScriptsDir, scriptDir) : localScriptsDir
-    if (!existsSync(targetDir)) {
-      mkdirSync(targetDir, { recursive: true })
-    }
-
-    const targetPath = join(targetDir, scriptBasename)
-
-    // check if file already exists
-    if (existsSync(targetPath)) {
-      console.error(pc.red(`✗ Script already exists at ${relative(cwd, targetPath)}`))
-      process.exit(1)
-    }
-
-    // copy the script
-    copyFileSync(scriptPath, targetPath)
-    console.info(pc.green(`✓ Ejected script to ${relative(cwd, targetPath)}`))
-
-    // update package.json if it exists
-    const packageJsonPath = join(cwd, 'package.json')
-    if (existsSync(packageJsonPath)) {
-      const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'))
-
-      if (packageJson.scripts) {
-        let updated = false
-        const scriptNameWithoutExt = scriptName.replace(/\.(ts|js)$/, '')
-
-        // look for any script that uses "takeout script run {name}"
-        for (const [key, value] of Object.entries(packageJson.scripts)) {
-          if (typeof value === 'string') {
-            // match patterns like "takeout script run scriptname" or "takeout script run folder/scriptname"
-            const pattern = new RegExp(
-              `takeout script run ${scriptNameWithoutExt.replace(/\//g, '\\/')}(?!\\S)`,
-              'g'
-            )
-            if (pattern.test(value)) {
-              const newValue = value.replace(pattern, `./${relative(cwd, targetPath)}`)
-              packageJson.scripts[key] = newValue
-              updated = true
-              console.info(pc.cyan(`  Updated script "${key}"`))
-            }
-          }
-        }
-
-        if (updated) {
-          writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n')
-          console.info(pc.green('✓ Updated package.json'))
-        } else {
-          console.info(pc.dim('  No package.json scripts reference this script'))
-        }
-      }
-    }
-
-    console.info()
-    console.info(pc.dim(`You can now edit the script at ${relative(cwd, targetPath)}`))
-  },
-})
-
-export const scriptCommand = defineCommand({
-  meta: {
-    name: 'script',
-    description: 'List and run Takeout scripts',
-  },
-  subCommands: {
-    list: listCommand,
-    run: runCommand,
-    path: pathCommand,
-    source: sourceCommand,
-    eject: ejectCommand,
-  },
-})
+  })
+}

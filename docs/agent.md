@@ -6,8 +6,9 @@ work.
 
 # Principles
 
-- always run `bun lint:fix && bun types:check` after code changes
+- always run `bun lint:fix && bun tko check types` after code changes
 - use `~` alias for non-relative imports, prefer it always
+  - except in `./packages/*` always use relative imports
 - use `console.info()` instead of `console.log()`
 - use `node:` prefix for built-in modules
 - write few comments, code should be self-documenting, write comments lowercase
@@ -25,12 +26,17 @@ For any UI: `./docs/tamagui.md` For Zero/queries: `./docs/zero.md`,
 
 There are many more.
 
+## App
+
+- prefer not to `export default`, One takes the first "export" as the page which
+  also hot reloads properly as opposed to export default
+
 ## Database
 
 For changes that can happen at Drizzle schema level, just update schema-public
 or schema-private. For any other migration, you need to run
 `bun db:migrate:add migration-name`. We don't do down migrations. Don't auto
-migrate, but if you do use `bun migrate` not `db:push`.
+migrate, but if you do use `bun migrate` not `bun tko db push`.
 
 ## Zero
 

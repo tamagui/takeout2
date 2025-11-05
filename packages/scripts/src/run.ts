@@ -1,9 +1,10 @@
 #!/usr/bin/env bun
 
+import { handleProcessExit } from '@vxrn/scripts/helpers/handleProcessExit'
 import { spawn } from 'node:child_process'
 import { promises as fs } from 'node:fs'
 import { join, relative, resolve } from 'node:path'
-import { handleProcessExit } from '@vxrn/scripts/helpers/handleProcessExit'
+import { getIsExiting } from './helpers/run'
 import { checkNodeVersion } from './node-version-check'
 
 const colors = [
@@ -215,7 +216,7 @@ const runScript = async (
     shell: false,
     env: { ...process.env, FORCE_COLOR: '3', BUN_RUN_PARENT_SCRIPT: name } as any,
     cwd: resolve(cwd),
-    detached: false,
+    detached: true,
   })
 
   log.info(`${color}${prefixLabel}${reset} Process started with PID: ${proc.pid}`)
@@ -245,6 +246,10 @@ const runScript = async (
   })
 
   proc.on('close', (code) => {
+    if (getIsExiting()) {
+      return
+    }
+
     if (code && code !== 0) {
       log.error(`${color}${prefixLabel}${reset} Process exited with code ${code}`)
 

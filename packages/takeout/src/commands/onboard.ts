@@ -11,6 +11,7 @@ import {
   generateSecret,
   updateEnvVariable,
 } from '../utils/env'
+import { setupProductionEnv } from '../utils/env-setup'
 import { markOnboarded, updateAppConfig, updatePackageJson } from '../utils/files'
 import { checkAllPorts, getConflictingPorts } from '../utils/ports'
 import { checkAllPrerequisites, hasRequiredPrerequisites } from '../utils/prerequisites'
@@ -111,8 +112,20 @@ export const onboardCommand = defineCommand({
 
     console.info()
 
-    // Phase 4: Start Services
-    showStep('Starting development services...')
+    // Phase 4: Production Environment (Optional)
+    showStep('Production environment configuration...')
+    console.info()
+
+    // run production env setup but don't fail onboarding if skipped
+    await setupProductionEnv(cwd, {
+      interactive: true,
+      skipOptional: false,
+    })
+
+    console.info()
+
+    // Phase 5: Port Check
+    showStep('Checking service ports...')
     console.info()
 
     const portChecks = checkAllPorts()
@@ -125,7 +138,7 @@ export const onboardCommand = defineCommand({
 
     console.info()
 
-    // Phase 5: Next Steps
+    // Phase 6: Next Steps
     showStep('Setup complete!')
     console.info()
 

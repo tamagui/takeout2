@@ -582,7 +582,7 @@ test('user can update own message', async () => {
 when you add or modify schemas, regenerate types:
 
 ```bash
-bun zero:generate
+bun tko zero generate
 ```
 
 this creates typescript types from your table schemas in
@@ -605,7 +605,7 @@ export const mutate = mutations(schema, permissions, {
 })
 ```
 
-in development, `bun dev` runs `zero:generate:watch` automatically.
+in development, `bun dev` runs `watch:zero:generate` automatically.
 
 ## migration
 
@@ -669,7 +669,7 @@ docker-compose auto-migrates. in production, run `bun migrate`.
 over-zero auto-generates typescript types from your schemas. run:
 
 ```bash
-bun zero:generate
+bun tko zero generate
 ```
 
 this generates `src/data/generated/types.ts`:
@@ -701,7 +701,7 @@ const update: MessageUpdate = {
 in development, run with watch mode:
 
 ```bash
-bun zero:generate:watch
+bun watch
 ```
 
 this watches your model files and regenerates types automatically. the main dev

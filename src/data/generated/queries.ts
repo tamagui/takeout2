@@ -62,6 +62,52 @@ export const postsByUserId = syncedQuery(
   }
 )
 
+export const postsPaginated = syncedQuery(
+  'postsPaginated',
+  v.parser(
+    v.tuple([
+      v.object({
+        pageSize: v.number(),
+        cursor: v.optional(
+          v.union([
+            v.object({
+              id: v.string(),
+            }),
+            v.null(),
+          ])
+        ),
+      }),
+    ])
+  ),
+  (arg) => {
+    return postQueries.postsPaginated(arg)
+  }
+)
+
+export const postsWithBlocking = syncedQuery(
+  'postsWithBlocking',
+  v.parser(
+    v.tuple([
+      v.object({
+        userId: v.optional(v.string()),
+        blockedUserIds: v.array(v.string()),
+        pageSize: v.number(),
+        cursor: v.optional(
+          v.union([
+            v.object({
+              id: v.string(),
+            }),
+            v.null(),
+          ])
+        ),
+      }),
+    ])
+  ),
+  (arg) => {
+    return postQueries.postsWithBlocking(arg)
+  }
+)
+
 export const userById = syncedQuery(
   'userById',
   v.parser(
@@ -87,6 +133,29 @@ export const userByUsername = syncedQuery(
   ),
   (arg) => {
     return userQueries.userByUsername(arg)
+  }
+)
+
+export const userPostsPaginated = syncedQuery(
+  'userPostsPaginated',
+  v.parser(
+    v.tuple([
+      v.object({
+        userId: v.string(),
+        pageSize: v.number(),
+        cursor: v.optional(
+          v.union([
+            v.object({
+              id: v.string(),
+            }),
+            v.null(),
+          ])
+        ),
+      }),
+    ])
+  ),
+  (arg) => {
+    return postQueries.userPostsPaginated(arg)
   }
 )
 

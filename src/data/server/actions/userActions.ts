@@ -1,9 +1,8 @@
-import { randomId } from '@vxrn/helpers'
 import { eq } from 'drizzle-orm'
-import type { AuthData } from '~/features/auth/types'
 import { getDb } from '~/database'
 import { user as userTable, whitelist } from '~/database/schema-private'
-import { userPublic, userState, post } from '~/database/schema-public'
+import { post, userPublic, userState } from '~/database/schema-public'
+import type { AuthData } from '~/features/auth/types'
 import { getIsAdmin } from '~/server/getIsAdmin'
 
 export const userActions = {

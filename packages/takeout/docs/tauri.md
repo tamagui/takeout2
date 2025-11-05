@@ -101,16 +101,16 @@ Content Security Policy (CSP) settings:
 #### Development
 
 ```bash
-bun tauri:dev
-bun tauri:build:dev  # build development version (with dev icon and config)
+bun tko tauri dev
+bun tko tauri build:dev  # build development version (with dev icon and config)
 ```
 
 #### Production Build
 
 ```bash
-bun tauri:build:prod
-bun tauri:build  # build both prod and dev versions
-bun tauri:build-and-release
+bun tko tauri build:prod
+bun tko tauri build  # build both prod and dev versions
+bun tko tauri build-and-release
 ```
 
 #### Utilities

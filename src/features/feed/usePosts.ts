@@ -1,11 +1,6 @@
 import { useMemo, useState } from 'react'
 import { blockedByUser } from '~/data/queries/block'
-import {
-  allPosts,
-  postsWithBlocking,
-  postsPaginated,
-  userPostsPaginated,
-} from '~/data/queries/post'
+import { allPosts, postsWithBlocking, userPostsPaginated } from '~/data/queries/post'
 import type { Post } from '~/data/types'
 import { useAuth } from '~/features/auth/client/authClient'
 import { useQuery } from '~/zero/client'

@@ -10,7 +10,8 @@
   "module": "dist/esm",
   "types": "./types/index.d.ts",
   "bin": {
-    "takeout": "./cli.mjs"
+    "takeout": "./cli.mjs",
+    "tko": "./cli.mjs"
   },
   "files": [
     "src",

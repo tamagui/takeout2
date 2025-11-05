@@ -35,3 +35,24 @@ export interface EnvironmentSetup {
   domain: string
   serverUrl: string
 }
+
+export interface EnvVariable {
+  key: string
+  label: string
+  description: string
+  instructions: string
+  required: boolean
+  type: 'text' | 'secret' | 'multiline'
+  default?: string
+  placeholder?: string
+  generator?: () => string
+}
+
+export interface EnvCategory {
+  id: string
+  name: string
+  description: string
+  required: boolean
+  setupTime?: string
+  variables: EnvVariable[]
+}

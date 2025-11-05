@@ -1,5 +1,4 @@
 import { where, zql } from 'over-zero'
-import type { Post } from '~/data/types'
 
 const permission = where('post', () => {
   return true
@@ -27,7 +26,10 @@ export const postsByUserId = (props: { userId: string; limit?: number }) => {
 }
 
 // Paginated posts query with cursor support
-export const postsPaginated = (props: { pageSize: number; cursor?: Post | null }) => {
+export const postsPaginated = (props: {
+  pageSize: number
+  cursor?: { id: string } | null
+}) => {
   let query = zql.post
     .where(permission)
     .orderBy('createdAt', 'desc')
@@ -45,7 +47,7 @@ export const postsPaginated = (props: { pageSize: number; cursor?: Post | null }
 export const userPostsPaginated = (props: {
   userId: string
   pageSize: number
-  cursor?: Post | null
+  cursor?: { id: string } | null
 }) => {
   let query = zql.post
     .where(permission)
@@ -66,7 +68,7 @@ export const postsWithBlocking = (props: {
   userId?: string
   blockedUserIds: string[]
   pageSize: number
-  cursor?: Post | null
+  cursor?: { id: string } | null
 }) => {
   let query = zql.post
     .where(permission)

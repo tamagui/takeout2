@@ -49,6 +49,7 @@
   "files.exclude": {
     ".sst": true,
     ".tamagui": true,
+    ".takeout": true,
     ".expo": true,
     ".docker": true
   }

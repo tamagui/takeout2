@@ -1,6 +1,6 @@
 import { defineCommand } from 'citty'
-import { existsSync, readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { existsSync, readFileSync, statSync } from 'node:fs'
+import { resolve, join } from 'node:path'
 import { spawn } from 'node:child_process'
 
 export const runCommand = defineCommand({
@@ -15,10 +15,85 @@ export const runCommand = defineCommand({
       required: false,
     },
   },
-  run: async ({ args }) => {
+  run: async ({ args, rawArgs }) => {
     // Get all arguments after 'run'
     const scriptArgs = process.argv.slice(3)
+    const firstArg = scriptArgs[0]
 
+    // Check if this is a filesystem script (category or script with slash)
+    if (firstArg) {
+      const localDir = join(process.cwd(), 'scripts')
+      const categoryPath = join(localDir, firstArg)
+
+      // Check if it's a category directory
+      if (existsSync(categoryPath) && statSync(categoryPath).isDirectory()) {
+        // Lazy load script functions only when needed
+        const { discoverScripts, getScriptMetadata } = await import('./script')
+        const pc = (await import('picocolors')).default
+
+        // List scripts in this category
+        const categoryScripts = discoverScripts(categoryPath)
+
+        if (categoryScripts.size > 0) {
+          console.info()
+          console.info(pc.bold(pc.cyan(`📁 ${firstArg} Scripts`)))
+          console.info()
+
+          for (const [name, path] of categoryScripts) {
+            const shortName = name.replace(`${firstArg}/`, '')
+            const metadata = getScriptMetadata(path)
+            let line = `  ${pc.green(shortName)}`
+
+            if (metadata.description) {
+              line += pc.dim(` - ${metadata.description}`)
+            }
+
+            if (metadata.args && metadata.args.length > 0) {
+              line += pc.dim(` [${metadata.args.join(', ')}]`)
+            }
+
+            console.info(line)
+          }
+
+          console.info()
+          console.info(pc.dim(`Run: tko ${firstArg} <name> [args...]`))
+          console.info(pc.dim(`Or:  tko run ${firstArg}/<name> [args...] to execute`))
+          console.info()
+        } else {
+          const pc = (await import('picocolors')).default
+          console.info(pc.yellow(`No scripts found in ${firstArg}/`))
+        }
+        return
+      }
+
+      // Check if it's a direct script reference (with slash or colon)
+      const normalizedName = firstArg.replace(/:/g, '/')
+
+      // Lazy load findScript only when needed
+      const { findScript } = await import('./script')
+      const scriptPath = findScript(normalizedName)
+
+      if (scriptPath) {
+        // Run the filesystem script
+        const pc = (await import('picocolors')).default
+        console.info(pc.dim(`Running: ${normalizedName}`))
+        console.info()
+
+        // Use spawn instead of Bun's $ helper since we're in a compiled context
+        const scriptArgsToPass = scriptArgs.slice(1)
+        const child = spawn('bun', [scriptPath, ...scriptArgsToPass], {
+          stdio: 'inherit',
+          shell: false,
+        })
+
+        child.on('exit', (code) => {
+          process.exit(code || 0)
+        })
+        return
+      }
+    }
+
+    // Fall back to the original run.ts behavior for package.json scripts
     // Find the project root by looking for package.json with workspaces
     let currentDir = process.cwd()
     let projectRoot = ''

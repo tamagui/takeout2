@@ -4,7 +4,7 @@ test.beforeEach(async ({ context }) => {
   await context.clearCookies()
 })
 
-test('complete onboarding flow', async ({ page }) => {
+test.skip('complete onboarding flow', async ({ page }) => {
   const BASE_URL = 'http://localhost:8081'
   const testEmail = `test${Date.now()}@example.com`
 

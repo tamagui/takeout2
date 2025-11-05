@@ -11,6 +11,10 @@ export function setExitCleanupState(state: boolean) {
   isInExitCleanup = state
 }
 
+export function getIsExiting() {
+  return isInExitCleanup
+}
+
 const processHandlers = new Set<ProcessHandler>()
 
 const colors = [

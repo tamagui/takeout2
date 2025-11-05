@@ -23,5 +23,10 @@
   },
   "devDependencies": {
     "vxrn": "*"
+  },
+  "scripts": {
+    "dev-tunnel": "bun ./src/dev-tunnel.ts",
+    "dev-tunnel-if-exist": "bun ./src/dev-tunnel-if-exist.ts",
+    "ensure-tunnel": "bun ./src/ensure-tunnel.ts"
   }
 }

@@ -43,9 +43,9 @@ bun backend                  # Start Docker services
 bun migrate                  # Run database migrations
 
 # Code Quality
-bun check                    # Run linter, type-check, and dependency checks
+bun tko check                # Run all checks (lint, types, dependencies)
 bun lint:fix                 # Auto-fix linting issues
-bun types:check              # TypeScript type checking
+bun tko check types          # TypeScript type checking
 
 # Testing
 bun test:unit                # Unit tests
@@ -57,7 +57,7 @@ bun db:migrate:add <name>    # Create one-off migrations
 
 # Deployment
 bun ci                       # Full CI/CD pipeline
-bun sst:deploy:production    # Deploy to AWS production
+bun tko sst deploy production  # Deploy to AWS production
 ```
 
 ## Project Structure
@@ -75,10 +75,28 @@ takeout/
 │   ├── zero/              # Real-time sync configuration
 │   ├── server/            # Server-side code
 │   └── tauri/             # Desktop app
-├── scripts/               # Build and deployment scripts
+├── scripts/               # Organized build and deployment scripts
+│   ├── aws/              # AWS infrastructure scripts
+│   ├── check/            # Code quality checks
+│   ├── ci/               # CI/CD pipeline scripts
+│   └── ...               # Other script categories
 ├── docs/                  # Detailed guides
 ├── assets/                # Images, fonts, splash screens
 └── public/                # Static web assets
+```
+
+## Scripts
+
+The `tko` CLI provides organized access to scripts:
+
+```bash
+# List scripts in a category
+bun tko aws                  # Shows all AWS scripts
+bun tko web                  # Shows all web build scripts
+
+# Run scripts directly
+bun tko aws health           # Run AWS health check
+bun tko run check/types      # Run type checking
 ```
 
 ## Database
@@ -94,7 +112,7 @@ PostgreSQL runs in Docker:
 ### Migrations
 
 ```bash
-bun db:generate              # Generate migration from schema changes
+bun tko db generate          # Generate migration from schema changes
 bun db:migrate:add <name>    # Create custom migration
 bun migrate                  # Apply migrations locally
 bun migrate:production       # Apply migrations in production
@@ -160,7 +178,7 @@ See `.env.production.example` for complete production configuration.
 This starter kit deploys to AWS using [SST](https://sst.dev/):
 
 ```bash
-bun sst:deploy:production
+bun tko sst deploy production
 ```
 
 Infrastructure includes:
@@ -206,8 +224,8 @@ Build native macOS desktop app with Tauri:
 
 ```bash
 cd src/tauri
-bun tauri:dev    # Development
-bun tauri:build  # Production build
+bun tko tauri dev    # Development
+bun tko tauri build  # Production build
 ```
 
 ## Built With

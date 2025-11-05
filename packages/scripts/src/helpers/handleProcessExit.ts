@@ -129,73 +129,46 @@ export function handleProcessExit({
     setExitCleanupState(true)
 
     // wrap entire cleanup in a timeout to prevent hanging
-    const cleanupPromise = (async () => {
-      if (onExit) {
-        try {
-          await onExit({ signal })
-        } catch (error) {
-          console.error('Error in exit callback:', error)
-        }
+    if (onExit) {
+      try {
+        await onExit({ signal })
+      } catch (error) {
+        console.error('Error in exit callback:', error)
       }
+    }
 
-      // skip cleanup if no processes to clean up
-      if (processes.length === 0) {
-        return
-      }
+    // skip cleanup if no processes to clean up
+    if (processes.length === 0) {
+      return
+    }
 
-      await Promise.all(
-        processes.map(async (proc) => {
-          if (proc.pid) {
-            try {
-              await killProcessTree(proc.pid, signal as NodeJS.Signals)
-            } catch (error) {
-              console.error(
-                `Error during graceful shutdown of process ${proc.pid}: ${error}`
-              )
-            }
-          }
-        })
-      )
-
-      // wait a bit for processes to exit gracefully
-      await new Promise((res) => setTimeout(res, 300))
-
-      // force kill any remaining processes
-      for (const proc of processes) {
-        try {
-          if (!proc.exitCode && proc.pid) {
-            process.kill(proc.pid, 'SIGKILL')
-          }
-        } catch (err) {
-          // process already gone
-        }
-      }
-    })()
-
-    let timeoutId: NodeJS.Timeout | undefined
-    const timeoutPromise = new Promise<void>((resolve) => {
-      timeoutId = setTimeout(() => {
-        console.error('Cleanup timed out after 10s, forcing exit')
-        // force kill all tracked processes
-        for (const proc of processes) {
+    await Promise.all(
+      processes.map(async (proc) => {
+        if (proc.pid) {
           try {
-            if (proc.pid) {
-              process.kill(proc.pid, 'SIGKILL')
-            }
-          } catch (err) {
-            // process already gone
+            await killProcessTree(proc.pid, signal as NodeJS.Signals)
+          } catch (error) {
+            console.error(
+              `Error during graceful shutdown of process ${proc.pid}: ${error}`
+            )
           }
         }
-        resolve()
-      }, 10000)
-    })
+      })
+    )
 
-    await Promise.race([
-      cleanupPromise.finally(() => {
-        if (timeoutId) clearTimeout(timeoutId)
-      }),
-      timeoutPromise,
-    ])
+    // wait a bit for processes to exit gracefully
+    await new Promise((res) => setTimeout(res, 200))
+
+    // force kill any remaining processes
+    for (const proc of processes) {
+      try {
+        if (!proc.exitCode && proc.pid) {
+          await killProcessTree(proc.pid, 'SIGTERM')
+        }
+      } catch (err) {
+        // process already gone
+      }
+    }
   }
 
   const addChildProcess = (proc: ProcessType) => {

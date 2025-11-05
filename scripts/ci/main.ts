@@ -73,12 +73,21 @@ const { values } = parseArgs({
       type: 'boolean',
       default: false,
     },
+    'dry-run': {
+      type: 'boolean',
+      default: false,
+    },
     redeploy: {
       type: 'boolean',
       default: false,
     },
   },
 })
+
+// --dry-run is an alias for --skip-deploy
+if (values['dry-run']) {
+  values['skip-deploy'] = true
+}
 
 if (values.redeploy) {
   values['skip-checks'] = true
@@ -143,12 +152,12 @@ try {
       fn: async () => {
         try {
           if (values['dev']) {
-            void run(`bun ci:frontend-dev`, {
+            void run(`bun tko ci frontend-dev`, {
               detached: true,
             })
             await sleep(4000)
           } else if (!values['skip-web-build']) {
-            await run(`bun web:build`, {
+            await run(`bun tko web build`, {
               prefix: 'web-build',
               timeout: time.ms.minutes(5),
               timing: 'web:build',
@@ -168,7 +177,7 @@ try {
       name: 'build-migrations',
       condition: () => !values['skip-build'],
       fn: async () => {
-        await run(`bun migrate:build`, {
+        await run(`bun tko migrate build`, {
           prefix: 'migrations',
           timeout: time.ms.minutes(2),
           timing: 'migrate:build',
@@ -242,7 +251,7 @@ async function setupBackend() {
     await run(`docker compose down`, {
       env: await getTestEnv(),
     })
-    void run(`bun ci:backend`, {
+    void run(`bun tko ci backend`, {
       detached: true,
     })
     await waitForBackend()
@@ -343,7 +352,7 @@ async function runIntegrationTests() {
   try {
     await waitForRun('playwright install')
 
-    void run(`bun ci:frontend-prod`, {
+    void run(`bun tko ci frontend-prod`, {
       detached: true,
     })
 
@@ -378,7 +387,7 @@ async function deployProduction() {
   }
 
   try {
-    await run('bun sst:deploy:production', {
+    await run('bun tko sst deploy production', {
       prefix: 'deploy',
       timeout: time.ms.minutes(10),
       timing: 'sst deploy',
@@ -549,7 +558,7 @@ async function prebuildDockerImage() {
   const fullImageUri = `${imageUri}:${imageTag}`
 
   console.info(`Building Docker image: ${fullImageUri}...`)
-  await run(`bun web:build-docker -t ${fullImageUri} --load .`, {
+  await run(`bun tko web build-docker -t ${fullImageUri} --load .`, {
     prefix: 'docker-build',
     timeout: time.ms.minutes(10),
   })

@@ -9,6 +9,7 @@ import { defineCommand, runMain } from 'citty'
 import { checkCommand } from './commands/check'
 import { docsCommand } from './commands/docs'
 import { onboardCommand } from './commands/onboard'
+import { runCommand } from './commands/run'
 import { scriptCommand } from './commands/script'
 import { updateDocsCommand } from './commands/update-docs'
 import { updateScriptsCommand } from './commands/update-scripts'
@@ -23,6 +24,7 @@ const main = defineCommand({
     onboard: onboardCommand,
     check: checkCommand,
     docs: docsCommand,
+    run: runCommand,
     script: scriptCommand,
     'update-docs': updateDocsCommand,
     'update-scripts': updateScriptsCommand,

@@ -6,9 +6,9 @@ import { $ } from 'bun'
 
 // Build packages in dependency order if needed
 const packages = [
-  'helpers',   // no deps
-  'postgres',  // needs helpers
-  'takeout',   // needs scripts (but scripts has no build)
+  'helpers', // no deps
+  'postgres', // needs helpers
+  'takeout', // needs scripts (but scripts has no build)
 ]
 
 for (const pkg of packages) {

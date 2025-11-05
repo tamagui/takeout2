@@ -3,7 +3,6 @@
   "version": "0.0.23",
   "description": "CLI tools for Takeout starter kit - interactive onboarding and project setup",
   "type": "module",
-  "private": true,
   "sideEffects": false,
   "source": "src/index.ts",
   "main": "dist/cjs",
@@ -59,17 +58,7 @@
     "@types/node": "24.0.3",
     "bun-types": "latest"
   },
-  "keywords": [
-    "cli",
-    "starter-kit",
-    "onboarding",
-    "setup",
-    "takeout"
-  ],
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/natew/chat",
-    "directory": "packages/takeout"
+  "publishConfig": {
+    "access": "public"
   }
 }

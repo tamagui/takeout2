@@ -1,5 +1,4 @@
-import { globalEffect } from '@vxrn/helpers'
-import { clearIndexedDB } from '~/helpers/storage/clearAllDataAndStorages'
+import { clearIndexedDB, globalEffect } from '@vxrn/helpers'
 import { dialogConfirm } from '~/interface/dialogs/actions'
 import { showNotificationToast } from '~/interface/notification/NotificationToast'
 import { zeroEvents } from '~/zero/client'

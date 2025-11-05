@@ -1,6 +1,6 @@
 {
   "name": "@vxrn/better-auth-utils",
-  "version": "0.0.24",
+  "version": "0.0.25",
   "description": "Better auth utilities and client for React/React Native applications",
   "sideEffects": false,
   "type": "module",

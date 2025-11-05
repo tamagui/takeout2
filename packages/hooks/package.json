@@ -1,6 +1,6 @@
 {
   "name": "@vxrn/hooks",
-  "version": "0.0.24",
+  "version": "0.0.25",
   "sideEffects": false,
   "source": "src/index.ts",
   "type": "module",

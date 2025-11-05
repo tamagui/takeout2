@@ -41,7 +41,7 @@ for (const pkg of packagesWithCLI) {
     try {
       symlinkSync(sourcePath, binPath)
     } catch (e) {
-      console.warn(`⚠️ Could not create ${pkg.name} symlink:`, e.message)
+      console.warn(`⚠️ Could not create ${pkg.name} symlink:`, e instanceof Error ? e.message : String(e))
     }
   }
 }

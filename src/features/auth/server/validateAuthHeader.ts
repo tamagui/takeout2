@@ -1,3 +1,4 @@
+import type { AuthData } from 'over-zero'
 import type { JWTPayload } from '../types'
 import { InvalidTokenError, validateToken } from './validateToken'
 
@@ -21,4 +22,16 @@ export async function getAuthHeader(req: Request) {
     }
     throw err
   }
+}
+
+export async function getAuthDataFromRequest(request: Request): Promise<AuthData | null> {
+  const auth = await getAuthHeader(request)
+
+  return auth
+    ? {
+        email: auth.email,
+        id: auth.id,
+        role: auth.role === 'admin' ? 'admin' : undefined,
+      }
+    : null
 }

@@ -274,6 +274,7 @@ export default $config({
       ZERO_REPLICA_FILE: 'sync-replica.db',
       ZERO_AUTH_JWKS_URL: $interpolate`${webApp.url}api/auth/jwks`,
       ZERO_PUSH_URL: $interpolate`${webApp.url}api/zero/push`,
+      ZERO_GET_QUERIES_URL: $interpolate`${webApp.url}api/zero/pull`,
       // these two are X max mutations per Y ms, not too aggressive but enough to avoid more DDoS stuff:
       ZERO_PER_USER_MUTATION_LIMIT_MAX: '20',
       ZERO_PER_USER_MUTATION_LIMIT_WINDOW_MS: '10000',

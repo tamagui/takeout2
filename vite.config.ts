@@ -12,6 +12,7 @@ export default {
 
   ssr: {
     noExternal: ['better-auth-harmony', 'validator', 'react-native'],
+    external: ['over-zero'],
   },
 
   esbuild: {

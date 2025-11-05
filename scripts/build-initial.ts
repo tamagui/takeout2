@@ -42,8 +42,22 @@ if (!existsSync(binDir)) {
 for (const pkg of packagesWithCLI) {
   const binPath = join(binDir, pkg.name)
   const sourcePath = join(process.cwd(), 'packages', pkg.name, pkg.cliFile)
-  symlinkSync(sourcePath, binPath)
+  symlinkTo(sourcePath, binPath)
+
   if (pkg.alias) {
-    symlinkSync(join(binDir, pkg.alias), binPath)
+    const aliasPath = join(binDir, pkg.alias)
+    // create alias symlink pointing to the source
+    symlinkTo(sourcePath, aliasPath)
   }
+}
+
+// helper function to create symlink with existence check
+function symlinkTo(source: string, target: string): void {
+  if (existsSync(target)) {
+    console.info(`✓ Symlink already exists: ${target}`)
+    return
+  }
+
+  symlinkSync(source, target)
+  console.info(`→ Created symlink: ${source} ⇢ ${target}`)
 }

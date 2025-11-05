@@ -8,7 +8,7 @@
 import { defineCommand, runMain } from 'citty'
 import { existsSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
-import { checkCommand } from './commands/check'
+import { doctorCommand } from './commands/doctor'
 import { docsCommand } from './commands/docs'
 import { envSetupCommand } from './commands/env-setup'
 import { onboardCommand } from './commands/onboard'
@@ -86,7 +86,7 @@ const main = defineCommand({
   },
   subCommands: {
     onboard: onboardCommand,
-    check: checkCommand,
+    check: doctorCommand,
     docs: docsCommand,
     'env:setup': envSetupCommand,
     run: runCommand,

@@ -1,77 +1,66 @@
-import { Tabs } from 'one'
-import { Platform, Pressable } from 'react-native'
-import { CreateSheet } from '~/features/main-tabs/CreateSheet'
+import { Platform } from 'react-native'
 import { CreateTabIcon } from '~/features/main-tabs/CreateTabIcon'
 import { ProfileTabIcon } from '~/features/main-tabs/ProfileTabIcon'
-import { scrollToTopEmitter } from '~/features/main-tabs/scrollToTopEmitter'
 import { useTabIconSize } from '~/features/main-tabs/useTabIconSize'
 import { HouseIcon } from '~/interface/icons/phosphor/HouseIcon'
-import { PostActionSheet } from '~/interface/sheet/PostActionSheet'
 // import { PostOwnerActionSheet } from '~/interface/sheet/PostOwnerActionSheet'
+
+import { createNativeBottomTabNavigator } from '@bottom-tabs/react-navigation'
+import { withLayoutContext } from 'one'
+import { CreateSheet } from '~/features/main-tabs/CreateSheet'
+import { PostActionSheet } from '~/interface/sheet/PostActionSheet'
 import { postActionSheetRef } from '~/interface/sheet/postActionSheetHelper'
-import { HapticTab } from '~/interface/tabs/HapticTab'
-import { TabBarBackground } from '~/interface/tabs/TabBarBackground'
+
+const NativeTabsNavigator = createNativeBottomTabNavigator().Navigator
+
+export const NativeTabs = withLayoutContext(NativeTabsNavigator)
 
 export default function TabsLayout() {
   const { smallerIconSize } = useTabIconSize()
 
   return (
     <>
-      <Tabs
+      <NativeTabs
+        hapticFeedbackEnabled
+        labeled={false}
+        scrollEdgeAppearance="opaque"
         screenOptions={{
-          tabBarActiveTintColor: '#fff',
-          tabBarInactiveTintColor: '#B4B4B4',
-          headerShown: false,
-          // @ts-expect-error its ok
-          tabBarButton: HapticTab,
-          tabBarBackground: TabBarBackground,
-          tabBarShowLabel: false,
-          tabBarStyle: Platform.select({
-            ios: {
-              // Use a transparent background on iOS to show the blur effect
-              position: 'absolute',
-              borderTopWidth: 0.5,
-              borderTopColor: 'rgba(255,255,255,0.2)',
-              borderTopStyle: 'solid',
-            },
-            default: {},
-          }),
-          tabBarIconStyle: {
-            marginTop: 10,
-          },
+          tabBarActiveTintColor: '#FFFFFF',
         }}
       >
-        <Tabs.Screen
+        <NativeTabs.Screen
           name="home"
           options={{
-            tabBarButton: (props: any) => (
-              <Pressable
-                {...props}
-                onPressOut={() => {
-                  scrollToTopEmitter.emit('home')
-                }}
-              />
-            ),
-            tabBarIcon: ({ color }: { color: string }) => (
-              <HouseIcon size={smallerIconSize} fill={color} />
-            ),
+            tabBarIcon: ({ color }: { color: string }) =>
+              Platform.select({
+                ios: { sfSymbol: 'house' } as any,
+                android: <HouseIcon size={smallerIconSize} fill={color} />,
+              }),
           }}
         />
-        <Tabs.Screen
+
+        <NativeTabs.Screen
           name="plus"
           options={{
-            tabBarButton: () => <CreateTabIcon />,
+            tabBarIcon: () =>
+              Platform.select({
+                ios: { sfSymbol: 'plus' } as any,
+                android: <CreateTabIcon />,
+              }),
           }}
         />
-        <Tabs.Screen
+        <NativeTabs.Screen
           name="profile"
           options={{
-            tabBarIcon: () => <ProfileTabIcon />,
+            tabBarIcon: () =>
+              Platform.select({
+                ios: { sfSymbol: 'person' } as any,
+                android: <ProfileTabIcon />,
+              }),
           }}
         />
-      </Tabs>
+      </NativeTabs>
       <PostActionSheet ref={postActionSheetRef} />
-      {/* <PostOwnerActionSheet ref={postOwnerActionSheetRef} /> */}
       <CreateSheet />
     </>
   )

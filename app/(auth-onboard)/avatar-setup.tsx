@@ -158,14 +158,12 @@ export const AvatarSetupPage = () => {
               You can always change your avatar later.
             </SizableText>
             <ButtonSimple
+              glass
               size="large"
               onPress={goToNextStep}
               disabled={!localImageUri || isUploading}
-              theme={localImageUri ? 'accent' : undefined}
             >
-              <ButtonSimple.Text>
-                {isUploading ? 'Uploading...' : 'Next'}
-              </ButtonSimple.Text>
+              {isUploading ? 'Uploading...' : 'Next'}
             </ButtonSimple>
           </YStack>
         }
@@ -203,12 +201,11 @@ export const AvatarSetupPage = () => {
                 borderColor="$color5"
                 position="relative"
               >
-                {localImageUri ? (
-                  <Image src={localImageUri} width={220} height={220} />
-                ) : (
-                  <Image src={images.avatarContainer} width={220} height={220} />
-                )}
-
+                <Image
+                  src={localImageUri ? localImageUri : images.avatarContainer}
+                  width={220}
+                  height={220}
+                />
                 {isUploading && (
                   <YStack
                     position="absolute"

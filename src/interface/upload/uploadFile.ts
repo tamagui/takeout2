@@ -1,4 +1,4 @@
-import { AbortError, createGlobalContext, useAsyncEffect } from '@vxrn/helpers'
+import { AbortError, createGlobalContext, isWeb, useAsyncEffect } from '@vxrn/helpers'
 import type React from 'react'
 import { useContext, useEffect, useState } from 'react'
 import { useEvent } from 'tamagui'
@@ -121,7 +121,6 @@ export const useUploadFiles = ({
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || [])
-
     if (!files.length) {
       setUploads([])
       setUploadsToProcess([])
@@ -130,6 +129,8 @@ export const useUploadFiles = ({
 
     function getUpload(upload: File): FileUpload {
       const validation = validateFile(upload)
+      // check if it's a native pseudo-file with uri property
+      const isNativeFile = !isWeb && typeof (upload as any).uri === 'string'
       return {
         uid: getFileId(upload),
         name: upload.name,
@@ -142,7 +143,9 @@ export const useUploadFiles = ({
               status: 'uploading' as const,
               preview:
                 isImageFile(upload.name) || isVideoFile(upload.name)
-                  ? URL.createObjectURL(upload)
+                  ? isNativeFile
+                    ? (upload as any).uri // use uri for native
+                    : URL.createObjectURL(upload) // use blob url for web
                   : undefined,
             }
           : {

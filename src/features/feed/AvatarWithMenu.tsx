@@ -1,8 +1,11 @@
-import { Image } from '~/interface/image/Image'
-import { router } from 'one'
+import { useRouter } from 'one'
 import { memo } from 'react'
 import { View } from 'tamagui'
-import { Pressable } from '~/interface/buttons/Pressable'
+import * as DropdownMenu from 'zeego/dropdown-menu'
+import { Avatar } from '~/interface/avatars/Avatar'
+import { HeartIcon } from '~/interface/icons/phosphor/HeartIcon'
+import { UserIcon } from '~/interface/icons/phosphor/UserIcon'
+import { Image } from '~/interface/image/Image'
 
 interface AvatarWithMenuProps {
   avatarUrl?: string
@@ -17,31 +20,62 @@ export const AvatarWithMenu = memo(
   ({
     avatarUrl,
     userId,
+    username,
     isFollowing = false,
     isOwnProfile = false,
     onFollowToggle,
   }: AvatarWithMenuProps) => {
+    const router = useRouter()
+
     const handleViewProfile = () => {
-      if (isOwnProfile) {
-        router.push('/profile')
-      } else {
-        router.push(`/home/profile/${userId}`)
-      }
+      router.push({
+        pathname: '/profile/[userId]',
+        params: { userId },
+      })
     }
 
     return (
-      <View position="relative">
-        <Pressable
-          onPress={handleViewProfile}
-          cursor="pointer"
-          pressStyle={{ opacity: 0.8 }}
-        >
-          <Image
-            src={avatarUrl || ''}
-            style={{ width: 32, height: 32, borderRadius: 100 }}
-          />
-        </Pressable>
-      </View>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger asChild>
+          <View cursor="pointer" pressStyle={{ opacity: 0.8 }} position="relative">
+            <Avatar image={avatarUrl} size={32} />
+          </View>
+        </DropdownMenu.Trigger>
+
+        <DropdownMenu.Content>
+          {!isOwnProfile && (
+            <>
+              <DropdownMenu.Item key="follow" onSelect={onFollowToggle}>
+                <DropdownMenu.ItemIcon
+                  ios={{
+                    name: isFollowing ? 'heart.fill' : 'heart',
+                    pointSize: 18,
+                  }}
+                >
+                  <HeartIcon size={16} />
+                </DropdownMenu.ItemIcon>
+                <DropdownMenu.ItemTitle>
+                  {isFollowing ? 'Unfollow' : 'Follow'}
+                </DropdownMenu.ItemTitle>
+              </DropdownMenu.Item>
+
+              <DropdownMenu.Separator />
+            </>
+          )}
+
+          <DropdownMenu.Item key="view-profile" onSelect={handleViewProfile}>
+            <DropdownMenu.ItemIcon
+              ios={{
+                name: 'person.crop.circle',
+                pointSize: 18,
+              }}
+            >
+              <UserIcon size={16} />
+            </DropdownMenu.ItemIcon>
+            <DropdownMenu.ItemTitle>View Profile</DropdownMenu.ItemTitle>
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
     )
   }
 )

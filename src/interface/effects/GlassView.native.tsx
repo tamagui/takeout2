@@ -1,14 +1,8 @@
 import { BlurView } from 'expo-blur'
-import * as Device from 'expo-device'
-import { GlassView as ExpoGlassView } from 'expo-glass-effect'
+import { GlassView as ExpoGlassView, isLiquidGlassAvailable } from 'expo-glass-effect'
 import { memo } from 'react'
 import { View } from 'tamagui'
 import type { GlassViewProps } from './GlassViewProps'
-
-// ios 26+ supports native glass effect
-const isIOS26Plus = Device.osVersion
-  ? Number.parseInt(Device.osVersion.split('.')[0] ?? '0', 10) >= 26
-  : false
 
 export const GlassView = memo(
   ({
@@ -27,7 +21,7 @@ export const GlassView = memo(
     isInteractive = false,
   }: GlassViewProps) => {
     // use expo-glass-effect for iOS 26+
-    if (isIOS26Plus && !isFallback) {
+    if (isLiquidGlassAvailable() && !isFallback) {
       return (
         <ExpoGlassView
           glassEffectStyle={glassEffectStyle}

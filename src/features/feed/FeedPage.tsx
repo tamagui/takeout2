@@ -1,19 +1,61 @@
-import { memo, useCallback, useEffect, useRef } from 'react'
-import { FlatList, RefreshControl } from 'react-native'
-import { AnimatePresence, SizableText, Spinner, View, YStack } from 'tamagui'
+import { LegendList, type LegendListRef } from '@legendapp/list'
+
+import { isAndroid, useEmitter } from '@vxrn/helpers'
+import { memo, useCallback, useRef, useState } from 'react'
+import { RefreshControl } from 'react-native'
+import Animated, {
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useEmitter } from '@vxrn/helpers'
-import { PageHeader } from '~/interface/pages/PageHeaderSimple'
+import { SizableText, Spinner, View, YStack } from 'tamagui'
 import { scrollToTopEmitter } from '../main-tabs/scrollToTopEmitter'
+import { mockPosts } from './mockData'
 import { PostCard } from './PostCard'
 import { usePostsPaginated } from './usePosts'
+import { ButtonGlassCircle } from '~/interface/buttons/ButtonGlassCircle'
+import { ArrowUpIcon } from '~/interface/icons/phosphor/ArrowUpIcon'
+import { runOnJS, scheduleOnRN } from 'react-native-worklets'
+
+const AnimatedLegendList = Animated.createAnimatedComponent(LegendList)
+
+const USE_MOCK_DATA = process.env.NODE_ENV === 'development'
 
 export const FeedPage = memo(() => {
   const safeAreaInsets = useSafeAreaInsets()
-  const listRef = useRef<FlatList<any>>(null)
+  const listRef = useRef<LegendListRef>(null)
   const { posts, loadMore, refresh, isLoading, hasMore } = usePostsPaginated()
+  const [showScrollToBottom, setShowScrollToBottom] = useState<boolean>(false)
+  const displayPosts = USE_MOCK_DATA ? mockPosts : posts
 
-  // Handle scroll to top
+  const scrollY = useSharedValue<number>(0)
+  const previousScrollY = useSharedValue<number>(0)
+  const headerHeight = 60 + safeAreaInsets.top
+  const headerTranslateY = useSharedValue<number>(0)
+
+  // scroll handler with animated scroll handler
+  const scrollHandler = useAnimatedScrollHandler((event) => {
+    scrollY.value = event.contentOffset.y
+  })
+  const scrollToTopStyle = useAnimatedStyle(() => {
+    const showButton = scrollY.value > 300
+    return {
+      opacity: withSpring(showButton ? 1 : 0),
+      transform: [
+        {
+          scale: withSpring(showButton ? 1 : 0.5),
+        },
+        {
+          translateY: withSpring(showButton ? 0 : 20),
+        },
+      ],
+      pointerEvents: showButton ? 'auto' : 'none',
+    }
+  })
+
+  // handle scroll to top
   useEmitter(scrollToTopEmitter, (tab) => {
     if (tab === 'home') {
       listRef.current?.scrollToOffset({ offset: 0, animated: true })
@@ -29,13 +71,13 @@ export const FeedPage = memo(() => {
   const renderEmpty = useCallback(() => {
     if (isLoading) {
       return (
-        <YStack flex={1} items="center" justify="center" p="$4">
+        <YStack flex={1} items="center" justify="center" p="$4" minH={400}>
           <Spinner size="large" />
         </YStack>
       )
     }
     return (
-      <YStack flex={1} items="center" justify="center" p="$4">
+      <YStack flex={1} items="center" justify="center" p="$4" minH={400}>
         <SizableText size="$5" color="$color10">
           No posts yet
         </SizableText>
@@ -56,23 +98,44 @@ export const FeedPage = memo(() => {
   }, [hasMore, posts.length])
 
   return (
-    <YStack flex={1} bg="$background">
-      <PageHeader title="Home" />
-      <FlatList
+    <View style={{ flex: 1 }}>
+      <AnimatedLegendList
         ref={listRef}
-        data={posts}
+        data={displayPosts}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         ListEmptyComponent={renderEmpty}
         ListFooterComponent={renderFooter}
         onEndReached={loadMore}
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
         onEndReachedThreshold={0.5}
         refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refresh} />}
         contentContainerStyle={{
           paddingBottom: safeAreaInsets.bottom + 100,
         }}
         showsVerticalScrollIndicator={false}
+        contentInsetAdjustmentBehavior="automatic"
       />
-    </YStack>
+      {/* Scroll to top button */}
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            bottom: isAndroid ? 33 : 66 + safeAreaInsets.bottom,
+            right: 16,
+            zIndex: 1000,
+          },
+          scrollToTopStyle,
+        ]}
+      >
+        <ButtonGlassCircle
+          size={42}
+          onPress={() => listRef.current?.scrollToOffset({ offset: 0, animated: true })}
+        >
+          <ArrowUpIcon size={20} color="white" />
+        </ButtonGlassCircle>
+      </Animated.View>
+    </View>
   )
 })

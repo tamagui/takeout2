@@ -238,7 +238,7 @@ export const PlusPage = memo(() => {
           onChange={handleWebFileChange}
         />
       )}
-      //Todo: Hide it atm because content doesn't show on first render on native
+      {/* Todo: Hide it atm because content doesn't show on first render on native */}
       {/* <Adapt when="maxMD" platform="touch">
         <Sheet
           animation="300ms"
@@ -266,7 +266,6 @@ export const PlusPage = memo(() => {
           enterStyle={{ opacity: 0 }}
           exitStyle={{ opacity: 0 }}
         />
-
         <Dialog.Content
           bordered
           elevate

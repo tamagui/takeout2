@@ -2,8 +2,9 @@ import { isIos } from '@vxrn/helpers'
 import type { ReactNode } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { View } from 'tamagui'
-import { GlassView } from '../effects/GlassView'
+// import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect'
 import { Pressable } from './Pressable'
+import { GlassView } from '../effects/GlassView'
 
 interface ButtonGlassCircleProps {
   onPress?: () => void
@@ -15,28 +16,28 @@ interface ButtonGlassCircleProps {
 export function ButtonGlassCircle({
   onPress,
   size = 40,
-  borderRadius = 16,
+  borderRadius = 100,
   children,
 }: ButtonGlassCircleProps) {
   return (
     <GlassView
-      borderRadius={borderRadius || size / 2}
+      containerStyle={{
+        width: size,
+        height: size,
+      }}
+      borderRadius={borderRadius}
       glassEffectStyle="clear"
-      containerStyle={{ width: size, height: size }}
     >
-      <Pressable
+      <View
         width={size}
         height={size}
         items="center"
         justify="center"
-        bg="$background"
-        rounded="$10"
-        borderWidth={0.5}
-        borderColor="$borderColor"
+        rounded={borderRadius}
         onPress={onPress}
       >
         {children}
-      </Pressable>
+      </View>
     </GlassView>
   )
 }

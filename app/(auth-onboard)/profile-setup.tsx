@@ -1,6 +1,7 @@
 import { useParams } from 'one'
 import { useEffect, useRef, useState } from 'react'
 import { Spinner, useDebounceValue, XStack, YStack } from 'tamagui'
+import { userByUsername } from '~/data/queries/user'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { OnboardingStepPageLayout } from '~/features/user/ui/OnboardingStepPageLayout'
 import { useUser } from '~/features/user/useUser'
@@ -25,7 +26,7 @@ export const ProfileSetupPage = () => {
   const { from } = useParams()
   const { user, update } = useUser()
   const [username, setUsername] = useState<string>('')
-  const [isValidating, setIsValidating] = useState(false)
+  const [isValidating, setIsValidating] = useState<boolean>(false)
   // const [name, setName] = useState<string>('')
   const nameInputRef = useRef<Input>(null)
 
@@ -39,10 +40,9 @@ export const ProfileSetupPage = () => {
 
   // Query to check if username exists once debounced
   const [existingUser, availabilityStatus] = useQuery(
-    zero.query.userPublic.where('username', debouncedUsername).one(),
-    {
-      enabled: isUsernameValid,
-    }
+    userByUsername,
+    { username: debouncedUsername },
+    { enabled: isUsernameValid }
   )
 
   // Determine checking and availability states

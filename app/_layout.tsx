@@ -1,4 +1,5 @@
 import { Slot } from 'one'
+import type { ReactNode } from 'react'
 import './root.css'
 
 import { Stack } from 'one'
@@ -14,6 +15,22 @@ import { DragDropFile } from '~/interface/upload/DragDropFile'
 import { PlatformSpecificProvider } from '~/providers/PlatformSpecificProvider'
 import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
 import { ProvideZero } from '~/zero/client'
+
+function Providers({ children }: { children: ReactNode }) {
+  return (
+    <ProvideZero>
+      <TamaguiRootProvider>
+        <SafeAreaProvider>
+          <ToastProvider>
+            <NotificationProvider>
+              <PlatformSpecificProvider>{children}</PlatformSpecificProvider>
+            </NotificationProvider>
+          </ToastProvider>
+        </SafeAreaProvider>
+      </TamaguiRootProvider>
+    </ProvideZero>
+  )
+}
 
 export function Layout() {
   if (isWeb) {
@@ -39,42 +56,34 @@ export function Layout() {
 
         <body>
           <div style={{ display: 'contents' }} data-testid="app-container">
-            <ProvideZero>
-              <TamaguiRootProvider>
-                <SafeAreaProvider>
-                  <ToastProvider>
-                    <NotificationProvider>
-                      <DragDropFile>
-                        <PlatformSpecificProvider>
-                          {isWeb ? (
-                            <Slot />
-                          ) : (
-                            <Stack
-                              screenOptions={{
-                                headerShown: false,
-                                animation: 'slide_from_bottom',
-                              }}
-                              initialRouteName={ROOT_MAIN_ROUTE_NAME}
-                            >
-                              <Stack.Screen name={ROOT_MAIN_ROUTE_NAME} />
-                              <Stack.Screen
-                                name={ROOT_AUTH_ONBOARD_ROUTE_NAME}
-                                options={{
-                                  gestureEnabled: false,
-                                }}
-                              />
-                            </Stack>
-                          )}
-                        </PlatformSpecificProvider>
-                      </DragDropFile>
-                    </NotificationProvider>
-                  </ToastProvider>
-                </SafeAreaProvider>
-              </TamaguiRootProvider>
-            </ProvideZero>
+            <Providers>
+              <DragDropFile>
+                <Slot />
+              </DragDropFile>
+            </Providers>
           </div>
         </body>
       </html>
     )
   }
+
+  return (
+    <Providers>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          animation: 'slide_from_bottom',
+        }}
+        initialRouteName={ROOT_MAIN_ROUTE_NAME}
+      >
+        <Stack.Screen name={ROOT_MAIN_ROUTE_NAME} />
+        <Stack.Screen
+          name={ROOT_AUTH_ONBOARD_ROUTE_NAME}
+          options={{
+            gestureEnabled: false,
+          }}
+        />
+      </Stack>
+    </Providers>
+  )
 }

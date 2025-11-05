@@ -5,12 +5,15 @@ import { CreateTabIcon } from '~/features/main-tabs/CreateTabIcon'
 import { ProfileTabIcon } from '~/features/main-tabs/ProfileTabIcon'
 import { useTabIconSize } from '~/features/main-tabs/useTabIconSize'
 import { HouseIcon } from '~/interface/icons/phosphor/HouseIcon'
+import { MagnifyingGlassIcon } from '~/interface/icons/phosphor/MagnifyingGlassIcon'
+import { PostActionSheet } from '~/interface/sheet/PostActionSheet'
+import { postActionSheetRef } from '~/interface/sheet/postActionSheetHelper'
 
 const NativeTabsNavigator = createNativeBottomTabNavigator().Navigator
 
 export const NativeTabs = withLayoutContext(NativeTabsNavigator)
 
-export function TabsLayout() {
+export default function TabsLayout() {
   const { smallerIconSize } = useTabIconSize()
 
   return (
@@ -54,7 +57,20 @@ export function TabsLayout() {
               }),
           }}
         />
+        <NativeTabs.Screen
+          name="search"
+          options={{
+            role: 'search',
+            tabBarIcon: () =>
+              Platform.select({
+                ios: { sfSymbol: 'magnifyingglass' } as any,
+                android: <MagnifyingGlassIcon />,
+              }),
+          }}
+        />
       </NativeTabs>
+
+      <PostActionSheet ref={postActionSheetRef} />
     </>
   )
 }

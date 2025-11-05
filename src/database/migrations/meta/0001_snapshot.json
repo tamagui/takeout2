@@ -1,5 +1,5 @@
 {
-  "id": "e3a36d90-1f3f-4112-ab65-cd71086b400f",
+  "id": "af336d5c-8101-4a3f-b63f-4f839fd3bb7d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -451,9 +451,10 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "integer",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {
@@ -559,19 +560,20 @@
         },
         "lastActiveAt": {
           "name": "lastActiveAt",
-          "type": "integer",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "integer",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "now()"
         },
         "updatedAt": {
           "name": "updatedAt",
-          "type": "integer",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         }
@@ -645,7 +647,7 @@
         },
         "usedAt": {
           "name": "usedAt",
-          "type": "integer",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
@@ -657,13 +659,14 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "integer",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "now()"
         },
         "expiresAt": {
           "name": "expiresAt",
-          "type": "integer",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
@@ -758,13 +761,14 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "integer",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "now()"
         },
         "updatedAt": {
           "name": "updatedAt",
-          "type": "integer",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         }
@@ -863,15 +867,16 @@
         },
         "reviewedAt": {
           "name": "reviewedAt",
-          "type": "integer",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "integer",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {
@@ -973,9 +978,10 @@
         },
         "joinedAt": {
           "name": "joinedAt",
-          "type": "bigint",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "now()"
         },
         "hasOnboarded": {
           "name": "hasOnboarded",
@@ -1054,7 +1060,7 @@
         },
         "lastNotificationReadAt": {
           "name": "lastNotificationReadAt",
-          "type": "integer",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         }

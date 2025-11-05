@@ -71,7 +71,7 @@ CREATE TABLE "block" (
 	"id" text PRIMARY KEY NOT NULL,
 	"blockerId" text NOT NULL,
 	"blockedId" text NOT NULL,
-	"createdAt" integer NOT NULL,
+	"createdAt" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "block_blocker_blocked_unique" UNIQUE("blockerId","blockedId")
 );
 --> statement-breakpoint
@@ -84,9 +84,9 @@ CREATE TABLE "device" (
 	"appVersion" text,
 	"pushToken" text,
 	"pushEnabled" boolean DEFAULT false NOT NULL,
-	"lastActiveAt" integer,
-	"createdAt" integer NOT NULL,
-	"updatedAt" integer
+	"lastActiveAt" timestamp,
+	"createdAt" timestamp DEFAULT now() NOT NULL,
+	"updatedAt" timestamp
 );
 --> statement-breakpoint
 CREATE TABLE "invite" (
@@ -94,10 +94,10 @@ CREATE TABLE "invite" (
 	"code" text NOT NULL,
 	"email" text,
 	"usedBy" text,
-	"usedAt" integer,
+	"usedAt" timestamp,
 	"createdBy" text,
-	"createdAt" integer NOT NULL,
-	"expiresAt" integer,
+	"createdAt" timestamp DEFAULT now() NOT NULL,
+	"expiresAt" timestamp,
 	"maxUses" integer DEFAULT 1 NOT NULL,
 	"useCount" integer DEFAULT 0 NOT NULL,
 	CONSTRAINT "invite_code_unique" UNIQUE("code"),
@@ -110,8 +110,8 @@ CREATE TABLE "post" (
 	"image" text NOT NULL,
 	"caption" text,
 	"hiddenByAdmin" boolean DEFAULT false NOT NULL,
-	"createdAt" integer NOT NULL,
-	"updatedAt" integer
+	"createdAt" timestamp DEFAULT now() NOT NULL,
+	"updatedAt" timestamp
 );
 --> statement-breakpoint
 CREATE TABLE "report" (
@@ -123,8 +123,8 @@ CREATE TABLE "report" (
 	"details" text,
 	"status" text DEFAULT 'pending' NOT NULL,
 	"reviewedBy" text,
-	"reviewedAt" integer,
-	"createdAt" integer NOT NULL
+	"reviewedAt" timestamp,
+	"createdAt" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "userPublic" (
@@ -132,7 +132,7 @@ CREATE TABLE "userPublic" (
 	"name" text,
 	"username" text,
 	"image" text,
-	"joinedAt" bigint NOT NULL,
+	"joinedAt" timestamp DEFAULT now() NOT NULL,
 	"hasOnboarded" boolean DEFAULT false NOT NULL,
 	"whitelisted" boolean DEFAULT false NOT NULL,
 	"migrationVersion" integer DEFAULT 0 NOT NULL,
@@ -145,7 +145,7 @@ CREATE TABLE "userState" (
 	"locale" text DEFAULT 'en' NOT NULL,
 	"timeZone" text DEFAULT 'UTC' NOT NULL,
 	"onlineStatus" text DEFAULT 'online' NOT NULL,
-	"lastNotificationReadAt" integer
+	"lastNotificationReadAt" timestamp
 );
 --> statement-breakpoint
 ALTER TABLE "account" ADD CONSTRAINT "account_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

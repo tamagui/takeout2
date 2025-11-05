@@ -1,15 +1,10 @@
+import { createNativeBottomTabNavigator } from '@bottom-tabs/react-navigation'
+import { withLayoutContext } from 'one'
 import { Platform } from 'react-native'
 import { CreateTabIcon } from '~/features/main-tabs/CreateTabIcon'
 import { ProfileTabIcon } from '~/features/main-tabs/ProfileTabIcon'
 import { useTabIconSize } from '~/features/main-tabs/useTabIconSize'
 import { HouseIcon } from '~/interface/icons/phosphor/HouseIcon'
-// import { PostOwnerActionSheet } from '~/interface/sheet/PostOwnerActionSheet'
-
-import { createNativeBottomTabNavigator } from '@bottom-tabs/react-navigation'
-import { withLayoutContext } from 'one'
-import { CreateSheet } from '~/features/main-tabs/CreateSheet'
-import { PostActionSheet } from '~/interface/sheet/PostActionSheet'
-import { postActionSheetRef } from '~/interface/sheet/postActionSheetHelper'
 
 const NativeTabsNavigator = createNativeBottomTabNavigator().Navigator
 
@@ -60,8 +55,6 @@ export default function TabsLayout() {
           }}
         />
       </NativeTabs>
-      <PostActionSheet ref={postActionSheetRef} />
-      <CreateSheet />
     </>
   )
 }

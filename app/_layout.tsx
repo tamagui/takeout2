@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import './root.css'
 
 import { Stack } from 'one'
+import { KeyboardProvider } from 'react-native-keyboard-controller'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { isWeb } from 'tamagui'
 import {
@@ -68,22 +69,24 @@ export function Layout() {
   }
 
   return (
-    <Providers>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          animation: 'slide_from_bottom',
-        }}
-        initialRouteName={ROOT_MAIN_ROUTE_NAME}
-      >
-        <Stack.Screen name={ROOT_MAIN_ROUTE_NAME} />
-        <Stack.Screen
-          name={ROOT_AUTH_ONBOARD_ROUTE_NAME}
-          options={{
-            gestureEnabled: false,
+    <KeyboardProvider>
+      <Providers>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            animation: 'slide_from_bottom',
           }}
-        />
-      </Stack>
-    </Providers>
+          initialRouteName={ROOT_MAIN_ROUTE_NAME}
+        >
+          <Stack.Screen name={ROOT_MAIN_ROUTE_NAME} />
+          <Stack.Screen
+            name={ROOT_AUTH_ONBOARD_ROUTE_NAME}
+            options={{
+              gestureEnabled: false,
+            }}
+          />
+        </Stack>
+      </Providers>
+    </KeyboardProvider>
   )
 }

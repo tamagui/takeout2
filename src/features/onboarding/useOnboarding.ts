@@ -1,5 +1,5 @@
 import { useFocusEffect, usePathname, useRouter } from 'one'
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useEvent } from 'tamagui'
 import { useUser } from '~/features/user/useUser'
 import { useGoBackToHome } from '~/helpers/useGoBackToHome'

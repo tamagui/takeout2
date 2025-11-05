@@ -1,5 +1,5 @@
-import type { UserWithProfile } from '~/data/types'
+import type { UserWithState } from '~/data/types'
 
-export const isUserOnline = (user: UserWithProfile) => {
+export const isUserOnline = (user: UserWithState) => {
   return user?.state?.onlineStatus === 'online'
 }

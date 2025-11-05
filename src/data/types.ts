@@ -10,7 +10,7 @@ export type PostWithRelations = Post & {
   user?: User
 }
 
-export type UserWithProfile = User & {
+export type UserWithState = User & {
   state?: UserState
 }
 

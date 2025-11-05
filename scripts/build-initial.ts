@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { existsSync } from 'fs'
+import { existsSync, symlinkSync, mkdirSync } from 'fs'
 import { join } from 'path'
 import { $ } from 'bun'
 
@@ -14,4 +14,25 @@ if (!existsSync(distPath)) {
   console.log('✅ Initial build complete')
 } else {
   console.log('✅ Packages already built, skipping initial build')
+}
+
+// Workaround for https://github.com/oven-sh/bun/issues/19782
+// Bun doesn't create symlinks for workspace packages properly
+const binDir = join(process.cwd(), 'node_modules', '.bin')
+const takeoutBin = join(binDir, 'takeout')
+const takeoutSource = join(process.cwd(), 'packages', 'takeout', 'cli.mjs')
+
+if (!existsSync(takeoutBin) && existsSync(takeoutSource)) {
+  console.log('🔗 Creating takeout symlink...')
+
+  if (!existsSync(binDir)) {
+    mkdirSync(binDir, { recursive: true })
+  }
+
+  try {
+    symlinkSync(takeoutSource, takeoutBin)
+    console.log('✅ Created takeout symlink')
+  } catch (e) {
+    console.warn('⚠️ Could not create symlink:', e.message)
+  }
 }

@@ -10,14 +10,15 @@
   "module": "dist/esm",
   "types": "./types/index.d.ts",
   "bin": {
-    "takeout": "./dist/esm/cli.mjs"
+    "takeout": "./cli.mjs"
   },
   "files": [
     "src",
     "types",
     "dist",
     "docs",
-    "scripts"
+    "scripts",
+    "cli.mjs"
   ],
   "exports": {
     "./package.json": "./package.json",

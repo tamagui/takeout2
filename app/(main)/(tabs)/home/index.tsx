@@ -1,5 +1,5 @@
 import { FeedPage } from '~/features/feed/FeedPage'
 
-export default function HomePage() {
+export function HomePage() {
   return <FeedPage />
 }

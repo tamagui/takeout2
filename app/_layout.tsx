@@ -1,7 +1,19 @@
+import { Slot } from 'one'
 import './root.css'
 
+import { Stack } from 'one'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { isWeb } from 'tamagui'
+import {
+  ROOT_AUTH_ONBOARD_ROUTE_NAME,
+  ROOT_MAIN_ROUTE_NAME,
+} from '~/constants/navigation'
+import { NotificationProvider } from '~/interface/notification/Notification'
+import { ToastProvider } from '~/interface/toast/Toast'
+import { DragDropFile } from '~/interface/upload/DragDropFile'
 import { PlatformSpecificProvider } from '~/providers/PlatformSpecificProvider'
+import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
+import { ProvideZero } from '~/zero/client'
 
 export function Layout() {
   if (isWeb) {
@@ -26,11 +38,43 @@ export function Layout() {
         </head>
 
         <body>
-          <PlatformSpecificProvider />
+          <div style={{ display: 'contents' }} data-testid="app-container">
+            <ProvideZero>
+              <TamaguiRootProvider>
+                <SafeAreaProvider>
+                  <ToastProvider>
+                    <NotificationProvider>
+                      <DragDropFile>
+                        <PlatformSpecificProvider>
+                          {isWeb ? (
+                            <Slot />
+                          ) : (
+                            <Stack
+                              screenOptions={{
+                                headerShown: false,
+                                animation: 'slide_from_bottom',
+                              }}
+                              initialRouteName={ROOT_MAIN_ROUTE_NAME}
+                            >
+                              <Stack.Screen name={ROOT_MAIN_ROUTE_NAME} />
+                              <Stack.Screen
+                                name={ROOT_AUTH_ONBOARD_ROUTE_NAME}
+                                options={{
+                                  gestureEnabled: false,
+                                }}
+                              />
+                            </Stack>
+                          )}
+                        </PlatformSpecificProvider>
+                      </DragDropFile>
+                    </NotificationProvider>
+                  </ToastProvider>
+                </SafeAreaProvider>
+              </TamaguiRootProvider>
+            </ProvideZero>
+          </div>
         </body>
       </html>
     )
   }
-
-  return <PlatformSpecificProvider />
 }

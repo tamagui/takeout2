@@ -13,7 +13,7 @@ export function useGoBackToHome() {
   const goBackToHome = useDebounce(
     () => {
       if (isWeb) {
-        router.replace('/(main)/(tabs)/home' as any)
+        router.replace('/home')
         return
       }
 

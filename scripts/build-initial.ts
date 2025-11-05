@@ -8,7 +8,7 @@ import { $ } from 'bun'
 const distPath = join(process.cwd(), 'packages', 'takeout', 'dist')
 
 if (!existsSync(distPath)) {
-  console.log('📦 Building packages for first time...')
+  console.log('📦 Building takeout package for first time...')
   // Build just the takeout package so the CLI is available
   await $`cd packages/takeout && bun run build`
   console.log('✅ Initial build complete')

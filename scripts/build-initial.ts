@@ -1,8 +1,14 @@
 #!/usr/bin/env bun
 
-import { existsSync, symlinkSync, mkdirSync } from 'node:fs'
-import { join } from 'node:path'
 import { $ } from 'bun'
+import { existsSync, mkdirSync, symlinkSync } from 'node:fs'
+import { exists } from 'node:fs/promises'
+import { join } from 'node:path'
+
+// only run once:
+if (await exists(`./node_modules/.bin/tko`)) {
+  process.exit(0)
+}
 
 // Build packages in dependency order if needed
 const packages = [
@@ -21,7 +27,7 @@ for (const pkg of packages) {
 
 // Packages that need CLI symlinks
 const packagesWithCLI = [
-  { name: 'takeout', cliFile: 'cli.mjs' },
+  { name: 'takeout', cliFile: 'cli.mjs', alias: 'tko' },
   { name: 'postgres', cliFile: 'cli.cjs' },
 ]
 
@@ -36,15 +42,8 @@ if (!existsSync(binDir)) {
 for (const pkg of packagesWithCLI) {
   const binPath = join(binDir, pkg.name)
   const sourcePath = join(process.cwd(), 'packages', pkg.name, pkg.cliFile)
-
-  if (!existsSync(binPath) && existsSync(sourcePath)) {
-    try {
-      symlinkSync(sourcePath, binPath)
-    } catch (e) {
-      console.warn(
-        `⚠️ Could not create ${pkg.name} symlink:`,
-        e instanceof Error ? e.message : String(e)
-      )
-    }
+  symlinkSync(sourcePath, binPath)
+  if (pkg.alias) {
+    symlinkSync(join(binDir, pkg.alias), binPath)
   }
 }

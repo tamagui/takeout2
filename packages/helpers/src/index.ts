@@ -23,6 +23,7 @@ export * from './async/useLazyMount'
 export * from './async/useLazyValue'
 
 // browser
+export * from './browser/clearIndexedDB'
 export * from './browser/isActiveElementFormField'
 export * from './browser/localStorage'
 export * from './browser/openPopup'

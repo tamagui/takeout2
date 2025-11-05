@@ -52,5 +52,11 @@
     ".takeout": true,
     ".expo": true,
     ".docker": true
+  },
+  "search.exclude": {
+    "**/data/generated": true,
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true
   }
 }

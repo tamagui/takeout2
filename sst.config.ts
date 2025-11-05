@@ -1,13 +1,11 @@
 /// <reference path="./.sst/platform/config.d.ts" />
 
-import { APP_NAME_LOWERCASE } from './src/constants/app'
-
-const appName = APP_NAME_LOWERCASE
-
 export default $config({
-  app(input) {
+  async app(input) {
+    const { APP_NAME_LOWERCASE } = await import('./src/constants/app')
+
     return {
-      name: appName,
+      name: APP_NAME_LOWERCASE,
       removal: input?.stage === 'production' ? 'retain' : 'remove',
       home: 'aws',
       providers: {
@@ -24,7 +22,7 @@ export default $config({
   async run() {
     const { readFileSync } = await import('node:fs')
     const { execSync } = await import('node:child_process')
-    const { loadEnv } = await import('./scripts/helpers/env-load')
+    const { loadEnv } = await import('@vxrn/scripts/helpers/env-load')
     const { DOMAIN } = await import('./src/constants/app')
     const stage = $dev ? 'development' : 'production'
 

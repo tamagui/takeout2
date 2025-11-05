@@ -225,6 +225,7 @@ const runScript = async (
   addChildProcess(proc)
 
   proc.stdout.on('data', (data) => {
+    if (getIsExiting()) return // prevent output during cleanup
     const lines = data.toString().split('\n')
     for (const line of lines) {
       if (line) log.output(`${color}${prefixLabel}${reset} ${line}`)
@@ -235,6 +236,7 @@ const runScript = async (
     const dataStr = data.toString()
     stderrBuffer += dataStr
 
+    if (getIsExiting()) return // prevent output during cleanup
     const lines = dataStr.split('\n')
     for (const line of lines) {
       if (line) log.error(`${color}${prefixLabel}${reset} ${line}`)
@@ -247,6 +249,7 @@ const runScript = async (
 
   proc.on('close', (code) => {
     if (getIsExiting()) {
+      // silently exit during cleanup
       return
     }
 

@@ -1,10 +1,10 @@
 // note! this is an helper script used by tamagui team for publishing the takeout packages
 // you can delete this from your own app
 
+import { run } from '@vxrn/scripts/helpers/run'
 import fs, { ensureDir, writeJSON } from 'fs-extra'
 import path, { join } from 'node:path'
 import pMap from 'p-map'
-import { run } from '@vxrn/scripts/helpers/run'
 
 // avoid emitter error
 process.setMaxListeners(50)
@@ -32,7 +32,7 @@ const skipBuild = finish || rePublish || process.argv.includes('--skip-build')
 const dryRun = process.argv.includes('--dry-run')
 const tamaguiGitUser = process.argv.includes('--tamagui-git-user')
 
-const curVersion = fs.readJSONSync('./packages/over-zero/package.json').version
+const curVersion = fs.readJSONSync('./packages/helpers/package.json').version
 
 // must specify version (unless republishing):
 if (!rePublish && !skipVersion && !shouldPatch && !shouldMinor && !shouldMajor) {
@@ -94,12 +94,11 @@ async function main() {
       await Promise.all(
         packageJsons.map(async ({ cwd, json }) => {
           const distDir = join(cwd, 'dist')
-          if (!json.scripts || json.scripts.build === 'true') {
-            return
-          }
-          if (!(await fs.pathExists(distDir))) {
-            console.warn('no dist dir!', distDir)
-            process.exit(1)
+          if (json.scripts.build) {
+            if (!(await fs.pathExists(distDir))) {
+              console.warn('no dist dir!', distDir)
+              process.exit(1)
+            }
           }
         })
       )

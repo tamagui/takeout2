@@ -1,19 +1,18 @@
-import { loadEnv as vxrnLoadEnv } from 'vxrn/loadEnv'
 import { join } from 'node:path'
-
-// safe loading of env, ensures values are set
+import { loadEnv as vxrnLoadEnv } from 'vxrn/loadEnv'
 
 export async function loadEnv(
   environment: 'development' | 'production' | 'dev-prod',
-  options?: { optional?: string[] }
+  options?: { optional?: string[]; envPath?: string }
 ) {
   // loads env into process.env
   await vxrnLoadEnv(environment)
 
-  // get our expected constants
-  const Environment = await import(join(process.cwd(), 'src/server/env-server'))
+  const Environment = await import(
+    options?.envPath || join(process.cwd(), 'src/server/env-server.ts')
+  )
 
-  // validate they exist
+  // validate
   for (const key in Environment) {
     if (options?.optional?.includes(key)) {
       continue

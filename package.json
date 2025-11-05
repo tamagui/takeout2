@@ -47,7 +47,6 @@
     "run:dev": "NODE_ENV=development dotenvx run -f .env .env.development -- bun",
     "run:prod-live": "REMOTE=WebApp bun run:prod",
     "run:prod": "NODE_ENV=production bun tko run exec-with-env production bun",
-    "sst": "tko sst",
     "tauri": "tko tauri",
     "test:integration": "bun run:dev playwright test -c ./src/test/playwright.config.ts",
     "test:unit": "bun run:dev vitest run -c ./src/test/vitest.config.ts",

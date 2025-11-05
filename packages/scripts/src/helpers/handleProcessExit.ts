@@ -77,7 +77,7 @@ async function killProcessTree(
 
     // if forceful, wait briefly then send SIGKILL
     if (forceful && signal !== 'SIGKILL') {
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 100))
 
       // send SIGKILL to any still-alive processes
       for (const descendantPid of descendants.reverse()) {
@@ -128,6 +128,15 @@ export function handleProcessExit({
     // notify run.ts that we're in cleanup state
     setExitCleanupState(true)
 
+    // suppress console output during cleanup for cleaner exit
+    if (signal === 'SIGINT') {
+      const noop = () => {}
+      console.log = noop
+      console.info = noop
+      console.warn = noop
+      // keep console.error for critical errors only
+    }
+
     // wrap entire cleanup in a timeout to prevent hanging
     if (onExit) {
       try {
@@ -142,11 +151,15 @@ export function handleProcessExit({
       return
     }
 
+    // for SIGINT (Ctrl+C), be more aggressive with cleanup
+    const isInterrupt = signal === 'SIGINT'
+    const killSignal = isInterrupt ? 'SIGTERM' : (signal as NodeJS.Signals)
+
     await Promise.all(
       processes.map(async (proc) => {
         if (proc.pid) {
           try {
-            await killProcessTree(proc.pid, signal as NodeJS.Signals)
+            await killProcessTree(proc.pid, killSignal, isInterrupt)
           } catch (error) {
             console.error(
               `Error during graceful shutdown of process ${proc.pid}: ${error}`
@@ -156,14 +169,14 @@ export function handleProcessExit({
       })
     )
 
-    // wait a bit for processes to exit gracefully
-    await new Promise((res) => setTimeout(res, 200))
+    // shorter wait for SIGINT
+    await new Promise((res) => setTimeout(res, isInterrupt ? 50 : 200))
 
     // force kill any remaining processes
     for (const proc of processes) {
       try {
         if (!proc.exitCode && proc.pid) {
-          await killProcessTree(proc.pid, 'SIGTERM')
+          await killProcessTree(proc.pid, 'SIGKILL', true)
         }
       } catch (err) {
         // process already gone
@@ -206,6 +219,11 @@ export function handleProcessExit({
   }
 
   const sigintHandler = () => {
+    // immediately print newline and reset cursor for clean terminal
+    process.stdout.write('\n')
+    // reset terminal attributes
+    process.stdout.write('\x1b[0m')
+
     cleanup('SIGINT').then(() => {
       process.exit(0)
     })

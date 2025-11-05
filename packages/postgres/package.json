@@ -8,12 +8,13 @@
   "type": "module",
   "types": "./src/index.ts",
   "bin": {
-    "postgres": "./dist/cjs/cli.cjs"
+    "postgres": "./cli.cjs"
   },
   "files": [
     "src",
     "types",
-    "dist"
+    "dist",
+    "cli.cjs"
   ],
   "publishConfig": {
     "access": "public"

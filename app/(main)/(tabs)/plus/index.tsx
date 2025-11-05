@@ -1,20 +1,18 @@
 import { randomId } from '@vxrn/helpers'
 import { router, useFocusEffect } from 'one'
-import { memo, useEffect, useRef, useState } from 'react'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
+import { memo, useRef, useState } from 'react'
 import {
-  Adapt,
   Circle,
   Dialog,
   isWeb,
   ScrollView,
-  Sheet,
   SizableText,
   Spinner,
   XStack,
   YStack,
 } from 'tamagui'
 import { useUser } from '~/features/user/useUser'
+import { pickImageFromLibrary } from '~/helpers/media/imagePicker'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { TextArea } from '~/interface/forms/TextArea'
@@ -28,13 +26,6 @@ import { zero } from '~/zero/client'
 
 const MAX_IMAGE_SIZE = 1200
 const IMAGE_QUALITY = 0.9
-
-let pickImageFromLibrary: any
-
-if (!isWeb) {
-  const picker = require('~/helpers/media/imagePicker')
-  pickImageFromLibrary = picker.pickImageFromLibrary
-}
 
 export const PlusPage = memo(() => {
   const { user } = useUser()
@@ -116,6 +107,7 @@ export const PlusPage = memo(() => {
       showToast('Post created successfully!', { type: 'success' })
       setCaption('')
       clear()
+      setOpen(false)
       router.back()
     } catch (error) {
       console.info('Failed to create post:', error)
@@ -143,7 +135,7 @@ export const PlusPage = memo(() => {
 
   const contentUI = (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <YStack gap="$4" p="$2">
+      <YStack gap="$4" p="$3">
         <XStack justify="space-between" items="center">
           <SizableText size="$6" fontWeight="700">
             Create Post
@@ -165,6 +157,7 @@ export const PlusPage = memo(() => {
             value={caption}
             onChangeText={setCaption}
             autoFocus={isWeb}
+            rounded="$6"
           />
 
           {previewUrl && (
@@ -233,7 +226,6 @@ export const PlusPage = memo(() => {
       </YStack>
     </ScrollView>
   )
-  console.info('open', open)
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange} modal>
@@ -246,14 +238,15 @@ export const PlusPage = memo(() => {
           onChange={handleWebFileChange}
         />
       )}
-
-      <Adapt when="maxMD" platform="touch">
+      //Todo: Hide it atm because content doesn't show on first render on native
+      {/* <Adapt when="maxMD" platform="touch">
         <Sheet
           animation="300ms"
           zIndex={200000}
           modal
           dismissOnSnapToBottom
           snapPoints={[90]}
+          unmountChildrenWhenHidden
         >
           <Sheet.Frame p="$4" gap="$4" bg="$color2">
             <Adapt.Contents />
@@ -264,8 +257,7 @@ export const PlusPage = memo(() => {
             exitStyle={{ opacity: 0 }}
           />
         </Sheet>
-      </Adapt>
-
+      </Adapt> */}
       <Dialog.Portal>
         <Dialog.Overlay
           key="overlay"

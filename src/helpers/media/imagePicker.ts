@@ -47,6 +47,9 @@ export const pickImageFromLibrary = async (
     allowsEditing,
     aspect: [1, 1],
     quality: 0.8,
+    // Let iOS always convert image to compatible format e.g. HEIC to JPEG
+    preferredAssetRepresentationMode:
+      ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Compatible,
   })
 
   if (!result.canceled) {

@@ -3,6 +3,8 @@ export type AttachmentType =
   | 'image/png'
   | 'image/gif'
   | 'image/webp'
+  | 'image/heic'
+  | 'image/heif'
   | 'video/mp4'
   | 'video/webm'
   | 'video/quicktime'
@@ -47,6 +49,8 @@ export const SUPPORTED_FILE_EXTENSIONS = [
   '.png',
   '.gif',
   '.webp',
+  '.heic',
+  '.heif',
   // Videos
   '.mp4',
   '.webm',

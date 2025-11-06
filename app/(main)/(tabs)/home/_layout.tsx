@@ -1,6 +1,7 @@
 import { Bell, ChevronLeft } from '@tamagui/lucide-icons'
 import { isLiquidGlassAvailable } from 'expo-glass-effect'
 import { router, Stack } from 'one'
+import { XStack } from 'tamagui'
 import { Pressable } from '~/interface/buttons/Pressable'
 
 export default function HomeLayout() {
@@ -10,6 +11,7 @@ export default function HomeLayout() {
         headerBlurEffect: isLiquidGlassAvailable() ? undefined : 'regular',
         headerTransparent: true,
         headerLargeStyle: { backgroundColor: 'transparent' },
+        headerShadowVisible: true,
       }}
     >
       <Stack.Screen
@@ -40,6 +42,8 @@ export default function HomeLayout() {
               <ChevronLeft size={24} />
             </Pressable>
           ),
+
+          presentation: 'modal',
         })}
       />
     </Stack>

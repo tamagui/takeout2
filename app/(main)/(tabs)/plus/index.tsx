@@ -38,7 +38,7 @@ export const PlusPage = memo(() => {
       maxWidth: MAX_IMAGE_SIZE,
       maxHeight: MAX_IMAGE_SIZE,
       quality: IMAGE_QUALITY,
-      maxSizeInBytes: 2000 * 1024,
+      maxSizeInBytes: 5000 * 1024,
     },
   })
 
@@ -144,7 +144,7 @@ export const PlusPage = memo(() => {
           <TextArea
             verticalAlign="top"
             maxLength={6000}
-            rows={6}
+            rows={3}
             size="$4"
             placeholder="What's on your mind?"
             value={caption}

@@ -66,7 +66,8 @@ export const AvatarSetupPage = () => {
   useEffect(() => {
     if (errorMessage) {
       showToast(errorMessage, {
-        type: 'error',
+        title: 'Error',
+        description: errorMessage,
       })
     }
   }, [errorMessage])

@@ -6,17 +6,44 @@ applications with React Native, Zero sync, and AWS deployment.
 ## Quick Start
 
 ```bash
-git clone <your-repo-url>
-cd takeout
 bun install
 bun onboard
 ```
 
 The onboarding wizard will guide you through setup.
 
+## General
+
+Takeout comes with a CLI (`bun tko`) that has a variety of helperful commands.
+Mostly it includes docs and scripts that can update with a simple bun install,
+so we can improve them easily without needing to copy-paste.
+
+Use `bun docs list` or `bun scripts list` to see them all.
+
+If you want to eject the docs and scripts into your repo you can use
+`bun tko docs eject` and `bun tko scripts eject`.
+
+### Packages
+
+The `tko` binary comes from `./packages/takeout`. You'll noticed the packages
+directory in this repo includes lots of helpful libraries that are used
+throughout.
+
+We structured it like this because we think it's nice to have the source files
+here by default, but you don't _have_ to have the `./packages` directory at all.
+You could delete it and then update your root `package.json` to remove the
+`workspaces` key and the `workspace:*` versions for the packages to instead have
+their latest version, as we publish all these packages to npm.
+
+The nice part of having the packages here is you get to see all the source
+easily, and you can help contribute back improvements easily by sending a PR to
+our Takeout repo.
+
 ## Documentation
 
-See detailed guides in the [docs](./docs) directory.
+We use the [docs](./docs) directory for documentation.
+
+More docs are viewable with `bun tko docs list`.
 
 ### Development
 
@@ -27,8 +54,7 @@ bun backend
 bun dev
 ```
 
-Which runs your backend services in one, and your web app and type checker in
-the other.
+Which runs your backend services + your web app and checks in the other.
 
 ## Development
 
@@ -64,7 +90,7 @@ bun tko sst deploy production  # Deploy to AWS production
 
 ```
 takeout/
-├── app/                    # File-based routing (One router)
+├── app/                   # File-based routing (One router)
 │   ├── (tabs)/            # Tab navigation
 │   └── api/               # API routes
 ├── src/
@@ -74,12 +100,8 @@ takeout/
 │   ├── auth/              # Authentication system
 │   ├── zero/              # Real-time sync configuration
 │   ├── server/            # Server-side code
-│   └── tauri/             # Desktop app
+│   └── tauri/             # Desktop app glue code
 ├── scripts/               # Organized build and deployment scripts
-│   ├── aws/              # AWS infrastructure scripts
-│   ├── check/            # Code quality checks
-│   ├── ci/               # CI/CD pipeline scripts
-│   └── ...               # Other script categories
 ├── docs/                  # Detailed guides
 ├── assets/                # Images, fonts, splash screens
 └── public/                # Static web assets
@@ -87,7 +109,7 @@ takeout/
 
 ## Scripts
 
-The `tko` CLI provides organized access to scripts:
+The `tko` CLI provides organized access to scripts you can run:
 
 ```bash
 # List scripts in a category
@@ -111,16 +133,13 @@ PostgreSQL runs in Docker:
 
 ### Migrations
 
-```bash
-bun tko db generate          # Generate migration from schema changes
-bun db:migrate:add <name>    # Create custom migration
-bun migrate                  # Apply migrations locally
-bun migrate:production       # Apply migrations in production
-```
+In general you just update your `src/database/schema-public.ts` and then run
+`bun migrate` while your backend server is up. You can also just run
+`bun tko db generate` if the backend isn't running.
 
 Database schema is defined in:
 
-- `src/database/schema-public.ts` - Public tables
+- `src/database/schema-public.ts` - Public tables (exposed to Zero/client)
 - `src/database/schema-private.ts` - Private tables
 
 You always sync the schema-public to your Zero models.

@@ -23,7 +23,7 @@ _takeout_completions() {
   local prev=\${COMP_WORDS[COMP_CWORD-1]}
 
   # main commands
-  local commands="script check docs onboard run update-docs update-scripts"
+  local commands="script check docs onboard run"
 
   # script categories
   local categories="ci aws build db dev hot-update migrate sst tauri zero"
@@ -84,8 +84,6 @@ _takeout_completions() {
     'docs:Browse documentation'
     'onboard:Initial project setup'
     'run:Run multiple commands'
-    'update-docs:Update documentation'
-    'update-scripts:Update scripts'
   )
 
   categories=(

@@ -18,7 +18,7 @@ The CI/CD setup runs on GitHub Actions with WarpBuild for performance, getting
 from commit to deployed in about 5 minutes end-to-end. The pipeline handles
 everything including running Playwright integration tests, building iOS apps and
 pushing to TestFlight, deploying the web app, running the full test suite with
-Vitest, and managing database migrations and backups.
+Vitest and Playwright, and managing database migrations and backups.
 
 The system includes rollout monitoring that watches health metrics and error
 logs after deploy, automatically flagging issues. Playwright tests get enhanced
@@ -107,9 +107,11 @@ building blocks for more complex UI.
 
 ## Native Dependencies
 
-The project includes several native dependencies that enhance mobile capabilities:
+The project includes several native dependencies that enhance mobile
+capabilities:
 
 **UI & Gestures**
+
 - react-native-reanimated for performant animations across platforms
 - react-native-gesture-handler for comprehensive gesture support
 - @gorhom/bottom-sheet for native bottom sheet modals
@@ -119,6 +121,7 @@ The project includes several native dependencies that enhance mobile capabilitie
 - react-native-safe-area-context for safe area insets
 
 **Media & Graphics**
+
 - @shopify/react-native-skia for 2D graphics and animations
 - expo-image for optimized image loading
 - expo-image-picker for camera and photo library access
@@ -126,19 +129,23 @@ The project includes several native dependencies that enhance mobile capabilitie
 - react-native-svg for SVG rendering
 
 **Data & Storage**
+
 - @op-engineering/op-sqlite for local SQLite database (used by Zero)
 - react-native-mmkv for fast key-value storage
 - expo-secure-store for encrypted credential storage
 - react-native-quick-crypto for cryptographic operations
 
 **Permissions & System**
-- react-native-permissions for runtime permission handling (camera, photo library, microphone, notifications)
+
+- react-native-permissions for runtime permission handling (camera, photo
+  library, microphone, notifications)
 - expo-notifications for push notifications
 - expo-haptics for haptic feedback
 - burnt for native toast notifications
 - zeego for native context menus
 
 **Other Native Features**
+
 - @react-native-masked-view/masked-view for view masking effects
 - expo-blur for native blur effects
 - expo-linear-gradient for gradient support
@@ -146,4 +153,6 @@ The project includes several native dependencies that enhance mobile capabilitie
 - expo-liquid-glass-view for advanced glass morphism
 - react-native-worklets for running JS on UI thread
 
-All native dependencies are configured in app.config.ts with appropriate iOS and Android permissions and build settings. The project uses static frameworks on iOS for faster builds and better compatibility.
+All native dependencies are configured in app.config.ts with appropriate iOS and
+Android permissions and build settings. The project uses static frameworks on
+iOS for faster builds and better compatibility.

@@ -3,9 +3,16 @@
  */
 
 import { defineCommand } from 'citty'
-import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import pc from 'picocolors'
+import { confirm } from '@clack/prompts'
+import {
+  type FileToSync,
+  compareFiles,
+  getFileSize,
+  syncFileWithConfirmation,
+} from '../utils/sync'
 
 // Find package root by looking for package.json
 function findPackageRoot(startDir: string): string {
@@ -138,6 +145,117 @@ const pathCommand = defineCommand({
   },
 })
 
+const ejectCommand = defineCommand({
+  meta: {
+    name: 'eject',
+    description: 'Eject Takeout documentation files into your project',
+  },
+  args: {
+    yes: {
+      type: 'boolean',
+      description: 'Skip confirmations and eject all files',
+      default: false,
+    },
+  },
+  async run({ args }) {
+    const cwd = process.cwd()
+    const targetDocsDir = join(cwd, 'docs')
+    const sourceDocsDir = DOCS_DIR
+
+    console.info()
+    console.info(pc.bold(pc.cyan('📚 Eject Docs')))
+    console.info()
+    console.info(pc.dim(`Source: ${sourceDocsDir}`))
+    console.info(pc.dim(`Target: ${targetDocsDir}`))
+    console.info()
+
+    if (!existsSync(sourceDocsDir)) {
+      console.error(pc.red('✗ Source docs directory not found in Takeout package'))
+      process.exit(1)
+    }
+
+    // ensure target docs directory exists
+    if (!existsSync(targetDocsDir)) {
+      console.info(pc.yellow('⚠ Target docs directory does not exist, will create it'))
+      mkdirSync(targetDocsDir, { recursive: true })
+    }
+
+    // get all markdown files from source
+    const sourceFiles = readdirSync(sourceDocsDir).filter((f) => f.endsWith('.md'))
+
+    if (sourceFiles.length === 0) {
+      console.info(pc.yellow('No markdown files found in Takeout docs'))
+      return
+    }
+
+    // analyze all files
+    const filesToSync: FileToSync[] = []
+    const stats = {
+      new: 0,
+      modified: 0,
+      identical: 0,
+    }
+
+    for (const file of sourceFiles) {
+      const sourcePath = join(sourceDocsDir, file)
+      const targetPath = join(targetDocsDir, file)
+      const status = compareFiles(sourcePath, targetPath)
+
+      stats[status]++
+
+      filesToSync.push({
+        name: file,
+        sourcePath,
+        targetPath,
+        status,
+        sourceSize: getFileSize(sourcePath),
+        targetSize: getFileSize(targetPath),
+      })
+    }
+
+    console.info(pc.bold('Summary:'))
+    console.info(`  ${pc.green(`${stats.new} new`)}`)
+    console.info(`  ${pc.yellow(`${stats.modified} modified`)}`)
+    console.info(`  ${pc.dim(`${stats.identical} identical`)}`)
+    console.info()
+
+    if (stats.new === 0 && stats.modified === 0) {
+      console.info(pc.green('✓ All docs are already up to date!'))
+      return
+    }
+
+    // sort files: new first, then modified, then identical
+    const sortOrder = { new: 0, modified: 1, identical: 2 }
+    filesToSync.sort((a, b) => sortOrder[a.status] - sortOrder[b.status])
+
+    // sync files
+    let syncedCount = 0
+
+    for (const file of filesToSync) {
+      if (args.yes && file.status !== 'identical') {
+        // auto-sync without confirmation
+        const targetDir = join(targetDocsDir)
+        if (!existsSync(targetDir)) {
+          mkdirSync(targetDir, { recursive: true })
+        }
+        const content = readFileSync(file.sourcePath)
+        writeFileSync(file.targetPath, content)
+        console.info(pc.green(`  ✓ ${file.name}`))
+        syncedCount++
+      } else {
+        const wasSynced = await syncFileWithConfirmation(file)
+        if (wasSynced) {
+          syncedCount++
+        }
+      }
+    }
+
+    console.info()
+    console.info(pc.bold(pc.green(`✓ Complete: ${syncedCount} file(s) ejected`)))
+    console.info()
+  },
+})
+
 export const docsCommand = defineCommand({
   meta: {
     name: 'docs',
@@ -147,5 +265,6 @@ export const docsCommand = defineCommand({
     list: listCommand,
     get: getCommand,
     path: pathCommand,
+    eject: ejectCommand,
   },
 })

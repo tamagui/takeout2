@@ -14,6 +14,12 @@ import {
 import { join, relative, dirname, basename, extname } from 'node:path'
 import pc from 'picocolors'
 import { homedir } from 'node:os'
+import {
+  type FileToSync,
+  compareFiles,
+  getFileSize,
+  syncFileWithConfirmation,
+} from '../utils/sync'
 
 // cache configuration
 const CACHE_DIR = join(homedir(), '.takeout')
@@ -356,6 +362,155 @@ main().catch(console.error)
   },
 })
 
+// get all script files recursively
+function getAllScriptFiles(dir: string, baseDir: string = dir): string[] {
+  const files: string[] = []
+
+  if (!existsSync(dir)) {
+    return files
+  }
+
+  try {
+    const entries = readdirSync(dir)
+
+    for (const entry of entries) {
+      const fullPath = join(dir, entry)
+      const stat = statSync(fullPath)
+
+      if (stat.isDirectory()) {
+        files.push(...getAllScriptFiles(fullPath, baseDir))
+      } else if (
+        entry.endsWith('.ts') ||
+        entry.endsWith('.js') ||
+        entry.endsWith('.cjs')
+      ) {
+        files.push(relative(baseDir, fullPath))
+      }
+    }
+  } catch (err) {
+    // ignore directory read errors
+  }
+
+  return files
+}
+
+// eject command to copy built-in scripts to local directory
+const ejectCommand = defineCommand({
+  meta: {
+    name: 'eject',
+    description: 'Eject built-in scripts into your project',
+  },
+  args: {
+    yes: {
+      type: 'boolean',
+      description: 'Skip confirmations and eject all files',
+      default: false,
+    },
+  },
+  async run({ args }) {
+    const cwd = process.cwd()
+    const targetScriptsDir = join(cwd, 'scripts')
+    const sourceScriptsDir = findScriptsPackageRoot()
+
+    console.info()
+    console.info(pc.bold(pc.cyan('⚙️  Eject Scripts')))
+    console.info()
+
+    if (!sourceScriptsDir) {
+      console.error(
+        pc.red('✗ Built-in scripts package (@vxrn/scripts) not found or not installed')
+      )
+      console.info()
+      console.info(pc.dim('Install with: bun add -d @vxrn/scripts'))
+      process.exit(1)
+    }
+
+    console.info(pc.dim(`Source: ${sourceScriptsDir}`))
+    console.info(pc.dim(`Target: ${targetScriptsDir}`))
+    console.info()
+
+    // ensure target scripts directory exists
+    if (!existsSync(targetScriptsDir)) {
+      console.info(pc.yellow('⚠ Target scripts directory does not exist, will create it'))
+      mkdirSync(targetScriptsDir, { recursive: true })
+    }
+
+    // get all script files from source (including subdirectories)
+    const sourceFiles = getAllScriptFiles(sourceScriptsDir)
+
+    if (sourceFiles.length === 0) {
+      console.info(pc.yellow('No script files found in built-in scripts package'))
+      return
+    }
+
+    // analyze all files
+    const filesToSync: FileToSync[] = []
+    const stats = {
+      new: 0,
+      modified: 0,
+      identical: 0,
+    }
+
+    for (const file of sourceFiles) {
+      const sourcePath = join(sourceScriptsDir, file)
+      const targetPath = join(targetScriptsDir, file)
+      const status = compareFiles(sourcePath, targetPath)
+
+      stats[status]++
+
+      filesToSync.push({
+        name: file,
+        sourcePath,
+        targetPath,
+        status,
+        sourceSize: getFileSize(sourcePath),
+        targetSize: getFileSize(targetPath),
+      })
+    }
+
+    console.info(pc.bold('Summary:'))
+    console.info(`  ${pc.green(`${stats.new} new`)}`)
+    console.info(`  ${pc.yellow(`${stats.modified} modified`)}`)
+    console.info(`  ${pc.dim(`${stats.identical} identical`)}`)
+    console.info()
+
+    if (stats.new === 0 && stats.modified === 0) {
+      console.info(pc.green('✓ All scripts are already up to date!'))
+      return
+    }
+
+    // sort files: new first, then modified, then identical
+    const sortOrder = { new: 0, modified: 1, identical: 2 }
+    filesToSync.sort((a, b) => sortOrder[a.status] - sortOrder[b.status])
+
+    // sync files
+    let syncedCount = 0
+
+    for (const file of filesToSync) {
+      if (args.yes && file.status !== 'identical') {
+        // auto-sync without confirmation
+        const targetDir = dirname(file.targetPath)
+        if (!existsSync(targetDir)) {
+          mkdirSync(targetDir, { recursive: true })
+        }
+        const content = readFileSync(file.sourcePath)
+        writeFileSync(file.targetPath, content)
+        console.info(pc.green(`  ✓ ${file.name}`))
+        syncedCount++
+      } else {
+        const wasSynced = await syncFileWithConfirmation(file)
+        if (wasSynced) {
+          syncedCount++
+        }
+      }
+    }
+
+    console.info()
+    console.info(pc.bold(pc.green(`✓ Complete: ${syncedCount} file(s) ejected`)))
+    console.info()
+  },
+})
+
 // run subcommand for backwards compatibility
 const runSubCommand = defineCommand({
   meta: {
@@ -402,7 +557,8 @@ export const scriptCommand = defineCommand({
   },
   subCommands: {
     new: newCommand,
-    run: runSubCommand, // Add run subcommand for compatibility
+    run: runSubCommand,
+    eject: ejectCommand,
   },
   async run({ args, rawArgs }) {
     const scriptName = args.name

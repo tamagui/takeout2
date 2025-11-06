@@ -4,6 +4,9 @@
  */
 
 import { test, expect } from '@playwright/test'
+import { join } from 'node:path'
+
+const outputDir = join(__dirname, '.output')
 
 test('admin login flow debug', async ({ page }) => {
   // Enable console logging
@@ -43,7 +46,10 @@ test('admin login flow debug', async ({ page }) => {
     // Check if we're still on login page
     if (currentUrl.includes('/login')) {
       // Take a screenshot
-      await page.screenshot({ path: 'admin-login-failed.png', fullPage: true })
+      await page.screenshot({
+        path: join(outputDir, 'admin-login-failed.png'),
+        fullPage: true,
+      })
 
       // Check for any error messages
       const bodyText = await page.textContent('body')
@@ -60,6 +66,9 @@ test('admin login flow debug', async ({ page }) => {
     } else {
     }
   } else {
-    await page.screenshot({ path: 'admin-button-not-found.png', fullPage: true })
+    await page.screenshot({
+      path: join(outputDir, 'admin-button-not-found.png'),
+      fullPage: true,
+    })
   }
 })

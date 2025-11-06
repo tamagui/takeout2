@@ -6,17 +6,14 @@
  */
 
 import { defineCommand, runMain } from 'citty'
-import { existsSync, readdirSync, statSync } from 'node:fs'
+import { existsSync, statSync } from 'node:fs'
 import { join } from 'node:path'
-import { doctorCommand } from './commands/doctor'
+import { completionCommand } from './commands/completion'
 import { docsCommand } from './commands/docs'
 import { envSetupCommand } from './commands/env-setup'
 import { onboardCommand } from './commands/onboard'
 import { runCommand } from './commands/run'
-import { scriptCommand, createShorthandCommand } from './commands/script'
-import { updateDocsCommand } from './commands/update-docs'
-import { updateScriptsCommand } from './commands/update-scripts'
-import { completionCommand } from './commands/completion'
+import { scriptCommand } from './commands/script'
 
 // check if a directory exists in scripts folder (lazy check)
 function isScriptCategory(name: string): boolean {
@@ -43,10 +40,8 @@ if (isShorthand) {
     'docs',
     'onboard',
     'run',
-    'script', // Add script to built-in commands
+    'script',
     'env:setup',
-    'update-docs',
-    'update-scripts',
     'completion',
     '--help',
     '-h',
@@ -86,14 +81,11 @@ const main = defineCommand({
   },
   subCommands: {
     onboard: onboardCommand,
-    check: doctorCommand,
     docs: docsCommand,
     'env:setup': envSetupCommand,
     run: runCommand,
     script: scriptCommand,
     completion: completionCommand,
-    'update-docs': updateDocsCommand,
-    'update-scripts': updateScriptsCommand,
   },
 })
 

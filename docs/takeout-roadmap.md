@@ -1,6 +1,5 @@
 - can we prevent vscode autocomplete of extenral overlaps:
   - Image, Link, Dialog
-- invite pavel to repo for uncloud integration
 
 general:
 
@@ -38,5 +37,4 @@ pokai:
 
 nate:
 
-- server.asyncTasks => pushTask()
 - sst/aws/github helpers are nice

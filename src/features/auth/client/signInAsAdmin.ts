@@ -1,11 +1,11 @@
 import { authClient } from '~/features/auth/client/authClient'
 import { ADMIN_EMAIL } from '~/constants/app'
 
-export const signInAsAdmin = async () => {
+export const signInAsAdmin = async (password: string) => {
   const { error } = await authClient.signUp.email({
     name: `Admin`,
     email: ADMIN_EMAIL,
-    password: `password123`,
+    password,
   })
 
   // if already exists (422) just login
@@ -15,7 +15,7 @@ export const signInAsAdmin = async () => {
 
   const loginRes = await authClient.signIn.email({
     email: ADMIN_EMAIL,
-    password: `password123`,
+    password,
   })
 
   if (loginRes.error) {

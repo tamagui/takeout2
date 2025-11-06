@@ -9,13 +9,9 @@ import { Dialog } from './Dialog'
 import { closeDialogLayer2, dialogLayer2Emitter } from './shared'
 
 export const DialogConfirm = () => {
-  const [extraConfirm, setExtraConfirm] = useState<string | null>(null)
+  const [extraConfirm, setExtraConfirm] = useState('')
   const state = useEmitterSelector(dialogLayer2Emitter, (next) => {
-    if (next.type === 'confirm') {
-      return next
-    } else {
-      return null
-    }
+    return next.type === 'confirm' ? next : null
   })
 
   const close = (accepted: boolean) => {

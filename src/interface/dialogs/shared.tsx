@@ -33,3 +33,7 @@ export const dialogLayer2Emitter = createEmitter<DialogLayer2>('dialogConfirm', 
 export const closeDialogLayer2 = () => {
   dialogLayer2Emitter.emit({ type: 'closed' })
 }
+
+export const closeDialog = () => {
+  dialogEmitter.emit({ type: 'closed' })
+}

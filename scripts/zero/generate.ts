@@ -4,19 +4,7 @@
  * @description Generate Zero sync code
  */
 
-import { spawn } from 'node:child_process'
+import { $ } from 'bun'
 
-async function main() {
-  console.info('Generating Zero sync code...')
-
-  const child = spawn('bun', ['over-zero', 'generate'], {
-    stdio: 'inherit',
-    cwd: process.cwd(),
-  })
-
-  child.on('exit', (code) => {
-    process.exit(code || 0)
-  })
-}
-
-main().catch(console.error)
+console.info('Generating Zero sync code...')
+await $`bun over-zero generate`

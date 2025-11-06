@@ -9,11 +9,10 @@ import {
 } from 'tamagui'
 import { images } from '~/constants/images'
 import { isIos, isNative } from '~/constants/platform'
-import { signInAsAdmin } from '~/features/auth/client/signInAsAdmin'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { getHumanReadableVersionString } from '~/helpers/getHumanReadableVersionString'
-import { useGoBackToHome } from '~/helpers/useGoBackToHome'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { dialogEmit } from '~/interface/dialogs/shared'
 import { AppleIcon } from '~/interface/icons/AppleIcon'
 import { GoogleIcon } from '~/interface/icons/GoogleIcon'
 import { Image } from '~/interface/image/Image'
@@ -25,17 +24,8 @@ export const LoginPage = () => {
 
   const { width } = useWindowDimensions()
 
-  const goBackToHome = useGoBackToHome()
-
   const handleSignInAdmin = async () => {
-    const res = await signInAsAdmin()
-    if (res.success) {
-      showToast(`Signed in!`, { type: 'info' })
-      goBackToHome()
-    } else {
-      console.error(res.error)
-      showToast(`Error!`, { type: 'error' })
-    }
+    dialogEmit({ type: 'admin-password' })
   }
 
   const handleContinueWithEmail = () => {
@@ -92,9 +82,9 @@ export const LoginPage = () => {
           >
             Continue with Email
           </ButtonSimple>
+
           {/* In dev mode - admin sign on visible */}
-          {(process.env.NODE_ENV === 'development' ||
-            (!isNative && window.location.search.includes('showAdmin'))) && (
+          {!isNative && window.location.search.includes('showAdmin') && (
             <ButtonSimple
               theme="accent"
               size="large"

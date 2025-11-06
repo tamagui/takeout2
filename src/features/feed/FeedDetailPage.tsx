@@ -7,7 +7,6 @@ import { formatDistanceToNow } from '~/helpers/date/formatDate'
 import { Avatar } from '~/interface/avatars/Avatar'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
-import { BasicHeader } from '~/interface/headers/BasicHeader'
 import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
 import { Image } from '~/interface/image/Image'
 import { showPostActionSheet } from '~/interface/sheet/postActionSheetHelper'
@@ -15,37 +14,19 @@ import { BodyText } from '~/interface/text/Body'
 import { usePostById } from './usePostById'
 
 export const FeedDetailPage = memo(() => {
-  // const { feedId } = useParams()
-  // const { user } = useAuth()
-  // const { post } = usePostById({ postId: feedId })
-  // const isOwnProfile = post?.userId === user?.id
+  const { feedId } = useParams()
+  const { user } = useAuth()
+  const { post } = usePostById({ postId: feedId })
+  const isOwnProfile = post?.userId === user?.id
 
-  // if (!post || !user) {
-  //   return null
-  // }
+  if (!post || !user) {
+    return null
+  }
 
   return (
     <YStack flex={1}>
-      {/* <BasicHeader title="Post" /> */}
-
-      <ScrollView flex={1} showsVerticalScrollIndicator={false} gap="$2">
-        <XStack width={100} height={150} bg="red" />
-        <XStack width={100} height={150} bg="blue" />
-        <XStack width={100} height={150} bg="green" />
-        <XStack width={100} height={150} bg="yellow" />
-        <XStack width={100} height={150} bg="purple" />
-        <XStack width={100} height={150} bg="orange" />
-        <XStack width={100} height={150} bg="pink" />
-        <XStack width={100} height={150} bg="brown" />
-        <XStack width={100} height={150} bg="gray" />
-        <XStack width={100} height={150} bg="$color1" />
-        <XStack width={100} height={150} bg="$color1" />
-        <XStack width={100} height={150} bg="$color1" />
-        <XStack width={100} height={150} bg="$color1" />
-        <XStack width={100} height={150} bg="$color1" />
-        <XStack width={100} height={150} bg="$color1" />
-        <XStack width={100} height={150} bg="$color1" />
-        {/* <XStack items="center" justify="space-between" pb="$2" px="$3">
+      <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+        <XStack items="center" justify="space-between" pb="$2" px="$3">
           <XStack items="center" gap="$3">
             <Avatar image={user.image as string} size={32} />
             <YStack flex={1}>
@@ -93,7 +74,7 @@ export const FeedDetailPage = memo(() => {
           <SizableText size="$2" color="$color10">
             {formatDistanceToNow(post.createdAt)}
           </SizableText>
-        </XStack> */}
+        </XStack>
       </ScrollView>
     </YStack>
   )

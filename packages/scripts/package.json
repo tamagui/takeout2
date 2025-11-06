@@ -1,6 +1,6 @@
 {
   "name": "@vxrn/scripts",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "type": "module",
   "main": "./src/index.ts",
   "sideEffects": false,

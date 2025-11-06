@@ -1,6 +1,6 @@
 {
   "name": "@vxrn/native-hot-update",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "type": "module",
   "sideEffects": false,
   "source": "src/index.ts",

@@ -1,6 +1,6 @@
 {
   "name": "@vxrn/helpers",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "sideEffects": false,
   "type": "module",
   "source": "src/index.ts",

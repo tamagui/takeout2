@@ -1,6 +1,6 @@
 {
   "name": "@vxrn/takeout",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "description": "CLI tools for Takeout starter kit - interactive onboarding and project setup",
   "type": "module",
   "sideEffects": false,

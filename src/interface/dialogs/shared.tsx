@@ -29,3 +29,7 @@ export const useDialogEmit = (cb: (val: DialogType) => void) =>
 export const dialogLayer2Emitter = createEmitter<DialogLayer2>('dialogConfirm', {
   type: 'closed',
 })
+
+export const closeDialogLayer2 = () => {
+  dialogLayer2Emitter.emit({ type: 'closed' })
+}

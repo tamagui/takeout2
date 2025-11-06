@@ -1,7 +1,6 @@
 import { Bell, ChevronLeft } from '@tamagui/lucide-icons'
 import { isLiquidGlassAvailable } from 'expo-glass-effect'
 import { router, Stack } from 'one'
-import { XStack } from 'tamagui'
 import { Pressable } from '~/interface/buttons/Pressable'
 
 export default function HomeLayout() {

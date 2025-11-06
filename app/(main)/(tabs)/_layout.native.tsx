@@ -10,10 +10,9 @@ import { PostActionSheet } from '~/interface/sheet/PostActionSheet'
 import { postActionSheetRef } from '~/interface/sheet/postActionSheetHelper'
 
 const NativeTabsNavigator = createNativeBottomTabNavigator().Navigator
+const NativeTabs = withLayoutContext(NativeTabsNavigator)
 
-export const NativeTabs = withLayoutContext(NativeTabsNavigator)
-
-export default function TabsLayout() {
+export function TabsLayout() {
   const { smallerIconSize } = useTabIconSize()
 
   return (

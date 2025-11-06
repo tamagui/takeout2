@@ -1,3 +1,4 @@
+import { useEmitterSelector } from '@vxrn/helpers'
 import { useState } from 'react'
 import { XStack, YStack } from 'tamagui'
 import { ButtonAction } from '../buttons/ButtonAction'
@@ -5,31 +6,33 @@ import { ButtonSimple } from '../buttons/ButtonSimple'
 import { Input } from '../forms/Input'
 import { confirmEmitter } from './actions'
 import { Dialog } from './Dialog'
-import { dialogLayer2Emitter } from './shared'
-import type { DialogConfirmType } from './types'
-import { useEmitter } from '@vxrn/helpers'
+import { closeDialogLayer2, dialogLayer2Emitter } from './shared'
 
 export const DialogConfirm = () => {
-  const [state, setState] = useState<DialogConfirmType | null>(null)
   const [extraConfirm, setExtraConfirm] = useState<string | null>(null)
-
-  useEmitter(dialogLayer2Emitter, (next) => {
+  const state = useEmitterSelector(dialogLayer2Emitter, (next) => {
     if (next.type === 'confirm') {
-      setState(next)
+      return next
     } else {
-      setState(null)
+      return null
     }
   })
+
+  const close = (accepted: boolean) => {
+    confirmEmitter.emit(accepted)
+    closeDialogLayer2()
+  }
 
   return (
     <Dialog
       minH={state?.extraConfirm ? 260 : 220}
       open={!!state}
       onOpenChange={(open) => {
+        if (open) return
+
         // Only handle closing, not opening
         if (!open && state) {
-          setState(null)
-          confirmEmitter.emit(false)
+          close(false)
         }
       }}
     >
@@ -49,8 +52,7 @@ export const DialogConfirm = () => {
         <Dialog.Close asChild>
           <ButtonSimple
             onPress={() => {
-              confirmEmitter.emit(false)
-              setState(null)
+              close(false)
             }}
           >
             Cancel
@@ -62,9 +64,7 @@ export const DialogConfirm = () => {
             if (state?.extraConfirm && extraConfirm !== 'Confirm') {
               return
             }
-
-            confirmEmitter.emit(true)
-            setState(null)
+            close(true)
           }}
         >
           Confirm

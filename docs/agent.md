@@ -28,8 +28,8 @@ There are many more.
 
 ## App
 
-- prefer not to `export default`, One takes the first "export" as the page which
-  also hot reloads properly as opposed to export default
+- prefer not to `export default` in any route, One takes the first "export" as
+  the page which also hot reloads properly as opposed to export default
 
 ## Database
 

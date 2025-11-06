@@ -1,8 +1,8 @@
 import { View, XStack, YStack } from 'tamagui'
-import { ShimmerProvider } from './ShimmerContext'
 import { CircleShimmer } from './CircleShimmer'
 import { LineShimmer } from './LineShimmer'
 import { Shimmer } from './Shimmer'
+import { ShimmerProvider } from './ShimmerContext'
 
 export const ChatShimmer = () => {
   return (

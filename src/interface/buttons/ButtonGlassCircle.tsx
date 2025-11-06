@@ -1,9 +1,6 @@
-import { isIos } from '@vxrn/helpers'
 import type { ReactNode } from 'react'
-import { TouchableOpacity } from 'react-native'
 import { View } from 'tamagui'
 // import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect'
-import { Pressable } from './Pressable'
 import { GlassView } from '../effects/GlassView'
 
 interface ButtonGlassCircleProps {

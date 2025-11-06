@@ -1,5 +1,5 @@
 import { Slot } from 'one'
 
-export default function TabsLayout() {
+export function TabsLayout() {
   return <Slot />
 }

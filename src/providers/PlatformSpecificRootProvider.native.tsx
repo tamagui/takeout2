@@ -1,6 +1,7 @@
 import * as SplashScreen from 'expo-splash-screen'
 import { useEffect, type ReactNode } from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { KeyboardProvider } from 'react-native-keyboard-controller'
 import { View } from 'tamagui'
 import { useAuth } from '~/features/auth/client/authClient'
 
@@ -10,7 +11,7 @@ SplashScreen.setOptions({
 })
 SplashScreen.preventAutoHideAsync()
 
-export function PlatformSpecificProvider({ children }: { children: ReactNode }) {
+export function PlatformSpecificRootProvider({ children }: { children: ReactNode }) {
   const { state } = useAuth()
 
   useEffect(() => {
@@ -22,8 +23,10 @@ export function PlatformSpecificProvider({ children }: { children: ReactNode }) 
   }, [state])
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <View flex={1}>{children}</View>
-    </GestureHandlerRootView>
+    <KeyboardProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <View flex={1}>{children}</View>
+      </GestureHandlerRootView>
+    </KeyboardProvider>
   )
 }

@@ -3,6 +3,7 @@ import { useZero } from '@rocicorp/zero/react'
 import { createZeroClient } from 'over-zero'
 import { memo, useEffect, useMemo, type ReactNode } from 'react'
 import { isClient, isWeb } from 'tamagui'
+import { ZERO_SERVER_URL } from '~/constants/urls'
 import { models } from '~/data/generated/models'
 import { schema } from '~/data/schema'
 import { useAuth } from '~/features/auth/client/authClient'
@@ -27,17 +28,6 @@ export const {
   disable,
 })
 
-const ZERO_SERVER =
-  typeof location !== 'undefined'
-    ? location.host === 'start.chat'
-      ? 'https://zero.start.chat'
-      : import.meta.env.VITE_PUBLIC_ZERO_SERVER
-    : import.meta.env.VITE_PUBLIC_ZERO_SERVER
-
-if (!ZERO_SERVER) {
-  throw new Error(`No zero server`)
-}
-
 export const ProvideZero = ({ children }: { children: ReactNode }) => {
   const auth = useAuth()
   const userId = auth?.user?.id || 'anon'
@@ -55,7 +45,7 @@ export const ProvideZero = ({ children }: { children: ReactNode }) => {
     }
   }, [userId, role])
 
-  console.info(`[zero]`, { auth, jwtToken, userId, ZERO_SERVER })
+  console.info(`[zero]`, { auth, jwtToken, userId, ZERO_SERVER_URL })
 
   return (
     <ProvideZeroWithoutAuth
@@ -63,7 +53,7 @@ export const ProvideZero = ({ children }: { children: ReactNode }) => {
       auth={jwtToken}
       kvStore={isWeb && isClient && userId ? 'idb' : 'mem'}
       authData={authData}
-      server={ZERO_SERVER}
+      server={ZERO_SERVER_URL}
     >
       {children}
       <ZeroDevTools />

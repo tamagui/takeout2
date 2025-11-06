@@ -15,9 +15,6 @@ import { showPostActionSheet } from '~/interface/sheet/postActionSheetHelper'
 import { BodyText } from '~/interface/text/Body'
 import { useQuery } from '~/zero/client'
 import { AvatarWithMenu } from './AvatarWithMenu'
-import { getMockUserById } from './mockData'
-
-const USE_MOCK_DATA = process.env.NODE_ENV === 'development'
 
 interface PostCardProps {
   post: Post
@@ -26,24 +23,18 @@ interface PostCardProps {
 export const PostCard = memo(({ post }: PostCardProps) => {
   const { user } = useAuth()
   const authorId = post.userId
-  const [author] = useQuery(
-    userById,
-    { userId: authorId },
-    { enabled: !!authorId && !USE_MOCK_DATA }
-  )
-
-  const mockAuthor = USE_MOCK_DATA ? getMockUserById(authorId) : null
-  const avatarUrl = USE_MOCK_DATA ? mockAuthor?.image : author?.image
-  const username = USE_MOCK_DATA ? mockAuthor?.username : author?.username
+  const [author] = useQuery(userById, { userId: authorId }, { enabled: !!authorId })
+  const avatarUrl = author?.image
+  const username = author?.username
 
   const [isTruncated, setIsTruncated] = useState<boolean>(false)
 
   const isOwnProfile = authorId === user?.id
 
   return (
-    <YStack mt="$2">
-      <Pressable onPress={() => router.push(`/home/post/${post.id}`)}>
-        <XStack items="center" justify="space-between" pb="$2" px="$2">
+    <View mt="$2">
+      <View px="$4">
+        <XStack items="center" justify="space-between" pb="$2">
           <XStack gap="$3">
             <AvatarWithMenu
               avatarUrl={avatarUrl || ''}
@@ -53,13 +44,12 @@ export const PostCard = memo(({ post }: PostCardProps) => {
             />
             <YStack flex={1} gap="$2">
               <XStack items="center" justify="space-between">
-                <XStack items="center">
+                <XStack items="center" gap="$1">
                   <SizableText size="$4" fontWeight="600" numberOfLines={1}>
                     {username}
                   </SizableText>
                   <Dot size={16} color="$color10" />
-
-                  <SizableText size="$3" color="$color10" ml="$2">
+                  <SizableText size="$3" color="$color10">
                     {formatDistanceToNow(post.createdAt)}
                   </SizableText>
                 </XStack>
@@ -72,49 +62,50 @@ export const PostCard = memo(({ post }: PostCardProps) => {
                   <DotsThreeIcon size={16} color="$color12" />
                 </ButtonGlassCircle>
               </XStack>
-              <YStack>
-                <Accordion overflow="hidden" type="multiple">
-                  <Accordion.Item value="caption">
-                    <Accordion.Trigger unstyled disabled={!isTruncated}>
-                      {({ open }: { open: boolean }) => (
-                        <BodyText
-                          color="$color12"
-                          numberOfLines={open ? undefined : 3}
-                          flex={1}
-                          onTextLayout={(e) => {
-                            if (e.nativeEvent.lines.length >= 3) {
-                              setIsTruncated(true)
-                            }
-                          }}
-                        >
-                          {post.caption}
-                        </BodyText>
-                      )}
-                    </Accordion.Trigger>
-                    <Accordion.HeightAnimator animation="200ms">
-                      <Accordion.Content animation="200ms" exitStyle={{ opacity: 0 }} />
-                    </Accordion.HeightAnimator>
-                  </Accordion.Item>
-                </Accordion>
-              </YStack>
-
-              <View width="100%" position="relative" mt="$2">
-                <Image
-                  src={post.image}
-                  width="100%"
-                  aspectRatio={3 / 4}
-                  objectFit="cover"
-                  rounded="$6"
-                />
-              </View>
             </YStack>
           </XStack>
         </XStack>
-      </Pressable>
+        <Pressable
+          onPress={() => router.push(`/home/post/${post.id}?username=${username}`)}
+        >
+          <Accordion overflow="hidden" type="multiple">
+            <Accordion.Item value="caption">
+              <Accordion.Trigger unstyled disabled={!isTruncated}>
+                {({ open }: { open: boolean }) => (
+                  <BodyText
+                    color="$color12"
+                    numberOfLines={open ? undefined : 3}
+                    flex={1}
+                    onTextLayout={(e) => {
+                      if (e.nativeEvent.lines.length >= 3) {
+                        setIsTruncated(true)
+                      }
+                    }}
+                  >
+                    {post.caption}
+                  </BodyText>
+                )}
+              </Accordion.Trigger>
+              <Accordion.HeightAnimator animation="200ms">
+                <Accordion.Content animation="200ms" exitStyle={{ opacity: 0 }} />
+              </Accordion.HeightAnimator>
+            </Accordion.Item>
+          </Accordion>
+          <View width="100%" position="relative" mt="$2">
+            <Image
+              src={post.image}
+              width="100%"
+              aspectRatio={1}
+              objectFit="cover"
+              rounded="$6"
+            />
+          </View>
+        </Pressable>
+      </View>
 
       <YStack py="$4">
         <LinearGradientSeparator />
       </YStack>
-    </YStack>
+    </View>
   )
 })

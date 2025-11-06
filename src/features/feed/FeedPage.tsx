@@ -1,7 +1,6 @@
 import { LegendList, type LegendListRef } from '@legendapp/list'
-
 import { isAndroid, useEmitter } from '@vxrn/helpers'
-import { memo, useCallback, useRef, useState } from 'react'
+import { memo, useCallback, useRef } from 'react'
 import { RefreshControl } from 'react-native'
 import Animated, {
   useAnimatedScrollHandler,
@@ -11,30 +10,22 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { AnimatePresence, SizableText, Spinner, View, YStack } from 'tamagui'
-import { scrollToTopEmitter } from '../main-tabs/scrollToTopEmitter'
-import { mockPosts } from './mockData'
-import { PostCard } from './PostCard'
-import { usePostsPaginated } from './usePosts'
 import { ButtonGlassCircle } from '~/interface/buttons/ButtonGlassCircle'
 import { ArrowUpIcon } from '~/interface/icons/phosphor/ArrowUpIcon'
-import { runOnJS, scheduleOnRN } from 'react-native-worklets'
 import { HomeShimmer } from '~/interface/shimmer/HomeShimmer'
+import { scrollToTopEmitter } from '../main-tabs/scrollToTopEmitter'
+import { PostCard } from './PostCard'
+import { usePostsPaginated } from './usePosts'
 
 const AnimatedLegendList = Animated.createAnimatedComponent(LegendList)
-
-const USE_MOCK_DATA = process.env.NODE_ENV === 'development'
 
 export const FeedPage = memo(() => {
   const safeAreaInsets = useSafeAreaInsets()
   const listRef = useRef<LegendListRef>(null)
   const { posts, loadMore, refresh, isLoading, hasMore } = usePostsPaginated()
-  const [showScrollToBottom, setShowScrollToBottom] = useState<boolean>(false)
-  const displayPosts = USE_MOCK_DATA ? mockPosts : posts
 
   const scrollY = useSharedValue<number>(0)
-  const previousScrollY = useSharedValue<number>(0)
   const headerHeight = 60 + safeAreaInsets.top
-  const headerTranslateY = useSharedValue<number>(0)
 
   // scroll handler with animated scroll handler
   const scrollHandler = useAnimatedScrollHandler((event) => {
@@ -122,7 +113,7 @@ export const FeedPage = memo(() => {
       </AnimatePresence>
       <AnimatedLegendList
         ref={listRef}
-        data={displayPosts}
+        data={posts}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         ListEmptyComponent={renderEmpty}

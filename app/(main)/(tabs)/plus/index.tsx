@@ -52,7 +52,7 @@ export const PlusPage = memo(() => {
     if (isWeb) {
       fileInputRef.current?.click()
     } else {
-      pickImageFromLibrary().then((result: any) => {
+      pickImageFromLibrary(false).then((result: any) => {
         if (result && !result.canceled && result.assets?.[0]) {
           const asset = result.assets[0]
           const pseudoFile = {

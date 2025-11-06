@@ -5,14 +5,17 @@ import { Pressable } from '~/interface/buttons/Pressable'
 
 export default function HomeLayout() {
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        headerBlurEffect: isLiquidGlassAvailable() ? undefined : 'regular',
+        headerTransparent: true,
+        headerLargeStyle: { backgroundColor: 'transparent' },
+      }}
+    >
       <Stack.Screen
         name="index"
         options={{
           title: 'Feed',
-          headerBlurEffect: isLiquidGlassAvailable() ? undefined : 'regular',
-          headerTransparent: true,
-          headerLargeStyle: { backgroundColor: 'transparent' },
           headerLargeTitle: true,
           headerRight: () => (
             <Pressable width={36} height={36} items="center" justify="center">
@@ -24,10 +27,8 @@ export default function HomeLayout() {
       <Stack.Screen name="profile/[userId]" />
       <Stack.Screen
         name="post/[feedId]"
-        options={{
-          title: 'Detail',
-          headerBlurEffect: isLiquidGlassAvailable() ? undefined : 'regular',
-          headerTransparent: true,
+        options={({ route }: { route: any }) => ({
+          title: route.params.username,
           headerLeft: () => (
             <Pressable
               onPress={() => router.back()}
@@ -39,7 +40,7 @@ export default function HomeLayout() {
               <ChevronLeft size={24} />
             </Pressable>
           ),
-        }}
+        })}
       />
     </Stack>
   )

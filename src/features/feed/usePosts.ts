@@ -23,7 +23,7 @@ export function usePosts(options?: UsePostsOptions) {
   }
 }
 
-export function usePostsPaginated(pageSize = 10) {
+export function usePostsPaginated(pageSize = 3) {
   const { user } = useAuth()
   const [allPostsData, setAllPostsData] = useState<Post[]>([])
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)

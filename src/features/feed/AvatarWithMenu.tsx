@@ -3,9 +3,9 @@ import { memo } from 'react'
 import { View } from 'tamagui'
 import * as DropdownMenu from 'zeego/dropdown-menu'
 import { Avatar } from '~/interface/avatars/Avatar'
+import { Pressable } from '~/interface/buttons/Pressable'
 import { HeartIcon } from '~/interface/icons/phosphor/HeartIcon'
 import { UserIcon } from '~/interface/icons/phosphor/UserIcon'
-import { Image } from '~/interface/image/Image'
 
 interface AvatarWithMenuProps {
   avatarUrl?: string
@@ -37,9 +37,9 @@ export const AvatarWithMenu = memo(
     return (
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
-          <View cursor="pointer" pressStyle={{ opacity: 0.8 }} position="relative">
+          <Pressable cursor="pointer" position="relative">
             <Avatar image={avatarUrl} size={32} />
-          </View>
+          </Pressable>
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content>

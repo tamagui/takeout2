@@ -13,9 +13,10 @@ import { showToast } from '~/interface/toast/helpers'
 import { zero } from '~/zero/client'
 import { ListItem } from '../lists/ListItem'
 import { PostActionSheetSharedItems } from './PostActionSheetSharedItems'
+import type { PostActionSheetOptions } from './postActionSheetHelper'
 
 export interface PostActionSheetRef {
-  show: (post: Post) => void
+  show: (post: Post, isOwnProfile?: boolean, options?: PostActionSheetOptions) => void
   hide: () => void
 }
 

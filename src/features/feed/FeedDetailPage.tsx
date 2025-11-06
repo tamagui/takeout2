@@ -1,6 +1,5 @@
 import { useParams } from 'one'
 import { memo } from 'react'
-import { Pressable } from 'react-native'
 import { ScrollView, SizableText, Spacer, XStack, YStack } from 'tamagui'
 import { useAuth } from '~/features/auth/client/authClient'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
@@ -12,10 +11,14 @@ import { Image } from '~/interface/image/Image'
 import { showPostActionSheet } from '~/interface/sheet/postActionSheetHelper'
 import { BodyText } from '~/interface/text/Body'
 import { usePostById } from './usePostById'
+import { ButtonGlassCircle } from '~/interface/buttons/ButtonGlassCircle'
+import { useUser } from '../user/useUser'
+import { Pressable } from '~/interface/buttons/Pressable'
+import { Dot } from '@tamagui/lucide-icons'
 
 export const FeedDetailPage = memo(() => {
   const { feedId } = useParams()
-  const { user } = useAuth()
+  const { user } = useUser()
   const { post } = usePostById({ postId: feedId })
   const isOwnProfile = post?.userId === user?.id
 
@@ -24,58 +27,60 @@ export const FeedDetailPage = memo(() => {
   }
 
   return (
-    <YStack flex={1}>
-      <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-        <XStack items="center" justify="space-between" pb="$2" px="$3">
-          <XStack items="center" gap="$3">
+    <ScrollView
+      flex={1}
+      px="$3"
+      showsVerticalScrollIndicator={false}
+      contentInsetAdjustmentBehavior="automatic"
+    >
+      <XStack items="center" justify="space-between" py="$4">
+        <XStack justify="space-between" gap="$3">
+          <XStack items="center" gap="$3" flex={1}>
             <Avatar image={user.image as string} size={32} />
-            <YStack flex={1}>
-              <XStack items="center" gap="$2">
-                <SizableText size="$4" fontWeight="600">
-                  {user.name}
-                </SizableText>
-                <Spacer flex />
-              </XStack>
-            </YStack>
+            <XStack items="center" gap="$1">
+              <SizableText size="$4" fontWeight="600" numberOfLines={1}>
+                {user.username}
+              </SizableText>
+              <Dot size={16} color="$color10" />
+              <SizableText size="$3" color="$color10">
+                {formatDistanceToNow(post.createdAt)}
+              </SizableText>
+            </XStack>
           </XStack>
-        </XStack>
-        <Pressable
-          onPress={() => {
-            galleryEmitter.emit({
-              items: [{ id: post.id.toString(), url: post.image }],
-              firstItem: post.id.toString(),
-            })
-          }}
-        >
-          <Image
-            key={`${post.id.toString()}`}
-            src={post.image}
-            width="100%"
-            aspectRatio={3 / 4}
-            objectFit="cover"
-          />
-        </Pressable>
-        <XStack px="$3" items="center" gap="$3" py="$2.5" justify="flex-end">
-          <ButtonSimple
-            circular
-            variant="outlined"
-            icon={<DotsThreeIcon size={16} color="$color12" />}
+          <ButtonGlassCircle
+            size={32}
             onPress={() =>
               showPostActionSheet(post, isOwnProfile, {
                 shouldNavigateBackOnDelete: true,
               })
             }
-          />
+          >
+            <DotsThreeIcon size={16} color="$color12" />
+          </ButtonGlassCircle>
         </XStack>
-        <XStack justify="space-between" flex={1} px="$3">
-          <YStack flex={1}>
-            <BodyText color="$color12">{post.caption}</BodyText>
-          </YStack>
-          <SizableText size="$2" color="$color10">
-            {formatDistanceToNow(post.createdAt)}
-          </SizableText>
-        </XStack>
-      </ScrollView>
-    </YStack>
+      </XStack>
+      <Pressable
+        onPress={() => {
+          galleryEmitter.emit({
+            items: [{ id: post.id.toString(), url: post.image }],
+            firstItem: post.id.toString(),
+          })
+        }}
+        mb="$4"
+      >
+        <Image
+          key={`${post.id.toString()}`}
+          src={post.image}
+          width="100%"
+          aspectRatio={1}
+          objectFit="cover"
+          rounded="$6"
+        />
+      </Pressable>
+
+      <YStack>
+        <BodyText color="$color12">{post.caption}</BodyText>
+      </YStack>
+    </ScrollView>
   )
 })

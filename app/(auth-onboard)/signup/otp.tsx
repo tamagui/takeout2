@@ -2,6 +2,8 @@ import { useParams } from 'one'
 import { useEffect, useState } from 'react'
 import { Keyboard } from 'react-native'
 import { SizableText, useEvent, YStack } from 'tamagui'
+import { otpLogin, validateLoginOtpCode } from '~/features/auth/client/otpLogin'
+import { OtpInput } from '~/features/auth/ui/OtpInput'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { useTimer } from '~/helpers/time/useTimer'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
@@ -9,9 +11,7 @@ import { Pressable } from '~/interface/buttons/Pressable'
 import { isSmallScreen } from '~/interface/dimensions'
 import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
-import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
-import { otpLogin, validateLoginOtpCode } from '~/features/auth/client/otpLogin'
-import { OtpInput } from '~/features/auth/ui/OtpInput'
+import { showToast } from '~/interface/toast/helpers'
 
 export const OtpPage = () => {
   const timer = useTimer()
@@ -30,9 +30,8 @@ export const OtpPage = () => {
 
   const handleResendOtp = useEvent(async () => {
     if (!params.method || !params.value) {
-      showErrorSheet({
-        title: 'Error',
-        description: 'Authentication method or value is not specified.',
+      showToast('Authentication method or value is not specified.', {
+        type: 'error',
       })
       return
     }
@@ -45,10 +44,8 @@ export const OtpPage = () => {
       const { error } = await validateLoginOtpCode(params.method, params.value)
 
       if (error) {
-        showErrorSheet({
-          title: error.title,
-          description: error.message,
-          cancelText: 'Okay',
+        showToast(error.message, {
+          type: 'error',
         })
       }
 
@@ -68,10 +65,8 @@ export const OtpPage = () => {
 
   const handleContinue = useEvent(async () => {
     if (!params.method || !params.value) {
-      showErrorSheet({
-        title: 'Error',
-        description: 'Authentication method or value is not specified.',
-        cancelText: 'Okay',
+      showToast('Authentication method or value is not specified.', {
+        type: 'error',
       })
       return
     }
@@ -82,25 +77,24 @@ export const OtpPage = () => {
       if (error) {
         setIsError(true)
         Keyboard.dismiss()
-        showErrorSheet({
-          title: error.title,
-          description: error.message,
-          cancelText: 'Okay',
-          onCancel: () => {
-            setIsError(false)
-            setOtpCode('')
-            setOtpKey(Math.random())
-            setLoading(false)
-          },
+        showToast(error.message, {
+          type: 'error',
         })
+        setTimeout(() => {
+          setIsError(false)
+          setOtpCode('')
+          setOtpKey(Math.random())
+          setLoading(false)
+        }, 500)
         return
       } else {
         timer.pause()
         // useOnboarding hook will handle navigation
       }
     } catch (err) {
+      console.error(err)
+    } finally {
       setLoading(false)
-      throw err
     }
   })
 

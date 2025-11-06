@@ -10,7 +10,7 @@ import { useUser } from '../useUser'
 import { OnboardingStepPageLayout } from './OnboardingStepPageLayout'
 import { authClient } from '~/features/auth/client/authClient'
 import { SERVER_URL } from '~/constants/urls'
-import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
+import { showToast } from '~/interface/toast/helpers'
 
 export const StayConnectedPage = () => {
   const router = useRouter()
@@ -33,9 +33,8 @@ export const StayConnectedPage = () => {
       })
 
       if (response.error) {
-        showErrorSheet({
-          title: 'Failed to save email',
-          description: response.error.message,
+        showToast('Failed to save email', {
+          type: 'error',
         })
         return
       }

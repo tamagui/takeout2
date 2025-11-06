@@ -10,7 +10,7 @@ import { ImageIcon } from '~/interface/icons/phosphor/ImageIcon'
 import { PencilSimpleIcon } from '~/interface/icons/phosphor/PencilSimpleIcon'
 import { Image } from '~/interface/image/Image'
 import { ListItem } from '~/interface/lists/ListItem'
-import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
+import { showToast } from '~/interface/toast/helpers'
 import { Sheet } from '~/interface/sheet/Sheet'
 import { useUploadFiles } from '~/interface/upload/uploadFile'
 import { useUser } from '../useUser'
@@ -35,9 +35,8 @@ export const AvatarSetupPage = () => {
           })
         } catch (error) {
           console.info('Failed to update user avatar:', error)
-          showErrorSheet({
-            title: 'Error',
-            description: 'Failed to update user avatar',
+          showToast('Failed to update user avatar', {
+            type: 'error',
           })
         }
       }
@@ -58,9 +57,8 @@ export const AvatarSetupPage = () => {
 
   useEffect(() => {
     if (errorMessage) {
-      showErrorSheet({
-        title: 'Error',
-        description: errorMessage,
+      showToast(errorMessage, {
+        type: 'error',
       })
     }
   }, [errorMessage])

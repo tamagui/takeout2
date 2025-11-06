@@ -9,7 +9,7 @@ import { Pressable } from '~/interface/buttons/Pressable'
 import { CameraIcon } from '~/interface/icons/phosphor/CameraIcon'
 import { PencilSimpleIcon } from '~/interface/icons/phosphor/PencilSimpleIcon'
 import { Image } from '~/interface/image/Image'
-import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
+import { showToast } from '~/interface/toast/helpers'
 import { useUploadFiles } from '~/interface/upload/uploadFile'
 
 let Sheet: any, ListItem: any, ImageIcon: any
@@ -43,9 +43,8 @@ export const AvatarSetupPage = () => {
           })
         } catch (error) {
           console.info('Failed to update user avatar:', error)
-          showErrorSheet({
-            title: 'Error',
-            description: 'Failed to update user avatar',
+          showToast('Failed to update user avatar', {
+            type: 'error',
           })
         }
       }
@@ -66,9 +65,8 @@ export const AvatarSetupPage = () => {
 
   useEffect(() => {
     if (errorMessage) {
-      showErrorSheet({
-        title: 'Error',
-        description: errorMessage,
+      showToast(errorMessage, {
+        type: 'error',
       })
     }
   }, [errorMessage])

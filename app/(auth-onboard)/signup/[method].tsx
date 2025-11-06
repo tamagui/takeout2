@@ -18,7 +18,7 @@ import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { DeviceMobileSpeakerIcon } from '~/interface/icons/phosphor/DeviceMobileSpeakerIcon'
 import { EnvelopeSimpleIcon } from '~/interface/icons/phosphor/EnvelopeSimpleIcon'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
-import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
+import { showToast } from '~/interface/toast/helpers'
 
 export const SignupPage = memo(() => {
   useOnboarding()
@@ -73,9 +73,8 @@ export const SignupPage = memo(() => {
 
   const handleContinue = useEvent(async () => {
     if (!method) {
-      showErrorSheet({
-        title: 'Error',
-        description: 'Authentication method is not specified.',
+      showToast('Authentication method is not specified.', {
+        type: 'error',
       })
       return
     }
@@ -101,9 +100,8 @@ export const SignupPage = memo(() => {
         return
       }
       Keyboard.dismiss()
-      showErrorSheet({
-        title: error.title,
-        description: error.message,
+      showToast(error.message, {
+        type: 'error',
       })
     } finally {
       clearTimeout(tm)

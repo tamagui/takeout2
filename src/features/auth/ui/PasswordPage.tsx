@@ -6,13 +6,12 @@ import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Input } from '~/interface/forms/Input'
 import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
-import { showErrorSheet } from '~/interface/sheet/errorSheetHelper'
+import { showToast } from '~/interface/toast/helpers'
 import { passwordLogin } from '../client/passwordLogin'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
 
 export const PasswordPage = () => {
   const params = useParams<{ method?: 'phone' | 'email'; value?: string }>()
-  const [isError, setIsError] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
 
   useOnboarding()
@@ -26,10 +25,8 @@ export const PasswordPage = () => {
 
   const handleContinue = async () => {
     if (!params.method || !params.value) {
-      showErrorSheet({
-        title: 'Error',
-        description: 'Authentication method or value is not specified.',
-        cancelText: 'Okay',
+      showToast('Authentication method or value is not specified.', {
+        type: 'error',
       })
       return
     }
@@ -43,22 +40,17 @@ export const PasswordPage = () => {
       const { error } = await passwordLogin(params.method, params.value, password)
 
       if (error) {
-        setIsError(true)
         Keyboard.dismiss()
-        showErrorSheet({
-          title: error.title,
-          description: error.message,
-          cancelText: 'Okay',
-          onCancel: () => {
-            setIsError(false)
-            setLoading(false)
-          },
+        showToast(error.message, {
+          type: 'error',
         })
+
         return
       }
     } catch (err) {
+      console.error(err)
+    } finally {
       setLoading(false)
-      throw err
     }
   }
 

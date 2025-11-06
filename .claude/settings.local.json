@@ -78,7 +78,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun takeout docs get tamagui"
+            "command": "bun tko docs get tamagui zero"
           }
         ]
       },
@@ -87,7 +87,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun takeout docs get zero"
+            "command": "bun tko docs get zero"
           }
         ]
       }

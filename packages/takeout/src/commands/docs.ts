@@ -84,32 +84,76 @@ const listCommand = defineCommand({
 const getCommand = defineCommand({
   meta: {
     name: 'get',
-    description: 'Get the content of a specific documentation file',
+    description: 'Get the content of one or more documentation files',
   },
   args: {
     name: {
       type: 'positional',
-      description: 'Name of the doc file (without .md extension)',
+      description: 'Name(s) of the doc files (without .md extension)',
       required: true,
+      valueHint: 'name...',
     },
   },
   async run({ args }) {
-    const fileName = args.name.endsWith('.md') ? args.name : `${args.name}.md`
-    const filePath = join(DOCS_DIR, fileName)
+    // args._ contains all positional arguments
+    // if multiple names are provided, they'll be in args._
+    // if only one is provided, it will be in both args.name and args._[0]
+    const names = args._.length > 0 ? args._ : [args.name]
 
-    if (!existsSync(filePath)) {
-      console.error(pc.red(`✗ Doc file not found: ${args.name}`))
-      console.info()
-      console.info(pc.dim(`Use 'takeout docs list' to see available docs`))
-      process.exit(1)
+    const results: Array<{ name: string; content: string }> = []
+    const errors: Array<{ name: string; error: string }> = []
+
+    // collect all docs
+    for (const name of names) {
+      const fileName = name.endsWith('.md') ? name : `${name}.md`
+      const filePath = join(DOCS_DIR, fileName)
+
+      if (!existsSync(filePath)) {
+        errors.push({ name, error: 'File not found' })
+        continue
+      }
+
+      try {
+        const content = readFileSync(filePath, 'utf-8')
+        results.push({ name, content })
+      } catch (err) {
+        errors.push({ name, error: String(err) })
+      }
     }
 
-    try {
-      const content = readFileSync(filePath, 'utf-8')
-      console.info(content)
-    } catch (err) {
-      console.error(pc.red(`✗ Error reading file: ${err}`))
-      process.exit(1)
+    // print errors if any
+    if (errors.length > 0) {
+      for (const { name, error } of errors) {
+        console.error(pc.red(`✗ Doc file not found: ${name}`))
+      }
+      console.info()
+      console.info(pc.dim(`Use 'takeout docs list' to see available docs`))
+
+      // if no successful results, exit
+      if (results.length === 0) {
+        process.exit(1)
+      }
+      console.info()
+    }
+
+    // print results
+    for (let i = 0; i < results.length; i++) {
+      const result = results[i]
+      if (!result) continue
+
+      // print title
+      console.info(`# ${result.name}`)
+      console.info()
+
+      // print content
+      console.info(result.content)
+
+      // print separator if not last item
+      if (i < results.length - 1) {
+        console.info()
+        console.info('---')
+        console.info()
+      }
     }
   },
 })

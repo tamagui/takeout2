@@ -1,6 +1,11 @@
-import { Stack } from 'one'
+import { Slot, Stack } from 'one'
+import { isWeb } from 'tamagui'
 
-export default function ProfileLayout() {
+export function ProfileLayout() {
+  if (isWeb) {
+    return <Slot />
+  }
+
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="profile-edit" />

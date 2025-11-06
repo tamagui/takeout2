@@ -146,10 +146,7 @@ export const AvatarSetupPage = () => {
         bottom={
           <YStack gap="$5">
             <SizableText
-              animation="200ms"
               opacity={localImageUri ? 0.6 : 0}
-              enterStyle={{ opacity: 0 }}
-              exitStyle={{ opacity: 0 }}
               size="$3"
               color="$color10"
               text="center"

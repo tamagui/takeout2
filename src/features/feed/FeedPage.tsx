@@ -1,5 +1,5 @@
 import { LegendList, type LegendListRef } from '@legendapp/list'
-import { isAndroid, useEmitter } from '@vxrn/helpers'
+import { isAndroid, isNative, useEmitter } from '@vxrn/helpers'
 import { memo, useCallback, useRef } from 'react'
 import { RefreshControl } from 'react-native'
 import Animated, {
@@ -27,7 +27,6 @@ export const FeedPage = memo(() => {
   const scrollY = useSharedValue<number>(0)
   const headerHeight = 60 + safeAreaInsets.top
 
-  // scroll handler with animated scroll handler
   const scrollHandler = useAnimatedScrollHandler((event) => {
     scrollY.value = event.contentOffset.y
   })
@@ -47,7 +46,6 @@ export const FeedPage = memo(() => {
     }
   })
 
-  // handle scroll to top
   useEmitter(scrollToTopEmitter, (tab) => {
     if (tab === 'home') {
       listRef.current?.scrollToOffset({ offset: 0, animated: true })
@@ -73,9 +71,12 @@ export const FeedPage = memo(() => {
         <SizableText size="$5" color="$color10">
           No posts yet
         </SizableText>
-        <SizableText size="$3" color="$color8" mt="$2">
-          Pull to refresh
-        </SizableText>
+
+        {isNative && (
+          <SizableText size="$3" color="$color8" mt="$2">
+            Pull to refresh
+          </SizableText>
+        )}
       </YStack>
     )
   }, [isLoading])
@@ -90,7 +91,7 @@ export const FeedPage = memo(() => {
   }, [hasMore, posts.length])
 
   return (
-    <View style={{ flex: 1 }}>
+    <View flex={1}>
       <AnimatePresence>
         {isLoading && (
           <YStack
@@ -111,6 +112,7 @@ export const FeedPage = memo(() => {
           </YStack>
         )}
       </AnimatePresence>
+
       <AnimatedLegendList
         ref={listRef}
         data={posts}
@@ -129,6 +131,7 @@ export const FeedPage = memo(() => {
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
       />
+
       {/* Scroll to top button */}
       <Animated.View
         style={[

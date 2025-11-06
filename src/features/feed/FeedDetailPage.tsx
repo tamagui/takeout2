@@ -5,7 +5,7 @@ import { memo } from 'react'
 import { ScrollView, SizableText, XStack, YStack } from 'tamagui'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
 import { Avatar } from '~/interface/avatars/Avatar'
-import { ButtonGlassCircle } from '~/interface/buttons/ButtonGlassCircle'
+import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
 import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
@@ -58,8 +58,10 @@ export const FeedDetailPage = memo(() => {
                 </SizableText>
               </XStack>
             </XStack>
-            <ButtonGlassCircle
-              size={32}
+            <ButtonSimple
+              size="small"
+              circular
+              glass
               onPress={() =>
                 showPostActionSheet(post, isOwnProfile, {
                   shouldNavigateBackOnDelete: true,
@@ -67,7 +69,7 @@ export const FeedDetailPage = memo(() => {
               }
             >
               <DotsThreeIcon size={16} color="$color12" />
-            </ButtonGlassCircle>
+            </ButtonSimple>
           </XStack>
         </XStack>
         <Pressable

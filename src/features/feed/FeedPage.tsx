@@ -10,7 +10,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { AnimatePresence, SizableText, Spinner, View, YStack } from 'tamagui'
-import { ButtonGlassCircle } from '~/interface/buttons/ButtonGlassCircle'
+import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { ArrowUpIcon } from '~/interface/icons/phosphor/ArrowUpIcon'
 import { HomeShimmer } from '~/interface/shimmer/HomeShimmer'
 import { scrollToTopEmitter } from '../main-tabs/scrollToTopEmitter'
@@ -144,12 +144,14 @@ export const FeedPage = memo(() => {
           scrollToTopStyle,
         ]}
       >
-        <ButtonGlassCircle
-          size={42}
+        <ButtonSimple
+          size="large"
+          circular
+          glass
           onPress={() => listRef.current?.scrollToOffset({ offset: 0, animated: true })}
         >
           <ArrowUpIcon size={20} color="white" />
-        </ButtonGlassCircle>
+        </ButtonSimple>
       </Animated.View>
     </View>
   )

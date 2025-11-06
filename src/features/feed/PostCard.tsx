@@ -6,7 +6,7 @@ import { userById } from '~/data/queries/user'
 import type { Post } from '~/data/types'
 import { useAuth } from '~/features/auth/client/authClient'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
-import { ButtonGlassCircle } from '~/interface/buttons/ButtonGlassCircle'
+import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
 import { Image } from '~/interface/image/Image'
@@ -53,14 +53,16 @@ export const PostCard = memo(({ post }: PostCardProps) => {
                     {formatDistanceToNow(post.createdAt)}
                   </SizableText>
                 </XStack>
-                <ButtonGlassCircle
-                  size={32}
+                <ButtonSimple
+                  size="small"
+                  circular
+                  glass
                   onPress={() => {
                     showPostActionSheet(post, isOwnProfile)
                   }}
                 >
                   <DotsThreeIcon size={16} color="$color12" />
-                </ButtonGlassCircle>
+                </ButtonSimple>
               </XStack>
             </YStack>
           </XStack>

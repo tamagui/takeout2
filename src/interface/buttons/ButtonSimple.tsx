@@ -32,6 +32,7 @@ type ButtonSimpleAdditionalProps = {
   icon?: any
   iconAfter?: boolean
   iconProps?: IconProps
+  isInteractive?: boolean
   scaleIcon?: number
 } & TooltipWrapperProps
 
@@ -329,6 +330,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
       icon,
       iconAfter,
       iconProps,
+      isInteractive,
       popover,
       scaleIcon = 1,
       theme,
@@ -402,8 +404,16 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
     const glassWrappedElement = glass ? (
       <GlassView
         glassEffectStyle="clear"
+        {...(typeof glass === 'object' ? glass : {})}
+        isInteractive={isInteractive}
+        borderRadius={rest.circular ? 100 : undefined}
         containerStyle={{
-          width: '100%',
+          ...(rest.circular
+            ? {
+                width: buttonWidths[rest.size || 'medium'],
+                height: buttonWidths[rest.size || 'medium'],
+              }
+            : { width: '100%' }),
           items: 'center',
           justify: 'center',
           ...(typeof glass === 'object' ? glass.containerStyle : {}),

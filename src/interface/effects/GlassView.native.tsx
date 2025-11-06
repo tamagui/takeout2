@@ -18,7 +18,7 @@ export const GlassView = memo(
     isFallback,
     backgroundColor = 'rgba(255, 255, 255, 0.05)',
     tintColor,
-    isInteractive = false,
+    isInteractive = true,
   }: GlassViewProps) => {
     // use expo-glass-effect for iOS 26+
     if (isLiquidGlassAvailable() && !isFallback) {

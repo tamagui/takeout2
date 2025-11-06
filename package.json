@@ -40,7 +40,7 @@
     "onboard": "tko onboard",
     "one:dev": "bun run ./scripts/cleanup-dev.ts && bun run one dev",
     "one:patch": "one patch",
-    "postinstall": "bun ./scripts/build-initial.ts & bun run one:patch",
+    "postinstall": "bun ./scripts/build-initial.ts && bun run bootstrap && bun run one:patch",
     "prebuild:native": "one prebuild",
     "release": "bun ./scripts/release.ts",
     "repl": "tko run repl",

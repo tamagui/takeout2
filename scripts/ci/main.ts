@@ -173,17 +173,6 @@ try {
         }
       },
     },
-    {
-      name: 'build-migrations',
-      condition: () => !values['skip-build'],
-      fn: async () => {
-        await run(`bun tko migrate build`, {
-          prefix: 'migrations',
-          timeout: time.ms.minutes(2),
-          timing: 'migrate:build',
-        })
-      },
-    },
   ])
 
   // if we skipped build, try to use the last saved Docker image

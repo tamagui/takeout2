@@ -94,7 +94,7 @@ async function main() {
       await Promise.all(
         packageJsons.map(async ({ cwd, json }) => {
           const distDir = join(cwd, 'dist')
-          if (json.scripts.build) {
+          if (json.scripts?.build) {
             if (!(await fs.pathExists(distDir))) {
               console.warn('no dist dir!', distDir)
               process.exit(1)

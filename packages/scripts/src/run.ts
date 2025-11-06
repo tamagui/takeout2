@@ -46,6 +46,11 @@ const forwardArgs = args.filter(
     arg.startsWith('--') && arg !== '--no-root' && arg !== '--bun' && arg !== '--watch'
 )
 
+// Get the list of scripts already being run by a parent process
+const parentRunningScripts = process.env.BUN_RUN_SCRIPTS
+  ? process.env.BUN_RUN_SCRIPTS.split(',')
+  : []
+
 const processes: ReturnType<typeof spawn>[] = []
 const { addChildProcess, exit } = handleProcessExit()
 
@@ -211,10 +216,18 @@ const runScript = async (
     `${color}${prefixLabel}${reset} Running: ${commandDisplay} (in ${resolve(cwd)})`
   )
 
+  // Combine parent running scripts with current scripts to prevent recursion
+  const allRunningScripts = [...parentRunningScripts, ...runCommands].join(',')
+
   const proc = spawn('bun', runArgs, {
     stdio: ['pipe', 'pipe', 'pipe'],
     shell: false,
-    env: { ...process.env, FORCE_COLOR: '3', BUN_RUN_PARENT_SCRIPT: name } as any,
+    env: {
+      ...process.env,
+      FORCE_COLOR: '3',
+      BUN_RUN_PARENT_SCRIPT: name,
+      BUN_RUN_SCRIPTS: allRunningScripts,
+    } as any,
     cwd: resolve(cwd),
     detached: true,
   })
@@ -307,7 +320,7 @@ async function main() {
       // Root package.json scripts first, if not disabled
       if (!noRoot) {
         const scriptPromises = runCommands
-          .filter((name) => name !== process.env[`BUN_RUN_PARENT_SCRIPT`])
+          .filter((name) => !parentRunningScripts.includes(name))
           .map((name) => runScript(name))
 
         await Promise.all(scriptPromises)
@@ -316,9 +329,11 @@ async function main() {
       const workspaceScriptMap = await mapWorkspacesToScripts(runCommands)
 
       for (const [workspace, { scripts, packageName }] of workspaceScriptMap.entries()) {
-        const workspaceScriptPromises = scripts.map((scriptName) =>
-          runScript(scriptName, workspace, `[${packageName}] [${scriptName}]`)
-        )
+        const workspaceScriptPromises = scripts
+          .filter((scriptName) => !parentRunningScripts.includes(scriptName))
+          .map((scriptName) =>
+            runScript(scriptName, workspace, `[${packageName}] [${scriptName}]`)
+          )
 
         await Promise.all(workspaceScriptPromises)
       }

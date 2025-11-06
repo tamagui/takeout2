@@ -47,10 +47,7 @@ export const ZERO_SERVER_URL = (() => {
     // Default to production URL if not set
     return import.meta.env.VITE_PUBLIC_ZERO_SERVER || 'https://zero.fleekapp.fxy.dev'
   } else {
-    // For dev server, we assume zero server is running alongside one server.
-    const serverUrlObj = new URL(serverUrl)
-    serverUrlObj.port = '4849' // Zero server port
-    return serverUrlObj.toString().replace(/\/+$/, '')
+    return import.meta.env.VITE_PUBLIC_ZERO_SERVER
   }
 })()
 

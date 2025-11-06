@@ -504,7 +504,7 @@ export const scriptCommand = defineCommand({
 
     // if no name provided, list all available scripts
     if (!scriptName) {
-      listAllScripts()
+      listAllScripts(false) // don't show built-in commands in script listing
       return
     }
 

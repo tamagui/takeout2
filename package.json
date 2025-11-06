@@ -44,7 +44,6 @@
     "one:patch": "one patch",
     "postinstall": "bun ./scripts/build-initial.ts && bun run bootstrap && bun run one:patch",
     "prebuild:native": "one prebuild",
-    "release": "bun ./scripts/release.ts",
     "repl": "tko run repl",
     "run:dev": "bun env:dev bun",
     "run:prod-live": "REMOTE=WebApp bun run:prod",
@@ -62,10 +61,7 @@
   },
   "resolutions": {
     "motion": "12.23.22",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "@expo/fingerprint": "0.15.3",
-    "sharp": "npm:@tamagui/proxy-worm@1.123.14"
+    "@expo/fingerprint": "0.15.3"
   },
   "expo": {
     "doctor": {

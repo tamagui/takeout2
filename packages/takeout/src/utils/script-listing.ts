@@ -100,7 +100,20 @@ export function formatScriptList(
 }
 
 // list all available scripts (local and built-in)
-export function listAllScripts(): void {
+export function listAllScripts(includeCommands = true): void {
+  if (includeCommands) {
+    // Show built-in CLI commands
+    console.info()
+    console.info(pc.bold(pc.cyan('🛠️  Built-in Commands')))
+    console.info()
+    console.info(`  ${pc.green('onboard')} ${pc.dim('- Setup wizard for new projects')}`)
+    console.info(`  ${pc.green('docs')} ${pc.dim('- View documentation')}`)
+    console.info(`  ${pc.green('env:setup')} ${pc.dim('- Setup environment variables')}`)
+    console.info(`  ${pc.green('run')} ${pc.dim('- Run scripts in parallel')}`)
+    console.info(`  ${pc.green('script')} ${pc.dim('- Manage and run scripts')}`)
+    console.info(`  ${pc.green('completion')} ${pc.dim('- Shell completion setup')}`)
+  }
+
   const localScripts = discoverScripts(getLocalScriptsDir())
   const builtInDir = findScriptsPackageRoot()
   const builtInScripts = builtInDir ? discoverScripts(builtInDir) : new Map()
@@ -124,6 +137,7 @@ export function listAllScripts(): void {
   }
 
   console.info()
+  console.info(pc.dim(`Run: tko <command> for built-in commands`))
   console.info(pc.dim(`Run: tko <script-name> [args...] to execute a script`))
   console.info(pc.dim(`Run: tko script new <path> to create a new script`))
   console.info()

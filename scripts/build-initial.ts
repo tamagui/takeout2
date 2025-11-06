@@ -11,7 +11,8 @@ if (!(await exists(`./node_modules/.bin/tko`))) {
 }
 
 if (!(await exists(`./packages/helpers/dist`))) {
-  await $`bun run build`
+  // can't use our package command as its not built yet
+  await $`bun ./packages/scripts/src/run.ts build --no-root`
 }
 
 function symlinkBins() {

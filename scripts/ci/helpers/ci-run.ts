@@ -6,6 +6,8 @@ import { handleProcessExit } from '@vxrn/scripts/helpers/handleProcessExit'
 import { run } from '@vxrn/scripts/helpers/run'
 
 export async function getTestWebEnv() {
+  process.env.NODE_ENV = 'test'
+
   const testEnv = await getTestEnv()
   return {
     ...testEnv,

@@ -14,6 +14,7 @@ import { envSetupCommand } from './commands/env-setup'
 import { onboardCommand } from './commands/onboard'
 import { runCommand } from './commands/run'
 import { scriptCommand } from './commands/script'
+import { listAllScripts } from './utils/script-listing'
 
 // check if a directory exists in scripts folder (lazy check)
 function isScriptCategory(name: string): boolean {
@@ -36,7 +37,6 @@ if (isShorthand) {
   const firstArg = process.argv[2]
   const secondArg = process.argv[3]
   const builtInCommands = [
-    'check',
     'docs',
     'onboard',
     'run',
@@ -75,9 +75,7 @@ const main = defineCommand({
   meta: {
     name: isShorthand ? 'tko' : 'takeout',
     version: '0.0.2',
-    description: isShorthand
-      ? 'Takeout CLI (shorthand) - try "tko ci" to run CI scripts'
-      : 'CLI tools for Takeout starter kit',
+    description: 'CLI tools for Takeout starter kit',
   },
   subCommands: {
     onboard: onboardCommand,
@@ -86,6 +84,14 @@ const main = defineCommand({
     run: runCommand,
     script: scriptCommand,
     completion: completionCommand,
+  },
+  run() {
+    // only show available scripts when running tko with truly no arguments
+    // check if process.argv has any arguments after the command name
+    const hasArgs = process.argv.length > 2
+    if (!hasArgs) {
+      listAllScripts()
+    }
   },
 })
 

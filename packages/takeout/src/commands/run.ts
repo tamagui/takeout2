@@ -19,6 +19,7 @@ export const runCommand = defineCommand({
     // Get all arguments after 'run'
     const scriptArgs = process.argv.slice(3)
     const firstArg = scriptArgs[0]
+    const secondArg = scriptArgs[1]
 
     // Check if this is a filesystem script (category or script with slash)
     if (firstArg) {
@@ -27,6 +28,35 @@ export const runCommand = defineCommand({
 
       // Check if it's a category directory
       if (existsSync(categoryPath) && statSync(categoryPath).isDirectory()) {
+        // Check if --all flag is present
+        const hasAllFlag = secondArg === '--all'
+
+        if (hasAllFlag) {
+          // Run all scripts in this category in parallel
+          const { discoverScripts } = await import('./script')
+          const { runScriptsInParallel } = await import('../utils/parallel-runner')
+          const pc = (await import('picocolors')).default
+          const categoryScripts = discoverScripts(categoryPath)
+
+          if (categoryScripts.size === 0) {
+            console.info(pc.yellow(`No scripts found in ${firstArg}/`))
+            return
+          }
+
+          const scriptsToRun = Array.from(categoryScripts.entries()).map(
+            ([name, path]) => ({
+              name: name.replace(`${firstArg}/`, ''),
+              path,
+            })
+          )
+
+          await runScriptsInParallel(scriptsToRun, {
+            title: pc.bold(pc.cyan(`Running all scripts in ${firstArg}/`)),
+          })
+
+          return
+        }
+
         // Lazy load script functions only when needed
         const { discoverScripts, getScriptMetadata } = await import('./script')
         const pc = (await import('picocolors')).default
@@ -57,6 +87,7 @@ export const runCommand = defineCommand({
 
           console.info()
           console.info(pc.dim(`Run: tko ${firstArg} <name> [args...]`))
+          console.info(pc.dim(`Or:  tko ${firstArg} --all to run all scripts`))
           console.info(pc.dim(`Or:  tko run ${firstArg}/<name> [args...] to execute`))
           console.info()
         } else {

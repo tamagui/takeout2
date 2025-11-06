@@ -2,7 +2,7 @@ import { LinearGradient } from '@tamagui/linear-gradient'
 import type { ReactNode } from 'react'
 import { KeyboardAvoidingView, ScrollView, Platform } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { YStack } from 'tamagui'
+import { isWeb, YStack } from 'tamagui'
 
 export interface ProgressBarConfig {
   totalSteps: number
@@ -33,6 +33,20 @@ export const BaseStepPageLayout = ({
 
   const content = (
     <>
+      {progressBar?.showProgressBar && (
+        <YStack px="$4" py="$2">
+          {/* Progress bar would go here */}
+          <YStack height={4} bg="$color4" rounded="$2">
+            <YStack
+              height={4}
+              bg="$color8"
+              rounded="$2"
+              width={`${(progressBar.currentStep / progressBar.totalSteps) * 100}%`}
+            />
+          </YStack>
+        </YStack>
+      )}
+
       <ScrollView
         scrollEnabled={!disableScroll}
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 50 }}
@@ -41,24 +55,13 @@ export const BaseStepPageLayout = ({
         showsVerticalScrollIndicator={false}
       >
         <YStack flex={1} pt={!hideBackButton ? top + 24 : 0}>
-          {progressBar && progressBar.showProgressBar && (
-            <YStack px="$4" py="$2">
-              {/* Progress bar would go here */}
-              <YStack height={4} bg="$color4" rounded="$2">
-                <YStack
-                  height={4}
-                  bg="$color8"
-                  rounded="$2"
-                  width={`${(progressBar.currentStep / progressBar.totalSteps) * 100}%`}
-                />
-              </YStack>
-            </YStack>
-          )}
-          <YStack flex={1} px={14}>
+          <YStack px={14}>
             {children}
+            {isWeb ? <YStack pt="$6">{bottomElement}</YStack> : null}
           </YStack>
         </YStack>
       </ScrollView>
+
       {linearGradientFooter && (
         <LinearGradient
           colors={['$background0', '$background']}
@@ -70,7 +73,8 @@ export const BaseStepPageLayout = ({
           pointerEvents="none"
         />
       )}
-      {bottomElement && (
+
+      {!isWeb && bottomElement && (
         <YStack
           position="absolute"
           b={0}

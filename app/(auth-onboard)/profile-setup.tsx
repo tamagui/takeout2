@@ -16,9 +16,7 @@ import { useQuery, zero } from '~/zero/client'
 
 function checkUsernameValid(username: string) {
   if (username.length < 3) return false
-
   if (!username.match(/^[a-z][a-z0-9_]+$/)) return false
-
   return true
 }
 
@@ -109,35 +107,33 @@ export const ProfileSetupPage = () => {
           onPress={handleContinue}
           disabled={!canContinue || isValidating}
         >
-          <ButtonSimple.Text>{isValidating ? 'Validating...' : 'Next'}</ButtonSimple.Text>
+          {isValidating ? 'Validating...' : 'Next'}
         </ButtonSimple>
       }
     >
-      <YStack gap="$4">
-        {/* username input */}
-        <YStack gap="$2">
-          <XStack items="center" gap="$2">
-            <Input
-              placeholder="johndoe"
-              value={username}
-              onChangeText={setUsername}
-              autoCapitalize="none"
-              autoCorrect={false}
-              fontWeight="600"
-              rounded="$5"
-              flex={1}
-            />
-            <XStack position="absolute" end={0} marginEnd={16}>
-              {isCheckingAvailability ? (
-                <Spinner size="small" color="$color10" />
-              ) : isAvailable ? (
-                <CheckIcon size={18} color="$green10" />
-              ) : isUsernameInvalid || isUnavailable ? (
-                <XIcon size={18} color="$red10" />
-              ) : null}
-            </XStack>
+      <YStack gap="$2">
+        <XStack items="center" gap="$2">
+          <Input
+            placeholder="johndoe"
+            value={username}
+            onChangeText={setUsername}
+            autoCapitalize="none"
+            autoCorrect={false}
+            fontWeight="600"
+            rounded="$5"
+            flex={1}
+          />
+
+          <XStack marginEnd={16}>
+            {isCheckingAvailability ? (
+              <Spinner size="small" color="$color10" />
+            ) : isAvailable ? (
+              <CheckIcon size={18} color="$green10" />
+            ) : isUsernameInvalid || isUnavailable ? (
+              <XIcon size={18} color="$red10" />
+            ) : null}
           </XStack>
-        </YStack>
+        </XStack>
 
         {isUnavailable && !isCheckingAvailability ? (
           <SubTitle size="$3" mt="$1" color="$red10">

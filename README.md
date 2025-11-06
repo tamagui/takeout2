@@ -142,7 +142,8 @@ Database schema is defined in:
 - `src/database/schema-public.ts` - Public tables (exposed to Zero/client)
 - `src/database/schema-private.ts` - Private tables
 
-You always sync the schema-public to your Zero models.
+If you need something outside of Drizzle migrations, you can do
+`bun db:migrate-add`
 
 ## Authentication
 

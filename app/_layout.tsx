@@ -11,7 +11,7 @@ import {
 import { NotificationProvider } from '~/interface/notification/Notification'
 import { ToastProvider } from '~/interface/toast/Toast'
 import { DragDropFile } from '~/interface/upload/DragDropFile'
-import { PlatformSpecificProvider } from '~/providers/PlatformSpecificRootProvider'
+import { PlatformSpecificRootProvider } from '~/providers/PlatformSpecificRootProvider'
 import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
 import { ProvideZero } from '~/zero/client'
 
@@ -82,7 +82,7 @@ function SharedProviders({ children }: { children: ReactNode }) {
         <SafeAreaProvider>
           <ToastProvider>
             <NotificationProvider>
-              <PlatformSpecificProvider>{children}</PlatformSpecificProvider>
+              <PlatformSpecificRootProvider>{children}</PlatformSpecificRootProvider>
             </NotificationProvider>
           </ToastProvider>
         </SafeAreaProvider>

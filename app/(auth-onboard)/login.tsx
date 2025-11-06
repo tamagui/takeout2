@@ -90,6 +90,7 @@ export const LoginPage = () => {
               size="large"
               onPress={handleSignInAdmin}
               width="100%"
+              data-testid="login-as-admin"
               pressStyle={{
                 scale: 0.98,
               }}

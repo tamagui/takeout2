@@ -4,6 +4,7 @@
 general:
 
 - zero migrations needs improvement - lambda / part of migrate likely
+- fix test.skip tests
 - job system should be here
 - get tests working
 - re-enable database backup in ci.ts once ./src/database/scripts/backup.ts is

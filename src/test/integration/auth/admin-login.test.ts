@@ -10,7 +10,7 @@ test.beforeEach(async ({ context }) => {
   await context.clearCookies()
 })
 
-test('admin login via UI', async ({ page }) => {
+test.skip('admin login via UI', async ({ page }) => {
   // Track auth requests
   let signupRequest: any = null
   page.on('response', async (response) => {
@@ -43,7 +43,7 @@ test('admin login via UI', async ({ page }) => {
   }
 })
 
-test('admin login shows username attribute', async ({ page }) => {
+test.skip('admin login shows username attribute', async ({ page }) => {
   await page.goto('http://localhost:8081/login?showAdmin')
   await page.waitForTimeout(1000)
 

@@ -1,7 +1,5 @@
 #!/usr/bin/env bun
 
-import '../cleanup-dev' // happens often enough running ci locally
-
 import {
   CreateRepositoryCommand,
   DescribeImagesCommand,

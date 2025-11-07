@@ -1,0 +1,456 @@
+---
+title: FAQ
+description: Frequently asked questions about Takeout
+---
+
+# Frequently Asked Questions
+
+Common questions and answers about using Takeout.
+
+## General
+
+### What is Takeout?
+
+Takeout is a production-ready starter kit for building full-stack, cross-platform applications with React. It includes authentication, real-time sync, database management, and deployment configuration out of the box.
+
+### Why use Takeout over Create React App or Next.js?
+
+Takeout is specifically designed for building cross-platform apps (web, iOS, Android, desktop) with real-time capabilities. It includes:
+- Universal React components that work on all platforms
+- Real-time offline-first data sync with Zero
+- Complete authentication system with Better Auth
+- Production deployment to AWS with SST
+- Mobile app builds with Expo
+- Desktop app support with Tauri
+
+### Is Takeout production-ready?
+
+Yes. Takeout is built from patterns refined through building real products. It includes:
+- Comprehensive CI/CD pipeline
+- Database migration system
+- Health monitoring
+- Error tracking
+- Automated deployments
+- OTA updates for mobile apps
+
+### Can I use Takeout for web-only projects?
+
+Absolutely. While Takeout supports mobile and desktop, you can build web-only apps by simply not using the native features. All the web infrastructure (authentication, database, API routes, deployment) works independently.
+
+## Technical
+
+### Why Bun instead of npm/yarn?
+
+Bun is significantly faster than npm/yarn for:
+- Package installation (10-100x faster)
+- Running scripts
+- TypeScript execution
+
+It's also a complete toolkit (runtime + package manager + bundler) which simplifies the toolchain.
+
+### Why Zero instead of GraphQL/REST?
+
+Zero provides:
+- **Offline-first architecture** - App works without internet
+- **Real-time sync** - Changes propagate instantly
+- **Optimistic UI** - Immediate feedback
+- **Automatic conflict resolution** - No manual merge logic
+- **Type-safe queries** - Full TypeScript support
+
+Traditional REST/GraphQL requires manual state management, cache invalidation, and websocket coordination.
+
+### Why single package.json instead of monorepo?
+
+A single package.json offers:
+- Simpler dependency management
+- Faster installations
+- Easier to understand
+- No version conflicts between packages
+- Better for small-to-medium teams
+
+Monorepos add complexity that most projects don't need.
+
+### Can I use a different database?
+
+Takeout is optimized for PostgreSQL because Zero requires it for logical replication. While you could add other databases for specific features, PostgreSQL should remain the primary database.
+
+### Can I deploy to platforms other than AWS?
+
+The current deployment setup uses SST for AWS. We've also added Uncloud support. You could adapt the Docker setup for other platforms (GCP, Azure, DigitalOcean), but you'll need to configure:
+- Container orchestration (ECS, Cloud Run, etc.)
+- Managed PostgreSQL with logical replication
+- Load balancing
+- CDN for static assets
+
+See [Deployment](/docs/deployment) for more details.
+
+## Development
+
+### How do I add a new feature?
+
+See [Guides: Adding a Feature](/docs/guides-adding-feature) for a step-by-step guide. The basic process:
+
+1. Create feature directory in `src/features/`
+2. Add components, hooks, queries, and mutations
+3. Export public API from `index.ts`
+4. Import and use in your app routes
+
+### How do I add environment variables?
+
+Never edit `src/server/env-server.ts` directly. Instead:
+
+1. Add variable to `package.json` `env` section
+2. Run `bun env:update`
+3. Add example value to `.env.development`
+4. Update `.env` with actual value
+
+See [Environment](/docs/environment) for details.
+
+### How do I run migrations in production?
+
+Migrations run automatically during deployment via Lambda function. The SST config includes a `PostgresMigrator` Lambda that runs on every deploy.
+
+For manual migrations:
+
+```bash
+bun run:prod bun migrate
+```
+
+### Why am I getting TypeScript errors?
+
+Common causes:
+- **Outdated generated types:** Run `bun tko zero generate`
+- **Cache issues:** Delete `node_modules/.vite` and restart
+- **Version mismatch:** Ensure Node version matches `package.json`
+
+Run `bun tko check types` to see all type errors.
+
+### How do I debug database queries?
+
+PostgreSQL logs queries automatically:
+
+```bash
+# View logs
+docker compose logs -f postgres
+
+# Slow queries (>1000ms) are logged automatically
+```
+
+Use Adminer (http://localhost:8080) or TablePlus to inspect data and run queries.
+
+## Zero Sync
+
+### What happens when a user is offline?
+
+Zero provides complete offline functionality:
+1. Queries run against local SQLite database
+2. Mutations apply to local database immediately
+3. UI updates instantly (optimistic)
+4. Changes queue for server sync
+5. When online, changes sync to server
+6. Conflicts resolve automatically
+
+### How does conflict resolution work?
+
+Zero uses Last Write Wins (LWW) with custom conflict resolution:
+- Each mutation has a timestamp
+- Server applies mutations in order
+- Concurrent edits use latest timestamp
+- Custom mutators can implement business logic for conflicts
+
+See [Real-time](/docs/real-time) for details.
+
+### Can I use Zero with existing PostgreSQL databases?
+
+Yes, but you need to:
+1. Enable logical replication
+2. Add Zero metadata tables
+3. Define Zero schemas for your tables
+4. Run initial sync
+
+Contact Zero documentation for migration guides.
+
+### How do I query relationships?
+
+Zero supports SQL-like joins:
+
+```typescript
+const [postsWithUsers] = useQuery(
+  z.posts
+    .related('user', (q) => q.one('userId', 'users', 'id'))
+    .orderBy('createdAt', 'desc')
+)
+```
+
+See [Guides: Queries](/docs/guides-queries) for more examples.
+
+## Authentication
+
+### Can I add more OAuth providers?
+
+Yes. Better Auth supports many providers. Add to `src/features/auth/server/auth.ts`:
+
+```typescript
+socialProviders: {
+  github: {
+    clientId: env.GITHUB_CLIENT_ID,
+    clientSecret: env.GITHUB_CLIENT_SECRET,
+  },
+  google: {
+    clientId: env.GOOGLE_CLIENT_ID,
+    clientSecret: env.GOOGLE_CLIENT_SECRET,
+  },
+}
+```
+
+### How do I protect routes?
+
+Use the `useAuth` hook:
+
+```typescript
+import { useAuth } from '~/features/auth'
+import { Redirect } from 'one'
+
+export function ProtectedPage() {
+  const { user, isLoading } = useAuth()
+
+  if (isLoading) return <Loading />
+  if (!user) return <Redirect href="/login" />
+
+  return <YourContent />
+}
+```
+
+### How do I implement role-based access control?
+
+Add roles to your user table:
+
+```typescript
+// schema-public.ts
+export const users = pgTable('user', {
+  id: text('id').primaryKey(),
+  email: text('email').notNull(),
+  role: text('role').notNull().default('user'), // user, admin, etc.
+})
+```
+
+Check roles in your app:
+
+```typescript
+const { user } = useAuth()
+const isAdmin = user?.role === 'admin'
+```
+
+## Mobile
+
+### Do I need a Mac for iOS development?
+
+Yes. iOS development requires:
+- macOS computer
+- Xcode 15+
+- Apple Developer account (for device testing and App Store)
+
+You can build iOS apps in the cloud with EAS Build without a Mac.
+
+### How do I publish to app stores?
+
+Use EAS Build for automated builds:
+
+```bash
+# Build for iOS
+bun tko eas build-prod
+
+# Build for Android
+bun tko eas build-prod
+```
+
+This creates production builds ready for App Store and Google Play submission.
+
+### How do OTA updates work?
+
+Over-the-air updates allow updating JavaScript/assets without app store approval:
+
+```bash
+# Create new release
+bun release
+```
+
+This:
+1. Builds new JavaScript bundle
+2. Uploads to update server
+3. App checks for updates on launch
+4. Downloads and applies update
+
+Native code changes still require app store submission.
+
+## Performance
+
+### How do I optimize bundle size?
+
+Takeout includes several optimizations:
+- Tree-shaking unused code
+- Code splitting by route
+- Lazy loading heavy components
+- Font subsetting with `bun tko subset-fonts`
+- Image optimization
+
+Monitor bundle size with:
+
+```bash
+bun tko web build
+```
+
+### How do I improve database performance?
+
+Best practices:
+- Add indexes to frequently queried columns
+- Use prepared statements (Drizzle does this automatically)
+- Limit result sets with `.limit()`
+- Use pagination for long lists
+- Cache expensive computations
+
+### Why is my app slow in development?
+
+Development mode includes:
+- Source maps for debugging
+- Hot module reloading
+- Unminified code
+- Additional logging
+
+Production builds are significantly faster. Test with:
+
+```bash
+bun tko web prod
+```
+
+## Deployment
+
+### How much does it cost to run in production?
+
+AWS costs vary by usage. Typical monthly costs:
+- **Aurora Serverless v2:** $25-100 (scales with usage)
+- **ECS Fargate:** $30-150 (depends on instance count)
+- **CloudFront CDN:** $5-20
+- **S3 Storage:** $1-10
+- **Data transfer:** $5-50
+
+Total: ~$66-330/month for low-to-medium traffic.
+
+### Can I use spot instances?
+
+Yes. The SST config uses spot instances by default for cost savings:
+
+```typescript
+capacity: 'spot'
+```
+
+For production, consider on-demand instances for reliability:
+
+```typescript
+capacity: 'on-demand'
+```
+
+### How do I set up a staging environment?
+
+SST supports multiple stages:
+
+```bash
+# Deploy to staging
+bun tko sst deploy staging
+
+# Deploy to production
+bun tko sst deploy production
+```
+
+Configure stage-specific settings in `sst.config.ts`.
+
+### How do I roll back a deployment?
+
+SST doesn't have automatic rollback. To revert:
+
+1. Checkout previous git commit
+2. Redeploy: `bun tko sst deploy production`
+
+For faster rollback, use container tags:
+
+```bash
+# Deploy specific image
+WEB_APP_DOCKER_IMAGE=your-registry/app:previous-tag bun tko sst deploy production
+```
+
+## Troubleshooting
+
+### Backend services won't start
+
+Common fixes:
+
+```bash
+# Clean Docker volumes
+bun backend:clean
+
+# Restart Docker Desktop
+# Then start backend again
+bun backend
+```
+
+### Port 8081 is already in use
+
+Kill the process using the port:
+
+```bash
+lsof -ti:8081 | xargs kill -9
+```
+
+### Zero sync isn't working
+
+Check:
+1. PostgreSQL is running: `docker compose ps`
+2. Migrations have run: `bun migrate`
+3. Zero server is accessible: `curl http://localhost:4848`
+4. Environment variables are set correctly
+
+### Build fails with memory error
+
+Increase Node memory:
+
+```bash
+export NODE_OPTIONS=--max-old-space-size=4096
+bun dev
+```
+
+See [Troubleshooting](/docs/troubleshooting) for more solutions.
+
+## Getting Help
+
+### Where can I get help?
+
+- **Documentation:** Start with these docs
+- **GitHub Issues:** Report bugs or request features
+- **Community:** Join discussions on GitHub Discussions
+
+### How do I report a bug?
+
+Create a GitHub issue with:
+1. Clear description of the problem
+2. Steps to reproduce
+3. Expected vs actual behavior
+4. Environment info (OS, Node version, etc.)
+5. Relevant error messages or logs
+
+### How do I contribute?
+
+Contributions are welcome! To contribute:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+See CONTRIBUTING.md for detailed guidelines.
+
+## Next Steps
+
+- [Guides: Adding a Feature](/docs/guides-adding-feature) - Build your first feature
+- [Troubleshooting](/docs/troubleshooting) - Solve common issues
+- [Deployment](/docs/deployment) - Deploy to production

@@ -1,0 +1,361 @@
+---
+title: Architecture
+description: Understanding Takeout's architectural design and philosophy
+---
+
+# Architecture
+
+Takeout is built around key architectural principles that make it scalable, maintainable, and developer-friendly. This guide explains the design decisions and patterns that shape the codebase.
+
+## Core Principles
+
+### Single Package.json
+
+Unlike many modern applications that use monorepos with complex tooling, Takeout uses a **single package.json** at the root. This design choice offers several advantages:
+
+- **Simplified dependency management** - No version conflicts between packages
+- **Faster installs and builds** - Less overhead from monorepo tooling
+- **Easier to understand** - Clear dependency tree
+- **Better for small teams** - Less infrastructure to maintain
+
+The project does use workspaces for internal packages in `./packages/*`, but these are development tools and shared utilities, not separate applications.
+
+### Feature-Based Organization
+
+The codebase is organized by feature rather than by technical layer. Each feature is self-contained with its own:
+
+```
+src/features/auth/
+├── components/          # UI components
+├── server/             # Server-side logic
+├── hooks/              # React hooks
+├── queries/            # Zero queries
+├── mutations/          # Zero mutations
+└── index.ts            # Public API
+```
+
+This organization makes it easy to:
+- Find all related code in one place
+- Understand feature boundaries
+- Delete or modify features without side effects
+- Scale the codebase as features grow
+
+### Zero Foundation
+
+Takeout is built on **Zero**, a real-time sync engine that provides:
+
+- **Offline-first architecture** - App works without internet
+- **Real-time updates** - Changes sync instantly across clients
+- **Optimistic UI** - Instant feedback on user actions
+- **Conflict resolution** - Automatic handling of concurrent edits
+
+Zero replaces traditional REST or GraphQL APIs with a reactive query system. See [Zero Sync](/docs/zero-sync) for details.
+
+## Application Layers
+
+### Client Layer
+
+The client layer runs on web, iOS, and Android using the same React codebase:
+
+```
+Web (Vite) ──┐
+iOS (Expo) ──┼──> React 19 + One.js ──> Zero Client ──> UI
+Android ─────┘
+```
+
+**Key technologies:**
+- **One.js** - Universal React framework with file-based routing
+- **Tamagui** - Cross-platform UI components
+- **React 19** - Latest React with concurrent features
+- **Zero Client** - Local database and sync engine
+
+### Server Layer
+
+The server layer provides authentication, database access, and Zero sync:
+
+```
+Client Requests ──> One.js Server ──> Better Auth
+                                  ──> Zero Server ──> PostgreSQL
+                                  ──> API Routes
+```
+
+**Server components:**
+- **One.js Server** - SSR and API routes
+- **Better Auth** - Authentication and session management
+- **Zero Server** - Real-time sync coordinator
+- **PostgreSQL** - Primary database
+
+### Data Layer
+
+Data flows through Zero's sync engine:
+
+```
+PostgreSQL (source of truth)
+    ↓
+Zero Server (replication + view syncer)
+    ↓
+Zero Client (local SQLite)
+    ↓
+React Components (reactive queries)
+```
+
+This architecture provides:
+- **Strong consistency** - PostgreSQL is the source of truth
+- **Low latency** - Queries run against local SQLite
+- **Real-time sync** - Changes propagate instantly
+- **Offline capability** - Full app functionality without network
+
+## Database Architecture
+
+### Schema Organization
+
+Takeout uses two schema types:
+
+**Public Schema** (`schema-public.ts`)
+- Tables exposed to Zero sync
+- Client can query these tables
+- Synced to client's local database
+- Examples: posts, comments, profiles
+
+**Private Schema** (`schema-private.ts`)
+- Server-only tables
+- Not synced to client
+- Contains sensitive data
+- Examples: analytics, admin data, internal logs
+
+### Migrations
+
+Database migrations are handled by Drizzle ORM:
+
+```bash
+# Generate migration from schema changes
+bun tko db generate
+
+# Run migrations
+bun migrate
+```
+
+For complex migrations outside of Drizzle's capabilities:
+
+```bash
+# Create custom migration
+bun db:migrate-add migration-name
+```
+
+Migrations run automatically during deployment via Lambda function.
+
+## Authentication Architecture
+
+Authentication is handled by **Better Auth** with a flexible provider system:
+
+```
+Client ──> Better Auth Client ──> API Routes (/api/auth/*)
+                                       ↓
+                                  Better Auth Server
+                                       ↓
+                                  PostgreSQL (sessions + users)
+```
+
+**Supported flows:**
+- Email/password authentication
+- OAuth (GitHub, Google, etc.)
+- Magic links
+- Session management
+- JWKS for Zero authentication
+
+See [Authentication](/docs/authentication) for implementation details.
+
+## Real-Time Sync Architecture
+
+Zero provides real-time synchronization through a sophisticated replication system:
+
+### Zero Server Components
+
+**View Syncer**
+- Serves client queries
+- Manages WebSocket connections
+- Handles subscriptions
+- Auto-scales based on load
+
+**Replication Manager**
+- Monitors PostgreSQL changes
+- Maintains replication slot
+- Streams changes to view syncers
+- Handles backup and recovery
+
+### Sync Flow
+
+```
+1. Client makes optimistic mutation
+2. Mutation applied to local SQLite
+3. Mutation sent to server
+4. Server validates and applies to PostgreSQL
+5. Change streams back to all connected clients
+6. Clients update local state
+```
+
+This flow ensures:
+- **Instant feedback** - UI updates immediately
+- **Conflict resolution** - Server reconciles concurrent changes
+- **Consistency** - All clients converge to same state
+
+## Deployment Architecture
+
+Takeout deploys to AWS using SST (Serverless Stack):
+
+```
+CloudFront CDN
+    ↓
+ALB (Application Load Balancer)
+    ↓
+┌─────────────┬──────────────┬─────────────┐
+│  Web App    │ Zero Syncer  │ Replication │
+│  (ECS)      │ (ECS)        │ (ECS)       │
+└─────────────┴──────────────┴─────────────┘
+         ↓            ↓             ↓
+    Aurora Serverless v2 (PostgreSQL)
+         ↓
+    S3 (Backups + Assets)
+```
+
+**Infrastructure components:**
+- **ECS Fargate** - Containerized services
+- **Aurora Serverless v2** - Auto-scaling PostgreSQL
+- **CloudFront** - CDN for static assets
+- **VPC** - Isolated network with bastion host
+- **S3** - Asset storage and database backups
+
+See [Deployment](/docs/deployment) for detailed deployment guides.
+
+## Development Architecture
+
+### Build Pipeline
+
+Development uses hot module reloading across all platforms:
+
+```
+Source Files ──> Vite (Web)
+              ──> Metro (Native)
+              ──> One.js (Universal)
+                    ↓
+               Live Reload
+```
+
+**Key features:**
+- Fast refresh on all platforms
+- Shared code between web and native
+- Type checking in watch mode
+- Zero codegen on file changes
+
+### Docker Compose Backend
+
+Local development runs backend services in Docker:
+
+```yaml
+Services:
+  - PostgreSQL (main database)
+  - Zero CVR (client view record)
+  - Zero CDB (change database)
+  - MinIO (S3-compatible storage)
+  - Adminer (database UI)
+```
+
+This matches production architecture for consistent development.
+
+### Script Organization
+
+Scripts are organized by domain in `./scripts/`:
+
+```
+scripts/
+├── aws/          # AWS operations
+├── check/        # Code quality
+├── ci/           # CI/CD pipeline
+├── db/           # Database management
+├── eas/          # Mobile builds
+├── web/          # Web builds
+└── zero/         # Zero codegen
+```
+
+The `tko` CLI automatically discovers and organizes these scripts.
+
+## Code Organization Patterns
+
+### Import Aliases
+
+Use the `~` alias for absolute imports:
+
+```typescript
+// Good
+import { Button } from '~/interface/Button'
+
+// Avoid
+import { Button } from '../../../interface/Button'
+```
+
+Exception: Always use relative imports inside `./packages/*`.
+
+### Feature Exports
+
+Each feature exports a public API through `index.ts`:
+
+```typescript
+// src/features/auth/index.ts
+export { LoginForm } from './components/LoginForm'
+export { useAuth } from './hooks/useAuth'
+export { authQueries } from './queries'
+```
+
+This creates clear boundaries and prevents circular dependencies.
+
+### Server vs Client Code
+
+Server-only code lives in:
+- `src/server/` - Global server utilities
+- `*/server/` - Feature-specific server code
+- `app/api/` - API route handlers
+
+Client code can import from `~/server/` but it will be tree-shaken out of client bundles.
+
+## Performance Patterns
+
+### Lazy Loading
+
+Features use lazy loading for heavy components:
+
+```typescript
+import { lazy } from 'react'
+
+const HeavyComponent = lazy(() => import('./HeavyComponent'))
+```
+
+### Stable References
+
+Use stable references to prevent unnecessary re-renders:
+
+```typescript
+import { useStableMemo } from '~/hooks/useStableMemo'
+
+const data = useStableMemo(() => ({ key: value }))
+```
+
+### Virtualized Lists
+
+Use FlashList for long lists:
+
+```typescript
+import { FlashList } from '@shopify/flash-list'
+
+<FlashList
+  data={items}
+  renderItem={({ item }) => <Item item={item} />}
+  estimatedItemSize={100}
+/>
+```
+
+## Next Steps
+
+- [Project Structure](/docs/project-structure) - Detailed directory guide
+- [Development](/docs/development) - Development workflow
+- [Tech Stack](/docs/tech-stack) - Technologies used
+- [Zero Sync](/docs/zero-sync) - Real-time sync deep dive

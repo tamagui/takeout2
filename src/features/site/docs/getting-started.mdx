@@ -1,0 +1,88 @@
+---
+title: Getting Started
+description: Get up and running with Takeout in minutes
+---
+
+# Getting Started
+
+This guide will walk you through setting up Takeout for local development.
+
+## Prerequisites
+
+Before you begin, make sure you have the following installed:
+
+- **Node.js** 18+ and **Bun** 1.0+
+- **Git** for version control
+- **PostgreSQL** for the database
+
+## Quick Start
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/usetakeout/takeout3.git
+cd takeout3
+```
+
+2. Install dependencies:
+
+```bash
+bun install
+```
+
+3. Set up your environment variables:
+
+```bash
+cp .env.development .env
+```
+
+4. Initialize the database:
+
+```bash
+bun tko db:setup
+```
+
+5. Start the development server:
+
+```bash
+bun dev
+```
+
+Your app should now be running at `http://localhost:8081`!
+
+## Project Overview
+
+Takeout is organized into several key directories:
+
+- **app/** - One.js routing and pages
+- **src/features/** - Feature modules (auth, feed, profile, etc.)
+- **src/interface/** - Shared UI components
+- **src/server/** - Backend API and database code
+- **packages/** - Internal packages and tools
+
+## Development Workflow
+
+Takeout includes a custom CLI tool called `tko` that provides helpful commands:
+
+```bash
+# View all available commands
+bun tko
+
+# Run type checking
+bun tko check types
+
+# Run linter
+bun lint:fix
+
+# Database commands
+bun tko db:migrate
+bun tko db:reset
+```
+
+## Next Steps
+
+Now that you're set up, explore these guides:
+
+- [Installation](/docs/installation) - Detailed installation instructions
+- [Architecture](/docs/architecture) - Learn how Takeout is structured
+- [Development Workflow](/docs/development-workflow) - Best practices for development

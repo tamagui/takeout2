@@ -1,0 +1,550 @@
+---
+title: Real-Time
+description: Building real-time, offline-first features with Zero
+---
+
+# Real-Time Features
+
+Takeout provides real-time data synchronization and offline-first capabilities through Zero. This guide covers building reactive, real-time features.
+
+## Real-Time Architecture
+
+```
+User Action
+    ↓
+Optimistic Update (instant UI feedback)
+    ↓
+Local SQLite Update
+    ↓
+Mutation Sent to Server
+    ↓
+PostgreSQL Update
+    ↓
+Change Streamed to All Connected Clients
+    ↓
+Other Clients Update Automatically
+```
+
+## Reactive Queries
+
+Queries automatically update when data changes:
+
+```typescript
+import { useQuery } from '~/zero'
+
+export function LiveFeed() {
+  const [posts] = useQuery(
+    z.posts.orderBy('createdAt', 'desc').limit(20)
+  )
+
+  // Component re-renders automatically when:
+  // - New post is created
+  // - Existing post is updated
+  // - Post is deleted
+  // - Another user makes changes
+
+  return (
+    <YStack>
+      {posts.map(post => (
+        <PostCard key={post.id} post={post} />
+      ))}
+    </YStack>
+  )
+}
+```
+
+No manual refetching needed - data stays in sync automatically.
+
+## Optimistic Updates
+
+Mutations apply locally before server confirms:
+
+```typescript
+export const likePost = mutation({
+  name: 'likePost',
+  async mutate(ctx, { postId }) {
+    // This runs immediately on client
+    await ctx.zero.posts.update({
+      id: postId,
+      likes: sql`${posts.likes} + 1`,
+    })
+
+    // Then syncs to server
+    // If server rejects, changes automatically revert
+  },
+})
+```
+
+**Benefits:**
+- Instant feedback (no loading spinners)
+- App feels fast even on slow networks
+- Automatic rollback on error
+
+## Real-Time Patterns
+
+### Live Counters
+
+Update counters in real-time:
+
+```typescript
+export function PostLikes({ postId }: { postId: string }) {
+  const [post] = useQuery(z.posts.where('id', postId))
+
+  // Updates automatically when anyone likes the post
+  return (
+    <Button onPress={() => likePost({ postId })}>
+      ❤️ {post?.likes || 0}
+    </Button>
+  )
+}
+```
+
+### Live Lists
+
+Lists update as items are added/removed:
+
+```typescript
+export function TodoList() {
+  const [todos] = useQuery(
+    z.todos
+      .where('completed', false)
+      .orderBy('createdAt', 'desc')
+  )
+
+  // New todos appear automatically
+  // Completed todos disappear automatically
+  // Order updates automatically
+
+  return (
+    <YStack>
+      {todos.map(todo => (
+        <TodoItem key={todo.id} todo={todo} />
+      ))}
+    </YStack>
+  )
+}
+```
+
+### Presence Indicators
+
+Show who's online:
+
+```typescript
+export function OnlineUsers() {
+  const [users] = useQuery(
+    z.users.where('lastSeen', '>', Date.now() - 60000)
+  )
+
+  return (
+    <XStack>
+      {users.map(user => (
+        <Avatar key={user.id} src={user.avatar} />
+      ))}
+      <Text>{users.length} online</Text>
+    </XStack>
+  )
+}
+```
+
+Update presence:
+
+```typescript
+// Update last seen every 30 seconds
+useEffect(() => {
+  const interval = setInterval(() => {
+    updatePresence({ lastSeen: Date.now() })
+  }, 30000)
+
+  return () => clearInterval(interval)
+}, [])
+```
+
+### Typing Indicators
+
+Show when users are typing:
+
+```typescript
+export function TypingIndicator({ channelId }) {
+  const [typing] = useQuery(
+    z.typing
+      .where('channelId', channelId)
+      .where('updatedAt', '>', Date.now() - 3000)
+  )
+
+  if (typing.length === 0) return null
+
+  return <Text>{typing[0].user.name} is typing...</Text>
+}
+```
+
+```typescript
+// Update typing status
+const handleInput = debounce((text) => {
+  updateTyping({
+    channelId,
+    userId,
+    updatedAt: Date.now(),
+  })
+}, 500)
+```
+
+## Offline Support
+
+### Offline Detection
+
+Detect network status:
+
+```typescript
+import { useOnlineStatus } from '~/hooks/useOnlineStatus'
+
+export function OfflineBanner() {
+  const isOnline = useOnlineStatus()
+
+  if (isOnline) return null
+
+  return (
+    <YStack bg="$yellow5" p="$3">
+      <Text>You're offline. Changes will sync when reconnected.</Text>
+    </YStack>
+  )
+}
+```
+
+### Offline-First Features
+
+App works fully offline:
+
+```typescript
+export function CreatePost() {
+  const handleSubmit = async (data) => {
+    // Works offline - queues mutation
+    await createPost({
+      id: randomId(),
+      title: data.title,
+      content: data.content,
+      userId: user.id,
+      createdAt: Date.now(),
+    })
+
+    // UI updates immediately
+    // Syncs to server when online
+    // No code changes needed for offline support!
+  }
+
+  return <PostForm onSubmit={handleSubmit} />
+}
+```
+
+### Pending Mutations
+
+Show pending changes:
+
+```typescript
+import { usePendingMutations } from '~/zero'
+
+export function SyncStatus() {
+  const pending = usePendingMutations()
+
+  if (pending.length === 0) return null
+
+  return (
+    <YStack>
+      <Spinner />
+      <Text>Syncing {pending.length} changes...</Text>
+    </YStack>
+  )
+}
+```
+
+### Conflict Resolution
+
+Zero handles conflicts automatically:
+
+```typescript
+// User A and B edit same post offline
+// User A: "Hello World" -> "Hello World!"
+// User B: "Hello World" -> "Hello World?"
+
+// When both sync:
+// - Last write wins (by timestamp)
+// - Result: "Hello World?" or "Hello World!" (whichever was later)
+// - Both clients converge to same state
+```
+
+Custom conflict resolution:
+
+```typescript
+export const incrementCounter = mutation({
+  name: 'incrementCounter',
+  async mutate(ctx, { id }) {
+    const counter = await ctx.zero.counters.get(id)
+
+    // Increment instead of overwrite
+    await ctx.zero.counters.update({
+      id,
+      value: counter.value + 1,
+    })
+  },
+})
+```
+
+## Subscriptions
+
+Subscribe to specific queries:
+
+```typescript
+import { useQuery } from '~/zero'
+
+export function PostDetail({ postId }) {
+  // Subscribes to this specific post
+  const [post] = useQuery(z.posts.where('id', postId))
+
+  // Only updates when THIS post changes
+  // Not when other posts change
+
+  return <Post post={post} />
+}
+```
+
+Zero automatically manages subscriptions:
+- Subscribe when component mounts
+- Unsubscribe when component unmounts
+- Share subscriptions across components
+- Batch subscription requests
+
+## Performance Optimization
+
+### Query Memoization
+
+Queries are automatically memoized:
+
+```typescript
+// Both components share the same query
+function ComponentA() {
+  const [posts] = useQuery(z.posts.limit(10))
+}
+
+function ComponentB() {
+  const [posts] = useQuery(z.posts.limit(10))
+}
+// Only one subscription created
+```
+
+### Pagination
+
+Implement infinite scroll:
+
+```typescript
+export function InfiniteFeed() {
+  const [limit, setLimit] = useState(20)
+  const [posts] = useQuery(
+    z.posts
+      .orderBy('createdAt', 'desc')
+      .limit(limit)
+  )
+
+  const loadMore = () => {
+    setLimit(prev => prev + 20)
+  }
+
+  return (
+    <FlatList
+      data={posts}
+      renderItem={({ item }) => <Post post={item} />}
+      onEndReached={loadMore}
+    />
+  )
+}
+```
+
+### Selective Updates
+
+Only subscribe to needed fields:
+
+```typescript
+// Good - only fetches id and title
+const [posts] = useQuery(
+  z.posts.select('id', 'title').limit(10)
+)
+
+// Avoid - fetches all fields
+const [posts] = useQuery(z.posts.limit(10))
+```
+
+## Real-Time Collaboration
+
+### Collaborative Editing
+
+Multiple users editing same document:
+
+```typescript
+export function CollaborativeEditor({ documentId }) {
+  const [doc] = useQuery(z.documents.where('id', documentId))
+  const [cursors] = useQuery(
+    z.cursors
+      .where('documentId', documentId)
+      .where('updatedAt', '>', Date.now() - 5000)
+  )
+
+  const handleChange = (content) => {
+    updateDocument({
+      id: documentId,
+      content,
+      updatedAt: Date.now(),
+    })
+  }
+
+  const handleCursorMove = (position) => {
+    updateCursor({
+      documentId,
+      userId,
+      position,
+      updatedAt: Date.now(),
+    })
+  }
+
+  return (
+    <Editor
+      content={doc?.content}
+      cursors={cursors}
+      onChange={handleChange}
+      onCursorMove={handleCursorMove}
+    />
+  )
+}
+```
+
+### Shared State
+
+Sync arbitrary state across clients:
+
+```typescript
+// Shared drawing canvas
+export function SharedCanvas() {
+  const [strokes] = useQuery(
+    z.strokes
+      .where('canvasId', canvasId)
+      .orderBy('createdAt', 'asc')
+  )
+
+  const handleDraw = (stroke) => {
+    addStroke({
+      id: randomId(),
+      canvasId,
+      userId,
+      points: stroke.points,
+      color: stroke.color,
+      createdAt: Date.now(),
+    })
+  }
+
+  return (
+    <Canvas
+      strokes={strokes}
+      onDraw={handleDraw}
+    />
+  )
+}
+```
+
+## Debugging Real-Time
+
+### Monitor Sync Events
+
+```typescript
+import { devGlobal } from '~/helpers/dev'
+
+// In dev console
+devGlobal.zero.onSync((event) => {
+  console.info('Sync event:', event)
+})
+```
+
+### View Pending Mutations
+
+```typescript
+// See queued mutations
+devGlobal.zero.pendingMutations()
+
+// See sync state
+devGlobal.zero.syncState()
+```
+
+### Network Simulation
+
+Test offline behavior:
+
+```typescript
+// Simulate offline
+devGlobal.zero.disconnect()
+
+// Reconnect
+devGlobal.zero.connect()
+```
+
+## Best Practices
+
+### Keep Mutations Fast
+
+```typescript
+// Good - fast mutation
+export const createPost = mutation({
+  name: 'createPost',
+  async mutate(ctx, input) {
+    await ctx.zero.posts.insert(input)
+  },
+})
+
+// Bad - slow mutation blocks other changes
+export const createPost = mutation({
+  name: 'createPost',
+  async mutate(ctx, input) {
+    await ctx.zero.posts.insert(input)
+    await generateThumbnail(input.image) // Slow!
+  },
+})
+
+// Good - queue slow work
+export const createPost = mutation({
+  name: 'createPost',
+  async mutate(ctx, input) {
+    await ctx.zero.posts.insert(input)
+
+    ctx.asyncTasks.push({
+      type: 'generateThumbnail',
+      imageUrl: input.image,
+    })
+  },
+})
+```
+
+### Limit Query Results
+
+```typescript
+// Good
+const [posts] = useQuery(z.posts.limit(20))
+
+// Bad - loads everything
+const [posts] = useQuery(z.posts)
+```
+
+### Use Indexes
+
+Add database indexes for filtered fields:
+
+```typescript
+export const posts = pgTable('posts', {
+  userId: text('user_id').notNull(),
+  createdAt: bigint('created_at', { mode: 'number' }).notNull(),
+}, (table) => ({
+  userIdIdx: index().on(table.userId),
+  createdAtIdx: index().on(table.createdAt),
+}))
+```
+
+## Next Steps
+
+- [Zero Sync](/docs/zero-sync) - Zero fundamentals
+- [Guides: Queries](/docs/guides-queries) - Write effective queries
+- [Guides: Mutations](/docs/guides-mutations) - Create mutations
+- [Database](/docs/database) - Database optimization

@@ -1,0 +1,391 @@
+---
+title: Environment Configuration
+description: Managing environment variables and configuration across environments
+---
+
+# Environment Configuration
+
+Takeout uses environment variables for configuration. This guide covers managing variables across development, staging, and production.
+
+## Environment Files
+
+### File Structure
+
+```
+.env.development      # Development defaults (committed)
+.env                  # Active environment (generated, gitignored)
+.env.local           # Personal overrides (gitignored)
+.env.production.example  # Production template (committed)
+```
+
+### Loading Order
+
+Environment variables are loaded in this order (later overrides earlier):
+
+1. `.env.development` - Base development config
+2. `.env` - Generated from package.json
+3. `.env.local` - Personal overrides
+4. System environment variables
+
+## Adding Variables
+
+### 1. Update package.json
+
+Add variable to `env` section:
+
+```json
+{
+  "env": {
+    "NEW_VARIABLE": true,
+    "ANOTHER_VARIABLE": "default-value"
+  }
+}
+```
+
+### 2. Run Update Script
+
+```bash
+bun env:update
+```
+
+This generates:
+- Updated `.env` file
+- Updated `src/server/env-server.ts` with types
+
+### 3. Add Example Value
+
+Add to `.env.development`:
+
+```bash
+NEW_VARIABLE=example-value
+ANOTHER_VARIABLE=another-example
+```
+
+**Important:** Never edit `src/server/env-server.ts` manually - it's auto-generated.
+
+## Variable Types
+
+### Required Variables
+
+Variables that must be set:
+
+```json
+{
+  "env": {
+    "DATABASE_URL": true,  // true = required
+    "API_KEY": true
+  }
+}
+```
+
+### Optional Variables
+
+Variables with defaults:
+
+```json
+{
+  "env": {
+    "PORT": "8081",  // string = default value
+    "DEBUG": "false"
+  }
+}
+```
+
+## Development Environment
+
+### Default Configuration
+
+`.env.development` provides sensible defaults:
+
+```bash
+# Authentication
+BETTER_AUTH_SECRET=dev-secret-change-in-production
+BETTER_AUTH_URL=http://localhost:8081
+
+# Server
+ONE_SERVER_URL=http://localhost:8081
+
+# Database (Docker Compose)
+ZERO_UPSTREAM_DB=postgresql://user:password@127.0.0.1:5433/postgres
+ZERO_CVR_DB=postgresql://user:password@127.0.0.1:5433/zero_cvr
+ZERO_CHANGE_DB=postgresql://user:password@127.0.0.1:5433/zero_cdb
+
+# Storage (MinIO in Docker)
+CLOUDFLARE_R2_ENDPOINT=http://localhost:9200/chat
+CLOUDFLARE_R2_ACCESS_KEY=minio
+CLOUDFLARE_R2_SECRET_KEY=minio_password
+CLOUDFLARE_R2_PUBLIC_URL=http://localhost:9200/chat
+
+# Email (Postmark sandbox)
+POSTMARK_SERVER_TOKEN=sandbox-token
+```
+
+### Local Overrides
+
+Create `.env.local` for personal settings:
+
+```bash
+# .env.local
+VITE_POSTHOG_API_KEY=my-personal-key
+DEBUG=true
+```
+
+This file is gitignored and won't be committed.
+
+## Production Environment
+
+### Setup
+
+```bash
+cp .env.production.example .env.production
+```
+
+Update with production values:
+
+```bash
+# Authentication (generate new secret!)
+BETTER_AUTH_SECRET=<openssl-rand-hex-32>
+BETTER_AUTH_URL=https://yourdomain.com
+
+# Server
+ONE_SERVER_URL=https://yourdomain.com
+
+# Database (AWS Aurora)
+ZERO_UPSTREAM_DB=<auto-configured-by-sst>
+ZERO_CVR_DB=<auto-configured-by-sst>
+ZERO_CHANGE_DB=<auto-configured-by-sst>
+
+# Storage (Cloudflare R2)
+CLOUDFLARE_R2_ENDPOINT=https://account.r2.cloudflarestorage.com
+CLOUDFLARE_R2_ACCESS_KEY=<your-access-key>
+CLOUDFLARE_R2_SECRET_KEY=<your-secret-key>
+CLOUDFLARE_R2_PUBLIC_URL=https://your-bucket.r2.dev
+
+# Email
+POSTMARK_SERVER_TOKEN=<your-production-token>
+
+# Analytics
+VITE_POSTHOG_API_KEY=<your-key>
+VITE_POSTHOG_HOST=https://app.posthog.com
+
+# OAuth
+GITHUB_CLIENT_ID=<your-client-id>
+GITHUB_CLIENT_SECRET=<your-client-secret>
+
+# AWS (for deployment)
+AWS_ACCESS_KEY_ID=<your-key>
+AWS_SECRET_ACCESS_KEY=<your-secret>
+```
+
+### Pulling from Production
+
+Pull production environment for debugging:
+
+```bash
+bun env:pull
+```
+
+**Warning:** This overwrites `.env` with production values. Use carefully!
+
+## Client vs Server Variables
+
+### Server-Only Variables
+
+Most variables are server-only by default:
+
+```typescript
+// src/server/env-server.ts
+import { env } from 'node:process'
+
+export const DATABASE_URL = env.DATABASE_URL!
+export const API_KEY = env.API_KEY!
+```
+
+Access only on server:
+
+```typescript
+// app/api/users.ts
+import { DATABASE_URL } from '~/server/env-server'
+
+export async function GET() {
+  // Can use DATABASE_URL here
+}
+```
+
+### Client Variables
+
+Prefix with `VITE_` for client access:
+
+```json
+{
+  "env": {
+    "VITE_POSTHOG_API_KEY": "",
+    "VITE_PUBLIC_ZERO_SERVER": "http://localhost:4848"
+  }
+}
+```
+
+Access in client code:
+
+```typescript
+// src/analytics/posthog.ts
+const apiKey = import.meta.env.VITE_POSTHOG_API_KEY
+```
+
+**Warning:** Client variables are publicly visible. Never put secrets in `VITE_` variables.
+
+## Variable Reference
+
+### Authentication
+
+```bash
+BETTER_AUTH_SECRET         # Session encryption secret
+BETTER_AUTH_URL            # Auth URL (with protocol)
+```
+
+### Server
+
+```bash
+ONE_SERVER_URL             # Server URL
+ONE_SUSPEND_ROUTES         # Suspend routes (dev only)
+```
+
+### Database
+
+```bash
+ZERO_UPSTREAM_DB           # Main PostgreSQL connection
+ZERO_CVR_DB               # Zero CVR database
+ZERO_CHANGE_DB            # Zero change database
+ZERO_AUTH_JWKS_URL        # JWT keys URL
+ZERO_PUSH_URL             # Mutation endpoint
+ZERO_GET_QUERIES_URL      # Query endpoint
+ZERO_REPLICA_FILE         # Local replica file path
+```
+
+### Storage
+
+```bash
+CLOUDFLARE_R2_ENDPOINT     # R2 API endpoint
+CLOUDFLARE_R2_ACCESS_KEY   # R2 access key
+CLOUDFLARE_R2_SECRET_KEY   # R2 secret key
+CLOUDFLARE_R2_PUBLIC_URL   # Public URL for uploads
+```
+
+### Email
+
+```bash
+POSTMARK_SERVER_TOKEN      # Postmark API token
+```
+
+### Analytics
+
+```bash
+VITE_POSTHOG_API_KEY      # PostHog API key (client)
+VITE_POSTHOG_HOST         # PostHog host (client)
+```
+
+### OAuth Providers
+
+```bash
+GITHUB_CLIENT_ID          # GitHub OAuth client ID
+GITHUB_CLIENT_SECRET      # GitHub OAuth secret
+GOOGLE_CLIENT_ID          # Google OAuth client ID
+GOOGLE_CLIENT_SECRET      # Google OAuth secret
+```
+
+### Apple Push Notifications
+
+```bash
+APNS_ENDPOINT             # APNs endpoint (sandbox or production)
+APNS_TEAM_ID              # Apple team ID
+APNS_KEY_ID               # APNs key ID
+APNS_KEY                  # APNs private key
+```
+
+### AWS
+
+```bash
+AWS_ACCESS_KEY_ID         # AWS access key
+AWS_SECRET_ACCESS_KEY     # AWS secret key
+```
+
+## Security
+
+### Secret Management
+
+**Development:**
+- Use placeholder values
+- Commit `.env.development` with placeholders
+- Never commit actual secrets
+
+**Production:**
+- Use strong random secrets: `openssl rand -hex 32`
+- Store in secure location (1Password, AWS Secrets Manager)
+- Rotate regularly
+- Never log secrets
+- Use environment variables, not config files
+
+### Secret Rotation
+
+Rotate secrets periodically:
+
+1. Generate new secret
+2. Update in production environment
+3. Deploy application
+4. Update in all environments
+5. Invalidate old secret
+
+### Access Control
+
+Limit who can access production environment:
+- Use role-based access control
+- Audit access logs
+- Use temporary credentials when possible
+- Enable MFA for AWS/cloud access
+
+## Validation
+
+Environment variables are validated on startup:
+
+```typescript
+// src/server/env-server.ts automatically validates
+if (!env.BETTER_AUTH_SECRET) {
+  throw new Error('Missing BETTER_AUTH_SECRET')
+}
+```
+
+Add custom validation:
+
+```typescript
+if (env.NODE_ENV === 'production' && env.BETTER_AUTH_URL.includes('localhost')) {
+  throw new Error('Invalid BETTER_AUTH_URL for production')
+}
+```
+
+## Troubleshooting
+
+### Variable Not Found
+
+1. Check spelling in `package.json` `env` section
+2. Run `bun env:update`
+3. Restart dev server
+
+### Variable Not Updated
+
+1. Edit `package.json` `env` section
+2. Run `bun env:update`
+3. Update `.env` with new value
+4. Restart server
+
+### Production Variable Issues
+
+1. Verify `.env.production` exists
+2. Check all required variables are set
+3. Ensure SST has access to variables
+4. Review deployment logs
+
+## Next Steps
+
+- [Deployment](/docs/deployment) - Deploying with environment config
+- [Deployment: SST](/docs/deployment-sst) - AWS-specific configuration
+- [Troubleshooting](/docs/troubleshooting) - Common environment issues

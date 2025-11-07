@@ -1,0 +1,557 @@
+---
+title: Authentication
+description: User authentication and authorization with Better Auth
+---
+
+# Authentication
+
+Takeout uses Better Auth for a complete authentication system with email/password, OAuth providers, and session management.
+
+## Overview
+
+Better Auth provides:
+- **Email/password authentication**
+- **OAuth providers** (GitHub, Google, etc.)
+- **Magic links** - Passwordless email authentication
+- **Session management** - Secure, encrypted sessions
+- **JWKS support** - JWT keys for Zero authentication
+- **TypeScript-first** - Fully typed API
+
+## Configuration
+
+### Server Setup
+
+Authentication is configured in `src/features/auth/server/auth.ts`:
+
+```typescript
+import { betterAuth } from 'better-auth'
+import { db } from '~/database/client'
+
+export const auth = betterAuth({
+  database: db,
+  emailAndPassword: {
+    enabled: true,
+  },
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID || '',
+      clientSecret: process.env.GITHUB_CLIENT_SECRET || '',
+    },
+  },
+  session: {
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    updateAge: 60 * 60 * 24, // Update session every 24 hours
+  },
+})
+```
+
+### Environment Variables
+
+Add to `.env`:
+
+```bash
+BETTER_AUTH_SECRET=your-secret-here
+BETTER_AUTH_URL=http://localhost:8081
+
+# OAuth (optional)
+GITHUB_CLIENT_ID=your-client-id
+GITHUB_CLIENT_SECRET=your-client-secret
+```
+
+Generate auth secret:
+
+```bash
+openssl rand -hex 32
+```
+
+## Client Usage
+
+### Auth Hook
+
+Use the `useAuth` hook to access authentication state:
+
+```typescript
+import { useAuth } from '~/features/auth'
+
+export function Profile() {
+  const { user, isLoading, signOut } = useAuth()
+
+  if (isLoading) {
+    return <LoadingSpinner />
+  }
+
+  if (!user) {
+    return <Redirect href="/login" />
+  }
+
+  return (
+    <YStack>
+      <Text>Welcome, {user.name}!</Text>
+      <Button onPress={signOut}>Sign Out</Button>
+    </YStack>
+  )
+}
+```
+
+**Available properties:**
+- `user` - Current user object or null
+- `isLoading` - Loading state
+- `signIn` - Sign in function
+- `signOut` - Sign out function
+- `signUp` - Sign up function
+
+## Email/Password Authentication
+
+### Sign Up
+
+Create account with email and password:
+
+```typescript
+import { authClient } from '~/features/auth/client'
+
+export function SignUpForm() {
+  const [error, setError] = useState(null)
+
+  const handleSignUp = async (data) => {
+    try {
+      await authClient.signUp.email({
+        email: data.email,
+        password: data.password,
+        name: data.name,
+      })
+
+      // Redirect to dashboard
+      router.push('/dashboard')
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
+  return (
+    <Form onSubmit={handleSignUp}>
+      {error && <Notice type="error">{error}</Notice>}
+      <Input name="name" placeholder="Name" />
+      <Input name="email" type="email" placeholder="Email" />
+      <Input name="password" type="password" placeholder="Password" />
+      <Button type="submit">Sign Up</Button>
+    </Form>
+  )
+}
+```
+
+### Sign In
+
+Authenticate with email and password:
+
+```typescript
+import { authClient } from '~/features/auth/client'
+
+export function SignInForm() {
+  const handleSignIn = async (data) => {
+    await authClient.signIn.email({
+      email: data.email,
+      password: data.password,
+    })
+
+    router.push('/dashboard')
+  }
+
+  return (
+    <Form onSubmit={handleSignIn}>
+      <Input name="email" type="email" placeholder="Email" />
+      <Input name="password" type="password" placeholder="Password" />
+      <Button type="submit">Sign In</Button>
+    </Form>
+  )
+}
+```
+
+### Password Reset
+
+Implement password reset flow:
+
+```typescript
+// Request reset
+await authClient.forgetPassword({
+  email: user.email,
+  redirectTo: '/reset-password',
+})
+
+// Reset with token
+await authClient.resetPassword({
+  token: resetToken,
+  password: newPassword,
+})
+```
+
+## OAuth Authentication
+
+### GitHub OAuth
+
+Configure GitHub OAuth:
+
+1. Create OAuth app at https://github.com/settings/developers
+2. Set callback URL: `http://localhost:8081/api/auth/callback/github`
+3. Add credentials to `.env`
+
+Use in your app:
+
+```typescript
+import { authClient } from '~/features/auth/client'
+
+export function GitHubSignIn() {
+  const handleGitHubSignIn = async () => {
+    await authClient.signIn.social({
+      provider: 'github',
+      callbackURL: '/dashboard',
+    })
+  }
+
+  return (
+    <Button onPress={handleGitHubSignIn}>
+      Sign in with GitHub
+    </Button>
+  )
+}
+```
+
+### Adding More Providers
+
+Add providers in `auth.ts`:
+
+```typescript
+socialProviders: {
+  github: {
+    clientId: env.GITHUB_CLIENT_ID,
+    clientSecret: env.GITHUB_CLIENT_SECRET,
+  },
+  google: {
+    clientId: env.GOOGLE_CLIENT_ID,
+    clientSecret: env.GOOGLE_CLIENT_SECRET,
+  },
+  discord: {
+    clientId: env.DISCORD_CLIENT_ID,
+    clientSecret: env.DISCORD_CLIENT_SECRET,
+  },
+}
+```
+
+## Session Management
+
+### Getting Session
+
+Access session server-side:
+
+```typescript
+import { auth } from '~/features/auth/server/auth'
+
+export async function GET(req: Request) {
+  const session = await auth.api.getSession({
+    headers: req.headers,
+  })
+
+  if (!session) {
+    return new Response('Unauthorized', { status: 401 })
+  }
+
+  return new Response(JSON.stringify(session.user))
+}
+```
+
+### Session Storage
+
+Sessions are stored in:
+- **Database** - Session records in `session` table
+- **Cookies** - Encrypted session token
+- **Better Auth** manages encryption and rotation
+
+### Session Lifecycle
+
+```typescript
+// Sessions expire after 7 days by default
+session: {
+  expiresIn: 60 * 60 * 24 * 7,
+}
+
+// Session updates every 24 hours to extend expiry
+session: {
+  updateAge: 60 * 60 * 24,
+}
+```
+
+## Protecting Routes
+
+### Page Protection
+
+Protect entire pages:
+
+```typescript
+// app/dashboard.tsx
+import { useAuth } from '~/features/auth'
+import { Redirect } from 'one'
+
+export function DashboardPage() {
+  const { user, isLoading } = useAuth()
+
+  if (isLoading) {
+    return <LoadingSpinner />
+  }
+
+  if (!user) {
+    return <Redirect href="/login" />
+  }
+
+  return <YourDashboard />
+}
+```
+
+### API Route Protection
+
+Protect API routes:
+
+```typescript
+// app/api/posts.ts
+import { auth } from '~/features/auth/server/auth'
+
+export async function POST(req: Request) {
+  const session = await auth.api.getSession({
+    headers: req.headers,
+  })
+
+  if (!session) {
+    return new Response('Unauthorized', { status: 401 })
+  }
+
+  // Create post with session.user.id
+  const post = await createPost({
+    ...data,
+    userId: session.user.id,
+  })
+
+  return Response.json(post)
+}
+```
+
+### Component Protection
+
+Conditionally render based on auth:
+
+```typescript
+import { useAuth } from '~/features/auth'
+
+export function AdminPanel() {
+  const { user } = useAuth()
+
+  if (!user?.isAdmin) {
+    return null
+  }
+
+  return <AdminContent />
+}
+```
+
+## Role-Based Access Control
+
+### Adding Roles
+
+Add role field to user schema:
+
+```typescript
+// schema-public.ts
+export const user = pgTable('user', {
+  id: text('id').primaryKey(),
+  email: text('email').notNull().unique(),
+  name: text('name').notNull(),
+  role: text('role').notNull().default('user'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+```
+
+### Checking Roles
+
+Check user roles:
+
+```typescript
+import { useAuth } from '~/features/auth'
+
+export function AdminFeature() {
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'admin'
+
+  if (!isAdmin) {
+    return <AccessDenied />
+  }
+
+  return <AdminContent />
+}
+```
+
+### Server-Side Role Check
+
+```typescript
+export async function DELETE(req: Request) {
+  const session = await auth.api.getSession({ headers: req.headers })
+
+  if (!session || session.user.role !== 'admin') {
+    return new Response('Forbidden', { status: 403 })
+  }
+
+  // Perform admin action
+}
+```
+
+## Zero Integration
+
+### JWT Authentication
+
+Better Auth provides JWKS endpoint for Zero:
+
+```typescript
+// Zero config uses Better Auth JWT
+ZERO_AUTH_JWKS_URL: `${webApp.url}api/auth/jwks`
+```
+
+Zero validates every request with JWT from Better Auth session.
+
+### User ID in Mutations
+
+Access user ID in mutations:
+
+```typescript
+export const createPost = mutation({
+  name: 'createPost',
+  async mutate(ctx, input) {
+    // ctx.auth.userId from Better Auth session
+    await ctx.zero.posts.insert({
+      ...input,
+      userId: ctx.auth.userId,
+    })
+  },
+})
+```
+
+## Email Verification
+
+### Enable Email Verification
+
+```typescript
+export const auth = betterAuth({
+  emailAndPassword: {
+    enabled: true,
+    requireEmailVerification: true,
+  },
+})
+```
+
+### Send Verification Email
+
+```typescript
+await authClient.sendVerificationEmail({
+  email: user.email,
+})
+```
+
+### Verify Email
+
+```typescript
+await authClient.verifyEmail({
+  token: verificationToken,
+})
+```
+
+## Security Best Practices
+
+### Password Requirements
+
+Enforce strong passwords:
+
+```typescript
+export const auth = betterAuth({
+  emailAndPassword: {
+    enabled: true,
+    minPasswordLength: 8,
+    maxPasswordLength: 128,
+  },
+})
+```
+
+### Rate Limiting
+
+Better Auth includes built-in rate limiting:
+- 5 login attempts per 15 minutes
+- 3 password reset requests per hour
+- Configurable limits
+
+### CSRF Protection
+
+Better Auth includes CSRF protection automatically.
+
+### Secure Cookies
+
+Sessions use secure, httpOnly cookies:
+
+```typescript
+cookie: {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax',
+}
+```
+
+## Custom User Fields
+
+### Add Custom Fields
+
+Extend user model:
+
+```typescript
+// schema-public.ts
+export const user = pgTable('user', {
+  id: text('id').primaryKey(),
+  email: text('email').notNull().unique(),
+  name: text('name').notNull(),
+  bio: text('bio'),
+  avatarUrl: text('avatar_url'),
+  location: text('location'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+```
+
+### Update User Profile
+
+```typescript
+await authClient.updateUser({
+  name: newName,
+  bio: newBio,
+  avatarUrl: newAvatarUrl,
+})
+```
+
+## Troubleshooting
+
+### Session Not Persisting
+
+Check:
+- Cookies are enabled
+- `BETTER_AUTH_URL` matches your domain
+- `BETTER_AUTH_SECRET` is set
+
+### OAuth Redirect Issues
+
+Ensure callback URL matches:
+```
+http://localhost:8081/api/auth/callback/{provider}
+```
+
+### JWT Verification Failed
+
+Check:
+- `ZERO_AUTH_JWKS_URL` is accessible
+- Better Auth is running
+- Session is valid
+
+## Next Steps
+
+- [Zero Sync](/docs/zero-sync) - Using auth in mutations
+- [Database](/docs/database) - User schema and migrations
+- [Deployment](/docs/deployment) - Production auth setup

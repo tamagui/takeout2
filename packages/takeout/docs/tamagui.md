@@ -53,6 +53,41 @@ Many shorthands from v3 (like w for width, h for height, f for flex, etc.) are
 no longer available in v4. Use the full property names for any properties not
 listed above.
 
+## Media Queries
+
+Media queries are defined in `tamagui.config.ts`:
+
+```
+media: {
+  pointerTouch: { pointer: 'coarse' },
+
+  heightXXXS: { minHeight: breakpoints.xxxs },
+  heightXXS: { minHeight: breakpoints.xxs },
+  heightXS: { minHeight: breakpoints.xs },
+  heightSM: { minHeight: breakpoints.sm },
+  heightMD: { minHeight: breakpoints.md },
+  heightLG: { minHeight: breakpoints.lg },
+
+  maxXXXS: { maxWidth: breakpoints.xxxs },
+  maxXXS: { maxWidth: breakpoints.xxs },
+  maxXS: { maxWidth: breakpoints.xs },
+  maxSM: { maxWidth: breakpoints.sm },
+  maxMD: { maxWidth: breakpoints.md },
+  maxLG: { maxWidth: breakpoints.lg },
+  maxXL: { maxWidth: breakpoints.xl },
+  maxXXL: { maxWidth: breakpoints.xxl },
+
+  xxxs: { minWidth: breakpoints.xxxs },
+  xxs: { minWidth: breakpoints.xxs },
+  xs: { minWidth: breakpoints.xs },
+  sm: { minWidth: breakpoints.sm },
+  md: { minWidth: breakpoints.md },
+  lg: { minWidth: breakpoints.lg },
+  xl: { minWidth: breakpoints.xl },
+  xxl: { minWidth: breakpoints.xxl },
+},
+```
+
 ## Component Preferences
 
 When building UI components, prefer these project-specific implementations:

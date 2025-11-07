@@ -1,0 +1,621 @@
+---
+title: Database
+description: Database schema, migrations, and Drizzle ORM usage
+---
+
+# Database
+
+Takeout uses PostgreSQL with Drizzle ORM for type-safe database access and migrations.
+
+## Overview
+
+**Database Stack:**
+- **PostgreSQL 16.8** - Primary database
+- **Drizzle ORM** - Type-safe query builder
+- **Drizzle Kit** - Migration tool
+- **Aurora Serverless v2** - Production (auto-scaling)
+- **Docker** - Local development
+
+## Schema Organization
+
+Takeout uses two schema files:
+
+### Public Schema
+
+`src/database/schema-public.ts` contains tables synced to clients via Zero:
+
+```typescript
+import { pgTable, text, bigint } from 'drizzle-orm/pg-core'
+
+export const posts = pgTable('posts', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  content: text('content'),
+  userId: text('user_id').notNull(),
+  createdAt: bigint('created_at', { mode: 'number' }).notNull(),
+})
+```
+
+**Use for:**
+- User-facing data
+- Real-time synced data
+- Client-queryable tables
+
+### Private Schema
+
+`src/database/schema-private.ts` contains server-only tables:
+
+```typescript
+export const analytics = pgTable('analytics', {
+  id: serial('id').primaryKey(),
+  event: text('event').notNull(),
+  userId: text('user_id'),
+  metadata: jsonb('metadata'),
+  createdAt: timestamp('created_at').defaultNow(),
+})
+```
+
+**Use for:**
+- Sensitive data
+- Analytics and logs
+- Admin-only data
+- Server-side caching
+
+## Column Types
+
+### Common Types
+
+```typescript
+import {
+  text,
+  integer,
+  bigint,
+  boolean,
+  timestamp,
+  jsonb,
+  serial,
+} from 'drizzle-orm/pg-core'
+
+export const example = pgTable('example', {
+  // Text
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  description: text('description'), // nullable
+
+  // Numbers
+  count: integer('count').default(0),
+  timestamp: bigint('timestamp', { mode: 'number' }),
+  autoIncrement: serial('id').primaryKey(),
+
+  // Boolean
+  isActive: boolean('is_active').default(true),
+
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+
+  // JSON
+  metadata: jsonb('metadata'),
+})
+```
+
+### Timestamps
+
+Use `bigint` for Zero-synced tables (milliseconds since epoch):
+
+```typescript
+export const posts = pgTable('posts', {
+  id: text('id').primaryKey(),
+  createdAt: bigint('created_at', { mode: 'number' }).notNull(),
+  updatedAt: bigint('updated_at', { mode: 'number' }),
+})
+```
+
+Use `timestamp` for server-only tables:
+
+```typescript
+export const logs = pgTable('logs', {
+  id: serial('id').primaryKey(),
+  createdAt: timestamp('created_at').defaultNow(),
+})
+```
+
+## Relationships
+
+Define relationships with foreign keys:
+
+```typescript
+export const posts = pgTable('posts', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+})
+
+export const comments = pgTable('comments', {
+  id: text('id').primaryKey(),
+  postId: text('post_id')
+    .notNull()
+    .references(() => posts.id, { onDelete: 'cascade' }),
+  userId: text('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+})
+```
+
+**Cascade options:**
+- `cascade` - Delete related records
+- `set null` - Set to null
+- `restrict` - Prevent deletion
+- `no action` - Do nothing
+
+## Indexes
+
+Add indexes for frequently queried columns:
+
+```typescript
+import { index } from 'drizzle-orm/pg-core'
+
+export const posts = pgTable('posts', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  createdAt: bigint('created_at', { mode: 'number' }).notNull(),
+}, (table) => ({
+  userIdIdx: index('posts_user_id_idx').on(table.userId),
+  createdAtIdx: index('posts_created_at_idx').on(table.createdAt),
+  userCreatedIdx: index('posts_user_created_idx').on(
+    table.userId,
+    table.createdAt
+  ),
+}))
+```
+
+## Migrations
+
+### Automatic Migrations
+
+For simple schema changes, Drizzle generates migrations automatically:
+
+1. Edit `schema-public.ts` or `schema-private.ts`
+2. Run migration command:
+
+```bash
+bun migrate
+```
+
+This:
+- Generates migration SQL
+- Applies to local database
+- Updates TypeScript types
+
+### Manual Migrations
+
+For complex changes (like data transformations), create custom migrations:
+
+```bash
+bun db:migrate-add add-user-roles
+```
+
+Edit generated file in `src/database/migrations/`:
+
+```sql
+-- Add role column with default
+ALTER TABLE "user" ADD COLUMN "role" text NOT NULL DEFAULT 'user';
+
+-- Update existing users
+UPDATE "user" SET "role" = 'admin' WHERE "email" LIKE '%@takeout.com';
+```
+
+**Important:** Takeout doesn't use down migrations. Only write forward migrations.
+
+### Migration Files
+
+Migrations are SQL files in `src/database/migrations/`:
+
+```
+migrations/
+├── 0001_initial_schema.sql
+├── 0002_add_posts_table.sql
+├── 0003_add_comments.sql
+└── meta/
+    └── _journal.json
+```
+
+### Running Migrations
+
+**Development:**
+
+```bash
+bun migrate
+```
+
+**Production:**
+
+Migrations run automatically via Lambda during deployment (configured in `sst.config.ts`).
+
+## Querying
+
+### Basic Queries
+
+```typescript
+import { db } from '~/database/client'
+import { posts } from '~/database/schema-public'
+
+// Select all
+const allPosts = await db.select().from(posts)
+
+// Select with filter
+const userPosts = await db
+  .select()
+  .from(posts)
+  .where(eq(posts.userId, userId))
+
+// Select with order
+const recentPosts = await db
+  .select()
+  .from(posts)
+  .orderBy(desc(posts.createdAt))
+  .limit(10)
+```
+
+### Filtering
+
+```typescript
+import { eq, ne, gt, lt, and, or } from 'drizzle-orm'
+
+// Single condition
+const posts = await db
+  .select()
+  .from(posts)
+  .where(eq(posts.userId, userId))
+
+// Multiple conditions (AND)
+const posts = await db
+  .select()
+  .from(posts)
+  .where(
+    and(
+      eq(posts.userId, userId),
+      gt(posts.createdAt, Date.now() - 86400000)
+    )
+  )
+
+// OR conditions
+const posts = await db
+  .select()
+  .from(posts)
+  .where(
+    or(
+      eq(posts.userId, userId),
+      eq(posts.isPublic, true)
+    )
+  )
+```
+
+### Joins
+
+```typescript
+import { posts, user } from '~/database/schema-public'
+
+const postsWithUsers = await db
+  .select({
+    post: posts,
+    user: user,
+  })
+  .from(posts)
+  .leftJoin(user, eq(posts.userId, user.id))
+```
+
+### Aggregations
+
+```typescript
+import { count, sum, avg } from 'drizzle-orm'
+
+// Count posts
+const [{ count: postCount }] = await db
+  .select({ count: count() })
+  .from(posts)
+
+// Sum and average
+const stats = await db
+  .select({
+    total: sum(posts.views),
+    average: avg(posts.views),
+  })
+  .from(posts)
+```
+
+## Inserting
+
+### Single Insert
+
+```typescript
+await db.insert(posts).values({
+  id: randomId(),
+  title: 'Hello World',
+  content: 'First post',
+  userId: user.id,
+  createdAt: Date.now(),
+})
+```
+
+### Bulk Insert
+
+```typescript
+await db.insert(posts).values([
+  { id: '1', title: 'Post 1', userId: '1', createdAt: Date.now() },
+  { id: '2', title: 'Post 2', userId: '1', createdAt: Date.now() },
+  { id: '3', title: 'Post 3', userId: '1', createdAt: Date.now() },
+])
+```
+
+### Returning Inserted Data
+
+```typescript
+const [post] = await db
+  .insert(posts)
+  .values({
+    id: randomId(),
+    title: 'Hello',
+    userId: user.id,
+    createdAt: Date.now(),
+  })
+  .returning()
+
+console.info(post.id) // Access inserted post
+```
+
+## Updating
+
+### Update Records
+
+```typescript
+await db
+  .update(posts)
+  .set({
+    title: 'Updated Title',
+    updatedAt: Date.now(),
+  })
+  .where(eq(posts.id, postId))
+```
+
+### Conditional Update
+
+```typescript
+await db
+  .update(posts)
+  .set({ views: sql`${posts.views} + 1` })
+  .where(eq(posts.id, postId))
+```
+
+## Deleting
+
+### Delete Records
+
+```typescript
+await db
+  .delete(posts)
+  .where(eq(posts.id, postId))
+```
+
+### Delete with Condition
+
+```typescript
+// Delete old posts
+await db
+  .delete(posts)
+  .where(lt(posts.createdAt, Date.now() - 30 * 86400000))
+```
+
+## Transactions
+
+Run multiple operations atomically:
+
+```typescript
+await db.transaction(async (tx) => {
+  // Insert post
+  const [post] = await tx
+    .insert(posts)
+    .values({ ... })
+    .returning()
+
+  // Insert comment
+  await tx.insert(comments).values({
+    postId: post.id,
+    content: 'First!',
+  })
+
+  // Update user stats
+  await tx
+    .update(user)
+    .set({ postCount: sql`${user.postCount} + 1` })
+    .where(eq(user.id, userId))
+})
+```
+
+If any operation fails, all changes roll back.
+
+## Database Client
+
+Access database client:
+
+```typescript
+import { db } from '~/database/client'
+
+// Available everywhere on server
+export async function getPosts() {
+  return await db.select().from(posts)
+}
+```
+
+## Connection Pooling
+
+Production uses connection pooling configured in `sst.config.ts`:
+
+```typescript
+// Aurora Serverless v2 config
+scaling: {
+  min: '0 ACU', // Scale to zero
+  max: '4 ACU', // Max 4 ACU (8GB RAM)
+}
+
+// Connection limits
+parameters: [
+  {
+    name: 'max_connections',
+    value: '100',
+  },
+  {
+    name: 'idle_session_timeout',
+    value: '35000', // 35 seconds
+  },
+]
+```
+
+## Logical Replication
+
+PostgreSQL logical replication is required for Zero:
+
+```typescript
+parameters: [
+  {
+    name: 'rds.logical_replication',
+    value: '1',
+  },
+  {
+    name: 'max_slot_wal_keep_size',
+    value: '10240', // 10GB
+  },
+]
+```
+
+This allows Zero to track database changes.
+
+## Local Database
+
+### Connection
+
+Local PostgreSQL runs in Docker on port 5433:
+
+```bash
+ZERO_UPSTREAM_DB=postgresql://user:password@127.0.0.1:5433/postgres
+```
+
+### Accessing
+
+Use any PostgreSQL client:
+
+```bash
+# psql
+psql postgresql://user:password@127.0.0.1:5433/postgres
+
+# TablePlus
+# Host: 127.0.0.1
+# Port: 5433
+# Database: postgres
+# User: user
+# Password: password
+```
+
+### Adminer
+
+Web UI at http://localhost:8080:
+- System: PostgreSQL
+- Server: postgres
+- Username: user
+- Password: password
+- Database: postgres
+
+## Backup and Recovery
+
+### Production Backups
+
+Aurora automatically backs up database:
+- **Backup retention:** 7 days
+- **Backup window:** 3:00-4:00 AM UTC
+- **Point-in-time recovery** enabled
+
+### Local Backups
+
+Export local database:
+
+```bash
+docker compose exec postgres pg_dump -U user postgres > backup.sql
+```
+
+Restore from backup:
+
+```bash
+docker compose exec -T postgres psql -U user postgres < backup.sql
+```
+
+## Performance
+
+### Query Performance
+
+View slow queries:
+
+```bash
+docker compose logs postgres | grep "duration:"
+```
+
+Queries over 1000ms are logged automatically.
+
+### Analyze Queries
+
+Use `EXPLAIN ANALYZE`:
+
+```typescript
+import { sql } from 'drizzle-orm'
+
+const result = await db.execute(
+  sql`EXPLAIN ANALYZE SELECT * FROM posts WHERE user_id = ${userId}`
+)
+```
+
+### Optimization Tips
+
+1. **Add indexes** for frequently queried columns
+2. **Use limit()** to restrict result sets
+3. **Batch operations** instead of N+1 queries
+4. **Use select()** to fetch only needed columns
+5. **Cache results** for expensive queries
+
+## Troubleshooting
+
+### Migrations Fail
+
+If migration fails:
+
+```bash
+# View migration status
+bun drizzle-kit push:pg
+
+# Force reset (development only!)
+bun backend:clean
+bun backend
+bun migrate
+```
+
+### Connection Issues
+
+Check PostgreSQL is running:
+
+```bash
+docker compose ps postgres
+docker compose logs postgres
+```
+
+### Schema Drift
+
+Regenerate types if schema and code mismatch:
+
+```bash
+bun tko db generate
+```
+
+## Next Steps
+
+- [Zero Sync](/docs/zero-sync) - Real-time data sync
+- [Architecture](/docs/architecture) - Database architecture
+- [Deployment](/docs/deployment) - Production database setup

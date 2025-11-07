@@ -1,0 +1,207 @@
+---
+title: "Guide: Creating Custom Scripts"
+description: Learn how to create custom TKO CLI scripts for your project
+---
+
+# Guide: Creating Custom Scripts
+
+This guide shows you how to create custom scripts for the TKO CLI to automate project tasks.
+
+## Script Organization
+
+Scripts live in the `./scripts/` directory, organized by domain:
+
+```
+scripts/
+├── aws/              # AWS operations
+├── check/            # Code quality
+├── ci/               # CI/CD
+├── db/               # Database operations
+├── web/              # Web builds
+└── custom/           # Your custom scripts
+```
+
+## Creating a Simple Script
+
+Create `scripts/custom/hello.ts`:
+
+```typescript
+#!/usr/bin/env bun
+
+console.info('Hello from custom script!')
+```
+
+Run with:
+
+```bash
+bun tko custom/hello
+```
+
+## Script with Arguments
+
+Create `scripts/custom/greet.ts`:
+
+```typescript
+#!/usr/bin/env bun
+
+const name = process.argv[2] || 'World'
+console.info(`Hello, ${name}!`)
+```
+
+Run with:
+
+```bash
+bun tko custom/greet John
+# Output: Hello, John!
+```
+
+## Organizing Related Scripts
+
+Create a directory for related scripts:
+
+```bash
+mkdir scripts/deploy
+```
+
+Add scripts:
+
+```typescript
+// scripts/deploy/staging.ts
+#!/usr/bin/env bun
+
+console.info('Deploying to staging...')
+// Deployment logic here
+
+// scripts/deploy/production.ts
+#!/usr/bin/env bun
+
+console.info('Deploying to production...')
+// Deployment logic here
+```
+
+Run with:
+
+```bash
+bun tko deploy staging
+bun tko deploy production
+```
+
+## Using Imports
+
+Scripts can import from your codebase:
+
+```typescript
+#!/usr/bin/env bun
+
+import { db } from '~/database/client'
+import { users } from '~/database/schema-public'
+
+const allUsers = await db.select().from(users)
+console.info(`Total users: ${allUsers.length}`)
+```
+
+## Environment Variables
+
+Load environment in scripts:
+
+```typescript
+#!/usr/bin/env bun
+
+import { loadEnv } from '@vxrn/scripts/helpers/env-load'
+
+const env = await loadEnv('production')
+
+console.info(`Server URL: ${env.ONE_SERVER_URL}`)
+```
+
+## Common Patterns
+
+### Database Script
+
+```typescript
+#!/usr/bin/env bun
+
+import { db } from '~/database/client'
+import { posts } from '~/database/schema-public'
+import { sql } from 'drizzle-orm'
+
+// Clean old posts
+const result = await db
+  .delete(posts)
+  .where(sql`created_at < NOW() - INTERVAL '30 days'`)
+
+console.info(`Deleted ${result.rowCount} old posts`)
+```
+
+### Backup Script
+
+```typescript
+#!/usr/bin/env bun
+
+import { execSync } from 'node:child_process'
+import { writeFileSync } from 'node:fs'
+
+const timestamp = new Date().toISOString()
+const filename = `backup-${timestamp}.sql`
+
+execSync(`pg_dump $DATABASE_URL > ${filename}`)
+
+console.info(`Backup saved to ${filename}`)
+```
+
+### Cleanup Script
+
+```typescript
+#!/usr/bin/env bun
+
+import { unlink } from 'node:fs/promises'
+import { glob } from 'glob'
+
+const files = await glob('dist/**/*.map')
+
+for (const file of files) {
+  await unlink(file)
+  console.info(`Deleted ${file}`)
+}
+
+console.info(`Cleaned ${files.length} source maps`)
+```
+
+## Best Practices
+
+1. **Make scripts executable:**
+
+```bash
+chmod +x scripts/custom/script.ts
+```
+
+2. **Add shebang:**
+
+```typescript
+#!/usr/bin/env bun
+```
+
+3. **Use descriptive names:**
+   - `deploy-staging.ts` not `ds.ts`
+   - `clean-cache.ts` not `clean.ts`
+
+4. **Add error handling:**
+
+```typescript
+try {
+  await dangerousOperation()
+} catch (error) {
+  console.error('Operation failed:', error)
+  process.exit(1)
+}
+```
+
+5. **Make scripts idempotent:**
+   - Safe to run multiple times
+   - Check state before modifying
+
+## Next Steps
+
+- [Scripts Reference](/docs/scripts) - All available scripts
+- [Development](/docs/development) - Development workflow
+- [Deployment](/docs/deployment) - Deployment scripts

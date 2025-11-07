@@ -1,0 +1,595 @@
+---
+title: Zero Sync
+description: Understanding and using Zero for real-time data synchronization
+---
+
+# Zero Sync
+
+Zero is a real-time sync engine that provides offline-first data synchronization between your PostgreSQL database and client applications. This guide covers the core concepts and usage of Zero in Takeout.
+
+## What is Zero?
+
+Zero is a synchronization system that maintains consistency between a server database (PostgreSQL) and local client databases (SQLite). It provides:
+
+- **Offline-first architecture** - Apps work without internet connection
+- **Real-time updates** - Changes sync instantly across all clients
+- **Optimistic UI** - Immediate feedback on user actions
+- **Automatic conflict resolution** - Handles concurrent edits gracefully
+- **Type-safe queries** - Full TypeScript support
+
+## How Zero Works
+
+### Architecture Overview
+
+```
+Client App
+    ↓
+Zero Client (SQLite)  ←→  Zero Server  ←→  PostgreSQL
+    ↓
+React Components
+```
+
+1. **Client makes query** - Runs against local SQLite database (instant)
+2. **Zero Client subscribes** - WebSocket connection to Zero Server
+3. **Server streams changes** - PostgreSQL changes replicate to clients
+4. **Client updates local DB** - Changes apply to SQLite automatically
+5. **React re-renders** - Components update with new data
+
+### Key Concepts
+
+**View Syncer**
+- Serves client queries
+- Manages WebSocket connections
+- Pushes changes to subscribed clients
+- Runs on port 4848 (local) or zero.yourdomain.com (production)
+
+**Replication Manager**
+- Monitors PostgreSQL logical replication slot
+- Captures all database changes
+- Streams to view syncers
+- Handles backup via Litestream
+
+**Local Database**
+- SQLite database on client
+- Stores synced data for offline access
+- Updates automatically from server
+- Queries run locally (fast!)
+
+## Setting Up Zero
+
+### Server Configuration
+
+Zero server configuration is in `sst.config.ts`:
+
+```typescript
+const zeroEnv = {
+  ZERO_APP_ID: 'zero',
+  ZERO_UPSTREAM_DB: pgDefaultDBConnectString,
+  ZERO_CVR_DB: cvrDBConnectString,
+  ZERO_CHANGE_DB: changeDBConnectString,
+  ZERO_AUTH_JWKS_URL: `${webApp.url}api/auth/jwks`,
+  ZERO_PUSH_URL: `${webApp.url}api/zero/push`,
+  ZERO_GET_QUERIES_URL: `${webApp.url}api/zero/pull`,
+}
+```
+
+**Environment Variables:**
+- `ZERO_UPSTREAM_DB` - Main PostgreSQL database
+- `ZERO_CVR_DB` - Client View Record database
+- `ZERO_CHANGE_DB` - Change tracking database
+- `ZERO_AUTH_JWKS_URL` - JWT key set for authentication
+- `ZERO_PUSH_URL` - Mutation endpoint
+- `ZERO_GET_QUERIES_URL` - Query endpoint
+
+### Client Configuration
+
+Zero client is configured in `src/zero/index.ts`:
+
+```typescript
+import { Zero } from '@rocicorp/zero'
+import { schema } from './schema'
+
+export const zero = new Zero({
+  server: import.meta.env.VITE_PUBLIC_ZERO_SERVER,
+  schema,
+  userID: getUserID(),
+  auth: () => getAuthToken(),
+})
+```
+
+## Defining Schema
+
+Zero schemas are generated from Drizzle schemas in `schema-public.ts`:
+
+```typescript
+// src/database/schema-public.ts
+export const posts = pgTable('posts', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  content: text('content'),
+  userId: text('user_id').notNull(),
+  createdAt: bigint('created_at', { mode: 'number' }).notNull(),
+})
+```
+
+Generate Zero types:
+
+```bash
+bun tko zero generate
+```
+
+This creates TypeScript types in `src/zero/generated/`.
+
+## Querying Data
+
+### Basic Queries
+
+Use `useQuery` hook to fetch data reactively:
+
+```typescript
+import { useQuery } from '~/zero'
+
+export function PostsList() {
+  const [posts] = useQuery(z.posts.orderBy('createdAt', 'desc'))
+
+  return (
+    <YStack>
+      {posts.map(post => (
+        <PostCard key={post.id} post={post} />
+      ))}
+    </YStack>
+  )
+}
+```
+
+The query:
+- Runs against local SQLite (instant)
+- Updates automatically when data changes
+- Returns strongly-typed results
+
+### Filtering
+
+Filter queries with `.where()`:
+
+```typescript
+// Single condition
+const [myPosts] = useQuery(
+  z.posts.where('userId', userId)
+)
+
+// Multiple conditions
+const [recentPosts] = useQuery(
+  z.posts
+    .where('userId', userId)
+    .where('createdAt', '>', Date.now() - 86400000)
+)
+```
+
+### Ordering
+
+Sort results with `.orderBy()`:
+
+```typescript
+// Ascending
+const [posts] = useQuery(
+  z.posts.orderBy('createdAt', 'asc')
+)
+
+// Descending
+const [posts] = useQuery(
+  z.posts.orderBy('createdAt', 'desc')
+)
+```
+
+### Limiting
+
+Limit result count with `.limit()`:
+
+```typescript
+const [latestPosts] = useQuery(
+  z.posts
+    .orderBy('createdAt', 'desc')
+    .limit(10)
+)
+```
+
+### Relationships
+
+Query related data with `.related()`:
+
+```typescript
+const [postsWithUsers] = useQuery(
+  z.posts
+    .related('user', (q) =>
+      q.one('userId', 'users', 'id')
+    )
+    .orderBy('createdAt', 'desc')
+)
+
+// Access related data
+postsWithUsers.forEach(post => {
+  console.info(post.title)
+  console.info(post.user.name) // Related user
+})
+```
+
+### Query Patterns
+
+Organize queries in feature directories:
+
+```typescript
+// src/features/posts/queries.ts
+export const postsQueries = {
+  all: () =>
+    z.posts.orderBy('createdAt', 'desc'),
+
+  byUser: (userId: string) =>
+    z.posts
+      .where('userId', userId)
+      .orderBy('createdAt', 'desc'),
+
+  byId: (id: string) =>
+    z.posts.where('id', id),
+
+  recent: (limit = 10) =>
+    z.posts
+      .orderBy('createdAt', 'desc')
+      .limit(limit),
+}
+```
+
+Use in components:
+
+```typescript
+import { postsQueries } from '~/features/posts/queries'
+
+const [posts] = useQuery(postsQueries.all())
+const [myPosts] = useQuery(postsQueries.byUser(userId))
+```
+
+See [Guides: Queries](/docs/guides-queries) for more examples.
+
+## Mutations
+
+### Basic Mutations
+
+Create mutations with optimistic updates:
+
+```typescript
+import { mutation } from 'over-zero'
+import { randomId } from '~/helpers/randomId'
+
+export const createPost = mutation({
+  name: 'createPost',
+  async mutate(ctx, input: { title: string; content: string }) {
+    const id = randomId()
+    const post = {
+      id,
+      title: input.title,
+      content: input.content,
+      userId: ctx.auth.userId,
+      createdAt: Date.now(),
+    }
+
+    await ctx.zero.posts.insert(post)
+    return { id }
+  },
+})
+```
+
+Use in components:
+
+```typescript
+import { createPost } from '~/features/posts/mutations'
+
+export function CreatePostForm() {
+  const handleSubmit = async (data) => {
+    await createPost({
+      title: data.title,
+      content: data.content,
+    })
+  }
+
+  return <PostForm onSubmit={handleSubmit} />
+}
+```
+
+### Update Mutations
+
+Update existing records:
+
+```typescript
+export const updatePost = mutation({
+  name: 'updatePost',
+  async mutate(ctx, { id, title, content }) {
+    await ctx.zero.posts.update({
+      id,
+      title,
+      content,
+      updatedAt: Date.now(),
+    })
+  },
+})
+```
+
+### Delete Mutations
+
+Delete records:
+
+```typescript
+export const deletePost = mutation({
+  name: 'deletePost',
+  async mutate(ctx, { id }: { id: string }) {
+    await ctx.zero.posts.delete({ id })
+  },
+})
+```
+
+### Mutation Context
+
+Mutations receive a `MutatorContext` with:
+
+```typescript
+{
+  auth: {
+    userId: string
+    // ... other auth data
+  },
+  zero: {
+    posts: { insert, update, delete },
+    users: { insert, update, delete },
+    // ... all your tables
+  },
+  serverAction: (fn) => void,  // Run server-side only
+  asyncTasks: {
+    push: (task) => void       // Queue background task
+  }
+}
+```
+
+### Server-Side Logic
+
+Run server-only code in mutations:
+
+```typescript
+export const createPost = mutation({
+  name: 'createPost',
+  async mutate(ctx, input) {
+    const id = randomId()
+
+    // Runs on client and server (optimistic)
+    await ctx.zero.posts.insert({
+      id,
+      title: input.title,
+      userId: ctx.auth.userId,
+      createdAt: Date.now(),
+    })
+
+    // Runs ONLY on server (after sync)
+    ctx.serverAction(async () => {
+      // Send notification
+      await sendEmail({
+        to: user.email,
+        subject: 'New post created',
+      })
+
+      // Track analytics
+      await analytics.track('post_created', { userId: ctx.auth.userId })
+    })
+
+    return { id }
+  },
+})
+```
+
+**Important:** Don't run long operations in mutations directly - they keep the database transaction open. Use `serverAction` or `asyncTasks.push` instead.
+
+### Background Tasks
+
+Queue tasks to run after mutation:
+
+```typescript
+export const processImage = mutation({
+  name: 'processImage',
+  async mutate(ctx, { imageUrl }) {
+    const id = randomId()
+
+    await ctx.zero.images.insert({
+      id,
+      url: imageUrl,
+      status: 'processing',
+    })
+
+    // Queue background processing
+    ctx.asyncTasks.push({
+      type: 'processImage',
+      imageId: id,
+      url: imageUrl,
+    })
+
+    return { id }
+  },
+})
+```
+
+See [Guides: Mutations](/docs/guides-mutations) for more details.
+
+## Offline Support
+
+### How Offline Works
+
+1. **User goes offline** - Zero Client detects network loss
+2. **Queries still work** - Data served from local SQLite
+3. **Mutations queue** - Changes stored locally
+4. **User goes online** - Zero Client reconnects
+5. **Changes sync** - Queued mutations sent to server
+6. **Conflicts resolve** - Server merges concurrent changes
+
+### Handling Offline State
+
+Detect online/offline status:
+
+```typescript
+import { useOnlineStatus } from '~/hooks/useOnlineStatus'
+
+export function OfflineIndicator() {
+  const isOnline = useOnlineStatus()
+
+  if (isOnline) return null
+
+  return (
+    <Notice type="warning">
+      You're offline. Changes will sync when you reconnect.
+    </Notice>
+  )
+}
+```
+
+### Conflict Resolution
+
+Zero uses Last Write Wins (LWW) by default:
+- Each mutation has a timestamp
+- Concurrent edits use latest timestamp
+- Data converges across all clients
+
+Custom conflict resolution in mutators:
+
+```typescript
+export const updateCounter = mutation({
+  name: 'updateCounter',
+  async mutate(ctx, { id, increment }) {
+    const counter = await ctx.zero.counters.get(id)
+
+    // Increment instead of overwrite
+    await ctx.zero.counters.update({
+      id,
+      value: counter.value + increment,
+    })
+  },
+})
+```
+
+## Performance
+
+### Query Optimization
+
+**Limit results:**
+
+```typescript
+// Bad - loads all posts
+const [posts] = useQuery(z.posts)
+
+// Good - loads first 20
+const [posts] = useQuery(z.posts.limit(20))
+```
+
+**Index frequently queried columns:**
+
+```typescript
+// schema-public.ts
+export const posts = pgTable('posts', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  createdAt: bigint('created_at', { mode: 'number' }).notNull(),
+}, (table) => ({
+  userIdIdx: index('posts_user_id_idx').on(table.userId),
+  createdAtIdx: index('posts_created_at_idx').on(table.createdAt),
+}))
+```
+
+**Use specific queries:**
+
+```typescript
+// Bad - fetches everything then filters
+const [posts] = useQuery(z.posts)
+const myPosts = posts.filter(p => p.userId === userId)
+
+// Good - filters in database
+const [myPosts] = useQuery(z.posts.where('userId', userId))
+```
+
+### Mutation Best Practices
+
+**Avoid randomness in mutators:**
+
+```typescript
+// Bad - different random values on client and server
+async mutate(ctx, input) {
+  const id = randomId()  // Different on client/server!
+  await ctx.zero.posts.insert({ id, ...input })
+}
+
+// Good - client provides random value
+async mutate(ctx, input) {
+  await ctx.zero.posts.insert(input)  // Client passes id
+}
+```
+
+**Keep mutations fast:**
+
+```typescript
+// Bad - slow mutation blocks other changes
+async mutate(ctx, input) {
+  await processImage(input.image)  // 5 seconds!
+  await ctx.zero.posts.insert(input)
+}
+
+// Good - queue slow work
+async mutate(ctx, input) {
+  await ctx.zero.posts.insert(input)
+
+  ctx.asyncTasks.push({
+    type: 'processImage',
+    imageUrl: input.image,
+  })
+}
+```
+
+## Debugging
+
+### View Zero State
+
+Access Zero internals in dev console:
+
+```typescript
+import { devGlobal } from '~/helpers/dev'
+
+// View current state
+devGlobal.zero.dump()
+
+// View pending mutations
+devGlobal.zero.pendingMutations()
+```
+
+### Enable Debug Logging
+
+Set environment variable:
+
+```bash
+VITE_ZERO_DEBUG=true
+```
+
+This logs:
+- Query executions
+- Mutation submissions
+- Sync events
+- Connection status
+
+### Zero Server Logs
+
+View server logs:
+
+```bash
+# Development
+docker compose logs -f zero
+
+# Production
+bun tko aws logs zero
+```
+
+## Next Steps
+
+- [Guides: Queries](/docs/guides-queries) - Write effective queries
+- [Guides: Mutations](/docs/guides-mutations) - Create mutations
+- [Real-time](/docs/real-time) - Real-time features
+- [Database](/docs/database) - Database schema and migrations

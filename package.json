@@ -120,6 +120,7 @@
     "@vxrn/color-scheme": "^1.2.6",
     "@vxrn/helpers": "workspace:*",
     "@vxrn/hooks": "workspace:*",
+    "@vxrn/mdx": "^1.2.7",
     "@vxrn/postgres": "workspace:*",
     "@vxrn/scripts": "workspace:*",
     "@vxrn/takeout": "workspace:*",

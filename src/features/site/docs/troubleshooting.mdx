@@ -1,0 +1,553 @@
+---
+title: Troubleshooting
+description: Common issues and solutions for Takeout development
+---
+
+# Troubleshooting
+
+Solutions to common issues you might encounter while developing with Takeout.
+
+## Installation Issues
+
+### Node Version Mismatch
+
+**Problem:** Error about wrong Node version
+
+**Solution:**
+
+```bash
+# Check current version
+node --version
+
+# Install correct version (24.3.0)
+nvm install 24.3.0
+nvm use 24.3.0
+```
+
+### Bun Installation Fails
+
+**Problem:** Bun won't install or crashes
+
+**Solution:**
+
+```bash
+# Uninstall Bun
+rm -rf ~/.bun
+
+# Reinstall
+curl -fsSL https://bun.sh/install | bash
+
+# Restart terminal
+source ~/.bashrc  # or ~/.zshrc
+```
+
+### Package Installation Errors
+
+**Problem:** `bun install` fails
+
+**Solution:**
+
+```bash
+# Clear cache
+rm -rf node_modules
+rm bun.lockb
+
+# Reinstall
+bun install
+```
+
+## Development Server Issues
+
+### Port Already in Use
+
+**Problem:** `Error: listen EADDRINUSE: address already in use :::8081`
+
+**Solution:**
+
+```bash
+# Find process using port 8081
+lsof -ti:8081
+
+# Kill the process
+lsof -ti:8081 | xargs kill -9
+
+# Or use different port
+PORT=3000 bun dev
+```
+
+### Hot Reload Not Working
+
+**Problem:** Changes don't reflect in browser
+
+**Solution:**
+
+```bash
+# Clear Vite cache
+rm -rf node_modules/.vite
+
+# Restart dev server
+bun dev
+```
+
+### Module Not Found Errors
+
+**Problem:** `Cannot find module '~/something'`
+
+**Solution:**
+
+1. Check import path is correct
+2. Restart TypeScript server in VS Code: Cmd+Shift+P → "TypeScript: Restart TS Server"
+3. Clear cache and restart:
+
+```bash
+rm -rf node_modules/.vite
+bun dev
+```
+
+## Database Issues
+
+### Docker Services Won't Start
+
+**Problem:** `docker compose up` fails
+
+**Solution:**
+
+```bash
+# Clean Docker containers and volumes
+bun backend:clean
+
+# Restart Docker Desktop
+
+# Try again
+bun backend
+```
+
+### PostgreSQL Connection Failed
+
+**Problem:** `Connection to database failed`
+
+**Solution:**
+
+1. Check PostgreSQL is running:
+
+```bash
+docker compose ps
+```
+
+2. Check connection string in `.env`:
+
+```bash
+ZERO_UPSTREAM_DB=postgresql://user:password@127.0.0.1:5433/postgres
+```
+
+3. Test connection:
+
+```bash
+psql postgresql://user:password@127.0.0.1:5433/postgres
+```
+
+### Migration Fails
+
+**Problem:** Database migration errors
+
+**Solution:**
+
+```bash
+# Check migration files
+ls -la src/database/migrations/
+
+# Reset database (development only!)
+bun backend:clean
+bun backend
+bun migrate
+```
+
+### Schema Drift
+
+**Problem:** Database schema doesn't match code
+
+**Solution:**
+
+```bash
+# Regenerate types
+bun tko db generate
+
+# Run migrations
+bun migrate
+
+# Restart dev server
+bun dev
+```
+
+## Zero Sync Issues
+
+### Zero Server Not Connecting
+
+**Problem:** Client can't connect to Zero server
+
+**Solution:**
+
+1. Check Zero server URL:
+
+```bash
+# .env
+VITE_PUBLIC_ZERO_SERVER=http://localhost:4848
+```
+
+2. Check Zero server is running:
+
+```bash
+curl http://localhost:4848/
+```
+
+3. Check backend is running:
+
+```bash
+bun backend
+```
+
+### Queries Not Updating
+
+**Problem:** Data doesn't update in real-time
+
+**Solution:**
+
+1. Check WebSocket connection in browser DevTools → Network → WS
+2. Regenerate Zero types:
+
+```bash
+bun tko zero generate
+```
+
+3. Check query syntax is correct
+4. Restart dev server
+
+### Mutations Not Syncing
+
+**Problem:** Mutations don't reach server
+
+**Solution:**
+
+1. Check mutation syntax
+2. Check network tab for errors
+3. Check server logs:
+
+```bash
+docker compose logs -f webapp
+```
+
+4. Verify Zero configuration is correct
+
+## TypeScript Issues
+
+### Type Errors
+
+**Problem:** TypeScript shows errors
+
+**Solution:**
+
+```bash
+# Run type check
+bun tko check types
+
+# Regenerate Zero types
+bun tko zero generate
+
+# Regenerate Drizzle types
+bun tko db generate
+
+# Restart TS server in VS Code
+# Cmd+Shift+P → "TypeScript: Restart TS Server"
+```
+
+### Circular Dependencies
+
+**Problem:** Circular dependency warnings
+
+**Solution:**
+
+```bash
+# Check for circular deps
+bun tko check dependencies
+
+# Refactor to remove circular imports
+# Move shared types to separate file
+# Use type-only imports: import type { ... }
+```
+
+## Build Issues
+
+### Build Fails with Memory Error
+
+**Problem:** `JavaScript heap out of memory`
+
+**Solution:**
+
+```bash
+# Increase Node memory
+export NODE_OPTIONS="--max-old-space-size=4096"
+
+# Then build
+bun tko web build
+```
+
+### Missing Dependencies
+
+**Problem:** Build fails with missing dependencies
+
+**Solution:**
+
+```bash
+# Install all dependencies
+bun install
+
+# Clean and rebuild
+rm -rf node_modules dist
+bun install
+bun tko web build
+```
+
+## Mobile Development Issues
+
+### iOS Build Fails
+
+**Problem:** iOS build errors
+
+**Solution:**
+
+```bash
+# Clean iOS build
+cd ios
+rm -rf Pods Podfile.lock
+pod install --repo-update
+
+# Rebuild
+bun ios
+```
+
+### Android Build Fails
+
+**Problem:** Android build errors
+
+**Solution:**
+
+```bash
+# Clean Android build
+cd android
+./gradlew clean
+
+# Rebuild
+bun android
+```
+
+### Metro Bundler Issues
+
+**Problem:** Metro bundler crashes or hangs
+
+**Solution:**
+
+```bash
+# Clear Metro cache
+rm -rf node_modules/.cache
+
+# Restart with clean cache
+bun android --reset-cache
+# or
+bun ios --reset-cache
+```
+
+## Environment Issues
+
+### Environment Variables Not Loading
+
+**Problem:** Environment variables are undefined
+
+**Solution:**
+
+1. Check `.env` file exists
+2. Update environment:
+
+```bash
+bun env:update
+```
+
+3. Restart dev server
+4. Verify in code:
+
+```typescript
+console.info('Env:', import.meta.env)
+```
+
+### Production Environment Wrong
+
+**Problem:** Production uses development config
+
+**Solution:**
+
+1. Check `NODE_ENV`:
+
+```bash
+echo $NODE_ENV
+```
+
+2. Set explicitly:
+
+```bash
+NODE_ENV=production bun tko web build
+```
+
+## Deployment Issues
+
+### SST Deployment Fails
+
+**Problem:** `sst deploy` errors
+
+**Solution:**
+
+1. Check AWS credentials:
+
+```bash
+aws sts get-caller-identity
+```
+
+2. Check region is correct in `sst.config.ts`
+3. Check all environment variables are set
+4. View deployment logs:
+
+```bash
+bun tko sst deploy production --verbose
+```
+
+### Docker Image Build Fails
+
+**Problem:** Docker build errors
+
+**Solution:**
+
+```bash
+# Check Dockerfile syntax
+docker build -t test .
+
+# Clear Docker cache
+docker system prune -a
+
+# Rebuild
+bun tko web build-docker
+```
+
+## Performance Issues
+
+### Slow Queries
+
+**Problem:** Queries take too long
+
+**Solution:**
+
+1. Add database indexes:
+
+```typescript
+export const posts = pgTable('posts', {
+  userId: text('user_id'),
+}, (table) => ({
+  userIdIdx: index().on(table.userId),
+}))
+```
+
+2. Limit result count:
+
+```typescript
+const [posts] = useQuery(z.posts.limit(20))
+```
+
+3. Check for N+1 queries
+
+### High Memory Usage
+
+**Problem:** App uses too much memory
+
+**Solution:**
+
+1. Check for memory leaks
+2. Limit query results
+3. Implement pagination
+4. Use lazy loading for heavy components
+
+## Testing Issues
+
+### Tests Fail
+
+**Problem:** Unit tests failing
+
+**Solution:**
+
+```bash
+# Update snapshots
+bun test:unit -u
+
+# Run specific test
+bun test:unit src/features/auth/auth.test.ts
+
+# Check for missing mocks
+```
+
+### Integration Tests Timeout
+
+**Problem:** Playwright tests timeout
+
+**Solution:**
+
+```bash
+# Increase timeout in playwright.config.ts
+timeout: 60000,
+
+# Run in headed mode to debug
+bun test:integration --headed
+
+# Check selectors are correct
+```
+
+## Authentication Issues
+
+### Session Not Persisting
+
+**Problem:** User gets logged out
+
+**Solution:**
+
+1. Check `BETTER_AUTH_SECRET` is set
+2. Check `BETTER_AUTH_URL` matches domain
+3. Check cookies are enabled
+4. Check session expiry settings
+
+### OAuth Not Working
+
+**Problem:** OAuth redirect fails
+
+**Solution:**
+
+1. Check redirect URL in OAuth provider settings:
+
+```
+http://localhost:8081/api/auth/callback/github
+```
+
+2. Check client ID and secret are correct
+3. Check `BETTER_AUTH_URL` is correct
+
+## Getting Help
+
+If you're still stuck:
+
+1. Check [Common Issues](/docs/common-issues)
+2. Search GitHub issues
+3. Create new issue with:
+   - Clear description
+   - Steps to reproduce
+   - Error messages
+   - Environment info (OS, Node version, etc.)
+
+## Next Steps
+
+- [Common Issues](/docs/common-issues) - Specific error messages
+- [Development](/docs/development) - Development workflow
+- [FAQ](/docs/faq) - Frequently asked questions

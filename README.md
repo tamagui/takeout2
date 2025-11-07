@@ -54,11 +54,12 @@ Which runs your backend services + your web app and checks in the other.
 
 ## Scripts and Docs
 
-Takeout comes with a CLI (`bun tko`) that has a variety of helperful commands.
-Mostly it includes docs and scripts that can update with a simple bun install,
-so we can improve them easily without needing to copy-paste.
+Takeout comes with a CLI (`bun tko`) that has a variety of commands.
 
-Use `bun docs list` or `bun scripts list` to see them all.
+Use:
+
+- `bun tko` to see commands
+- `bun docs list` to see docs
 
 If you want to eject the docs and scripts into your repo you can use
 `bun tko docs eject` and `bun tko scripts eject`.

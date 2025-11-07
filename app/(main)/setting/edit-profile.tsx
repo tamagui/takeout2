@@ -171,7 +171,6 @@ export const ProfileEditPage = () => {
               originalImage={user?.image || undefined}
               currentImage={user?.image || undefined}
               onChangeImage={handleAvatarUpload}
-              onResetImage={handleAvatarReset}
             />
           </YStack>
           <YStack>

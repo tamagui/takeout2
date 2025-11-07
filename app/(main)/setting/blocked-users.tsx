@@ -1,29 +1,17 @@
+import { LegendList } from '@legendapp/list'
+import { isNative } from '@vxrn/helpers'
 import { useCallback } from 'react'
-import { Alert, FlatList } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { ListItem, Spinner, View, YStack } from 'tamagui'
-import { images } from '~/constants/images'
+import { Alert, RefreshControl } from 'react-native'
+import { ListItem, SizableText, Spinner, View, YStack } from 'tamagui'
 import type { User } from '~/data/types'
 import { useBlockedUsers } from '~/features/profile/useBlockedUsers'
 import { Avatar } from '~/interface/avatars/Avatar'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
-import { BasicHeader } from '~/interface/headers/BasicHeader'
-import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
-import { Image } from '~/interface/image/Image'
 import { BodyText } from '~/interface/text/Body'
-import { H5 } from '~/interface/text/Headings'
 
 export const ProfileBlockedUsersPage = () => {
-  const { bottom } = useSafeAreaInsets()
-  const {
-    blockedUsers,
-    isLoading,
-    isLoadingMore,
-    hasMore,
-    loadMore,
-    unblockUser,
-    isEmpty,
-  } = useBlockedUsers()
+  const { blockedUsers, isLoading, hasMore, loadMore, refresh, unblockUser } =
+    useBlockedUsers()
 
   const handleUnblock = useCallback(
     (user: User) => {
@@ -75,24 +63,30 @@ export const ProfileBlockedUsersPage = () => {
 
   const keyExtractor = useCallback((item: User) => item.id, [])
 
-  const ListEmptyComponent = useCallback(
-    () => (
-      <YStack flex={1} items="center" justify="center" py="$8" gap="$3">
-        <Image src={images.iconBoy} width={78} height={78} />
-        <H5 color="$color10">No blocked users</H5>
-      </YStack>
-    ),
-    []
-  )
-
-  const ListFooterComponent = useCallback(() => {
-    if (!isLoadingMore) return null
+  const renderEmpty = useCallback(() => {
     return (
-      <View py="$4" items="center">
-        <Spinner size="small" color="$color10" />
-      </View>
+      <YStack flex={1} items="center" justify="center" p="$4" minH={400}>
+        <SizableText size="$5" color="$color10">
+          No blocked users
+        </SizableText>
+
+        {isNative && (
+          <SizableText size="$3" color="$color8" mt="$2">
+            Pull to refresh
+          </SizableText>
+        )}
+      </YStack>
     )
-  }, [isLoadingMore])
+  }, [])
+
+  const renderFooter = useCallback(() => {
+    if (!hasMore || blockedUsers.length === 0) return null
+    return (
+      <YStack p="$4" items="center" justify="center">
+        <Spinner size="small" />
+      </YStack>
+    )
+  }, [hasMore, blockedUsers.length])
 
   return (
     <YStack flex={1}>
@@ -101,18 +95,18 @@ export const ProfileBlockedUsersPage = () => {
           <Spinner size="large" color="$color10" />
         </YStack>
       ) : (
-        <FlatList
+        <LegendList
           data={blockedUsers}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
-          ListEmptyComponent={isEmpty ? ListEmptyComponent : undefined}
-          ListFooterComponent={ListFooterComponent}
-          onEndReached={hasMore ? loadMore : undefined}
+          ListEmptyComponent={renderEmpty}
+          ListFooterComponent={renderFooter}
+          refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refresh} />}
+          onEndReached={loadMore}
           onEndReachedThreshold={0.5}
-          ItemSeparatorComponent={() => <View height={8} />}
+          contentInsetAdjustmentBehavior="automatic"
           contentContainerStyle={{
-            marginTop: 16,
-            paddingBottom: bottom + 20,
+            paddingHorizontal: 14,
           }}
         />
       )}

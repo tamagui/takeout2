@@ -3,7 +3,7 @@ import { isLiquidGlassAvailable } from 'expo-glass-effect'
 import { router, Stack } from 'one'
 import { Pressable } from '~/interface/buttons/Pressable'
 
-export function UserLayout() {
+export function SettingLayout() {
   return (
     <Stack
       screenOptions={{

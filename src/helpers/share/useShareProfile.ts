@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import { Share, Platform } from 'react-native'
 import type { User } from '~/data/types'
 import { showToast } from '~/interface/toast/helpers'
+import { showError } from '~/interface/dialogs/actions'
 
 export function useShareProfile() {
   const shareProfile = useCallback(async (user: User, publicProfileUrl: string) => {
@@ -25,7 +26,7 @@ export function useShareProfile() {
       // })
     } catch (error) {
       console.error('Error sharing profile:', error)
-      showToast('Failed to share profile', { type: 'error' })
+      showError(error, 'Share Profile')
     }
   }, [])
 

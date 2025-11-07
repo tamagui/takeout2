@@ -1,6 +1,6 @@
-import { useEmitterSelector } from '@vxrn/helpers'
+import { isWeb, useEmitterSelector } from '@vxrn/helpers'
 import { useState } from 'react'
-import { XStack, YStack } from 'tamagui'
+import { useWindowDimensions, XStack, YStack } from 'tamagui'
 import { ButtonAction } from '../buttons/ButtonAction'
 import { ButtonSimple } from '../buttons/ButtonSimple'
 import { Input } from '../forms/Input'
@@ -9,6 +9,7 @@ import { Dialog } from './Dialog'
 import { closeDialogLayer2, dialogLayer2Emitter } from './shared'
 
 export const DialogConfirm = () => {
+  const { width } = useWindowDimensions()
   const [extraConfirm, setExtraConfirm] = useState('')
   const state = useEmitterSelector(dialogLayer2Emitter, (next) => {
     return next.type === 'confirm' ? next : null
@@ -22,6 +23,7 @@ export const DialogConfirm = () => {
   return (
     <Dialog
       minH={state?.extraConfirm ? 260 : 220}
+      minW={isWeb ? 450 : width * 0.9}
       open={!!state}
       onOpenChange={(open) => {
         if (open) return

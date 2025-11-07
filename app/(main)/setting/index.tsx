@@ -6,6 +6,7 @@ import { authClient, clearAuthClientToken } from '~/features/auth/client/authCli
 import { useUser } from '~/features/user/useUser'
 import { getHumanReadableVersionString } from '~/helpers/getHumanReadableVersionString'
 import { Pressable } from '~/interface/buttons/Pressable'
+import { showError } from '~/interface/dialogs/actions'
 import { Switch } from '~/interface/forms/Switch'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { ChatCircleIcon } from '~/interface/icons/phosphor/ChatCircleIcon'
@@ -19,7 +20,6 @@ import { UserIcon } from '~/interface/icons/phosphor/UserIcon'
 import { Image } from '~/interface/image/Image'
 import { RepeatedTapToShowDevTools } from '~/interface/interactions/RepeatedTapToShowDevTools'
 import { H4 } from '~/interface/text/Headings'
-import { showToast } from '~/interface/toast/helpers'
 
 interface SettingItem {
   id: string
@@ -58,7 +58,7 @@ export const ProfileSettingsPage = () => {
               router.replace('/login')
             } catch (error) {
               console.error('Logout error:', error)
-              showToast('Failed to log out', { type: 'error' })
+              showError(error, 'Logout')
             }
           },
         },
@@ -171,8 +171,8 @@ export const ProfileSettingsPage = () => {
     if (item.action) {
       item.action()
     } else if (item.url) {
-      Linking.openURL(item.url).catch(() => {
-        showToast('Failed to open link', { type: 'error' })
+      Linking.openURL(item.url).catch((error) => {
+        showError(error, 'Open Link')
       })
     } else if (item.route) {
       router.push(item.route)

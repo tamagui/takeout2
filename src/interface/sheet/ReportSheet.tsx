@@ -5,6 +5,7 @@ import { Label, RadioGroup, SizableText, useTheme, View, XStack, YStack } from '
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Sheet, type SheetRef } from '~/interface/sheet/Sheet'
 import { showToast } from '~/interface/toast/helpers'
+import { showError } from '~/interface/dialogs/actions'
 import { zero } from '~/zero/client'
 
 export interface ReportSheetRef {
@@ -81,7 +82,7 @@ export const ReportSheet = forwardRef<ReportSheetRef>((_, ref) => {
 
       showToast(successMessage, { type: 'success' })
     } catch (error) {
-      showToast('Failed to submit report. Please try again.', { type: 'error' })
+      showError(error, 'Submit Report')
     } finally {
       setIsSubmitting(false)
     }

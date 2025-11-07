@@ -7,10 +7,11 @@ import { APP_NAME, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '~/constants/
 import { validateLoginOtpCode } from '~/features/auth/client/otpLogin'
 import { shouldUsePasswordOnlyAuth } from '~/features/auth/constants'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
-import { Link } from '~/interface/app/Link'
 import { formatPhoneNumber } from '~/helpers/number/formatNumber'
+import { Link } from '~/interface/app/Link'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
+import { showError } from '~/interface/dialogs/actions'
 import { isSmallScreen } from '~/interface/dimensions'
 import { Input } from '~/interface/forms/Input'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
@@ -18,7 +19,6 @@ import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { DeviceMobileSpeakerIcon } from '~/interface/icons/phosphor/DeviceMobileSpeakerIcon'
 import { EnvelopeSimpleIcon } from '~/interface/icons/phosphor/EnvelopeSimpleIcon'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
-import { showToast } from '~/interface/toast/helpers'
 
 export const SignupPage = memo(() => {
   useOnboarding()
@@ -73,9 +73,7 @@ export const SignupPage = memo(() => {
 
   const handleContinue = useEvent(async () => {
     if (!method) {
-      showToast('Authentication method is not specified.', {
-        type: 'error',
-      })
+      showError('Authentcation method is not specified.')
       return
     }
 
@@ -100,9 +98,7 @@ export const SignupPage = memo(() => {
         return
       }
       Keyboard.dismiss()
-      showToast(error.message, {
-        type: 'error',
-      })
+      showError(error)
     } finally {
       clearTimeout(tm)
       setLoading(false)

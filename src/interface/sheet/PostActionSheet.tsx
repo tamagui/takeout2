@@ -10,6 +10,7 @@ import { WarningCircleIcon } from '~/interface/icons/phosphor/WarningCircleIcon'
 import { Sheet, type SheetRef } from '~/interface/sheet/Sheet'
 import { showReportForPost } from '~/interface/sheet/reportSheetHelper'
 import { showToast } from '~/interface/toast/helpers'
+import { showError } from '~/interface/dialogs/actions'
 import { zero } from '~/zero/client'
 import { ListItem } from '../lists/ListItem'
 import { PostActionSheetSharedItems } from './PostActionSheetSharedItems'
@@ -68,7 +69,7 @@ export const PostActionSheet = forwardRef<PostActionSheetRef>((_, ref) => {
               showToast('User blocked')
               sheetRef.current?.collapse()
             } catch (error) {
-              showToast('Failed to block user', { type: 'error' })
+              showError(error, 'Block User')
             }
           },
         },
@@ -87,7 +88,7 @@ export const PostActionSheet = forwardRef<PostActionSheetRef>((_, ref) => {
       showToast('Post hidden')
       sheetRef.current?.collapse()
     } catch (error) {
-      showToast('Failed to hide post', { type: 'error' })
+      showError(error, 'Hide Post')
     }
   }
 

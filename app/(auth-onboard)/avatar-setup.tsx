@@ -6,6 +6,7 @@ import { OnboardingStepPageLayout } from '~/features/user/ui/OnboardingStepPageL
 import { useUser } from '~/features/user/useUser'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
+import { showError } from '~/interface/dialogs/actions'
 import { CameraIcon } from '~/interface/icons/phosphor/CameraIcon'
 import { PencilSimpleIcon } from '~/interface/icons/phosphor/PencilSimpleIcon'
 import { Image } from '~/interface/image/Image'
@@ -43,9 +44,7 @@ export const AvatarSetupPage = () => {
           })
         } catch (error) {
           console.info('Failed to update user avatar:', error)
-          showToast('Failed to update user avatar', {
-            type: 'error',
-          })
+          showError(error)
         }
       }
     },

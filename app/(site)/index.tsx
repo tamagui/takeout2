@@ -1,4 +1,5 @@
-import { H1, YStack } from 'tamagui'
+import { Redirect } from 'one'
+import { H1, isWeb, YStack } from 'tamagui'
 import { useAuth } from '~/features/auth/client/authClient'
 import { Link } from '~/interface/app/Link'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'

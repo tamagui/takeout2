@@ -92,7 +92,7 @@ const DialogComponent = ({
         <TamaguiDialog.Portal zIndex={500_000}>
           <DialogOverlay
             key="overlay"
-            bg="transparent"
+            bg="$background06"
             onPress={(e) => {
               props.onOpenChange?.(false)
               e.stopPropagation()
@@ -214,7 +214,13 @@ const DialogHeader = ({
 }) => {
   const content = (
     <YStack pointerEvents="box-none" gap="$3" mb="$3">
-      <DialogTitle pointerEvents="none" cursor="default" select="none">
+      <DialogTitle
+        size="$5"
+        fontWeight="600"
+        pointerEvents="none"
+        cursor="default"
+        select="none"
+      >
         {title}
       </DialogTitle>
       <DialogDescription

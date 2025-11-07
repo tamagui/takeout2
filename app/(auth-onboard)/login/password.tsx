@@ -5,10 +5,10 @@ import { YStack } from 'tamagui'
 import { passwordLogin } from '~/features/auth/client/passwordLogin'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { showError } from '~/interface/dialogs/actions'
 import { Input } from '~/interface/forms/Input'
 import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
-import { showToast } from '~/interface/toast/helpers'
 
 export const PasswordPage = () => {
   const params = useParams<{ method?: 'phone' | 'email'; value?: string }>()
@@ -25,9 +25,7 @@ export const PasswordPage = () => {
 
   const handleContinue = async () => {
     if (!params.method || !params.value) {
-      showToast('Authentication method or value is not specified.', {
-        type: 'error',
-      })
+      showError('Authentication method or value is not specified.')
       return
     }
 
@@ -41,9 +39,7 @@ export const PasswordPage = () => {
 
       if (error) {
         Keyboard.dismiss()
-        showToast(error.message, {
-          type: 'error',
-        })
+        showError(error)
         return
       }
     } catch (err) {

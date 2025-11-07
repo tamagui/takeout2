@@ -30,7 +30,6 @@ export default function AppLayout() {
   return (
     <MainProviders>
       <DragDropFile>
-        <Dialogs />
         {isWeb ? (
           <Slot />
         ) : (

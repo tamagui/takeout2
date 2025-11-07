@@ -17,6 +17,7 @@ import { usePageHeader } from '~/interface/pages/PageHeader'
 import { showReportForUser } from '~/interface/sheet/reportSheetHelper'
 import { H4 } from '~/interface/text/Headings'
 import { showToast } from '~/interface/toast/helpers'
+import { showError } from '~/interface/dialogs/actions'
 import { zero } from '~/zero/client'
 import { CreateTabIcon } from '../main-tabs/CreateTabIcon'
 
@@ -64,7 +65,7 @@ export const ProfileTopHeader = memo<ProfileTopHeaderProps>(
                 showToast(`Blocked @${userInfo.username}`, { type: 'success' })
                 router.back()
               } catch (error) {
-                showToast('Failed to block user', { type: 'error' })
+                showError(error, 'Block User')
               }
             },
           },

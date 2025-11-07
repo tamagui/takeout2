@@ -1,5 +1,4 @@
 import { useNavigation } from '@react-navigation/native'
-import { LinearGradient } from '@tamagui/linear-gradient'
 import { router } from 'one'
 import { useEffect, useState } from 'react'
 import { Alert, Keyboard } from 'react-native'
@@ -8,6 +7,7 @@ import { Spinner, useDebounceValue, View, XStack, YStack } from 'tamagui'
 import { userByUsername } from '~/data/queries/user'
 import { useUser } from '~/features/user/useUser'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { showError } from '~/interface/dialogs/actions'
 import { Input } from '~/interface/forms/Input'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { XIcon } from '~/interface/icons/phosphor/XIcon'
@@ -103,9 +103,7 @@ export const ProfileEditPage = () => {
       if (err.details === 'Blocked username') {
         setIsUsernameBlocked(true)
       } else {
-        showToast('Invalid profile information.', {
-          type: 'error',
-        })
+        showError(err)
       }
     } finally {
       setIsSaving(false)

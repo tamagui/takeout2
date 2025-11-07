@@ -3,6 +3,7 @@ import { saveRemoteImage } from '~/helpers/media/saveImage'
 import type { SheetRef } from '~/interface/sheet/Sheet'
 import { isNative } from '~/constants/platform'
 import { showToast } from '../toast/helpers'
+import { showError } from '../dialogs/actions'
 import { ListItem } from '../lists/ListItem'
 import { DownloadSimpleIcon } from '../icons/phosphor/DownloadSimpleIcon'
 
@@ -22,7 +23,7 @@ export function PostActionSheetSharedItems({
       await saveRemoteImage(currentPost.image)
     } catch (err) {
       // Fallback toast just in case helper throws
-      showToast('Failed to save image', { type: 'error' })
+      showError(err, 'Save Image')
     }
   }
 

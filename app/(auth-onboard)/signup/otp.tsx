@@ -8,10 +8,10 @@ import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { useTimer } from '~/helpers/time/useTimer'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
+import { showError } from '~/interface/dialogs/actions'
 import { isSmallScreen } from '~/interface/dimensions'
 import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
-import { showToast } from '~/interface/toast/helpers'
 
 export const OtpPage = () => {
   const timer = useTimer()
@@ -30,9 +30,7 @@ export const OtpPage = () => {
 
   const handleResendOtp = useEvent(async () => {
     if (!params.method || !params.value) {
-      showToast('Authentication method or value is not specified.', {
-        type: 'error',
-      })
+      showError('Authentication method or value is not specified.')
       return
     }
     // Keep loading state active - useAfterLoginRedirect will handle navigation
@@ -44,9 +42,7 @@ export const OtpPage = () => {
       const { error } = await validateLoginOtpCode(params.method, params.value)
 
       if (error) {
-        showToast(error.message, {
-          type: 'error',
-        })
+        showError(error)
       }
 
       setIsError(!!error)
@@ -65,9 +61,7 @@ export const OtpPage = () => {
 
   const handleContinue = useEvent(async () => {
     if (!params.method || !params.value) {
-      showToast('Authentication method or value is not specified.', {
-        type: 'error',
-      })
+      showError('Authentication method or value is not specified.')
       return
     }
     setLoading(true)
@@ -77,15 +71,13 @@ export const OtpPage = () => {
       if (error) {
         setIsError(true)
         Keyboard.dismiss()
-        showToast(error.message, {
-          type: 'error',
-        })
-        setTimeout(() => {
-          setIsError(false)
-          setOtpCode('')
-          setOtpKey(Math.random())
-          setLoading(false)
-        }, 500)
+        showError(error)
+        // setTimeout(() => {
+        //   setIsError(false)
+        //   setOtpCode('')
+        //   setOtpKey(Math.random())
+        //   setLoading(false)
+        // }, 500)
         return
       } else {
         timer.pause()

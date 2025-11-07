@@ -4,6 +4,7 @@ import { Slot } from 'one'
 import type { ReactNode } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { isWeb } from 'tamagui'
+import { Dialogs } from '~/interface/dialogs/Dialogs'
 import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
 
 export function Layout() {
@@ -49,6 +50,7 @@ export function Layout() {
 function MinimalProviders({ children }: { children: ReactNode }) {
   return (
     <TamaguiRootProvider>
+      <Dialogs />
       <SafeAreaProvider>{children}</SafeAreaProvider>
     </TamaguiRootProvider>
   )

@@ -4,12 +4,12 @@ import { Spinner, useDebounceValue, XStack, YStack } from 'tamagui'
 import { userByUsername } from '~/data/queries/user'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { showError } from '~/interface/dialogs/actions'
 import { Input } from '~/interface/forms/Input'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { SignatureIcon } from '~/interface/icons/phosphor/SignatureIcon'
 import { XIcon } from '~/interface/icons/phosphor/XIcon'
 import { SubTitle } from '~/interface/text/SubTitle'
-import { showToast } from '~/interface/toast/helpers'
 import { useQuery, zero } from '~/zero/client'
 import { useUser } from '../useUser'
 import { OnboardingStepPageLayout } from './OnboardingStepPageLayout'
@@ -91,9 +91,7 @@ export const ProfileSetupPage = () => {
       goToNextStep()
     } catch (err) {
       console.error(err)
-      showToast(`Error: Invalid username`, {
-        type: 'error',
-      })
+      showError('Invalid Username')
     } finally {
       setIsValidating(false)
     }

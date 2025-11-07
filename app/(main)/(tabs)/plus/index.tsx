@@ -19,6 +19,7 @@ import { TextArea } from '~/interface/forms/TextArea'
 import { ImageIcon } from '~/interface/icons/phosphor/ImageIcon'
 import { XIcon } from '~/interface/icons/phosphor/XIcon'
 import { Image } from '~/interface/image/Image'
+import { showError } from '~/interface/dialogs/actions'
 import { showToast } from '~/interface/toast/helpers'
 import { useUploadFiles } from '~/interface/upload/uploadFile'
 import { zero } from '~/zero/client'
@@ -80,12 +81,12 @@ export const PlusPage = memo(() => {
 
   const handlePost = async () => {
     if (!user?.id) {
-      showToast('You must be logged in to post', { type: 'error' })
+      showError('You must be logged in to post')
       return
     }
 
     if (!caption.trim() && !uploadedUrl) {
-      showToast('Please add a caption or image', { type: 'error' })
+      showError('Please add a caption or image')
       return
     }
 
@@ -107,7 +108,7 @@ export const PlusPage = memo(() => {
       router.back()
     } catch (error) {
       console.info('Failed to create post:', error)
-      showToast('Failed to create post', { type: 'error' })
+      showError(error, 'Failed to create post')
     } finally {
       setIsPosting(false)
     }

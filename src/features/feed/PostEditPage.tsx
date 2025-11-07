@@ -18,6 +18,7 @@ import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { BasicHeader } from '~/interface/headers/BasicHeader'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { showToast } from '~/interface/toast/helpers'
+import { showError } from '~/interface/dialogs/actions'
 import { useQuery, zero } from '~/zero/client'
 
 export const PostEditPage = () => {
@@ -81,7 +82,7 @@ export const PostEditPage = () => {
       router.back()
     } catch (error) {
       console.error('Error updating caption:', error)
-      showToast('Failed to update caption', { type: 'error' })
+      showError(error, 'Update Caption')
     } finally {
       setIsSaving(false)
     }

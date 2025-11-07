@@ -1,6 +1,6 @@
 import { AbortError, createEmitter, isEqualNever } from '@vxrn/helpers'
 import { dialogEmit } from './shared'
-import type { DialogConfirmType } from './types'
+import type { DialogConfirmType, DialogErrorType } from './types'
 
 export const confirmEmitter = createEmitter<boolean>('confirm', false, {
   comparator: isEqualNever,
@@ -23,4 +23,33 @@ export const ensureConfirmed = async (props: DialogConfirmProps = {}) => {
   if (!confirmed) {
     throw new AbortError()
   }
+}
+
+// Error dialog actions
+export type DialogErrorProps = Partial<Omit<DialogErrorType, 'type'>>
+
+export const dialogError = (props: DialogErrorProps) => {
+  dialogEmit({
+    type: 'error',
+    title: 'Error',
+    description: 'An error occurred',
+    ...props,
+  })
+}
+
+export const showError = (error: unknown, title: string = 'Error') => {
+  let description = 'An unexpected error occurred'
+
+  if (error instanceof Error) {
+    description = error.message
+  } else if (typeof error === 'string') {
+    description = error
+  } else if (error && typeof error === 'object' && 'message' in error) {
+    description = String(error.message)
+  }
+
+  dialogError({
+    title,
+    description,
+  })
 }

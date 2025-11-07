@@ -8,7 +8,7 @@ export const dialogEmitter = createEmitter<DialogType>('dialog', {
 
 export const dialogEmit = (next: DialogType | DialogLayer2) => {
   closeOpenTooltips()
-  if (next.type === 'confirm') {
+  if (next.type === 'confirm' || next.type === 'error') {
     dialogLayer2Emitter.emit(next)
   } else if (next.type === 'closed') {
     // close in order

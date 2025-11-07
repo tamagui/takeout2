@@ -1,7 +1,6 @@
-import type { FlashListRef } from '@shopify/flash-list'
-import { FlashList } from '@shopify/flash-list'
+import { LegendList, type LegendListRef } from '@legendapp/list'
 import { useParams } from 'one'
-import { memo, useCallback, useRef } from 'react'
+import { memo, useCallback, useMemo, useRef } from 'react'
 import { RefreshControl } from 'react-native'
 import { AnimatePresence, Spinner, useWindowDimensions, YStack } from 'tamagui'
 import { images } from '~/constants/images'
@@ -15,13 +14,14 @@ import { useUser } from '../user/useUser'
 import { ProfileHeader } from './ProfileHeader'
 
 const COLUMN_GAP = 8
+const NUM_COLUMNS = 2
 
 export const ProfilePage = memo(() => {
   const { headerHeight } = usePageHeader()
-  const listRef = useRef<FlashListRef<any>>(null)
+  const listRef = useRef<LegendListRef>(null)
 
   const { width } = useWindowDimensions()
-  const columnWidth = (width - 28 - COLUMN_GAP * 2) / 2
+  const columnWidth = (width - 28 - COLUMN_GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS
 
   const { userId } = useParams<{ userId: string }>()
   const { user: currentUser } = useUser()
@@ -36,30 +36,48 @@ export const ProfilePage = memo(() => {
   const isOwnProfile = !userId || userId === currentUser?.id
   const userInfo = isOwnProfile ? currentUser : profileUser
 
-  const renderItem = useCallback(
-    ({ item }: { item: any }) => {
+  const columns = useMemo(() => {
+    return Array.from({ length: NUM_COLUMNS }, (_, colIndex) => {
+      return (posts || []).filter((_, index) => index % NUM_COLUMNS === colIndex)
+    })
+  }, [posts])
+
+  const renderColumn = useCallback(
+    ({ item: columnData, index: columnIndex }: { item: any[]; index: number }) => {
       return (
-        <Pressable
-          width={columnWidth}
-          mb={COLUMN_GAP}
-          onPress={() => {
-            // navigate to post detail
-          }}
+        <YStack
+          flex={1}
+          gap={COLUMN_GAP}
+          pl={columnIndex === 0 ? 0 : COLUMN_GAP / 2}
+          pr={columnIndex === NUM_COLUMNS - 1 ? 0 : COLUMN_GAP / 2}
         >
-          <Image
-            src={item.image}
-            width={columnWidth}
-            height="auto"
-            aspectRatio={0.6 + Math.random() * 0.8}
-            rounded="$4"
-          />
-        </Pressable>
+          {columnData.map((item) => {
+            const aspectRatio = 0.6 + Math.random() * 0.8
+            const height = columnWidth / aspectRatio
+
+            return (
+              <Pressable
+                key={item.id}
+                onPress={() => {
+                  // navigate to post detail
+                }}
+              >
+                <Image
+                  src={item.image}
+                  width={columnWidth}
+                  height={height}
+                  rounded="$4"
+                />
+              </Pressable>
+            )
+          })}
+        </YStack>
       )
     },
     [columnWidth]
   )
 
-  const keyExtractor = useCallback((item: any) => item.id, [])
+  const keyExtractor = useCallback((_item: any, index: number) => `column-${index}`, [])
 
   const renderEmpty = useCallback(() => {
     if (isLoading) return null
@@ -115,13 +133,12 @@ export const ProfilePage = memo(() => {
           </YStack>
         )}
       </AnimatePresence>
-
-      <FlashList
+      <LegendList
         ref={listRef}
-        data={posts || []}
-        renderItem={renderItem}
+        data={columns}
+        renderItem={renderColumn}
         keyExtractor={keyExtractor}
-        masonry
+        // masonry
         numColumns={2}
         ListHeaderComponent={renderHeader}
         ListEmptyComponent={renderEmpty}
@@ -132,7 +149,6 @@ export const ProfilePage = memo(() => {
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{
-          // gap: COLUMN_GAP,
           paddingHorizontal: 14,
         }}
       />

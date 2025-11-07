@@ -6,6 +6,7 @@ export interface PrerequisiteCheck {
   requiredVersion?: string
   message?: string
   installUrl?: string
+  recommendation?: string
 }
 
 export interface PortCheck {

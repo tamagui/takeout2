@@ -19,7 +19,10 @@ export function displayPrerequisites(checks: PrerequisiteCheck[]): void {
   const items = checks.map((check) => {
     const icon = check.installed ? pc.green('✓') : pc.red('✗')
     const message = check.message || ''
-    return `${icon} ${pc.bold(check.name)}: ${message}`
+    const recommendation = check.recommendation
+      ? `\n    ${pc.dim(check.recommendation)}`
+      : ''
+    return `${icon} ${pc.bold(check.name)}: ${message}${recommendation}`
   })
 
   p.note(items.join('\n'), 'Prerequisites')

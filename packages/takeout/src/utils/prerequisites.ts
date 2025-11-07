@@ -39,13 +39,19 @@ function compareVersions(current: string, required: string): boolean {
 }
 
 export function checkBun(): PrerequisiteCheck {
-  const version = getVersion('bun --version')
-
-  if (!version) {
-    throw new Error(`No bun version?`)
-  }
-
+  const version = getVersion('bun --version') ?? undefined
   const requiredVersion = '1.0.0'
+  const hasBunv = !!execCommand('bunv --version')
+
+  let message = version
+    ? compareVersions(version, requiredVersion)
+      ? `Bun ${version} installed`
+      : `Bun ${version} installed (${requiredVersion}+ recommended)`
+    : 'Bun not found'
+
+  if (version && !hasBunv) {
+    message += ' (consider installing bunv for auto version switching)'
+  }
 
   return {
     name: 'Bun',
@@ -53,21 +59,27 @@ export function checkBun(): PrerequisiteCheck {
     installed: !!version,
     version,
     requiredVersion,
-    message: version
-      ? compareVersions(version, requiredVersion)
-        ? `Bun ${version} installed`
-        : `Bun ${version} installed (${requiredVersion}+ recommended)`
-      : 'Bun not found',
+    message,
     installUrl: 'https://bun.sh',
+    recommendation: !hasBunv
+      ? 'Install bunv to automatically switch bun versions: https://github.com/aklinker1/bunv'
+      : undefined,
   }
 }
 
 export function checkNode(): PrerequisiteCheck {
-  const version = getVersion('node --version')
+  const version = getVersion('node --version') ?? undefined
   const requiredVersion = '20.0.0'
+  const hasFnm = !!execCommand('fnm --version')
 
-  if (!version) {
-    throw new Error(`No node version?`)
+  let message = version
+    ? compareVersions(version, requiredVersion)
+      ? `Node.js ${version} installed`
+      : `Node.js ${version} installed (${requiredVersion}+ recommended)`
+    : 'Node.js not found (optional)'
+
+  if (version && !hasFnm) {
+    message += ' (consider installing fnm for auto version switching)'
   }
 
   return {
@@ -76,22 +88,17 @@ export function checkNode(): PrerequisiteCheck {
     installed: !!version,
     version,
     requiredVersion,
-    message: version
-      ? compareVersions(version, requiredVersion)
-        ? `Node.js ${version} installed`
-        : `Node.js ${version} installed (${requiredVersion}+ recommended)`
-      : 'Node.js not found (optional)',
+    message,
     installUrl: 'https://nodejs.org',
+    recommendation: !hasFnm
+      ? 'Install fnm to automatically switch node versions: https://github.com/Schniz/fnm'
+      : undefined,
   }
 }
 
 export function checkDocker(): PrerequisiteCheck {
-  const version = getVersion('docker --version')
+  const version = getVersion('docker --version') ?? undefined
   const isRunning = !!execCommand('docker ps')
-
-  if (!version) {
-    throw new Error(`No docker version?`)
-  }
 
   return {
     name: 'Docker',
@@ -108,11 +115,7 @@ export function checkDocker(): PrerequisiteCheck {
 }
 
 export function checkGit(): PrerequisiteCheck {
-  const version = getVersion('git --version')
-
-  if (!version) {
-    throw new Error(`No git version?`)
-  }
+  const version = getVersion('git --version') ?? undefined
 
   return {
     name: 'Git',

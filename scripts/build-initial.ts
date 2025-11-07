@@ -1,5 +1,9 @@
 #!/usr/bin/env bun
 
+/**
+ * @description Bootstrap project workspace and build initial packages
+ */
+
 import { $ } from 'bun'
 import { existsSync, mkdirSync, symlinkSync } from 'node:fs'
 import { exists } from 'node:fs/promises'

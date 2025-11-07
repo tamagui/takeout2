@@ -28,10 +28,11 @@ export const AvatarWithMenu = memo(
     const router = useRouter()
 
     const handleViewProfile = () => {
-      router.push({
-        pathname: '/profile/[userId]',
-        params: { userId },
-      })
+      // TODO
+      // router.push({
+      //   pathname: '/profile/[userId]',
+      //   params: { userId },
+      // })
     }
 
     return (

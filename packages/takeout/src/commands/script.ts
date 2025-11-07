@@ -136,7 +136,7 @@ export function getScriptMetadata(filePath: string): ScriptMetadata {
 }
 
 // discover scripts in a directory
-export function discoverScripts(dir: string, baseDir: string = dir): Map<string, string> {
+export function discoverScripts(dir: string, baseDir: string = dir, depth: number = 0, maxDepth: number = 1): Map<string, string> {
   const scripts = new Map<string, string>()
 
   if (!existsSync(dir)) {
@@ -151,8 +151,12 @@ export function discoverScripts(dir: string, baseDir: string = dir): Map<string,
       const stat = statSync(fullPath)
 
       if (stat.isDirectory()) {
+        // skip helpers directories and limit depth to maxDepth
+        if (entry === 'helpers' || depth >= maxDepth) {
+          continue
+        }
         // recursively discover in subdirectories
-        const subScripts = discoverScripts(fullPath, baseDir)
+        const subScripts = discoverScripts(fullPath, baseDir, depth + 1, maxDepth)
         for (const [name, path] of subScripts) {
           scripts.set(name, path)
         }

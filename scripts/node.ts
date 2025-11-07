@@ -1,5 +1,9 @@
 #!/usr/bin/env bun
 
+/**
+ * @description Start interactive Node REPL with SST resources
+ */
+
 import { Resource } from 'sst'
 import './ensure-tunnel'
 

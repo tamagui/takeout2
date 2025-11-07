@@ -1,5 +1,9 @@
 #!/usr/bin/env bun
 
+/**
+ * @description Run full CI/CD pipeline with tests, builds, and deployment
+ */
+
 import {
   CreateRepositoryCommand,
   DescribeImagesCommand,

@@ -1,7 +1,7 @@
 # we build web app outside docker and then just install here
 # its generally faster and easier to debug
 
-FROM node:22.4-slim
+FROM node:24-slim
 
 # for healthchecks, bun installation, and sharp dependencies
 RUN apt-get update && apt-get install -y \

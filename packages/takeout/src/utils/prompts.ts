@@ -91,6 +91,69 @@ export async function promptPassword(message: string): Promise<string> {
 export async function promptSelect<T extends string>(
   message: string,
   options: { value: T; label: string; hint?: string }[]
+): Promise<T | 'cancel'> {
+  const result = await p.select({
+    message,
+    options: options as any,
+  })
+
+  if (p.isCancel(result)) {
+    return 'cancel' as const
+  }
+
+  return result as T
+}
+
+export async function promptStartStep(): Promise<
+  | 'full'
+  | 'prerequisites'
+  | 'environment'
+  | 'identity'
+  | 'ports'
+  | 'production'
+  | 'cancel'
+> {
+  console.info()
+  console.info(pc.gray('What would you like to do?'))
+  console.info()
+
+  return promptSelect('Select starting point:', [
+    {
+      value: 'full',
+      label: 'Complete setup',
+      hint: 'Run through all setup steps',
+    },
+    {
+      value: 'prerequisites',
+      label: 'Check prerequisites',
+      hint: 'Verify bun, docker, git, etc.',
+    },
+    {
+      value: 'environment',
+      label: 'Configure environment',
+      hint: 'Set up .env files for development',
+    },
+    {
+      value: 'identity',
+      label: 'Project identity',
+      hint: 'Customize app name and bundle ID',
+    },
+    {
+      value: 'ports',
+      label: 'Check ports',
+      hint: 'Verify required ports are available',
+    },
+    {
+      value: 'production',
+      label: 'Production deployment',
+      hint: 'Configure production environment and deployment',
+    },
+  ])
+}
+
+export async function promptOldSelect<T extends string>(
+  message: string,
+  options: { value: T; label: string; hint?: string }[]
 ): Promise<T> {
   const result = await p.select<string>({
     message,

@@ -1,21 +1,23 @@
-# local uncloud deployment - completely override services to avoid port conflicts
-# uncloud treats ports as ingress (http/https only), so we remove all ports
-# services communicate via uncloud's wireguard mesh network
+# uncloud deployment
+# supports both self-hosted db (default) and external managed db
+# use DB_EXTERNAL=true to skip pgdb service and use ZERO_UPSTREAM_DB from env
 
 services:
   pgdb:
     image: pgvector/pgvector:pg16
     shm_size: 1g
     restart: always
+    profiles:
+      - self-hosted-db
     healthcheck:
-      test: 'pg_isready -U user --dbname=postgres'
+      test: 'pg_isready -U ${POSTGRES_USER:-user} --dbname=${POSTGRES_DB:-postgres}'
       interval: 1s
       timeout: 5s
       retries: 10
     environment:
-      POSTGRES_USER: user
-      POSTGRES_DB: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
     command: |
       postgres
       -c wal_level=logical
@@ -29,15 +31,14 @@ services:
 
   migrate:
     image: takeout-web:latest
-    depends_on:
-      pgdb:
-        condition: service_healthy
+    restart: "no"
     environment:
       - RUN=1
       - ALLOW_MISSING_ENV=1
-      - ZERO_UPSTREAM_DB=postgresql://user:password@pgdb:5432/postgres
-      - ZERO_CVR_DB=postgresql://user:password@pgdb:5432/zero_cvr
-      - ZERO_CHANGE_DB=postgresql://user:password@pgdb:5432/zero_cdb
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - ZERO_UPSTREAM_DB=${ZERO_UPSTREAM_DB:-postgresql://user:password@pgdb:5432/postgres}
+      - ZERO_CVR_DB=${ZERO_CVR_DB:-postgresql://user:password@pgdb:5432/zero_cvr}
+      - ZERO_CHANGE_DB=${ZERO_CHANGE_DB:-postgresql://user:password@pgdb:5432/zero_cdb}
     command: ["node", "/app/src/database/migrate-dist.js"]
 
   zero:
@@ -45,19 +46,21 @@ services:
     restart: always
     depends_on:
       - migrate
+    x-ports:
+      - zero-takeout.uncloud.run:4848/https
     environment:
-      - ZERO_ADMIN_PASSWORD=production-admin-change-me
-      - ZERO_LOG_LEVEL=info
+      - ZERO_ADMIN_PASSWORD=${ZERO_ADMIN_PASSWORD:-production-admin-change-me}
+      - ZERO_LOG_LEVEL=${ZERO_LOG_LEVEL:-info}
       - ZERO_AUTH_JWKS_URL=http://web:3533/api/auth/jwks
       - ZERO_PUSH_URL=http://web:3533/api/zero/push
       - ZERO_GET_QUERIES_URL=http://web:3533/api/zero/pull
-      - ZERO_UPSTREAM_DB=postgresql://user:password@pgdb:5432/postgres
-      - ZERO_CVR_DB=postgresql://user:password@pgdb:5432/zero_cvr
-      - ZERO_CHANGE_DB=postgresql://user:password@pgdb:5432/zero_cdb
+      - ZERO_UPSTREAM_DB=${ZERO_UPSTREAM_DB:-postgresql://user:password@pgdb:5432/postgres}
+      - ZERO_CVR_DB=${ZERO_CVR_DB:-postgresql://user:password@pgdb:5432/zero_cvr}
+      - ZERO_CHANGE_DB=${ZERO_CHANGE_DB:-postgresql://user:password@pgdb:5432/zero_cdb}
       - ZERO_REPLICA_FILE=/app/sync-replica.db
-      - ZERO_NUM_SYNC_WORKERS=8
-      - ZERO_CVR_MAX_CONNS=16
-      - ZERO_UPSTREAM_MAX_CONNS=32
+      - ZERO_NUM_SYNC_WORKERS=${ZERO_NUM_SYNC_WORKERS:-2}
+      - ZERO_CVR_MAX_CONNS=${ZERO_CVR_MAX_CONNS:-4}
+      - ZERO_UPSTREAM_MAX_CONNS=${ZERO_UPSTREAM_MAX_CONNS:-8}
     volumes:
       - zero_data:/app
 
@@ -99,22 +102,24 @@ services:
     restart: always
     depends_on:
       - zero
+    x-ports:
+      - takeout.uncloud.run:3533/https
     environment:
-      - BETTER_AUTH_SECRET=production-secret-change-me
-      - BETTER_AUTH_URL=http://localhost:8081
-      - ONE_SERVER_URL=http://localhost:8081
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET:-production-secret-change-me}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL:-http://localhost:8081}
+      - ONE_SERVER_URL=${ONE_SERVER_URL:-http://localhost:8081}
       - NODE_ENV=production
       - ZERO_AUTH_JWKS_URL=http://web:3533/api/auth/jwks
       - ZERO_PUSH_URL=http://web:3533/api/zero/push
       - ZERO_GET_QUERIES_URL=http://web:3533/api/zero/pull
-      - ZERO_UPSTREAM_DB=postgresql://user:password@pgdb:5432/postgres
-      - ZERO_CVR_DB=postgresql://user:password@pgdb:5432/zero_cvr
-      - ZERO_CHANGE_DB=postgresql://user:password@pgdb:5432/zero_cdb
-      - VITE_PUBLIC_ZERO_SERVER=http://localhost:4848
-      - CLOUDFLARE_R2_ENDPOINT=http://minio:9000/chat
-      - CLOUDFLARE_R2_ACCESS_KEY=minio
-      - CLOUDFLARE_R2_SECRET_KEY=minio_password
-      - CLOUDFLARE_R2_PUBLIC_URL=http://localhost:9200/chat
+      - ZERO_UPSTREAM_DB=${ZERO_UPSTREAM_DB:-postgresql://user:password@pgdb:5432/postgres}
+      - ZERO_CVR_DB=${ZERO_CVR_DB:-postgresql://user:password@pgdb:5432/zero_cvr}
+      - ZERO_CHANGE_DB=${ZERO_CHANGE_DB:-postgresql://user:password@pgdb:5432/zero_cdb}
+      - VITE_PUBLIC_ZERO_SERVER=${VITE_PUBLIC_ZERO_SERVER:-http://localhost:4848}
+      - CLOUDFLARE_R2_ENDPOINT=${CLOUDFLARE_R2_ENDPOINT:-http://minio:9000/chat}
+      - CLOUDFLARE_R2_ACCESS_KEY=${CLOUDFLARE_R2_ACCESS_KEY:-minio}
+      - CLOUDFLARE_R2_SECRET_KEY=${CLOUDFLARE_R2_SECRET_KEY:-minio_password}
+      - CLOUDFLARE_R2_PUBLIC_URL=${CLOUDFLARE_R2_PUBLIC_URL:-http://localhost:9200/chat}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3533/api/health"]
       interval: 30s

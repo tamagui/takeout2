@@ -500,7 +500,9 @@ export const scriptCommand = defineCommand({
     eject: ejectCommand,
   },
   async run({ args, rawArgs }) {
-    const scriptName = args.name
+    // citty doesn't handle args with hyphens well, so use rawArgs directly
+    // rawArgs[0] is 'script', rawArgs[1] is the actual script name
+    const scriptName = args.name || rawArgs[1]
 
     // if no name provided, list all available scripts
     if (!scriptName) {

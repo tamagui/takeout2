@@ -83,8 +83,10 @@ const SubSection = ({
 
   const wrapper = (children: React.ReactNode) => {
     return (
-      // @ts-expect-error - Tamagui shorthand props
-      <YStack bbw={0} bc={inMenu ? 'transparent' : '$background02'}>
+      <YStack
+        borderBottomWidth={0}
+        borderColor={inMenu ? 'transparent' : '$background02'}
+      >
         {children}
       </YStack>
     )
@@ -95,13 +97,11 @@ const SubSection = ({
   }
 
   return wrapper(
-    // @ts-expect-error - Tamagui shorthand props
-    <Accordion.Item bw={0} value={section.title || 'base'}>
+    <Accordion.Item borderWidth={0} value={section.title || 'base'}>
       <Accordion.Trigger
         unstyled
         bg="transparent"
-        // @ts-expect-error - Tamagui shorthand props
-        bw={0}
+        borderWidth={0}
         hoverStyle={{
           bg: '$background02',
         }}
@@ -112,16 +112,16 @@ const SubSection = ({
               onPress={() => {
                 setVisible(!visible)
               }}
-              fd={inMenu ? 'row-reverse' : 'row'}
+              flexDirection={inMenu ? 'row-reverse' : 'row'}
               py="$2"
               px="$4"
-              jc="space-between"
+              justifyContent="space-between"
               tag="span"
-              ai="center"
+              alignItems="center"
               gap="$3"
               {...({} as any)}
             >
-              <Paragraph size="$5" fw="600" color="$color12" {...({} as any)}>
+              <Paragraph size="$5" fontWeight="600" color="$color12" {...({} as any)}>
                 {section.title}
               </Paragraph>
 

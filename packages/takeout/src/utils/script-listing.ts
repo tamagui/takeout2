@@ -101,17 +101,23 @@ export function formatScriptList(
 
 // list all available scripts (local and built-in)
 export function listAllScripts(includeCommands = true): void {
+  // show header with description
+  console.info()
+  console.info(pc.bold(pc.cyan('Takeout CLI - Project Scripts & Commands')))
+  console.info()
+  console.info(pc.dim('  Manage scripts, run tasks, and configure your project'))
+  console.info()
+
   if (includeCommands) {
     // Show built-in CLI commands
-    console.info()
     console.info(pc.bold(pc.cyan('🛠️  Built-in Commands')))
     console.info()
-    console.info(`  ${pc.green('onboard')} ${pc.dim('- Setup wizard for new projects')}`)
-    console.info(`  ${pc.green('docs')} ${pc.dim('- View documentation')}`)
-    console.info(`  ${pc.green('env:setup')} ${pc.dim('- Setup environment variables')}`)
-    console.info(`  ${pc.green('run')} ${pc.dim('- Run scripts in parallel')}`)
-    console.info(`  ${pc.green('script')} ${pc.dim('- Manage and run scripts')}`)
-    console.info(`  ${pc.green('completion')} ${pc.dim('- Shell completion setup')}`)
+    console.info(`  ${pc.green('onboard')} - Setup wizard for new projects`)
+    console.info(`  ${pc.green('docs')} - View documentation`)
+    console.info(`  ${pc.green('env:setup')} - Setup environment variables`)
+    console.info(`  ${pc.green('run')} - Run scripts in parallel`)
+    console.info(`  ${pc.green('script')} - Manage and run scripts`)
+    console.info(`  ${pc.green('completion')} - Shell completion setup`)
   }
 
   const localScripts = discoverScripts(getLocalScriptsDir())
@@ -137,9 +143,10 @@ export function listAllScripts(includeCommands = true): void {
   }
 
   console.info()
-  console.info(pc.dim(`Run: tko <command> for built-in commands`))
-  console.info(pc.dim(`Run: tko <script-name> [args...] to execute a script`))
-  console.info(pc.dim(`Run: tko script new <path> to create a new script`))
+  console.info(pc.bold('Usage:'))
+  console.info(`  ${pc.cyan('tko <command>')}           ${pc.dim('Run a built-in command')}`)
+  console.info(`  ${pc.cyan('tko <script-name>')}       ${pc.dim('Execute a script (e.g., tko upgrade/tamagui)')}`)
+  console.info(`  ${pc.cyan('tko script new <path>')}   ${pc.dim('Create a new script')}`)
   console.info()
 }
 

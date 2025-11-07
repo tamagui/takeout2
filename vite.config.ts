@@ -11,7 +11,7 @@ export default {
   },
 
   ssr: {
-    noExternal: ['better-auth-harmony', 'validator', 'react-native'],
+    noExternal: true,
     external: ['over-zero', '@vxrn/mdx'],
   },
 

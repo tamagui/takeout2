@@ -28,6 +28,31 @@ function isScriptCategory(name: string): boolean {
   }
 }
 
+// check if a name could be a built-in script
+function isBuiltInScript(name: string): boolean {
+  try {
+    const resolved = import.meta.resolve('@vxrn/scripts/package.json')
+    const packageJsonPath = new URL(resolved).pathname
+    const packageRoot = join(packageJsonPath, '..')
+    const srcPath = join(packageRoot, 'src')
+
+    // normalize name: convert colons to slashes
+    const normalizedName = name.replace(/:/g, '/')
+
+    // check if the script file exists
+    for (const ext of ['.ts', '.js', '']) {
+      const scriptPath = join(srcPath, `${normalizedName}${ext}`)
+      if (existsSync(scriptPath)) {
+        return true
+      }
+    }
+  } catch {
+    // package not found or error resolving
+  }
+
+  return false
+}
+
 // detect if running as tko (shorthand mode)
 const isShorthand =
   process.argv[1]?.endsWith('tko') || process.argv[1]?.includes('/.bin/tko')
@@ -63,6 +88,10 @@ if (isShorthand) {
       process.argv.splice(2, 0, 'run')
     } else if (firstArg?.includes('/')) {
       // inject "run" into args to use the run command directly
+      process.argv.splice(2, 0, 'run')
+    } else if (isBuiltInScript(firstArg)) {
+      // check if it's a built-in script (like update-deps, clean, etc.)
+      // use "run" to avoid citty parsing issues with hyphens
       process.argv.splice(2, 0, 'run')
     } else {
       // assume it's a script command, inject "script" into args

@@ -70,6 +70,15 @@
             "command": "cat docs/agent.md"
           }
         ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun tko"
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [

@@ -29,8 +29,8 @@ export const DocsRouteNavItem = function DocsRouteNavItem({
       <XStack
         ref={ref}
         className="docs-nav-item"
-        ai="center"
-        jc="flex-end"
+        alignItems="center"
+        justifyContent="flex-end"
         px="$4"
         py="$1"
         opacity={pending ? 0.25 : 1}
@@ -44,7 +44,7 @@ export const DocsRouteNavItem = function DocsRouteNavItem({
         }}
         {...(inMenu &&
           ({
-            jc: 'flex-start',
+            justifyContent: 'flex-start',
           } as any))}
         {...({} as any)}
       >

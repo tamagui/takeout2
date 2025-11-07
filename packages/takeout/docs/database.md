@@ -81,7 +81,7 @@ Location: src/database/sql.ts:10
 For connection pooling and advanced PostgreSQL features:
 
 ```typescript
-import { getDBClient, queryDb } from '~/database/getDBClient'
+import { getDBClient, queryDb } from '~/database/helpers'
 
 const client = await getDBClient()
 try {

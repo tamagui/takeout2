@@ -59,8 +59,7 @@ export function DocsLayout() {
 
           {/* Pagination */}
           {(previous || next) && (
-            // @ts-expect-error - Tamagui shorthand props
-            <XStack mt="$14" mb="$10" jc="space-between" gap="$4" flexWrap="wrap">
+            <XStack mt="$14" mb="$10" justify="space-between" gap="$4" flexWrap="wrap">
               {previous && (
                 <Link href={previous.route as Href} asChild>
                   <XStack
@@ -77,7 +76,7 @@ export function DocsLayout() {
                     pressStyle={{
                       bg: '$backgroundPress',
                     }}
-                    ai="center"
+                    alignItems="center"
                     gap="$4"
                     cursor="pointer"
                     {...({} as any)}
@@ -111,8 +110,8 @@ export function DocsLayout() {
                     pressStyle={{
                       bg: '$backgroundPress',
                     }}
-                    ai="center"
-                    jc="flex-end"
+                    alignItems="center"
+                    justifyContent="flex-end"
                     gap="$4"
                     cursor="pointer"
                     {...({} as any)}

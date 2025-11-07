@@ -6,4 +6,5 @@
 
 import { $ } from 'bun'
 
-await $`bun up @rocicorp/zero`
+const args = process.argv.slice(2)
+await $`bun tko update-deps ${args} @rocicorp/zero`

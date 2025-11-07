@@ -1,7 +1,7 @@
 import { getMDXComponent } from 'mdx-bundler/client'
+import { useLoader } from 'one'
 import { useMemo } from 'react'
 import { H1, Paragraph } from 'tamagui'
-import { useLoader, useParams } from 'one'
 import { components } from '~/features/docs/MDXComponents'
 
 export async function generateStaticParams() {

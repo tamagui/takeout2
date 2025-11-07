@@ -6,4 +6,5 @@
 
 import { $ } from 'bun'
 
-await $`bun up 'one' '@vxrn/*' 'over-zero'`
+const args = process.argv.slice(2)
+await $`bun tko update-deps ${args} one '@vxrn/*' over-zero`

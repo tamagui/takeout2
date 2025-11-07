@@ -6,4 +6,5 @@
 
 import { $ } from 'bun'
 
-await $`bun up better-auth '@better-auth/*'`
+const args = process.argv.slice(2)
+await $`bun tko update-deps ${args} better-auth '@better-auth/*'`

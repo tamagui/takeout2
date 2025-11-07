@@ -1,5 +1,5 @@
 import { Link, router } from 'one'
-import { memo } from 'react'
+import { memo, useId, useState } from 'react'
 import { Alert } from 'react-native'
 import { View, XStack } from 'tamagui'
 import * as DropdownMenu from 'zeego/dropdown-menu'
@@ -7,7 +7,6 @@ import { SERVER_URL } from '~/constants/urls'
 import type { User } from '~/data/types'
 import { useShareProfile } from '~/helpers/share/useShareProfile'
 import { Pressable } from '~/interface/buttons/Pressable'
-import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
 import { GearIcon } from '~/interface/icons/phosphor/GearIcon'
 import { PlusIcon } from '~/interface/icons/phosphor/PlusIcon'
@@ -28,6 +27,8 @@ interface ProfileTopHeaderProps {
 
 export const ProfileTopHeader = memo<ProfileTopHeaderProps>(
   ({ userInfo, isOwnProfile }) => {
+    const [isGlassExpanded, setIsGlassExpanded] = useState<boolean>(false)
+    const namespaceId = useId()
     const { top, headerHeight } = usePageHeader()
     const { shareProfile } = useShareProfile()
 
@@ -158,19 +159,10 @@ export const ProfileTopHeader = memo<ProfileTopHeaderProps>(
           zIndex: 1001,
         }}
       >
-        <XStack items="center" justify="space-between">
-          <XStack gap="$2">
-            {isOwnProfile ? (
-              <H4>{userInfo?.username}</H4>
-            ) : (
-              <Pressable onPress={() => router.back()}>
-                <XStack items="center" gap="$2">
-                  <CaretLeftIcon size={20} color="$color12" />
-                  <H4>{userInfo?.username}</H4>
-                </XStack>
-              </Pressable>
-            )}
-          </XStack>
+        <XStack justify="space-between">
+          <Pressable onPress={() => setIsGlassExpanded(!isGlassExpanded)}>
+            <H4>Profile</H4>
+          </Pressable>
 
           {renderRightIcons()}
         </XStack>

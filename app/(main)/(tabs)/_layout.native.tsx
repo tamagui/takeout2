@@ -21,6 +21,7 @@ export function TabsLayout() {
         hapticFeedbackEnabled
         labeled={false}
         scrollEdgeAppearance="opaque"
+        minimizeBehavior="onScrollDown"
         screenOptions={{
           tabBarActiveTintColor: '#FFFFFF',
         }}

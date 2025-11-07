@@ -26,12 +26,6 @@ export const ProfileLayout = () => {
         }}
       />
       <Stack.Screen name="settings" />
-      <Stack.Screen
-        name="post/[feedId]"
-        options={{
-          animation: 'fade',
-        }}
-      />
     </Stack>
   )
 }

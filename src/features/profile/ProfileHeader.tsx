@@ -1,10 +1,13 @@
-import { memo, useId } from 'react'
+import { memo } from 'react'
 import { SizableText, View, XStack, YStack } from 'tamagui'
 import { SERVER_URL } from '~/constants/urls'
 import type { User } from '~/data/types'
-import { formatCount } from '~/helpers/number/formatNumber'
+import { formatCount, formatReactionCount } from '~/helpers/number/formatNumber'
 import { useShareProfile } from '~/helpers/share/useShareProfile'
 import { Avatar } from '~/interface/avatars/Avatar'
+import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { PencilSimpleIcon } from '~/interface/icons/phosphor/PencilSimpleIcon'
+import { ShareFatIcon } from '~/interface/icons/phosphor/ShareFatIcon'
 import { SocialLinks } from '~/interface/social-media/platforms'
 import { BodyText } from '~/interface/text/Body'
 
@@ -33,7 +36,7 @@ export const ProfileHeader = memo(
     }
 
     return (
-      <View px={14} py="$3">
+      <View py="$3">
         <YStack gap="$4">
           {/* Profile Info Section */}
           <XStack items="center" gap="$5">
@@ -52,11 +55,48 @@ export const ProfileHeader = memo(
                     Posts
                   </SizableText>
                 </YStack>
+                <YStack items="flex-start">
+                  <SizableText size="$6" fontWeight="700">
+                    {formatReactionCount(1200)}
+                  </SizableText>
+                  <SizableText size="$2" color="$color11">
+                    Followers
+                  </SizableText>
+                </YStack>
+                <YStack items="flex-start">
+                  <SizableText size="$6" fontWeight="700">
+                    {formatReactionCount(14555)}
+                  </SizableText>
+                  <SizableText size="$2" color="$color11">
+                    Following
+                  </SizableText>
+                </YStack>
               </XStack>
             </YStack>
           </XStack>
           {/* Social Links - Stacked Avatar Style */}
           <SocialLinks links={socialLinks} />
+          <XStack gap="$2" flex={1}>
+            <ButtonSimple
+              size="medium"
+              flex={1}
+              glass
+              onPress={handleShare}
+              icon={<ShareFatIcon size={16} color="$color12" />}
+            >
+              Share
+            </ButtonSimple>
+            <ButtonSimple
+              size="medium"
+              flex={1}
+              glass
+              onPress={handleShare}
+              icon={<PencilSimpleIcon size={16} color="$color12" />}
+            >
+              Edit Profile
+            </ButtonSimple>
+          </XStack>
+          <XStack></XStack>
         </YStack>
       </View>
     )

@@ -16,9 +16,12 @@ ENV PATH="/root/.bun/bin:${PATH}"
 
 WORKDIR /app
 
+# copy package files
 COPY package.json bun.lock vite.config.ts ./
+COPY packages ./packages
 
-RUN PRODUCTION=1 bun install --production --frozen-lockfile
+# skip postinstall during docker build (it's dev-only setup)
+RUN bun install --production --frozen-lockfile --ignore-scripts
 
 COPY . .
 
@@ -26,4 +29,4 @@ RUN test -d dist || (echo "dist/ not found, did you build the app before buildin
 
 EXPOSE 3533
 
-CMD ["bun", "run", "web:serve"]
+CMD ["bun", "one", "serve", "--port", "3533"]

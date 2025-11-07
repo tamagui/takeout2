@@ -2,6 +2,8 @@
 
 .docker
 node_modules
+packages/*/node_modules
+**/node_modules
 ios
 android
 .git
@@ -23,5 +25,3 @@ tests
 docker-compose.yml
 vitest.config.ts
 tsconfig.tsbuildinfo
-src/database/migrate-dist.js
-src/database/migrations

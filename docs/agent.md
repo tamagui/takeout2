@@ -60,3 +60,12 @@ MutatorContext.
 Never modify `/src/server/env-server.ts` - it's auto-generated. To add env vars,
 add to `env` section in `package.json`, run `bun env:update`, and optionally add
 example to `.env.development`.
+
+## Scripts
+
+We try and keep our package.json scripts minimal with our custom takeout CLI. In
+packages/takeout is the logic for this CLI, it will scan our `./scripts/*`
+folders and files and automatically turn them into CLI commands. When creating
+new scripts generally try and group them logically into scripts. Read over the
+./scripts dir and run `bun tko` to see a list of all scripts and get a feel for
+how it works.

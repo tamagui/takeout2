@@ -1,0 +1,128 @@
+# local uncloud deployment - completely override services to avoid port conflicts
+# uncloud treats ports as ingress (http/https only), so we remove all ports
+# services communicate via uncloud's wireguard mesh network
+
+services:
+  pgdb:
+    image: pgvector/pgvector:pg16
+    shm_size: 1g
+    restart: always
+    healthcheck:
+      test: 'pg_isready -U user --dbname=postgres'
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: password
+    command: |
+      postgres
+      -c wal_level=logical
+      -c max_wal_senders=10
+      -c max_replication_slots=5
+      -c hot_standby=on
+      -c max_connections=256
+    volumes:
+      - pgdb_data:/var/lib/postgresql/data
+      - ./src/database/:/docker-entrypoint-initdb.d
+
+  migrate:
+    image: takeout-web:latest
+    depends_on:
+      pgdb:
+        condition: service_healthy
+    environment:
+      - RUN=1
+      - ALLOW_MISSING_ENV=1
+      - ZERO_UPSTREAM_DB=postgresql://user:password@pgdb:5432/postgres
+      - ZERO_CVR_DB=postgresql://user:password@pgdb:5432/zero_cvr
+      - ZERO_CHANGE_DB=postgresql://user:password@pgdb:5432/zero_cdb
+    command: ["node", "/app/src/database/migrate-dist.js"]
+
+  zero:
+    image: "rocicorp/zero:${ZERO_VERSION:-latest}"
+    restart: always
+    depends_on:
+      - migrate
+    environment:
+      - ZERO_ADMIN_PASSWORD=production-admin-change-me
+      - ZERO_LOG_LEVEL=info
+      - ZERO_AUTH_JWKS_URL=http://web:3533/api/auth/jwks
+      - ZERO_PUSH_URL=http://web:3533/api/zero/push
+      - ZERO_GET_QUERIES_URL=http://web:3533/api/zero/pull
+      - ZERO_UPSTREAM_DB=postgresql://user:password@pgdb:5432/postgres
+      - ZERO_CVR_DB=postgresql://user:password@pgdb:5432/zero_cvr
+      - ZERO_CHANGE_DB=postgresql://user:password@pgdb:5432/zero_cdb
+      - ZERO_REPLICA_FILE=/app/sync-replica.db
+      - ZERO_NUM_SYNC_WORKERS=8
+      - ZERO_CVR_MAX_CONNS=16
+      - ZERO_UPSTREAM_MAX_CONNS=32
+    volumes:
+      - zero_data:/app
+
+  minio:
+    image: minio/minio
+    restart: always
+    entrypoint: sh
+    command: -c 'mkdir -p /data/chat && minio server --address ":9000" --console-address ":9001" /data'
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio_password
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+      start_period: 1s
+
+  minio-init:
+    image: minio/mc
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+        until mc alias set local http://minio:9000 minio minio_password; do
+          echo 'Waiting for MinIO...';
+          sleep 1;
+        done &&
+        mc mb --ignore-existing local/chat &&
+        mc anonymous set download local/chat &&
+        echo '✅ MinIO chat bucket ready and public';
+      "
+
+  web:
+    image: takeout-web:latest
+    restart: always
+    depends_on:
+      - zero
+    environment:
+      - BETTER_AUTH_SECRET=production-secret-change-me
+      - BETTER_AUTH_URL=http://localhost:8081
+      - ONE_SERVER_URL=http://localhost:8081
+      - NODE_ENV=production
+      - ZERO_AUTH_JWKS_URL=http://web:3533/api/auth/jwks
+      - ZERO_PUSH_URL=http://web:3533/api/zero/push
+      - ZERO_GET_QUERIES_URL=http://web:3533/api/zero/pull
+      - ZERO_UPSTREAM_DB=postgresql://user:password@pgdb:5432/postgres
+      - ZERO_CVR_DB=postgresql://user:password@pgdb:5432/zero_cvr
+      - ZERO_CHANGE_DB=postgresql://user:password@pgdb:5432/zero_cdb
+      - VITE_PUBLIC_ZERO_SERVER=http://localhost:4848
+      - CLOUDFLARE_R2_ENDPOINT=http://minio:9000/chat
+      - CLOUDFLARE_R2_ACCESS_KEY=minio
+      - CLOUDFLARE_R2_SECRET_KEY=minio_password
+      - CLOUDFLARE_R2_PUBLIC_URL=http://localhost:9200/chat
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3533/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  pgdb_data:
+  zero_data:
+  minio_data:

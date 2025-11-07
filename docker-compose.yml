@@ -96,7 +96,7 @@ services:
       MINIO_ROOT_PASSWORD: minio_password
     ports:
       - 9200:9000
-      - 127.0.0.1:9201:9001
+      - 9201:9001
     volumes:
       - ./.docker/minio:/data
     healthcheck:

@@ -53,3 +53,8 @@ dist
 
 # Docker volume data
 .docker
+
+# uncloud
+.cloud-init.yml
+# cluster config (encrypted, optionally commit for team)
+# .uncloud-cluster.enc

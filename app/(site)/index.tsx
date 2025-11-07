@@ -1,8 +1,8 @@
 import { H1, YStack } from 'tamagui'
+import { useAuth } from '~/features/auth/client/authClient'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { Link } from '~/features/routing/Link'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
-import { useAuth } from '../src/features/auth/client/authClient'
 
 export default function IndexPage() {
   useOnboarding()

@@ -1,0 +1,388 @@
+================================================================================
+@vxrn/mdx DOCUMENTATION SET FOR TAKEOUT3
+================================================================================
+
+Created: November 6, 2024
+Source: /Users/n8/one/packages/mdx/ (complete analysis)
+Total: 4 documents, 1,945 lines, 56 KB of comprehensive documentation
+
+================================================================================
+DOCUMENT INDEX
+================================================================================
+
+1. VXRN_MDX_README.md (254 lines, 8 KB)
+   ├─ START HERE
+   ├─ Overview of all documentation
+   ├─ How to use the documentation set
+   ├─ Key insights about the package
+   ├─ Integration steps overview
+   ├─ Common use cases
+   └─ Next steps checklist
+
+2. VXRN_MDX_QUICK_REFERENCE.md (520 lines, 12 KB)
+   ├─ QUICK LOOKUPS & COPY-PASTE
+   ├─ API one-liners
+   ├─ Frontmatter YAML template
+   ├─ Code block syntax examples
+   ├─ Directory structure template
+   ├─ CSS classes reference
+   ├─ React app setup (4 steps)
+   ├─ Common patterns/recipes
+   ├─ Troubleshooting quick fixes
+   ├─ Complete minimal example
+   └─ Dependencies list
+
+3. VXRN_MDX_GUIDE.md (736 lines, 20 KB)
+   ├─ COMPREHENSIVE REFERENCE
+   ├─ Overview of package
+   ├─ Core dependencies explained
+   ├─ Exported API documentation
+   │  ├─ getMDX()
+   │  ├─ getMDXBySlug()
+   │  ├─ getAllFrontmatter()
+   │  ├─ getAllVersionsFromPath()
+   │  └─ createCodeHighlighter()
+   ├─ Frontmatter type definition
+   ├─ Plugin system (Rehype)
+   ├─ Code highlighting system
+   ├─ 8-step integration guide
+   ├─ Styled example
+   ├─ Complete working example
+   ├─ Troubleshooting guide
+   └─ Performance considerations
+
+4. VXRN_MDX_ARCHITECTURE.md (435 lines, 16 KB)
+   ├─ DIAGRAMS & TECHNICAL DEEP DIVE
+   ├─ Data flow diagram
+   ├─ Function relationships
+   ├─ Plugin pipeline detail
+   ├─ Code highlighting stages (4-stage)
+   ├─ File system operations
+   ├─ Type relationships
+   ├─ Configuration points
+   ├─ Cache/singleton patterns
+   ├─ Error handling strategies
+   ├─ Async/await patterns
+   └─ Performance characteristics
+
+================================================================================
+HOW TO USE THIS DOCUMENTATION
+================================================================================
+
+SCENARIO 1: I want to get started quickly (5-10 minutes)
+   → Read: VXRN_MDX_README.md
+   → Follow: VXRN_MDX_QUICK_REFERENCE.md - "Setup for React App"
+   → Copy: VXRN_MDX_QUICK_REFERENCE.md - "Complete Minimal Example"
+
+SCENARIO 2: I need to understand everything (30-60 minutes)
+   → Read: VXRN_MDX_README.md (overview)
+   → Study: VXRN_MDX_GUIDE.md (complete API)
+   → Review: VXRN_MDX_ARCHITECTURE.md (how it works)
+   → Reference: VXRN_MDX_QUICK_REFERENCE.md (lookups)
+
+SCENARIO 3: I'm implementing a specific feature (5-15 minutes)
+   → Search: VXRN_MDX_QUICK_REFERENCE.md - "Common Patterns"
+   → Copy: Example code
+   → Reference: VXRN_MDX_GUIDE.md - Relevant section
+
+SCENARIO 4: Something isn't working (5-20 minutes)
+   → Check: VXRN_MDX_QUICK_REFERENCE.md - "Troubleshooting Quick Fixes"
+   → Read: VXRN_MDX_GUIDE.md - "Troubleshooting" section
+   → Understand: VXRN_MDX_ARCHITECTURE.md - "Error Handling"
+
+================================================================================
+KEY FACTS ABOUT @vxrn/mdx
+================================================================================
+
+VERSION: 1.2.7
+TYPE: CommonJS (requires dynamic import in ESM)
+USE CASE: Complete MDX processing with bundling, highlighting, and metadata
+
+MAIN FUNCTIONS:
+  1. getMDX(source) → bundles MDX string
+  2. getMDXBySlug(path, slug) → loads & bundles MDX file
+  3. getAllFrontmatter(path) → extracts all metadata from directory
+  4. getAllVersionsFromPath(path) → lists semantic versions
+  5. createCodeHighlighter() → standalone syntax highlighting
+
+CORE FEATURES:
+  ✓ MDX bundling with mdx-bundler
+  ✓ YAML frontmatter parsing with gray-matter
+  ✓ Syntax highlighting with Prism/refractor
+  ✓ Line highlighting (via meta attributes)
+  ✓ Word highlighting (via __underscores__)
+  ✓ Heading extraction & TOC generation
+  ✓ Reading time calculation
+  ✓ Version management for components
+  ✓ Customizable rehype plugin pipeline
+  ✓ Auto-slug generation
+
+KEY DEPENDENCIES:
+  - mdx-bundler v10.0.2 (core MDX processing)
+  - gray-matter v4.0.3 (frontmatter parsing)
+  - refractor v4.7.0 (Prism-based highlighting)
+  - reading-time v1.3.0 (reading time)
+  - rehype ecosystem (HTML transformation)
+  - fast-glob v3.3.3 (file scanning)
+
+IMPORTANT CONSTRAINTS:
+  ✗ Node.js only (not browser)
+  ✗ CommonJS module (ESM requires dynamic import)
+  ✗ mdx-bundler is async (must await)
+  ✗ Output code must be evaluated with mdx-bundler/evaluate()
+  ✗ Code highlighting is post-processing (not in HTML AST)
+  ✗ Limited to registered refractor languages (TSX, CSS by default)
+
+================================================================================
+INTEGRATION CHECKLIST
+================================================================================
+
+INSTALL & SETUP:
+  [ ] Install: yarn add @vxrn/mdx
+  [ ] Create: content/docs/ directory
+  [ ] Create: content/blog/ directory (optional)
+  [ ] Create: lib/mdx.ts with utility functions
+
+CREATE CONTENT:
+  [ ] Write: First .mdx file with frontmatter
+  [ ] Follow: YAML format from VXRN_MDX_QUICK_REFERENCE.md
+  [ ] Include: title, slug, description, publishedAt
+
+CREATE PAGES:
+  [ ] Create: pages/docs/[slug].tsx
+  [ ] Use: getMDXBySlug() for file loading
+  [ ] Use: evaluate() for rendering
+  [ ] Pass: custom components via evaluate() options
+
+STYLING:
+  [ ] Add CSS: For syntax highlighting
+  [ ] Style: .highlight-line, .highlight-word, .token
+  [ ] Test: Code blocks display correctly
+
+OPTIONAL ENHANCEMENTS:
+  [ ] Create: blog/[slug].tsx page
+  [ ] Generate: Table of contents from headings
+  [ ] Filter: Drafts from published posts
+  [ ] Cache: getAllFrontmatter() results
+  [ ] Add: Custom rehype plugins
+  [ ] Register: Additional syntax languages
+
+================================================================================
+EXPORTED API SUMMARY
+================================================================================
+
+getMDX(source: string, extraPlugins?: UnifiedPlugin)
+  INPUT:  MDX content as string (with YAML frontmatter)
+  OUTPUT: { frontmatter: Frontmatter, code: string }
+  ASYNC:  Yes
+  USES:   mdx-bundler, gray-matter, refractor
+
+getMDXBySlug(basePath: string, slug: string, extraPlugins?: UnifiedPlugin)
+  INPUT:  Directory path, file slug (without .mdx)
+  OUTPUT: { frontmatter: Frontmatter, code: string }
+  ASYNC:  Yes
+  SMART:  Auto-detects latest version for components
+  USES:   fs.readFileSync(), getMDX()
+
+getAllFrontmatter(fromPath: string)
+  INPUT:  Directory to scan
+  OUTPUT: Frontmatter[] (sorted by publishedAt descending)
+  ASYNC:  No (synchronous)
+  USES:   fast-glob, gray-matter, getHeadings()
+
+getAllVersionsFromPath(fromPath: string)
+  INPUT:  Directory path
+  OUTPUT: string[] (semantic versions, descending order)
+  ASYNC:  No (synchronous)
+  USES:   fs.readdirSync(), compare-versions
+
+createCodeHighlighter()
+  INPUT:  None (returns function)
+  OUTPUT: (source, lang, line?) => string (HTML)
+  ASYNC:  No (synchronous, singleton)
+  USES:   refractor, rehypeHighlightLine, rehypeHighlightWord
+
+================================================================================
+FRONTMATTER STRUCTURE
+================================================================================
+
+REQUIRED FIELDS:
+  title: string           (your page title)
+  slug: string            (for URL & identification)
+
+OPTIONAL METADATA:
+  description: string     (SEO, preview)
+  publishedAt: string     (ISO date, used for sorting)
+  draft: boolean          (hide unpublished posts)
+  by: string              (author name)
+  image: string           (preview/og image)
+  poster: string          (cover image)
+  type: string            (changelog, article, etc.)
+  
+COMPONENT-SPECIFIC:
+  component: string       (component name)
+  package: string         (npm package name)
+  demoName: string        (demo identifier)
+  
+VERSIONING:
+  version: string         (current version)
+  versions: string[]      (available versions)
+  relatedIds: string[]    (related content)
+
+AUTO-GENERATED (by getMDX/getAllFrontmatter):
+  headings: { title, priority: 1-6, id }[]
+  readingTime: { text, minutes, time, words }
+
+================================================================================
+CODE BLOCK SYNTAX EXAMPLES
+================================================================================
+
+BASIC SYNTAX HIGHLIGHTING:
+  ```tsx
+  const x = 42
+  ```
+
+WITH LINE HIGHLIGHTING:
+  ```tsx line="1,3-5"
+  // Line 1: highlighted
+  // Line 2: normal
+  // Line 3-5: highlighted
+  ```
+
+WITH WORD HIGHLIGHTING:
+  ```tsx
+  const important = __this is highlighted__
+  ```
+
+WITH META ATTRIBUTES:
+  ```tsx title="example.tsx" line="2-4" custom="value"
+  // Custom attributes available as HTML properties
+  ```
+
+ADVANCED (UNDERSCORE PATTERN):
+  Use __text__ in code to highlight individual words
+  Result: <span class="highlight-word">text</span>
+
+================================================================================
+CSS CLASSES REFERENCE
+================================================================================
+
+FROM SYNTAX HIGHLIGHTING (refractor):
+  .token                    (base class)
+  .token.keyword            (const, function, etc.)
+  .token.string             (string literals)
+  .token.number             (numeric literals)
+  .token.comment            (comments)
+  .token.operator           (operators)
+  .token.function           (function names)
+  (and 20+ more Prism token types)
+
+FROM LINE HIGHLIGHTING:
+  .highlight-line           (container for each line)
+  [data-highlighted=true]   (highlighted lines)
+  [data-highlighted=false]  (non-highlighted lines)
+  [data-line="N"]           (line number attribute)
+
+FROM WORD HIGHLIGHTING:
+  .highlight-word           (from __text__ pattern)
+
+FROM HEADING LINKING:
+  h1 > a, h2 > a, etc.     (auto-generated links)
+
+================================================================================
+PERFORMANCE NOTES
+================================================================================
+
+ASYNC OPERATIONS (can be slow):
+  getMDX()         - Depends on bundling (can be 100ms+)
+  getMDXBySlug()   - I/O + bundling
+  
+SYNC OPERATIONS (fast):
+  getAllFrontmatter()      - O(n) file reads (cache it!)
+  getAllVersionsFromPath() - O(n) directory read
+  createCodeHighlighter()  - Singleton (first call slowest)
+
+RECOMMENDATIONS:
+  1. Cache getAllFrontmatter() results (expensive for many files)
+  2. Lazy load MDX bundles (don't process all at once)
+  3. Use static generation for known routes
+  4. Consider build-time preprocessing for frequently accessed content
+  5. Evaluate code only when rendering (not at server start)
+
+================================================================================
+FILE LOCATIONS IN SOURCE
+================================================================================
+
+@vxrn/mdx SOURCE CODE:
+  /Users/n8/one/packages/mdx/src/
+  ├── index.ts                    (exports)
+  ├── getMDX.ts                   (core logic)
+  ├── getMDXBySlug.tsx            (file loading)
+  ├── getAllFrontmatter.tsx        (batch extraction)
+  ├── getAllVersionsFromPath.tsx  (version detection)
+  ├── getHeadings.ts              (heading parsing)
+  ├── highlightCode.tsx           (standalone highlighting)
+  ├── rehypeHighlightCode.tsx     (syntax highlighting plugin)
+  ├── rehypeLine.tsx              (line highlighting logic)
+  ├── rehypeWord.tsx              (word highlighting logic)
+  ├── rehypeMetaAttribute.tsx     (meta attribute parsing)
+  └── types.ts                    (TypeScript types)
+
+TYPE DEFINITIONS:
+  /Users/n8/one/packages/mdx/types/
+  └── (generated from source TypeScript)
+
+================================================================================
+NEXT STEPS
+================================================================================
+
+START HERE:
+  1. Read: VXRN_MDX_README.md (3-5 min)
+  2. Review: VXRN_MDX_QUICK_REFERENCE.md - "Setup for React App"
+  3. Create: content/docs/getting-started.mdx
+  4. Implement: lib/mdx.ts from examples
+  5. Add: pages/docs/[slug].tsx
+  6. Style: Add CSS for code highlighting
+  7. Test: yarn dev
+
+GOING DEEPER:
+  - Study VXRN_MDX_GUIDE.md for complete API
+  - Review VXRN_MDX_ARCHITECTURE.md for understanding
+  - Reference VXRN_MDX_QUICK_REFERENCE.md for lookups
+
+ADVANCED FEATURES:
+  - Custom rehype plugins (see VXRN_MDX_GUIDE.md)
+  - Component mapping (see VXRN_MDX_QUICK_REFERENCE.md)
+  - Versioned components (see examples)
+  - Additional syntax languages (register with refractor)
+  - TOC generation from headings (see examples)
+
+================================================================================
+SUPPORT RESOURCES
+================================================================================
+
+WITHIN DOCUMENTATION:
+  - VXRN_MDX_QUICK_REFERENCE.md - Troubleshooting Quick Fixes
+  - VXRN_MDX_GUIDE.md - Troubleshooting section
+  - VXRN_MDX_ARCHITECTURE.md - Error Handling section
+
+EXTERNAL RESOURCES:
+  - mdx-bundler: https://github.com/kentcdodds/mdx-bundler
+  - Unified: https://github.com/unifiedjs/unified
+  - Rehype: https://github.com/rehypejs/rehype
+  - Prism: https://prismjs.com/
+
+SOURCE CODE:
+  - /Users/n8/one/packages/mdx/src/ (reference implementation)
+  - All 12 source files are well-commented
+
+================================================================================
+END OF INDEX
+================================================================================
+
+Documentation created: November 6, 2024
+Total lines: 1,945
+Total size: 56 KB
+Completeness: 100% (all APIs documented, all files analyzed)
+
+STATUS: Ready for integration into takeout3

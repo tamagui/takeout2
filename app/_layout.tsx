@@ -1,45 +1,16 @@
 import './root.css'
 
-import { Slot, Stack } from 'one'
+import { Slot } from 'one'
 import type { ReactNode } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { isWeb } from 'tamagui'
-import {
-  ROOT_AUTH_ONBOARD_ROUTE_NAME,
-  ROOT_MAIN_ROUTE_NAME,
-} from '~/constants/navigation'
-import { NotificationProvider } from '~/interface/notification/Notification'
-import { ToastProvider } from '~/interface/toast/Toast'
-import { DragDropFile } from '~/interface/upload/DragDropFile'
-import { PlatformSpecificRootProvider } from '~/providers/PlatformSpecificRootProvider'
 import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
-import { ProvideZero } from '~/zero/client'
 
 export function Layout() {
   const contents = (
-    <SharedProviders>
-      <DragDropFile>
-        {isWeb ? (
-          <Slot />
-        ) : (
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              animation: 'slide_from_bottom',
-            }}
-            initialRouteName={ROOT_MAIN_ROUTE_NAME}
-          >
-            <Stack.Screen name={ROOT_MAIN_ROUTE_NAME} />
-            <Stack.Screen
-              name={ROOT_AUTH_ONBOARD_ROUTE_NAME}
-              options={{
-                gestureEnabled: false,
-              }}
-            />
-          </Stack>
-        )}
-      </DragDropFile>
-    </SharedProviders>
+    <MinimalProviders>
+      <Slot />
+    </MinimalProviders>
   )
 
   if (isWeb) {
@@ -75,18 +46,10 @@ export function Layout() {
   return contents
 }
 
-function SharedProviders({ children }: { children: ReactNode }) {
+function MinimalProviders({ children }: { children: ReactNode }) {
   return (
-    <ProvideZero>
-      <TamaguiRootProvider>
-        <SafeAreaProvider>
-          <ToastProvider>
-            <NotificationProvider>
-              <PlatformSpecificRootProvider>{children}</PlatformSpecificRootProvider>
-            </NotificationProvider>
-          </ToastProvider>
-        </SafeAreaProvider>
-      </TamaguiRootProvider>
-    </ProvideZero>
+    <TamaguiRootProvider>
+      <SafeAreaProvider>{children}</SafeAreaProvider>
+    </TamaguiRootProvider>
   )
 }

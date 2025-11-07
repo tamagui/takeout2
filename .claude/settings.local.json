@@ -78,7 +78,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun tko docs get tamagui zero"
+            "command": "bun tko docs get tamagui zero one-components"
           }
         ]
       },
@@ -88,6 +88,24 @@
           {
             "type": "command",
             "command": "bun tko docs get zero"
+          }
+        ]
+      },
+      {
+        "matcher": "app/**/*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun tko docs get one-routes one-components"
+          }
+        ]
+      },
+      {
+        "matcher": "src/features/**/use*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun tko docs get one-hooks"
           }
         ]
       }

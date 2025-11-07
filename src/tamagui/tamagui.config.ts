@@ -116,7 +116,6 @@ export const config = createTamagui({
     themeClassNameOnRoot: true,
     onlyAllowShorthands: true,
     maxDarkLightNesting: 2,
-    styleCompat: 'react-native',
     allowedStyleValues: 'somewhat-strict-web',
     disableSSR: true,
   },

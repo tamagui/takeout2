@@ -1,11 +1,42 @@
-/* NOTE useAppTheme overrides bodyBg */
-
 :root {
   color-scheme: light dark;
-  --bodyBgLight: #fff;
-  --bodyBgLightTransparent: rgba(255, 255, 255, 0);
-  --bodyBgDark: #000;
-  --bodyBgDarkTransparent: rgba(0, 0, 0, 0);
+}
+
+body {
+  margin: 0;
+  position: relative;
+  max-width: 100vw;
+  min-height: 100vh;
+  background-color: var(--bodyBg);
+}
+
+html,
+body {
+  max-width: 100vw;
+  background: var(--bodyBg);
+}
+
+html:has(.body-scrollable),
+body:has(.body-scrollable) {
+  overflow: auto;
+}
+
+/* fixes prod content not fitting frame */
+body > :is(.css-175oi2r, .css-view-175oi2r),
+body
+  > :is(.css-175oi2r, .css-view-175oi2r)
+  > span
+  > :is(.css-175oi2r, .css-view-175oi2r) {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* fix safari adjusting some random font sizes bigger */
+@media screen and (max-device-width: 480px) {
+  body {
+    -webkit-text-size-adjust: 100%;
+  }
 }
 
 /* css reset this because we always want to set our own focus styles */
@@ -30,71 +61,6 @@ a:focus,
   box-shadow: none;
 }
 
-:root {
-  --bodyBg: light-dark(var(--bodyBgLight), var(--bodyBgDark));
-  --bodyBgTransparent: light-dark(
-    var(--bodyBgLightTransparent),
-    var(--bodyBgDarkTransparent)
-  );
-}
-
-.bodyBg {
-  background-color: var(--bodyBg);
-}
-
-:root:has(.body-dark) {
-  background-color: var(--bodyBgDark);
-}
-
-.t_dark,
-.t_dark .bodyBg {
-  --bodyBg: var(--bodyBgDark);
-}
-
-.t_light,
-.t_light .bodyBg {
-  --bodyBg: var(--bodyBgLight);
-}
-
-body {
-  margin: 0;
-  position: relative;
-  max-width: 100vw;
-  min-height: 100vh;
-  overflow: hidden;
-  background-color: var(--bodyBg);
-}
-
-/* fix safari adjusting some random font sizes bigger */
-@media screen and (max-device-width: 480px) {
-  body {
-    -webkit-text-size-adjust: 100%;
-  }
-}
-
-html,
-body {
-  max-width: 100vw;
-  background: var(--bodyBg);
-  overflow: hidden;
-}
-
-html:has(.body-scrollable),
-body:has(.body-scrollable) {
-  overflow: auto;
-}
-
-/* fixes prod content not fitting frame */
-body > :is(.css-175oi2r, .css-view-175oi2r),
-body
-  > :is(.css-175oi2r, .css-view-175oi2r)
-  > span
-  > :is(.css-175oi2r, .css-view-175oi2r) {
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
-}
-
 /* default links to not underline */
 a {
   text-decoration: none;
@@ -103,6 +69,7 @@ a {
 
 /* but if in a paragraph then underline */
 .is_Paragraph a,
+p a,
 [data-tint-link] {
   text-decoration: underline;
   text-decoration-thickness: 2px;
@@ -115,14 +82,6 @@ a:hover {
   text-decoration-color: var(--color02);
 }
 
-.t_dark a {
-  text-decoration-color: var(--color02);
-}
-
-.t_dark a:hover {
-  text-decoration-color: var(--color03);
-}
-
 * {
   box-sizing: border-box;
 }
@@ -133,87 +92,4 @@ a {
 
 [role="heading"] {
   text-wrap: pretty;
-}
-
-.pretty-text {
-  text-wrap: balance;
-}
-
-.text-underline-none {
-  text-decoration: none;
-  text-decoration-thickness: 0px;
-}
-
-a.is_Button {
-  text-decoration: none;
-}
-
-/* Hide scrollbar utilities */
-.hide-scrollbar {
-  scrollbar-width: none; /* Firefox */
-}
-.hide-scrollbar::-webkit-scrollbar {
-  display: none; /* Safari and Chrome */
-}
-
-/* Ellipsis utilities */
-.ellipsis {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.ellipsis-2 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  text-overflow: ellipsis;
-}
-
-.ellipsis-3 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  -webkit-box-orient: vertical;
-  text-overflow: ellipsis;
-}
-
-/* Gradient border animation */
-@keyframes gradient-rotate {
-  0% {
-    --gradient-angle: 0deg;
-  }
-  100% {
-    --gradient-angle: 360deg;
-  }
-}
-
-@property --gradient-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-
-/* Mask fade utilities */
-.mask-fade-to-bottom {
-  mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-}
-
-.mask-fade-to-top {
-  mask-image: linear-gradient(to top, black 70%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to top, black 70%, transparent 100%);
-}
-
-.mask-fade-to-left {
-  mask-image: linear-gradient(to left, black 70%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to left, black 70%, transparent 100%);
-}
-
-.mask-fade-to-right {
-  mask-image: linear-gradient(to right, black 70%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, black 70%, transparent 100%);
 }

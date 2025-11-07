@@ -1,14 +1,11 @@
 import { H1, YStack } from 'tamagui'
-import { useOnboarding } from '~/features/onboarding/useOnboarding'
-import { Link } from '~/features/routing/Link'
+import { useAuth } from '~/features/auth/client/authClient'
+import { Link } from '~/interface/app/Link'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
-import { useAuth } from '../src/features/auth/client/authClient'
 
 export default function IndexPage() {
-  useOnboarding()
-
   return (
-    <YStack flex={1} items="center" justify="center">
+    <YStack items="center" justify="center">
       <H1>Welcome</H1>
       <LoginButton />
     </YStack>

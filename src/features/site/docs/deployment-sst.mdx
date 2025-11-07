@@ -1,0 +1,545 @@
+---
+title: AWS SST Deployment
+description: Complete guide to deploying Takeout to AWS using SST
+---
+
+# AWS SST Deployment
+
+Deploy Takeout to AWS using SST (Serverless Stack) for a production-ready, auto-scaling infrastructure.
+
+## Prerequisites
+
+- AWS Account
+- AWS CLI installed and configured
+- Domain name (optional but recommended)
+- Cloudflare account (for DNS, optional)
+
+## Infrastructure Overview
+
+SST creates:
+- **VPC** - Isolated network with bastion host
+- **ECS Fargate** - Containerized services
+- **Aurora Serverless v2** - Auto-scaling PostgreSQL
+- **Application Load Balancer** - Traffic routing and SSL
+- **CloudFront** (optional) - CDN for static assets
+- **S3** - Backups and assets
+
+## Initial Setup
+
+### 1. Install AWS CLI
+
+```bash
+# macOS
+brew install awscli
+
+# Verify installation
+aws --version
+```
+
+### 2. Configure AWS Credentials
+
+```bash
+aws configure --profile tamagui-dev
+
+# Enter:
+# AWS Access Key ID: your-access-key
+# AWS Secret Access Key: your-secret-key
+# Default region: us-west-1
+# Default output format: json
+```
+
+For production, create separate profile:
+
+```bash
+aws configure --profile tamagui-prod
+```
+
+### 3. Update SST Config
+
+Edit `sst.config.ts`:
+
+```typescript
+export default $config({
+  async app(input) {
+    return {
+      name: 'your-app-name',
+      removal: input?.stage === 'production' ? 'retain' : 'remove',
+      home: 'aws',
+      providers: {
+        aws: {
+          region: 'us-west-1',
+          profile: input.stage === 'production' ? 'tamagui-prod' : 'tamagui-dev',
+        },
+      },
+    }
+  },
+})
+```
+
+### 4. Update Domain Constants
+
+Edit `src/constants/app.ts`:
+
+```typescript
+export const DOMAIN = 'yourdomain.com'
+export const APP_NAME = 'YourApp'
+export const APP_NAME_LOWERCASE = 'yourapp'
+```
+
+## First Deployment
+
+### 1. Set Environment Variables
+
+Create production environment file:
+
+```bash
+cp .env.production.example .env.production
+```
+
+Update with production values:
+
+```bash
+BETTER_AUTH_SECRET=<generate-new-secret>
+BETTER_AUTH_URL=https://yourdomain.com
+ONE_SERVER_URL=https://yourdomain.com
+
+# Storage (Cloudflare R2)
+CLOUDFLARE_R2_ENDPOINT=https://your-account.r2.cloudflarestorage.com
+CLOUDFLARE_R2_ACCESS_KEY=<your-key>
+CLOUDFLARE_R2_SECRET_KEY=<your-secret>
+CLOUDFLARE_R2_PUBLIC_URL=https://your-r2-bucket.com
+
+# Email
+POSTMARK_SERVER_TOKEN=<your-token>
+
+# Analytics
+VITE_POSTHOG_API_KEY=<your-key>
+VITE_POSTHOG_HOST=https://app.posthog.com
+```
+
+### 2. Build Docker Image
+
+```bash
+# Build production image
+bun tko web build-docker
+
+# Tag for deployment
+docker tag your-app:latest your-registry/your-app:latest
+
+# Push to registry
+docker push your-registry/your-app:latest
+```
+
+### 3. Deploy to AWS
+
+```bash
+# Deploy to staging first
+bun tko sst deploy staging
+
+# After testing, deploy to production
+bun tko sst deploy production
+```
+
+Deployment takes 10-15 minutes for first deploy.
+
+## DNS Configuration
+
+### With Cloudflare
+
+SST automatically configures DNS if using Cloudflare:
+
+```typescript
+// sst.config.ts
+loadBalancer: {
+  domain: {
+    name: domain,
+    dns: sst.cloudflare.dns(),
+  },
+}
+```
+
+1. Add your domain to Cloudflare
+2. Update nameservers at your registrar
+3. SST creates DNS records automatically
+
+### Manual DNS
+
+If not using Cloudflare, create DNS records manually:
+
+```
+A    yourdomain.com      -> ALB-address
+CNAME zero.yourdomain.com -> ALB-address
+```
+
+Get ALB address from deployment output.
+
+## SSL Certificate
+
+SST automatically provisions SSL certificates via AWS Certificate Manager.
+
+For custom certificates:
+
+```typescript
+loadBalancer: {
+  domain: {
+    name: domain,
+    cert: 'arn:aws:acm:...',
+  },
+}
+```
+
+## Monitoring
+
+### View Logs
+
+```bash
+# Web app logs
+bun tko aws logs webapp
+
+# Zero logs
+bun tko aws logs zero
+
+# Follow logs (real-time)
+bun tko aws logs webapp --follow
+```
+
+### Health Checks
+
+Check service health:
+
+```bash
+bun tko aws health
+```
+
+This verifies:
+- Web app responding
+- Zero server responding
+- Database accessible
+- Load balancer healthy
+
+### CloudWatch
+
+View metrics in AWS Console:
+1. Navigate to CloudWatch
+2. Select your service
+3. View CPU, memory, network metrics
+
+### Alarms
+
+Set up CloudWatch alarms:
+
+```typescript
+// sst.config.ts
+new aws.cloudwatch.MetricAlarm('HighErrorRate', {
+  alarmDescription: 'Alert on high error rate',
+  metricName: 'HTTPCode_Target_5XX_Count',
+  namespace: 'AWS/ApplicationELB',
+  statistic: 'Sum',
+  period: 300,
+  evaluationPeriods: 2,
+  threshold: 10,
+  comparisonOperator: 'GreaterThanThreshold',
+  alarmActions: [snsTopicArn],
+})
+```
+
+## Scaling Configuration
+
+### Auto-Scaling
+
+Configure service scaling:
+
+```typescript
+// sst.config.ts
+const webApp = new sst.aws.Service('WebApp', {
+  scaling: {
+    min: 1,      // Minimum instances
+    max: 5,      // Maximum instances
+  },
+  cpu: '4 vCPU',
+  memory: '8 GB',
+})
+```
+
+ECS auto-scales based on:
+- CPU utilization
+- Memory utilization
+- Request count
+
+### Database Scaling
+
+Aurora Serverless v2 auto-scales:
+
+```typescript
+const database = new sst.aws.Aurora('Postgres2', {
+  scaling: {
+    min: '0 ACU',  // Can scale to zero
+    max: '4 ACU',  // Max 4 ACU (8GB RAM)
+  },
+})
+```
+
+1 ACU = 2GB RAM and corresponding CPU
+
+## Cost Optimization
+
+### Use Spot Instances
+
+For non-critical environments:
+
+```typescript
+capacity: 'spot',  // 70% cost savings
+```
+
+For production, use on-demand:
+
+```typescript
+capacity: 'on-demand',  // Reliable but more expensive
+```
+
+### Database Auto-Pause
+
+Aurora can pause when idle:
+
+```typescript
+scaling: {
+  min: '0 ACU',  // Pauses after 5 minutes of inactivity
+}
+```
+
+Note: First query after pause has ~25s latency.
+
+### Reserved Instances
+
+For steady production load, buy reserved instances:
+- 1-year commitment: ~40% savings
+- 3-year commitment: ~60% savings
+
+## Backup and Recovery
+
+### Automated Backups
+
+Aurora backs up automatically:
+
+```typescript
+transform: {
+  cluster: {
+    backupRetentionPeriod: 7,
+    preferredBackupWindow: '03:00-04:00',
+  },
+}
+```
+
+### Point-in-Time Recovery
+
+Restore to any point in last 7 days:
+
+```bash
+aws rds restore-db-cluster-to-point-in-time \
+  --source-db-cluster-identifier your-cluster \
+  --db-cluster-identifier your-cluster-restored \
+  --restore-to-time 2024-01-15T12:00:00Z
+```
+
+### Manual Snapshots
+
+Create manual snapshot:
+
+```bash
+aws rds create-db-cluster-snapshot \
+  --db-cluster-identifier your-cluster \
+  --db-cluster-snapshot-identifier pre-deploy-snapshot
+```
+
+## Database Access
+
+### Bastion Host
+
+SSH into bastion to access database:
+
+```bash
+# Get bastion IP from SST console
+ssh -i your-key.pem ec2-user@bastion-ip
+
+# Connect to database
+psql $ZERO_UPSTREAM_DB
+```
+
+### SSM Session
+
+Connect via AWS Systems Manager (no SSH key needed):
+
+```bash
+aws ssm start-session --target bastion-instance-id
+```
+
+### Database Tunnel
+
+Create tunnel through bastion:
+
+```bash
+ssh -i your-key.pem -L 5432:db-host:5432 ec2-user@bastion-ip
+
+# Connect on localhost
+psql postgresql://username:password@localhost:5432/postgres
+```
+
+## CI/CD Integration
+
+### GitHub Actions
+
+```yaml
+name: Deploy to Production
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: oven-sh/setup-bun@v1
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run tests
+        run: bun test
+
+      - name: Build Docker image
+        run: bun tko web build-docker
+
+      - name: Push to ECR
+        run: |
+          aws ecr get-login-password | docker login --username AWS --password-stdin $ECR_REGISTRY
+          docker tag app:latest $ECR_REGISTRY/app:$GITHUB_SHA
+          docker push $ECR_REGISTRY/app:$GITHUB_SHA
+
+      - name: Deploy with SST
+        run: WEB_APP_DOCKER_IMAGE=$ECR_REGISTRY/app:$GITHUB_SHA bun tko sst deploy production
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+```
+
+## Troubleshooting
+
+### Deployment Fails
+
+Check SST logs:
+
+```bash
+# View deployment logs
+bun tko sst deploy production --verbose
+```
+
+Common issues:
+- Missing environment variables
+- AWS credentials incorrect
+- Resource limits exceeded
+- DNS not configured
+
+### Services Unhealthy
+
+Check health:
+
+```bash
+# Service status
+bun tko aws health
+
+# View logs
+bun tko aws logs webapp
+bun tko aws logs zero
+```
+
+### Database Connection Issues
+
+Verify:
+- Database is in "available" state
+- Security groups allow connections
+- VPC configuration correct
+- Connection string correct
+
+### High Costs
+
+Review:
+- Number of running instances
+- Database ACU usage
+- Data transfer costs
+- NAT gateway costs
+
+Optimize:
+- Reduce instance count
+- Lower database max ACU
+- Use CloudFront CDN
+- Switch to single NAT gateway
+
+## Updating Deployment
+
+### Code Updates
+
+```bash
+# Build new image
+bun tko web build-docker
+
+# Deploy
+bun tko sst deploy production
+```
+
+### Infrastructure Changes
+
+Edit `sst.config.ts` and redeploy:
+
+```bash
+bun tko sst deploy production
+```
+
+SST updates infrastructure without downtime when possible.
+
+### Environment Variables
+
+Update secrets and redeploy:
+
+```bash
+# Update .env.production
+vim .env.production
+
+# Redeploy
+bun tko sst deploy production
+```
+
+## Removing Deployment
+
+### Development
+
+```bash
+bun tko sst remove development
+```
+
+### Production
+
+Production uses "retain" mode - resources aren't auto-deleted:
+
+```typescript
+removal: input?.stage === 'production' ? 'retain' : 'remove'
+```
+
+Manually delete via AWS Console or update config:
+
+```typescript
+removal: 'remove'
+```
+
+Then:
+
+```bash
+bun tko sst remove production
+```
+
+## Next Steps
+
+- [Environment](/docs/environment) - Managing environment variables
+- [Deployment](/docs/deployment) - General deployment concepts
+- [Troubleshooting](/docs/troubleshooting) - Solve common issues

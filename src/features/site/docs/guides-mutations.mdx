@@ -1,0 +1,417 @@
+---
+title: "Guide: Creating Mutations"
+description: Learn how to create Zero mutations for modifying data
+---
+
+# Guide: Creating Mutations
+
+This guide covers creating Zero mutations for inserting, updating, and deleting data with optimistic updates.
+
+## Basic Mutation Structure
+
+Mutations modify data and sync changes to the server:
+
+```typescript
+import { mutation } from 'over-zero'
+import { randomId } from '~/helpers/randomId'
+
+export const createPost = mutation({
+  name: 'createPost',
+  async mutate(ctx, input: { title: string; content: string }) {
+    const id = randomId()
+
+    await ctx.zero.posts.insert({
+      id,
+      title: input.title,
+      content: input.content,
+      userId: ctx.auth.userId,
+      createdAt: Date.now(),
+    })
+
+    return { id }
+  },
+})
+```
+
+## Mutation Context
+
+Every mutation receives `MutatorContext`:
+
+```typescript
+{
+  auth: {
+    userId: string,
+    // Other auth data
+  },
+  zero: {
+    posts: { insert, update, delete },
+    users: { insert, update, delete },
+    // All your tables
+  },
+  serverAction: (fn) => void,
+  asyncTasks: {
+    push: (task) => void
+  }
+}
+```
+
+## Insert Operations
+
+### Basic Insert
+
+```typescript
+export const createPost = mutation({
+  name: 'createPost',
+  async mutate(ctx, input) {
+    await ctx.zero.posts.insert({
+      id: randomId(),
+      title: input.title,
+      content: input.content,
+      userId: ctx.auth.userId,
+      createdAt: Date.now(),
+    })
+  },
+})
+```
+
+### Insert with Validation
+
+```typescript
+export const createPost = mutation({
+  name: 'createPost',
+  async mutate(ctx, input: { title: string; content: string }) {
+    if (!input.title || input.title.length < 3) {
+      throw new Error('Title must be at least 3 characters')
+    }
+
+    if (!input.content) {
+      throw new Error('Content is required')
+    }
+
+    await ctx.zero.posts.insert({
+      id: randomId(),
+      title: input.title,
+      content: input.content,
+      userId: ctx.auth.userId,
+      createdAt: Date.now(),
+    })
+  },
+})
+```
+
+## Update Operations
+
+### Basic Update
+
+```typescript
+export const updatePost = mutation({
+  name: 'updatePost',
+  async mutate(ctx, { id, title, content }) {
+    await ctx.zero.posts.update({
+      id,
+      title,
+      content,
+      updatedAt: Date.now(),
+    })
+  },
+})
+```
+
+### Increment Counter
+
+```typescript
+export const likePost = mutation({
+  name: 'likePost',
+  async mutate(ctx, { postId }) {
+    const post = await ctx.zero.posts.get(postId)
+
+    await ctx.zero.posts.update({
+      id: postId,
+      likes: post.likes + 1,
+    })
+  },
+})
+```
+
+## Delete Operations
+
+### Basic Delete
+
+```typescript
+export const deletePost = mutation({
+  name: 'deletePost',
+  async mutate(ctx, { id }: { id: string }) {
+    await ctx.zero.posts.delete({ id })
+  },
+})
+```
+
+### Cascade Delete
+
+```typescript
+export const deletePostWithComments = mutation({
+  name: 'deletePostWithComments',
+  async mutate(ctx, { id }) {
+    // Delete comments first
+    const comments = await ctx.zero.comments.where('postId', id)
+    for (const comment of comments) {
+      await ctx.zero.comments.delete({ id: comment.id })
+    }
+
+    // Then delete post
+    await ctx.zero.posts.delete({ id })
+  },
+})
+```
+
+## Server-Side Actions
+
+Run code only on server after mutation:
+
+```typescript
+export const createPost = mutation({
+  name: 'createPost',
+  async mutate(ctx, input) {
+    const id = randomId()
+
+    // Runs on client and server (optimistic)
+    await ctx.zero.posts.insert({
+      id,
+      title: input.title,
+      userId: ctx.auth.userId,
+      createdAt: Date.now(),
+    })
+
+    // Runs ONLY on server
+    ctx.serverAction(async () => {
+      // Send email notification
+      await sendEmail({
+        to: user.email,
+        subject: 'Post created',
+        template: 'post-created',
+        data: { title: input.title },
+      })
+
+      // Track analytics
+      await analytics.track('post_created', {
+        userId: ctx.auth.userId,
+        postId: id,
+      })
+    })
+
+    return { id }
+  },
+})
+```
+
+## Background Tasks
+
+Queue long-running tasks:
+
+```typescript
+export const uploadImage = mutation({
+  name: 'uploadImage',
+  async mutate(ctx, { imageUrl }) {
+    const id = randomId()
+
+    await ctx.zero.images.insert({
+      id,
+      url: imageUrl,
+      status: 'processing',
+      userId: ctx.auth.userId,
+      createdAt: Date.now(),
+    })
+
+    // Queue background processing
+    ctx.asyncTasks.push({
+      type: 'processImage',
+      imageId: id,
+      url: imageUrl,
+    })
+
+    return { id }
+  },
+})
+```
+
+## Best Practices
+
+### Avoid Randomness
+
+Client and server must produce same result:
+
+```typescript
+// Bad - different random values on client/server
+async mutate(ctx, input) {
+  const id = randomId() // Different on client and server!
+  await ctx.zero.posts.insert({ id, ...input })
+}
+
+// Good - client provides random value
+async mutate(ctx, input) {
+  // Client passes pre-generated id
+  await ctx.zero.posts.insert(input)
+}
+```
+
+### Keep Mutations Fast
+
+Don't block mutations with slow operations:
+
+```typescript
+// Bad - slow operation blocks mutation
+async mutate(ctx, input) {
+  await ctx.zero.posts.insert(input)
+  await generateThumbnail(input.image) // 5 seconds!
+}
+
+// Good - queue slow operation
+async mutate(ctx, input) {
+  await ctx.zero.posts.insert(input)
+
+  ctx.asyncTasks.push({
+    type: 'generateThumbnail',
+    imageUrl: input.image,
+  })
+}
+```
+
+### Related Record IDs
+
+Use deterministic IDs for related records:
+
+```typescript
+export const createPostWithTask = mutation({
+  name: 'createPostWithTask',
+  async mutate(ctx, input) {
+    const postId = randomId()
+
+    await ctx.zero.posts.insert({
+      id: postId,
+      ...input,
+    })
+
+    // Task ID based on post ID (deterministic)
+    await ctx.zero.tasks.insert({
+      id: `${postId}-task`,
+      postId,
+      title: 'Review post',
+      createdAt: Date.now(),
+    })
+  },
+})
+```
+
+## Error Handling
+
+### Client-Side Validation
+
+```typescript
+export const createPost = mutation({
+  name: 'createPost',
+  async mutate(ctx, input) {
+    if (!input.title?.trim()) {
+      throw new Error('Title is required')
+    }
+
+    if (input.title.length > 200) {
+      throw new Error('Title must be under 200 characters')
+    }
+
+    await ctx.zero.posts.insert({
+      id: randomId(),
+      title: input.title,
+      userId: ctx.auth.userId,
+      createdAt: Date.now(),
+    })
+  },
+})
+```
+
+### Using Mutations
+
+```typescript
+import { createPost } from '~/features/posts/mutations'
+
+export function CreatePostForm() {
+  const [error, setError] = useState(null)
+
+  const handleSubmit = async (data) => {
+    try {
+      setError(null)
+      await createPost({
+        title: data.title,
+        content: data.content,
+      })
+      router.push('/posts')
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      {error && <Notice type="error">{error}</Notice>}
+      <Input name="title" />
+      <Button type="submit">Create</Button>
+    </Form>
+  )
+}
+```
+
+## Common Patterns
+
+### Toggle Boolean
+
+```typescript
+export const togglePublished = mutation({
+  name: 'togglePublished',
+  async mutate(ctx, { id }) {
+    const post = await ctx.zero.posts.get(id)
+
+    await ctx.zero.posts.update({
+      id,
+      published: !post.published,
+      updatedAt: Date.now(),
+    })
+  },
+})
+```
+
+### Batch Operations
+
+```typescript
+export const deleteMultiplePosts = mutation({
+  name: 'deleteMultiplePosts',
+  async mutate(ctx, { ids }: { ids: string[] }) {
+    for (const id of ids) {
+      await ctx.zero.posts.delete({ id })
+    }
+  },
+})
+```
+
+### Conditional Updates
+
+```typescript
+export const incrementViewCount = mutation({
+  name: 'incrementViewCount',
+  async mutate(ctx, { postId }) {
+    const post = await ctx.zero.posts.get(postId)
+
+    // Only increment if post exists and is published
+    if (post && post.published) {
+      await ctx.zero.posts.update({
+        id: postId,
+        views: post.views + 1,
+      })
+    }
+  },
+})
+```
+
+## Next Steps
+
+- [Zero Sync](/docs/zero-sync) - Zero fundamentals
+- [Guides: Queries](/docs/guides-queries) - Writing queries
+- [Real-Time](/docs/real-time) - Real-time patterns

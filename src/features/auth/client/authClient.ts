@@ -12,7 +12,7 @@ console.info(`[better-auth] client baseURL`, SERVER_URL)
 const betterAuthClient = createBetterAuthClient({
   baseURL: SERVER_URL,
   plugins,
-  createUser: (user: any) => user as AppUser,
+  createUser: (user) => user as AppUser,
   onAuthStateChange: (state) => {
     setUser(state.user)
   },

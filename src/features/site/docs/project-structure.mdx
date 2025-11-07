@@ -1,0 +1,430 @@
+---
+title: Project Structure
+description: Detailed guide to Takeout's directory structure and file organization
+---
+
+# Project Structure
+
+This guide explains Takeout's directory structure and file organization, helping you navigate the codebase and understand where to find (and add) different types of code.
+
+## Root Directory
+
+```
+takeout3/
+├── app/                    # One.js routing
+├── src/                    # Source code
+├── packages/               # Internal packages
+├── scripts/                # Build and deployment scripts
+├── assets/                 # Static assets (fonts, images)
+├── public/                 # Web static files
+├── docs/                   # Documentation
+├── .docker/                # Docker volumes (gitignored)
+├── dist/                   # Build output (gitignored)
+└── node_modules/           # Dependencies (gitignored)
+```
+
+## App Directory
+
+The `app/` directory contains One.js routes using file-based routing:
+
+```
+app/
+├── (tabs)/                 # Tab navigation group
+│   ├── index.tsx           # Home tab (/)
+│   ├── feed.tsx            # Feed tab (/feed)
+│   └── profile.tsx         # Profile tab (/profile)
+├── api/                    # API routes
+│   ├── auth/               # Authentication endpoints
+│   │   └── [...all].ts     # Better Auth catch-all
+│   ├── zero/               # Zero sync endpoints
+│   │   ├── pull.ts         # Query endpoint
+│   │   └── push.ts         # Mutation endpoint
+│   └── health.ts           # Health check endpoint
+├── login.tsx               # Login page (/login)
+├── settings.tsx            # Settings page (/settings)
+└── _layout.tsx             # Root layout
+
+```
+
+### Routing Conventions
+
+- **Files = Routes:** `app/about.tsx` → `/about`
+- **Folders = Groups:** `app/(tabs)/` groups tab routes
+- **API Routes:** `app/api/*.ts` become API endpoints
+- **Dynamic Routes:** `app/post/[id].tsx` → `/post/:id`
+- **Catch-all:** `app/[...slug].tsx` catches all unmatched routes
+
+Named exports (not `export default`) enable better hot reloading.
+
+## Source Directory
+
+The `src/` directory contains all application code:
+
+```
+src/
+├── features/               # Feature modules
+├── interface/              # Shared UI components
+├── helpers/                # Utility functions
+├── hooks/                  # Custom React hooks
+├── database/               # Database schema and migrations
+├── server/                 # Server-side code
+├── zero/                   # Zero sync configuration
+├── tauri/                  # Desktop app code
+├── constants/              # App constants
+└── test/                   # Test configuration
+```
+
+## Features Directory
+
+Features are self-contained modules with all related code:
+
+```
+src/features/
+├── auth/                   # Authentication
+│   ├── components/         # Auth UI components
+│   ├── server/             # Better Auth configuration
+│   ├── hooks/              # useAuth, etc.
+│   └── index.ts            # Public API
+├── feed/                   # Feed feature
+│   ├── components/         # Feed UI
+│   ├── queries.ts          # Zero queries
+│   ├── mutations.ts        # Zero mutations
+│   └── index.ts            # Public API
+├── profile/                # User profile
+├── upload/                 # File uploads
+├── analytics/              # PostHog integration
+├── theme/                  # Theme management
+├── shortcuts/              # Keyboard shortcuts
+├── errors/                 # Error handling
+├── logger/                 # Logging utilities
+└── site/                   # Marketing site
+    └── docs/               # Documentation (this file!)
+```
+
+### Feature Structure
+
+Each feature follows this pattern:
+
+```
+feature-name/
+├── components/             # React components
+│   ├── FeatureComponent.tsx
+│   └── index.ts            # Re-exports
+├── server/                 # Server-only code
+│   └── feature-logic.ts
+├── hooks/                  # Custom hooks
+│   └── useFeature.ts
+├── queries.ts              # Zero queries
+├── mutations.ts            # Zero mutations
+├── types.ts                # TypeScript types
+├── utils.ts                # Utility functions
+└── index.ts                # Public API (exports)
+```
+
+### Important Features
+
+**auth/** - Authentication and authorization
+- Better Auth configuration
+- Login/signup components
+- Session management
+- OAuth providers
+
+**user/** - User management
+- User profile data
+- User settings
+- Account management
+
+**feed/** - Main content feed
+- Post listing
+- Infinite scroll
+- Real-time updates
+
+**upload/** - File upload handling
+- Image upload to R2
+- Progress tracking
+- Error handling
+- URL generation
+
+**theme/** - Theme and appearance
+- Dark mode toggle
+- Color scheme management
+- Theme persistence
+
+**analytics/** - Product analytics
+- PostHog integration
+- Event tracking
+- Feature flags
+
+**hot-updater/** - Over-the-air updates
+- OTA update checks
+- Update downloads
+- Version management
+
+## Interface Directory
+
+Shared UI components used across features:
+
+```
+src/interface/
+├── Button.tsx              # Button component
+├── ListItem.tsx            # List item component
+├── Input.tsx               # Input component
+├── Card.tsx                # Card component
+├── Avatar.tsx              # Avatar component
+├── Notice.tsx              # Notice/alert component
+└── index.ts                # Re-exports
+```
+
+These are primitive components built on Tamagui that maintain consistent design across the app.
+
+## Database Directory
+
+Database schema, migrations, and Drizzle configuration:
+
+```
+src/database/
+├── schema-public.ts        # Public tables (synced to client)
+├── schema-private.ts       # Private tables (server-only)
+├── migrations/             # Migration files
+│   ├── 0001_initial.sql
+│   └── meta/               # Migration metadata
+├── client.ts               # Database client
+├── migrate.ts              # Migration runner
+└── migrate-dist.ts         # Compiled migration for Lambda
+```
+
+### Schema Organization
+
+**schema-public.ts** - Tables exposed to Zero sync:
+
+```typescript
+export const posts = pgTable('posts', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  content: text('content'),
+  userId: text('user_id').notNull(),
+  createdAt: bigint('created_at', { mode: 'number' }).notNull(),
+})
+```
+
+**schema-private.ts** - Server-only tables:
+
+```typescript
+export const analytics = pgTable('analytics', {
+  id: serial('id').primaryKey(),
+  event: text('event').notNull(),
+  userId: text('user_id'),
+  data: jsonb('data'),
+  createdAt: timestamp('created_at').defaultNow(),
+})
+```
+
+## Zero Directory
+
+Zero sync configuration and generated code:
+
+```
+src/zero/
+├── index.ts                # Zero client setup
+├── schema.ts               # Zero schema definition
+├── generated/              # Auto-generated types (gitignored)
+└── mutators/               # Custom mutators
+```
+
+Zero schemas are generated from `schema-public.ts` using `bun tko zero generate`.
+
+## Scripts Directory
+
+Build, deployment, and utility scripts organized by domain:
+
+```
+scripts/
+├── aws/                    # AWS operations
+│   ├── configure.ts        # AWS configuration
+│   ├── health.ts           # Health check
+│   └── users.ts            # User management
+├── check/                  # Code quality
+│   ├── dependencies.ts     # Circular deps check
+│   ├── lint.ts             # Linting
+│   └── types.ts            # Type checking
+├── ci/                     # CI/CD pipeline
+│   ├── check.ts            # CI checks
+│   ├── backend.ts          # Start backend for CI
+│   └── frontend-dev.ts     # Start frontend for CI
+├── db/                     # Database management
+│   ├── add-migration.ts    # Create migration
+│   └── generate-drizzle.ts # Generate Drizzle types
+├── eas/                    # Mobile builds
+│   ├── build-dev.ts        # Dev builds
+│   └── build-prod.ts       # Production builds
+├── web/                    # Web builds
+│   ├── build.ts            # Build web
+│   └── serve.ts            # Serve web
+├── zero/                   # Zero utilities
+│   └── generate.ts         # Generate Zero code
+└── README.md               # Scripts documentation
+```
+
+Scripts are accessible via the TKO CLI:
+
+```bash
+bun tko check types         # Run scripts/check/types.ts
+bun tko db generate         # Run scripts/db/generate-drizzle.ts
+```
+
+## Packages Directory
+
+Internal packages that can be used or published independently:
+
+```
+packages/
+├── takeout/                # TKO CLI
+│   ├── src/
+│   │   ├── commands/       # CLI commands
+│   │   └── index.ts
+│   └── package.json
+├── helpers/                # Utility functions
+│   └── src/
+│       ├── randomId.ts
+│       ├── sleep.ts
+│       └── index.ts
+├── hooks/                  # React hooks
+│   └── src/
+│       ├── useStableMemo.ts
+│       └── index.ts
+├── postgres/               # PostgreSQL utilities
+└── scripts/                # Script helpers
+    └── src/
+        └── helpers/
+```
+
+These packages use `workspace:*` versions but are also published to npm.
+
+## Configuration Files
+
+Root-level configuration files:
+
+```
+├── package.json            # Dependencies and scripts
+├── tsconfig.json           # TypeScript config
+├── biome.json              # Biome linter config
+├── vite.config.ts          # Vite configuration
+├── sst.config.ts           # SST deployment config
+├── app.config.ts           # Expo/One configuration
+├── docker-compose.yml      # Local backend services
+├── Dockerfile              # Production container
+├── .env.development        # Development env template
+└── .gitignore              # Git ignore rules
+```
+
+## Assets Directory
+
+Static assets organized by type:
+
+```
+assets/
+├── fonts/                  # Custom fonts
+│   └── inter/
+├── images/                 # App images
+│   ├── icon.png            # App icon
+│   └── splash.png          # Splash screen
+└── sounds/                 # Audio files
+```
+
+## Public Directory
+
+Web-only static files served directly:
+
+```
+public/
+├── favicon.ico             # Browser favicon
+├── robots.txt              # SEO robots file
+└── manifest.json           # PWA manifest
+```
+
+## Test Directory
+
+Test configuration and utilities:
+
+```
+src/test/
+├── vitest.config.ts        # Vitest configuration
+├── playwright.config.ts    # Playwright configuration
+├── setup.ts                # Test setup
+└── helpers/                # Test helpers
+```
+
+## Build Output
+
+Generated directories (gitignored):
+
+```
+├── dist/                   # Build output
+├── .vite/                  # Vite cache
+├── .docker/                # Docker volumes
+└── node_modules/           # NPM packages
+```
+
+## File Naming Conventions
+
+### Components
+
+- **PascalCase:** `UserProfile.tsx`, `LoginForm.tsx`
+- **One file per component:** Each component gets its own file
+- **Index exports:** Use `index.ts` to re-export from directory
+
+### Utilities
+
+- **camelCase:** `randomId.ts`, `formatDate.ts`
+- **Descriptive names:** Function name should match file name
+
+### Types
+
+- **PascalCase:** `User.ts`, `Post.ts`
+- **Suffix for interfaces:** `UserInput.ts`, `ApiResponse.ts`
+
+### Tests
+
+- **Same name with suffix:** `UserProfile.test.tsx`, `formatDate.test.ts`
+- **Co-located:** Tests live next to the code they test
+
+## Import Patterns
+
+### Absolute Imports (Preferred)
+
+Use the `~` alias for imports from `src/`:
+
+```typescript
+import { Button } from '~/interface/Button'
+import { useAuth } from '~/features/auth'
+import { db } from '~/database/client'
+```
+
+### Relative Imports
+
+Use relative imports within `packages/`:
+
+```typescript
+// Inside packages/helpers/
+import { sleep } from './sleep'
+import { randomId } from '../utils/randomId'
+```
+
+### Feature Exports
+
+Import from feature index files:
+
+```typescript
+// Good
+import { LoginForm, useAuth } from '~/features/auth'
+
+// Avoid
+import { LoginForm } from '~/features/auth/components/LoginForm'
+import { useAuth } from '~/features/auth/hooks/useAuth'
+```
+
+## Next Steps
+
+- [Development](/docs/development) - Development workflow
+- [Architecture](/docs/architecture) - How it all fits together
+- [Guides: Adding a Feature](/docs/guides-adding-feature) - Create a new feature

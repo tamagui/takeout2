@@ -1,0 +1,429 @@
+---
+title: "Guide: Adding a Feature"
+description: Step-by-step guide to adding a new feature to Takeout
+---
+
+# Guide: Adding a Feature
+
+This guide walks through creating a complete feature in Takeout, from database schema to UI components.
+
+## Example Feature: Task Management
+
+We'll build a simple task management feature with:
+- Task creation, editing, deletion
+- Task completion toggle
+- Real-time sync across devices
+- User-specific tasks
+
+## Step 1: Database Schema
+
+Create database schema in `src/database/schema-public.ts`:
+
+```typescript
+export const tasks = pgTable('tasks', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  description: text('description'),
+  completed: boolean('completed').notNull().default(false),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  createdAt: bigint('created_at', { mode: 'number' }).notNull(),
+  updatedAt: bigint('updated_at', { mode: 'number' }),
+}, (table) => ({
+  userIdIdx: index('tasks_user_id_idx').on(table.userId),
+  completedIdx: index('tasks_completed_idx').on(table.completed),
+}))
+```
+
+Run migration:
+
+```bash
+bun migrate
+```
+
+Generate Zero types:
+
+```bash
+bun tko zero generate
+```
+
+## Step 2: Create Feature Directory
+
+Create feature structure:
+
+```bash
+mkdir -p src/features/tasks/{components,hooks}
+touch src/features/tasks/{queries.ts,mutations.ts,types.ts,index.ts}
+```
+
+## Step 3: Define Types
+
+Create `src/features/tasks/types.ts`:
+
+```typescript
+export interface Task {
+  id: string
+  title: string
+  description: string | null
+  completed: boolean
+  userId: string
+  createdAt: number
+  updatedAt: number | null
+}
+
+export interface CreateTaskInput {
+  title: string
+  description?: string
+}
+
+export interface UpdateTaskInput {
+  id: string
+  title?: string
+  description?: string
+  completed?: boolean
+}
+```
+
+## Step 4: Write Queries
+
+Create `src/features/tasks/queries.ts`:
+
+```typescript
+export const tasksQueries = {
+  all: (userId: string) =>
+    z.tasks
+      .where('userId', userId)
+      .orderBy('createdAt', 'desc'),
+
+  active: (userId: string) =>
+    z.tasks
+      .where('userId', userId)
+      .where('completed', false)
+      .orderBy('createdAt', 'desc'),
+
+  completed: (userId: string) =>
+    z.tasks
+      .where('userId', userId)
+      .where('completed', true)
+      .orderBy('updatedAt', 'desc'),
+
+  byId: (id: string) =>
+    z.tasks.where('id', id),
+}
+```
+
+## Step 5: Create Mutations
+
+Create `src/features/tasks/mutations.ts`:
+
+```typescript
+import { mutation } from 'over-zero'
+import { randomId } from '~/helpers/randomId'
+import type { CreateTaskInput, UpdateTaskInput } from './types'
+
+export const createTask = mutation({
+  name: 'createTask',
+  async mutate(ctx, input: CreateTaskInput) {
+    const id = randomId()
+
+    await ctx.zero.tasks.insert({
+      id,
+      title: input.title,
+      description: input.description || null,
+      completed: false,
+      userId: ctx.auth.userId,
+      createdAt: Date.now(),
+      updatedAt: null,
+    })
+
+    return { id }
+  },
+})
+
+export const updateTask = mutation({
+  name: 'updateTask',
+  async mutate(ctx, input: UpdateTaskInput) {
+    await ctx.zero.tasks.update({
+      ...input,
+      updatedAt: Date.now(),
+    })
+  },
+})
+
+export const toggleTask = mutation({
+  name: 'toggleTask',
+  async mutate(ctx, { id }: { id: string }) {
+    const task = await ctx.zero.tasks.get(id)
+
+    await ctx.zero.tasks.update({
+      id,
+      completed: !task.completed,
+      updatedAt: Date.now(),
+    })
+  },
+})
+
+export const deleteTask = mutation({
+  name: 'deleteTask',
+  async mutate(ctx, { id }: { id: string }) {
+    await ctx.zero.tasks.delete({ id })
+  },
+})
+```
+
+## Step 6: Create Components
+
+Create `src/features/tasks/components/TaskItem.tsx`:
+
+```typescript
+import { YStack, XStack, Text, Button, Checkbox } from 'tamagui'
+import { Trash2 } from '@tamagui/lucide-icons'
+import { toggleTask, deleteTask } from '../mutations'
+import type { Task } from '../types'
+
+export function TaskItem({ task }: { task: Task }) {
+  const handleToggle = () => toggleTask({ id: task.id })
+  const handleDelete = () => deleteTask({ id: task.id })
+
+  return (
+    <XStack
+      gap="$3"
+      p="$3"
+      bg="$background"
+      br="$4"
+      ai="center"
+      pressStyle={{ opacity: 0.8 }}
+    >
+      <Checkbox
+        checked={task.completed}
+        onCheckedChange={handleToggle}
+      />
+
+      <YStack f={1}>
+        <Text
+          fontSize="$5"
+          textDecorationLine={task.completed ? 'line-through' : 'none'}
+          opacity={task.completed ? 0.5 : 1}
+        >
+          {task.title}
+        </Text>
+        {task.description && (
+          <Text fontSize="$3" opacity={0.7}>
+            {task.description}
+          </Text>
+        )}
+      </YStack>
+
+      <Button
+        size="$3"
+        chromeless
+        icon={Trash2}
+        onPress={handleDelete}
+      />
+    </XStack>
+  )
+}
+```
+
+Create `src/features/tasks/components/TasksList.tsx`:
+
+```typescript
+import { YStack } from 'tamagui'
+import { useQuery } from '~/zero'
+import { useAuth } from '~/features/auth'
+import { tasksQueries } from '../queries'
+import { TaskItem } from './TaskItem'
+
+export function TasksList() {
+  const { user } = useAuth()
+  const [tasks] = useQuery(tasksQueries.active(user.id))
+
+  if (tasks.length === 0) {
+    return <Text>No tasks yet!</Text>
+  }
+
+  return (
+    <YStack gap="$2">
+      {tasks.map(task => (
+        <TaskItem key={task.id} task={task} />
+      ))}
+    </YStack>
+  )
+}
+```
+
+Create `src/features/tasks/components/CreateTaskForm.tsx`:
+
+```typescript
+import { useState } from 'react'
+import { YStack, Input, TextArea, Button } from 'tamagui'
+import { createTask } from '../mutations'
+
+export function CreateTaskForm() {
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+
+  const handleSubmit = async () => {
+    if (!title.trim()) return
+
+    await createTask({
+      title: title.trim(),
+      description: description.trim() || undefined,
+    })
+
+    setTitle('')
+    setDescription('')
+  }
+
+  return (
+    <YStack gap="$3">
+      <Input
+        placeholder="Task title"
+        value={title}
+        onChangeText={setTitle}
+      />
+
+      <TextArea
+        placeholder="Description (optional)"
+        value={description}
+        onChangeText={setDescription}
+      />
+
+      <Button onPress={handleSubmit} disabled={!title.trim()}>
+        Add Task
+      </Button>
+    </YStack>
+  )
+}
+```
+
+## Step 7: Export Public API
+
+Create `src/features/tasks/index.ts`:
+
+```typescript
+// Components
+export { TasksList } from './components/TasksList'
+export { TaskItem } from './components/TaskItem'
+export { CreateTaskForm } from './components/CreateTaskForm'
+
+// Queries
+export { tasksQueries } from './queries'
+
+// Mutations
+export {
+  createTask,
+  updateTask,
+  toggleTask,
+  deleteTask,
+} from './mutations'
+
+// Types
+export type { Task, CreateTaskInput, UpdateTaskInput } from './types'
+```
+
+## Step 8: Create Route
+
+Create `app/tasks.tsx`:
+
+```typescript
+import { YStack, H1 } from 'tamagui'
+import { TasksList, CreateTaskForm } from '~/features/tasks'
+
+export function TasksPage() {
+  return (
+    <YStack f={1} p="$4" gap="$4">
+      <H1>Tasks</H1>
+
+      <CreateTaskForm />
+
+      <TasksList />
+    </YStack>
+  )
+}
+```
+
+## Step 9: Add Navigation
+
+Add to navigation (e.g., `app/(tabs)/_layout.tsx`):
+
+```typescript
+<Tabs.Screen
+  name="tasks"
+  options={{
+    title: 'Tasks',
+    tabBarIcon: ({ color }) => <CheckSquare color={color} />,
+  }}
+/>
+```
+
+## Step 10: Test
+
+1. Start dev server:
+
+```bash
+bun dev
+```
+
+2. Navigate to `/tasks`
+3. Create tasks
+4. Toggle completion
+5. Delete tasks
+6. Open in multiple windows to see real-time sync
+
+## Step 11: Add Tests
+
+Create `src/features/tasks/tasks.test.ts`:
+
+```typescript
+import { describe, it, expect } from 'vitest'
+import { createTask, toggleTask } from './mutations'
+
+describe('Tasks', () => {
+  it('creates a task', async () => {
+    const result = await createTask({
+      title: 'Test task',
+      description: 'Test description',
+    })
+
+    expect(result.id).toBeDefined()
+  })
+
+  it('toggles task completion', async () => {
+    const { id } = await createTask({ title: 'Test' })
+    await toggleTask({ id })
+
+    const task = await getTask(id)
+    expect(task.completed).toBe(true)
+  })
+})
+```
+
+## Next Steps
+
+Your feature is now complete! Consider adding:
+
+- Loading states
+- Error handling
+- Animations
+- Task categories
+- Due dates
+- Priority levels
+- Task sharing
+- Comments
+
+## Best Practices
+
+1. **Keep features isolated** - All related code in one directory
+2. **Export through index.ts** - Clear public API
+3. **Type everything** - Full TypeScript coverage
+4. **Test critical paths** - Unit tests for business logic
+5. **Use queries pattern** - Organized, reusable queries
+6. **Optimize indexes** - Index filtered/sorted fields
+7. **Handle errors** - Show user-friendly messages
+8. **Real-time first** - Leverage Zero's capabilities
+
+## Resources
+
+- [Zero Sync](/docs/zero-sync) - Real-time sync details
+- [Database](/docs/database) - Schema and migrations
+- [Project Structure](/docs/project-structure) - Organizing code

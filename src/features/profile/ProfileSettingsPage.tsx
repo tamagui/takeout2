@@ -104,10 +104,10 @@ export const ProfileSettingsPage = () => {
       title: 'Support and more',
       items: [
         {
-          id: 'get-help',
-          title: 'Get Help',
+          id: 'help',
+          title: 'Help & Support',
           icon: ChatCircleIcon,
-          url: HELP_REQUESTS_URL,
+          route: '/help',
         },
         {
           id: 'request-feature',
@@ -119,13 +119,13 @@ export const ProfileSettingsPage = () => {
           id: 'terms',
           title: 'Terms of Service',
           icon: FileIcon,
-          url: TERMS_OF_SERVICE_URL,
+          route: '/terms-of-service',
         },
         {
           id: 'privacy',
           title: 'Privacy Policy',
           icon: LockIcon,
-          url: PRIVACY_POLICY_URL,
+          route: '/privacy-policy',
         },
         {
           id: 'delete',

@@ -7,7 +7,7 @@ import { APP_NAME, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '~/constants/
 import { validateLoginOtpCode } from '~/features/auth/client/otpLogin'
 import { shouldUsePasswordOnlyAuth } from '~/features/auth/constants'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
-import { Link } from '~/features/routing/Link'
+import { Link } from '~/interface/app/Link'
 import { formatPhoneNumber } from '~/helpers/number/formatNumber'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'

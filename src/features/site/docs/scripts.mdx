@@ -1,0 +1,320 @@
+---
+title: Scripts Reference
+description: Complete reference of all available TKO CLI scripts
+---
+
+# Scripts Reference
+
+Complete reference of all scripts available in the TKO CLI.
+
+## Built-in Commands
+
+### onboard
+Setup wizard for new projects
+
+```bash
+bun tko onboard
+```
+
+### docs
+View documentation
+
+```bash
+bun tko docs
+bun tko docs list
+```
+
+### env:setup
+Setup environment variables
+
+```bash
+bun tko env:setup
+```
+
+### run
+Run multiple scripts in parallel
+
+```bash
+bun tko run script1 script2 script3
+```
+
+## Check Scripts
+
+### check/dependencies
+Check for circular dependencies
+
+```bash
+bun tko check dependencies
+```
+
+### check/lint
+Run Biome linter
+
+```bash
+bun tko check lint
+# or
+bun lint
+```
+
+### check/types
+Run TypeScript type checking
+
+```bash
+bun tko check types
+```
+
+## CI Scripts
+
+### ci/start
+Start CI pipeline
+
+```bash
+bun tko ci start
+```
+
+### ci/backend
+Start backend services for CI
+
+```bash
+bun tko ci backend
+```
+
+### ci/check
+Run all CI checks
+
+```bash
+bun tko ci check
+```
+
+## Database Scripts
+
+### db/add-migration
+Add a new database migration
+
+```bash
+bun tko db add-migration migration-name
+# or
+bun db:migrate-add migration-name
+```
+
+### db/generate-drizzle
+Generate Drizzle schema types
+
+```bash
+bun tko db generate-drizzle
+# or
+bun tko db generate
+```
+
+### db/migrate-drizzle
+Run database migrations
+
+```bash
+bun tko db migrate-drizzle
+# or
+bun migrate
+```
+
+## EAS Scripts
+
+### eas/build-dev
+Build development profile for all platforms
+
+```bash
+bun tko eas build-dev
+```
+
+### eas/build-preview
+Build preview profile for all platforms
+
+```bash
+bun tko eas build-preview
+```
+
+### eas/build-prod
+Build production profile for all platforms
+
+```bash
+bun tko eas build-prod
+```
+
+## Web Scripts
+
+### web/build
+Build web platform
+
+```bash
+bun tko web build
+```
+
+### web/build-docker
+Build Docker image for web
+
+```bash
+bun tko web build-docker
+```
+
+### web/serve
+Serve web on port 8081
+
+```bash
+bun tko web serve
+```
+
+### web/prod
+Build and serve web in production mode
+
+```bash
+bun tko web prod
+```
+
+## Zero Scripts
+
+### zero/generate
+Generate Zero sync code
+
+```bash
+bun tko zero generate
+# or
+bun tko zero gen
+```
+
+## Tauri Scripts
+
+### tauri/build
+Build Tauri desktop app
+
+```bash
+bun tko tauri build
+```
+
+### tauri/dev
+Run Tauri in development mode
+
+```bash
+bun tko tauri dev
+```
+
+## Upgrade Scripts
+
+### upgrade/one
+Upgrade One framework and all @vxrn/* packages
+
+```bash
+bun tko upgrade one
+```
+
+### upgrade/tamagui
+Upgrade Tamagui and all @tamagui/* packages
+
+```bash
+bun tko upgrade tamagui
+```
+
+### upgrade/zero
+Upgrade @rocicorp/zero package
+
+```bash
+bun tko upgrade zero
+```
+
+### upgrade/better-auth
+Upgrade Better Auth and all @better-auth/* packages
+
+```bash
+bun tko upgrade better-auth
+```
+
+### upgrade/tauri
+Upgrade Tauri packages
+
+```bash
+bun tko upgrade tauri
+```
+
+## Hot Update Scripts
+
+### hot-update/ios
+Deploy hot update for iOS
+
+```bash
+bun tko hot-update ios
+```
+
+### hot-update/android
+Deploy hot update for Android
+
+```bash
+bun tko hot-update android
+```
+
+## AWS Scripts
+
+### aws/configure
+Configure AWS credentials
+
+```bash
+bun tko aws configure
+```
+
+### aws/health
+Run AWS health check
+
+```bash
+bun tko aws health
+```
+
+### aws/users
+AWS user management operations
+
+```bash
+bun tko aws users
+```
+
+## Uncloud Scripts
+
+### uncloud/deploy
+Deploy to Uncloud
+
+```bash
+bun tko uncloud deploy
+```
+
+### uncloud/clean
+Clean Uncloud deployment
+
+```bash
+bun tko uncloud clean
+```
+
+## Common Script Patterns
+
+### Running Multiple Scripts
+
+```bash
+# Run in parallel
+bun tko run script1 script2 script3
+
+# Run sequentially
+bun script1 && bun script2 && bun script3
+```
+
+### With Environment
+
+```bash
+# Development
+bun run:dev bun tko script-name
+
+# Production
+bun run:prod bun tko script-name
+```
+
+## Creating Custom Scripts
+
+See [Guides: Scripts](/docs/guides-scripts) for creating your own scripts.
+
+## Next Steps
+
+- [Guides: Scripts](/docs/guides-scripts) - Create custom scripts
+- [Development](/docs/development) - Development workflow
+- [Deployment](/docs/deployment) - Deployment scripts

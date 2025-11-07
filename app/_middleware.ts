@@ -3,6 +3,11 @@ import '~/setupServer'
 import { createMiddleware } from 'one'
 import { analytics } from '~/features/analytics/analytics'
 
+/**
+ * Example middleware for now just reports errors to analytics
+ * Can be used for private beta redirects or any sort of middleware
+ */
+
 export default createMiddleware(async ({ request, next }) => {
   const url = new URL(request.url)
 

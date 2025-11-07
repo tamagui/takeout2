@@ -12,32 +12,28 @@ bun onboard
 
 The onboarding wizard will guide you through setup.
 
-## General
+## Getting Familiar
 
-Takeout comes with a CLI (`bun tko`) that has a variety of helperful commands.
-Mostly it includes docs and scripts that can update with a simple bun install,
-so we can improve them easily without needing to copy-paste.
+This repo is an entire startup in a box, so it will take a little time to get
+familiar with. That said, compared to our previous Takeout stack, it's a
+dramatic step forward in simplicity.
 
-Use `bun docs list` or `bun scripts list` to see them all.
+At a high level, the primary technologies used are:
 
-If you want to eject the docs and scripts into your repo you can use
-`bun tko docs eject` and `bun tko scripts eject`.
+- [One](https://onestack.dev) - Universal React framework
+- [Zero](https://zero.rocicorp.dev) - Real-time sync
+- [Tamagui](https://tamagui.dev) - Real-time sync
+- [Better Auth](https://www.better-auth.com) - Authentication
+- [Tamagui](https://tamagui.dev) - Universal UI
+- [Drizzle ORM](https://orm.drizzle.team) - Database Schema
+- [SST](https://sst.dev) - Infrastructure as code
 
-### Packages
+And high level structure that is good to start learning:
 
-The `tko` binary comes from `./packages/takeout`. You'll noticed the packages
-directory in this repo includes lots of helpful libraries that are used
-throughout.
-
-We structured it like this because we think it's nice to have the source files
-here by default, but you don't _have_ to have the `./packages` directory at all.
-You could delete it and then update your root `package.json` to remove the
-`workspaces` key and the `workspace:*` versions for the packages to instead have
-their latest version, as we publish all these packages to npm.
-
-The nice part of having the packages here is you get to see all the source
-easily, and you can help contribute back improvements easily by sending a PR to
-our Takeout repo.
+- `./app` - your file-system routes
+- `./src/*` - all non-feature-specific code
+- `./src/features/*` - anything logically a feature in the app
+- `./src/data` - all Zero setup, data models, mutators and queries
 
 ## Documentation
 
@@ -55,6 +51,17 @@ bun dev
 ```
 
 Which runs your backend services + your web app and checks in the other.
+
+## Scripts and Docs
+
+Takeout comes with a CLI (`bun tko`) that has a variety of helperful commands.
+Mostly it includes docs and scripts that can update with a simple bun install,
+so we can improve them easily without needing to copy-paste.
+
+Use `bun docs list` or `bun scripts list` to see them all.
+
+If you want to eject the docs and scripts into your repo you can use
+`bun tko docs eject` and `bun tko scripts eject`.
 
 ## Development
 
@@ -85,6 +92,21 @@ bun db:migrate:add <name>    # Create one-off migrations
 bun ci                       # Full CI/CD pipeline
 bun tko sst deploy production  # Deploy to AWS production
 ```
+
+### Scripts and Docs
+
+The `tko` binary comes from `./packages/takeout`. You'll notice the packages
+directory in this repo includes lots of helpful libraries that are used
+throughout.
+
+We structured it like this because we think it's nice to have the source files
+here by default, but you don't _have_ to have the `./packages` directory at all.
+You can delete it and then update your root `package.json` to remove
+`workspaces` and the `workspace:*` versions for the packages (replace that with
+their latest published version).
+
+The nice part of having the packages here is you see the source easily and
+everyone can help contribute back.
 
 ## Project Structure
 
@@ -197,20 +219,7 @@ See `.env.production.example` for complete production configuration.
 
 This starter kit deploys to AWS using [SST](https://sst.dev/):
 
-```bash
-bun tko sst deploy production
-```
-
-Infrastructure includes:
-
-- ECS Fargate for web app and Zero server
-- Aurora Serverless v2 (PostgreSQL)
-- CloudFront CDN
-- S3/R2 for storage
-- Route53 for DNS
-
-Update `sst.config.ts` and `src/constants/app.ts` with your domain, AWS region,
-and app name.
+[todo]
 
 ## Mobile Apps
 
@@ -235,7 +244,8 @@ Requires Android Studio, JDK 17+, and Android SDK 34+.
 ### Over-the-Air Updates
 
 ```bash
-bun release  # Create new release with OTA update
+bun hot-update ios
+bun hot-update android
 ```
 
 ## Desktop App
@@ -247,12 +257,3 @@ cd src/tauri
 bun tko tauri dev    # Development
 bun tko tauri build  # Production build
 ```
-
-## Built With
-
-- [One](https://onestack.dev/) - Universal React framework
-- [Zero](https://zero.rocicorp.dev/) - Real-time sync
-- [Better Auth](https://www.better-auth.com/) - Authentication
-- [Tamagui](https://tamagui.dev/) - Universal UI
-- [Drizzle ORM](https://orm.drizzle.team/) - Type-safe database
-- [SST](https://sst.dev/) - Infrastructure as code

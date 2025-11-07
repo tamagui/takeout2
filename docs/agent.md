@@ -16,14 +16,16 @@ implement with even more, use the a strong model for tasks.
 
 ## Context
 
-Please run a `ls -la ./docs` with a background task to get a list of guides
-available and be very eager to read them into context they are highly optimized
-and relevant context.
+More docs are at:
 
-For any UI: `./docs/tamagui.md` For Zero/queries: `./docs/zero.md`,
-`./docs/zero-mutations.md`
+- `ls -la ./docs`
+- `bun tko docs list`
 
-There are many more.
+## CI/CD
+
+In general you can do a thorough test of things working:
+
+- `bun run ci --dry-run` - runs CI, build and tests
 
 ## App
 

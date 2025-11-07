@@ -1,8 +1,7 @@
 ultrathink
 
 use sub-tasks liberally to parallelize work, make a plan using sub-tasks, then
-implement with even more, tend to use the strongest model thats possibel for all
-work.
+implement with even more, use the a strong model for tasks.
 
 # Principles
 
@@ -15,7 +14,7 @@ work.
 - never git commit or push code without explicit user permission
 - if you are asked to git commit, keep it one-line and lowercase
 
-## More docs
+## Context
 
 Please run a `ls -la ./docs` with a background task to get a list of guides
 available and be very eager to read them into context they are highly optimized

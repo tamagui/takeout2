@@ -41,7 +41,7 @@ export const PostActionSheet = forwardRef<PostActionSheetRef>((_, ref) => {
   const handleViewProfile = () => {
     if (!currentPost) return
     sheetRef.current?.collapse()
-    // router.push(`/profile/${currentPost.userId}`)
+    router.push(`/home/profile/${currentPost.userId}`)
   }
 
   const handleReport = () => {

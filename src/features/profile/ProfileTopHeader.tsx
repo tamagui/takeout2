@@ -97,12 +97,11 @@ export const ProfileTopHeader = memo<ProfileTopHeaderProps>(
 
       // Settings/More icon
       if (isOwnProfile) {
-        // TODO
-        // icons.push(
-        //   <Link key="settings" href="/profile/settings">
-        //     <GearIcon size={24} color="$color12" />
-        //   </Link>
-        // )
+        icons.push(
+          <Link key="settings" href="/setting">
+            <GearIcon size={24} color="$color12" />
+          </Link>
+        )
       } else {
         // only show the dropdown menu if the feature flag is enabled
         icons.push(

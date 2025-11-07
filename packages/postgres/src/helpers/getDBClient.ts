@@ -1,5 +1,4 @@
 import pg, { type Pool, type PoolClient } from 'pg'
-import retry from 'async-retry'
 
 // some of this file retry logic taken from:
 // https://github.com/brianc/node-postgres/issues/2718#issuecomment-1074019993
@@ -63,6 +62,7 @@ async function tryToGetNewClientFromPool(
   connectionString: string | undefined,
   retries: number
 ): Promise<PoolClient> {
+  const { default: retry } = await import('async-retry')
   const clientFromPool = await retry(
     async () => {
       if (providedPool) {
@@ -245,6 +245,7 @@ async function tryToGetNewClient(connectionString: string): Promise<pg.Client> {
     allowExitOnIdle: true,
   }
 
+  const { default: retry } = await import('async-retry')
   const client = await retry(
     async () => {
       const newClient = new pg.Client(configurations)

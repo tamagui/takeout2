@@ -1,9 +1,9 @@
 import { expo } from '@better-auth/expo'
 import { betterAuth } from 'better-auth'
-import { emailHarmony, phoneHarmony } from 'better-auth-harmony'
-import { admin, bearer, jwt, magicLink, emailOTP, phoneNumber } from 'better-auth/plugins'
-import { database } from '~/database/database'
+// import { emailHarmony, phoneHarmony } from 'better-auth-harmony'
 import { time } from '@vxrn/helpers'
+import { admin, bearer, emailOTP, jwt, magicLink, phoneNumber } from 'better-auth/plugins'
+import { database } from '~/database/database'
 import { BETTER_AUTH_SECRET, BETTER_AUTH_URL } from '~/server/env-server'
 import { APP_SCHEME } from '../constants'
 import { afterCreateUser } from './afterCreateUser'
@@ -69,8 +69,8 @@ export const authServer = betterAuth({
 
     // avoid spam or duplicate emails and phone numbers
     // https://github.com/gekorm/better-auth-harmony
-    emailHarmony(),
-    phoneHarmony(),
+    // emailHarmony(),
+    // phoneHarmony(),
 
     emailOTP({
       async sendVerificationOTP({ email, otp, type }) {

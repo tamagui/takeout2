@@ -95,9 +95,7 @@ export const ProfileBlockedUsersPage = () => {
   }, [isLoadingMore])
 
   return (
-    <YStack flex={1} bg="$background">
-      <BasicHeader title="Blocked Users" BackIcon={CaretLeftIcon} />
-
+    <YStack flex={1}>
       {isLoading ? (
         <YStack flex={1} items="center" justify="center">
           <Spinner size="large" color="$color10" />

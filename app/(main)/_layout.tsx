@@ -1,5 +1,7 @@
-import { Redirect, Slot } from 'one'
+import { Redirect, Slot, Stack } from 'one'
 import type { ReactNode } from 'react'
+import { isWeb } from 'tamagui'
+import { ROOT_MAIN_ROUTE_NAME } from '~/constants/navigation'
 import { getNextOnboardingStep } from '~/features/onboarding/getNextOnboardingStep'
 import { useUser } from '~/features/user/useUser'
 import { Dialogs } from '~/interface/dialogs/Dialogs'
@@ -29,7 +31,15 @@ export default function AppLayout() {
     <MainProviders>
       <DragDropFile>
         <Dialogs />
-        <Slot />
+        {isWeb ? (
+          <Slot />
+        ) : (
+          // We need Stack here for transition animation to work on native
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="setting" />
+          </Stack>
+        )}
       </DragDropFile>
     </MainProviders>
   )

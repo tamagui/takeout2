@@ -1,3 +1,4 @@
+import { router } from 'one'
 import { memo } from 'react'
 import { SizableText, View, XStack, YStack } from 'tamagui'
 import { SERVER_URL } from '~/constants/urls'
@@ -90,7 +91,7 @@ export const ProfileHeader = memo(
               size="medium"
               flex={1}
               glass
-              onPress={handleShare}
+              onPress={() => router.push('/setting/edit-profile')}
               icon={<PencilSimpleIcon size={16} color="$color12" />}
             >
               Edit Profile

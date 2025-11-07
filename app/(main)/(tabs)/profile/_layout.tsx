@@ -1,5 +1,6 @@
+import { ChevronLeft } from '@tamagui/lucide-icons'
 import { isLiquidGlassAvailable } from 'expo-glass-effect'
-import { Stack } from 'one'
+import { router, Stack } from 'one'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { GearIcon } from '~/interface/icons/phosphor/GearIcon'
 
@@ -19,13 +20,18 @@ export const ProfileLayout = () => {
           title: 'Profile',
           headerLargeTitle: true,
           headerRight: () => (
-            <Pressable width={36} height={36} items="center" justify="center">
+            <Pressable
+              onPress={() => router.push('/setting')}
+              width={36}
+              height={36}
+              items="center"
+              justify="center"
+            >
               <GearIcon size={24} color="$color12" />
             </Pressable>
           ),
         }}
       />
-      <Stack.Screen name="settings" />
     </Stack>
   )
 }

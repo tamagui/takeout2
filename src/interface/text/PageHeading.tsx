@@ -13,7 +13,7 @@ export const PageHeading = ({
 }) => {
   return (
     <YStack gap="$2">
-      <H5 size="$7" color="$color12">
+      <H5 size="$7" color="$color12" fontWeight="600">
         {title}
       </H5>
 

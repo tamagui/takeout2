@@ -60,7 +60,7 @@ export const mutate = mutations(schema, permissions, {
     }
 
     if (environment === 'server' && server && updateData.username) {
-      await server.actions.userActions.validateUsername(updateData.username)
+      await server.actions.userActions.validateUsername(updateData.username, authData.id)
     }
 
     await tx.mutate.userPublic.update(updateData)

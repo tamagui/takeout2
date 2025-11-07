@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { eq, ne, and } from 'drizzle-orm'
 import { getDb } from '~/database'
 import { user as userTable, whitelist } from '~/database/schema-private'
 import { post, userPublic, userState } from '~/database/schema-public'
@@ -131,7 +131,7 @@ async function deleteAccount(userId: string) {
   }
 }
 
-async function validateUsername(username?: string) {
+async function validateUsername(username?: string, excludeUserId?: string) {
   if (!username) return
 
   if (username.length < 3) {
@@ -151,12 +151,12 @@ async function validateUsername(username?: string) {
 
   const db = getDb()
 
-  // Check if username is already taken
-  const existingUser = await db
-    .select()
-    .from(userPublic)
-    .where(eq(userPublic.username, username))
-    .limit(1)
+  // Check if username is already taken by another user
+  const whereCondition = excludeUserId
+    ? and(eq(userPublic.username, username), ne(userPublic.id, excludeUserId))
+    : eq(userPublic.username, username)
+
+  const existingUser = await db.select().from(userPublic).where(whereCondition).limit(1)
 
   if (existingUser.length > 0) {
     throw new Error('Username is already taken')

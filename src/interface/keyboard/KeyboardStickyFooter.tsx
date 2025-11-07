@@ -1,32 +1,23 @@
+import { LinearGradient } from '@tamagui/linear-gradient'
 import type { ReactNode } from 'react'
-import { KeyboardAvoidingView, Platform } from 'react-native'
+import { KeyboardStickyView } from 'react-native-keyboard-controller'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { YStack } from 'tamagui'
 
-interface KeyboardStickyFooterProps {
-  children: ReactNode
-}
+export const KeyboardStickyFooter = ({ children }: { children: ReactNode }) => {
+  const { bottom } = useSafeAreaInsets()
 
-export const KeyboardStickyFooter = ({ children }: KeyboardStickyFooterProps) => {
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
-    >
-      <YStack
-        position="absolute"
-        b={0}
-        l={0}
-        r={0}
-        bg="$background"
-        px="$4"
-        py="$3"
-        borderTopWidth={1}
-        borderTopColor="$borderColor"
-      >
+    <KeyboardStickyView offset={{ closed: -bottom, opened: 0 }}>
+      <YStack gap="$2" px="$3" py="$2">
+        <LinearGradient
+          fullscreen
+          colors={['$background0', '$background']}
+          start={[0, 0]}
+          end={[0, 1]}
+        />
         {children}
       </YStack>
-    </KeyboardAvoidingView>
+    </KeyboardStickyView>
   )
 }
-
-export default KeyboardStickyFooter

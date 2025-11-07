@@ -1,9 +1,12 @@
 import { Stack } from 'one'
+import { PlatformSpecificRootProvider } from '~/providers/PlatformSpecificRootProvider'
 
 export function AuthAndOnboardingLayout() {
   return (
-    <Stack screenOptions={{ headerShown: false, gestureEnabled: false }}>
-      {/* empty */}
-    </Stack>
+    <PlatformSpecificRootProvider>
+      <Stack screenOptions={{ headerShown: false, gestureEnabled: false }}>
+        {/* empty */}
+      </Stack>
+    </PlatformSpecificRootProvider>
   )
 }

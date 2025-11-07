@@ -7,6 +7,7 @@ import { images } from '~/constants/images'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { Image } from '~/interface/image/Image'
 import { usePageHeader } from '~/interface/pages/PageHeader'
+import { useHeaderHeight } from '@react-navigation/elements'
 import { ProfileShimmer } from '~/interface/shimmer/ProfileShimmer'
 import { H5 } from '~/interface/text/Headings'
 import { usePostsByUserId } from '../feed/usePosts'
@@ -17,9 +18,8 @@ const COLUMN_GAP = 8
 const NUM_COLUMNS = 2
 
 export const ProfilePage = memo(() => {
-  const { headerHeight } = usePageHeader()
   const listRef = useRef<LegendListRef>(null)
-
+  const headerHeight = useHeaderHeight() || 0
   const { width } = useWindowDimensions()
   const columnWidth = (width - 28 - COLUMN_GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS
 
@@ -31,7 +31,6 @@ export const ProfilePage = memo(() => {
 
   const profileUser = userId ? null : null
   const postsCount = posts?.length || 0
-  const isLoadingUser = false
 
   const isOwnProfile = !userId || userId === currentUser?.id
   const userInfo = isOwnProfile ? currentUser : profileUser
@@ -113,11 +112,11 @@ export const ProfilePage = memo(() => {
   return (
     <YStack flex={1}>
       <AnimatePresence>
-        {(isLoading || isLoadingUser) && (
+        {isLoading && (
           <YStack
             key="studio-shimmer"
-            pt={headerHeight}
             animation="200ms"
+            pt={headerHeight}
             exitStyle={{
               opacity: 0,
             }}
@@ -138,7 +137,6 @@ export const ProfilePage = memo(() => {
         data={columns}
         renderItem={renderColumn}
         keyExtractor={keyExtractor}
-        // masonry
         numColumns={2}
         ListHeaderComponent={renderHeader}
         ListEmptyComponent={renderEmpty}

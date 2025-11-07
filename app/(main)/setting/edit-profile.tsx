@@ -1,21 +1,21 @@
 import { useNavigation } from '@react-navigation/native'
+import { LinearGradient } from '@tamagui/linear-gradient'
 import { router } from 'one'
 import { useEffect, useState } from 'react'
 import { Alert, Keyboard } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
 import { Spinner, useDebounceValue, View, XStack, YStack } from 'tamagui'
 import { userByUsername } from '~/data/queries/user'
+import { useUser } from '~/features/user/useUser'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Input } from '~/interface/forms/Input'
-import { BasicHeader } from '~/interface/headers/BasicHeader'
-import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { XIcon } from '~/interface/icons/phosphor/XIcon'
 import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter'
 import { MediumText, TinyText } from '~/interface/text/Body'
 import { showToast } from '~/interface/toast/helpers'
-import { useQuery, zero } from '~/zero/client'
-import { useUser } from '../user/useUser'
+import { AvatarUpload } from '~/interface/upload/AvatarUpload'
+import { useQuery } from '~/zero/client'
 
 function checkUsernameValid(username: string) {
   if (username.length < 3) return false
@@ -24,7 +24,7 @@ function checkUsernameValid(username: string) {
 }
 
 export const ProfileEditPage = () => {
-  const { user, isLoading, update } = useUser()
+  const { user, update } = useUser()
   const navigation = useNavigation()
   const [isSaving, setIsSaving] = useState<boolean>(false)
 
@@ -49,6 +49,12 @@ export const ProfileEditPage = () => {
   const handleAvatarUpload = async (url: string) => {
     if (!user?.id) return
     update({ image: url })
+  }
+
+  const handleAvatarReset = () => {
+    if (!user?.id) return
+    // reset to empty string or original image if you want to clear the avatar
+    update({ image: '' })
   }
 
   // Determine availability states
@@ -151,17 +157,22 @@ export const ProfileEditPage = () => {
 
   return (
     <View flex={1}>
-      <BasicHeader title="Edit Profile" BackIcon={CaretLeftIcon} />
-
       <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
         bottomOffset={100}
         keyboardShouldPersistTaps="handled"
+        contentInsetAdjustmentBehavior="automatic"
       >
         <YStack px="$3" pt="$3" gap="$3">
           <YStack py="$3" justify="center" items="center">
-            {/* TODO */}
-            {/* <AvatarUpload currentImageUrl={user?.image} onUpload={handleAvatarUpload} /> */}
+            <AvatarUpload
+              id="avatar"
+              dropActive={false}
+              originalImage={user?.image || undefined}
+              currentImage={user?.image || undefined}
+              onChangeImage={handleAvatarUpload}
+              onResetImage={handleAvatarReset}
+            />
           </YStack>
           <YStack>
             <XStack justify="space-between" items="center" mb="$2">
@@ -220,14 +231,8 @@ export const ProfileEditPage = () => {
       </KeyboardAwareScrollView>
 
       <KeyboardStickyFooter>
-        <ButtonSimple
-          onPress={handleSave}
-          disabled={!canSave}
-          variant={!canSave || isSaving ? 'default' : 'floating'}
-          // TODO
-          // loading={isLoading || isCheckingAvailability || isSaving}
-        >
-          Save
+        <ButtonSimple glass size="large" onPress={handleSave} disabled={!canSave}>
+          {isSaving ? 'Saving...' : 'Save'}
         </ButtonSimple>
       </KeyboardStickyFooter>
     </View>

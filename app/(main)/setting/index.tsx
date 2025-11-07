@@ -1,18 +1,16 @@
 import { router, type Href } from 'one'
 import { Alert, Linking } from 'react-native'
 import { ScrollView, SizableText, View, XStack, YStack } from 'tamagui'
+import { APP_NAME_LOWERCASE, HELP_ROADMAP_URL } from '~/constants/app'
 import { authClient, clearAuthClientToken } from '~/features/auth/client/authClient'
 import { useUser } from '~/features/user/useUser'
 import { getHumanReadableVersionString } from '~/helpers/getHumanReadableVersionString'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { Switch } from '~/interface/forms/Switch'
-import { BasicHeader } from '~/interface/headers/BasicHeader'
-import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { ChatCircleIcon } from '~/interface/icons/phosphor/ChatCircleIcon'
 import { DoorIcon } from '~/interface/icons/phosphor/DoorIcon'
 import { FileIcon } from '~/interface/icons/phosphor/FileIcon'
-import { GearIcon } from '~/interface/icons/phosphor/GearIcon'
 import { InfoIcon } from '~/interface/icons/phosphor/InfoIcon'
 import { LockIcon } from '~/interface/icons/phosphor/LockIcon'
 import { ShieldCheckIcon } from '~/interface/icons/phosphor/ShieldCheckIcon'
@@ -22,13 +20,6 @@ import { Image } from '~/interface/image/Image'
 import { RepeatedTapToShowDevTools } from '~/interface/interactions/RepeatedTapToShowDevTools'
 import { H4 } from '~/interface/text/Headings'
 import { showToast } from '~/interface/toast/helpers'
-import {
-  APP_NAME_LOWERCASE,
-  HELP_REQUESTS_URL,
-  HELP_ROADMAP_URL,
-  TERMS_OF_SERVICE_URL,
-  PRIVACY_POLICY_URL,
-} from '~/constants/app'
 
 interface SettingItem {
   id: string
@@ -90,13 +81,13 @@ export const ProfileSettingsPage = () => {
           id: 'profile',
           title: 'Profile',
           icon: UserIcon,
-          route: '/user/profile-edit',
+          route: '/setting/edit-profile',
         },
         {
           id: 'blocked-users',
           title: 'Blocked Users',
           icon: ShieldCheckIcon,
-          route: '/user/profile-blocked-users',
+          route: '/setting/blocked-users',
         },
       ],
     },
@@ -163,17 +154,17 @@ export const ProfileSettingsPage = () => {
     //       },
     //     ]
     //   : []),
-    // {
-    //   title: 'Other',
-    //   items: [
-    //     {
-    //       id: 'logout',
-    //       title: 'Log Out',
-    //       icon: DoorIcon,
-    //       action: handleLogout,
-    //     },
-    //   ],
-    // },
+    {
+      title: 'Other',
+      items: [
+        {
+          id: 'logout',
+          title: 'Log Out',
+          icon: DoorIcon,
+          action: handleLogout,
+        },
+      ],
+    },
   ]
 
   const handleItemPress = (item: SettingItem) => {
@@ -209,7 +200,7 @@ export const ProfileSettingsPage = () => {
                 <Icon size={20} color="$color11" />
               </View>
             )}
-            <SizableText size="$4" color="$color12">
+            <SizableText size="$4" color="$color12" fontWeight="600">
               {item.title}
             </SizableText>
           </XStack>
@@ -246,33 +237,33 @@ export const ProfileSettingsPage = () => {
   }
 
   return (
-    <YStack flex={1} bg="$background">
-      <BasicHeader title="Settings" BackIcon={CaretLeftIcon} />
-
-      <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-        <YStack flex={1} pb="$10">
-          {allSections.map((section, sectionIndex) => (
-            <YStack key={section.title} mb="$6">
-              <SizableText
-                size="$2"
-                color="$color10"
-                px="$4"
-                py="$2"
-                textTransform="uppercase"
-                fontWeight="600"
-              >
-                {section.title}
-              </SizableText>
-              <YStack bg="$color1" borderTopWidth={1} borderTopColor="$color3">
-                {section.items.map((item) => renderItem(item))}
-              </YStack>
+    <ScrollView
+      flex={1}
+      showsVerticalScrollIndicator={false}
+      contentInsetAdjustmentBehavior="automatic"
+    >
+      <YStack flex={1} pb="$10">
+        {allSections.map((section, sectionIndex) => (
+          <YStack key={section.title} mb="$6">
+            <SizableText
+              size="$2"
+              color="$color10"
+              px="$4"
+              py="$2"
+              textTransform="uppercase"
+              fontWeight="600"
+            >
+              {section.title}
+            </SizableText>
+            <YStack bg="$color1" borderTopWidth={1} borderTopColor="$color3">
+              {section.items.map((item) => renderItem(item))}
             </YStack>
-          ))}
+          </YStack>
+        ))}
 
-          <LogoAndVersion />
-        </YStack>
-      </ScrollView>
-    </YStack>
+        <LogoAndVersion />
+      </YStack>
+    </ScrollView>
   )
 }
 
@@ -281,11 +272,11 @@ function LogoAndVersion() {
     <RepeatedTapToShowDevTools>
       {({ handleTap, tapsRemaining }) => (
         <YStack items="center" pb={100} pt="$4" onPress={handleTap}>
-          <XStack>
+          <XStack items="center" gap="$2">
             <Image
               src={require('../../../assets/logo.png')}
-              width={20}
-              height={24}
+              width={16}
+              height={16}
               objectFit="contain"
               tintColor="white"
             />

@@ -95,15 +95,6 @@ export const ProfilePage = memo(() => {
     }
   }, [isLoadingMore])
 
-  const renderCharactersEmpty = useCallback(() => {
-    return (
-      <YStack p="$4" items="center" justify="center" mt="$4">
-        <Image src={images.iconCamera} width={78} height={78} />
-        <H5 mt="$3">No characters yet</H5>
-      </YStack>
-    )
-  }, [])
-
   const renderGridContent = () => {
     if (profileIncomplete) {
       return (
@@ -119,13 +110,7 @@ export const ProfilePage = memo(() => {
         data={memoizedPosts}
         renderItem={({ item }) => (
           <Pressable
-            onPress={() => {
-              if (isOwnProfile) {
-                // router.push(`profile/post/${item.id}`)
-              } else {
-                // router.push(`home/profile/post/${item.id}`)
-              }
-            }}
+            onPress={() => {}}
             width={imageSize}
             height={imageSize}
             overflow="hidden"
@@ -165,8 +150,8 @@ export const ProfilePage = memo(() => {
 
   return (
     <YStack flex={1}>
-      <ProfileTopHeader userInfo={userInfo!} isOwnProfile={isOwnProfile} />
-      <View flex={1} pt={headerHeight}>
+      {/* <ProfileTopHeader userInfo={userInfo!} isOwnProfile={isOwnProfile} /> */}
+      <View flex={1}>
         <AnimatePresence>
           {(isLoading || isLoadingUser) && (
             <YStack
@@ -189,7 +174,10 @@ export const ProfilePage = memo(() => {
           )}
         </AnimatePresence>
 
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentInsetAdjustmentBehavior="automatic"
+        >
           <ProfileHeader
             userInfo={userInfo || undefined}
             isOwnProfile={isOwnProfile}

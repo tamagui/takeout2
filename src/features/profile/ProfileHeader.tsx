@@ -1,15 +1,12 @@
-import { memo } from 'react'
-import { SizableText, useWindowDimensions, View, XStack, YStack } from 'tamagui'
+import { memo, useId } from 'react'
+import { SizableText, View, XStack, YStack } from 'tamagui'
 import { SERVER_URL } from '~/constants/urls'
 import type { User } from '~/data/types'
 import { formatCount } from '~/helpers/number/formatNumber'
 import { useShareProfile } from '~/helpers/share/useShareProfile'
 import { Avatar } from '~/interface/avatars/Avatar'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
-import { PencilSimpleIcon } from '~/interface/icons/phosphor/PencilSimpleIcon'
-import { ShareFatIcon } from '~/interface/icons/phosphor/ShareFatIcon'
+import { SocialLinks } from '~/interface/social-media/platforms'
 import { BodyText } from '~/interface/text/Body'
-import { Link } from '../routing/Link'
 
 interface ProfileHeaderProps {
   userInfo?: User
@@ -19,10 +16,13 @@ interface ProfileHeaderProps {
 
 export const ProfileHeader = memo(
   ({ userInfo, isOwnProfile, postsCount }: ProfileHeaderProps) => {
-    const { width } = useWindowDimensions()
     const { shareProfile } = useShareProfile()
-
-    const CARD_SIZE = (width - 28) / 3
+    const socialLinks = {
+      twitter: `@${userInfo?.username}`,
+      facebook: `@${userInfo?.username}`,
+      instagram: `@${userInfo?.username}`,
+      tiktok: `@${userInfo?.username}`,
+    }
 
     // Handle share functionality
     const handleShare = async () => {
@@ -33,7 +33,7 @@ export const ProfileHeader = memo(
     }
 
     return (
-      <View bg="$background" px={14} py="$3">
+      <View px={14} py="$3">
         <YStack gap="$4">
           {/* Profile Info Section */}
           <XStack items="center" gap="$5">
@@ -55,20 +55,8 @@ export const ProfileHeader = memo(
               </XStack>
             </YStack>
           </XStack>
-
-          {/* Action Buttons */}
-          <XStack gap="$2">
-            <ButtonSimple size="small" flex={1} icon={ShareFatIcon} onPress={handleShare}>
-              Share
-            </ButtonSimple>
-            {isOwnProfile && (
-              <Link asChild href="/user/profile-edit" style={{ flex: 1 }}>
-                <ButtonSimple size="small" flex={1} icon={PencilSimpleIcon}>
-                  Edit Profile
-                </ButtonSimple>
-              </Link>
-            )}
-          </XStack>
+          {/* Social Links - Stacked Avatar Style */}
+          <SocialLinks links={socialLinks} />
         </YStack>
       </View>
     )

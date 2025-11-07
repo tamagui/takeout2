@@ -6,8 +6,6 @@ import type { GlassViewProps } from './GlassViewProps'
 
 export const GlassView = memo(
   ({
-    width = 100,
-    height = 100,
     borderRadius = 16,
     intensity = 40,
     tint = 'regular',
@@ -59,6 +57,11 @@ export const GlassView = memo(
           containerStyle as any,
         ]}
       >
+        {/* content container - must be first so overlays can block it */}
+        <View items="center" justify="center" style={style as any}>
+          {children}
+        </View>
+
         {/* glass overlay layer with gradient-like effect */}
         <View
           position="absolute"
@@ -69,6 +72,7 @@ export const GlassView = memo(
           b={0}
           rounded={borderRadius}
           bg={backgroundColor as any}
+          pointerEvents={isInteractive ? 'none' : 'auto'}
         />
 
         {/* subtle inner light edge - minimal and clean */}
@@ -84,11 +88,6 @@ export const GlassView = memo(
           borderWidth={0.5}
           borderColor="rgba(255, 255, 255, 0.15)"
         />
-
-        {/* content container */}
-        <View z={3} items="center" justify="center" style={style as any}>
-          {children}
-        </View>
       </BlurView>
     )
   }

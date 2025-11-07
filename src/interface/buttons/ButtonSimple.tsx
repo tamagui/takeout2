@@ -27,7 +27,7 @@ type ButtonSimpleAdditionalProps = {
   disableBackground?: boolean
   fixedWidth?: boolean
   fontFamily?: string
-  glass?: boolean | Partial<GlassViewProps>
+  glass?: boolean
   glow?: boolean
   icon?: any
   iconAfter?: boolean
@@ -404,7 +404,6 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
     const glassWrappedElement = glass ? (
       <GlassView
         glassEffectStyle="clear"
-        {...(typeof glass === 'object' ? glass : {})}
         isInteractive={isInteractive}
         borderRadius={rest.circular ? 100 : undefined}
         containerStyle={{
@@ -413,10 +412,14 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
                 width: buttonWidths[rest.size || 'medium'],
                 height: buttonWidths[rest.size || 'medium'],
               }
-            : { width: '100%' }),
+            : {
+                flex: rest.flex,
+                flexGrow: rest.grow,
+                flexShrink: rest.shrink,
+                alignSelf: rest.self,
+              }),
           items: 'center',
           justify: 'center',
-          ...(typeof glass === 'object' ? glass.containerStyle : {}),
         }}
       >
         {buttonElement}

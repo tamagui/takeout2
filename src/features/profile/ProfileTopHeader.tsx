@@ -98,7 +98,7 @@ export const ProfileTopHeader = memo<ProfileTopHeaderProps>(
       // Settings/More icon
       if (isOwnProfile) {
         icons.push(
-          <Link key="settings" href="/setting">
+          <Link key="settings" href="/settings">
             <GearIcon size={24} color="$color12" />
           </Link>
         )

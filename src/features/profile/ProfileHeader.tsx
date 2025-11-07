@@ -91,7 +91,7 @@ export const ProfileHeader = memo(
               size="medium"
               flex={1}
               glass
-              onPress={() => router.push('/setting/edit-profile')}
+              onPress={() => router.push('/settings/edit-profile')}
               icon={<PencilSimpleIcon size={16} color="$color12" />}
             >
               Edit Profile

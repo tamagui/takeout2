@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * local deployment to multipass vm with self-hosted database
+ * @description Deploy locally to Multipass VM with self-hosted database
  */
 
 import { buildWeb, buildDockerImage } from './helpers/build'

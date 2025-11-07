@@ -136,7 +136,12 @@ export function getScriptMetadata(filePath: string): ScriptMetadata {
 }
 
 // discover scripts in a directory
-export function discoverScripts(dir: string, baseDir: string = dir, depth: number = 0, maxDepth: number = 1): Map<string, string> {
+export function discoverScripts(
+  dir: string,
+  baseDir: string = dir,
+  depth: number = 0,
+  maxDepth: number = 1
+): Map<string, string> {
   const scripts = new Map<string, string>()
 
   if (!existsSync(dir)) {

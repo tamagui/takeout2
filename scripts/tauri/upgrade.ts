@@ -1,5 +1,9 @@
 #!/usr/bin/env bun
 
+/**
+ * @description Upgrade Tauri packages and sync versions
+ */
+
 import { $ } from 'bun'
 import { readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'

@@ -148,9 +148,18 @@ export function listAllScripts(includeCommands = true): void {
     `  ${pc.cyan('tko <command>')}           ${pc.dim('Run a built-in command')}`
   )
   console.info(
-    `  ${pc.cyan('tko <script-name>')}       ${pc.dim('Execute a script (e.g., tko upgrade/tamagui)')}`
+    `  ${pc.cyan('tko <script-name>')}       ${pc.dim('Execute a script (use / for nested, e.g., tko web/build)')}`
   )
   console.info(`  ${pc.cyan('tko script new <path>')}   ${pc.dim('Create a new script')}`)
+  console.info()
+  console.info(pc.bold('Examples:'))
+  console.info(
+    `  ${pc.cyan('tko upgrade/tamagui')}     ${pc.dim('Upgrade Tamagui packages')}`
+  )
+  console.info(`  ${pc.cyan('tko web/build')}           ${pc.dim('Build web platform')}`)
+  console.info(
+    `  ${pc.cyan('tko check/types')}         ${pc.dim('Run TypeScript type checking')}`
+  )
   console.info()
 }
 

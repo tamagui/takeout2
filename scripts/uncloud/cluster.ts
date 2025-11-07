@@ -1,8 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * manage encrypted cluster config for team sharing
- * stores/retrieves uncloud cluster config encrypted in repo
+ * @description Manage encrypted cluster config for team sharing
  */
 
 import { execSync } from 'node:child_process'

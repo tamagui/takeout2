@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * view logs from production deployment
+ * @description View logs from production deployment
  */
 
 import { exec } from './helpers/exec'

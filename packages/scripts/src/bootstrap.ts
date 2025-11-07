@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * Bootstrap script for environment setup
+ * @description Bootstrap project dependencies and workspace packages
  *
  * This script runs automatically during `bun install` via the prepare lifecycle.
  * It manages the .env file configuration with the following responsibilities:

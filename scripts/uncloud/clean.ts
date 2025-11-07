@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * clean up local multipass vm
+ * @description Clean up local Multipass VM
  */
 
 import { execSync } from 'node:child_process'

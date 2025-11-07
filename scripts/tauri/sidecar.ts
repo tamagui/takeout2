@@ -1,3 +1,7 @@
+/**
+ * @description Build Tauri sidecar binaries
+ */
+
 import { $ } from 'bun'
 import fs from 'node:fs'
 import { join } from 'node:path'

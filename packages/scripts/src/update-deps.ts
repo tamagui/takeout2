@@ -1,5 +1,9 @@
 #!/usr/bin/env bun
 
+/**
+ * @description Update dependencies across workspace packages
+ */
+
 import { $ } from 'bun'
 import { existsSync, readdirSync, readFileSync, rmSync } from 'node:fs'
 import { join } from 'node:path'

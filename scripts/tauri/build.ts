@@ -1,3 +1,7 @@
+/**
+ * @description Build Tauri desktop application
+ */
+
 import { $ } from 'bun'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'

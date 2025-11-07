@@ -1,5 +1,9 @@
 #!/usr/bin/env bun
 
+/**
+ * @description Run TypeScript compiler for type checking
+ */
+
 import { run } from '@vxrn/scripts/helpers/run'
 
 const useTsgo = process.env.TSGO === '1'

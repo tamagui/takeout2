@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * production deployment to configured droplet with external managed database
+ * @description Deploy to production droplet with managed database
  */
 
 import { config } from 'dotenv'

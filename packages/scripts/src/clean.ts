@@ -1,5 +1,9 @@
 #!/usr/bin/env bun
 
+/**
+ * @description Clean build artifacts and temporary files
+ */
+
 import { execSync } from 'node:child_process'
 
 try {

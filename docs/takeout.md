@@ -5,12 +5,14 @@ applications. It brings together modern tools and patterns that we've refined
 through building real products, with a focus on developer experience and
 deployment reliability.
 
+Find out much more by using `bun tko` for available commands and
+`bun tko docs list` for built-in docs.
+
 ## Repository Structure
 
-The entire project lives in a single package.json, no monorepo complexity. This
-makes dependency management straightforward and keeps the build pipeline fast.
-Everything from the web app to native iOS builds to desktop distribution happens
-from one codebase.
+The entire project lives in a single package.json to avoid monorepo complexity.
+Everything from the web app to native iOS and Android builds, Tauri, and infra
+is defined in this codebase.
 
 ## Build Pipeline
 

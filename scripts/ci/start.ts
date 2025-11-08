@@ -378,12 +378,13 @@ async function deployProduction() {
 }
 
 async function detectDeploymentPlatform(): Promise<'sst' | 'uncloud'> {
-  // check for explicit platform in env
-  if (process.env.DEPLOYMENT_PLATFORM) {
-    return process.env.DEPLOYMENT_PLATFORM as 'sst' | 'uncloud'
+  // check for explicit platform in env (this works in both CI and local)
+  const platform = process.env.DEPLOYMENT_PLATFORM?.toLowerCase()
+  if (platform === 'uncloud' || platform === 'sst') {
+    return platform as 'sst' | 'uncloud'
   }
 
-  // check .env.production for platform hint
+  // check .env.production for platform hint (local fallback)
   try {
     const envContent = await Bun.file('.env.production').text()
     if (envContent.includes('DEPLOYMENT_PLATFORM=uncloud')) {
@@ -394,11 +395,11 @@ async function detectDeploymentPlatform(): Promise<'sst' | 'uncloud'> {
       return 'uncloud'
     }
   } catch {
-    // file doesn't exist or can't be read
+    // file doesn't exist or can't be read (normal in CI)
   }
 
-  // default to SST
-  return 'sst'
+  // default to uncloud (safer default - no cloudflare api needed)
+  return 'uncloud'
 }
 
 async function deploySST() {

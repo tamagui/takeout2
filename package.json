@@ -219,6 +219,7 @@
     "CLOUDFLARE_R2_ENDPOINT": true,
     "CLOUDFLARE_R2_PUBLIC_URL": true,
     "CLOUDFLARE_R2_SECRET_KEY": true,
+    "DEPLOYMENT_PLATFORM": "uncloud",
     "ONE_SERVER_URL": true,
     "POSTMARK_SERVER_TOKEN": true,
     "VITE_POSTHOG_API_KEY": "",

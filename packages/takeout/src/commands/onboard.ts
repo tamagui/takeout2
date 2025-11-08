@@ -453,6 +453,7 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
 
   // Save to .env.production
   const envFile = '.env.production'
+  updateEnvVariable(cwd, 'DEPLOYMENT_PLATFORM', 'uncloud', envFile)
   updateEnvVariable(cwd, 'BETTER_AUTH_SECRET', authSecret, envFile)
   updateEnvVariable(cwd, 'BETTER_AUTH_URL', domain, envFile)
   updateEnvVariable(cwd, 'ONE_SERVER_URL', domain, envFile)
@@ -460,6 +461,11 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   updateEnvVariable(cwd, 'ZERO_UPSTREAM_DB', dbUrl, envFile)
   updateEnvVariable(cwd, 'ZERO_CVR_DB', cvrDb, envFile)
   updateEnvVariable(cwd, 'ZERO_CHANGE_DB', changeDb, envFile)
+
+  // Extract host from domain URL and save for deployment
+  const deployHost = new URL(domain).hostname
+  updateEnvVariable(cwd, 'DEPLOY_HOST', deployHost, envFile)
+  updateEnvVariable(cwd, 'DEPLOY_USER', 'root', envFile)
 
   console.info()
   showSuccess(`✓ Saved configuration to ${envFile}`)
@@ -515,6 +521,10 @@ async function setupSSTDeployment(cwd: string): Promise<void> {
     envFile: '.env.production',
     interactive: true,
   })
+
+  // Save deployment platform
+  const envFile = '.env.production'
+  updateEnvVariable(cwd, 'DEPLOYMENT_PLATFORM', 'sst', envFile)
 
   console.info()
   showInfo(

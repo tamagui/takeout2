@@ -366,6 +366,42 @@ async function runIntegrationTests() {
 async function deployProduction() {
   console.info('\nDeploying to production...')
 
+  // detect deployment platform
+  const deploymentPlatform = await detectDeploymentPlatform()
+  console.info(`Using deployment platform: ${deploymentPlatform}`)
+
+  if (deploymentPlatform === 'uncloud') {
+    await deployUncloud()
+  } else {
+    await deploySST()
+  }
+}
+
+async function detectDeploymentPlatform(): Promise<'sst' | 'uncloud'> {
+  // check for explicit platform in env
+  if (process.env.DEPLOYMENT_PLATFORM) {
+    return process.env.DEPLOYMENT_PLATFORM as 'sst' | 'uncloud'
+  }
+
+  // check .env.production for platform hint
+  try {
+    const envContent = await Bun.file('.env.production').text()
+    if (envContent.includes('DEPLOYMENT_PLATFORM=uncloud')) {
+      return 'uncloud'
+    }
+    if (envContent.includes('DEPLOY_HOST=') && envContent.includes('DEPLOY_USER=')) {
+      // uncloud is configured
+      return 'uncloud'
+    }
+  } catch {
+    // file doesn't exist or can't be read
+  }
+
+  // default to SST
+  return 'sst'
+}
+
+async function deploySST() {
   try {
     await run('bun sst unlock --stage production', {
       prefix: 'deploy',
@@ -395,6 +431,33 @@ async function deployProduction() {
       prefix: 'health',
       timeout: time.ms.minutes(10),
       timing: 'deployment health check',
+    })
+  } catch (error) {
+    failures.push({ task: 'health check', error })
+    throw error
+  }
+}
+
+async function deployUncloud() {
+  // run uncloud deployment
+  try {
+    await run('bun tko uncloud deploy-prod', {
+      prefix: 'deploy',
+      timeout: time.ms.minutes(10),
+      timing: 'uncloud deploy',
+    })
+  } catch (error) {
+    failures.push({ task: 'deploy', error })
+    throw error
+  }
+
+  // run uncloud-specific health check
+  console.info('\nChecking uncloud deployment health...')
+  try {
+    await run('bun tko uncloud check-deployment', {
+      prefix: 'health',
+      timeout: time.ms.minutes(5),
+      timing: 'uncloud health check',
     })
   } catch (error) {
     failures.push({ task: 'health check', error })

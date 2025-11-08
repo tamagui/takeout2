@@ -5,7 +5,6 @@
  */
 
 import * as clack from '@clack/prompts'
-import { config } from 'dotenv'
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import pc from 'picocolors'

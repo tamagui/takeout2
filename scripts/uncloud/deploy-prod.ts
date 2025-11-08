@@ -45,12 +45,21 @@ function checkPrerequisites() {
     process.exit(1)
   }
 
-  if (!process.env.ZERO_UPSTREAM_DB) {
-    console.error('❌ ZERO_UPSTREAM_DB not set')
-    console.error('\nFor uncloud deployment, database should be externally managed')
-    console.error('Set ZERO_UPSTREAM_DB, ZERO_CVR_DB, ZERO_CHANGE_DB in .env.production')
+  const hasDatabase =
+    process.env.ZERO_UPSTREAM_DB &&
+    process.env.ZERO_CVR_DB &&
+    process.env.ZERO_CHANGE_DB
+
+  if (!hasDatabase) {
+    console.error('❌ Zero database variables not set')
+    console.error('\nRequired: ZERO_UPSTREAM_DB, ZERO_CVR_DB, ZERO_CHANGE_DB')
+    console.error('\nFor local deployment: set in .env.production')
+    console.error('For CI: uncloud deployment requires manual setup')
+    console.error('\nRun: bun tko onboard to configure')
     process.exit(1)
   }
+
+  console.info(`✅ zero databases configured`)
 
   console.info(`✅ deploy host: ${DEPLOY_HOST}`)
   console.info(`✅ deploy user: ${DEPLOY_USER}`)

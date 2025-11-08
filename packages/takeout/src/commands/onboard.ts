@@ -644,6 +644,24 @@ async function setupSSTDeployment(cwd: string): Promise<void> {
   updateEnvVariable(cwd, 'DEPLOYMENT_PLATFORM', 'sst', envFile)
   updateEnvVariable(cwd, 'DEPLOYMENT_ARCH', deploymentArch, envFile)
 
+  // update sst.config.ts architecture
+  console.info()
+  showInfo('Updating sst.config.ts architecture...')
+  try {
+    const sstConfigPath = resolve(cwd, 'sst.config.ts')
+    let sstConfig = readFileSync(sstConfigPath, 'utf-8')
+
+    // replace architecture in all services
+    const archValue = architecture === 'arm64' ? 'arm64' : 'x86_64'
+    sstConfig = sstConfig.replace(/architecture:\s*['"]arm64['"]/g, `architecture: '${archValue}'`)
+    sstConfig = sstConfig.replace(/architecture:\s*['"]x86_64['"]/g, `architecture: '${archValue}'`)
+
+    writeFileSync(sstConfigPath, sstConfig)
+    showSuccess(`✓ Updated sst.config.ts to use ${archValue}`)
+  } catch (error) {
+    showWarning('Could not update sst.config.ts (you can update manually)')
+  }
+
   // clean up uncloud-specific vars when switching to sst
   console.info()
   showInfo('Cleaning up uncloud-specific variables...')

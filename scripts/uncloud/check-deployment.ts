@@ -47,26 +47,29 @@ Monitors the deployment and exits when all services are healthy or on timeout.
   process.exit(0)
 }
 
-// Load environment
+// Load environment from env vars (CI) or .env.production (local)
 const envFile = '.env.production'
-let deployHost: string | undefined
-let deployUser: string | undefined
+let deployHost: string | undefined = process.env.DEPLOY_HOST
+let deployUser: string | undefined = process.env.DEPLOY_USER || 'root'
 
-try {
-  const envContent = readFileSync(envFile, 'utf-8')
-  envContent.split('\n').forEach((line) => {
-    const [key, value] = line.split('=')
-    if (key === 'DEPLOY_HOST') deployHost = value?.trim()
-    if (key === 'DEPLOY_USER') deployUser = value?.trim()
-  })
-} catch (error) {
-  console.error('❌ Could not read .env.production - is uncloud configured?')
-  process.exit(1)
+// try to load from .env.production if env vars not set (local use)
+if (!deployHost) {
+  try {
+    const envContent = readFileSync(envFile, 'utf-8')
+    envContent.split('\n').forEach((line) => {
+      const [key, value] = line.split('=')
+      if (key === 'DEPLOY_HOST') deployHost = value?.trim()
+      if (key === 'DEPLOY_USER') deployUser = value?.trim()
+    })
+  } catch (error) {
+    // file doesn't exist - likely running in CI without deployment configured
+  }
 }
 
-if (!deployHost || !deployUser) {
-  console.error('❌ Missing DEPLOY_HOST or DEPLOY_USER in .env.production')
-  console.error('Run `bun tko onboard` to configure deployment')
+if (!deployHost) {
+  console.error('❌ DEPLOY_HOST not set')
+  console.error('For local: add to .env.production')
+  console.error('For CI: ensure DEPLOY_HOST is in GitHub secrets')
   process.exit(1)
 }
 

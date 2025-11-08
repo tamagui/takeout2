@@ -11,7 +11,7 @@ import { run } from '@vxrn/scripts/helpers/run'
 import pc from 'picocolors'
 
 export async function checkUncloudConfigured(): Promise<boolean> {
-  return Boolean(process.env.DEPLOY_HOST && process.env.ZERO_UPSTREAM_DB)
+  return Boolean(process.env.DEPLOY_HOST && process.env.DEPLOY_DB)
 }
 
 export async function installUncloudCLI() {
@@ -141,8 +141,8 @@ export function showMissingConfigWarning() {
   if (!process.env.DEPLOY_HOST) {
     console.info(pc.gray('  - DEPLOY_HOST'))
   }
-  if (!process.env.ZERO_UPSTREAM_DB) {
-    console.info(pc.gray('  - ZERO_UPSTREAM_DB'))
+  if (!process.env.DEPLOY_DB) {
+    console.info(pc.gray('  - DEPLOY_DB'))
   }
   console.info(pc.gray('\nskipping deployment (builds succeeded)'))
   console.info(pc.gray('\nto enable deployment:'))

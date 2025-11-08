@@ -224,6 +224,7 @@
     "DEPLOY_HOST": true,
     "DEPLOY_USER": "root",
     "DEPLOY_SSH_KEY": true,
+    "DEPLOY_DB": "",
     "ONE_SERVER_URL": true,
     "POSTMARK_SERVER_TOKEN": true,
     "VITE_POSTHOG_API_KEY": "",

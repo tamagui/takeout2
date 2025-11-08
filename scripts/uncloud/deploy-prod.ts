@@ -7,6 +7,7 @@
 import { config } from 'dotenv'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
+import pc from 'picocolors'
 import { buildMigrations, buildWeb, buildDockerImage } from './helpers/build'
 import { checkSSHKey, testSSHConnection } from './helpers/ssh'
 import {
@@ -45,21 +46,29 @@ function checkPrerequisites() {
     process.exit(1)
   }
 
-  const hasDatabase =
-    process.env.ZERO_UPSTREAM_DB &&
-    process.env.ZERO_CVR_DB &&
-    process.env.ZERO_CHANGE_DB
-
-  if (!hasDatabase) {
-    console.error('❌ Zero database variables not set')
-    console.error('\nRequired: ZERO_UPSTREAM_DB, ZERO_CVR_DB, ZERO_CHANGE_DB')
-    console.error('\nFor local deployment: set in .env.production')
-    console.error('For CI: uncloud deployment requires manual setup')
+  // derive zero database URLs from DEPLOY_DB (like sst.config.ts does)
+  const deployDb = process.env.DEPLOY_DB
+  if (!deployDb) {
+    console.error('❌ DEPLOY_DB not set')
+    console.error('\nFor uncloud deployment, set DEPLOY_DB in .env.production')
+    console.error('Example: postgresql://user:pass@host:port/dbname?sslmode=require')
     console.error('\nRun: bun tko onboard to configure')
     process.exit(1)
   }
 
+  // extract base connection string (everything before the database name)
+  const dbUrlParts = deployDb.split('/')
+  const baseUrl = dbUrlParts.slice(0, -1).join('/')
+  const queryParams = deployDb.includes('?') ? '?' + deployDb.split('?')[1] : ''
+
+  const ZERO_UPSTREAM_DB = deployDb
+  const ZERO_CVR_DB = `${baseUrl}/zero_cvr${queryParams}`
+  const ZERO_CHANGE_DB = `${baseUrl}/zero_cdb${queryParams}`
+
   console.info(`✅ zero databases configured`)
+  console.info(
+    pc.gray(`   upstream: ${deployDb.split('@')[1]?.split('/')[0] || 'configured'}`)
+  )
 
   console.info(`✅ deploy host: ${DEPLOY_HOST}`)
   console.info(`✅ deploy user: ${DEPLOY_USER}`)
@@ -67,12 +76,15 @@ function checkPrerequisites() {
 
   checkUncloudCLI()
   checkSSHKey(DEPLOY_SSH_KEY)
+
+  return { ZERO_UPSTREAM_DB, ZERO_CVR_DB, ZERO_CHANGE_DB }
 }
 
 async function main() {
   console.info('🎯 deploying takeout to production\n')
 
-  checkPrerequisites()
+  // derive database URLs from DEPLOY_DB
+  const { ZERO_UPSTREAM_DB, ZERO_CVR_DB, ZERO_CHANGE_DB } = checkPrerequisites()
 
   // build steps
   if (!skipBuild) {
@@ -98,9 +110,9 @@ async function main() {
   console.info('\n📝 processing compose file with production env...\n')
   const processedCompose = 'src/uncloud/docker-compose.processed.yml'
   processComposeEnv('src/uncloud/docker-compose.yml', processedCompose, {
-    ZERO_UPSTREAM_DB: process.env.ZERO_UPSTREAM_DB,
-    ZERO_CVR_DB: process.env.ZERO_CVR_DB,
-    ZERO_CHANGE_DB: process.env.ZERO_CHANGE_DB,
+    ZERO_UPSTREAM_DB,
+    ZERO_CVR_DB,
+    ZERO_CHANGE_DB,
     ZERO_ADMIN_PASSWORD: process.env.ZERO_ADMIN_PASSWORD,
     ZERO_LOG_LEVEL: process.env.ZERO_LOG_LEVEL,
     ZERO_NUM_SYNC_WORKERS: process.env.ZERO_NUM_SYNC_WORKERS,

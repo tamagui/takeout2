@@ -413,6 +413,11 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   console.info()
 
   // ask about server architecture
+  console.info()
+  showInfo('Server Architecture')
+  console.info(pc.gray('Docker images must match your server CPU architecture'))
+  console.info()
+
   const architecture = await promptSelect<'amd64' | 'arm64'>(
     'What CPU architecture is your deployment server?',
     [
@@ -485,24 +490,33 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   console.info()
 
   // Database setup
-  showInfo('Database configuration')
+  showInfo('Database Configuration')
   console.info()
   console.info(pc.gray('PostgreSQL database with logical replication enabled'))
-  console.info(
-    pc.gray('Zero will use 3 databases on the same host: main, zero_cvr, zero_cdb')
-  )
+  console.info(pc.gray('Zero sync requires 3 databases on the same host:'))
+  console.info(pc.gray('  • Main database (your app data)'))
+  console.info(pc.gray('  • Two Zero databases (for sync infrastructure)'))
+  console.info()
+  console.info(pc.gray('Use a managed database (DigitalOcean, Render, Supabase, etc.)'))
+  console.info(pc.gray('The deployment will automatically create the Zero databases'))
   console.info()
 
   const dbUser = await promptText('Database username:', undefined, 'postgres')
   const dbPassword = await promptText('Database password:', undefined, '')
-  const dbHost = await promptText('Database host:', undefined, 'localhost')
+  const dbHost = await promptText(
+    'Database host (e.g., db-xxx.ondigitalocean.com):',
+    undefined,
+    'localhost'
+  )
   const dbPort = await promptText('Database port:', '5432', '5432')
-  const dbName = await promptText('Main database name:', 'postgres', 'postgres')
+  const dbName = await promptText(
+    'Main database name (will derive Zero databases from this):',
+    'postgres',
+    'postgres'
+  )
 
-  // Construct database URLs
+  // Construct database URL (deployment script will derive Zero databases from this)
   const dbUrl = `postgresql://${dbUser}:${dbPassword}@${dbHost}:${dbPort}/${dbName}`
-  const cvrDb = `postgresql://${dbUser}:${dbPassword}@${dbHost}:${dbPort}/zero_cvr`
-  const changeDb = `postgresql://${dbUser}:${dbPassword}@${dbHost}:${dbPort}/zero_cdb`
 
   // Generate auth secret
   console.info()
@@ -512,13 +526,26 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   const envFile = '.env.production'
   updateEnvVariable(cwd, 'DEPLOYMENT_PLATFORM', 'uncloud', envFile)
   updateEnvVariable(cwd, 'DEPLOYMENT_ARCH', deploymentArch, envFile)
+  updateEnvVariable(cwd, 'DEPLOY_DB', dbUrl, envFile)
   updateEnvVariable(cwd, 'BETTER_AUTH_SECRET', authSecret, envFile)
   updateEnvVariable(cwd, 'BETTER_AUTH_URL', domain, envFile)
   updateEnvVariable(cwd, 'ONE_SERVER_URL', domain, envFile)
   updateEnvVariable(cwd, 'VITE_PUBLIC_ZERO_SERVER', zeroUrl, envFile)
-  updateEnvVariable(cwd, 'ZERO_UPSTREAM_DB', dbUrl, envFile)
-  updateEnvVariable(cwd, 'ZERO_CVR_DB', cvrDb, envFile)
-  updateEnvVariable(cwd, 'ZERO_CHANGE_DB', changeDb, envFile)
+
+  // for local dev, also set the three zero vars (read from DEPLOY_DB in production)
+  updateEnvVariable(cwd, 'ZERO_UPSTREAM_DB', dbUrl, '.env')
+  updateEnvVariable(
+    cwd,
+    'ZERO_CVR_DB',
+    `${dbUrl.split('/').slice(0, -1).join('/')}/zero_cvr`,
+    '.env'
+  )
+  updateEnvVariable(
+    cwd,
+    'ZERO_CHANGE_DB',
+    `${dbUrl.split('/').slice(0, -1).join('/')}/zero_cdb`,
+    '.env'
+  )
 
   // Extract host from domain URL and save for deployment
   const deployHost = new URL(domain).hostname
@@ -595,18 +622,26 @@ async function setupSSTDeployment(cwd: string): Promise<void> {
   console.info()
 
   // ask about architecture (ARM is cheaper for AWS)
+  console.info()
+  showInfo('AWS ECS Architecture')
+  console.info(pc.gray('AWS Graviton (ARM64) is ~40% cheaper than x86_64'))
+  console.info(
+    pc.gray('Both have excellent performance, ARM recommended for cost savings')
+  )
+  console.info()
+
   const architecture = await promptSelect<'amd64' | 'arm64'>(
     'What CPU architecture for AWS ECS?',
     [
       {
         value: 'arm64',
         label: 'ARM64 (Graviton) - Recommended',
-        hint: '~40% cheaper than x86, great performance',
+        hint: 'Significantly cheaper, excellent performance',
       },
       {
         value: 'amd64',
         label: 'AMD64/x86_64 (Intel/AMD)',
-        hint: 'Standard option, slightly more expensive',
+        hint: 'Standard option if you need specific x86 dependencies',
       },
     ]
   )
@@ -653,8 +688,14 @@ async function setupSSTDeployment(cwd: string): Promise<void> {
 
     // replace architecture in all services
     const archValue = architecture === 'arm64' ? 'arm64' : 'x86_64'
-    sstConfig = sstConfig.replace(/architecture:\s*['"]arm64['"]/g, `architecture: '${archValue}'`)
-    sstConfig = sstConfig.replace(/architecture:\s*['"]x86_64['"]/g, `architecture: '${archValue}'`)
+    sstConfig = sstConfig.replace(
+      /architecture:\s*['"]arm64['"]/g,
+      `architecture: '${archValue}'`
+    )
+    sstConfig = sstConfig.replace(
+      /architecture:\s*['"]x86_64['"]/g,
+      `architecture: '${archValue}'`
+    )
 
     writeFileSync(sstConfigPath, sstConfig)
     showSuccess(`✓ Updated sst.config.ts to use ${archValue}`)

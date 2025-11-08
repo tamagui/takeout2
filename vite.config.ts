@@ -150,6 +150,7 @@ export default {
                   'better-auth',
                   'better-auth/plugins',
                   'sharp',
+                  '@nandorojo/galeria',
                 ],
               },
             },

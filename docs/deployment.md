@@ -7,24 +7,27 @@ complete overview of the e2e deployment system built for takeout.
 ### 1. environment management system
 
 **package.json env section**
+
 ```json
 {
   "env": {
     "DEPLOYMENT_PLATFORM": "uncloud",
     "DEPLOY_HOST": true,
     "DEPLOY_USER": "root",
-    "DEPLOY_SSH_KEY": true,
+    "DEPLOY_SSH_KEY": true
     // ... all other env vars
   }
 }
 ```
 
 **auto-sync workflow**
+
 - `bun env:update` syncs to `.github/workflows/*.yml`
 - `bun env:update` syncs to `src/server/env-server.ts`
 - keeps everything in sync automatically
 
 **github secrets sync**
+
 - `bun scripts/env/sync-to-github.ts` - interactive sync tool
 - reads only `.env.production` (not .env or .env.local)
 - shows preview before syncing
@@ -33,7 +36,8 @@ complete overview of the e2e deployment system built for takeout.
 
 ### 2. deployment platform abstraction
 
-**auto-detection** (scripts/ci/start.ts:380-403)
+**auto-detection** (scripts/ci/release.ts:380-403)
+
 ```typescript
 async function detectDeploymentPlatform(): Promise<'sst' | 'uncloud'> {
   // 1. check DEPLOYMENT_PLATFORM env var (works in CI and local)
@@ -43,6 +47,7 @@ async function detectDeploymentPlatform(): Promise<'sst' | 'uncloud'> {
 ```
 
 **platform-specific deployment**
+
 - `deployUncloud()` - runs when DEPLOYMENT_PLATFORM=uncloud
 - `deploySST()` - runs when DEPLOYMENT_PLATFORM=sst
 - gracefully skips if vars missing
@@ -50,6 +55,7 @@ async function detectDeploymentPlatform(): Promise<'sst' | 'uncloud'> {
 ### 3. uncloud deployment
 
 **modular helpers** (scripts/ci/helpers/uncloud.ts)
+
 - `checkUncloudConfigured()` - validate env vars
 - `installUncloudCLI()` - auto-install if missing
 - `setupSSHKey()` - create ssh key from env var
@@ -60,6 +66,7 @@ async function detectDeploymentPlatform(): Promise<'sst' | 'uncloud'> {
 - `showDeploymentInfo()` - display access urls
 
 **deployment flow**
+
 1. validates env vars (DEPLOY_HOST, ZERO_UPSTREAM_DB)
 2. installs uncloud cli if needed
 3. sets up ssh key from secret
@@ -75,11 +82,13 @@ async function detectDeploymentPlatform(): Promise<'sst' | 'uncloud'> {
 ### 4. interactive onboarding
 
 **production setup wizard** (packages/takeout/src/commands/onboard.ts)
+
 ```bash
 bun tko onboard
 ```
 
 **uncloud flow:**
+
 1. choose deployment platform (uncloud or sst)
 2. enter domain (yourapp.uncloud.run or custom)
 3. configure database (postgres with logical replication)
@@ -90,6 +99,7 @@ bun tko onboard
 8. show next steps with scaling instructions
 
 **sst flow:**
+
 1. cleans up uncloud vars when switching
 2. runs aws env setup
 3. syncs to github
@@ -98,12 +108,14 @@ bun tko onboard
 ### 5. platform switching
 
 **uncloud → sst**
+
 - clears DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY
 - sets DEPLOYMENT_PLATFORM=sst
 - runs env:update
 - syncs to github
 
 **sst → uncloud**
+
 - clears sst-specific vars
 - sets DEPLOYMENT_PLATFORM=uncloud
 - configures deploy vars
@@ -113,6 +125,7 @@ bun tko onboard
 ### 6. ci/cd integration
 
 **github actions workflow** (.github/workflows/ci.yml)
+
 - runs on every push
 - full test suite
 - builds web app
@@ -121,6 +134,7 @@ bun tko onboard
 - gracefully skips deployment if secrets missing
 
 **environment variables**
+
 - auto-generated section between `# 🔒 start` and `# 🔒 end`
 - managed by `bun env:update`
 - never edit manually
@@ -128,6 +142,7 @@ bun tko onboard
 ### 7. documentation
 
 **guides created:**
+
 - `docs/deployment-uncloud.md` - comprehensive uncloud guide
   - single machine setup
   - multi-machine scaling
@@ -136,8 +151,9 @@ bun tko onboard
   - common issues
 
 **inline help:**
+
 - onboarding shows scaling commands
-- ci/start shows missing config instructions
+- ci/release shows missing config instructions
 - all scripts have helpful error messages
 
 ## user journey
@@ -145,6 +161,7 @@ bun tko onboard
 ### new template user
 
 1. **clone and setup**
+
    ```bash
    git clone <repo>
    cd takeout3
@@ -153,6 +170,7 @@ bun tko onboard
    ```
 
 2. **development (immediate)**
+
    ```bash
    bun dev    # works immediately after onboarding
    ```
@@ -168,6 +186,7 @@ bun tko onboard
 ### switching platforms
 
 **from uncloud to sst**
+
 ```bash
 bun tko onboard
 # → choose "production setup"
@@ -177,6 +196,7 @@ bun tko onboard
 ```
 
 **from sst to uncloud**
+
 ```bash
 bun tko onboard
 # → choose "production setup"
@@ -188,11 +208,13 @@ bun tko onboard
 ## scaling architecture
 
 ### single machine (current)
+
 ```
 DEPLOY_HOST=134.209.4.79    # single droplet
 ```
 
 ### multi-machine (future)
+
 ```bash
 # on deployment machine
 uc machine add --name hetzner-1 root@5.223.45.199
@@ -206,6 +228,7 @@ uc scale web 3    # 3 replicas across cluster
 ```
 
 ### load balancing
+
 - uncloud automatically distributes services
 - caddy reverse proxy on each machine
 - automatic service discovery via dns
@@ -217,7 +240,7 @@ uc scale web 3    # 3 replicas across cluster
 package.json                                  # env section
 .github/workflows/ci.yml                      # auto-generated env vars
 src/server/env-server.ts                      # auto-generated validation
-scripts/ci/start.ts                           # deployment orchestration
+scripts/ci/release.ts                         # deployment orchestration
 scripts/ci/helpers/uncloud.ts                 # uncloud-specific logic (NEW)
 scripts/env/sync-to-github.ts                 # github secrets sync (NEW)
 scripts/uncloud/deploy-prod.ts                # load from env vars
@@ -240,26 +263,12 @@ github secrets
     ↓
 github actions environment
     ↓
-scripts/ci/start.ts
+scripts/ci/release.ts
     ↓
 scripts/uncloud/deploy-prod.ts
     ↓
 uncloud cluster deployment
 ```
-
-## template-ready features
-
-✅ works out of box after onboarding
-✅ supports multiple deployment platforms
-✅ auto-syncs env to ci/cd
-✅ graceful degradation (skips deploy if not configured)
-✅ comprehensive error messages
-✅ scaling documentation included
-✅ team collaboration support (encrypted cluster config)
-✅ platform switching built-in
-✅ ci/cd fully automated
-✅ health checks and monitoring
-✅ deployment logs and status
 
 ## future improvements
 

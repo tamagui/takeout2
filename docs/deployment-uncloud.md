@@ -4,9 +4,12 @@ comprehensive guide to deploying takeout to production using uncloud.
 
 ## what is uncloud?
 
-uncloud is a lightweight container orchestration tool that bridges the gap between docker and kubernetes. it lets you deploy and scale apps across multiple machines with minimal overhead.
+uncloud is a lightweight container orchestration tool that bridges the gap
+between docker and kubernetes. it lets you deploy and scale apps across multiple
+machines with minimal overhead.
 
 **key features:**
+
 - zero-downtime deployments
 - automatic load balancing across machines
 - built-in service discovery and mesh networking
@@ -14,23 +17,26 @@ uncloud is a lightweight container orchestration tool that bridges the gap betwe
 - docker compose compatible
 - minimal resource footprint (~150mb ram per machine)
 
-**note:** uncloud is in active development and not yet production-ready. breaking changes may occur.
+**note:** uncloud is in active development and not yet production-ready.
+breaking changes may occur.
 
 ## single machine deployment
 
 ### prerequisites
 
 1. uncloud cli installed: `curl -fsS https://get.uncloud.run/install.sh | sh`
-2. digital ocean account (or any VM provider)
+2. digital ocean account (or any VM/dedicated provider)
 3. domain name (optional - can use `yourapp.uncloud.run` subdomain)
 4. managed postgresql database with logical replication enabled
 
 ### quick start
 
 1. **run onboarding:**
+
    ```bash
    bun tko onboard
    ```
+
    - choose "set up production deployment"
    - select "uncloud" platform
    - enter your app subdomain (e.g., `takeout` → `takeout.uncloud.run`)
@@ -38,6 +44,7 @@ uncloud is a lightweight container orchestration tool that bridges the gap betwe
    - sync to github when prompted
 
 2. **initial setup (first time only):**
+
    ```bash
    # get your droplet ip from digital ocean
    export DROPLET_IP=134.209.4.79
@@ -47,6 +54,7 @@ uncloud is a lightweight container orchestration tool that bridges the gap betwe
    ```
 
 3. **deploy:**
+
    ```bash
    # local deployment
    bun tko uncloud deploy-prod
@@ -93,6 +101,7 @@ uc machine ls
 ```
 
 when you add a machine, uncloud automatically:
+
 - installs docker and uncloudd daemon
 - sets up wireguard mesh networking
 - syncs cluster state
@@ -100,24 +109,31 @@ when you add a machine, uncloud automatically:
 
 ### scaling services
 
-services automatically distribute across available machines. uncloud picks machines based on resource availability.
+services automatically distribute across available machines. uncloud picks
+machines based on resource availability.
 
 to scale a service to multiple replicas:
+
 ```bash
 uc scale web 3
 ```
 
-this creates 3 instances distributed across your cluster with automatic load balancing.
+this creates 3 instances distributed across your cluster with automatic load
+balancing.
 
 ### configuration
 
-for multi-machine setups, you can still use single `DEPLOY_HOST` - uncloud cli connects to any machine in the cluster and can control all others through the mesh network.
+for multi-machine setups, you can still use single `DEPLOY_HOST` - uncloud cli
+connects to any machine in the cluster and can control all others through the
+mesh network.
 
 alternatively, update your deployment script to track multiple machines:
 
 ```typescript
 // scripts/uncloud/deploy-prod.ts
-const DEPLOY_HOSTS = process.env.DEPLOY_HOSTS?.split(',') || [process.env.DEPLOY_HOST]
+const DEPLOY_HOSTS = process.env.DEPLOY_HOSTS?.split(',') || [
+  process.env.DEPLOY_HOST,
+]
 ```
 
 ## github actions ci/cd
@@ -143,6 +159,7 @@ bun scripts/env/sync-to-github.ts
 ### workflow
 
 when you push to main:
+
 1. runs tests and builds
 2. creates docker image
 3. if `DEPLOY_HOST` configured, deploys to uncloud
@@ -150,22 +167,26 @@ when you push to main:
 5. runs health checks
 
 to skip deployment on specific commits:
+
 ```bash
 git commit -m "docs: update readme" --skip-ci
 ```
 
 or push to non-main branch:
+
 ```bash
 git push origin feature-branch
 ```
 
 ## database configuration
 
-uncloud deployment uses externally managed databases (digital ocean, render, supabase, etc.).
+uncloud deployment uses externally managed databases (digital ocean, render,
+supabase, etc.).
 
 ### required databases
 
 you need 3 postgres databases on the same host:
+
 - `defaultdb` (or your main db name) - main application data
 - `zero_cvr` - zero cvr (client view records)
 - `zero_cdb` - zero change database
@@ -173,11 +194,13 @@ you need 3 postgres databases on the same host:
 ### connection strings
 
 format:
+
 ```
 postgresql://user:password@host:port/dbname?sslmode=require
 ```
 
 example:
+
 ```bash
 ZERO_UPSTREAM_DB=postgresql://doadmin:pass@db-host.ondigitalocean.com:25060/defaultdb?sslmode=require
 ZERO_CVR_DB=postgresql://doadmin:pass@db-host.ondigitalocean.com:25060/zero_cvr?sslmode=require
@@ -186,7 +209,8 @@ ZERO_CHANGE_DB=postgresql://doadmin:pass@db-host.ondigitalocean.com:25060/zero_c
 
 ### logical replication
 
-zero requires logical replication. on digital ocean managed postgres, this is enabled by default. for other providers, ensure `wal_level = logical`.
+zero requires logical replication. on digital ocean managed postgres, this is
+enabled by default. for other providers, ensure `wal_level = logical`.
 
 ## monitoring & debugging
 
@@ -228,6 +252,7 @@ bun tko uncloud check-deployment
 ```
 
 checks:
+
 - web service is running
 - zero sync is accessible
 - database connectivity
@@ -238,6 +263,7 @@ checks:
 ### deployment fails: "uncloud cli not found"
 
 install uncloud cli:
+
 ```bash
 curl -fsS https://get.uncloud.run/install.sh | sh
 ```
@@ -245,11 +271,13 @@ curl -fsS https://get.uncloud.run/install.sh | sh
 ### ssh connection fails
 
 ensure:
+
 1. ssh key is added to droplet
 2. `DEPLOY_SSH_KEY` points to correct key file
 3. firewall allows ssh (port 22)
 
 verify connection:
+
 ```bash
 ssh -i ~/.ssh/id_rsa root@134.209.4.79
 ```
@@ -257,6 +285,7 @@ ssh -i ~/.ssh/id_rsa root@134.209.4.79
 ### services not accessible
 
 check:
+
 1. domain dns points to droplet ip
 2. firewall allows http/https (ports 80/443)
 3. services are running: `uc ls`
@@ -264,6 +293,7 @@ check:
 ### database connection errors
 
 verify:
+
 1. connection strings are correct
 2. database has logical replication enabled
 3. databases exist (defaultdb, zero_cvr, zero_cdb)

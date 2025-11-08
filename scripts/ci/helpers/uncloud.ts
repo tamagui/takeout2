@@ -118,7 +118,9 @@ export function showDeploymentInfo() {
   if (deployHost) {
     console.info(pc.bold('access your app:'))
     console.info(pc.cyan(`  web app:     https://${deployHost}`))
-    console.info(pc.cyan(`  ssh:         ssh ${process.env.DEPLOY_USER || 'root'}@${deployHost}`))
+    console.info(
+      pc.cyan(`  ssh:         ssh ${process.env.DEPLOY_USER || 'root'}@${deployHost}`)
+    )
     console.info()
     console.info(pc.gray('useful commands:'))
     console.info(pc.gray('  bun tko uncloud logs       # view logs'))

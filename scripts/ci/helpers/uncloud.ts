@@ -42,8 +42,9 @@ export async function setupSSHKey() {
     await mkdir(sshDir, { recursive: true })
   }
 
-  // write ssh key
-  await writeFile(keyPath, process.env.DEPLOY_SSH_KEY, { mode: 0o600 })
+  // write ssh key (handle escaped newlines from github secrets)
+  const keyContent = process.env.DEPLOY_SSH_KEY.replace(/\\n/g, '\n')
+  await writeFile(keyPath, keyContent, { mode: 0o600 })
 
   // add host to known_hosts
   if (process.env.DEPLOY_HOST) {

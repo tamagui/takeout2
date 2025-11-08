@@ -214,6 +214,7 @@
     "APNS_KEY": "",
     "BETTER_AUTH_SECRET": true,
     "BETTER_AUTH_URL": true,
+    "CLOUDFLARE_API_TOKEN": true,
     "CLOUDFLARE_R2_ACCESS_KEY": true,
     "CLOUDFLARE_R2_ENDPOINT": true,
     "CLOUDFLARE_R2_PUBLIC_URL": true,

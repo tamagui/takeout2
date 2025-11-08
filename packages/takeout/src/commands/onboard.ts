@@ -543,13 +543,15 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   console.info(pc.cyan('3. Deploy your app:'))
   console.info(pc.gray('   bun tko uncloud deploy-prod'))
   console.info()
-  console.info(pc.cyan('Or push to main branch for automatic CI/CD deployment'))
+  console.info(pc.cyan('Or push to main branch for automatic CI/CD deployment:'))
+  console.info(pc.gray('   git push origin main'))
   console.info()
-  console.info(
-    pc.gray(
-      'For detailed deployment guide, see: https://docs.yourapp.com/deployment/uncloud'
-    )
-  )
+  console.info(pc.bold('scaling to multiple machines:'))
+  console.info(pc.gray('   uc machine add --name server-2 root@IP'))
+  console.info(pc.gray('   uc scale web 3    # run 3 instances'))
+  console.info()
+  console.info(pc.gray('view detailed guide: bun tko docs read deployment-uncloud'))
+  console.info(pc.gray('or see: docs/deployment-uncloud.md'))
 }
 
 async function setupSSTDeployment(cwd: string): Promise<void> {

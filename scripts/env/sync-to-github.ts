@@ -44,8 +44,9 @@ async function main() {
     if (!trimmed || trimmed.startsWith('#')) continue
 
     const match = trimmed.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/)
-    if (match) {
-      const [, key, value] = match
+    if (match && match[1] && match[2] !== undefined) {
+      const key = match[1]
+      const value = match[2]
       // remove quotes if present
       const cleanValue = value.replace(/^["'](.*)["']$/, '$1')
       process.env[key] = cleanValue

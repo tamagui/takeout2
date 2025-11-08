@@ -412,6 +412,33 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   )
   console.info()
 
+  // ask about server architecture
+  const architecture = await promptSelect<'amd64' | 'arm64'>(
+    'What CPU architecture is your deployment server?',
+    [
+      {
+        value: 'amd64',
+        label: 'AMD64/x86_64 (Intel/AMD)',
+        hint: 'Most VPS providers (DigitalOcean, Linode, Vultr)',
+      },
+      {
+        value: 'arm64',
+        label: 'ARM64 (Apple Silicon)',
+        hint: 'Hetzner ARM, Oracle ARM, Bare metal ARM servers',
+      },
+    ]
+  )
+
+  if (architecture === 'cancel') {
+    showInfo('Skipping production setup')
+    return
+  }
+
+  const deploymentArch = architecture === 'arm64' ? 'linux/arm64' : 'linux/amd64'
+  console.info()
+  showInfo(`Will build Docker images for: ${deploymentArch}`)
+  console.info()
+
   // Read app name from constants
   const appConstantsPath = resolve(cwd, 'src/constants/app.ts')
   let defaultAppName = 'my-app'
@@ -484,6 +511,7 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   // Save to .env.production
   const envFile = '.env.production'
   updateEnvVariable(cwd, 'DEPLOYMENT_PLATFORM', 'uncloud', envFile)
+  updateEnvVariable(cwd, 'DEPLOYMENT_ARCH', deploymentArch, envFile)
   updateEnvVariable(cwd, 'BETTER_AUTH_SECRET', authSecret, envFile)
   updateEnvVariable(cwd, 'BETTER_AUTH_URL', domain, envFile)
   updateEnvVariable(cwd, 'ONE_SERVER_URL', domain, envFile)
@@ -566,6 +594,33 @@ async function setupSSTDeployment(cwd: string): Promise<void> {
   )
   console.info()
 
+  // ask about architecture (ARM is cheaper for AWS)
+  const architecture = await promptSelect<'amd64' | 'arm64'>(
+    'What CPU architecture for AWS ECS?',
+    [
+      {
+        value: 'arm64',
+        label: 'ARM64 (Graviton) - Recommended',
+        hint: '~40% cheaper than x86, great performance',
+      },
+      {
+        value: 'amd64',
+        label: 'AMD64/x86_64 (Intel/AMD)',
+        hint: 'Standard option, slightly more expensive',
+      },
+    ]
+  )
+
+  if (architecture === 'cancel') {
+    showInfo('Skipping AWS setup')
+    return
+  }
+
+  const deploymentArch = architecture === 'arm64' ? 'linux/arm64' : 'linux/amd64'
+  console.info()
+  showInfo(`Will build Docker images for: ${deploymentArch}`)
+  console.info()
+
   const shouldContinue = await confirmContinue(
     'Continue with AWS SST setup? (requires AWS account)',
     false
@@ -587,6 +642,7 @@ async function setupSSTDeployment(cwd: string): Promise<void> {
   // Save deployment platform
   const envFile = '.env.production'
   updateEnvVariable(cwd, 'DEPLOYMENT_PLATFORM', 'sst', envFile)
+  updateEnvVariable(cwd, 'DEPLOYMENT_ARCH', deploymentArch, envFile)
 
   // clean up uncloud-specific vars when switching to sst
   console.info()

@@ -1,6 +1,7 @@
 # @vxrn/takeout
 
-CLI tools for Takeout starter kit - interactive onboarding and project setup.
+CLI tools for Takeout starter kit - interactive onboarding, project setup,
+scripts and script running.
 
 ## Features
 
@@ -35,6 +36,7 @@ takeout onboard
 ```
 
 This will guide you through:
+
 1. Prerequisites verification (Bun, Docker, Node, Git)
 2. Environment file setup (.env from .env.development)
 3. Secret generation (BETTER_AUTH_SECRET)
@@ -43,6 +45,7 @@ This will guide you through:
 6. Database migrations
 
 **Options:**
+
 - `--skip` - Skip interactive prompts
 
 #### `takeout check`
@@ -54,6 +57,7 @@ takeout check
 ```
 
 **Options:**
+
 - `--silent` - Run silently with no output
 
 ### Programmatic Usage

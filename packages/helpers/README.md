@@ -1,0 +1,90 @@
+# helpers
+
+utility functions and types for the project
+
+## exports
+
+- array
+  - fuzzy
+  - getRandomItem
+  - takeLast
+  - uniqBy
+- assert
+- async
+  - abortable
+  - asyncContext
+  - idle
+  - interval
+  - isAborted
+  - sleep
+  - useAsync
+  - useAsyncEffect
+  - useLazyMount
+  - useLazyValue
+- browser
+  - clearIndexedDB
+  - isActiveElementFormField
+  - localStorage
+  - openPopup
+- client-only
+- constants
+- debug
+  - debugLog
+  - debugUseState
+- emitter
+- ensure
+  - ensure
+  - ensureOne
+- error
+  - errors
+- function
+  - emptyFn
+  - identityFn
+  - throttle
+- global
+  - globalEffect
+  - globalValue
+- number
+  - formatNumber
+- object
+  - decorateObject
+  - isEqualDeep
+  - isEqualIdentity
+  - isEqualJSON
+  - isEqualNever
+  - mapObject
+  - object
+  - objectUniqueKey
+- react
+  - createGlobalContext
+  - getCurrentComponentStack
+- server
+  - ensureEnv
+  - getHeaders
+  - prettyPrintRequest
+  - prettyPrintResponse
+  - streamToString
+- server-only
+- string
+  - dedent
+  - ellipsis
+  - hash
+  - insertAtIndex
+  - pickLast
+  - pluralize
+  - randomId
+  - slugify
+  - truncateList
+- time
+  - formatDate
+  - formatDateRelative
+  - time
+- types
+  - NullToOptional
+  - object
+  - react
+  - timer
+  - tuple
+- url
+  - urlSanitize
+  - urlValidate

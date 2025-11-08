@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * @description Run full CI/CD pipeline with tests, builds, and deployment
+ * @description Run full CI/CD pipeline with builds, tests, and deployment
  */
 
 import {

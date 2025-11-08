@@ -28,6 +28,7 @@ import {
 } from '@vxrn/scripts/helpers/run'
 import { waitForPort } from '@vxrn/scripts/helpers/wait-for-port'
 import pc from 'picocolors'
+import * as uncloudHelpers from './helpers/uncloud'
 
 if (process.env.ONE_SERVER_URL?.includes('localhost')) {
   throw new Error(
@@ -445,135 +446,42 @@ async function deployUncloud() {
   console.info()
 
   // check if uncloud is properly configured
-  if (!process.env.DEPLOY_HOST || !process.env.ZERO_UPSTREAM_DB) {
-    console.info(pc.yellow('⚠ uncloud deployment not fully configured'))
-    console.info(pc.gray('\nmissing required variables:'))
-    if (!process.env.DEPLOY_HOST) {
-      console.info(pc.gray('  - DEPLOY_HOST'))
-    }
-    if (!process.env.ZERO_UPSTREAM_DB) {
-      console.info(pc.gray('  - ZERO_UPSTREAM_DB'))
-    }
-    console.info(pc.gray('\nskipping deployment (builds succeeded)'))
-    console.info(pc.gray('\nto enable deployment:'))
-    console.info(pc.gray('  1. run: bun tko onboard'))
-    console.info(pc.gray('  2. sync env to github: bun scripts/env/sync-to-github.ts'))
+  const isConfigured = await uncloudHelpers.checkUncloudConfigured()
+  if (!isConfigured) {
+    uncloudHelpers.showMissingConfigWarning()
     return
   }
 
   // install uncloud cli if not present
-  console.info('🔧 checking uncloud cli...')
-  try {
-    await run('uc --version', { silent: true, timeout: time.ms.seconds(5) })
-    console.info(pc.gray('  uncloud cli already installed'))
-  } catch {
-    console.info(pc.gray('  installing uncloud cli...'))
-    await run('curl -fsS https://get.uncloud.run/install.sh | sh', {
-      timeout: time.ms.seconds(30),
-    })
-    console.info(pc.gray('  ✓ uncloud cli installed'))
-  }
+  await uncloudHelpers.installUncloudCLI()
 
   // setup ssh key for deployment
-  if (process.env.DEPLOY_SSH_KEY) {
-    console.info('🔑 setting up ssh key...')
-    const sshDir = join(homedir(), '.ssh')
-    const keyPath = join(sshDir, 'uncloud_deploy')
-
-    // create .ssh directory if needed
-    if (!existsSync(sshDir)) {
-      await mkdir(sshDir, { recursive: true })
-    }
-
-    // write ssh key
-    await writeFile(keyPath, process.env.DEPLOY_SSH_KEY, { mode: 0o600 })
-
-    // add host to known_hosts
-    if (process.env.DEPLOY_HOST) {
-      try {
-        await run(
-          `ssh-keyscan -H ${process.env.DEPLOY_HOST} >> ${join(sshDir, 'known_hosts')}`,
-          {
-            silent: true,
-            timeout: time.ms.seconds(10),
-          }
-        )
-      } catch {
-        // ignore errors - ssh will prompt if needed
-      }
-    }
-
-    // override env var to point to the file we created
-    process.env.DEPLOY_SSH_KEY = keyPath
-    console.info(pc.gray(`  ssh key written to ${keyPath}`))
-  }
+  await uncloudHelpers.setupSSHKey()
 
   // run uncloud deployment
   try {
-    await run('bun tko uncloud deploy-prod', {
-      prefix: 'deploy',
-      timeout: time.ms.minutes(10),
-      timing: 'uncloud deploy',
-    })
+    await uncloudHelpers.runDeployment()
   } catch (error) {
     failures.push({ task: 'deploy', error })
     throw error
   }
 
-  console.info('\n✅ deployment complete!')
-  console.info('\n📊 deployment status:')
-  console.info()
-
   // show status
-  try {
-    await run('uc ls', {
-      prefix: 'status',
-      timeout: time.ms.seconds(30),
-    })
-  } catch {
-    console.info(pc.gray('  (could not fetch status)'))
-  }
+  await uncloudHelpers.showDeploymentStatus()
 
-  // run uncloud-specific health check
-  console.info('\n🏥 checking deployment health...')
+  // run health check
   try {
-    await run('bun tko uncloud check-deployment', {
-      prefix: 'health',
-      timeout: time.ms.minutes(5),
-      timing: 'uncloud health check',
-    })
+    await uncloudHelpers.runHealthCheck()
   } catch (error) {
     failures.push({ task: 'health check', error })
     throw error
   }
 
-  // tail logs briefly to show deployment is working
-  console.info('\n📜 recent deployment logs:')
-  console.info()
-  try {
-    await run('uc logs web --tail 20', {
-      prefix: 'logs',
-      timeout: time.ms.seconds(10),
-    })
-  } catch {
-    console.info(pc.gray('  (logs not available yet)'))
-  }
+  // tail logs
+  await uncloudHelpers.tailLogs()
 
-  console.info('\n🎉 uncloud deployment successful!')
-  console.info()
-  const deployHost = process.env.DEPLOY_HOST
-  if (deployHost) {
-    console.info(pc.bold('access your app:'))
-    console.info(pc.cyan(`  web app:     https://${deployHost}`))
-    console.info(
-      pc.cyan(`  ssh:         ssh ${process.env.DEPLOY_USER || 'root'}@${deployHost}`)
-    )
-    console.info()
-    console.info(pc.gray('useful commands:'))
-    console.info(pc.gray('  bun tko uncloud logs       # view logs'))
-    console.info(pc.gray('  uc ls                       # list services'))
-    console.info(pc.gray('  uc logs web -f              # follow web logs'))
-  }
+  // show deployment info
+  uncloudHelpers.showDeploymentInfo()
 }
 
 // TODO: re-enable once backup script is available

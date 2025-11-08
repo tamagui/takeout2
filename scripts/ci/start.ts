@@ -351,7 +351,7 @@ async function runIntegrationTests() {
 
     const testEnv = await getTestEnv()
 
-    await run('bunx playwright test', {
+    await run('cd src/test && bunx playwright test', {
       prefix: 'e2e',
       env: testEnv,
       timeout: time.ms.minutes(5),

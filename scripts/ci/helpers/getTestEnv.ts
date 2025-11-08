@@ -2,7 +2,6 @@
 
 import { getDockerHost } from '@vxrn/scripts/helpers/get-docker-host'
 import { getTestEnv } from '@vxrn/scripts/helpers/get-test-env'
-import { run } from '@vxrn/scripts/helpers/run'
 
 export async function getTestWebEnv() {
   process.env.NODE_ENV = 'test'

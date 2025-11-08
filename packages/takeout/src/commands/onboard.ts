@@ -500,6 +500,34 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   console.info()
   showSuccess(`✓ Saved configuration to ${envFile}`)
 
+  // run env:update to sync to GitHub workflow
+  console.info()
+  showInfo('Updating GitHub workflow with environment variables...')
+  try {
+    execSync('bun env:update', { cwd, stdio: 'ignore' })
+    showSuccess('✓ GitHub workflow updated')
+  } catch (error) {
+    showWarning('Failed to update GitHub workflow (non-critical)')
+  }
+
+  // offer to sync to github
+  console.info()
+  const syncToGitHub = await confirmContinue(
+    'Sync environment to GitHub secrets for CI/CD?',
+    true
+  )
+
+  if (syncToGitHub) {
+    try {
+      execSync('bun scripts/env/sync-to-github.ts --yes', { cwd, stdio: 'inherit' })
+    } catch (error) {
+      showWarning('Failed to sync to GitHub (you can do this later)')
+      showInfo('Run manually: bun scripts/env/sync-to-github.ts')
+    }
+  } else {
+    showInfo('You can sync later with: bun scripts/env/sync-to-github.ts')
+  }
+
   // Next steps
   console.info()
   showStep('Ready to deploy!')
@@ -513,7 +541,9 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   console.info(pc.gray('   uncloud login'))
   console.info()
   console.info(pc.cyan('3. Deploy your app:'))
-  console.info(pc.gray('   bun tko uncloud deploy'))
+  console.info(pc.gray('   bun tko uncloud deploy-prod'))
+  console.info()
+  console.info(pc.cyan('Or push to main branch for automatic CI/CD deployment'))
   console.info()
   console.info(
     pc.gray(
@@ -555,6 +585,41 @@ async function setupSSTDeployment(cwd: string): Promise<void> {
   // Save deployment platform
   const envFile = '.env.production'
   updateEnvVariable(cwd, 'DEPLOYMENT_PLATFORM', 'sst', envFile)
+
+  // clean up uncloud-specific vars when switching to sst
+  console.info()
+  showInfo('Cleaning up uncloud-specific variables...')
+  updateEnvVariable(cwd, 'DEPLOY_HOST', '', envFile)
+  updateEnvVariable(cwd, 'DEPLOY_USER', '', envFile)
+  updateEnvVariable(cwd, 'DEPLOY_SSH_KEY', '', envFile)
+
+  // run env:update to sync to GitHub workflow
+  console.info()
+  showInfo('Updating GitHub workflow with environment variables...')
+  try {
+    execSync('bun env:update', { cwd, stdio: 'ignore' })
+    showSuccess('✓ GitHub workflow updated')
+  } catch (error) {
+    showWarning('Failed to update GitHub workflow (non-critical)')
+  }
+
+  // offer to sync to github
+  console.info()
+  const syncToGitHub = await confirmContinue(
+    'Sync environment to GitHub secrets for CI/CD?',
+    true
+  )
+
+  if (syncToGitHub) {
+    try {
+      execSync('bun scripts/env/sync-to-github.ts --yes', { cwd, stdio: 'inherit' })
+    } catch (error) {
+      showWarning('Failed to sync to GitHub (you can do this later)')
+      showInfo('Run manually: bun scripts/env/sync-to-github.ts')
+    }
+  } else {
+    showInfo('You can sync later with: bun scripts/env/sync-to-github.ts')
+  }
 
   console.info()
   showInfo(

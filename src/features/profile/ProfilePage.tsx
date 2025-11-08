@@ -185,7 +185,11 @@ export const ProfilePage = memo(() => {
           </YStack>
         )}
       </AnimatePresence>
-      {isWeb ? listContent : <GalleryWrapper urls={allImageUrls}>{listContent}</GalleryWrapper>}
+      {isWeb ? (
+        listContent
+      ) : (
+        <GalleryWrapper urls={allImageUrls}>{listContent}</GalleryWrapper>
+      )}
     </YStack>
   )
 })

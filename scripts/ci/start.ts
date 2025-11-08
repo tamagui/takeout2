@@ -27,6 +27,7 @@ import {
   waitForRun,
 } from '@vxrn/scripts/helpers/run'
 import { waitForPort } from '@vxrn/scripts/helpers/wait-for-port'
+import pc from 'picocolors'
 
 if (process.env.ONE_SERVER_URL?.includes('localhost')) {
   throw new Error(
@@ -440,6 +441,9 @@ async function deploySST() {
 }
 
 async function deployUncloud() {
+  console.info('\n📦 deploying to uncloud...')
+  console.info()
+
   // run uncloud deployment
   try {
     await run('bun tko uncloud deploy-prod', {
@@ -452,8 +456,22 @@ async function deployUncloud() {
     throw error
   }
 
+  console.info('\n✅ deployment complete!')
+  console.info('\n📊 deployment status:')
+  console.info()
+
+  // show status
+  try {
+    await run('uc ls', {
+      prefix: 'status',
+      timeout: time.ms.seconds(30),
+    })
+  } catch {
+    console.info(pc.gray('  (could not fetch status)'))
+  }
+
   // run uncloud-specific health check
-  console.info('\nChecking uncloud deployment health...')
+  console.info('\n🏥 checking deployment health...')
   try {
     await run('bun tko uncloud check-deployment', {
       prefix: 'health',
@@ -463,6 +481,34 @@ async function deployUncloud() {
   } catch (error) {
     failures.push({ task: 'health check', error })
     throw error
+  }
+
+  // tail logs briefly to show deployment is working
+  console.info('\n📜 recent deployment logs:')
+  console.info()
+  try {
+    await run('uc logs web --tail 20', {
+      prefix: 'logs',
+      timeout: time.ms.seconds(10),
+    })
+  } catch {
+    console.info(pc.gray('  (logs not available yet)'))
+  }
+
+  console.info('\n🎉 uncloud deployment successful!')
+  console.info()
+  const deployHost = process.env.DEPLOY_HOST
+  if (deployHost) {
+    console.info(pc.bold('access your app:'))
+    console.info(pc.cyan(`  web app:     https://${deployHost}`))
+    console.info(
+      pc.cyan(`  ssh:         ssh ${process.env.DEPLOY_USER || 'root'}@${deployHost}`)
+    )
+    console.info()
+    console.info(pc.gray('useful commands:'))
+    console.info(pc.gray('  bun tko uncloud logs       # view logs'))
+    console.info(pc.gray('  uc ls                       # list services'))
+    console.info(pc.gray('  uc logs web -f              # follow web logs'))
   }
 }
 

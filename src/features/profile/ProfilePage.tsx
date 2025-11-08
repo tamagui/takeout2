@@ -1,11 +1,11 @@
 import { LegendList, type LegendListRef } from '@legendapp/list'
-import { Galeria } from '@nandorojo/galeria'
 import { useParams } from 'one'
 import { memo, useCallback, useMemo, useRef } from 'react'
 import { RefreshControl } from 'react-native'
 import { AnimatePresence, Spinner, useWindowDimensions, YStack, isWeb } from 'tamagui'
 import { images } from '~/constants/images'
 import { Pressable } from '~/interface/buttons/Pressable'
+import { GalleryWrapper, GalleryImage } from '~/interface/gallery/Gallery'
 import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
 import { Image } from '~/interface/image/Image'
 import { usePageHeader } from '~/interface/pages/PageHeader'
@@ -89,16 +89,16 @@ export const ProfilePage = memo(() => {
               )
             }
 
-            // For native, wrap with Galeria.Image
+            // For native, wrap with GalleryImage
             return (
-              <Galeria.Image key={item.id} index={fullIndex}>
+              <GalleryImage key={item.id} index={fullIndex}>
                 <Image
                   src={item.image}
                   width={columnWidth}
                   height={height}
                   rounded="$4"
                 />
-              </Galeria.Image>
+              </GalleryImage>
             )
           })}
         </YStack>
@@ -185,7 +185,7 @@ export const ProfilePage = memo(() => {
           </YStack>
         )}
       </AnimatePresence>
-      {isWeb ? listContent : <Galeria urls={allImageUrls}>{listContent}</Galeria>}
+      {isWeb ? listContent : <GalleryWrapper urls={allImageUrls}>{listContent}</GalleryWrapper>}
     </YStack>
   )
 })

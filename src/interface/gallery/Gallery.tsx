@@ -1,6 +1,7 @@
 import { AnimatePresence } from '@tamagui/animate-presence'
 import { ChevronLeft, ChevronRight, X } from '@tamagui/lucide-icons'
 import { useEmitterValue } from '@vxrn/helpers'
+import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
 import { useWindowDimensions } from 'react-native'
 import { Button, type ButtonProps, Portal, styled, XStack, YStack } from 'tamagui'
@@ -9,6 +10,19 @@ import { Image } from '~/interface/image/Image'
 import { isVideoFile } from '~/interface/upload/helpers'
 import { Video } from '~/interface/video/Video'
 import { galleryEmitter } from './galleryEmitter'
+
+export type GalleryProps = { urls: string[]; children: ReactNode }
+export type GalleryImageProps = { index?: number; children: ReactNode }
+
+export const GalleryImage = ({ children }: GalleryImageProps) => {
+  // web stub - just renders children
+  return <>{children}</>
+}
+
+// web gallery wrapper - no-op, uses galleryEmitter instead
+export const GalleryWrapper = ({ children }: GalleryProps) => {
+  return <>{children}</>
+}
 
 const closeGallery = () => {
   galleryEmitter.emit(null)

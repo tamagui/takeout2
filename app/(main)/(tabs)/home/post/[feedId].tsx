@@ -1,4 +1,3 @@
-import { Galeria } from '@nandorojo/galeria'
 import { LinearGradient } from '@tamagui/linear-gradient'
 import { Dot } from '@tamagui/lucide-icons'
 import { useParams } from 'one'
@@ -8,6 +7,7 @@ import { formatDistanceToNow } from '~/helpers/date/formatDate'
 import { Avatar } from '~/interface/avatars/Avatar'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
+import { GalleryWrapper, GalleryImage } from '~/interface/gallery/Gallery'
 import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
 import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
 import { Image } from '~/interface/image/Image'
@@ -95,8 +95,8 @@ export const FeedDetailPage = memo(() => {
           </Pressable>
         ) : (
           <YStack mb="$4">
-            <Galeria urls={[post.image]}>
-              <Galeria.Image>
+            <GalleryWrapper urls={[post.image]}>
+              <GalleryImage>
                 <Image
                   key={`${post.id.toString()}`}
                   src={post.image}
@@ -111,8 +111,8 @@ export const FeedDetailPage = memo(() => {
                     }
                   }}
                 />
-              </Galeria.Image>
-            </Galeria>
+              </GalleryImage>
+            </GalleryWrapper>
           </YStack>
         )}
 

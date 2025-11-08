@@ -461,6 +461,19 @@ async function deployUncloud() {
     return
   }
 
+  // install uncloud cli if not present
+  console.info('🔧 checking uncloud cli...')
+  try {
+    await run('uc --version', { silent: true, timeout: time.ms.seconds(5) })
+    console.info(pc.gray('  uncloud cli already installed'))
+  } catch {
+    console.info(pc.gray('  installing uncloud cli...'))
+    await run('curl -fsS https://get.uncloud.run/install.sh | sh', {
+      timeout: time.ms.seconds(30),
+    })
+    console.info(pc.gray('  ✓ uncloud cli installed'))
+  }
+
   // setup ssh key for deployment
   if (process.env.DEPLOY_SSH_KEY) {
     console.info('🔑 setting up ssh key...')

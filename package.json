@@ -66,15 +66,6 @@
     "motion": "12.23.22",
     "@expo/fingerprint": "0.15.3"
   },
-  "expo": {
-    "doctor": {
-      "reactNativeDirectoryCheck": {
-        "exclude": [
-          "expo-liquid-glass-view"
-        ]
-      }
-    }
-  },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.709.0",
     "@aws-sdk/lib-storage": "^3.709.0",
@@ -146,7 +137,6 @@
     "expo-image-picker": "~17.0.8",
     "expo-linear-gradient": "~15.0.7",
     "expo-linking": "^8.0.8",
-    "expo-liquid-glass-view": "^0.1.8",
     "expo-notifications": "~0.32.12",
     "expo-plugin-ios-static-libraries": "^1.0.4",
     "expo-secure-store": "~15.0.7",

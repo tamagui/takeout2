@@ -4,18 +4,11 @@ import { KeyboardAvoidingView, ScrollView, Platform } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { isWeb, YStack } from 'tamagui'
 
-export interface ProgressBarConfig {
-  totalSteps: number
-  currentStep: number
-  showProgressBar?: boolean
-}
-
 export const BaseStepPageLayout = ({
   children,
   bottom: bottomElement,
   disableScroll = true,
   linearGradientFooter = false,
-  progressBar,
   disableKeyboardAvoidingView = false,
   hideBackButton = false,
   keyboardOffset = 0,
@@ -24,7 +17,6 @@ export const BaseStepPageLayout = ({
   bottom?: ReactNode
   disableScroll?: boolean
   linearGradientFooter?: boolean
-  progressBar?: ProgressBarConfig
   disableKeyboardAvoidingView?: boolean
   hideBackButton?: boolean
   keyboardOffset?: number
@@ -33,20 +25,6 @@ export const BaseStepPageLayout = ({
 
   const content = (
     <>
-      {progressBar?.showProgressBar && (
-        <YStack px="$4" py="$2">
-          {/* Progress bar would go here */}
-          <YStack height={4} bg="$color4" rounded="$2">
-            <YStack
-              height={4}
-              bg="$color8"
-              rounded="$2"
-              width={`${(progressBar.currentStep / progressBar.totalSteps) * 100}%`}
-            />
-          </YStack>
-        </YStack>
-      )}
-
       <ScrollView
         scrollEnabled={!disableScroll}
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 50 }}

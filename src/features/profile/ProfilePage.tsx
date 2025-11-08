@@ -1,10 +1,12 @@
 import { LegendList, type LegendListRef } from '@legendapp/list'
+import { Galeria } from '@nandorojo/galeria'
 import { useParams } from 'one'
 import { memo, useCallback, useMemo, useRef } from 'react'
 import { RefreshControl } from 'react-native'
-import { AnimatePresence, Spinner, useWindowDimensions, YStack } from 'tamagui'
+import { AnimatePresence, Spinner, useWindowDimensions, YStack, isWeb } from 'tamagui'
 import { images } from '~/constants/images'
 import { Pressable } from '~/interface/buttons/Pressable'
+import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
 import { Image } from '~/interface/image/Image'
 import { usePageHeader } from '~/interface/pages/PageHeader'
 import { useHeaderHeight } from '@react-navigation/elements'
@@ -41,6 +43,11 @@ export const ProfilePage = memo(() => {
     })
   }, [posts])
 
+  // Get all image URLs for Galeria
+  const allImageUrls = useMemo(() => {
+    return posts?.map((post) => post.image) || []
+  }, [posts])
+
   const renderColumn = useCallback(
     ({ item: columnData, index: columnIndex }: { item: any[]; index: number }) => {
       return (
@@ -53,27 +60,51 @@ export const ProfilePage = memo(() => {
           {columnData.map((item) => {
             const aspectRatio = 0.6 + Math.random() * 0.8
             const height = columnWidth / aspectRatio
+            // Find the actual index of this item in the full posts array
+            const fullIndex = posts?.findIndex((p) => p.id === item.id) || 0
 
+            if (isWeb) {
+              return (
+                <Pressable
+                  key={item.id}
+                  onPress={() => {
+                    // For web, use the gallery emitter
+                    galleryEmitter.emit({
+                      items:
+                        posts?.map((post) => ({
+                          id: post.id.toString(),
+                          url: post.image,
+                        })) || [],
+                      firstItem: item.id.toString(),
+                    })
+                  }}
+                >
+                  <Image
+                    src={item.image}
+                    width={columnWidth}
+                    height={height}
+                    rounded="$4"
+                  />
+                </Pressable>
+              )
+            }
+
+            // For native, wrap with Galeria.Image
             return (
-              <Pressable
-                key={item.id}
-                onPress={() => {
-                  // navigate to post detail
-                }}
-              >
+              <Galeria.Image key={item.id} index={fullIndex}>
                 <Image
                   src={item.image}
                   width={columnWidth}
                   height={height}
                   rounded="$4"
                 />
-              </Pressable>
+              </Galeria.Image>
             )
           })}
         </YStack>
       )
     },
-    [columnWidth]
+    [columnWidth, posts]
   )
 
   const keyExtractor = useCallback((_item: any, index: number) => `column-${index}`, [])
@@ -109,6 +140,28 @@ export const ProfilePage = memo(() => {
     )
   }, [userInfo, isOwnProfile, postsCount])
 
+  const listContent = (
+    <LegendList
+      ref={listRef}
+      data={columns}
+      renderItem={renderColumn}
+      keyExtractor={keyExtractor}
+      numColumns={2}
+      ListHeaderComponent={renderHeader}
+      ListEmptyComponent={renderEmpty}
+      ListFooterComponent={renderFooter}
+      onEndReached={loadMore}
+      onEndReachedThreshold={0.5}
+      refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refresh} />}
+      showsVerticalScrollIndicator={false}
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={{
+        paddingHorizontal: 14,
+        paddingBottom: 100,
+      }}
+    />
+  )
+
   return (
     <YStack flex={1}>
       <AnimatePresence>
@@ -132,24 +185,7 @@ export const ProfilePage = memo(() => {
           </YStack>
         )}
       </AnimatePresence>
-      <LegendList
-        ref={listRef}
-        data={columns}
-        renderItem={renderColumn}
-        keyExtractor={keyExtractor}
-        numColumns={2}
-        ListHeaderComponent={renderHeader}
-        ListEmptyComponent={renderEmpty}
-        ListFooterComponent={renderFooter}
-        onEndReached={loadMore}
-        onEndReachedThreshold={0.5}
-        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refresh} />}
-        showsVerticalScrollIndicator={false}
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={{
-          paddingHorizontal: 14,
-        }}
-      />
+      {isWeb ? listContent : <Galeria urls={allImageUrls}>{listContent}</Galeria>}
     </YStack>
   )
 })

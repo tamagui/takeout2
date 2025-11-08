@@ -9,7 +9,6 @@ import { BasicHeader } from '~/interface/headers/BasicHeader'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { Image } from '~/interface/image/Image'
 import { RepeatedTapToShowDevTools } from '~/interface/interactions/RepeatedTapToShowDevTools'
-import { ProgressBar } from '~/interface/progress-bar/ProgressBar'
 import { MediumText } from '~/interface/text/Body'
 import { H3 } from '~/interface/text/Headings'
 
@@ -32,7 +31,6 @@ export const WaitingListPage = () => {
 
   return (
     <YStack flex={1} bg="$background">
-      <ProgressBar totalSteps={6} currentStep={2} />
       <YStack pt={22}>
         <BasicHeader BackIcon={CaretLeftIcon} onClose={handleLogout} />
       </YStack>

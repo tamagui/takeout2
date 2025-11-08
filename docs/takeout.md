@@ -152,7 +152,6 @@ capabilities:
 - expo-blur for native blur effects
 - expo-linear-gradient for gradient support
 - expo-glass-effect for frosted glass UI effects
-- expo-liquid-glass-view for advanced glass morphism
 - react-native-worklets for running JS on UI thread
 
 All native dependencies are configured in app.config.ts with appropriate iOS and

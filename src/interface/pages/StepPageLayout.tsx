@@ -5,7 +5,7 @@ import { Pressable } from '../buttons/Pressable'
 import { CaretLeftIcon } from '../icons/phosphor/CaretLeftIcon'
 import type { IconComponent } from '../icons/types'
 import { PageHeading } from '../text/PageHeading'
-import { BaseStepPageLayout, type ProgressBarConfig } from './BaseStepPageLayout'
+import { BaseStepPageLayout } from './BaseStepPageLayout'
 
 export const StepPageLayout = ({
   title,
@@ -20,9 +20,7 @@ export const StepPageLayout = ({
   disableBackButton = false,
   hideBackButton = false,
   disableScroll = false,
-
   linearGradientFooter = false,
-  progressBar,
   disableKeyboardAvoidingView = false,
   keyboardOffset = 0,
 }: {
@@ -39,7 +37,6 @@ export const StepPageLayout = ({
   hideBackButton?: boolean
   disableScroll?: boolean
   linearGradientFooter?: boolean
-  progressBar?: ProgressBarConfig
   disableKeyboardAvoidingView?: boolean
   keyboardOffset?: number
 }) => {
@@ -48,7 +45,6 @@ export const StepPageLayout = ({
       bottom={bottom}
       disableScroll={disableScroll}
       linearGradientFooter={linearGradientFooter}
-      progressBar={progressBar}
       disableKeyboardAvoidingView={disableKeyboardAvoidingView}
       hideBackButton={hideBackButton}
       keyboardOffset={keyboardOffset}

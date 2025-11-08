@@ -72,12 +72,9 @@ export const OtpPage = () => {
         setIsError(true)
         Keyboard.dismiss()
         showError(error)
-        // setTimeout(() => {
-        //   setIsError(false)
-        //   setOtpCode('')
-        //   setOtpKey(Math.random())
-        //   setLoading(false)
-        // }, 500)
+        setOtpCode('')
+        setOtpKey(Math.random())
+        setLoading(false)
         return
       } else {
         timer.pause()

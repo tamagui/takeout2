@@ -41,7 +41,6 @@ export function HomeLayout() {
               <ChevronLeft size={24} />
             </Pressable>
           ),
-
           presentation: 'modal',
         })}
       />

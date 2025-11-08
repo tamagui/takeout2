@@ -125,7 +125,7 @@ export const PlusPage = memo(() => {
     setOpen(true)
   }, [])
 
-  const canPost = (caption.trim() || uploadedUrl) && !isUploading && !isPosting
+  const canPost = caption.trim() && uploadedUrl && !isUploading && !isPosting
 
   const contentUI = (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -134,11 +134,9 @@ export const PlusPage = memo(() => {
           <SizableText size="$6" fontWeight="700">
             Create Post
           </SizableText>
-          <Pressable onPress={() => handleOpenChange(false)}>
-            <Circle size={36} bg="$color3" items="center" justify="center">
-              <XIcon size={20} color="$color11" />
-            </Circle>
-          </Pressable>
+          <ButtonSimple glass circular onPress={() => handleOpenChange(false)}>
+            <XIcon size={20} color="$color11" />
+          </ButtonSimple>
         </XStack>
 
         <YStack gap="$3">

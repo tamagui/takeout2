@@ -461,6 +461,40 @@ async function deployUncloud() {
     return
   }
 
+  // setup ssh key for deployment
+  if (process.env.DEPLOY_SSH_KEY) {
+    console.info('🔑 setting up ssh key...')
+    const sshDir = join(homedir(), '.ssh')
+    const keyPath = join(sshDir, 'uncloud_deploy')
+
+    // create .ssh directory if needed
+    if (!existsSync(sshDir)) {
+      await mkdir(sshDir, { recursive: true })
+    }
+
+    // write ssh key
+    await writeFile(keyPath, process.env.DEPLOY_SSH_KEY, { mode: 0o600 })
+
+    // add host to known_hosts
+    if (process.env.DEPLOY_HOST) {
+      try {
+        await run(
+          `ssh-keyscan -H ${process.env.DEPLOY_HOST} >> ${join(sshDir, 'known_hosts')}`,
+          {
+            silent: true,
+            timeout: time.ms.seconds(10),
+          }
+        )
+      } catch {
+        // ignore errors - ssh will prompt if needed
+      }
+    }
+
+    // override env var to point to the file we created
+    process.env.DEPLOY_SSH_KEY = keyPath
+    console.info(pc.gray(`  ssh key written to ${keyPath}`))
+  }
+
   // run uncloud deployment
   try {
     await run('bun tko uncloud deploy-prod', {

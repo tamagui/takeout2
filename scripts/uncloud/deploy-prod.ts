@@ -31,7 +31,9 @@ if (existsSync(envPath)) {
 
 const DEPLOY_HOST = process.env.DEPLOY_HOST
 const DEPLOY_USER = process.env.DEPLOY_USER || 'root'
-const DEPLOY_SSH_KEY = process.env.DEPLOY_SSH_KEY || `${process.env.HOME}/.ssh/id_rsa`
+// default to uncloud_deploy (set by CI), fall back to id_rsa locally
+const DEPLOY_SSH_KEY =
+  process.env.DEPLOY_SSH_KEY || `${process.env.HOME}/.ssh/uncloud_deploy`
 
 function checkPrerequisites() {
   console.info('📋 checking prerequisites...\n')

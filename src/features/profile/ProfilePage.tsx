@@ -1,15 +1,14 @@
 import { LegendList, type LegendListRef } from '@legendapp/list'
+import { useHeaderHeight } from '@react-navigation/elements'
 import { useParams } from 'one'
 import { memo, useCallback, useMemo, useRef } from 'react'
 import { RefreshControl } from 'react-native'
-import { AnimatePresence, Spinner, useWindowDimensions, YStack, isWeb } from 'tamagui'
+import { AnimatePresence, isWeb, Spinner, useWindowDimensions, YStack } from 'tamagui'
 import { images } from '~/constants/images'
 import { Pressable } from '~/interface/buttons/Pressable'
-import { GalleryWrapper, GalleryImage } from '~/interface/gallery/Gallery'
+import { GalleryImage, GalleryWrapper } from '~/interface/gallery/Gallery'
 import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
 import { Image } from '~/interface/image/Image'
-import { usePageHeader } from '~/interface/pages/PageHeader'
-import { useHeaderHeight } from '@react-navigation/elements'
 import { ProfileShimmer } from '~/interface/shimmer/ProfileShimmer'
 import { H5 } from '~/interface/text/Headings'
 import { usePostsByUserId } from '../feed/usePosts'
@@ -185,11 +184,7 @@ export const ProfilePage = memo(() => {
           </YStack>
         )}
       </AnimatePresence>
-      {isWeb ? (
-        listContent
-      ) : (
-        <GalleryWrapper urls={allImageUrls}>{listContent}</GalleryWrapper>
-      )}
+      <GalleryWrapper urls={allImageUrls}>{listContent}</GalleryWrapper>
     </YStack>
   )
 })

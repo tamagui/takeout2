@@ -66,6 +66,7 @@ export const onboardCommand = defineCommand({
       | 'environment'
       | 'identity'
       | 'ports'
+      | 'ci-runners'
       | 'production'
       | 'cancel'
 
@@ -190,7 +191,36 @@ export const onboardCommand = defineCommand({
       console.info()
     }
 
-    // Phase 5: Development Complete
+    // Phase 5: CI/CD Runner Configuration
+    if (
+      startStep === 'prerequisites' ||
+      startStep === 'environment' ||
+      startStep === 'identity' ||
+      startStep === 'ports' ||
+      startStep === 'full'
+    ) {
+      saveOnboardState(cwd, { step: 'ci-runners', timestamp: Date.now() })
+      showStep('Configuring CI/CD runners...')
+      console.info()
+
+      const shouldConfigureCI = await confirmContinue(
+        'Configure GitHub Actions CI runners?',
+        true
+      )
+
+      if (shouldConfigureCI) {
+        await configureCIRunners(cwd)
+      } else {
+        showInfo('Skipping CI runner configuration')
+        showWarning(
+          'Default CI uses ARM64 Docker builds. If not using ARM runners, update scripts/web/build-docker.ts'
+        )
+      }
+
+      console.info()
+    }
+
+    // Phase 6: Development Complete
     if (startStep !== 'production') {
       showStep('Development setup complete!')
       console.info()
@@ -210,7 +240,7 @@ export const onboardCommand = defineCommand({
       console.info()
     }
 
-    // Phase 6: Production Setup (Optional or direct)
+    // Phase 7: Production Setup (Optional or direct)
     if (startStep === 'full' || startStep === 'production') {
       saveOnboardState(cwd, { step: 'production', timestamp: Date.now() })
       console.info()
@@ -532,6 +562,116 @@ async function setupSSTDeployment(cwd: string): Promise<void> {
   )
 }
 
+async function configureCIRunners(cwd: string): Promise<void> {
+  showInfo('GitHub Actions CI/CD Runner Configuration')
+  console.info()
+  console.info(
+    pc.gray(
+      'Your project uses ARM64 (Apple Silicon) architecture for Docker builds.\n' +
+        'GitHub Actions requires compatible runners for CI/CD to work properly.'
+    )
+  )
+  console.info()
+
+  const runnerChoice = await promptSelect<'warp' | 'github-arm' | 'github-x64' | 'skip'>(
+    'Choose your CI runner configuration:',
+    [
+      {
+        value: 'warp',
+        label: 'Warp Runners (Recommended)',
+        hint: 'Fast ARM64 runners, cheaper than GitHub ($0.005/min)',
+      },
+      {
+        value: 'github-arm',
+        label: 'GitHub ARM Runners',
+        hint: 'Native ARM64, requires GitHub Teams/Enterprise ($0.16/min)',
+      },
+      {
+        value: 'github-x64',
+        label: 'GitHub x64 Runners (Free)',
+        hint: 'Requires changing Docker builds to x64 architecture',
+      },
+      {
+        value: 'skip',
+        label: 'Configure Later',
+        hint: 'Skip for now (CI will fail until configured)',
+      },
+    ]
+  )
+
+  if (runnerChoice === 'cancel' || runnerChoice === 'skip') {
+    showInfo('Skipping CI runner configuration')
+    showWarning(
+      'CI/CD will fail until you configure runners. Update .github/workflows/ci.yml'
+    )
+    return
+  }
+
+  const ciConfigPath = resolve(cwd, '.github/workflows/ci.yml')
+  const dockerBuildPath = resolve(cwd, 'scripts/web/build-docker.ts')
+
+  try {
+    let ciContent = readFileSync(ciConfigPath, 'utf-8')
+    let dockerContent = readFileSync(dockerBuildPath, 'utf-8')
+
+    if (runnerChoice === 'warp') {
+      console.info()
+      showStep('Setting up Warp runners')
+      console.info()
+      console.info(pc.cyan('1. Sign up for Warp Build (if not already):'))
+      console.info(pc.gray('   https://www.warpbuild.com'))
+      console.info()
+      console.info(pc.cyan('2. Install Warp GitHub App:'))
+      console.info(pc.gray('   https://github.com/apps/warp-build'))
+      console.info()
+      console.info(pc.cyan('3. Grant access to your repository'))
+      console.info()
+
+      // CI config is already set for Warp, just confirm
+      showSuccess('✓ CI configuration already set for Warp runners')
+      showInfo('Warp uses ARM64 runners matching your local architecture')
+    } else if (runnerChoice === 'github-arm') {
+      // Update CI to use GitHub ARM runners
+      ciContent = ciContent.replace(
+        /runs-on:.*warp-ubuntu-latest-arm64.*/,
+        'runs-on: ubuntu-24.04-arm'
+      )
+      writeFileSync(ciConfigPath, ciContent)
+
+      console.info()
+      showSuccess('✓ Updated CI to use GitHub ARM runners')
+      showWarning('Note: GitHub ARM runners require Teams or Enterprise plan')
+      showInfo('Pricing: $0.16/minute for ARM runners')
+    } else if (runnerChoice === 'github-x64') {
+      // Update CI to use standard GitHub runners
+      ciContent = ciContent.replace(
+        /runs-on:.*warp-ubuntu-latest-arm64.*/,
+        'runs-on: ubuntu-latest'
+      )
+      writeFileSync(ciConfigPath, ciContent)
+
+      // Update Docker build script to use x64
+      dockerContent = dockerContent.replace('linux/arm64', 'linux/amd64')
+      writeFileSync(dockerBuildPath, dockerContent)
+
+      console.info()
+      showSuccess('✓ Updated CI to use free GitHub x64 runners')
+      showSuccess('✓ Updated Docker builds to x64 architecture')
+      showWarning(
+        "Note: Docker images built on x64 won't run on ARM64 machines without emulation"
+      )
+    }
+
+    console.info()
+    showInfo('CI runner configuration complete')
+  } catch (error) {
+    showError('Failed to update CI configuration')
+    showInfo(
+      'Please manually update .github/workflows/ci.yml and scripts/web/build-docker.ts'
+    )
+  }
+}
+
 async function startServices(cwd: string): Promise<void> {
   const spinner = showSpinner('Starting Docker services...')
 
@@ -574,7 +714,13 @@ async function startServices(cwd: string): Promise<void> {
 
 // State management helpers
 interface OnboardState {
-  step: 'prerequisites' | 'environment' | 'identity' | 'ports' | 'production'
+  step:
+    | 'prerequisites'
+    | 'environment'
+    | 'identity'
+    | 'ports'
+    | 'ci-runners'
+    | 'production'
   platform?: 'uncloud' | 'sst'
   timestamp: number
 }

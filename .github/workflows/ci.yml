@@ -49,9 +49,12 @@ jobs:
   build-test-and-deploy:
     if: "!contains(github.event.commits[0].message, 'docs:')"
     timeout-minutes: 18
-    # TODO: Switch back to Warp runners once configured
-    # runs-on: ${{ github.ref == 'refs/heads/main' && 'warp-ubuntu-latest-arm64-32x' || 'warp-ubuntu-latest-arm64-8x' }}
-    runs-on: ubuntu-latest
+    # Using Warp runners for ARM64 support (cheaper and faster than GitHub ARM runners)
+    # If you don't have Warp, either:
+    # 1. Sign up at https://www.warpbuild.com (recommended - cheaper than GitHub)
+    # 2. Use GitHub's ubuntu-24.04-arm (requires paid GitHub plan)
+    # 3. Use ubuntu-latest and change Docker builds to linux/amd64 in scripts/web/build-docker.ts
+    runs-on: ${{ github.ref == 'refs/heads/main' && 'warp-ubuntu-latest-arm64-16x' || 'warp-ubuntu-latest-arm64-4x' }}
 
     steps:
       - name: Checkout

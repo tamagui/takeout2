@@ -67,7 +67,7 @@ async function main() {
   const skippedVars: Array<{ key: string; reason: string }> = []
 
   for (const [key, defaultValue] of Object.entries(packageJson.env)) {
-    const value = process.env[key]
+    let value = process.env[key]
 
     // skip if no value in .env.production
     if (!value || value === '') {
@@ -81,6 +81,21 @@ async function main() {
     if (defaultValue !== true && value === String(defaultValue)) {
       skippedVars.push({ key, reason: 'using default value' })
       continue
+    }
+
+    // for DEPLOY_SSH_KEY, read the file content if it's a path
+    if (key === 'DEPLOY_SSH_KEY' && value.startsWith('/')) {
+      try {
+        const keyContent = readFileSync(value, 'utf-8')
+        value = keyContent
+        console.info(pc.gray(`  reading ssh key from: ${process.env[key]}`))
+      } catch (error) {
+        skippedVars.push({
+          key,
+          reason: `file not found: ${value}`,
+        })
+        continue
+      }
     }
 
     // determine if sensitive (contains SECRET, KEY, PASSWORD, TOKEN)

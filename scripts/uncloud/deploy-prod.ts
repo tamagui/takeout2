@@ -5,6 +5,7 @@
  */
 
 import { config } from 'dotenv'
+import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { buildMigrations, buildWeb, buildDockerImage } from './helpers/build'
 import { checkSSHKey, testSSHConnection } from './helpers/ssh'
@@ -22,9 +23,11 @@ const args = process.argv.slice(2)
 const skipBuild = args.includes('--skip-build')
 const skipDocker = args.includes('--skip-docker')
 
-// load .env.production
+// load .env.production if it exists (for local use)
 const envPath = resolve(process.cwd(), '.env.production')
-config({ path: envPath, override: true })
+if (existsSync(envPath)) {
+  config({ path: envPath, override: false })
+}
 
 const DEPLOY_HOST = process.env.DEPLOY_HOST
 const DEPLOY_USER = process.env.DEPLOY_USER || 'root'
@@ -34,14 +37,16 @@ function checkPrerequisites() {
   console.info('📋 checking prerequisites...\n')
 
   if (!DEPLOY_HOST) {
-    console.error('❌ DEPLOY_HOST not set in .env.production')
-    console.error('\nrun: bun tko onboard')
+    console.error('❌ DEPLOY_HOST not set')
+    console.error('\nFor local use, run: bun tko onboard')
+    console.error('For CI, ensure DEPLOY_HOST is in GitHub secrets')
     process.exit(1)
   }
 
   if (!process.env.ZERO_UPSTREAM_DB) {
-    console.error('❌ ZERO_UPSTREAM_DB not set in .env.production')
-    console.error('\nrun: bun tko onboard')
+    console.error('❌ ZERO_UPSTREAM_DB not set')
+    console.error('\nFor uncloud deployment, database should be externally managed')
+    console.error('Set ZERO_UPSTREAM_DB, ZERO_CVR_DB, ZERO_CHANGE_DB in .env.production')
     process.exit(1)
   }
 

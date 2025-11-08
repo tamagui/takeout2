@@ -444,6 +444,23 @@ async function deployUncloud() {
   console.info('\n📦 deploying to uncloud...')
   console.info()
 
+  // check if uncloud is properly configured
+  if (!process.env.DEPLOY_HOST || !process.env.ZERO_UPSTREAM_DB) {
+    console.info(pc.yellow('⚠ uncloud deployment not fully configured'))
+    console.info(pc.gray('\nmissing required variables:'))
+    if (!process.env.DEPLOY_HOST) {
+      console.info(pc.gray('  - DEPLOY_HOST'))
+    }
+    if (!process.env.ZERO_UPSTREAM_DB) {
+      console.info(pc.gray('  - ZERO_UPSTREAM_DB'))
+    }
+    console.info(pc.gray('\nskipping deployment (builds succeeded)'))
+    console.info(pc.gray('\nto enable deployment:'))
+    console.info(pc.gray('  1. run: bun tko onboard'))
+    console.info(pc.gray('  2. sync env to github: bun scripts/env/sync-to-github.ts'))
+    return
+  }
+
   // run uncloud deployment
   try {
     await run('bun tko uncloud deploy-prod', {

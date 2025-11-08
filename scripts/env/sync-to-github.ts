@@ -37,7 +37,20 @@ async function main() {
     process.exit(1)
   }
 
-  config({ path: envPath })
+  // manually parse .env.production to avoid dotenv loading .env or .env.local
+  const envContent = readFileSync(envPath, 'utf-8')
+  for (const line of envContent.split('\n')) {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith('#')) continue
+
+    const match = trimmed.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/)
+    if (match) {
+      const [, key, value] = match
+      // remove quotes if present
+      const cleanValue = value.replace(/^["'](.*)["']$/, '$1')
+      process.env[key] = cleanValue
+    }
+  }
 
   // load package.json env section
   const packagePath = resolve(cwd, 'package.json')

@@ -1,6 +1,6 @@
 import { Check, Copy } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Button, YStack, SizableText } from 'tamagui'
+import { Button, SizableText, YStack } from 'tamagui'
 
 export function DocsCodeBlock({
   children,
@@ -21,14 +21,7 @@ export function DocsCodeBlock({
   }
 
   return (
-    <YStack
-      position="relative"
-      my="$4"
-      bg="$color2"
-      // @ts-expect-error - borderRadius on YStack
-      borderRadius="$4"
-      overflow="hidden"
-    >
+    <YStack position="relative" my="$4" bg="$color2" rounded="$4" overflow="hidden">
       <Button
         position="absolute"
         top="$2"

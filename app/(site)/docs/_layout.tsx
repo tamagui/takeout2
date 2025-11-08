@@ -1,9 +1,9 @@
 import { ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
-import { Paragraph, ScrollView, SizableText, Spacer, View, XStack, YStack } from 'tamagui'
 import { type Href, Link, Slot } from 'one'
-import { SiteHeader } from '~/features/site/components/SiteHeader'
+import { Paragraph, ScrollView, SizableText, Spacer, View, XStack, YStack } from 'tamagui'
 import { DocsMenuContents } from '~/features/docs/DocsMenuContents'
 import { useDocsMenu } from '~/features/docs/useDocsMenu'
+import { SiteHeader } from '~/features/site/components/SiteHeader'
 
 const GITHUB_URL = 'https://github.com'
 const REPO_NAME = 'usetakeout/takeout3'
@@ -22,8 +22,7 @@ export function DocsLayout() {
         mx="auto"
         width="100%"
         maxW={1250}
-        // @ts-expect-error - Tamagui shorthand and responsive props
-        $gtMd={{
+        $md={{
           flexDirection: 'row',
         }}
       >
@@ -33,14 +32,13 @@ export function DocsLayout() {
           bg="$background"
           borderRightWidth={1}
           borderRightColor="$borderColor"
-          // @ts-expect-error - $gtMd responsive breakpoint
-          $gtMd={{
+          $md={{
             position: 'sticky' as any,
-            top: 0,
+            t: 0,
             height: '100vh',
             width: 225,
           }}
-          $md={{
+          $maxMD={{
             display: 'none',
           }}
         >
@@ -104,17 +102,16 @@ export function DocsLayout() {
                     flex={1}
                     minW={200}
                     p="$5"
-                    borderRadius="$4"
+                    rounded="$4"
                     borderWidth={1}
                     borderColor="$borderColor"
                     pressStyle={{
                       bg: '$backgroundPress',
                     }}
-                    alignItems="center"
-                    justifyContent="flex-end"
+                    items="center"
+                    justify="flex-end"
                     gap="$4"
                     cursor="pointer"
-                    {...({} as any)}
                   >
                     <View>
                       <Paragraph select="none" size="$5">

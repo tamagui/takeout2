@@ -97,8 +97,7 @@ export const DocsRouteNavItem = function DocsRouteNavItem({
         {pending ? (
           <>
             <XStack flex={1} />
-            {/* @ts-expect-error - borderRadius on SizableText */}
-            <SizableText size="$1" px="$2" py="$1" bg="$background" borderRadius="$3">
+            <SizableText size="$1" px="$2" py="$1" bg="$background" rounded="$3">
               WIP
             </SizableText>
           </>

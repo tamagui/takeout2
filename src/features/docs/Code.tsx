@@ -9,8 +9,7 @@ export function CodeInline({ children }: { children: any }) {
       bg="$color3"
       px="$2"
       py="$1"
-      // @ts-expect-error - borderRadius on Text
-      borderRadius="$2"
+      rounded="$2"
     >
       {children}
     </SizableText>

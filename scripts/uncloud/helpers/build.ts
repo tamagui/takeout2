@@ -14,7 +14,7 @@ export function buildWeb() {
 
 export function buildDockerImage(
   imageName = 'takeout-web:latest',
-  platform = 'linux/amd64'
+  platform = 'linux/arm64'
 ) {
   console.info('\n🐳 building docker image...\n')
   console.info(`platform: ${platform}`)

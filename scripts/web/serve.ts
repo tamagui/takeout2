@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 
 /**
- * @description Serve web on port 8081
+ * @description Serve web in production mode
  */
 
 import { $ } from 'bun'
 
-await $`one serve --port 8081`
+await $`bun one serve --port 8081`

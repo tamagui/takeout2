@@ -4,6 +4,10 @@
  * @description Start backend services for CI
  */
 
-import { ciBackend } from './helpers/ci-run'
+import { run } from '@vxrn/scripts/helpers/run'
+import { getTestWebEnv } from './helpers/getTestEnv'
 
-await ciBackend()
+await run(`bun backend:clean`)
+await run(`bun backend --no-color`, {
+  env: await getTestWebEnv(),
+})

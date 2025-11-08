@@ -295,7 +295,7 @@ Integration tests run automatically in CI:
   run: bun ci:backend &
 
 - name: Start frontend (production)
-  run: bun ci:frontend-prod &
+  run: bun ci:frontend &
 
 - name: Wait for server
   run: bun wait-for-server

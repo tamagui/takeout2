@@ -6,12 +6,12 @@ general:
 - zero migrations needs improvement - lambda / part of migrate likely
 - fix test.skip tests
 - job system should be here
-- get tests working
 - re-enable database backup in ci.ts once ./src/database/scripts/backup.ts is
   available
 
 quan:
 
+- remove public/images/\* i think
 - get auth flows working
 - get home/tabs working
 - remove lots more native dependencies
@@ -35,7 +35,3 @@ pokai:
 - production sst deploy (merge in good parts from fleek)
 - hot update cleanup / into package ideally
 - read over guides and improve/add, especially ci/cd, etc
-
-nate:
-
-- sst/aws/github helpers are nice

@@ -1,5 +1,4 @@
 import { tamaguiPlugin } from '@tamagui/vite-plugin'
-import { promises as fs } from 'node:fs'
 import { one } from 'one/vite'
 import type { UserConfig } from 'vite'
 
@@ -19,27 +18,6 @@ export default {
     // for `over-zero`, may change how we do things here since it depends on function.name
     // i can see the argument that this is a standard JS feature tho so this is a fine default
     minifyIdentifiers: false,
-  },
-
-  optimizeDeps: {
-    esbuildOptions: {
-      plugins: [
-        {
-          name: 'jsx-for-expo-packages',
-          setup(build) {
-            build.onLoad(
-              {
-                filter: /node_modules\/(expo-|@expo\/).*\.js$/,
-              },
-              async (args) => ({
-                contents: await fs.readFile(args.path, 'utf8'),
-                loader: 'jsx',
-              })
-            )
-          },
-        },
-      ],
-    },
   },
 
   plugins: [

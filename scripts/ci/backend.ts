@@ -4,7 +4,7 @@
  * @description Start backend services for CI
  */
 
-import { run } from '@tamatko/scripts/helpers/run'
+import { run } from '@take-out/scripts/helpers/run'
 import { getTestWebEnv } from './helpers/getTestEnv'
 
 await run(`bun backend:clean`)

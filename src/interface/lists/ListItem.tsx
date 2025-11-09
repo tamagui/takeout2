@@ -8,7 +8,7 @@ import {
   XStack,
   YStack,
 } from 'tamagui'
-import { isTauri } from '@tamatko/helpers'
+import { isTauri } from '@take-out/helpers'
 import type { ContextMenuItem } from '../menu/types'
 import { LineShimmer } from '../shimmer/LineShimmer'
 import { ListItemBackground } from './ListItemBackground'

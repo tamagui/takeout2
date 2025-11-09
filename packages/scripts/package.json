@@ -1,5 +1,5 @@
 {
-  "name": "@tamatko/scripts",
+  "name": "@take-out/scripts",
   "version": "0.0.27",
   "type": "module",
   "main": "./src/index.ts",
@@ -19,7 +19,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@tamatko/helpers": "workspace:*"
+    "@take-out/helpers": "workspace:*"
   },
   "devDependencies": {
     "vxrn": "*"

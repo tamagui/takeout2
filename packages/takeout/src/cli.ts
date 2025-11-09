@@ -32,7 +32,7 @@ function isScriptCategory(name: string): boolean {
 // check if a name could be a built-in script
 function isBuiltInScript(name: string): boolean {
   try {
-    const resolved = import.meta.resolve('@tamatko/scripts/package.json')
+    const resolved = import.meta.resolve('@take-out/scripts/package.json')
     const packageJsonPath = new URL(resolved).pathname
     const packageRoot = join(packageJsonPath, '..')
     const srcPath = join(packageRoot, 'src')

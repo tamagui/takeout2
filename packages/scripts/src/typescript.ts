@@ -4,7 +4,7 @@
  * @description Run TypeScript compiler for type checking
  */
 
-import { run } from '@tamatko/scripts/helpers/run'
+import { run } from '@take-out/scripts/helpers/run'
 
 const useTsgo = process.env.TSGO === '1'
 const args = process.argv.slice(2)

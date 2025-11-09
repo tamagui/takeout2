@@ -1,4 +1,4 @@
-import { ensure } from '@tamatko/helpers'
+import { ensure } from '@take-out/helpers'
 import { userById } from '~/data/queries/user'
 import type { User } from '~/data/types'
 import { useAuth } from '~/features/auth/client/authClient'

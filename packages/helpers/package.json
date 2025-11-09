@@ -1,5 +1,5 @@
 {
-  "name": "@tamatko/helpers",
+  "name": "@take-out/helpers",
   "version": "0.0.27",
   "sideEffects": false,
   "type": "module",

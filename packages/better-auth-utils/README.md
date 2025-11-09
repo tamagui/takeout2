@@ -1,4 +1,4 @@
-# @tamatko/better-auth-utils
+# @take-out/better-auth-utils
 
 Better Auth utilities and helpers for React/React Native applications.
 
@@ -14,7 +14,7 @@ Better Auth utilities and helpers for React/React Native applications.
 ## Installation
 
 ```bash
-bun add @tamatko/better-auth-utils
+bun add @take-out/better-auth-utils
 ```
 
 ## Usage
@@ -22,7 +22,7 @@ bun add @tamatko/better-auth-utils
 ### Basic Setup
 
 ```typescript
-import { createBetterAuthClient } from '@tamatko/better-auth-utils'
+import { createBetterAuthClient } from '@take-out/better-auth-utils'
 import { adminClient, magicLinkClient } from 'better-auth/client/plugins'
 
 const authClient = createBetterAuthClient({
@@ -65,7 +65,7 @@ function UserProfile() {
 ### Custom User Types
 
 ```typescript
-import type { User } from '@tamatko/better-auth-utils'
+import type { User } from '@take-out/better-auth-utils'
 
 interface MyUser extends User {
   role?: 'admin' | 'user'

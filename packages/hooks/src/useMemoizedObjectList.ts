@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react'
-import { isEqualDeepLite } from '@tamatko/helpers'
+import { isEqualDeepLite } from '@take-out/helpers'
 
 /**
  * When zero mutates and inserts, it creates all new objects for everything, but this

@@ -130,14 +130,14 @@ export async function ejectFromMonorepo(cwd: string): Promise<{
       latestVersion = takeoutPkg.version
     }
 
-    // replace workspace:* with actual version for all @tamatko/* packages
+    // replace workspace:* with actual version for all @take-out/* packages
     const workspacePackages = [
-      '@tamatko/better-auth-utils',
-      '@tamatko/helpers',
-      '@tamatko/hooks',
-      '@tamatko/postgres',
-      '@tamatko/scripts',
-      '@tamatko/takeout',
+      '@take-out/better-auth-utils',
+      '@take-out/helpers',
+      '@take-out/hooks',
+      '@take-out/postgres',
+      '@take-out/scripts',
+      '@take-out/takeout',
     ]
 
     for (const pkgName of workspacePackages) {

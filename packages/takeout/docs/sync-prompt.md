@@ -83,8 +83,8 @@ Check if the user has ejected from the monorepo setup:
 
 **If ejected:**
 - DO NOT copy any changes from `./packages/*` directories
-- Instead, at the end of syncing, check the latest `@tamatko/*` package versions in the upstream `package.json`
-- Run: `bun add @tamatko/takeout@^X.X.X @tamatko/helpers@^X.X.X` (etc.) with the latest versions
+- Instead, at the end of syncing, check the latest `@take-out/*` package versions in the upstream `package.json`
+- Run: `bun add @take-out/takeout@^X.X.X @take-out/helpers@^X.X.X` (etc.) with the latest versions
 
 **If NOT ejected:**
 - Sync changes to `./packages/*` normally

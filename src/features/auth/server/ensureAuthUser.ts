@@ -1,4 +1,4 @@
-import { ensureExists } from '@tamatko/helpers'
+import { ensureExists } from '@take-out/helpers'
 import { ensureAuth } from './ensureAuth'
 
 export class NotAuthorizedError extends Error {}

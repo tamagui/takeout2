@@ -1,13 +1,13 @@
 #!/usr/bin/env bun
 
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
-import { time, type Timer } from '@tamatko/helpers'
+import { time, type Timer } from '@take-out/helpers'
 import { spawn } from 'node:child_process'
 import { unlink } from 'node:fs/promises'
 import { join } from 'node:path'
 import { Resource } from 'sst'
-import { ensureS3Bucket } from '@tamatko/scripts/helpers/ensure-s3-bucket'
-import { run } from '@tamatko/scripts/helpers/run'
+import { ensureS3Bucket } from '@take-out/scripts/helpers/ensure-s3-bucket'
+import { run } from '@take-out/scripts/helpers/run'
 import { pruneBackups } from './prune-backups'
 
 const BUCKET_NAME = 'start-dot-chat-db-backups'

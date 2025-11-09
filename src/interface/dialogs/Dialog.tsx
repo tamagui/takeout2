@@ -1,4 +1,4 @@
-import { createGlobalContext, useAsyncEffect } from '@tamatko/helpers'
+import { createGlobalContext, useAsyncEffect } from '@take-out/helpers'
 import { use, useRef } from 'react'
 import {
   DialogDescription,

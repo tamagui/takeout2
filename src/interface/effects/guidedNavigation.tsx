@@ -1,7 +1,7 @@
 import { AnimatePresence, Circle, debounce, useIsomorphicLayoutEffect } from 'tamagui'
 import { closeAllEscapables } from '~/features/shortcuts/handleKeyboardEscape'
-import { sleep } from '@tamatko/helpers'
-import { createEmitter, useEmitterValue } from '@tamatko/helpers'
+import { sleep } from '@take-out/helpers'
+import { createEmitter, useEmitterValue } from '@take-out/helpers'
 import { animationClamped } from '~/interface/animations/animationClamped'
 
 const GUIDED_CURSOR_SIZE = 30

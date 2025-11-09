@@ -1,5 +1,5 @@
 import type { ChildProcess } from 'node:child_process'
-import type { Timer } from '@tamatko/helpers'
+import type { Timer } from '@take-out/helpers'
 
 export type ProcessType = ChildProcess | Bun.Subprocess
 export type ProcessHandler = (process: ProcessType) => void

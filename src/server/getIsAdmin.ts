@@ -1,5 +1,5 @@
 import type { AuthData } from '~/features/auth/types'
-import { ensure } from '@tamatko/helpers'
+import { ensure } from '@take-out/helpers'
 import { ADMIN_WHITELIST } from '~/server/constants-server'
 
 export const getIsAdmin = (authData: AuthData) =>

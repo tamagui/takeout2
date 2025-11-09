@@ -1,4 +1,4 @@
-import { isNative } from '@tamatko/helpers'
+import { isNative } from '@take-out/helpers'
 import * as ExpoHaptics from 'expo-haptics'
 
 // only enable haptics on iOS and Android

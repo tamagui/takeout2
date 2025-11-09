@@ -1,6 +1,6 @@
 import { AnimatePresence } from '@tamagui/animate-presence'
 import { ChevronLeft, ChevronRight, X } from '@tamagui/lucide-icons'
-import { useEmitterValue } from '@tamatko/helpers'
+import { useEmitterValue } from '@take-out/helpers'
 import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
 import { useWindowDimensions } from 'react-native'

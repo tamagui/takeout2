@@ -1,4 +1,4 @@
-# @tamatko/native-hot-update
+# @take-out/native-hot-update
 
 Minimal, headless React Native hot update library.
 
@@ -14,7 +14,7 @@ Minimal, headless React Native hot update library.
 ## Installation
 
 ```bash
-bun add @tamatko/native-hot-update react-native-mmkv
+bun add @take-out/native-hot-update react-native-mmkv
 ```
 
 ## Quick Start
@@ -24,8 +24,8 @@ bun add @tamatko/native-hot-update react-native-mmkv
 ```ts
 // src/hotUpdater.ts
 import { MMKV } from 'react-native-mmkv'
-import { createHotUpdater } from '@tamatko/native-hot-update'
-import { createMMKVStorage } from '@tamatko/native-hot-update/mmkv'
+import { createHotUpdater } from '@take-out/native-hot-update'
+import { createMMKVStorage } from '@take-out/native-hot-update/mmkv'
 
 const mmkv = new MMKV({ id: 'hot-updater' })
 
@@ -176,7 +176,7 @@ React hook for automatic update checking.
 
 ```ts
 import { MMKV } from 'react-native-mmkv'
-import { createMMKVStorage } from '@tamatko/native-hot-update/mmkv'
+import { createMMKVStorage } from '@take-out/native-hot-update/mmkv'
 
 const mmkv = new MMKV({ id: 'hot-updater' })
 const storage = createMMKVStorage(mmkv)

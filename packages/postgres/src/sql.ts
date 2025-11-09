@@ -1,5 +1,5 @@
 import type { Pool, QueryResult } from 'pg'
-import { ellipsis } from '@tamatko/helpers'
+import { ellipsis } from '@take-out/helpers'
 
 export type SqlQuery = {
   text: string

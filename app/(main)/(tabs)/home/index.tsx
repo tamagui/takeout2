@@ -1,5 +1,5 @@
 import { LegendList, type LegendListRef } from '@legendapp/list'
-import { isAndroid, isNative, useEmitter } from '@tamatko/helpers'
+import { isAndroid, isNative, useEmitter } from '@take-out/helpers'
 import { memo, useCallback, useRef } from 'react'
 import { RefreshControl } from 'react-native'
 import Animated, {

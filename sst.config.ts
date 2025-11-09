@@ -22,7 +22,7 @@ export default $config({
   async run() {
     const { readFileSync } = await import('node:fs')
     const { execSync } = await import('node:child_process')
-    const { loadEnv } = await import('@tamatko/scripts/helpers/env-load')
+    const { loadEnv } = await import('@take-out/scripts/helpers/env-load')
     const { DOMAIN } = await import('./src/constants/app')
     const stage = $dev ? 'development' : 'production'
 

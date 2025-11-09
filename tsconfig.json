@@ -4,12 +4,12 @@
     "outDir": "dist",
     "paths": {
       "~/*": ["./src/*"],
-      "@tamatko/better-auth-utils": ["./packages/better-auth-utils/src/index.ts"],
-      "@tamatko/helpers": ["./packages/helpers/src/index.ts"],
-      "@tamatko/hooks": ["./packages/hooks/src/index.ts"],
-      "@tamatko/postgres": ["./packages/postgres/src/index.ts"],
-      "@tamatko/scripts": ["./packages/scripts/src/index.ts"],
-      "@tamatko/takeout": ["./packages/takeout/src/index.ts"]
+      "@take-out/better-auth-utils": ["./packages/better-auth-utils/src/index.ts"],
+      "@take-out/helpers": ["./packages/helpers/src/index.ts"],
+      "@take-out/hooks": ["./packages/hooks/src/index.ts"],
+      "@take-out/postgres": ["./packages/postgres/src/index.ts"],
+      "@take-out/scripts": ["./packages/scripts/src/index.ts"],
+      "@take-out/takeout": ["./packages/takeout/src/index.ts"]
     },
     "forceConsistentCasingInFileNames": true,
     "verbatimModuleSyntax": true,

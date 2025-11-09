@@ -1,5 +1,5 @@
 {
-  "name": "@tamatko/better-auth-utils",
+  "name": "@take-out/better-auth-utils",
   "version": "0.0.27",
   "description": "Better auth utilities and client for React/React Native applications",
   "sideEffects": false,
@@ -45,7 +45,7 @@
     }
   },
   "dependencies": {
-    "@tamatko/helpers": "workspace:*",
+    "@take-out/helpers": "workspace:*",
     "better-auth": "^1.3.28"
   },
   "peerDependencies": {

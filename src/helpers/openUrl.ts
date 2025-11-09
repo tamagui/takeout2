@@ -1,4 +1,4 @@
-import { isTauri } from '@tamatko/helpers'
+import { isTauri } from '@take-out/helpers'
 
 /**
  * Opens a URL in the default browser

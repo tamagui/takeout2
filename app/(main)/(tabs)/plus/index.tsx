@@ -1,4 +1,4 @@
-import { randomId } from '@tamatko/helpers'
+import { randomId } from '@take-out/helpers'
 import { router, useFocusEffect } from 'one'
 import { memo, useRef, useState } from 'react'
 import {

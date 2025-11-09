@@ -1,5 +1,5 @@
 {
-  "name": "@tamatko/takeout",
+  "name": "@take-out/takeout",
   "version": "0.0.27",
   "description": "CLI tools for Takeout starter kit - interactive onboarding and project setup",
   "type": "module",
@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.8.2",
-    "@tamatko/scripts": "workspace:*",
+    "@take-out/scripts": "workspace:*",
     "citty": "^0.1.6",
     "picocolors": "^1.1.1"
   },

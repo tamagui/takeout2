@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { YStack } from 'tamagui'
-import { IS_SAFARI, isTauri } from '@tamatko/helpers'
+import { IS_SAFARI, isTauri } from '@take-out/helpers'
 import { GradientBlurDown } from '~/interface/effects/GradientBlur'
 import { LinearGradient } from '@tamagui/linear-gradient'
 

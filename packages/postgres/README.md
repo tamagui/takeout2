@@ -1,4 +1,4 @@
-# @tamatko/postgres
+# @take-out/postgres
 
 PostgreSQL database utilities and migration system for vxrn applications.
 
@@ -19,7 +19,7 @@ not the most flexible abstraction just meant to provide a starting point.
 ## Installation
 
 ```bash
-bun add @tamatko/postgres
+bun add @take-out/postgres
 ```
 
 ## Usage
@@ -27,7 +27,7 @@ bun add @tamatko/postgres
 ### Basic Setup
 
 ```typescript
-import { createPool, createDb } from '@tamatko/postgres'
+import { createPool, createDb } from '@take-out/postgres'
 import * as schema from './schema'
 
 // create raw pg pool
@@ -40,7 +40,7 @@ const db = createDb(process.env.DATABASE_URL, schema)
 ### Connection Management
 
 ```typescript
-import { getDBClient, queryDb } from '@tamatko/postgres/helpers'
+import { getDBClient, queryDb } from '@take-out/postgres/helpers'
 
 // get client with automatic retry and monitoring
 const client = await getDBClient()
@@ -57,7 +57,7 @@ const result = await queryDb('SELECT * FROM users WHERE id = $1', [userId])
 ### SQL Template Helper
 
 ```typescript
-import { sql } from '@tamatko/postgres'
+import { sql } from '@take-out/postgres'
 
 const users = await sql<User>`
   SELECT * FROM users WHERE created_at > ${since}
@@ -67,7 +67,7 @@ const users = await sql<User>`
 ### Chunked Query Processing
 
 ```typescript
-import { processInChunks, updateInChunks } from '@tamatko/postgres/helpers'
+import { processInChunks, updateInChunks } from '@take-out/postgres/helpers'
 
 // process large datasets in chunks
 await processInChunks(
@@ -92,7 +92,7 @@ The package includes a custom migration runner that supports both SQL and
 TypeScript migrations:
 
 ```typescript
-import { migrate } from '@tamatko/postgres/migrate'
+import { migrate } from '@take-out/postgres/migrate'
 
 await migrate({
   connectionString: process.env.DATABASE_URL,

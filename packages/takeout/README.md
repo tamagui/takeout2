@@ -1,4 +1,4 @@
-# @tamatko/takeout
+# @take-out/takeout
 
 CLI tools for Takeout starter kit - interactive onboarding, project setup,
 scripts and script running.
@@ -16,11 +16,11 @@ scripts and script running.
 ## Installation
 
 ```bash
-npm install @tamatko/takeout
+npm install @take-out/takeout
 # or
-bun add @tamatko/takeout
+bun add @take-out/takeout
 # or
-pnpm add @tamatko/takeout
+pnpm add @take-out/takeout
 ```
 
 ## Usage
@@ -71,7 +71,7 @@ import {
   generateSecret,
   updateEnvVariable,
   displayWelcome,
-} from '@tamatko/takeout'
+} from '@take-out/takeout'
 
 // Check prerequisites
 const checks = checkAllPrerequisites()
@@ -172,7 +172,7 @@ Add to your `package.json`:
     "postinstall": "takeout check"
   },
   "dependencies": {
-    "@tamatko/takeout": "^0.0.1"
+    "@take-out/takeout": "^0.0.1"
   }
 }
 ```

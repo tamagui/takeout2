@@ -256,12 +256,12 @@ export const onboardCommand = defineCommand({
           "We've included a variety of packages we found useful building apps with this stack:"
         )
       )
-      console.info(pc.gray('  • @tamatko/takeout - CLI tools and onboarding'))
-      console.info(pc.gray('  • @tamatko/helpers - Utility functions'))
-      console.info(pc.gray('  • @tamatko/hooks - React hooks'))
-      console.info(pc.gray('  • @tamatko/postgres - Database utilities'))
-      console.info(pc.gray('  • @tamatko/scripts - Build and dev scripts'))
-      console.info(pc.gray('  • @tamatko/better-auth-utils - Auth helpers'))
+      console.info(pc.gray('  • @take-out/takeout - CLI tools and onboarding'))
+      console.info(pc.gray('  • @take-out/helpers - Utility functions'))
+      console.info(pc.gray('  • @take-out/hooks - React hooks'))
+      console.info(pc.gray('  • @take-out/postgres - Database utilities'))
+      console.info(pc.gray('  • @take-out/scripts - Build and dev scripts'))
+      console.info(pc.gray('  • @take-out/better-auth-utils - Auth helpers'))
       console.info()
       console.info(pc.gray('These packages are included locally for two reasons:'))
       console.info(

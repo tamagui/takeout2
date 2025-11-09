@@ -1,4 +1,4 @@
-import { ensureEnv } from '@tamatko/helpers'
+import { ensureEnv } from '@take-out/helpers'
 
 if (typeof window !== 'undefined') {
   throw new Error(`This is a server-only file`)

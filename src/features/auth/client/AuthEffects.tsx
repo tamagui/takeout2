@@ -1,5 +1,5 @@
 import { isClient, isWeb } from 'tamagui'
-import { isTauri } from '@tamatko/helpers'
+import { isTauri } from '@take-out/helpers'
 import { setAuthClientToken } from './authClient'
 
 const disableAuthBrowser =

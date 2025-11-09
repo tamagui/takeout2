@@ -10,23 +10,23 @@ import {
   ECRClient,
   GetAuthorizationTokenCommand,
 } from '@aws-sdk/client-ecr'
-import { sleep, slugify, time } from '@tamatko/helpers'
+import { sleep, slugify, time } from '@take-out/helpers'
 import { existsSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { parseArgs } from 'node:util'
-import { checkPort } from '@tamatko/scripts/helpers/check-port'
-import { getTestEnv } from '@tamatko/scripts/helpers/get-test-env'
-import { handleProcessExit } from '@tamatko/scripts/helpers/handleProcessExit'
+import { checkPort } from '@take-out/scripts/helpers/check-port'
+import { getTestEnv } from '@take-out/scripts/helpers/get-test-env'
+import { handleProcessExit } from '@take-out/scripts/helpers/handleProcessExit'
 import {
   printTiming,
   run,
   runInline,
   runParallel,
   waitForRun,
-} from '@tamatko/scripts/helpers/run'
-import { waitForPort } from '@tamatko/scripts/helpers/wait-for-port'
+} from '@take-out/scripts/helpers/run'
+import { waitForPort } from '@take-out/scripts/helpers/wait-for-port'
 import pc from 'picocolors'
 import * as uncloudHelpers from './helpers/uncloud'
 

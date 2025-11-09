@@ -2,12 +2,12 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "@tamatko/better-auth-utils": ["./better-auth-utils/src/index.ts"],
-      "@tamatko/helpers": ["./helpers/src/index.ts"],
-      "@tamatko/hooks": ["./hooks/src/index.ts"],
-      "@tamatko/postgres": ["./postgres/src/index.ts"],
-      "@tamatko/scripts": ["./scripts/src/index.ts"],
-      "@tamatko/takeout": ["./takeout/src/index.ts"]
+      "@take-out/better-auth-utils": ["./better-auth-utils/src/index.ts"],
+      "@take-out/helpers": ["./helpers/src/index.ts"],
+      "@take-out/hooks": ["./hooks/src/index.ts"],
+      "@take-out/postgres": ["./postgres/src/index.ts"],
+      "@take-out/scripts": ["./scripts/src/index.ts"],
+      "@take-out/takeout": ["./takeout/src/index.ts"]
     },
     "outDir": "dist",
     "importHelpers": true,

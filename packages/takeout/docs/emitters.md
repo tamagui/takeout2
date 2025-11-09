@@ -21,7 +21,7 @@ An emitter is a simple pub-sub pattern with:
 ## Basic Usage
 
 ```tsx
-import { createEmitter, useEmitterValue, useEmitter } from '@tamatko/helpers'
+import { createEmitter, useEmitterValue, useEmitter } from '@take-out/helpers'
 
 // simple value emitter
 const counterEmitter = createEmitter('counter', 0)
@@ -51,7 +51,7 @@ Comparators control when listeners are notified:
 - Custom: Provide your own comparison function
 
 ```tsx
-import { isEqualIdentity, isEqualNever, isEqualDeep } from '@tamatko/helpers'
+import { isEqualIdentity, isEqualNever, isEqualDeep } from '@take-out/helpers'
 
 // always emit (good for action events)
 const actionEmitter = createEmitter(
@@ -173,7 +173,7 @@ async function waitForConfirmation() {
 ### Global emitters that survive HMR
 
 ```tsx
-import { createGlobalEmitter } from '@tamatko/helpers'
+import { createGlobalEmitter } from '@take-out/helpers'
 
 const globalStateEmitter = createGlobalEmitter('globalState', {
   theme: 'dark',
@@ -184,7 +184,7 @@ const globalStateEmitter = createGlobalEmitter('globalState', {
 ### Contextual emitters for component trees
 
 ```tsx
-import { createContextualEmitter } from '@tamatko/helpers'
+import { createContextualEmitter } from '@take-out/helpers'
 
 const [useChannelEmitter, ChannelEmitterProvider] =
   createContextualEmitter<string>('channelId', { comparator: isEqualIdentity })

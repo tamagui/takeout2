@@ -15,7 +15,7 @@ import {
   type Emitter,
   isEqualDeepLite,
   useEmitterValue,
-} from '@tamatko/helpers'
+} from '@take-out/helpers'
 import type { Session, User } from 'better-auth'
 import { type BetterAuthClientOptions, createAuthClient } from 'better-auth/client'
 

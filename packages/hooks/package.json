@@ -1,5 +1,5 @@
 {
-  "name": "@tamatko/hooks",
+  "name": "@take-out/hooks",
   "version": "0.0.27",
   "sideEffects": false,
   "source": "src/index.ts",
@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "react": "*",
-    "@tamatko/helpers": "workspace:*",
+    "@take-out/helpers": "workspace:*",
     "tamagui": "*"
   },
   "peerDependencies": {

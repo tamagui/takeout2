@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { SizableText } from 'tamagui'
-import { abbreviateNumber } from '@tamatko/helpers'
+import { abbreviateNumber } from '@take-out/helpers'
 
 type BadgeCountProps = {
   count: number

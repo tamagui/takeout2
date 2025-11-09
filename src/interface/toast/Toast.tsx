@@ -7,7 +7,7 @@ import {
 } from '@tamagui/toast'
 import { useState, type ReactNode } from 'react'
 import { YStack } from 'tamagui'
-import { useEmitter, useEmitterValue } from '@tamatko/helpers'
+import { useEmitter, useEmitterValue } from '@take-out/helpers'
 import { Z_INDICES } from '../constants'
 import { toastEmitter } from './emitter'
 

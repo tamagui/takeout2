@@ -90,18 +90,11 @@ export async function showDeploymentStatus() {
 
 export async function runHealthCheck() {
   console.info('\n🏥 checking deployment health...')
-  try {
-    await run('bun tko uncloud check-deployment', {
-      prefix: 'health',
-      timeout: time.ms.minutes(5),
-      timing: 'uncloud health check',
-    })
-  } catch (error) {
-    // health check is informational - don't fail deployment if it times out
-    console.info(pc.yellow('\n⚠ health check timed out (non-critical)'))
-    console.info(pc.gray('  services may still be starting up'))
-    console.info(pc.gray('  check manually with: ssh root@$DEPLOY_HOST'))
-  }
+  await run('bun tko uncloud check-deployment', {
+    prefix: 'health',
+    timeout: time.ms.minutes(5),
+    timing: 'uncloud health check',
+  })
 }
 
 export async function tailLogs() {

@@ -47,7 +47,7 @@ export const ZERO_SERVER_URL = (() => {
     // Default to production URL if not set
     return import.meta.env.VITE_PUBLIC_ZERO_SERVER || 'https://zero.fleekapp.fxy.dev'
   } else {
-    return import.meta.env.VITE_PUBLIC_ZERO_SERVER
+    return import.meta.env.VITE_PUBLIC_ZERO_SERVER || 'http://localhost:4848'
   }
 })()
 

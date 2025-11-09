@@ -4,26 +4,18 @@ import { images } from '~/constants/images'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { OnboardingStepPageLayout } from '~/features/user/ui/OnboardingStepPageLayout'
 import { useUser } from '~/features/user/useUser'
+import { pickImageFromLibrary, takePhotoWithCamera } from '~/helpers/media/imagePicker'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { showError } from '~/interface/dialogs/actions'
 import { CameraIcon } from '~/interface/icons/phosphor/CameraIcon'
+import { ImageIcon } from '~/interface/icons/phosphor/ImageIcon'
 import { PencilSimpleIcon } from '~/interface/icons/phosphor/PencilSimpleIcon'
 import { Image } from '~/interface/image/Image'
+import { ListItem } from '~/interface/lists/ListItem'
+import { Sheet } from '~/interface/sheet/Sheet'
 import { showToast } from '~/interface/toast/helpers'
 import { useUploadFiles } from '~/interface/upload/uploadFile'
-
-let Sheet: any, ListItem: any, ImageIcon: any
-let pickImageFromLibrary: any, takePhotoWithCamera: any
-
-if (!isWeb) {
-  Sheet = require('~/interface/sheet/Sheet').Sheet
-  ListItem = require('~/interface/lists/ListItem').ListItem
-  ImageIcon = require('~/interface/icons/phosphor/ImageIcon').ImageIcon
-  const picker = require('~/helpers/media/imagePicker')
-  pickImageFromLibrary = picker.pickImageFromLibrary
-  takePhotoWithCamera = picker.takePhotoWithCamera
-}
 
 const MAX_IMAGE_SIZE = 600
 const IMAGE_QUALITY = 0.9
@@ -143,24 +135,22 @@ export const AvatarSetupPage = () => {
         Icon={CameraIcon}
         description="Finally, let's choose an avatar for your profile."
         bottom={
-          <YStack gap="$5">
-            <SizableText
-              opacity={localImageUri ? 0.6 : 0}
-              size="$3"
-              color="$color10"
-              text="center"
-            >
-              You can always change your avatar later.
-            </SizableText>
-            <ButtonSimple
-              glass
-              size="large"
-              onPress={goToNextStep}
-              disabled={!localImageUri || isUploading}
-            >
-              {isUploading ? 'Uploading...' : 'Next'}
-            </ButtonSimple>
-          </YStack>
+          <ButtonSimple
+            glass
+            variant="outlined"
+            size="large"
+            pressStyle={{
+              scale: 0.97,
+              bg: '$color2',
+            }}
+            hoverStyle={{
+              bg: '$color2',
+            }}
+            onPress={goToNextStep}
+            disabled={!localImageUri || isUploading}
+          >
+            {isUploading ? 'Uploading...' : 'Next'}
+          </ButtonSimple>
         }
       >
         <YStack items="center" mt="$10">

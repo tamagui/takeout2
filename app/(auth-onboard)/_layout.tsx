@@ -6,7 +6,6 @@ import { NotificationProvider } from '~/interface/notification/Notification'
 import { ToastProvider } from '~/interface/toast/Toast'
 import { DragDropFile } from '~/interface/upload/DragDropFile'
 import { PlatformSpecificRootProvider } from '~/providers/PlatformSpecificRootProvider'
-import { ProvideZero } from '~/zero/client'
 
 export function AuthAndOnboardingLayout() {
   return (
@@ -23,12 +22,10 @@ export function AuthAndOnboardingLayout() {
 
 function MainProviders({ children }: { children: ReactNode }) {
   return (
-    <ProvideZero>
-      <ToastProvider>
-        <NotificationProvider>
-          <PlatformSpecificRootProvider>{children}</PlatformSpecificRootProvider>
-        </NotificationProvider>
-      </ToastProvider>
-    </ProvideZero>
+    <ToastProvider>
+      <NotificationProvider>
+        <PlatformSpecificRootProvider>{children}</PlatformSpecificRootProvider>
+      </NotificationProvider>
+    </ToastProvider>
   )
 }

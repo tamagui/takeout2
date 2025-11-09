@@ -1,4 +1,5 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
+import { isIos, isNative } from '@vxrn/helpers'
 import { router } from 'one'
 import { Linking } from 'react-native'
 import {
@@ -12,12 +13,10 @@ import {
   YStack,
 } from 'tamagui'
 import { APP_NAME, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '~/constants/app'
-import { isIos, isNative } from '~/constants/platform'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { Logo } from '~/interface/app/Logo'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { dialogEmit } from '~/interface/dialogs/shared'
-import Glint from '~/interface/effects/Glint'
 import { AppleIcon } from '~/interface/icons/AppleIcon'
 import { GoogleIcon } from '~/interface/icons/GoogleIcon'
 import { H2 } from '~/interface/text/Headings'
@@ -25,8 +24,6 @@ import { showToast } from '~/interface/toast/helpers'
 
 export const LoginPage = () => {
   useOnboarding()
-
-  const { width } = useWindowDimensions()
 
   const handleSignInAdmin = async () => {
     dialogEmit({ type: 'admin-password' })
@@ -55,15 +52,17 @@ export const LoginPage = () => {
   return (
     <View flex={1} bg="$color1">
       {/* Dark gradient background */}
-      <LinearGradient
-        colors={['#313131', 'transparent']}
-        position="absolute"
-        t={0}
-        l={0}
-        r={0}
-        b={0}
-        height={200}
-      />
+      {isNative && (
+        <LinearGradient
+          colors={['#313131', 'transparent']}
+          position="absolute"
+          t={0}
+          l={0}
+          r={0}
+          b={0}
+          height={200}
+        />
+      )}
       <YStack flex={1} justify="center" items="center" px="$4">
         <YStack gap="$6" width="100%" items="center">
           <YStack
@@ -174,6 +173,7 @@ export const LoginPage = () => {
             <YStack width="100%" gap="$3">
               <ButtonSimple
                 glass
+                variant="outlined"
                 size="large"
                 onPress={() => handleSocialLogin('google')}
                 width="100%"
@@ -187,14 +187,13 @@ export const LoginPage = () => {
                 animation="200ms"
                 enterStyle={{ opacity: 0, scale: 0.95 }}
                 icon={<GoogleIcon size={18} />}
-                borderWidth={1}
-                borderColor="$color3"
               >
                 Continue with Google
               </ButtonSimple>
               {isIos && (
                 <ButtonSimple
                   glass
+                  variant="outlined"
                   size="large"
                   onPress={() => handleSocialLogin('apple')}
                   width="100%"
@@ -208,8 +207,6 @@ export const LoginPage = () => {
                   animation="200ms"
                   enterStyle={{ opacity: 0, scale: 0.95 }}
                   icon={<AppleIcon size={20} />}
-                  borderWidth={1}
-                  borderColor="$color3"
                 >
                   Continue with Apple
                 </ButtonSimple>

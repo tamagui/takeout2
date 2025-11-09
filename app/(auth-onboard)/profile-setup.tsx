@@ -101,7 +101,15 @@ export const ProfileSetupPage = () => {
       bottom={
         <ButtonSimple
           glass
+          variant="outlined"
           size="large"
+          pressStyle={{
+            scale: 0.97,
+            bg: '$color2',
+          }}
+          hoverStyle={{
+            bg: '$color2',
+          }}
           onPress={handleContinue}
           disabled={!canContinue || isValidating}
         >

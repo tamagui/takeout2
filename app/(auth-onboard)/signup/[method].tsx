@@ -213,8 +213,16 @@ export const SignupPage = memo(() => {
       bottom={
         <ButtonSimple
           glass
+          variant="outlined"
           data-testid="next-button"
           size="large"
+          pressStyle={{
+            scale: 0.97,
+            bg: '$color2',
+          }}
+          hoverStyle={{
+            bg: '$color2',
+          }}
           onPress={handleContinue}
           disabled={!inputValue.trim() || (isPhone && !smsConsent)}
         >

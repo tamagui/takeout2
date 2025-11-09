@@ -15,8 +15,8 @@ export default {
   },
 
   esbuild: {
-    // for `over-zero`, may change how we do things here since it depends on function.name
-    // i can see the argument that this is a standard JS feature tho so this is a fine default
+    // for `over-zero`, may change how we do things here since queries depend on function.name
+    // i can see the argument that this is a standard JS feature though
     minifyIdentifiers: false,
   },
 
@@ -48,47 +48,8 @@ export default {
         ? {}
         : {
             bundler: 'metro', // Use Metro bundler for better React Native compatibility
-
-            // TODO in one simplify the following:
-            // bundlerOptions: {
-            //   watchman: false, // had some slowness using this
-            //   excludeModules: ['node:http2', 'jsonwebtoken', '@aws-sdk/*'],
-            //   babelConfig: {
-            //     plugins: ['hot-updater/babel-plugin'],
-            //   },
-            // },
-
             bundlerOptions: {
-              defaultConfigOverrides: (config) => {
-                return {
-                  ...config,
-                  resolver: {
-                    ...config?.resolver,
-                    useWatchman: false, // We are encountering various issues with Watchman so we are disabling it for now
-                    resolveRequest: (context, moduleName, platform) => {
-                      const defaultResolveRequest =
-                        config?.resolver?.resolveRequest || context.resolveRequest
-
-                      // Workaround: resolve these to empty module because they will break the build
-                      // We may want to refactor and make this not be imported at all in the RN build
-                      if (
-                        moduleName === 'node:http2' ||
-                        moduleName === 'jsonwebtoken' ||
-                        moduleName.startsWith('@aws-sdk/')
-                      ) {
-                        return defaultResolveRequest(
-                          context,
-                          '@vxrn/vite-plugin-metro/empty',
-                          platform
-                        )
-                      }
-
-                      const res = defaultResolveRequest(context, moduleName, platform)
-                      return res
-                    },
-                  },
-                }
-              },
+              watchman: false, // had some slowness using this
               babelConfigOverrides: (config) => {
                 return {
                   ...config,

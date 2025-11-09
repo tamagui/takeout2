@@ -1,4 +1,4 @@
-import { ensureEnv } from '@vxrn/helpers'
+import { ensureEnv } from '@tamatko/helpers'
 
 if (typeof window !== 'undefined') {
   throw new Error(`This is a server-only file`)

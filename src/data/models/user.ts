@@ -1,5 +1,5 @@
 import { boolean, number, string, table } from '@rocicorp/zero'
-import { ensure } from '@vxrn/helpers'
+import { ensure } from '@tamatko/helpers'
 import { mutations, where } from 'over-zero'
 import type { UserUpdate } from '../types'
 

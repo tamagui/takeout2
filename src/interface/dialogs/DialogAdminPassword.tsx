@@ -1,4 +1,4 @@
-import { useEmitterSelector } from '@vxrn/helpers'
+import { useEmitterSelector } from '@tamatko/helpers'
 import { useState } from 'react'
 import { XStack, YStack } from 'tamagui'
 import { signInAsAdmin } from '~/features/auth/client/signInAsAdmin'

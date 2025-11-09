@@ -1,4 +1,4 @@
-import { AbortError, createGlobalContext, isWeb, useAsyncEffect } from '@vxrn/helpers'
+import { AbortError, createGlobalContext, isWeb, useAsyncEffect } from '@tamatko/helpers'
 import type React from 'react'
 import { useContext, useEffect, useState } from 'react'
 import { useEvent } from 'tamagui'

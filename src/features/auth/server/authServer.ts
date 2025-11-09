@@ -1,7 +1,7 @@
 import { expo } from '@better-auth/expo'
 import { betterAuth } from 'better-auth'
 // import { emailHarmony, phoneHarmony } from 'better-auth-harmony'
-import { time } from '@vxrn/helpers'
+import { time } from '@tamatko/helpers'
 import { admin, bearer, emailOTP, jwt, magicLink, phoneNumber } from 'better-auth/plugins'
 import { database } from '~/database/database'
 import { BETTER_AUTH_SECRET, BETTER_AUTH_URL } from '~/server/env-server'

@@ -9,7 +9,7 @@ import {
 import { ListItemContext } from './ListItemContext'
 import { ListItemInput } from './ListItemInput'
 import { useHandleEscapeIf } from '~/features/shortcuts/handleKeyboardEscape'
-import { createContextualEmitter, useEmitter } from '@vxrn/helpers'
+import { createContextualEmitter, useEmitter } from '@tamatko/helpers'
 
 export type ListItemTextProps = GetProps<typeof ListItemTextFrame>
 

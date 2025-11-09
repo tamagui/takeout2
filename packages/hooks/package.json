@@ -1,5 +1,5 @@
 {
-  "name": "@vxrn/hooks",
+  "name": "@tamatko/hooks",
   "version": "0.0.26",
   "sideEffects": false,
   "source": "src/index.ts",
@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "react": "*",
-    "@vxrn/helpers": "workspace:*",
+    "@tamatko/helpers": "workspace:*",
     "tamagui": "*"
   },
   "peerDependencies": {

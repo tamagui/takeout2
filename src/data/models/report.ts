@@ -1,5 +1,5 @@
 import { number, string, table } from '@rocicorp/zero'
-import { randomId } from '@vxrn/helpers'
+import { randomId } from '@tamatko/helpers'
 import { mutations, where } from 'over-zero'
 
 export const schema = table('report')

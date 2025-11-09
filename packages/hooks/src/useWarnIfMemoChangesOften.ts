@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { emptyFn } from '@vxrn/helpers'
+import { emptyFn } from '@tamatko/helpers'
 
 export const useWarnIfMemoChangesOften =
   process.env.NODE_ENV === 'production'

@@ -16,7 +16,7 @@ import {
 // find scripts package root using import.meta.resolve
 function findScriptsPackageRoot(): string | null {
   try {
-    const resolved = import.meta.resolve('@vxrn/scripts/package.json')
+    const resolved = import.meta.resolve('@tamatko/scripts/package.json')
     const packageJsonPath = new URL(resolved).pathname
     const packageRoot = join(packageJsonPath, '..')
     const srcPath = join(packageRoot, 'src')
@@ -139,7 +139,7 @@ export function listAllScripts(includeCommands = true): void {
     console.info(
       pc.dim(`Create scripts in ${relative(process.cwd(), getLocalScriptsDir())}/`)
     )
-    console.info(pc.dim(`Or install @vxrn/scripts package for built-in scripts`))
+    console.info(pc.dim(`Or install @tamatko/scripts package for built-in scripts`))
   }
 
   console.info()

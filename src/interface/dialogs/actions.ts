@@ -1,4 +1,4 @@
-import { AbortError, createEmitter, isEqualNever } from '@vxrn/helpers'
+import { AbortError, createEmitter, isEqualNever } from '@tamatko/helpers'
 import { dialogEmit } from './shared'
 import type { DialogConfirmType, DialogErrorType } from './types'
 

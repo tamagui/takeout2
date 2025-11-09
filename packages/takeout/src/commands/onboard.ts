@@ -15,7 +15,12 @@ import {
   updateEnvVariable,
 } from '../utils/env'
 import { setupProductionEnv } from '../utils/env-setup'
-import { markOnboarded, updateAppConfig, updatePackageJson } from '../utils/files'
+import {
+  ejectFromMonorepo,
+  markOnboarded,
+  updateAppConfig,
+  updatePackageJson,
+} from '../utils/files'
 import { checkAllPorts, getConflictingPorts } from '../utils/ports'
 import { checkAllPrerequisites, hasRequiredPrerequisites } from '../utils/prerequisites'
 import {
@@ -237,6 +242,70 @@ export const onboardCommand = defineCommand({
       console.info('  bun ios            # Build iOS dev app')
       console.info('  bun android        # Build Android dev app')
       console.info('  takeout docs list  # View Takeout docs')
+      console.info()
+    }
+
+    // Phase 6.5: Monorepo Ejection (Optional)
+    if (startStep !== 'production') {
+      console.info()
+      showStep('Monorepo Setup')
+      console.info()
+
+      console.info(
+        pc.gray(
+          "We've included a variety of packages we found useful building apps with this stack:"
+        )
+      )
+      console.info(pc.gray('  • @tamatko/takeout - CLI tools and onboarding'))
+      console.info(pc.gray('  • @tamatko/helpers - Utility functions'))
+      console.info(pc.gray('  • @tamatko/hooks - React hooks'))
+      console.info(pc.gray('  • @tamatko/postgres - Database utilities'))
+      console.info(pc.gray('  • @tamatko/scripts - Build and dev scripts'))
+      console.info(pc.gray('  • @tamatko/better-auth-utils - Auth helpers'))
+      console.info()
+      console.info(pc.gray('These packages are included locally for two reasons:'))
+      console.info(
+        pc.gray('  1. You can see their source and decide if you want to keep them')
+      )
+      console.info(
+        pc.gray('  2. Anyone can easily submit fixes or improvements back to our repo')
+      )
+      console.info()
+      console.info(
+        pc.gray(
+          "Over time we'll publish new versions. You can sync with 'bun tko sync' (monorepo)"
+        )
+      )
+      console.info(pc.gray("or if you eject, use 'bun up takeout' for package updates."))
+      console.info()
+
+      const shouldEject = await confirmContinue(
+        'Eject from monorepo setup? (removes ./packages, uses published versions)',
+        false
+      )
+
+      if (shouldEject) {
+        const spinner = showSpinner('Ejecting from monorepo...')
+
+        const result = await ejectFromMonorepo(cwd)
+
+        if (result.success) {
+          spinner.stop('Ejected from monorepo')
+          showSuccess('✓ Removed ./packages directory')
+          showSuccess('✓ Updated package.json to use published versions')
+          showSuccess('✓ Installed published packages')
+          console.info()
+          showInfo('You can now upgrade packages with: bun up takeout')
+        } else {
+          spinner.stop('Ejection failed')
+          showError(`Failed to eject: ${result.error}`)
+          console.info()
+        }
+      } else {
+        showInfo('Keeping monorepo setup - you can customize packages locally')
+        showInfo('Run "bun tko sync" to sync with upstream Takeout updates later')
+      }
+
       console.info()
     }
 

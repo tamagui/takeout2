@@ -1,4 +1,4 @@
-import { sleep } from '@vxrn/helpers'
+import { sleep } from '@tamatko/helpers'
 import { authClient } from './authClient'
 import { standardizeBetterAuthError } from './passwordLogin'
 

@@ -4,7 +4,7 @@
  * @description Run multiple scripts in parallel or sequence
  */
 
-import { handleProcessExit } from '@vxrn/scripts/helpers/handleProcessExit'
+import { handleProcessExit } from '@tamatko/scripts/helpers/handleProcessExit'
 import { spawn } from 'node:child_process'
 import { promises as fs } from 'node:fs'
 import { join, relative, resolve } from 'node:path'

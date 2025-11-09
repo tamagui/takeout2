@@ -1,4 +1,4 @@
-import { useEmitterSelector } from '@vxrn/helpers'
+import { useEmitterSelector } from '@tamatko/helpers'
 import { isWeb, useWindowDimensions, XStack, YStack } from 'tamagui'
 import { ButtonAction } from '../buttons/ButtonAction'
 import { Dialog } from './Dialog'

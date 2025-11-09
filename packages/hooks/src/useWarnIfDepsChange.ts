@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef } from 'react'
-import { getCurrentComponentStack } from '@vxrn/helpers'
+import { getCurrentComponentStack } from '@tamatko/helpers'
 
 export interface UseWarnIfDepsChangeOptions {
   maxChanges?: number

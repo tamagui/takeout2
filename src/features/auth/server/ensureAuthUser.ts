@@ -1,4 +1,4 @@
-import { ensureExists } from '@vxrn/helpers'
+import { ensureExists } from '@tamatko/helpers'
 import { ensureAuth } from './ensureAuth'
 
 export class NotAuthorizedError extends Error {}

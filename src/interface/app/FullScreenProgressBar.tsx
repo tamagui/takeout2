@@ -1,9 +1,9 @@
 import { memo, useEffect, useState } from 'react'
 import { useDebounce, View } from 'tamagui'
-import { createEmitter, useEmitterValue } from '@vxrn/helpers'
-import type { Timer } from '@vxrn/helpers'
+import { createEmitter, useEmitterValue } from '@tamatko/helpers'
+import type { Timer } from '@tamatko/helpers'
 import { attachmentEmitter } from '../upload/DragDropFile'
-import { isEqualIdentity } from '@vxrn/helpers'
+import { isEqualIdentity } from '@tamatko/helpers'
 
 export type FullScreenProgressBarProps = {
   /** How long after a navigation to wait before showing the progress bar (in ms) */

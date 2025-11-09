@@ -1,5 +1,5 @@
 {
-  "name": "@vxrn/native-hot-update",
+  "name": "@tamatko/native-hot-update",
   "version": "0.0.26",
   "type": "module",
   "sideEffects": false,

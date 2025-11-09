@@ -1,4 +1,4 @@
-# @vxrn/takeout
+# @tamatko/takeout
 
 CLI tools for Takeout starter kit - interactive onboarding, project setup,
 scripts and script running.
@@ -16,11 +16,11 @@ scripts and script running.
 ## Installation
 
 ```bash
-npm install @vxrn/takeout
+npm install @tamatko/takeout
 # or
-bun add @vxrn/takeout
+bun add @tamatko/takeout
 # or
-pnpm add @vxrn/takeout
+pnpm add @tamatko/takeout
 ```
 
 ## Usage
@@ -71,7 +71,7 @@ import {
   generateSecret,
   updateEnvVariable,
   displayWelcome,
-} from '@vxrn/takeout'
+} from '@tamatko/takeout'
 
 // Check prerequisites
 const checks = checkAllPrerequisites()
@@ -172,7 +172,7 @@ Add to your `package.json`:
     "postinstall": "takeout check"
   },
   "dependencies": {
-    "@vxrn/takeout": "^0.0.1"
+    "@tamatko/takeout": "^0.0.1"
   }
 }
 ```

@@ -8,7 +8,7 @@ import {
   withStaticProperties,
   type PopoverProps,
 } from 'tamagui'
-import { sleep } from '@vxrn/helpers'
+import { sleep } from '@tamatko/helpers'
 import { animationClamped } from '../animations/animationClamped'
 import { Popover } from '../popover/Popover'
 import { MenuItem } from './MenuItem'

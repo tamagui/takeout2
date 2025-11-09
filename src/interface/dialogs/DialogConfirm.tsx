@@ -1,4 +1,4 @@
-import { isWeb, useEmitterSelector } from '@vxrn/helpers'
+import { isWeb, useEmitterSelector } from '@tamatko/helpers'
 import { useState } from 'react'
 import { useWindowDimensions, XStack, YStack } from 'tamagui'
 import { ButtonAction } from '../buttons/ButtonAction'

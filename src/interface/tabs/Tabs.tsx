@@ -1,4 +1,4 @@
-import { createGlobalContext } from '@vxrn/helpers'
+import { createGlobalContext } from '@tamatko/helpers'
 import { useEffect, useRef, useState } from 'react'
 import { Animated } from 'react-native'
 import type {

@@ -1,4 +1,4 @@
-import { clearIndexedDB, globalEffect } from '@vxrn/helpers'
+import { clearIndexedDB, globalEffect } from '@tamatko/helpers'
 import { dialogConfirm } from '~/interface/dialogs/actions'
 import { showNotificationToast } from '~/interface/notification/NotificationToast'
 import { zeroEvents } from '~/zero/client'

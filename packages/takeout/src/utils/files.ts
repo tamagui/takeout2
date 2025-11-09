@@ -2,7 +2,8 @@
  * File operations for updating project configuration
  */
 
-import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { execSync } from 'node:child_process'
+import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 export function updatePackageJson(
@@ -92,6 +93,84 @@ export function markOnboarded(cwd: string): { success: boolean; error?: string }
       `Onboarded at: ${timestamp}\nRun 'bun onboard' to reconfigure.\n`,
       'utf-8'
     )
+    return { success: true }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    }
+  }
+}
+
+/**
+ * Ejects from monorepo setup by removing ./packages and updating workspace:* versions
+ */
+export async function ejectFromMonorepo(cwd: string): Promise<{
+  success: boolean
+  error?: string
+}> {
+  const packagePath = join(cwd, 'package.json')
+  const packagesDir = join(cwd, 'packages')
+
+  if (!existsSync(packagePath)) {
+    return { success: false, error: 'package.json not found' }
+  }
+
+  try {
+    // read package.json
+    const content = readFileSync(packagePath, 'utf-8')
+    const pkg = JSON.parse(content)
+
+    // get the current version from takeout package
+    const takeoutPkgPath = join(packagesDir, 'takeout/package.json')
+    let latestVersion = '0.0.26' // fallback version
+
+    if (existsSync(takeoutPkgPath)) {
+      const takeoutPkg = JSON.parse(readFileSync(takeoutPkgPath, 'utf-8'))
+      latestVersion = takeoutPkg.version
+    }
+
+    // replace workspace:* with actual version for all @tamatko/* packages
+    const workspacePackages = [
+      '@tamatko/better-auth-utils',
+      '@tamatko/helpers',
+      '@tamatko/hooks',
+      '@tamatko/postgres',
+      '@tamatko/scripts',
+      '@tamatko/takeout',
+    ]
+
+    for (const pkgName of workspacePackages) {
+      if (pkg.dependencies?.[pkgName] === 'workspace:*') {
+        pkg.dependencies[pkgName] = `^${latestVersion}`
+      }
+      if (pkg.devDependencies?.[pkgName] === 'workspace:*') {
+        pkg.devDependencies[pkgName] = `^${latestVersion}`
+      }
+    }
+
+    // remove workspaces field
+    delete pkg.workspaces
+
+    // write updated package.json
+    writeFileSync(packagePath, JSON.stringify(pkg, null, 2) + '\n', 'utf-8')
+
+    // remove packages directory
+    if (existsSync(packagesDir)) {
+      rmSync(packagesDir, { recursive: true, force: true })
+    }
+
+    // install the published packages
+    try {
+      execSync('bun install', { cwd, stdio: 'inherit' })
+    } catch (installError) {
+      return {
+        success: false,
+        error:
+          'Failed to install published packages. You may need to run "bun install" manually.',
+      }
+    }
+
     return { success: true }
   } catch (error) {
     return {

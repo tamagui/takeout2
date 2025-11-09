@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { sleep } from '@vxrn/helpers'
+import { sleep } from '@tamatko/helpers'
 
 const ONE_SERVER_URL = process.env.ONE_SERVER_URL || 'http://localhost:8081'
 const CHECK_INTERVAL = 2000

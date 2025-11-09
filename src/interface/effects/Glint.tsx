@@ -1,5 +1,5 @@
 import { styled, YStack } from 'tamagui'
-import { isNative } from '@vxrn/helpers'
+import { isNative } from '@tamatko/helpers'
 
 const Glint = styled(YStack, {
   fullscreen: true,

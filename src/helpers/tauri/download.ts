@@ -1,4 +1,4 @@
-import { isTauri } from '@vxrn/helpers'
+import { isTauri } from '@tamatko/helpers'
 
 async function saveInTauri(data: string | Blob, filename: string) {
   const { save } = await import('@tauri-apps/plugin-dialog')

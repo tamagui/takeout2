@@ -4,7 +4,7 @@
  * @description Check deployment health after CI deployment
  */
 
-import { time, sleep } from '@vxrn/helpers'
+import { time, sleep } from '@tamatko/helpers'
 
 const PRODUCTION_URL = process.env.ONE_SERVER_URL || 'https://api.takeout.com'
 const MAX_RETRIES = 30

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
-import { ensureExists } from '@vxrn/helpers'
-import { loadEnv } from '@vxrn/scripts/helpers/env-load'
+import { ensureExists } from '@tamatko/helpers'
+import { loadEnv } from '@tamatko/scripts/helpers/env-load'
 
 export async function execWithEnvironment(
   environment: 'development' | 'production',
@@ -12,7 +12,7 @@ export async function execWithEnvironment(
   let envFileEnv: Record<string, string>
 
   if (process.env.REMOTE) {
-    await import('@vxrn/scripts/ensure-tunnel')
+    await import('@tamatko/scripts/ensure-tunnel')
     const { getEnvironment } = await import('./sst-get-environment')
     envFileEnv = getEnvironment(process.env.REMOTE)
     ensureExists(envFileEnv)

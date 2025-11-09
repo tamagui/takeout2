@@ -7,7 +7,7 @@ import {
   uniqBy,
   useAsyncEffect,
   useEmitterValue,
-} from '@vxrn/helpers'
+} from '@tamatko/helpers'
 import {
   memo,
   type ReactElement,
@@ -26,7 +26,7 @@ import {
   type ViewProps,
   YStack,
 } from 'tamagui'
-import { isTauri } from '@vxrn/helpers'
+import { isTauri } from '@tamatko/helpers'
 import type { Component } from '../types'
 import { getFileType, isSupportedFile } from './helpers'
 import type { FileUpload } from './types'

@@ -1,4 +1,4 @@
-import { isTauri } from '@vxrn/helpers'
+import { isTauri } from '@tamatko/helpers'
 
 let listenersSetup = false
 

@@ -1,5 +1,5 @@
 {
-  "name": "@vxrn/helpers",
+  "name": "@tamatko/helpers",
   "version": "0.0.26",
   "sideEffects": false,
   "type": "module",

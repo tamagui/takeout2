@@ -20,13 +20,13 @@ function findPackageRoot(startDir: string): string {
   while (dir !== '/') {
     if (existsSync(join(dir, 'package.json'))) {
       const pkg = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf-8'))
-      if (pkg.name === '@vxrn/takeout') {
+      if (pkg.name === '@tamatko/takeout') {
         return dir
       }
     }
     dir = join(dir, '..')
   }
-  throw new Error('Could not find @vxrn/takeout package root')
+  throw new Error('Could not find @tamatko/takeout package root')
 }
 
 const PACKAGE_ROOT = findPackageRoot(import.meta.dirname)

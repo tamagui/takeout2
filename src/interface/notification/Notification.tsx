@@ -1,7 +1,7 @@
 import { Toast, ToastViewport } from '@tamagui/toast'
 import { useState } from 'react'
 import { AnimatePresence, XStack, YStack } from 'tamagui'
-import { createEmitter, useEmitter } from '@vxrn/helpers'
+import { createEmitter, useEmitter } from '@tamatko/helpers'
 import { ButtonSimple } from '../buttons/ButtonSimple'
 import { Z_INDICES } from '../constants'
 import Glint from '../effects/Glint'

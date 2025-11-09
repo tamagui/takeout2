@@ -44,6 +44,12 @@ export default {
     }),
 
     one({
+      // setupFile: {
+      //   client: './src/setupClient.ts',
+      //   server: './src/setupServer.ts',
+      //   // native: './src/setupNative.ts', // if you want to diverge
+      // },
+
       react: {
         compiler: true,
       },
@@ -51,7 +57,7 @@ export default {
       native: process.env.DISABLE_METRO
         ? {}
         : {
-            bundler: 'metro', // Use Metro bundler for better React Native compatibility
+            bundler: 'metro',
             bundlerOptions: {
               watchman: false, // had some slowness using this
               babelConfigOverrides: (config) => {
@@ -67,8 +73,6 @@ export default {
               },
             },
           },
-
-      setupFile: './src/setupClient.ts',
 
       router: {
         experimental: {
@@ -103,7 +107,6 @@ export default {
                   'better-auth',
                   'better-auth/plugins',
                   'sharp',
-                  '@nandorojo/galeria',
                 ],
               },
             },

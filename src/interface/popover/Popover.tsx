@@ -8,7 +8,7 @@ import {
   type PopoverProps,
   type PopoverContentProps as TamaguiPopoverContentProps,
 } from 'tamagui'
-import { createEmitter } from '@vxrn/helpers'
+import { createEmitter } from '@tamatko/helpers'
 import { animationClamped } from '../animations/animationClamped'
 import { hasSelection } from '../forms/hasSelection'
 

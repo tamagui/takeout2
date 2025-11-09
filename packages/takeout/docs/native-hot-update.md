@@ -143,7 +143,7 @@ export function CustomUpdater() {
 ### Debugging
 
 ```ts
-import { hotUpdater } from '@vxrn/native-hot-update'
+import { hotUpdater } from '@tamatko/native-hot-update'
 
 console.info('Applied OTA:', hotUpdater.getAppliedOta())
 console.info('Short ID:', hotUpdater.getShortOtaId())
@@ -173,7 +173,7 @@ The package uses a pluggable storage interface. The app provides MMKV storage:
 
 ```ts
 import { MMKV } from 'react-native-mmkv'
-import { createMMKVStorage } from '@vxrn/native-hot-update/mmkv'
+import { createMMKVStorage } from '@tamatko/native-hot-update/mmkv'
 
 const mmkv = new MMKV({ id: 'hot-updater' })
 const storage = createMMKVStorage(mmkv)

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
-import { getDockerHost } from '@vxrn/scripts/helpers/get-docker-host'
-import { getTestEnv } from '@vxrn/scripts/helpers/get-test-env'
+import { getDockerHost } from '@tamatko/scripts/helpers/get-docker-host'
+import { getTestEnv } from '@tamatko/scripts/helpers/get-test-env'
 
 export async function getTestWebEnv() {
   process.env.NODE_ENV = 'test'

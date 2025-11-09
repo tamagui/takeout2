@@ -1,4 +1,4 @@
-import { createBetterAuthClient } from '@vxrn/better-auth-utils'
+import { createBetterAuthClient } from '@tamatko/better-auth-utils'
 import type { User } from 'better-auth'
 import { SERVER_URL } from '~/constants/urls'
 import { setUser } from '~/features/user/getUser'

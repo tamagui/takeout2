@@ -1,5 +1,5 @@
 import type { Update } from '@tauri-apps/plugin-updater'
-import { emptyFn, time, isTauri } from '@vxrn/helpers'
+import { emptyFn, time, isTauri } from '@tamatko/helpers'
 import { useCallback, useEffect, useRef } from 'react'
 import { showNotification } from '~/interface/notification/Notification'
 import { showToast } from '~/interface/toast/Toast'

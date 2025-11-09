@@ -1,5 +1,5 @@
 {
-  "name": "@vxrn/scripts",
+  "name": "@tamatko/scripts",
   "version": "0.0.26",
   "type": "module",
   "main": "./src/index.ts",
@@ -19,7 +19,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@vxrn/helpers": "workspace:*"
+    "@tamatko/helpers": "workspace:*"
   },
   "devDependencies": {
     "vxrn": "*"

@@ -1,4 +1,4 @@
-import { randomId } from '@vxrn/helpers'
+import { randomId } from '@tamatko/helpers'
 import { s3Client } from './s3client'
 import { uploadToS3, defaultBucket } from './upload'
 

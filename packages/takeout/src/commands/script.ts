@@ -39,7 +39,7 @@ interface ScriptCache {
 // find scripts package root using import.meta.resolve
 function findScriptsPackageRoot(): string | null {
   try {
-    const resolved = import.meta.resolve('@vxrn/scripts/package.json')
+    const resolved = import.meta.resolve('@tamatko/scripts/package.json')
     const packageJsonPath = new URL(resolved).pathname
     const packageRoot = join(packageJsonPath, '..')
     const srcPath = join(packageRoot, 'src')
@@ -366,10 +366,10 @@ const ejectCommand = defineCommand({
 
     if (!sourceScriptsDir) {
       console.error(
-        pc.red('✗ Built-in scripts package (@vxrn/scripts) not found or not installed')
+        pc.red('✗ Built-in scripts package (@tamatko/scripts) not found or not installed')
       )
       console.info()
-      console.info(pc.dim('Install with: bun add -d @vxrn/scripts'))
+      console.info(pc.dim('Install with: bun add -d @tamatko/scripts'))
       process.exit(1)
     }
 

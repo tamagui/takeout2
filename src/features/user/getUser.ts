@@ -1,4 +1,4 @@
-import { createLocalStorageValue } from '@vxrn/helpers'
+import { createLocalStorageValue } from '@tamatko/helpers'
 import type { User } from '~/data/types'
 
 let user: User | null | undefined

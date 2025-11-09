@@ -6,7 +6,7 @@ import type { HotUpdateStorage } from './types'
  *
  * @example
  * import { MMKV } from 'react-native-mmkv'
- * import { createMMKVStorage } from '@vxrn/native-hot-update/mmkv'
+ * import { createMMKVStorage } from '@tamatko/native-hot-update/mmkv'
  *
  * const mmkv = new MMKV({ id: 'hot-updater' })
  * const storage = createMMKVStorage(mmkv)

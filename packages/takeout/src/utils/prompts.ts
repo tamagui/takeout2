@@ -9,6 +9,13 @@ import type { PortCheck, PrerequisiteCheck } from '../types'
 export function displayWelcome(projectName = 'Takeout'): void {
   console.info()
   p.intro(pc.bgCyan(pc.black(` ${projectName} Starter Kit `)))
+  console.info()
+  p.note(
+    pc.dim(
+      "You can re-run 'bun onboard' anytime to reconfigure or skip to specific steps.\nNo need to decide everything upfront!"
+    ),
+    pc.cyan('Tip')
+  )
 }
 
 export function displayOutro(message: string): void {

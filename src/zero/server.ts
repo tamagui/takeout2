@@ -1,4 +1,4 @@
-import { assertString } from '@vxrn/helpers'
+import { assertString } from '@tamatko/helpers'
 import { createZeroServer } from 'over-zero/server'
 import { models } from '~/data/generated/models'
 import * as queries from '~/data/generated/queries'

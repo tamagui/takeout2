@@ -1,5 +1,5 @@
 import type { IconProps } from '@tamagui/helpers-icon'
-import { IS_SAFARI, isWeb, sleep } from '@vxrn/helpers'
+import { IS_SAFARI, isWeb, sleep } from '@tamatko/helpers'
 import { createElement, forwardRef, isValidElement } from 'react'
 import type { FontFamilyTokens, RadiusTokens } from 'tamagui'
 import {

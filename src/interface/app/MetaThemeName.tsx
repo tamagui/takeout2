@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { isClient, useDidFinishSSR, useTheme } from 'tamagui'
-import { emptyFn } from '@vxrn/helpers'
-import { isTauri } from '@vxrn/helpers'
+import { emptyFn } from '@tamatko/helpers'
+import { isTauri } from '@tamatko/helpers'
 
 export const MetaThemeName = isTauri
   ? emptyFn

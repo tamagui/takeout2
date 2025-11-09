@@ -1,4 +1,4 @@
-import { createEmitter, useEmitter } from '@vxrn/helpers'
+import { createEmitter, useEmitter } from '@tamatko/helpers'
 import { closeOpenTooltips } from '~/interface/tooltip/closeOpenTooltips'
 import type { DialogLayer2, DialogType } from './types'
 

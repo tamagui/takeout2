@@ -14,6 +14,7 @@ import { envSetupCommand } from './commands/env-setup'
 import { onboardCommand } from './commands/onboard'
 import { runCommand } from './commands/run'
 import { scriptCommand } from './commands/script'
+import { syncCommand } from './commands/sync'
 import { listAllScripts } from './utils/script-listing'
 
 // check if a directory exists in scripts folder (lazy check)
@@ -31,7 +32,7 @@ function isScriptCategory(name: string): boolean {
 // check if a name could be a built-in script
 function isBuiltInScript(name: string): boolean {
   try {
-    const resolved = import.meta.resolve('@vxrn/scripts/package.json')
+    const resolved = import.meta.resolve('@tamatko/scripts/package.json')
     const packageJsonPath = new URL(resolved).pathname
     const packageRoot = join(packageJsonPath, '..')
     const srcPath = join(packageRoot, 'src')
@@ -68,6 +69,7 @@ if (isShorthand) {
     'script',
     'env:setup',
     'completion',
+    'sync',
     '--help',
     '-h',
     '--version',
@@ -113,6 +115,7 @@ const main = defineCommand({
     run: runCommand,
     script: scriptCommand,
     completion: completionCommand,
+    sync: syncCommand,
   },
   run() {
     // only show available scripts when running tko with truly no arguments

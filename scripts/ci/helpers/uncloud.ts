@@ -6,8 +6,8 @@ import { existsSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
-import { time } from '@vxrn/helpers'
-import { run } from '@vxrn/scripts/helpers/run'
+import { time } from '@tamatko/helpers'
+import { run } from '@tamatko/scripts/helpers/run'
 import pc from 'picocolors'
 
 export async function checkUncloudConfigured(): Promise<boolean> {

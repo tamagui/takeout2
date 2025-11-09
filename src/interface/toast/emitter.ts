@@ -1,4 +1,4 @@
-import { createEmitter } from '@vxrn/helpers'
+import { createEmitter } from '@tamatko/helpers'
 import type { ToastOptions } from './types'
 
 export const toastEmitter = createEmitter<

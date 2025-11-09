@@ -48,6 +48,16 @@ export default {
         ? {}
         : {
             bundler: 'metro', // Use Metro bundler for better React Native compatibility
+
+            // TODO in one simplify the following:
+            // bundlerOptions: {
+            //   watchman: false, // had some slowness using this
+            //   excludeModules: ['node:http2', 'jsonwebtoken', '@aws-sdk/*'],
+            //   babelConfig: {
+            //     plugins: ['hot-updater/babel-plugin'],
+            //   },
+            // },
+
             bundlerOptions: {
               defaultConfigOverrides: (config) => {
                 return {

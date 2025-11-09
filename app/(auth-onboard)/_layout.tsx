@@ -13,7 +13,6 @@ export function AuthAndOnboardingLayout() {
     <MainProviders>
       <DragDropFile>
         <SiteHeader />
-
         <PageContainer>
           <Slot />
         </PageContainer>

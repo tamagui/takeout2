@@ -1,16 +1,28 @@
 import './root.css'
 
-import { Slot } from 'one'
+import { Slot, Stack } from 'one'
 import type { ReactNode } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { isWeb } from 'tamagui'
+import {
+  ROOT_AUTH_ONBOARD_ROUTE_NAME,
+  ROOT_MAIN_ROUTE_NAME,
+} from '~/constants/navigation'
 import { Dialogs } from '~/interface/dialogs/Dialogs'
 import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
+import { ProvideZero } from '~/zero/client'
 
 export function Layout() {
   const contents = (
     <MinimalProviders>
-      <Slot />
+      {isWeb ? (
+        <Slot />
+      ) : (
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name={ROOT_MAIN_ROUTE_NAME} />
+          <Stack.Screen name={ROOT_AUTH_ONBOARD_ROUTE_NAME} />
+        </Stack>
+      )}
     </MinimalProviders>
   )
 
@@ -49,9 +61,11 @@ export function Layout() {
 
 function MinimalProviders({ children }: { children: ReactNode }) {
   return (
-    <TamaguiRootProvider>
-      <Dialogs />
-      <SafeAreaProvider>{children}</SafeAreaProvider>
-    </TamaguiRootProvider>
+    <ProvideZero>
+      <TamaguiRootProvider>
+        <Dialogs />
+        <SafeAreaProvider>{children}</SafeAreaProvider>
+      </TamaguiRootProvider>
+    </ProvideZero>
   )
 }

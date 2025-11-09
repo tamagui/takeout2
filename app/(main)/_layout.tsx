@@ -1,15 +1,12 @@
 import { Redirect, Slot, Stack } from 'one'
 import type { ReactNode } from 'react'
 import { isWeb } from 'tamagui'
-import { ROOT_MAIN_ROUTE_NAME } from '~/constants/navigation'
 import { getNextOnboardingStep } from '~/features/onboarding/getNextOnboardingStep'
 import { useUser } from '~/features/user/useUser'
-import { Dialogs } from '~/interface/dialogs/Dialogs'
 import { NotificationProvider } from '~/interface/notification/Notification'
 import { ToastProvider } from '~/interface/toast/Toast'
 import { DragDropFile } from '~/interface/upload/DragDropFile'
 import { PlatformSpecificRootProvider } from '~/providers/PlatformSpecificRootProvider'
-import { ProvideZero } from '~/zero/client'
 
 export default function AppLayout() {
   const { user, state } = useUser()
@@ -46,12 +43,10 @@ export default function AppLayout() {
 
 function MainProviders({ children }: { children: ReactNode }) {
   return (
-    <ProvideZero>
-      <ToastProvider>
-        <NotificationProvider>
-          <PlatformSpecificRootProvider>{children}</PlatformSpecificRootProvider>
-        </NotificationProvider>
-      </ToastProvider>
-    </ProvideZero>
+    <ToastProvider>
+      <NotificationProvider>
+        <PlatformSpecificRootProvider>{children}</PlatformSpecificRootProvider>
+      </NotificationProvider>
+    </ToastProvider>
   )
 }

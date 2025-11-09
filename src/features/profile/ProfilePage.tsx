@@ -1,10 +1,10 @@
 import { LegendList, type LegendListRef } from '@legendapp/list'
-import { useHeaderHeight } from '@react-navigation/elements'
 import { useParams } from 'one'
 import { memo, useCallback, useMemo, useRef } from 'react'
 import { RefreshControl } from 'react-native'
 import { AnimatePresence, isWeb, Spinner, useWindowDimensions, YStack } from 'tamagui'
 import { images } from '~/constants/images'
+import { useHeaderHeightSafe } from '~/hooks/useHeaderHeightSafe'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { GalleryImage, GalleryWrapper } from '~/interface/gallery/Gallery'
 import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
@@ -20,7 +20,7 @@ const NUM_COLUMNS = 2
 
 export const ProfilePage = memo(() => {
   const listRef = useRef<LegendListRef>(null)
-  const headerHeight = useHeaderHeight() || 0
+  const headerHeight = useHeaderHeightSafe()
   const { width } = useWindowDimensions()
   const columnWidth = (width - 28 - COLUMN_GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS
 

@@ -1,5 +1,5 @@
 import type { IconProps } from '@tamagui/helpers-icon'
-import { IS_SAFARI, sleep } from '@vxrn/helpers'
+import { IS_SAFARI, isWeb, sleep } from '@vxrn/helpers'
 import { createElement, forwardRef, isValidElement } from 'react'
 import type { FontFamilyTokens, RadiusTokens } from 'tamagui'
 import {
@@ -15,7 +15,6 @@ import {
 } from 'tamagui'
 import { useIsDark } from '~/features/theme/useIsDark'
 import { GlassView } from '../effects/GlassView'
-import type { GlassViewProps } from '../effects/GlassViewProps'
 import Glint from '../effects/Glint'
 import { type TooltipWrapperProps, wrapWithTooltip } from '../tooltip/TooltipSimple'
 import { closeOpenTooltips } from '../tooltip/closeOpenTooltips'
@@ -355,6 +354,19 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
       />
     ) : null
 
+    // determine if glint should be shown
+    const shouldShowGlint = () => {
+      if (disableGlint) return false
+      if (rest.size === 'square') return false
+      if (variant === 'transparent' || variant === 'subtle') return false
+
+      // on web, show glint even with glass
+      if (isWeb && glass) return true
+
+      // on native, don't show glint with glass
+      return !glass
+    }
+
     const buttonElement = (
       <ButtonFrame
         size="medium"
@@ -382,11 +394,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
           },
         })}
       >
-        {!disableGlint &&
-          !glass &&
-          variant !== 'transparent' &&
-          variant !== 'subtle' &&
-          rest.size !== 'square' && <ButtonGlint bottomShadow />}
+        {shouldShowGlint() && <ButtonGlint bottomShadow />}
 
         {variant !== 'outlined' && !disableBackground && <ButtonBackground />}
         {variant === 'outlined' && <ButtonOutline />}

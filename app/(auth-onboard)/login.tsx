@@ -96,6 +96,9 @@ export const LoginPage = () => {
               >
                 Welcome back
               </H2>
+              <SizableText color="$color12" onPress={openTermsOfService}>
+                Sign in to your account
+              </SizableText>
             </YStack>
           </YStack>
           <YStack
@@ -159,15 +162,15 @@ export const LoginPage = () => {
               enterStyle={{ opacity: 0 }}
             >
               <Separator flex={1} borderColor="$color3" />
-              <Text
+              <SizableText
                 color="$color10"
-                fontSize="$2"
+                size="$2"
                 fontFamily="$mono"
                 textTransform="uppercase"
                 letterSpacing={1}
               >
                 or
-              </Text>
+              </SizableText>
               <Separator flex={1} borderColor="$color3" />
             </XStack>
             <YStack width="100%" gap="$3">

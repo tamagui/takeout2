@@ -9,6 +9,10 @@ export default {
     allowedHosts: ['host.docker.internal', 'onechat-dev-n8.start.chat'],
   },
 
+  optimizeDeps: {
+    include: ['async-retry'],
+  },
+
   ssr: {
     noExternal: true,
     external: ['over-zero', '@vxrn/mdx'],

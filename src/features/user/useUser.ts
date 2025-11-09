@@ -30,7 +30,9 @@ export const useUser = () => {
       enabled: !!userId,
       status: status.type,
       hasUser: !!user,
-      userData: user ? { id: user.id, username: user.username, hasOnboarded: user.hasOnboarded } : null,
+      userData: user
+        ? { id: user.id, username: user.username, hasOnboarded: user.hasOnboarded }
+        : null,
     },
     error: status.type === 'error' ? status : null,
   })

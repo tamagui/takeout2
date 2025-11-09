@@ -1,6 +1,6 @@
 {
   "name": "@tamatko/scripts",
-  "version": "0.0.26",
+  "version": "0.0.27",
   "type": "module",
   "main": "./src/index.ts",
   "sideEffects": false,

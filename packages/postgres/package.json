@@ -1,6 +1,6 @@
 {
   "name": "@tamatko/postgres",
-  "version": "0.0.26",
+  "version": "0.0.27",
   "sideEffects": false,
   "source": "src/index.ts",
   "main": "dist/cjs",

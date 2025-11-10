@@ -4,15 +4,16 @@ import { router } from 'one'
 import { Linking } from 'react-native'
 import {
   Circle,
+  isWeb,
   Separator,
   SizableText,
-  Text,
-  useWindowDimensions,
+  useMedia,
   View,
   XStack,
   YStack,
 } from 'tamagui'
 import { APP_NAME, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '~/constants/app'
+import { OnboardingScreen } from '~/features/onboarding/OnboardingScreen'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { Logo } from '~/interface/app/Logo'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
@@ -50,7 +51,7 @@ export const LoginPage = () => {
   }
 
   return (
-    <View flex={1} bg="$color1">
+    <XStack flex={1}>
       {/* Dark gradient background */}
       {isNative && (
         <LinearGradient
@@ -63,7 +64,7 @@ export const LoginPage = () => {
           height={200}
         />
       )}
-      <YStack flex={1} justify="center" items="center" px="$4">
+      <YStack flex={2} flexBasis={0} justify="center" items="center" $md={{ p: '$6' }}>
         <YStack gap="$6" width="100%" items="center">
           <YStack
             animation="bouncy"
@@ -259,6 +260,13 @@ export const LoginPage = () => {
           </YStack>
         </YStack>
       </YStack>
-    </View>
+
+      {/* Onboarding section - visible on larger screens */}
+      {isWeb && (
+        <YStack $maxMD={{ display: 'none' }} flex={3} flexBasis={0}>
+          <OnboardingScreen />
+        </YStack>
+      )}
+    </XStack>
   )
 }

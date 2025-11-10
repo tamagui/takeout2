@@ -218,7 +218,7 @@ const ButtonText = styled(Text, {
   color: '$color11',
   cursor: 'default',
   fontFamily: '$mono',
-  fontWeight: '600',
+  fontWeight: '500',
   select: 'none',
   y: IS_SAFARI ? 1 : 0,
 

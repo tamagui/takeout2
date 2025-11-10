@@ -3,14 +3,7 @@
     "rootDir": ".",
     "outDir": "dist",
     "paths": {
-      "~/*": ["./src/*"],
-      "over-zero": ["./packages/over-zero/src/index.ts"],
-      "@take-out/better-auth-utils": ["./packages/better-auth-utils/src/index.ts"],
-      "@take-out/helpers": ["./packages/helpers/src/index.ts"],
-      "@take-out/hooks": ["./packages/hooks/src/index.ts"],
-      "@take-out/postgres": ["./packages/postgres/src/index.ts"],
-      "@take-out/scripts": ["./packages/scripts/src/index.ts"],
-      "@take-out/takeout": ["./packages/takeout/src/index.ts"]
+      "~/*": ["./src/*"]
     },
     "forceConsistentCasingInFileNames": true,
     "verbatimModuleSyntax": true,
@@ -36,7 +29,8 @@
     "types": ["node", "react", "vite/client", "bun"],
     "lib": ["dom", "esnext"]
   },
-  "include": ["./src", "./scripts", "./app", "./sst-env.d.ts", "./packages"],
+  "include": ["./src", "./scripts", "./app", "./sst-env.d.ts"],
+  "exclude": ["./packages"],
   "typeAcquisition": {
     "enable": true
   }

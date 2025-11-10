@@ -6,6 +6,7 @@
  */
 
 import { $ } from 'bun'
+import { existsSync } from 'node:fs'
 import { parseArgs } from 'node:util'
 
 const { values } = parseArgs({
@@ -15,8 +16,18 @@ const { values } = parseArgs({
   },
 })
 
-if (values.watch) {
-  await $`TSGO=1 tko run typescript --watch`
-} else {
-  await $`TSGO=1 tko run typescript`
+async function checkProjectTypes() {
+  if (values.watch) {
+    await $`TSGO=1 tko run typecheck --watch`
+  } else {
+    await $`TSGO=1 tko run typecheck`
+  }
 }
+
+async function checkPackagesTypes() {
+  if (existsSync('./packages')) {
+    await $`bun tko run --no-root typecheck`
+  }
+}
+
+await Promise.all([checkProjectTypes(), checkPackagesTypes()])

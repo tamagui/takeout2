@@ -1,9 +1,7 @@
 import { isWeb } from '@tamagui/constants'
 
 export const isTauri: boolean =
-  typeof window !== 'undefined' &&
-  // @ts-expect-error
-  window['__TAURI__'] !== undefined
+  typeof window !== 'undefined' && window['__TAURI__'] !== undefined
 
 export const isNative: boolean = !isWeb && !isTauri
 

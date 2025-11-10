@@ -5,7 +5,6 @@ export const prettyFormatZeroQuery = (
   query: Query<any, any, any>,
   mode: 'full' | 'minimal' = 'full'
 ): string => {
-  // @ts-expect-error
   const astObject = query['_completeAst']?.()
 
   if (!astObject) return ''

@@ -2,12 +2,11 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "composite": true,
-    "baseUrl": ".",
     "outDir": "./dist",
     "rootDir": "./src",
     "declaration": true,
     "declarationMap": true,
     "emitDeclarationOnly": false
   },
-  "exclude": ["**/test", "**/__tests__", "dist", "node_modules", "types"]
+  "include": ["./src/**/*"]
 }

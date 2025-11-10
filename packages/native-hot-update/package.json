@@ -33,6 +33,7 @@
     "build": "tamagui-build --skip-types",
     "watch": "tamagui-build --skip-types --watch",
     "clean": "tamagui-build clean",
+    "typecheck": "TSGO=1 tko run typecheck",
     "lint": "biome check src/",
     "check": "tsc --noEmit"
   },

@@ -3,7 +3,6 @@ import React from 'react'
 export const getCurrentComponentStack = (format?: 'short'): string => {
   if (process.env.NODE_ENV === 'development') {
     const stack =
-      // @ts-expect-error its ok
       React[
         '__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE'
       ].getCurrentStack()

@@ -23,7 +23,7 @@ export function useMemoizedObjectList<
   const val = useMemo(() => {
     let res = list
     let didFindChange = false
-    const next = []
+    const next: Item[] = []
     const lastItems = memoizedItems.current
 
     // changed size, always update array identity

@@ -23,10 +23,6 @@ const MAX_AST_HISTORY = 10
 // short name because otherwise it often forces multiple lines in chrome devtools
 // due to showing the filename next to log lines
 export const useZeroDebug = (query: Query<any, any, any>, options: any, results: any) => {
-  // if (DEBUG_LEVEL < 2) {
-  //   return
-  // }
-  // @ts-expect-error
   const astObject = query['_completeAst']?.()
   const table = astObject.table
   const ast = JSON.stringify(astObject, null, 2)

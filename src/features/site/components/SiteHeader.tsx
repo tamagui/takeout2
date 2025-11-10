@@ -1,25 +1,27 @@
-import { SizableText, Spacer } from 'tamagui'
-import { YStack, XStack } from 'tamagui'
+import { Spacer, XStack, YStack } from 'tamagui'
 import { Link } from '~/interface/app/Link'
 import { Logo } from '~/interface/app/Logo'
-import { PageContainer } from '~/interface/layout/PageContainer'
+import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { ThemeSwitch } from '~/interface/theme/ThemeSwitch'
 
 export const SiteHeader = () => {
   return (
-    <YStack py="$4">
-      <PageContainer>
-        <XStack>
-          <Link href="/">
-            <Logo />
-          </Link>
+    <YStack py="$4" bg="transparent">
+      <XStack items="center">
+        <Link href="/">
+          <Logo />
+        </Link>
 
-          <Spacer flex />
+        <Spacer flex />
 
+        <XStack gap="$4" items="center">
           <Link href="/docs">
-            <SizableText>Docs</SizableText>
+            <ButtonSimple>Docs</ButtonSimple>
           </Link>
+
+          <ThemeSwitch />
         </XStack>
-      </PageContainer>
+      </XStack>
     </YStack>
   )
 }

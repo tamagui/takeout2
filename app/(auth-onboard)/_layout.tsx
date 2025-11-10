@@ -1,6 +1,7 @@
 import { Slot } from 'one'
 import type { ReactNode } from 'react'
 import { SiteHeader } from '~/features/site/components/SiteHeader'
+import { GridBackground } from '~/interface/backgrounds/GridBackground'
 import { PageContainer } from '~/interface/layout/PageContainer'
 import { NotificationProvider } from '~/interface/notification/Notification'
 import { ToastProvider } from '~/interface/toast/Toast'
@@ -11,8 +12,9 @@ export function AuthAndOnboardingLayout() {
   return (
     <MainProviders>
       <DragDropFile>
-        <SiteHeader />
+        <GridBackground />
         <PageContainer>
+          <SiteHeader />
           <Slot />
         </PageContainer>
       </DragDropFile>

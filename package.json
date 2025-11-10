@@ -54,7 +54,7 @@
     "uncloud": "tko uncloud",
     "up-dep": "tko update-deps",
     "up": "tko upgrade",
-    "watch:types": "tko run typescript --watch",
+    "watch:types": "tko run typecheck --watch",
     "watch:zero:generate": "over-zero generate --watch --after 'bun lint:fix'",
     "watch": "tko run watch watch:types watch:zero:generate",
     "web": "tko web",

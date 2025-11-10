@@ -177,7 +177,7 @@ Configure in `.env`:
 
 ```bash
 BETTER_AUTH_SECRET=<generate-with-openssl-rand-hex-32>
-BETTER_AUTH_URL=http://localhost:8081
+BETTER_AUTH_URL=http://localhost:8262
 
 # Optional: GitHub OAuth
 ONECHAT_GITHUB_CLIENT_ID=your-client-id

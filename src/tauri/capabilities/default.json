@@ -5,7 +5,7 @@
   "windows": ["*"],
   "webviews": ["main"],
   "remote": {
-    "urls": ["http://localhost:8081", "https://*"]
+    "urls": ["http://localhost:8262", "https://*"]
   },
   "permissions": [
     "updater:default",

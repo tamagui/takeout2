@@ -6,4 +6,4 @@
 
 import { $ } from 'bun'
 
-await $`bun one serve --port 8081`
+await $`bun one serve --port 8262`

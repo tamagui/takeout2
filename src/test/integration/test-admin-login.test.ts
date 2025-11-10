@@ -27,7 +27,7 @@ test('admin login flow debug', async ({ page }) => {
       }
     }
   })
-  await page.goto('http://localhost:8081/login?showAdmin', {
+  await page.goto('http://localhost:8262/login?showAdmin', {
     waitUntil: 'domcontentloaded',
   })
   await page.waitForTimeout(2000)

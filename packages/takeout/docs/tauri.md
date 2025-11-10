@@ -83,7 +83,7 @@ Content Security Policy (CSP) settings:
 ```json
 {
   "default-src": "'self' start-chat: asset:",
-  "connect-src": "ipc: http://localhost:8081 https://start.chat",
+  "connect-src": "ipc: http://localhost:8262 https://start.chat",
   "img-src": "'self' asset: https://storage.start.chat blob: data:"
 }
 ```

@@ -29,7 +29,7 @@ export function getServerUrlOrTunnelUrlIfLocal(): string {
     return tunnelUrl
   }
 
-  const serverUrl = process.env.ONE_SERVER_URL || 'http://localhost:8081'
+  const serverUrl = process.env.ONE_SERVER_URL || 'http://localhost:8262'
 
   if (serverUrl.includes('0.0.0.0') || serverUrl.includes('localhost')) {
     const localUrl = serverUrl.replace('0.0.0.0', 'localhost')

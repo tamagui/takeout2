@@ -13,7 +13,7 @@ function isPortInUse(port: number): { inUse: boolean; pid?: number } {
       stdio: ['pipe', 'pipe', 'ignore'],
     }).trim()
 
-    const pid = output ? Number.parseInt(output.split('\n')[0] || '8081', 10) : undefined
+    const pid = output ? Number.parseInt(output.split('\n')[0] || '8262', 10) : undefined
 
     return { inUse: !!output, pid }
   } catch {
@@ -25,7 +25,7 @@ function isPortInUse(port: number): { inUse: boolean; pid?: number } {
 export const TAKEOUT_PORTS = {
   postgres: 5432,
   zero: 4848,
-  web: 8081,
+  web: 8262,
   minio: 9090,
   minioConsole: 9091,
 } as const

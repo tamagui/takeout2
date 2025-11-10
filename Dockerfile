@@ -27,6 +27,6 @@ COPY . .
 
 RUN test -d dist || (echo "dist/ not found, did you build the app before building docker?" && exit 1)
 
-EXPOSE 3533
+EXPOSE 8262
 
-CMD ["bun", "one", "serve", "--port", "3533"]
+CMD ["bun", "one", "serve", "--port", "8262"]

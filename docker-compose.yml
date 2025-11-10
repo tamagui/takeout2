@@ -66,9 +66,9 @@ services:
       - ZERO_LOG_LEVEL=${ZERO_LOG_LEVEL:-info}
       # These URLs are provided via environment variables
       # In CI, they'll be overridden with the correct Docker host IP
-      - ZERO_AUTH_JWKS_URL=${ZERO_AUTH_JWKS_URL:-http://host.docker.internal:8081/api/auth/jwks}
-      - ZERO_PUSH_URL=${ZERO_PUSH_URL:-http://host.docker.internal:8081/api/zero/push}
-      - ZERO_GET_QUERIES_URL=${ZERO_GET_QUERIES_URL:-http://host.docker.internal:8081/api/zero/pull}
+      - ZERO_AUTH_JWKS_URL=${ZERO_AUTH_JWKS_URL:-http://host.docker.internal:8262/api/auth/jwks}
+      - ZERO_PUSH_URL=${ZERO_PUSH_URL:-http://host.docker.internal:8262/api/zero/push}
+      - ZERO_GET_QUERIES_URL=${ZERO_GET_QUERIES_URL:-http://host.docker.internal:8262/api/zero/pull}
       - ZERO_UPSTREAM_DB=postgresql://user:password@pgdb:5432/postgres
       - ZERO_CVR_DB=postgresql://user:password@pgdb:5432/zero_cvr
       - ZERO_CHANGE_DB=postgresql://user:password@pgdb:5432/zero_cdb

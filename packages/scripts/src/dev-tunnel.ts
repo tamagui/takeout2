@@ -106,7 +106,7 @@ async function getOrCreateTunnel(): Promise<string | null> {
   }
 }
 
-async function runTunnel(port: number = 8081) {
+async function runTunnel(port: number = 8262) {
   // ensure cloudflared is installed
   const isInstalled = await ensureCloudflared()
   if (!isInstalled) {
@@ -161,7 +161,7 @@ async function runTunnel(port: number = 8081) {
 
 // Parse command line arguments
 const args = process.argv.slice(2)
-let port = 8081
+let port = 8262
 
 for (let i = 0; i < args.length; i++) {
   if (args[i] === '--port' && args[i + 1]) {

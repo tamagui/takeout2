@@ -297,7 +297,7 @@ export async function loader({ params }) {
 ```tsx
 import { getURL } from 'one'
 
-const url = getURL() // http://127.0.0.1:8081
+const url = getURL() // http://127.0.0.1:8262
 ```
 
 returns current app url, uses `ONE_SERVER_URL` in production

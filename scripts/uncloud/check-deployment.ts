@@ -74,7 +74,7 @@ if (!deployHost) {
 }
 
 /**
- * Get container status via SSH
+ * Get container status via SSH using docker ps with better pattern matching
  */
 async function getContainerStatus(): Promise<Map<string, any>> {
   try {
@@ -86,10 +86,32 @@ async function getContainerStatus(): Promise<Map<string, any>> {
     for (const line of lines) {
       try {
         const container = JSON.parse(line)
-        // Extract service name from container name (e.g., "takeout-web-1" -> "web")
-        const match = container.Names?.match(/takeout[_-]([^_-]+)[_-]\d+/)
+        // Try multiple patterns to extract service name
+        // Pattern 1: "takeout-web-1" -> "web"
+        // Pattern 2: "takeout_web_1" -> "web"
+        // Pattern 3: just "web-1" -> "web"
+        const name = container.Names || ''
+        let serviceName = null
+
+        // try takeout prefix with dash or underscore
+        let match = name.match(/takeout[_-]([^_-]+)[_-]\d+/)
         if (match) {
-          const serviceName = match[1]
+          serviceName = match[1]
+        } else {
+          // try without takeout prefix
+          match = name.match(/^([^_-]+)[_-]\d+$/)
+          if (match) {
+            serviceName = match[1]
+          } else {
+            // try just the name before any dash or underscore
+            match = name.match(/^([^_-]+)/)
+            if (match) {
+              serviceName = match[1]
+            }
+          }
+        }
+
+        if (serviceName) {
           containers.set(serviceName, {
             id: container.ID,
             status: container.Status,
@@ -147,9 +169,9 @@ async function checkHttpHealth(): Promise<{
   message?: string
 }> {
   try {
-    // Try port 8081 first (web service)
+    // Check the /api/health endpoint on port 8262
     const result =
-      await $`curl -s -o /dev/null -w "%{http_code}" -m 5 http://${deployHost}:8081/`.quiet()
+      await $`curl -s -o /dev/null -w "%{http_code}" -m 5 http://${deployHost}:8262/api/health`.quiet()
     const statusCode = parseInt(result.stdout.toString().trim(), 10)
 
     if (statusCode === 200) {
@@ -215,8 +237,15 @@ async function monitor() {
 
   console.info('📊 Initial Status:')
 
-  // Expected services
-  const expectedServices = ['web', 'pgdb', 'zero', 'minio']
+  // Expected services (no pgdb for managed database deployment)
+  const expectedServices = ['web', 'zero', 'minio']
+
+  if (verbose) {
+    console.info(
+      `  Found containers: ${Array.from(containers.keys()).join(', ') || 'none'}`
+    )
+  }
+
   for (const serviceName of expectedServices) {
     const container = containers.get(serviceName)
     const state: ServiceState = {
@@ -230,6 +259,10 @@ async function monitor() {
       state.healthy = await checkContainerHealth(container.id)
     }
 
+    if (verbose && container) {
+      console.info(`  Container ${serviceName}: ${container.names} (${container.state})`)
+    }
+
     detectStateChanges(state)
     console.info(formatServiceStatus(state))
   }
@@ -240,6 +273,9 @@ async function monitor() {
     console.info(`  🌐 HTTP: ${httpHealth.message || 'Not responding'}`)
   }
   console.info('')
+
+  // Define expected services outside loop for reuse
+  const monitoredServices = expectedServices
 
   // Monitoring loop
   while (Date.now() - startTime < TIMEOUT) {
@@ -255,7 +291,7 @@ async function monitor() {
     let hasChanges = false
 
     // Check each service
-    for (const serviceName of expectedServices) {
+    for (const serviceName of monitoredServices) {
       const container = containers.get(serviceName)
       const state: ServiceState = {
         name: serviceName,
@@ -333,7 +369,7 @@ async function monitor() {
       const finalHealth = await checkHttpHealth()
       if (finalHealth.healthy) {
         console.info(
-          `\n🎉 Deployment successful! Application is accessible at http://${deployHost}:8081`
+          `\n🎉 Deployment successful! Application is accessible at http://${deployHost}:8262`
         )
         process.exit(0)
       } else {

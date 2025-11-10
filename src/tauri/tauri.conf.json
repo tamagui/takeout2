@@ -5,7 +5,7 @@
   "identifier": "chat.start",
   "build": {
     "beforeDevCommand": "bun run dev",
-    "devUrl": "http://localhost:8081",
+    "devUrl": "http://localhost:8262",
     "frontendDist": "./shell-prod"
   },
   "plugins": {
@@ -35,9 +35,9 @@
     "security": {
       "csp": {
         "default-src": "'self' 'unsafe-inline' 'unsafe-eval' start-chat: asset: ipc: http://ipc.localhost https://ipc.localhost",
-        "connect-src": "ipc: http://ipc.localhost https://ipc.localhost http://localhost:8081 https://start.chat https://storage.start.chat",
-        "font-src": ["http://localhost:8081", "https://start.chat"],
-        "img-src": "'self' asset: http://localhost:8081 https://start.chat https://storage.start.chat blob: data:",
+        "connect-src": "ipc: http://ipc.localhost https://ipc.localhost http://localhost:8262 https://start.chat https://storage.start.chat",
+        "font-src": ["http://localhost:8262", "https://start.chat"],
+        "img-src": "'self' asset: http://localhost:8262 https://start.chat https://storage.start.chat blob: data:",
         "script-src": "'self' 'unsafe-inline' 'unsafe-eval' ipc: http://ipc.localhost https://ipc.localhost"
       }
     }

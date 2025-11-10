@@ -12,7 +12,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'list',
   use: {
-    baseURL: 'http://localhost:8081',
+    baseURL: 'http://localhost:8262',
     trace: 'on-first-retry',
   },
 

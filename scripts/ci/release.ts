@@ -114,7 +114,7 @@ try {
       name: 'checks',
       condition: () => !values['skip-checks'],
       async fn() {
-        await ensurePort8081Clear()
+        await ensurePort8262Clear()
         await run('bun check', {
           prefix: 'checks',
           timeout: time.ms.minutes(1),
@@ -349,7 +349,7 @@ async function runIntegrationTests() {
       detached: true,
     })
 
-    await waitForPort(8081)
+    await waitForPort(8262)
 
     const testEnv = await getTestEnv()
 
@@ -709,11 +709,11 @@ async function readLastDockerImage(): Promise<string | null> {
   }
 }
 
-async function ensurePort8081Clear() {
-  const isPortTaken = await checkPort(8081)
+async function ensurePort8262Clear() {
+  const isPortTaken = await checkPort(8262)
   if (isPortTaken) {
     console.error(
-      '❌ Port 8081 is already in use. Please stop the existing server before running CI.'
+      '❌ Port 8262 is already in use. Please stop the existing server before running CI.'
     )
     process.exit(1)
   }

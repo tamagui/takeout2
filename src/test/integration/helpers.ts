@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test'
 
 export async function loginAsAdmin(page: Page, pathname = '/') {
   console.info('Navigating to login page...')
-  await page.goto('http://localhost:8081/login?showAdmin', {
+  await page.goto('http://localhost:8262/login?showAdmin', {
     waitUntil: 'domcontentloaded',
   })
 
@@ -24,7 +24,7 @@ export async function loginAsAdmin(page: Page, pathname = '/') {
 
   // Navigate to desired pathname if different from current
   if (pathname !== '/' || !currentUrl.endsWith(pathname)) {
-    await page.goto(`http://localhost:8081${pathname}?showAdmin`, {
+    await page.goto(`http://localhost:8262${pathname}?showAdmin`, {
       waitUntil: 'networkidle',
     })
   }

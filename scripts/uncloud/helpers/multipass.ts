@@ -143,7 +143,7 @@ export function setupPortForward() {
     { silent: true }
   ).trim()
 
-  console.info(`web container: ${webIP}:3533`)
+  console.info(`web container: ${webIP}:8262`)
   console.info(`zero container: ${zeroIP}:4848`)
 
   // kill any existing port forwards
@@ -154,11 +154,11 @@ export function setupPortForward() {
   }
 
   // forward to container IPs in uncloud network
-  console.info('\nforwarding localhost:8081 -> web container')
+  console.info('\nforwarding localhost:8262 -> web container')
   console.info('forwarding localhost:4848 -> zero container')
 
   exec(
-    `ssh -i ${VM_SSH_KEY_PATH} -o StrictHostKeyChecking=no -f -N -L 8081:${webIP}:3533 -L 4848:${zeroIP}:4848 ubuntu@${ip}`,
+    `ssh -i ${VM_SSH_KEY_PATH} -o StrictHostKeyChecking=no -f -N -L 8262:${webIP}:8262 -L 4848:${zeroIP}:4848 ubuntu@${ip}`,
     { silent: true }
   )
 
@@ -170,7 +170,7 @@ export function showLocalStatus() {
 
   console.info('\n🎉 deployment ready!')
   console.info('\naccess your app:')
-  console.info('  web app:     http://localhost:8081')
+  console.info('  web app:     http://localhost:8262')
   console.info('  zero sync:   http://localhost:4848')
   if (ip) {
     console.info(`  vm ip:       ${ip}`)

@@ -51,9 +51,9 @@ services:
     environment:
       - ZERO_ADMIN_PASSWORD=${ZERO_ADMIN_PASSWORD:-production-admin-change-me}
       - ZERO_LOG_LEVEL=${ZERO_LOG_LEVEL:-info}
-      - ZERO_AUTH_JWKS_URL=http://web:3533/api/auth/jwks
-      - ZERO_PUSH_URL=http://web:3533/api/zero/push
-      - ZERO_GET_QUERIES_URL=http://web:3533/api/zero/pull
+      - ZERO_AUTH_JWKS_URL=http://web:8262/api/auth/jwks
+      - ZERO_PUSH_URL=http://web:8262/api/zero/push
+      - ZERO_GET_QUERIES_URL=http://web:8262/api/zero/pull
       - ZERO_UPSTREAM_DB=${ZERO_UPSTREAM_DB:-postgresql://user:password@pgdb:5432/postgres}
       - ZERO_CVR_DB=${ZERO_CVR_DB:-postgresql://user:password@pgdb:5432/zero_cvr}
       - ZERO_CHANGE_DB=${ZERO_CHANGE_DB:-postgresql://user:password@pgdb:5432/zero_cdb}
@@ -63,6 +63,12 @@ services:
       - ZERO_UPSTREAM_MAX_CONNS=${ZERO_UPSTREAM_MAX_CONNS:-8}
     volumes:
       - zero_data:/app
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4848/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   minio:
     image: minio/minio
@@ -103,15 +109,15 @@ services:
     depends_on:
       - zero
     x-ports:
-      - takeout.uncloud.run:3533/https
+      - takeout.uncloud.run:8262/https
     environment:
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET:-production-secret-change-me}
-      - BETTER_AUTH_URL=${BETTER_AUTH_URL:-http://localhost:8081}
-      - ONE_SERVER_URL=${ONE_SERVER_URL:-http://localhost:8081}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL:-http://localhost:8262}
+      - ONE_SERVER_URL=${ONE_SERVER_URL:-http://localhost:8262}
       - NODE_ENV=production
-      - ZERO_AUTH_JWKS_URL=http://web:3533/api/auth/jwks
-      - ZERO_PUSH_URL=http://web:3533/api/zero/push
-      - ZERO_GET_QUERIES_URL=http://web:3533/api/zero/pull
+      - ZERO_AUTH_JWKS_URL=http://web:8262/api/auth/jwks
+      - ZERO_PUSH_URL=http://web:8262/api/zero/push
+      - ZERO_GET_QUERIES_URL=http://web:8262/api/zero/pull
       - ZERO_UPSTREAM_DB=${ZERO_UPSTREAM_DB:-postgresql://user:password@pgdb:5432/postgres}
       - ZERO_CVR_DB=${ZERO_CVR_DB:-postgresql://user:password@pgdb:5432/zero_cvr}
       - ZERO_CHANGE_DB=${ZERO_CHANGE_DB:-postgresql://user:password@pgdb:5432/zero_cdb}
@@ -121,7 +127,7 @@ services:
       - CLOUDFLARE_R2_SECRET_KEY=${CLOUDFLARE_R2_SECRET_KEY:-minio_password}
       - CLOUDFLARE_R2_PUBLIC_URL=${CLOUDFLARE_R2_PUBLIC_URL:-http://localhost:9200/chat}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3533/api/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8262/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3

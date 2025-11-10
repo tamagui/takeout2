@@ -86,7 +86,7 @@ credentials-file: ${join(homedir(), '.cloudflared', `${tunnelId}.json`)}
 
 ingress:
   - hostname: ${tunnelDomain}
-    service: http://localhost:8081
+    service: http://localhost:8262
   - service: http_status:404
 `
     writeFileSync(TUNNEL_CONFIG_FILE, tunnelConfig)

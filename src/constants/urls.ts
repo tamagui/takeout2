@@ -4,7 +4,7 @@ import { getURL } from 'one'
 
 // Server URLs configuration
 // Force localhost on client to avoid 0.0.0.0 CORS issues
-const rawServerUrl = process.env.ONE_SERVER_URL || 'http://localhost:8081'
+const rawServerUrl = process.env.ONE_SERVER_URL || 'http://localhost:8262'
 
 export const SERVER_URL = (() => {
   // For production and staging web, we can infer the server URL from location.

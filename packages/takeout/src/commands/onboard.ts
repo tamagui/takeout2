@@ -173,7 +173,7 @@ export const onboardCommand = defineCommand({
       console.info()
     }
 
-    // Phase 4: Port Check
+    // Phase 4: Web Port Configuration
     if (
       startStep === 'prerequisites' ||
       startStep === 'environment' ||
@@ -182,6 +182,31 @@ export const onboardCommand = defineCommand({
       startStep === 'full'
     ) {
       saveOnboardState(cwd, { step: 'ports', timestamp: Date.now() })
+      showStep('Configuring web server port...')
+      console.info()
+
+      showInfo('Default web port: 8262 (TAMA in T9)')
+      const shouldCustomizePort = await confirmContinue(
+        'Customize web server port?',
+        false
+      )
+
+      if (shouldCustomizePort) {
+        const newPort = await promptText(
+          'Web server port:',
+          '8262',
+          '3000, 8080, 8262, etc.'
+        )
+
+        if (newPort && newPort !== '8262') {
+          await replacePortInProject(cwd, '8262', newPort)
+          showSuccess(`✓ Updated web server port to ${newPort}`)
+        }
+      } else {
+        showInfo('Keeping default port 8262')
+      }
+
+      console.info()
       showStep('Checking service ports...')
       console.info()
 
@@ -406,8 +431,8 @@ async function customizeProject(cwd: string): Promise<void> {
 
   const domain = await promptText(
     'Development domain:',
-    'localhost:8081',
-    'localhost:8081'
+    'localhost:8262',
+    'localhost:8262'
   )
 
   // Update package.json
@@ -960,6 +985,46 @@ async function startServices(cwd: string): Promise<void> {
     spinner.stop('Failed to start services')
     showError(error instanceof Error ? error.message : 'Unknown error')
     showInfo("Try running 'bun backend' manually")
+  }
+}
+
+/**
+ * Replace port throughout project files using find/sed
+ */
+async function replacePortInProject(
+  cwd: string,
+  oldPort: string,
+  newPort: string
+): Promise<void> {
+  const spinner = showSpinner(
+    `Replacing port ${oldPort} with ${newPort} throughout project...`
+  )
+
+  try {
+    // Use find + sed to replace port references across the entire project
+    // Excludes node_modules, .git, and other build artifacts
+    // Simple wholesale replacement of the port number
+    const sedCommand = `
+      find . \
+        -type f \
+        -not -path "*/node_modules/*" \
+        -not -path "*/.git/*" \
+        -not -path "*/dist/*" \
+        -not -path "*/build/*" \
+        -not -path "*/.next/*" \
+        -not -path "*/.turbo/*" \
+        -not -path "*/types/*" \
+        \\( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name ".env*" -o -name "*.md" -o -name "*.yml" -o -name "*.yaml" \\) \
+        -exec sed -i '' 's/${oldPort}/${newPort}/g' {} +
+    `
+
+    execSync(sedCommand, { cwd, stdio: 'ignore' })
+
+    spinner.stop(`Port updated from ${oldPort} to ${newPort}`)
+  } catch (error) {
+    spinner.stop('Port replacement failed')
+    showError('Failed to replace port. You may need to update manually.')
+    throw error
   }
 }
 

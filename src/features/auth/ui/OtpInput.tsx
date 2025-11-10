@@ -33,7 +33,7 @@ export const OtpInput = memo(function OtpInput({
   'data-testid': testId,
   inputProps,
 }: IOtpInput) {
-  const { color, color2, color02, red10 } = useTheme()
+  const { color, color2, color3, color02, red10 } = useTheme()
   const { width: windowWidth } = useWindowDimensions()
   const width = Math.min(500, windowWidth)
 
@@ -160,7 +160,7 @@ export const OtpInput = memo(function OtpInput({
                   height={inputWidth}
                   bg={color2}
                   rounded={12}
-                  borderColor={borderColor as any}
+                  borderColor={color3 as any}
                   borderWidth={1}
                   pointerEvents="none"
                 >

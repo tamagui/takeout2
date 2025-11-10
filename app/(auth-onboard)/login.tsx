@@ -1,23 +1,14 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
-import { isIos, isNative } from '@vxrn/helpers'
+import { Facebook } from '@tamagui/lucide-icons'
 import { router } from 'one'
 import { Linking } from 'react-native'
-import {
-  Circle,
-  isWeb,
-  Separator,
-  SizableText,
-  useMedia,
-  View,
-  XStack,
-  YStack,
-} from 'tamagui'
+import { Circle, isWeb, Separator, SizableText, XStack, YStack } from 'tamagui'
 import { APP_NAME, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '~/constants/app'
-import { OnboardingScreen } from '~/features/onboarding/OnboardingScreen'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { Logo } from '~/interface/app/Logo'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { dialogEmit } from '~/interface/dialogs/shared'
+import Glint from '~/interface/effects/Glint'
 import { AppleIcon } from '~/interface/icons/AppleIcon'
 import { GoogleIcon } from '~/interface/icons/GoogleIcon'
 import { H2 } from '~/interface/text/Headings'
@@ -51,9 +42,11 @@ export const LoginPage = () => {
   }
 
   return (
-    <XStack flex={1}>
-      {/* Dark gradient background */}
-      {isNative && (
+    <XStack flex={1} position="relative">
+      {/* Modern grid background for web */}
+
+      {/* Dark gradient for native */}
+      {!isWeb && (
         <LinearGradient
           colors={['#313131', 'transparent']}
           position="absolute"
@@ -64,8 +57,38 @@ export const LoginPage = () => {
           height={200}
         />
       )}
-      <YStack flex={2} flexBasis={0} justify="center" items="center" $md={{ p: '$6' }}>
-        <YStack gap="$6" width="100%" items="center">
+      <YStack flex={1} justify="center" items="center">
+        <Circle
+          size={80}
+          mb="$4"
+          animation="superLazy"
+          enterStyle={{ scale: 0.5, opacity: 0 }}
+          shadowColor="$color12"
+          shadowOpacity={0.1}
+          shadowRadius={20}
+          borderWidth={0.5}
+          borderColor="$color3"
+          items="center"
+          justify="center"
+        >
+          <Logo size={42} />
+        </Circle>
+
+        <YStack
+          gap="$4"
+          width="100%"
+          items="center"
+          bg="$background"
+          rounded="$8"
+          p={isWeb ? '$6' : '$4'}
+          maxW={isWeb ? 400 : '90%'}
+          shadowColor="$shadowColor"
+          shadowOffset={{ width: 0, height: 2 }}
+          shadowOpacity={0.08}
+          shadowRadius={10}
+          elevation="$4"
+        >
+          <Glint rounded="$8" />
           <YStack
             animation="bouncy"
             enterStyle={{ scale: 0.9, opacity: 0 }}
@@ -73,21 +96,6 @@ export const LoginPage = () => {
             items="center"
             gap="$2"
           >
-            <Circle
-              size={80}
-              bg="$color2"
-              animation="superLazy"
-              enterStyle={{ scale: 0.5, opacity: 0 }}
-              shadowColor="$color12"
-              shadowOpacity={0.1}
-              shadowRadius={20}
-              borderWidth={0.5}
-              borderColor="$color3"
-              items="center"
-              justify="center"
-            >
-              <Logo size={52} />
-            </Circle>
             <YStack items="center" gap="$2">
               <H2
                 text="center"
@@ -97,7 +105,7 @@ export const LoginPage = () => {
               >
                 Welcome back
               </H2>
-              <SizableText color="$color12" onPress={openTermsOfService}>
+              <SizableText color="$color8" onPress={openTermsOfService}>
                 Sign in to your account
               </SizableText>
             </YStack>
@@ -105,16 +113,11 @@ export const LoginPage = () => {
           <YStack
             key="welcome-content"
             gap="$4"
-            p="$5"
             items="center"
             width="100%"
             animation="medium"
             enterStyle={{ opacity: 0, y: 20 }}
             exitStyle={{ opacity: 0, y: -20 }}
-            bg="$color1"
-            borderWidth={1}
-            borderColor="$color3"
-            rounded="$8"
             shadowColor="$shadowColor"
             shadowOpacity={0.05}
             shadowRadius={10}
@@ -123,7 +126,7 @@ export const LoginPage = () => {
           >
             <YStack width="100%" gap="$3">
               <ButtonSimple
-                theme="accent"
+                glass
                 size="large"
                 onPress={handleContinueWithEmail}
                 width="100%"
@@ -137,7 +140,7 @@ export const LoginPage = () => {
                 Continue with Email
               </ButtonSimple>
 
-              {!isNative && window.location.search.includes('showAdmin') && (
+              {isWeb && window.location.search.includes('showAdmin') && (
                 <ButtonSimple
                   variant="outlined"
                   size="large"
@@ -174,13 +177,11 @@ export const LoginPage = () => {
               </SizableText>
               <Separator flex={1} borderColor="$color3" />
             </XStack>
-            <YStack width="100%" gap="$3">
+            <XStack width="100%" gap="$3" justify="center" overflow="visible">
               <ButtonSimple
                 glass
-                variant="outlined"
                 size="large"
                 onPress={() => handleSocialLogin('google')}
-                width="100%"
                 pressStyle={{
                   scale: 0.97,
                   bg: '$color2',
@@ -191,31 +192,39 @@ export const LoginPage = () => {
                 animation="200ms"
                 enterStyle={{ opacity: 0, scale: 0.95 }}
                 icon={<GoogleIcon size={18} />}
-              >
-                Continue with Google
-              </ButtonSimple>
-              {isIos && (
-                <ButtonSimple
-                  glass
-                  variant="outlined"
-                  size="large"
-                  onPress={() => handleSocialLogin('apple')}
-                  width="100%"
-                  pressStyle={{
-                    scale: 0.97,
-                    bg: '$color2',
-                  }}
-                  hoverStyle={{
-                    bg: '$color2',
-                  }}
-                  animation="200ms"
-                  enterStyle={{ opacity: 0, scale: 0.95 }}
-                  icon={<AppleIcon size={20} />}
-                >
-                  Continue with Apple
-                </ButtonSimple>
-              )}
-            </YStack>
+              />
+
+              <ButtonSimple
+                glass
+                size="large"
+                onPress={() => handleSocialLogin('apple')}
+                pressStyle={{
+                  scale: 0.97,
+                  bg: '$color2',
+                }}
+                hoverStyle={{
+                  bg: '$color2',
+                }}
+                animation="200ms"
+                enterStyle={{ opacity: 0, scale: 0.95 }}
+                icon={<Facebook size={20} />}
+              />
+              <ButtonSimple
+                glass
+                size="large"
+                onPress={() => handleSocialLogin('apple')}
+                pressStyle={{
+                  scale: 0.97,
+                  bg: '$color2',
+                }}
+                hoverStyle={{
+                  bg: '$color2',
+                }}
+                animation="200ms"
+                enterStyle={{ opacity: 0, scale: 0.95 }}
+                icon={<AppleIcon size={20} />}
+              />
+            </XStack>
           </YStack>
           <YStack
             animation="200ms"
@@ -262,11 +271,11 @@ export const LoginPage = () => {
       </YStack>
 
       {/* Onboarding section - visible on larger screens */}
-      {isWeb && (
+      {/* {isWeb && (
         <YStack $maxMD={{ display: 'none' }} flex={3} flexBasis={0}>
           <OnboardingScreen />
         </YStack>
-      )}
+      )} */}
     </XStack>
   )
 }

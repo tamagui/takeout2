@@ -1,6 +1,6 @@
 import { router } from 'one'
-import { useRef, type ReactNode } from 'react'
-import { Circle, H5, Spacer, View, XStack, YStack } from 'tamagui'
+import type { ReactNode } from 'react'
+import { Circle, H5, isWeb, Spacer, XStack, YStack } from 'tamagui'
 import { Pressable } from '../buttons/Pressable'
 import { CaretLeftIcon } from '../icons/phosphor/CaretLeftIcon'
 import type { IconComponent } from '../icons/types'
@@ -50,7 +50,7 @@ export const StepPageLayout = ({
       keyboardOffset={keyboardOffset}
     >
       <YStack gap="$5">
-        {!hideBackButton && (
+        {!hideBackButton && !isWeb && (
           <XStack justify="space-between" items="center">
             <Pressable
               disabled={disableBackButton}
@@ -66,7 +66,17 @@ export const StepPageLayout = ({
 
         <YStack gap="$5">
           {Icon && (
-            <Circle size={52} bg="$color2" items="center" justify="center">
+            <Circle
+              size={52}
+              bg="$color2"
+              shadowColor="$color12"
+              shadowOpacity={0.1}
+              shadowRadius={12}
+              borderWidth={0.5}
+              borderColor="$color3"
+              items="center"
+              justify="center"
+            >
               <Icon size={28} color="$color11" />
             </Circle>
           )}

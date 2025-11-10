@@ -16,6 +16,6 @@ export const PageContainer = styled(YStack, {
   },
 
   $xl: {
-    maxW: 1200,
+    maxW: 840,
   },
 })

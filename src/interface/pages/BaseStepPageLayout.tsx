@@ -1,6 +1,6 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
 import type { ReactNode } from 'react'
-import { KeyboardAvoidingView, ScrollView, Platform } from 'react-native'
+import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { isWeb, YStack } from 'tamagui'
 
@@ -32,7 +32,13 @@ export const BaseStepPageLayout = ({
         keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
       >
-        <YStack flex={1} pt={!hideBackButton ? top + 24 : 0}>
+        <YStack
+          flex={1}
+          pt={!hideBackButton ? top + 24 : 0}
+          bg="$background"
+          rounded="$6"
+          {...(isWeb && { flex: 'unset', mt: '$10', maxW: 400, p: '$6', self: 'center' })}
+        >
           <YStack px={14}>
             {children}
             {isWeb ? <YStack pt="$6">{bottomElement}</YStack> : null}

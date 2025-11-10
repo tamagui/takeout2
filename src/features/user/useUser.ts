@@ -17,26 +17,6 @@ export const useUser = () => {
     }
   )
 
-  // detailed logging for debugging zero query issues
-  console.info(`[useUser] Query status:`, {
-    platform: typeof window !== 'undefined' ? 'web' : 'native',
-    auth: {
-      hasAuthUser: !!auth.user,
-      authUserId: auth.user?.id,
-      hasToken: !!auth.token,
-    },
-    query: {
-      userId,
-      enabled: !!userId,
-      status: status.type,
-      hasUser: !!user,
-      userData: user
-        ? { id: user.id, username: user.username, hasOnboarded: user.hasOnboarded }
-        : null,
-    },
-    error: status.type === 'error' ? status : null,
-  })
-
   return {
     ...auth,
     user,

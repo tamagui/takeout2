@@ -40,14 +40,14 @@ export const GridBackground = memo(({ opacity = 1 }: GridBackgroundProps) => {
               position: absolute;
               inset: 0;
               background-image:
-                linear-gradient(${isDark ? 'rgba(150, 150, 170, 0.06)' : 'rgba(147, 139, 255, 0.035)'} 1px, transparent 1px),
-                linear-gradient(90deg, ${isDark ? 'rgba(150, 150, 170, 0.06)' : 'rgba(147, 139, 255, 0.035)'} 1px, transparent 1px);
+                linear-gradient(${isDark ? 'rgba(150, 150, 170, 0.03)' : 'rgba(147, 139, 255, 0.035)'} 1px, transparent 1px),
+                linear-gradient(90deg, ${isDark ? 'rgba(150, 150, 170, 0.03)' : 'rgba(147, 139, 255, 0.035)'} 1px, transparent 1px);
               background-size: 50px 50px;
               background-position: -1px -1px;
-              mask-image: radial-gradient(ellipse at center, transparent 0%, black 70%);
-              -webkit-mask-image: radial-gradient(ellipse at center, transparent 0%, black 70%);
+              mask-image: radial-gradient(ellipse at center, transparent 0%, black 85%);
+              -webkit-mask-image: radial-gradient(ellipse at center, transparent 0%, black 85%);
               animation: grid-fade-in 1s ease-out;
-              ${isDark ? 'filter: blur(0.3px);' : ''}
+              ${isDark ? 'filter: blur(0.6px);' : ''}
             }
 
             .modern-grid-highlight {
@@ -55,21 +55,21 @@ export const GridBackground = memo(({ opacity = 1 }: GridBackgroundProps) => {
               inset: 0;
               background: radial-gradient(
                 circle at 30% 20%,
-                ${isDark ? 'rgba(99, 102, 241, 0.12)' : 'rgba(147, 139, 255, 0.06)'} 0%,
+                ${isDark ? 'rgba(99, 102, 241, 0.06)' : 'rgba(147, 139, 255, 0.06)'} 0%,
                 transparent 50%
               ),
               radial-gradient(
                 circle at 70% 60%,
-                ${isDark ? 'rgba(236, 72, 153, 0.12)' : 'rgba(255, 139, 200, 0.05)'} 0%,
+                ${isDark ? 'rgba(236, 72, 153, 0.06)' : 'rgba(255, 139, 200, 0.05)'} 0%,
                 transparent 50%
               ),
               radial-gradient(
                 circle at 20% 80%,
-                ${isDark ? 'rgba(139, 92, 246, 0.12)' : 'rgba(180, 139, 255, 0.06)'} 0%,
+                ${isDark ? 'rgba(139, 92, 246, 0.06)' : 'rgba(180, 139, 255, 0.06)'} 0%,
                 transparent 50%
               );
               animation: grid-fade-in 1.5s ease-out;
-              ${isDark ? 'filter: blur(0.5px);' : ''}
+              ${isDark ? 'filter: blur(0.8px);' : ''}
             }
           `,
         }}

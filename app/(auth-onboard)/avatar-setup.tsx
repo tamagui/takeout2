@@ -19,6 +19,8 @@ import { useUploadFiles } from '~/interface/upload/uploadFile'
 
 const MAX_IMAGE_SIZE = 600
 const IMAGE_QUALITY = 0.9
+const IMAGE_SIZE = isWeb ? 100 : 220
+const PENCIL_SIZE = isWeb ? 28 : 52
 
 export const AvatarSetupPage = () => {
   const [localImageUri, setLocalImageUri] = useState<string | null>(null)
@@ -137,14 +139,10 @@ export const AvatarSetupPage = () => {
         bottom={
           <ButtonSimple
             glass
-            variant="outlined"
             size="large"
             pressStyle={{
               scale: 0.97,
-              bg: '$color2',
-            }}
-            hoverStyle={{
-              bg: '$color2',
+              opacity: 0.9,
             }}
             onPress={goToNextStep}
             disabled={!localImageUri || isUploading}
@@ -153,7 +151,7 @@ export const AvatarSetupPage = () => {
           </ButtonSimple>
         }
       >
-        <YStack items="center" mt="$10">
+        <YStack items="center" mt="$2">
           {!localImageUri && (
             <YStack mb="$4">
               <YStack items="center" px="$4" py="$2" bg="$color2" rounded="$6">
@@ -188,8 +186,8 @@ export const AvatarSetupPage = () => {
               >
                 <Image
                   src={localImageUri ? localImageUri : images.avatarContainer}
-                  width={220}
-                  height={220}
+                  width={IMAGE_SIZE}
+                  height={IMAGE_SIZE}
                 />
                 {isUploading && (
                   <YStack
@@ -211,8 +209,8 @@ export const AvatarSetupPage = () => {
             </Pressable>
             {localImageUri && !isUploading && (
               <Pressable position="absolute" b={0} r={0} onPress={handleOpenSheet}>
-                <Circle size={52} bg="$color" items="center" justify="center">
-                  <PencilSimpleIcon size={28} color="$color2" />
+                <Circle size={PENCIL_SIZE} bg="$color" items="center" justify="center">
+                  <PencilSimpleIcon size={PENCIL_SIZE / 2} color="$color2" />
                 </Circle>
               </Pressable>
             )}

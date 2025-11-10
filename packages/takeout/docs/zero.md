@@ -131,13 +131,15 @@ automatically pass.
 
 ### reusable permission helpers
 
-extract common patterns to `src/data/where/`:
+extract common patterns to `src/data/where/`. note that we use "serverWhere" as
+these conditions will only run on the server, where permissions should be
+enforced.
 
 ```ts
 // src/data/where/isUsersOwn.ts
 import { where } from 'over-zero'
 
-export const isUsersOwn = where<'userPublic'>((q, auth) =>
+export const isUsersOwn = serverWehere<'userPublic'>((q, auth) =>
   q.cmp('id', '=', auth?.id || ''),
 )
 ```

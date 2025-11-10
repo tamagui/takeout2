@@ -1,6 +1,6 @@
 import { number, string, table } from '@rocicorp/zero'
 import { randomId } from '@take-out/helpers'
-import { ensureLoggedIn, mutations, where } from 'over-zero'
+import { ensureLoggedIn, mutations, serverWhere } from 'over-zero'
 
 export const schema = table('block')
   .columns({
@@ -11,7 +11,7 @@ export const schema = table('block')
   })
   .primaryKey('id')
 
-const permissions = where('block', (_, auth) => {
+const permissions = serverWhere('block', (_, auth) => {
   return _.cmp('blockerId', auth?.id || '')
 })
 

@@ -1,0 +1,465 @@
+# over-zero
+
+<img src="./over-zero.svg" width="120" alt="over-zero" />
+
+helpers for building offline-first apps with [zero](https://zero.rocicorp.dev)
+
+## what it does
+
+over-zero provides three integrated systems on top of zero:
+
+**queries** - plain functions that become synced queries **mutations** -
+server-validated operations with auto-generated crud **permissions** -
+composable access control checked at runtime
+
+the package handles schema setup, type generation, and react integration. models
+live alongside their permissions and mutations. queries are just functions that
+use a global `zql` builder.
+
+## queries
+
+write plain functions. they become synced queries automatically.
+
+```ts
+// src/data/queries/notification.ts
+import { zql, where } from 'over-zero'
+
+const permission = where('notification', (q, auth) => {
+  return q.cmp('userId', auth?.id || '')
+})
+
+export const latestNotifications = (props: {
+  userId: string
+  serverId: string
+}) => {
+  return zql.notification
+    .where(permission)
+    .where('userId', props.userId)
+    .where('serverId', props.serverId)
+    .orderBy('createdAt', 'desc')
+    .limit(20)
+}
+```
+
+zql is just the normal Zero query builder based on your typed schema.
+
+use them:
+
+```tsx
+const [data, state] = useQuery(latestNotifications, { userId, serverId })
+```
+
+the function name becomes the query name. `useQuery` detects plain functions,
+creates a cached `SyncedQuery` per function, and calls it with your params.
+
+### query permissions
+
+define permissions inline using `where()`:
+
+```ts
+const permission = where('channel', (q, auth) => {
+  if (auth?.role === 'admin') return true
+
+  return q.and(
+    q.cmp('deleted', '!=', true),
+    q.or(
+      q.cmp('private', false),
+      q.exists('role', (r) =>
+        r.whereExists('member', (m) => m.where('id', auth?.id)),
+      ),
+    ),
+  )
+})
+```
+
+then use in queries:
+
+```ts
+export const channelById = (props: { channelId: string }) => {
+  return zql.channel.where(permission).where('id', props.channelId).one()
+}
+```
+
+permissions execute server-side only. on the client they automatically pass. the
+`where()` helper automatically accesses auth data from `queryContext()` or
+`mutatorContext()` so you don't need to pass it manually.
+
+## mutations
+
+define schema, permissions, and mutations together:
+
+```ts
+// src/data/models/message.ts
+import { table, mutations, where } from 'over-zero'
+
+export const schema = table('message')
+  .columns({
+    id: string(),
+    content: string(),
+    authorId: string(),
+    channelId: string(),
+    createdAt: number(),
+  })
+  .primaryKey('id')
+
+export const permissions = where('message', (q, auth) => {
+  return q.cmp('authorId', auth?.id || '')
+})
+
+// CRUD migrations with permissions by passing schema + permissions:
+export const mutate = mutations(schema, permissions, {
+  async send(ctx, props: { content: string; channelId: string }) {
+    await ctx.can(permissions, props)
+
+    await ctx.tx.mutate.message.insert({
+      id: randomId(),
+      content: props.content,
+      channelId: props.channelId,
+      authorId: ctx.authData!.id,
+      createdAt: Date.now(),
+    })
+
+    if (ctx.server) {
+      ctx.server.asyncTasks.push(async () => {
+        await ctx.server.actions.sendNotification(props)
+      })
+    }
+  },
+})
+```
+
+call mutations from react:
+
+```tsx
+await zero.mutate.message.send({ content: 'hello', channelId: 'ch-1' })
+```
+
+the second argument (`permissions`) enables auto-generated crud that checks
+permissions:
+
+```tsx
+zero.mutate.message.insert(message)
+zero.mutate.message.update(message)
+zero.mutate.message.delete(message)
+zero.mutate.message.upsert(message)
+```
+
+## permissions
+
+permissions use the `where()` helper to create Zero `ExpressionBuilder`
+conditions:
+
+```ts
+export const permissions = where('channel', (q, auth) => {
+  if (auth?.role === 'admin') return true
+
+  return q.or(
+    q.cmp('public', true),
+    q.exists('members', (m) => m.where('userId', auth?.id)),
+  )
+})
+```
+
+the `where()` helper automatically gets auth data from `queryContext()` or
+`mutatorContext()`, so you don't manually pass it. permissions only execute
+server-side - on the client they automatically pass.
+
+**for queries:** define permissions inline as a constant in query files:
+
+```ts
+// src/data/queries/channel.ts
+const permission = where('channel', (q, auth) => {
+  return q.cmp('userId', auth?.id || '')
+})
+
+export const myChannels = () => {
+  return zql.channel.where(permission)
+}
+```
+
+**for mutations:** define permissions in model files for CRUD operations:
+
+```ts
+// src/data/models/message.ts
+export const permissions = where('message', (q, auth) => {
+  return q.cmp('authorId', auth?.id || '')
+})
+```
+
+CRUD mutations automatically apply them, but for custom mutations use `can()`:
+
+```ts
+await ctx.can(permissions, messageId)
+```
+
+check permissions in React with `usePermission()`:
+
+```tsx
+const canEdit = usePermission('message', messageId)
+```
+
+## generation
+
+`over-zero` has a CLI that auto-generates glue files that wire up your models,
+queries, and types.
+
+### cli commands
+
+**`over-zero generate [dir]`**
+
+generates all files needed to connect your models and queries:
+
+- `models.ts` - aggregates all model files into a single import
+- `types.ts` - generates TypeScript types from table schemas
+- `tables.ts` - exports table schemas (separate to avoid circular types)
+- `queries.ts` - generates synced query definitions with valibot validators
+
+**options:**
+
+- `dir` - base directory containing `models/` and `queries/` folders (default:
+  `src/data`)
+- `--watch` - watch for changes and regenerate automatically
+- `--after` - command to run after generation completes
+
+**examples:**
+
+```bash
+# generate once
+bun over-zero generate
+
+# generate and watch
+bun over-zero generate --watch
+
+# custom directory
+bun over-zero generate ./app/data
+
+# run linter after generation
+bun over-zero generate --after "bun lint:fix"
+```
+
+**`over-zero generate-queries <dir>`**
+
+generates query validators from TypeScript query functions. this is included in
+`generate` but can be run standalone.
+
+- parses exported arrow functions from `.ts` files in the queries directory
+- extracts parameter types using TypeScript compiler API
+- generates valibot schemas using typebox-codegen
+
+**example:**
+
+```bash
+bun over-zero generate-queries src/data/queries
+```
+
+### what gets generated
+
+**models.ts:**
+
+```ts
+import * as channel from '~/data/models/channel'
+import * as message from '~/data/models/message'
+
+export const models = {
+  channel,
+  message,
+}
+```
+
+**types.ts:**
+
+```ts
+import type { TableInsertRow, TableUpdateRow } from 'over-zero'
+import type * as schema from './tables'
+
+export type Channel = TableInsertRow<typeof schema.channel>
+export type ChannelUpdate = TableUpdateRow<typeof schema.channel>
+```
+
+**tables.ts:**
+
+```ts
+export { schema as channel } from '~/data/models/channel'
+export { schema as message } from '~/data/models/message'
+```
+
+**queries.ts:**
+
+```ts
+import * as v from 'valibot'
+import { syncedQuery } from '@rocicorp/zero'
+import * as messageQueries from '../queries/message'
+
+export const latestMessages = syncedQuery(
+  'latestMessages',
+  v.parser(
+    v.tuple([
+      v.object({
+        channelId: v.string(),
+        limit: v.optional(v.number()),
+      }),
+    ]),
+  ),
+  (arg) => {
+    return messageQueries.latestMessages(arg)
+  },
+)
+```
+
+### how it works
+
+the generator:
+
+1. scans `models/` for files with `export const schema = table(...)`
+2. scans `queries/` for exported arrow functions
+3. parses TypeScript AST to extract parameter types
+4. converts types to valibot schemas using typebox-codegen
+5. wraps query functions in `syncedQuery()` with validators
+6. handles special cases (void params, user → userPublic mapping)
+7. groups query imports by source file
+
+queries with no parameters get wrapped in `v.parser(v.tuple([]))` while queries
+with params get validators like `v.parser(v.tuple([v.object({ ... })]))`.
+
+exports named `permission` are automatically skipped during query generation.
+
+## setup
+
+client:
+
+```tsx
+import { createZeroClient } from 'over-zero'
+import { schema } from './data/schema'
+import { models } from './data/models'
+
+export const { ProvideZero, useQuery, zero } = createZeroClient({
+  schema,
+  models,
+})
+
+// in your app root
+<ProvideZero
+  server="http://localhost:4848"
+  userID={user.id}
+  auth={jwtToken}
+  authData={{ id: user.id, email: user.email, role: user.role }}
+>
+  <App />
+</ProvideZero>
+```
+
+server:
+
+```ts
+import { createZeroServer } from 'over-zero/server'
+
+export const zeroServer = createZeroServer({
+  schema,
+  models,
+  database: process.env.DATABASE_URL,
+  createServerActions: () => ({
+    sendEmail: async (to, subject, body) => { ... }
+  })
+})
+
+// in your api endpoint
+app.post('/api/zero/push', async (req) => {
+  const authData = await getAuthFromRequest(req)
+  const { response } = await zeroServer.handleMutationRequest({
+    authData,
+    request: req
+  })
+  return response
+})
+```
+
+type augmentation:
+
+```ts
+// src/zero/types.ts
+import type { schema } from '~/data/schema'
+import type { AuthData } from './auth'
+
+declare module 'over-zero' {
+  interface Config {
+    schema: typeof schema
+    authData: AuthData
+  }
+}
+```
+
+## mutation context
+
+every mutation receives `MutatorContext` as first argument:
+
+```ts
+type MutatorContext = {
+  tx: Transaction // database transaction
+  authData: AuthData | null // current user
+  environment: 'server' | 'client' // where executing
+  can: (where, obj) => Promise<void> // permission checker
+  server?: {
+    actions: ServerActions // async server functions
+    asyncTasks: AsyncAction[] // run after transaction
+  }
+}
+```
+
+use it:
+
+```ts
+export const mutate = mutations(schema, permissions, {
+  async archive(ctx, { messageId }) {
+    await ctx.can(permissions, messageId)
+    await ctx.tx.mutate.message.update({ id: messageId, archived: true })
+
+    ctx.server?.asyncTasks.push(async () => {
+      await ctx.server.actions.indexForSearch(messageId)
+    })
+  },
+})
+```
+
+## patterns
+
+**client-side optimistic updates:**
+
+```ts
+zero.mutate.message.update(message).client
+```
+
+**wait for server confirmation:**
+
+```ts
+const result = await zero.mutate.message.update(message).server
+```
+
+**server-only mutations:**
+
+```ts
+await zeroServer.mutate(async (tx, mutators) => {
+  await mutators.user.insert(tx, user)
+})
+```
+
+**one-off queries:**
+
+```ts
+const user = await zeroServer.query((q) => q.user.where('id', userId).one())
+```
+
+**batch processing:**
+
+```ts
+import { batchQuery } from 'over-zero'
+
+await batchQuery(
+  zql.message.where('processed', false),
+  async (messages) => {
+    for (const msg of messages) {
+      await processMessage(msg)
+    }
+  },
+  { chunk: 100, pause: 50 },
+)
+```

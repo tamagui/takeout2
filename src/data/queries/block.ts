@@ -1,6 +1,6 @@
-import { where, zql } from 'over-zero'
+import { serverWhere, zql } from 'over-zero'
 
-const permission = where('block', (_, auth) => {
+const permission = serverWhere('block', (_, auth) => {
   return _.cmp('blockerId', auth?.id || '')
 })
 

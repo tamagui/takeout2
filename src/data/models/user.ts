@@ -1,6 +1,6 @@
 import { boolean, number, string, table } from '@rocicorp/zero'
 import { ensure } from '@take-out/helpers'
-import { mutations, where } from 'over-zero'
+import { mutations, serverWhere } from 'over-zero'
 import type { UserUpdate } from '../types'
 
 export const schema = table('userPublic')
@@ -17,7 +17,7 @@ export const schema = table('userPublic')
   })
   .primaryKey('id')
 
-const permissions = where('userPublic', (_, auth) => {
+const permissions = serverWhere('userPublic', (_, auth) => {
   return _.or(_.cmpLit(auth?.role || '', '=', 'admin'), _.cmp('id', auth?.id || ''))
 })
 

@@ -1,6 +1,6 @@
-import { where, zql } from 'over-zero'
+import { serverWhere, zql } from 'over-zero'
 
-const permission = where('post', () => {
+const permission = serverWhere('post', () => {
   return true
 })
 

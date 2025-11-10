@@ -1,5 +1,5 @@
-import { where } from 'over-zero'
+import { serverWhere } from 'over-zero'
 
-export const isUsersOwn = where<'userPublic'>((_, auth) =>
+export const isUsersOwn = serverWhere('userPublic', (_, auth) =>
   _.cmp('id', '=', auth?.id || '')
 )

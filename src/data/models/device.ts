@@ -1,5 +1,5 @@
 import { boolean, number, string, table } from '@rocicorp/zero'
-import { mutations, where } from 'over-zero'
+import { mutations, serverWhere } from 'over-zero'
 
 export const schema = table('device')
   .columns({
@@ -17,7 +17,7 @@ export const schema = table('device')
   })
   .primaryKey('id')
 
-const permissions = where('device', (_, auth) => {
+const permissions = serverWhere('device', (_, auth) => {
   return _.cmp('userId', auth?.id || '')
 })
 

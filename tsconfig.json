@@ -4,6 +4,7 @@
     "outDir": "dist",
     "paths": {
       "~/*": ["./src/*"],
+      "over-zero": ["./packages/over-zero/src/index.ts"],
       "@take-out/better-auth-utils": ["./packages/better-auth-utils/src/index.ts"],
       "@take-out/helpers": ["./packages/helpers/src/index.ts"],
       "@take-out/hooks": ["./packages/hooks/src/index.ts"],

@@ -1,0 +1,68 @@
+{
+  "name": "over-zero",
+  "version": "0.0.23",
+  "sideEffects": false,
+  "source": "src/index.ts",
+  "main": "dist/cjs",
+  "module": "dist/esm",
+  "type": "module",
+  "types": "./types/index.d.ts",
+  "bin": {
+    "over-zero": "./dist/cjs/cli.cjs"
+  },
+  "files": [
+    "src",
+    "types",
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tamagui-build",
+    "watch": "tamagui-build --watch",
+    "lint": "biome check src",
+    "lint:fix": "biome check --write src",
+    "clean": "tamagui-build clean",
+    "clean:build": "tamagui-build clean:build"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "react-native": {
+        "import": "./dist/esm/index.native.js",
+        "require": "./dist/cjs/index.native.js"
+      },
+      "types": "./types/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs",
+      "default": "./dist/cjs/index.native.js"
+    },
+    "./server": {
+      "types": "./types/server.d.ts",
+      "import": "./dist/esm/server.mjs",
+      "require": "./dist/cjs/server.cjs"
+    }
+  },
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.41",
+    "@sinclair/typebox-codegen": "^0.11.1",
+    "@vxrn/helpers": "^0.0.21",
+    "chokidar": "^4.0.3",
+    "citty": "^0.1.6",
+    "pg": "^8.13.1",
+    "typescript": "^5.9.3",
+    "valibot": "^1.1.0"
+  },
+  "peerDependencies": {
+    "@rocicorp/zero": "*",
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "@tamagui/build": "*",
+    "@typeschema/valibot": "^0.14.0",
+    "react": "*",
+    "react-native": "*"
+  }
+}

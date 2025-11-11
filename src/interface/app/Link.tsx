@@ -6,7 +6,7 @@ import {
   type Href,
   type LinkProps as OneLinkProps,
 } from 'one'
-import { isWeb, Text, useDebounce, type TextProps } from 'tamagui'
+import { isWeb, SizableText, useDebounce, type SizableTextProps } from 'tamagui'
 import { wrapWithTooltip, type TooltipWrapperProps } from '../tooltip/TooltipSimple'
 
 type ResetStackConfig = {
@@ -15,7 +15,7 @@ type ResetStackConfig = {
 }
 
 export type LinkProps = OneLinkProps<Href> &
-  TextProps & {
+  SizableTextProps & {
     delayNavigation?: number | boolean
     resetStack?: boolean | ResetStackConfig // reset navigation stack with custom routes (native only)
 
@@ -140,7 +140,7 @@ export const Link = ({
     )
 
   const linkElement = (
-    <Text
+    <SizableText
       tag="a"
       target={target}
       disabled={!!disabled}
@@ -170,7 +170,7 @@ export const Link = ({
       onPress={handlePress}
     >
       {childrenElements}
-    </Text>
+    </SizableText>
   )
 
   return wrapWithTooltip(linkElement, {

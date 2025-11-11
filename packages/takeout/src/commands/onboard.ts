@@ -20,6 +20,7 @@ import {
   markOnboarded,
   updateAppConfig,
   updatePackageJson,
+  updatePackageJsonEnv,
 } from '../utils/files'
 import { checkAllPorts, getConflictingPorts } from '../utils/ports'
 import { checkAllPrerequisites, hasRequiredPrerequisites } from '../utils/prerequisites'
@@ -649,6 +650,16 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   console.info()
   showSuccess(`✓ Saved configuration to ${envFile}`)
 
+  // update package.json env section to remove sst-specific vars
+  console.info()
+  showInfo('Updating package.json env section for Uncloud deployment...')
+  const envUpdateResult = updatePackageJsonEnv(cwd, 'uncloud')
+  if (envUpdateResult.success) {
+    showSuccess('✓ Removed SST-specific environment variables from package.json')
+  } else {
+    showWarning(`Failed to update package.json env: ${envUpdateResult.error}`)
+  }
+
   // run env:update to sync to GitHub workflow
   console.info()
   showInfo('Updating GitHub workflow with environment variables...')
@@ -797,12 +808,15 @@ async function setupSSTDeployment(cwd: string): Promise<void> {
     showWarning('Could not update sst.config.ts (you can update manually)')
   }
 
-  // clean up uncloud-specific vars when switching to sst
+  // update package.json env section to remove uncloud-specific vars
   console.info()
-  showInfo('Cleaning up uncloud-specific variables...')
-  updateEnvVariable(cwd, 'DEPLOY_HOST', '', envFile)
-  updateEnvVariable(cwd, 'DEPLOY_USER', '', envFile)
-  updateEnvVariable(cwd, 'DEPLOY_SSH_KEY', '', envFile)
+  showInfo('Updating package.json env section for SST deployment...')
+  const envUpdateResult = updatePackageJsonEnv(cwd, 'sst')
+  if (envUpdateResult.success) {
+    showSuccess('✓ Removed Uncloud-specific environment variables from package.json')
+  } else {
+    showWarning(`Failed to update package.json env: ${envUpdateResult.error}`)
+  }
 
   // run env:update to sync to GitHub workflow
   console.info()

@@ -1,10 +1,9 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
 import { Facebook } from '@tamagui/lucide-icons'
-import { router } from 'one'
-import { Linking } from 'react-native'
 import { Circle, isWeb, Separator, SizableText, XStack, YStack } from 'tamagui'
-import { APP_NAME, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '~/constants/app'
+import { EULA_URL, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '~/constants/app'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
+import { Link } from '~/interface/app/Link'
 import { Logo } from '~/interface/app/Logo'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { dialogEmit } from '~/interface/dialogs/shared'
@@ -21,31 +20,12 @@ export const LoginPage = () => {
     dialogEmit({ type: 'admin-password' })
   }
 
-  const handleContinueWithEmail = () => {
-    router.push('/signup/email')
-  }
-
-  const openTermsOfService = () => {
-    Linking.openURL(TERMS_OF_SERVICE_URL)
-  }
-
-  const openPrivacyPolicy = () => {
-    Linking.openURL(PRIVACY_POLICY_URL)
-  }
-
-  const openEULA = () => {
-    router.push('/eula')
-  }
-
   const handleSocialLogin = async (provider: 'google' | 'apple') => {
     showToast(`${provider} login coming soon!`, { type: 'info' })
   }
 
   return (
     <XStack flex={1} position="relative">
-      {/* Modern grid background for web */}
-
-      {/* Dark gradient for native */}
       {!isWeb && (
         <LinearGradient
           colors={['#313131', 'transparent']}
@@ -105,9 +85,7 @@ export const LoginPage = () => {
               >
                 Welcome back
               </H2>
-              <SizableText color="$color8" onPress={openTermsOfService}>
-                Sign in to your account
-              </SizableText>
+              <SizableText color="$color8">Sign in to your account</SizableText>
             </YStack>
           </YStack>
           <YStack
@@ -125,20 +103,21 @@ export const LoginPage = () => {
             overflow="hidden"
           >
             <YStack width="100%" gap="$3">
-              <ButtonSimple
-                glass
-                size="large"
-                onPress={handleContinueWithEmail}
-                width="100%"
-                pressStyle={{
-                  scale: 0.97,
-                  opacity: 0.9,
-                }}
-                animation="200ms"
-                enterStyle={{ opacity: 0, scale: 0.95 }}
-              >
-                Continue with Email
-              </ButtonSimple>
+              <Link href="/signup/email">
+                <ButtonSimple
+                  glass
+                  size="large"
+                  width="100%"
+                  pressStyle={{
+                    scale: 0.97,
+                    opacity: 0.9,
+                  }}
+                  animation="200ms"
+                  enterStyle={{ opacity: 0, scale: 0.95 }}
+                >
+                  Continue with Email
+                </ButtonSimple>
+              </Link>
 
               {isWeb && window.location.search.includes('showAdmin') && (
                 <ButtonSimple
@@ -235,47 +214,19 @@ export const LoginPage = () => {
           >
             <YStack gap="$1">
               <SizableText text="center" color="$color11">
-                By continuing, you agree to {APP_NAME}'s
+                By continuing, you agree to our
               </SizableText>
               <XStack justify="center" gap="$1">
-                <SizableText
-                  color="$color12"
-                  textDecorationLine="underline"
-                  onPress={openTermsOfService}
-                  cursor="pointer"
-                >
-                  Terms of Service
-                </SizableText>
+                <Link href={TERMS_OF_SERVICE_URL}>Terms of Service</Link>
                 <SizableText color="$color11">,</SizableText>
-                <SizableText
-                  color="$color12"
-                  textDecorationLine="underline"
-                  onPress={openPrivacyPolicy}
-                  cursor="pointer"
-                >
-                  Privacy Policy
-                </SizableText>
+                <Link href={PRIVACY_POLICY_URL}>Privacy Policy</Link>
                 <SizableText color="$color11">and</SizableText>
-                <SizableText
-                  color="$color12"
-                  textDecorationLine="underline"
-                  onPress={openEULA}
-                  cursor="pointer"
-                >
-                  EULA.
-                </SizableText>
+                <Link href={EULA_URL}>EULA.</Link>
               </XStack>
             </YStack>
           </YStack>
         </YStack>
       </YStack>
-
-      {/* Onboarding section - visible on larger screens */}
-      {/* {isWeb && (
-        <YStack $maxMD={{ display: 'none' }} flex={3} flexBasis={0}>
-          <OnboardingScreen />
-        </YStack>
-      )} */}
     </XStack>
   )
 }

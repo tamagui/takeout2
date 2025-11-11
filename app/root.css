@@ -70,7 +70,8 @@ a {
 /* but if in a paragraph then underline */
 .is_Paragraph a,
 p a,
-[data-tint-link] {
+[data-tint-link],
+.t_Link:not(:has(div, span)) {
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-decoration-color: var(--color0075);

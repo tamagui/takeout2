@@ -103,6 +103,49 @@ export function markOnboarded(cwd: string): { success: boolean; error?: string }
 }
 
 /**
+ * Updates the env section in package.json to remove platform-specific variables
+ */
+export function updatePackageJsonEnv(
+  cwd: string,
+  platform: 'sst' | 'uncloud'
+): { success: boolean; error?: string } {
+  const packagePath = join(cwd, 'package.json')
+
+  if (!existsSync(packagePath)) {
+    return { success: false, error: 'package.json not found' }
+  }
+
+  try {
+    const content = readFileSync(packagePath, 'utf-8')
+    const pkg = JSON.parse(content)
+
+    if (!pkg.env) {
+      return { success: false, error: 'env section not found in package.json' }
+    }
+
+    if (platform === 'sst') {
+      // remove uncloud-specific vars, keep sst vars
+      delete pkg.env.DEPLOY_HOST
+      delete pkg.env.DEPLOY_USER
+      delete pkg.env.DEPLOY_SSH_KEY
+    } else if (platform === 'uncloud') {
+      // remove sst-specific vars, keep uncloud vars
+      delete pkg.env.CLOUDFLARE_API_TOKEN
+      delete pkg.env.AWS_ACCESS_KEY_ID
+      delete pkg.env.AWS_SECRET_ACCESS_KEY
+    }
+
+    writeFileSync(packagePath, JSON.stringify(pkg, null, 2) + '\n', 'utf-8')
+    return { success: true }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    }
+  }
+}
+
+/**
  * Ejects from monorepo setup by removing ./packages and updating workspace:* versions
  */
 export async function ejectFromMonorepo(cwd: string): Promise<{

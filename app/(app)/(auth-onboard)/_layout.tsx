@@ -9,8 +9,6 @@ import { PageContainer } from '~/interface/layout/PageContainer'
 export function AuthAndOnboardingLayout() {
   const { user, state } = useUser()
 
-  console.log('state', state)
-
   // if (state === 'logged-out') {
   //   return <Redirect href="/login" />
   // }

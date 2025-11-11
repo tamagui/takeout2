@@ -18,8 +18,6 @@ jobs:
     # 1. Sign up at https://www.warpbuild.com (recommended - cheaper than GitHub)
     # 2. Use GitHub's ubuntu-24.04-arm (requires paid GitHub plan)
     # 3. Use ubuntu-latest and change Docker builds to linux/amd64 in scripts/web/build-docker.ts
-    # use ubuntu-latest for AMD64 builds (DigitalOcean droplets are AMD64)
-    # change back to warp-ubuntu-latest-arm64-* if using ARM64 servers (Hetzner, Oracle)
     runs-on: ubuntu-latest
 
     steps:

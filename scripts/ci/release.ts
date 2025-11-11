@@ -30,12 +30,6 @@ import { waitForPort } from '@take-out/scripts/helpers/wait-for-port'
 import pc from 'picocolors'
 import * as uncloudHelpers from './helpers/uncloud'
 
-if (process.env.ONE_SERVER_URL?.includes('localhost')) {
-  throw new Error(
-    `bun loaded ci.ts with .env.development which will break production build`
-  )
-}
-
 const { exit } = handleProcessExit({
   onExit: async () => {
     try {

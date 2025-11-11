@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 
-const BASE_URL = 'http://localhost:8262'
+const BASE_URL = 'http://localhost:8081'
 
 test.describe('Basic Integration Tests', () => {
   let page: Page
@@ -13,7 +13,7 @@ test.describe('Basic Integration Tests', () => {
     await page.close()
   })
 
-  test('server should be running on port 8262', async () => {
+  test('server should be running on port 8081', async () => {
     const response = await page.goto(BASE_URL, { waitUntil: 'networkidle' })
     expect(response?.status()).toBe(200)
   })

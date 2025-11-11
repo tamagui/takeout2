@@ -5,7 +5,7 @@ test.beforeEach(async ({ context }) => {
 })
 
 test.skip('complete onboarding flow', async ({ page }) => {
-  const BASE_URL = 'http://localhost:8262'
+  const BASE_URL = 'http://localhost:8081'
   const testEmail = `test${Date.now()}@example.com`
 
   await page.goto(BASE_URL)

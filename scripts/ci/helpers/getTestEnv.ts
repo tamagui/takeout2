@@ -12,11 +12,11 @@ export async function getTestWebEnv() {
     IS_TESTING: '1',
     DISABLE_CLIENT_OPTIMIZE: '1',
     DISABLE_METRO: '1', // not testing native here
-    ONE_SERVER_URL: 'http://localhost:8262',
+    ONE_SERVER_URL: 'http://localhost:8081',
     DOCKER_BUILDKIT_PROGRESS: 'plain',
     COMPOSE_ANSI: 'never',
     BUILDKIT_PROGRESS: 'plain',
-    BETTER_AUTH_URL: 'http://localhost:8262',
+    BETTER_AUTH_URL: 'http://localhost:8081',
     ...(getDockerHost() !== 'host.docker.internal' && {
       FORCE_ISSUER: new URL(testEnv.ZERO_AUTH_JWKS_URL).origin,
     }),

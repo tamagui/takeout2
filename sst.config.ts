@@ -185,7 +185,7 @@ export default $config({
         NODE_OPTIONS: '--max-old-space-size=6144',
       },
       health: {
-        command: ['CMD-SHELL', 'curl -f http://localhost:8262/api/health || exit 1'],
+        command: ['CMD-SHELL', 'curl -f http://localhost:8081/api/health || exit 1'],
         interval: '10 seconds',
         retries: 8,
         startPeriod: '300 seconds',
@@ -194,12 +194,12 @@ export default $config({
         retention: '2 weeks',
       },
       serviceRegistry: {
-        port: 8262,
+        port: 8081,
       },
       loadBalancer: {
         public: true,
         health: {
-          '8262/http': {
+          '8081/http': {
             path: '/api/health',
             interval: '10 seconds',
           },
@@ -213,13 +213,13 @@ export default $config({
         rules: [
           {
             listen: '80/http',
-            forward: '8262/http',
+            forward: '8081/http',
           },
           ...(!$dev
             ? ([
                 {
                   listen: '443/https',
-                  forward: '8262/http',
+                  forward: '8081/http',
                 },
               ] as const)
             : []),

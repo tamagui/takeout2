@@ -185,7 +185,7 @@ export const onboardCommand = defineCommand({
       showStep('Configuring web server port...')
       console.info()
 
-      showInfo('Default web port: 8262 (TAMA in T9)')
+      showInfo('Default web port: 8081 (TAMA in T9)')
       const shouldCustomizePort = await confirmContinue(
         'Customize web server port?',
         false
@@ -194,16 +194,16 @@ export const onboardCommand = defineCommand({
       if (shouldCustomizePort) {
         const newPort = await promptText(
           'Web server port:',
-          '8262',
-          '3000, 8080, 8262, etc.'
+          '8081',
+          '3000, 8080, 8081, etc.'
         )
 
-        if (newPort && newPort !== '8262') {
-          await replacePortInProject(cwd, '8262', newPort)
+        if (newPort && newPort !== '8081') {
+          await replacePortInProject(cwd, '8081', newPort)
           showSuccess(`✓ Updated web server port to ${newPort}`)
         }
       } else {
-        showInfo('Keeping default port 8262')
+        showInfo('Keeping default port 8081')
       }
 
       console.info()
@@ -431,8 +431,8 @@ async function customizeProject(cwd: string): Promise<void> {
 
   const domain = await promptText(
     'Development domain:',
-    'localhost:8262',
-    'localhost:8262'
+    'localhost:8081',
+    'localhost:8081'
   )
 
   // Update package.json

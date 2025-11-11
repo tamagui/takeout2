@@ -116,7 +116,7 @@ getConflictingPorts(checks: PortCheck[]): PortCheck[]
 TAKEOUT_PORTS = {
   postgres: 5432,
   zero: 4848,
-  web: 8262,
+  web: 8081,
   minio: 9090,
   minioConsole: 9091,
 }

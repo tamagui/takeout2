@@ -297,7 +297,7 @@ export async function loader({ params }) {
 ```tsx
 import { getURL } from 'one'
 
-const url = getURL() // http://127.0.0.1:8262
+const url = getURL() // http://127.0.0.1:8081
 ```
 
 returns current app url, uses `ONE_SERVER_URL` in production
@@ -314,7 +314,8 @@ type-level validation only
 
 ## layouts
 
-layouts frame routes in a directory and can nest inside each other. must render one of: `Slot`, `Stack`, `Tabs`, or `Drawer`.
+layouts frame routes in a directory and can nest inside each other. must render
+one of: `Slot`, `Stack`, `Tabs`, or `Drawer`.
 
 ### root layout
 
@@ -338,7 +339,8 @@ export default function Layout() {
 
 ### useServerHeadInsertion
 
-root layout only hook for inserting tags into `<head>` after ssr. useful for css-in-js.
+root layout only hook for inserting tags into `<head>` after ssr. useful for
+css-in-js.
 
 ```tsx
 import { Slot, useServerHeadInsertion } from 'one'
@@ -393,8 +395,11 @@ export default function Layout() {
 ```
 
 **common options:**
-- `presentation`: 'card' | 'modal' | 'transparentModal' | 'containedModal' | 'containedTransparentModal' | 'fullScreenModal' | 'formSheet'
-- `animation`: 'default' | 'fade' | 'fade_from_bottom' | 'flip' | 'simple_push' | 'slide_from_bottom' | 'slide_from_right' | 'slide_from_left' | 'none'
+
+- `presentation`: 'card' | 'modal' | 'transparentModal' | 'containedModal' |
+  'containedTransparentModal' | 'fullScreenModal' | 'formSheet'
+- `animation`: 'default' | 'fade' | 'fade_from_bottom' | 'flip' | 'simple_push'
+  | 'slide_from_bottom' | 'slide_from_right' | 'slide_from_left' | 'none'
 - `headerShown`: boolean
 - `title`: string
 - `headerRight`: () => ReactElement
@@ -451,6 +456,7 @@ app/
 ```
 
 **tabs layout:**
+
 ```tsx
 // app/_layout.tsx
 import { Tabs } from 'one'
@@ -473,6 +479,7 @@ export default function RootLayout() {
 ```
 
 **stack inside feed tab:**
+
 ```tsx
 // app/(feed)/_layout.tsx
 import { Stack, Slot } from 'one'

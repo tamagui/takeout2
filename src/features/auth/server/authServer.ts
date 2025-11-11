@@ -28,7 +28,7 @@ export const authServer = betterAuth({
   trustedOrigins: [
     // matches webApp.url in sst.config
     'https://start.chat',
-    'http://localhost:8262',
+    'http://localhost:8081',
     `${APP_SCHEME}://`,
   ],
 

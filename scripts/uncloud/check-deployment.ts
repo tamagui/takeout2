@@ -169,9 +169,9 @@ async function checkHttpHealth(): Promise<{
   message?: string
 }> {
   try {
-    // Check the /api/health endpoint on port 8262
+    // Check the /api/health endpoint on port 8081
     const result =
-      await $`curl -s -o /dev/null -w "%{http_code}" -m 5 http://${deployHost}:8262/api/health`.quiet()
+      await $`curl -s -o /dev/null -w "%{http_code}" -m 5 http://${deployHost}:8081/api/health`.quiet()
     const statusCode = parseInt(result.stdout.toString().trim(), 10)
 
     if (statusCode === 200) {
@@ -369,7 +369,7 @@ async function monitor() {
       const finalHealth = await checkHttpHealth()
       if (finalHealth.healthy) {
         console.info(
-          `\n🎉 Deployment successful! Application is accessible at http://${deployHost}:8262`
+          `\n🎉 Deployment successful! Application is accessible at http://${deployHost}:8081`
         )
         process.exit(0)
       } else {

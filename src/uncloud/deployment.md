@@ -14,7 +14,7 @@ bun run web build
 bun run deploy:local
 ```
 
-your app will be running at http://localhost:8262
+your app will be running at http://localhost:8081
 
 ## quick start - production
 
@@ -33,7 +33,7 @@ bun run web build
 bun run deploy
 ```
 
-your app will be running at http://your-server-ip:8262
+your app will be running at http://your-server-ip:8081
 
 ## what it does
 
@@ -41,7 +41,7 @@ your app will be running at http://your-server-ip:8262
 2. installs docker on the vm
 3. installs uncloud on the vm
 4. deploys your full stack (web, zero, postgres, minio)
-5. forwards ports to localhost:8262
+5. forwards ports to localhost:8081
 
 ## stack
 
@@ -52,7 +52,7 @@ the deployment uses:
 
 services deployed:
 
-- **web** (localhost:8262) - your app
+- **web** (localhost:8081) - your app
 - **zero** (localhost:4848) - sync server
 - **pgdb** - postgres with pgvector
 - **minio** - s3-compatible storage
@@ -62,7 +62,7 @@ services deployed:
 uncloud creates a wireguard mesh network so services can talk to each other by
 name:
 
-- `web:8262` - web app
+- `web:8081` - web app
 - `pgdb:5432` - postgres
 - `zero:4848` - zero sync
 - `minio:9000` - storage
@@ -156,12 +156,12 @@ curl -fsS https://get.uncloud.run/install.sh | sh
 kill any port forwards:
 
 ```bash
-pkill -f "ssh.*takeout-deploy.*8262"
+pkill -f "ssh.*takeout-deploy.*8081"
 ```
 
 then run `bun run deploy` again.
 
-### can't access localhost:8262
+### can't access localhost:8081
 
 check services are running:
 
@@ -196,7 +196,7 @@ bun run deploy
 │  ├──────────────────────────────┤  │
 │  │                               │  │
 │  │  ┌────────┐  ┌────────────┐  │  │
-│  │  │ caddy  │──│ web:8262   │  │  │
+│  │  │ caddy  │──│ web:8081   │  │  │
 │  │  │ (http) │  │            │  │  │
 │  │  └────────┘  └────────────┘  │  │
 │  │                               │  │
@@ -218,7 +218,7 @@ bun run deploy
                │
         ┌──────▼──────┐
         │ localhost   │
-        │ :8262       │
+        │ :8081       │
         │ :4848       │
         └─────────────┘
 ```

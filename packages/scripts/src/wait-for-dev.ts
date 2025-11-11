@@ -2,7 +2,7 @@
 
 import { sleep } from '@take-out/helpers'
 
-const ONE_SERVER_URL = process.env.ONE_SERVER_URL || 'http://localhost:8262'
+const ONE_SERVER_URL = process.env.ONE_SERVER_URL || 'http://localhost:8081'
 const CHECK_INTERVAL = 2000
 
 async function checkServer(): Promise<boolean> {

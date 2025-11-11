@@ -135,7 +135,7 @@ async function main() {
 
   console.info('\n🎉 deployment ready!')
   console.info('\naccess your app:')
-  console.info(`  web app:     http://${DEPLOY_HOST}:8262`)
+  console.info(`  web app:     http://${DEPLOY_HOST}:8081`)
   console.info(`  zero sync:   http://${DEPLOY_HOST}:4848`)
   console.info(`  ssh:         ssh ${DEPLOY_USER}@${DEPLOY_HOST}`)
   console.info('\nuseful commands:')

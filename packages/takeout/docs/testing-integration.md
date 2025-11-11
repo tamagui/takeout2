@@ -95,7 +95,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: process.env.CI ? 'dot' : 'line',
   use: {
-    baseURL: 'http://localhost:8262',
+    baseURL: 'http://localhost:8081',
     trace: 'on-first-retry',
   },
   projects: [
@@ -382,14 +382,14 @@ if (count !== expected) {
 }
 ```
 
-#### Port 8262 Already in Use
+#### Port 8081 Already in Use
 
 Problem: Previous test run didn't clean up
 
 Solution:
 
 ```bash
-lsof -i :8262
+lsof -i :8081
 kill -9 <PID>
 
 # or use docker cleanup
@@ -503,7 +503,7 @@ Test real-time features:
 test('websocket connection', async ({ page }) => {
   await page.evaluate(() => {
     return new Promise((resolve) => {
-      const ws = new WebSocket('ws://localhost:8262/ws')
+      const ws = new WebSocket('ws://localhost:8081/ws')
       ws.onopen = () => resolve(true)
     })
   })

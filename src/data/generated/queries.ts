@@ -108,6 +108,31 @@ export const postsWithBlocking = syncedQuery(
   }
 )
 
+export const searchPosts = syncedQuery(
+  'searchPosts',
+  v.parser(
+    v.tuple([
+      v.object({
+        searchText: v.string(),
+        userId: v.optional(v.string()),
+        blockedUserIds: v.array(v.string()),
+        pageSize: v.number(),
+        cursor: v.optional(
+          v.union([
+            v.object({
+              id: v.string(),
+            }),
+            v.null(),
+          ])
+        ),
+      }),
+    ])
+  ),
+  (arg) => {
+    return postQueries.searchPosts(arg)
+  }
+)
+
 export const userById = syncedQuery(
   'userById',
   v.parser(

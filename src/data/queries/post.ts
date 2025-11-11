@@ -93,3 +93,37 @@ export const postsWithBlocking = (props: {
 
   return query
 }
+
+// Search posts by caption
+export const searchPosts = (props: {
+  searchText: string
+  userId?: string
+  blockedUserIds: string[]
+  pageSize: number
+  cursor?: { id: string } | null
+}) => {
+  let query = zql.post.where(permission).where((eb) => {
+    if (!props.searchText) {
+      return eb.cmp('id', '!=', '')
+    }
+
+    const captionCondition = eb.cmp('caption', 'LIKE', `%${props.searchText}%`)
+
+    if (props.userId && props.blockedUserIds.length > 0) {
+      return eb.and(
+        captionCondition,
+        eb.not(eb.cmp('userId', 'IN', props.blockedUserIds))
+      )
+    }
+
+    return captionCondition
+  })
+
+  query = query.orderBy('createdAt', 'desc').orderBy('id', 'desc').limit(props.pageSize)
+
+  if (props.cursor) {
+    query = query.start(props.cursor)
+  }
+
+  return query
+}

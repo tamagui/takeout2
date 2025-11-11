@@ -1,5 +1,17 @@
-import { Slot } from 'one'
+import { Stack } from 'one'
 
 export const SearchLayout = () => {
-  return <Slot />
+  return (
+    <Stack>
+      <Stack.Screen
+        name="index"
+        options={{
+          title: 'Search',
+          headerSearchBarOptions: {
+            placeholder: 'Search...',
+          },
+        }}
+      />
+    </Stack>
+  )
 }

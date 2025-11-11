@@ -3,6 +3,7 @@ import './root.css'
 import { Slot } from 'one'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { isWeb } from 'tamagui'
+import { GridBackground } from '~/interface/backgrounds/GridBackground'
 import { Dialogs } from '~/interface/dialogs/Dialogs'
 import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
 
@@ -10,6 +11,7 @@ export function Layout() {
   const contents = (
     <TamaguiRootProvider>
       <SafeAreaProvider>
+        <GridBackground />
         <Dialogs />
         <Slot />
       </SafeAreaProvider>

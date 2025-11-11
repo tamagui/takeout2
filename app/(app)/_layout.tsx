@@ -7,6 +7,7 @@ import { NotificationProvider } from '~/interface/notification/Notification'
 import { ToastProvider } from '~/interface/toast/Toast'
 import { DragDropFile } from '~/interface/upload/DragDropFile'
 import { PlatformSpecificRootProvider } from '~/providers/PlatformSpecificRootProvider'
+import { ProvideZero } from '~/zero/client'
 
 export default function AppLayout() {
   const { user, state } = useUser()
@@ -32,6 +33,7 @@ export default function AppLayout() {
         ) : (
           // We need Stack here for transition animation to work on native
           <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(auth-onboard)" />
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="settings" />
           </Stack>
@@ -43,10 +45,12 @@ export default function AppLayout() {
 
 function MainProviders({ children }: { children: ReactNode }) {
   return (
-    <ToastProvider>
-      <NotificationProvider>
-        <PlatformSpecificRootProvider>{children}</PlatformSpecificRootProvider>
-      </NotificationProvider>
-    </ToastProvider>
+    <ProvideZero>
+      <ToastProvider>
+        <NotificationProvider>
+          <PlatformSpecificRootProvider>{children}</PlatformSpecificRootProvider>
+        </NotificationProvider>
+      </ToastProvider>
+    </ProvideZero>
   )
 }

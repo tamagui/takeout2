@@ -14,7 +14,8 @@ export const GridBackground = memo(({ opacity = 1 }: GridBackgroundProps) => {
 
   return (
     <View
-      position="absolute"
+      // @ts-expect-error
+      position="fixed"
       t={0}
       l={0}
       r={0}
@@ -23,6 +24,7 @@ export const GridBackground = memo(({ opacity = 1 }: GridBackgroundProps) => {
       pointerEvents="none"
       opacity={opacity}
       bg={isDark ? undefined : 'rgba(245, 243, 255, 0.3)'}
+      zi={-1}
     >
       {/* CSS Grid Pattern */}
       <style

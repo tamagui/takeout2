@@ -216,10 +216,3 @@ If an update causes issues:
 2. **Deploy fix** - Create and test a fix
 3. **Roll forward** - Deploy the fix as a new update
 4. **Monitor** - Track analytics to ensure issues are resolved
-
-## Platform Support
-
-- ✅ **iOS** - Full support
-- ✅ **Android** - Full support
-- ❌ **Web** - Not supported (web updates via deployment)
-- ❌ **Desktop (Tauri)** - Uses Tauri's auto-update system

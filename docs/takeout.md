@@ -11,8 +11,8 @@ Find out much more by using `bun tko` for available commands and
 ## Repository Structure
 
 The entire project lives in a single package.json to avoid monorepo complexity.
-Everything from the web app to native iOS and Android builds, Tauri, and infra
-is defined in this codebase.
+Everything from the web app to native iOS and Android builds, and infra is
+defined in this codebase.
 
 ## Build Pipeline
 
@@ -63,17 +63,11 @@ for better performance and smaller bundles.
 
 ## Developer Utilities
 
-@take-out/helpers and the ./src/ folder has a lot of nice helpers. There's an event
-emitter system for cross-component communication, keyboard shortcut management
-that works across platforms, URL unfurling for rich link previews, image upload
-with progress and error handling, and drag and drop that works in the browser
-and Tauri, with support for nested drop areas.
-
-## Desktop Application
-
-The desktop app runs on Tauri with support for sidecars (running additional
-binaries alongside the main app), deep linking from browser to app, auto
-updates, and icon generation for all platforms.
+@take-out/helpers and the ./src/ folder has a lot of nice helpers. There's an
+event emitter system for cross-component communication, keyboard shortcut
+management that works across platforms, URL unfurling for rich link previews,
+image upload with progress and error handling, and drag and drop that works in
+the browser with support for nested drop areas.
 
 ## Zero Integration
 

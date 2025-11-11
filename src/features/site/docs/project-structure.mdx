@@ -1,11 +1,14 @@
 ---
 title: Project Structure
-description: Detailed guide to Takeout's directory structure and file organization
+description:
+  Detailed guide to Takeout's directory structure and file organization
 ---
 
 # Project Structure
 
-This guide explains Takeout's directory structure and file organization, helping you navigate the codebase and understand where to find (and add) different types of code.
+This guide explains Takeout's directory structure and file organization, helping
+you navigate the codebase and understand where to find (and add) different types
+of code.
 
 ## Root Directory
 
@@ -69,7 +72,6 @@ src/
 ├── database/               # Database schema and migrations
 ├── server/                 # Server-side code
 ├── zero/                   # Zero sync configuration
-├── tauri/                  # Desktop app code
 ├── constants/              # App constants
 └── test/                   # Test configuration
 ```
@@ -124,38 +126,45 @@ feature-name/
 ### Important Features
 
 **auth/** - Authentication and authorization
+
 - Better Auth configuration
 - Login/signup components
 - Session management
 - OAuth providers
 
 **user/** - User management
+
 - User profile data
 - User settings
 - Account management
 
 **feed/** - Main content feed
+
 - Post listing
 - Infinite scroll
 - Real-time updates
 
 **upload/** - File upload handling
+
 - Image upload to R2
 - Progress tracking
 - Error handling
 - URL generation
 
 **theme/** - Theme and appearance
+
 - Dark mode toggle
 - Color scheme management
 - Theme persistence
 
 **analytics/** - Product analytics
+
 - PostHog integration
 - Event tracking
 - Feature flags
 
 **hot-updater/** - Over-the-air updates
+
 - OTA update checks
 - Update downloads
 - Version management
@@ -175,7 +184,8 @@ src/interface/
 └── index.ts                # Re-exports
 ```
 
-These are primitive components built on Tamagui that maintain consistent design across the app.
+These are primitive components built on Tamagui that maintain consistent design
+across the app.
 
 ## Database Directory
 
@@ -231,7 +241,8 @@ src/zero/
 └── mutators/               # Custom mutators
 ```
 
-Zero schemas are generated from `schema-public.ts` using `bun tko zero generate`.
+Zero schemas are generated from `schema-public.ts` using
+`bun tko zero generate`.
 
 ## Scripts Directory
 

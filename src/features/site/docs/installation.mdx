@@ -5,11 +5,13 @@ description: Set up your development environment and install Takeout
 
 # Installation
 
-This guide will walk you through setting up Takeout for local development, from prerequisites to running your first development server.
+This guide will walk you through setting up Takeout for local development, from
+prerequisites to running your first development server.
 
 ## Prerequisites
 
-Before installing Takeout, ensure you have the following tools installed on your system:
+Before installing Takeout, ensure you have the following tools installed on your
+system:
 
 ### Required
 
@@ -48,7 +50,8 @@ curl -fsSL https://bun.sh/install | bash
 
 ### Docker Desktop
 
-Download and install Docker Desktop from [docker.com](https://www.docker.com/products/docker-desktop/).
+Download and install Docker Desktop from
+[docker.com](https://www.docker.com/products/docker-desktop/).
 
 ## Quick Installation
 
@@ -62,6 +65,7 @@ bun onboard
 ```
 
 The onboarding wizard will:
+
 - Verify all prerequisites are installed
 - Set up your environment variables
 - Initialize the database
@@ -81,6 +85,7 @@ bun install
 ```
 
 The postinstall script will automatically:
+
 - Build initial packages
 - Bootstrap the project
 - Apply One.js patches
@@ -116,6 +121,7 @@ bun backend
 ```
 
 This will start:
+
 - PostgreSQL on port 5433
 - MinIO (S3-compatible storage) on port 9200
 - Adminer (database UI) on port 8080
@@ -129,6 +135,7 @@ bun migrate
 ```
 
 This will:
+
 - Create all necessary database tables
 - Set up the Zero sync schema
 - Run Better Auth migrations
@@ -140,6 +147,7 @@ bun dev
 ```
 
 Your app will be available at:
+
 - Web: http://localhost:8081
 - API: http://localhost:8081/api
 - Zero sync: http://localhost:4848
@@ -172,7 +180,8 @@ Create `.vscode/settings.json`:
 
 ### TypeScript Settings
 
-The project uses TypeScript 5.8.3 with strict mode enabled. Type checking runs automatically with:
+The project uses TypeScript 5.8.3 with strict mode enabled. Type checking runs
+automatically with:
 
 ```bash
 bun tko check types
@@ -226,26 +235,6 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 bun android
 ```
 
-## Desktop Development Setup
-
-### Tauri (macOS, Linux, Windows)
-
-Install Rust and Tauri dependencies:
-
-```bash
-# Install Rust
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-
-# macOS additional dependencies
-brew install pkg-config
-```
-
-Build and run the desktop app:
-
-```bash
-bun tko tauri dev
-```
-
 ## Verification
 
 Verify your installation is working correctly:
@@ -268,7 +257,8 @@ bun test:unit
 
 ### Node Version Mismatch
 
-If you see errors about Node versions, ensure you're using the exact version specified in `package.json`:
+If you see errors about Node versions, ensure you're using the exact version
+specified in `package.json`:
 
 ```bash
 node --version  # Should output v24.3.0

@@ -1,13 +1,10 @@
-import { Image } from '@tamagui/lucide-icons'
-import type { Event } from '@tauri-apps/api/event'
-import type { DragDropEvent as TauriDragDropEvent } from '@tauri-apps/api/webview'
 import {
   createEmitter,
   createGlobalContext,
   uniqBy,
-  useAsyncEffect,
   useEmitterValue,
 } from '@take-out/helpers'
+import { Image } from '@tamagui/lucide-icons'
 import {
   memo,
   type ReactElement,
@@ -26,7 +23,6 @@ import {
   type ViewProps,
   YStack,
 } from 'tamagui'
-import { isTauri } from '@take-out/helpers'
 import type { Component } from '../types'
 import { getFileType, isSupportedFile } from './helpers'
 import type { FileUpload } from './types'
@@ -307,179 +303,94 @@ export const useDragDrop = ({
   const [internalNode, setNode] = useState<HTMLDivElement | null>(null)
   const onChangeCb = useEvent(onChange)
 
-  if (isTauri) {
-    // biome-ignore lint/correctness/useHookAtTopLevel: ignore
-    useAsyncEffect(async () => {
-      let disableDrop = false
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return // TODO: native
+    }
 
-      const handleDragDropEvent = async (event: Event<TauriDragDropEvent>) => {
-        if (event.event === 'tauri://drag-enter' && isWindowFocused) {
-          disableDrop = true
-          // dont accent drags from internally
+    const node = selector
+      ? (document.querySelector(selector) as HTMLElement | undefined)
+      : internalNode
+
+    if (!node) return
+
+    const controller = new AbortController()
+    const { signal } = controller
+
+    node.addEventListener(
+      'dragover',
+      (e) => {
+        if (isDragFromWithinBrowser(e)) {
           return
         }
-        if (disableDrop) {
+
+        e.preventDefault()
+        e.stopPropagation()
+        onChangeCb({
+          type: 'drag',
+          x: e.clientX,
+          y: e.clientY,
+        })
+      },
+      { signal }
+    )
+
+    node.addEventListener(
+      'dragleave',
+      (e) => {
+        if (isDragFromWithinBrowser(e)) {
           return
         }
 
-        if (event.payload.type === 'over') {
-          lastDropPaths = []
-          onChangeCb({
-            ...event.payload.position,
-            type: 'drag',
-          })
-        } else if (event.payload.type === 'drop') {
-          const paths = event.payload.paths
+        e.preventDefault()
+        e.stopPropagation()
+        onChangeCb({
+          type: 'cancel',
+        })
+      },
+      { signal }
+    )
 
-          if (JSON.stringify(paths) === JSON.stringify(lastDropPaths)) {
-            // tauri sends two event
-            return
-          }
-
-          lastDropPaths = paths
-
-          const { exists, readFile } = await import('@tauri-apps/plugin-fs')
-
-          const files = (
-            await Promise.all(
-              paths.flatMap(async (name) => {
-                if (await exists(name)) {
-                  const contents = await readFile(name)
-                  return [
-                    {
-                      id: name,
-                      name,
-                      contents,
-                      preview: await fileLikeToDataURI({ name, contents }),
-                    } satisfies DropFile,
-                  ]
-                }
-
-                return []
-              })
-            )
-          ).flat()
-
-          onChangeCb({
-            type: 'drop',
-            files,
-          })
-        } else {
-          lastDropPaths = []
-          onChangeCb({
-            type: 'cancel',
-          })
+    node.addEventListener(
+      'drop',
+      async (e) => {
+        if (isDragFromWithinBrowser(e)) {
+          return
         }
-      }
 
-      const { getCurrentWebview } = await import('@tauri-apps/api/webview')
-      const webView = getCurrentWebview()
+        e.preventDefault()
+        e.stopPropagation()
 
-      let isWindowFocused = await webView.window.isFocused()
+        const files: DropFile[] = []
 
-      const [disposeFocusChanged, disposeDrop] = await Promise.all([
-        webView.window.onFocusChanged((val) => {
-          isWindowFocused = val.payload
-        }),
-        webView.onDragDropEvent(handleDragDropEvent),
-      ])
+        for (const item of Array.from(e.dataTransfer!.files)) {
+          const fileName = item.name
+          const fileSize = item.size
+          const fileType = item.type
+          const lastModified = item.lastModified
 
-      return () => {
-        disposeFocusChanged()
-        disposeDrop()
-      }
-    }, [onChangeCb])
-  } else {
-    // biome-ignore lint/correctness/useHookAtTopLevel: ignore
-    useEffect(() => {
-      if (typeof document === 'undefined') {
-        return // TODO: native
-      }
-
-      const node = selector
-        ? (document.querySelector(selector) as HTMLElement | undefined)
-        : internalNode
-
-      if (!node) return
-
-      const controller = new AbortController()
-      const { signal } = controller
-
-      node.addEventListener(
-        'dragover',
-        (e) => {
-          if (isDragFromWithinBrowser(e)) {
-            return
+          try {
+            files.push({
+              id: `${fileName}-${fileSize}-${lastModified}-${fileType}`,
+              name: item.name,
+              contents: new Uint8Array(await item.arrayBuffer()),
+              preview: await fileLikeToDataURI(item),
+            })
+          } catch (err) {
+            console.error('Failed to read dropped file:', err)
           }
+        }
 
-          e.preventDefault()
-          e.stopPropagation()
-          onChangeCb({
-            type: 'drag',
-            x: e.clientX,
-            y: e.clientY,
-          })
-        },
-        { signal }
-      )
+        onChangeCb({
+          type: 'drop',
+          files,
+        })
+      },
+      { signal }
+    )
 
-      node.addEventListener(
-        'dragleave',
-        (e) => {
-          if (isDragFromWithinBrowser(e)) {
-            return
-          }
-
-          e.preventDefault()
-          e.stopPropagation()
-          onChangeCb({
-            type: 'cancel',
-          })
-        },
-        { signal }
-      )
-
-      node.addEventListener(
-        'drop',
-        async (e) => {
-          if (isDragFromWithinBrowser(e)) {
-            return
-          }
-
-          e.preventDefault()
-          e.stopPropagation()
-
-          const files: DropFile[] = []
-
-          for (const item of Array.from(e.dataTransfer!.files)) {
-            const fileName = item.name
-            const fileSize = item.size
-            const fileType = item.type
-            const lastModified = item.lastModified
-
-            try {
-              files.push({
-                id: `${fileName}-${fileSize}-${lastModified}-${fileType}`,
-                name: item.name,
-                contents: new Uint8Array(await item.arrayBuffer()),
-                preview: await fileLikeToDataURI(item),
-              })
-            } catch (err) {
-              console.error('Failed to read dropped file:', err)
-            }
-          }
-
-          onChangeCb({
-            type: 'drop',
-            files,
-          })
-        },
-        { signal }
-      )
-
-      return () => controller.abort()
-    }, [internalNode, onChangeCb, selector])
-  }
+    return () => controller.abort()
+  }, [internalNode, onChangeCb, selector])
 
   return {
     createDropElement: (props?: React.HTMLAttributes<HTMLDivElement>) => {

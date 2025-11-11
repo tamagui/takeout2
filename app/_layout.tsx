@@ -18,7 +18,7 @@ export function Layout() {
 
   if (isWeb) {
     return (
-      <html data-tauri-drag-region lang="en-US">
+      <html lang="en-US">
         <head>
           <meta charSet="utf-8" />
           <meta httpEquiv="X-UA-Compatible" content="IE=edge" />

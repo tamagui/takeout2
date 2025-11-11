@@ -1,9 +1,7 @@
 import { isClient, isWeb } from 'tamagui'
-import { isTauri } from '@take-out/helpers'
 import { setAuthClientToken } from './authClient'
 
-const disableAuthBrowser =
-  !isWeb || isTauri || (typeof window !== 'undefined' && window.opener)
+const disableAuthBrowser = !isWeb || (typeof window !== 'undefined' && window.opener)
 
 if (isWeb && isClient && !disableAuthBrowser) {
   // Listen for messages from the popup

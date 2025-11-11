@@ -1,11 +1,13 @@
 ---
 title: Development
-description: Development workflow, tools, and best practices for building with Takeout
+description:
+  Development workflow, tools, and best practices for building with Takeout
 ---
 
 # Development
 
-This guide covers the day-to-day development workflow for building features with Takeout, from starting the dev server to running tests and debugging.
+This guide covers the day-to-day development workflow for building features with
+Takeout, from starting the dev server to running tests and debugging.
 
 ## Development Workflow
 
@@ -20,6 +22,7 @@ bun backend
 ```
 
 This starts Docker Compose with:
+
 - PostgreSQL (port 5433)
 - MinIO for S3-compatible storage (port 9200)
 - Adminer database UI (port 8080)
@@ -31,6 +34,7 @@ bun dev
 ```
 
 This starts:
+
 - One.js development server (port 8081)
 - Hot module reloading
 - Type checking (optional, with `bun watch`)
@@ -40,13 +44,15 @@ Your app is now running at `http://localhost:8081`.
 
 ### Watch Mode
 
-For a better development experience, run watch mode for automatic type checking and Zero codegen:
+For a better development experience, run watch mode for automatic type checking
+and Zero codegen:
 
 ```bash
 bun watch
 ```
 
 This runs in parallel:
+
 - TypeScript type checking (`bun watch:types`)
 - Zero code generation (`bun watch:zero:generate`)
 
@@ -57,6 +63,7 @@ Takeout supports fast refresh on all platforms:
 ### Web
 
 Changes to code automatically reload in the browser with state preservation:
+
 - React components hot reload
 - API routes restart automatically
 - CSS updates instantly
@@ -64,6 +71,7 @@ Changes to code automatically reload in the browser with state preservation:
 ### Native (iOS/Android)
 
 Fast refresh works on mobile with some caveats:
+
 - Component changes hot reload
 - New dependencies require rebuild
 - Native module changes need full rebuild
@@ -107,10 +115,12 @@ bun backend:clean
 ### Accessing Services
 
 **PostgreSQL**
+
 - Connection: `postgresql://user:password@127.0.0.1:5433/postgres`
 - Use TablePlus, pgAdmin, or any PostgreSQL client
 
 **Adminer (Database UI)**
+
 - URL: `http://localhost:8080`
 - System: PostgreSQL
 - Server: `postgres`
@@ -119,6 +129,7 @@ bun backend:clean
 - Database: `postgres`
 
 **MinIO (S3 Storage)**
+
 - Console: `http://localhost:9200`
 - Access Key: `minio`
 - Secret Key: `minio_password`
@@ -169,7 +180,8 @@ bun db:migrate-add migration-name
 
 Edit the generated file in `src/database/migrations/`.
 
-**Important:** Takeout doesn't use down migrations. Only create migrations that can be applied forward.
+**Important:** Takeout doesn't use down migrations. Only create migrations that
+can be applied forward.
 
 ### Resetting Database
 
@@ -286,11 +298,13 @@ bun tko check
 ```
 
 This runs:
+
 - TypeScript type checking
 - Biome linting
 - Circular dependency detection
 
-**Best Practice:** Always run `bun lint:fix && bun tko check types` after making changes.
+**Best Practice:** Always run `bun lint:fix && bun tko check types` after making
+changes.
 
 ## Testing
 
@@ -335,6 +349,7 @@ bun test
 ### Client-Side Debugging
 
 **Browser DevTools**
+
 - React DevTools extension
 - Zero DevTools (if available)
 - Network tab for API calls
@@ -383,6 +398,7 @@ docker compose logs -f postgres | grep duration
 **SQL Client**
 
 Use TablePlus or Adminer to:
+
 - Inspect table data
 - Run raw SQL queries
 - View query plans with `EXPLAIN ANALYZE`
@@ -475,6 +491,7 @@ bun dev-tunnel
 ```
 
 This creates a tunnel to your SST infrastructure, useful for testing:
+
 - OAuth callbacks
 - Webhooks
 - Mobile app development
@@ -505,6 +522,7 @@ bun ios --device
 ```
 
 **Debugging:**
+
 - Xcode console for native logs
 - Safari DevTools for JavaScript debugging
 - React Native Debugger
@@ -523,18 +541,9 @@ bun android --device
 ```
 
 **Debugging:**
+
 - Android Studio Logcat for native logs
 - Chrome DevTools for JavaScript debugging
-
-### Desktop Development
-
-```bash
-# Development mode
-bun tko tauri dev
-
-# Build for production
-bun tko tauri build
-```
 
 ## Best Practices
 
@@ -569,7 +578,8 @@ bun tko tauri build
 
 ## Next Steps
 
-- [Guides: Adding a Feature](/docs/guides-adding-feature) - Step-by-step feature development
+- [Guides: Adding a Feature](/docs/guides-adding-feature) - Step-by-step feature
+  development
 - [Guides: Queries](/docs/guides-queries) - Writing Zero queries
 - [Guides: Mutations](/docs/guides-mutations) - Creating mutations
 - [Troubleshooting](/docs/troubleshooting) - Common issues and solutions

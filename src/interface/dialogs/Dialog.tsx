@@ -112,7 +112,6 @@ const DialogComponent = ({
           </DialogOverlay>
 
           <DialogContent
-            data-tauri-drag-region
             ref={dialogContentRef}
             minH={minH}
             minW={minW}
@@ -240,9 +239,9 @@ const DialogFooter = (props: { children: any }) => {
   return (
     <>
       <Spacer flex />
-      <YStack data-tauri-drag-region gap="$3">
+      <YStack gap="$3">
         <Separator opacity={0.5} />
-        <XStack data-tauri-drag-region justify="flex-end" gap="$2">
+        <XStack justify="flex-end" gap="$2">
           {props.children}
         </XStack>
       </YStack>

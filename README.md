@@ -123,7 +123,6 @@ takeout/
 │   ├── auth/              # Authentication system
 │   ├── zero/              # Real-time sync configuration
 │   ├── server/            # Server-side code
-│   └── tauri/             # Desktop app glue code
 ├── scripts/               # Organized build and deployment scripts
 ├── docs/                  # Detailed guides
 ├── assets/                # Images, fonts, splash screens
@@ -247,14 +246,4 @@ Requires Android Studio, JDK 17+, and Android SDK 34+.
 ```bash
 bun hot-update ios
 bun hot-update android
-```
-
-## Desktop App
-
-Build native macOS desktop app with Tauri:
-
-```bash
-cd src/tauri
-bun tko tauri dev    # Development
-bun tko tauri build  # Production build
 ```

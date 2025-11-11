@@ -27,7 +27,14 @@
         "noConsole": {
           "level": "error",
           "options": {
-            "allow": ["error", "warn", "info", "groupCollapsed", "groupEnd", "trace"]
+            "allow": [
+              "error",
+              "warn",
+              "info",
+              "groupCollapsed",
+              "groupEnd",
+              "trace"
+            ]
           }
         }
       },
@@ -107,8 +114,6 @@
       "!**/.claude",
       "!src/database/migrations/meta/**/*",
       "!src/database/migrate-dist.js",
-      "!src/tauri/target/**/*",
-      "!src/tauri/gen/**/*",
       "!src/tamagui/themes-out.ts",
       "!**/*.d.ts",
       "!**/ios",

@@ -11,21 +11,26 @@ Common questions and answers about using Takeout.
 
 ### What is Takeout?
 
-Takeout is a production-ready starter kit for building full-stack, cross-platform applications with React. It includes authentication, real-time sync, database management, and deployment configuration out of the box.
+Takeout is a production-ready starter kit for building full-stack,
+cross-platform applications with React. It includes authentication, real-time
+sync, database management, and deployment configuration out of the box.
 
 ### Why use Takeout over Create React App or Next.js?
 
-Takeout is specifically designed for building cross-platform apps (web, iOS, Android, desktop) with real-time capabilities. It includes:
+Takeout is specifically designed for building cross-platform apps (web, iOS,
+Android, desktop) with real-time capabilities. It includes:
+
 - Universal React components that work on all platforms
 - Real-time offline-first data sync with Zero
 - Complete authentication system with Better Auth
 - Production deployment to AWS with SST
 - Mobile app builds with Expo
-- Desktop app support with Tauri
 
 ### Is Takeout production-ready?
 
-Yes. Takeout is built from patterns refined through building real products. It includes:
+Yes. Takeout is built from patterns refined through building real products. It
+includes:
+
 - Comprehensive CI/CD pipeline
 - Database migration system
 - Health monitoring
@@ -35,33 +40,40 @@ Yes. Takeout is built from patterns refined through building real products. It i
 
 ### Can I use Takeout for web-only projects?
 
-Absolutely. While Takeout supports mobile and desktop, you can build web-only apps by simply not using the native features. All the web infrastructure (authentication, database, API routes, deployment) works independently.
+Absolutely. While Takeout supports mobile and desktop, you can build web-only
+apps by simply not using the native features. All the web infrastructure
+(authentication, database, API routes, deployment) works independently.
 
 ## Technical
 
 ### Why Bun instead of npm/yarn?
 
 Bun is significantly faster than npm/yarn for:
+
 - Package installation (10-100x faster)
 - Running scripts
 - TypeScript execution
 
-It's also a complete toolkit (runtime + package manager + bundler) which simplifies the toolchain.
+It's also a complete toolkit (runtime + package manager + bundler) which
+simplifies the toolchain.
 
 ### Why Zero instead of GraphQL/REST?
 
 Zero provides:
+
 - **Offline-first architecture** - App works without internet
 - **Real-time sync** - Changes propagate instantly
 - **Optimistic UI** - Immediate feedback
 - **Automatic conflict resolution** - No manual merge logic
 - **Type-safe queries** - Full TypeScript support
 
-Traditional REST/GraphQL requires manual state management, cache invalidation, and websocket coordination.
+Traditional REST/GraphQL requires manual state management, cache invalidation,
+and websocket coordination.
 
 ### Why single package.json instead of monorepo?
 
 A single package.json offers:
+
 - Simpler dependency management
 - Faster installations
 - Easier to understand
@@ -72,11 +84,16 @@ Monorepos add complexity that most projects don't need.
 
 ### Can I use a different database?
 
-Takeout is optimized for PostgreSQL because Zero requires it for logical replication. While you could add other databases for specific features, PostgreSQL should remain the primary database.
+Takeout is optimized for PostgreSQL because Zero requires it for logical
+replication. While you could add other databases for specific features,
+PostgreSQL should remain the primary database.
 
 ### Can I deploy to platforms other than AWS?
 
-The current deployment setup uses SST for AWS. We've also added Uncloud support. You could adapt the Docker setup for other platforms (GCP, Azure, DigitalOcean), but you'll need to configure:
+The current deployment setup uses SST for AWS. We've also added Uncloud support.
+You could adapt the Docker setup for other platforms (GCP, Azure, DigitalOcean),
+but you'll need to configure:
+
 - Container orchestration (ECS, Cloud Run, etc.)
 - Managed PostgreSQL with logical replication
 - Load balancing
@@ -88,7 +105,8 @@ See [Deployment](/docs/deployment) for more details.
 
 ### How do I add a new feature?
 
-See [Guides: Adding a Feature](/docs/guides-adding-feature) for a step-by-step guide. The basic process:
+See [Guides: Adding a Feature](/docs/guides-adding-feature) for a step-by-step
+guide. The basic process:
 
 1. Create feature directory in `src/features/`
 2. Add components, hooks, queries, and mutations
@@ -108,7 +126,8 @@ See [Environment](/docs/environment) for details.
 
 ### How do I run migrations in production?
 
-Migrations run automatically during deployment via Lambda function. The SST config includes a `PostgresMigrator` Lambda that runs on every deploy.
+Migrations run automatically during deployment via Lambda function. The SST
+config includes a `PostgresMigrator` Lambda that runs on every deploy.
 
 For manual migrations:
 
@@ -119,6 +138,7 @@ bun run:prod bun migrate
 ### Why am I getting TypeScript errors?
 
 Common causes:
+
 - **Outdated generated types:** Run `bun tko zero generate`
 - **Cache issues:** Delete `node_modules/.vite` and restart
 - **Version mismatch:** Ensure Node version matches `package.json`
@@ -136,13 +156,15 @@ docker compose logs -f postgres
 # Slow queries (>1000ms) are logged automatically
 ```
 
-Use Adminer (http://localhost:8080) or TablePlus to inspect data and run queries.
+Use Adminer (http://localhost:8080) or TablePlus to inspect data and run
+queries.
 
 ## Zero Sync
 
 ### What happens when a user is offline?
 
 Zero provides complete offline functionality:
+
 1. Queries run against local SQLite database
 2. Mutations apply to local database immediately
 3. UI updates instantly (optimistic)
@@ -153,6 +175,7 @@ Zero provides complete offline functionality:
 ### How does conflict resolution work?
 
 Zero uses Last Write Wins (LWW) with custom conflict resolution:
+
 - Each mutation has a timestamp
 - Server applies mutations in order
 - Concurrent edits use latest timestamp
@@ -163,6 +186,7 @@ See [Real-time](/docs/real-time) for details.
 ### Can I use Zero with existing PostgreSQL databases?
 
 Yes, but you need to:
+
 1. Enable logical replication
 2. Add Zero metadata tables
 3. Define Zero schemas for your tables
@@ -178,7 +202,7 @@ Zero supports SQL-like joins:
 const [postsWithUsers] = useQuery(
   z.posts
     .related('user', (q) => q.one('userId', 'users', 'id'))
-    .orderBy('createdAt', 'desc')
+    .orderBy('createdAt', 'desc'),
 )
 ```
 
@@ -188,7 +212,8 @@ See [Guides: Queries](/docs/guides-queries) for more examples.
 
 ### Can I add more OAuth providers?
 
-Yes. Better Auth supports many providers. Add to `src/features/auth/server/auth.ts`:
+Yes. Better Auth supports many providers. Add to
+`src/features/auth/server/auth.ts`:
 
 ```typescript
 socialProviders: {
@@ -246,6 +271,7 @@ const isAdmin = user?.role === 'admin'
 ### Do I need a Mac for iOS development?
 
 Yes. iOS development requires:
+
 - macOS computer
 - Xcode 15+
 - Apple Developer account (for device testing and App Store)
@@ -268,7 +294,8 @@ This creates production builds ready for App Store and Google Play submission.
 
 ### How do OTA updates work?
 
-Over-the-air updates allow updating JavaScript/assets without app store approval:
+Over-the-air updates allow updating JavaScript/assets without app store
+approval:
 
 ```bash
 # Create new release
@@ -276,6 +303,7 @@ bun release
 ```
 
 This:
+
 1. Builds new JavaScript bundle
 2. Uploads to update server
 3. App checks for updates on launch
@@ -288,6 +316,7 @@ Native code changes still require app store submission.
 ### How do I optimize bundle size?
 
 Takeout includes several optimizations:
+
 - Tree-shaking unused code
 - Code splitting by route
 - Lazy loading heavy components
@@ -303,6 +332,7 @@ bun tko web build
 ### How do I improve database performance?
 
 Best practices:
+
 - Add indexes to frequently queried columns
 - Use prepared statements (Drizzle does this automatically)
 - Limit result sets with `.limit()`
@@ -312,6 +342,7 @@ Best practices:
 ### Why is my app slow in development?
 
 Development mode includes:
+
 - Source maps for debugging
 - Hot module reloading
 - Unminified code
@@ -328,6 +359,7 @@ bun tko web prod
 ### How much does it cost to run in production?
 
 AWS costs vary by usage. Typical monthly costs:
+
 - **Aurora Serverless v2:** $25-100 (scales with usage)
 - **ECS Fargate:** $30-150 (depends on instance count)
 - **CloudFront CDN:** $5-20
@@ -404,6 +436,7 @@ lsof -ti:8081 | xargs kill -9
 ### Zero sync isn't working
 
 Check:
+
 1. PostgreSQL is running: `docker compose ps`
 2. Migrations have run: `bun migrate`
 3. Zero server is accessible: `curl http://localhost:4848`
@@ -431,6 +464,7 @@ See [Troubleshooting](/docs/troubleshooting) for more solutions.
 ### How do I report a bug?
 
 Create a GitHub issue with:
+
 1. Clear description of the problem
 2. Steps to reproduce
 3. Expected vs actual behavior
@@ -451,6 +485,7 @@ See CONTRIBUTING.md for detailed guidelines.
 
 ## Next Steps
 
-- [Guides: Adding a Feature](/docs/guides-adding-feature) - Build your first feature
+- [Guides: Adding a Feature](/docs/guides-adding-feature) - Build your first
+  feature
 - [Troubleshooting](/docs/troubleshooting) - Solve common issues
 - [Deployment](/docs/deployment) - Deploy to production

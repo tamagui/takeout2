@@ -6,13 +6,7 @@ android/**
 
 packages/*/types
 
-# coming from docker compose typesense, should figure out why
-storage
-
 tmp-data
-src/tauri/binaries
-src/tauri/icons
-.tauri-hash
 
 # keep types in repo to track them
 # **/types/**/*.d.ts
@@ -40,8 +34,6 @@ dist
 .env.backup
 
 .expo
-
-./src/tauri/binaries
 
 # test output
 .output

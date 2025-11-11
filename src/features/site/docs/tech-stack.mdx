@@ -5,13 +5,15 @@ description: Complete overview of technologies and dependencies used in Takeout
 
 # Tech Stack
 
-Takeout is built with carefully selected modern technologies that provide excellent developer experience, performance, and cross-platform capabilities.
+Takeout is built with carefully selected modern technologies that provide
+excellent developer experience, performance, and cross-platform capabilities.
 
 ## Core Framework
 
 ### One.js
 
-**One.js** is a universal React framework that enables building web and native apps from a single codebase.
+**One.js** is a universal React framework that enables building web and native
+apps from a single codebase.
 
 - **Version:** 1.2.6+
 - **File-based routing** - Convention-based routing for web and mobile
@@ -48,7 +50,8 @@ const [isPending, startTransition] = useTransition()
 
 ### Tamagui
 
-**Tamagui** is a universal design system that works across web and native with excellent performance.
+**Tamagui** is a universal design system that works across web and native with
+excellent performance.
 
 - **Version:** 1.136.1+
 - **Cross-platform components** - Same API for web and native
@@ -67,6 +70,7 @@ import { Button, YStack } from 'tamagui'
 ```
 
 **Component libraries:**
+
 - `@tamagui/lucide-icons` - Icon set
 - `@tamagui/toast` - Toast notifications
 - `@tamagui/linear-gradient` - Gradients
@@ -86,7 +90,7 @@ Learn more: [tamagui.dev](https://tamagui.dev/)
 import Animated, { useAnimatedStyle } from 'react-native-reanimated'
 
 const animatedStyle = useAnimatedStyle(() => ({
-  transform: [{ scale: withSpring(isPressed ? 0.95 : 1) }]
+  transform: [{ scale: withSpring(isPressed ? 0.95 : 1) }],
 }))
 ```
 
@@ -101,7 +105,8 @@ const animatedStyle = useAnimatedStyle(() => ({
 
 ### Zero
 
-**Zero** is a real-time sync engine that provides offline-first data synchronization.
+**Zero** is a real-time sync engine that provides offline-first data
+synchronization.
 
 - **Version:** 0.24.2025101500 (@rocicorp/zero)
 - **Local-first architecture** - App works offline
@@ -148,7 +153,8 @@ Learn more: [orm.drizzle.team](https://orm.drizzle.team/)
 
 ### Better Auth
 
-**Better Auth** is a modern authentication library with excellent TypeScript support.
+**Better Auth** is a modern authentication library with excellent TypeScript
+support.
 
 - **Version:** 1.3.32+
 - **Multiple providers** - Email/password, OAuth, magic links
@@ -175,7 +181,8 @@ Learn more: [better-auth.com](https://www.better-auth.com/)
 
 ### PostgreSQL
 
-**PostgreSQL** is the primary database, running via Aurora Serverless v2 in production.
+**PostgreSQL** is the primary database, running via Aurora Serverless v2 in
+production.
 
 - **Version:** 16.8
 - **Logical replication** - Required for Zero sync
@@ -184,6 +191,7 @@ Learn more: [better-auth.com](https://www.better-auth.com/)
 - **Aurora Serverless v2** - Auto-scaling in production
 
 **Local development:**
+
 - Runs in Docker via `docker-compose.yml`
 - Port 5433 (to avoid conflicts with system PostgreSQL)
 - Three databases: `postgres`, `zero_cvr`, `zero_cdb`
@@ -381,12 +389,6 @@ Learn more: [sst.dev](https://sst.dev/)
 - **EAS Build** - Cloud-based native builds
 - **Hot Updater** (0.21.4) - Over-the-air updates
 
-### Desktop Development
-
-- **@tauri-apps/cli** (2.8.4) - Desktop app framework
-- **@tauri-apps/api** (2.8.0) - Native API access
-- Rust-based backend for native performance
-
 ## Analytics & Monitoring
 
 ### PostHog
@@ -451,7 +453,8 @@ Takeout includes several internal packages in `./packages/`:
 - **@tamatko/scripts** - Build scripts and helpers
 - **@tamatko/better-auth-utils** - Better Auth integration helpers
 
-These packages are published to npm but included in the repo for easy local development.
+These packages are published to npm but included in the repo for easy local
+development.
 
 ## Version Management
 

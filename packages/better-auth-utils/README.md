@@ -4,7 +4,7 @@ Better Auth utilities and helpers for React/React Native applications.
 
 ## Features
 
-- JWT support for Zero, Tauri, and React Native
+- JWT support for Zero, web and React Native
 - Session persistence in local storage
 - Token validation and refresh
 - State management with emitters

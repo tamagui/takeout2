@@ -12,7 +12,6 @@ android
 **/tmp-data
 **/tmp
 src/test
-src/tauri
 docs
 tests
 *.md

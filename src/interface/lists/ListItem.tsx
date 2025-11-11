@@ -8,7 +8,6 @@ import {
   XStack,
   YStack,
 } from 'tamagui'
-import { isTauri } from '@take-out/helpers'
 import type { ContextMenuItem } from '../menu/types'
 import { LineShimmer } from '../shimmer/LineShimmer'
 import { ListItemBackground } from './ListItemBackground'
@@ -44,27 +43,6 @@ const ListItemComponent = ({
     <ListItemFrame
       ref={ref}
       {...(props as any)}
-      {...(isTauri &&
-        contextMenu && {
-          onContextMenu: async (e: any) => {
-            if (!isTauri) return
-            e.preventDefault()
-            onContextMenu?.()
-
-            const { Menu: TauriContextMenu } = await import('@tauri-apps/api/menu')
-
-            const menu = TauriContextMenu.new({
-              items: contextMenu.map((item: any) => {
-                return {
-                  id: item.text,
-                  ...item,
-                }
-              }),
-            })
-            const menuInstance = await menu
-            menuInstance.popup()
-          },
-        })}
       {...(props.editable && {
         onKeyDown: (e: KeyboardEvent) => {
           setStartEdit(Date.now())

@@ -5,12 +5,10 @@ import { PageContainer } from '~/interface/layout/PageContainer'
 
 export function SiteLayout() {
   return (
-    <>
+    <PageContainer py="$4">
       <SiteHeader />
-      <PageContainer py="$4">
-        <Slot />
-      </PageContainer>
+      <Slot />
       <SiteFooter />
-    </>
+    </PageContainer>
   )
 }

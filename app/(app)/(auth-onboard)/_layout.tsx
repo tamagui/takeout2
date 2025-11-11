@@ -12,7 +12,6 @@ export function AuthAndOnboardingLayout() {
   return (
     <MainProviders>
       <DragDropFile>
-        <GridBackground />
         <PageContainer>
           <SiteHeader />
           <Slot />

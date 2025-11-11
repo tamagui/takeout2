@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { View, useThemeName } from 'tamagui'
+import { View, isWeb, useThemeName } from 'tamagui'
 
 export interface GridBackgroundProps {
   opacity?: number
@@ -8,6 +8,9 @@ export interface GridBackgroundProps {
 export const GridBackground = memo(({ opacity = 1 }: GridBackgroundProps) => {
   const theme = useThemeName()
   const isDark = theme?.includes('dark')
+
+  // Only render on web
+  if (!isWeb) return null
 
   return (
     <View

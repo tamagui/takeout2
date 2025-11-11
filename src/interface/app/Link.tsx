@@ -133,9 +133,7 @@ export const Link = ({
       <>
         {children}
 
-        {target === '_blank' && (
-          <ExternalLink size={12} opacity={0.5} display="inline-flex" ml={4} />
-        )}
+        <ExternalLink size={12} opacity={0.5} display="inline-flex" ml={4} />
       </>
     ) : (
       children

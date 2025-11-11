@@ -26,6 +26,7 @@ export function useOnboarding() {
     user,
     isLoading,
   })
+
   const router = useRouter()
   const pathname = usePathname()
   const goBackToHome = useGoBackToHome()
@@ -83,7 +84,7 @@ export function useOnboarding() {
     goBackToHome()
   })
 
-  const handleFocusEffect = useEvent(() => {
+  useFocusEffect(() => {
     console.info('[onboarding:focus]', {
       isLoading,
       hasUser: !!user,
@@ -91,33 +92,31 @@ export function useOnboarding() {
       userId: user?.id,
     })
 
-    if (!isLoading && user) {
-      const nextRoute = getNextOnboardingStep(user, onboardingConfig)
+    // if (!isLoading && user) {
+    //   const nextRoute = getNextOnboardingStep(user, onboardingConfig)
 
-      console.info('[onboarding:redirect]', {
-        nextRoute,
-        currentPath: pathname,
-        hasOnboarded: user.hasOnboarded,
-      })
+    //   console.info('[onboarding:redirect]', {
+    //     nextRoute,
+    //     currentPath: pathname,
+    //     hasOnboarded: user.hasOnboarded,
+    //   })
 
-      if (nextRoute) {
-        if (pathname === nextRoute) {
-          console.info('[onboarding:skip] already on target route')
-          return
-        }
-        console.info('[onboarding:navigate]', { to: nextRoute })
-        router.push(nextRoute)
-      } else if (!user.hasOnboarded) {
-        console.info('[onboarding:complete] completing signup and going home')
-        completeSignupAndGoHome()
-      } else {
-        console.info('[onboarding:home] going to home')
-        goBackToHome()
-      }
-    }
-  })
-
-  useFocusEffect(handleFocusEffect, [isLoading, user?.id, pathname])
+    //   if (nextRoute) {
+    //     if (pathname === nextRoute) {
+    //       console.info('[onboarding:skip] already on target route')
+    //       return
+    //     }
+    //     console.info('[onboarding:navigate]', { to: nextRoute })
+    //     router.push(nextRoute)
+    //   } else if (!user.hasOnboarded) {
+    //     console.info('[onboarding:complete] completing signup and going home')
+    //     completeSignupAndGoHome()
+    //   } else {
+    //     console.info('[onboarding:home] going to home')
+    //     goBackToHome()
+    //   }
+    // }
+  }, [isLoading, user?.id, pathname])
 
   return {
     currentStep,

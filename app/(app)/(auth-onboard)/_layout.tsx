@@ -1,33 +1,41 @@
-import { Slot } from 'one'
-import type { ReactNode } from 'react'
+import { isNative } from '@take-out/helpers'
+import { Redirect, Slot } from 'one'
+import { getNextOnboardingStep } from '~/features/onboarding/getNextOnboardingStep'
 import { SiteHeader } from '~/features/site/components/SiteHeader'
+import { useUser } from '~/features/user/useUser'
 import { GridBackground } from '~/interface/backgrounds/GridBackground'
 import { PageContainer } from '~/interface/layout/PageContainer'
-import { NotificationProvider } from '~/interface/notification/Notification'
-import { ToastProvider } from '~/interface/toast/Toast'
-import { DragDropFile } from '~/interface/upload/DragDropFile'
-import { PlatformSpecificRootProvider } from '~/providers/PlatformSpecificRootProvider'
 
 export function AuthAndOnboardingLayout() {
-  return (
-    <MainProviders>
-      <DragDropFile>
-        <GridBackground />
-        <SiteHeader />
-        <PageContainer>
-          <Slot />
-        </PageContainer>
-      </DragDropFile>
-    </MainProviders>
-  )
-}
+  const { user, state } = useUser()
 
-function MainProviders({ children }: { children: ReactNode }) {
+  console.log('state', state)
+
+  // if (state === 'logged-out') {
+  //   return <Redirect href="/login" />
+  // }
+
+  // if (state === 'loading' || !user) {
+  //   return null
+  // }
+
+  // const nextStep = getNextOnboardingStep(user)
+
+  // if (nextStep) {
+  //   return <Redirect href={nextStep} />
+  // }
+
+  if (isNative) {
+    return <Slot />
+  }
+
   return (
-    <ToastProvider>
-      <NotificationProvider>
-        <PlatformSpecificRootProvider>{children}</PlatformSpecificRootProvider>
-      </NotificationProvider>
-    </ToastProvider>
+    <>
+      <GridBackground />
+      <SiteHeader />
+      <PageContainer>
+        <Slot />
+      </PageContainer>
+    </>
   )
 }

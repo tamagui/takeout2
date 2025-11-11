@@ -1,11 +1,6 @@
 import { createNativeBottomTabNavigator } from '@bottom-tabs/react-navigation'
 import { withLayoutContext } from 'one'
 import { Platform } from 'react-native'
-import { CreateTabIcon } from '~/features/main-tabs/CreateTabIcon'
-import { ProfileTabIcon } from '~/features/main-tabs/ProfileTabIcon'
-import { useTabIconSize } from '~/features/main-tabs/useTabIconSize'
-import { HouseIcon } from '~/interface/icons/phosphor/HouseIcon'
-import { MagnifyingGlassIcon } from '~/interface/icons/phosphor/MagnifyingGlassIcon'
 import { PostActionSheet } from '~/interface/sheet/PostActionSheet'
 import { postActionSheetRef } from '~/interface/sheet/postActionSheetHelper'
 
@@ -13,8 +8,6 @@ const NativeTabsNavigator = createNativeBottomTabNavigator().Navigator
 const NativeTabs = withLayoutContext(NativeTabsNavigator)
 
 export function TabsLayout() {
-  const { smallerIconSize } = useTabIconSize()
-
   return (
     <>
       <NativeTabs
@@ -32,7 +25,7 @@ export function TabsLayout() {
             tabBarIcon: ({ color }: { color: string }) =>
               Platform.select({
                 ios: { sfSymbol: 'house' } as any,
-                android: <HouseIcon size={smallerIconSize} fill={color} />,
+                android: require('../../../public/icons/house.png'),
               }),
           }}
         />
@@ -43,7 +36,7 @@ export function TabsLayout() {
             tabBarIcon: () =>
               Platform.select({
                 ios: { sfSymbol: 'plus' } as any,
-                android: <CreateTabIcon />,
+                android: require('../../../public/icons/plus.png'),
               }),
           }}
         />
@@ -53,7 +46,7 @@ export function TabsLayout() {
             tabBarIcon: () =>
               Platform.select({
                 ios: { sfSymbol: 'person' } as any,
-                android: <ProfileTabIcon />,
+                android: require('../../../public/icons/user-round.png'),
               }),
           }}
         />
@@ -64,7 +57,7 @@ export function TabsLayout() {
             tabBarIcon: () =>
               Platform.select({
                 ios: { sfSymbol: 'magnifyingglass' } as any,
-                android: <MagnifyingGlassIcon />,
+                android: require('../../../public/icons/search.png'),
               }),
           }}
         />

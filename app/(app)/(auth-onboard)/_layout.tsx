@@ -13,8 +13,8 @@ export function AuthAndOnboardingLayout() {
     <MainProviders>
       <DragDropFile>
         <GridBackground />
+        <SiteHeader />
         <PageContainer>
-          <SiteHeader />
           <Slot />
         </PageContainer>
       </DragDropFile>

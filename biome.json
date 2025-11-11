@@ -27,14 +27,7 @@
         "noConsole": {
           "level": "error",
           "options": {
-            "allow": [
-              "error",
-              "warn",
-              "info",
-              "groupCollapsed",
-              "groupEnd",
-              "trace"
-            ]
+            "allow": ["error", "warn", "info", "groupCollapsed", "groupEnd", "trace"]
           }
         }
       },

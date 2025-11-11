@@ -3,7 +3,6 @@ import { type Href, Link, Slot } from 'one'
 import { Paragraph, ScrollView, SizableText, Spacer, View, XStack, YStack } from 'tamagui'
 import { DocsMenuContents } from '~/features/docs/DocsMenuContents'
 import { useDocsMenu } from '~/features/docs/useDocsMenu'
-import { SiteHeader } from '~/features/site/components/SiteHeader'
 
 const GITHUB_URL = 'https://github.com'
 const REPO_NAME = 'usetakeout/takeout3'
@@ -15,8 +14,6 @@ export function DocsLayout() {
 
   return (
     <YStack flex={1} bg="$background">
-      <SiteHeader />
-
       <XStack
         flex={1}
         mx="auto"

@@ -167,22 +167,6 @@ Database schema is defined in:
 If you need something outside of Drizzle migrations, you can do
 `bun db:migrate-add`
 
-## Authentication
-
-Built-in authentication with Better Auth supports email/password, GitHub OAuth,
-magic links, and session management.
-
-Configure in `.env`:
-
-```bash
-BETTER_AUTH_SECRET=<generate-with-openssl-rand-hex-32>
-BETTER_AUTH_URL=http://localhost:8262
-
-# Optional: GitHub OAuth
-ONECHAT_GITHUB_CLIENT_ID=your-client-id
-ONECHAT_GITHUB_CLIENT_SECRET=your-secret
-```
-
 ## Environment Configuration
 
 ### File Structure

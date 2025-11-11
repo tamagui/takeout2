@@ -1,3 +1,7 @@
+- we need to support / message about rebuilding the native app for a different
+  port if they want something other than 8081
+  - likewise i'd like there to be way less areas to touch when doing so
+
 - can we prevent vscode autocomplete of extenral overlaps:
   - Image, Link, Dialog
 

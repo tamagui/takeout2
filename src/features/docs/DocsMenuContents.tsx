@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Accordion, Paragraph, Square, XStack, YStack } from 'tamagui'
-import { ChevronDown } from '@tamagui/lucide-icons'
+import { CaretDownIcon } from '~/interface/icons/phosphor/CaretDownIcon'
 import { DocsRouteNavItem } from './DocsRouteNavItem'
 import { docsRoutes } from './docsRoutes'
 import { useDocsMenu } from './useDocsMenu'
@@ -126,7 +126,7 @@ const SubSection = ({
               </Paragraph>
 
               <Square animation="quick" rotate={open ? '180deg' : '0deg'}>
-                <ChevronDown color="$color7" size="$1" />
+                <CaretDownIcon color="$color7" size="$1" />
               </Square>
             </XStack>
           )

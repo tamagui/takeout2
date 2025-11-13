@@ -1,4 +1,4 @@
-import { ExternalLink } from '@tamagui/lucide-icons'
+import { ArrowSquareOutIcon } from '~/interface/icons/phosphor/ArrowSquareOutIcon'
 import {
   router,
   useLinkTo,
@@ -133,7 +133,14 @@ export const Link = ({
       <>
         {children}
 
-        <ExternalLink size={12} opacity={0.5} display="inline-flex" ml={4} />
+        <ArrowSquareOutIcon
+          size={12}
+          style={{
+            display: isWeb ? ('inline-flex' as any) : 'flex',
+            marginLeft: 4,
+            opacity: 0.5,
+          }}
+        />
       </>
     ) : (
       children

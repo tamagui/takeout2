@@ -1,5 +1,6 @@
-import { Spacer, XStack, YStack } from 'tamagui'
+import { Spacer, Theme, XStack, YStack } from 'tamagui'
 import { LoginButton } from '~/features/auth/ui/LoginButton'
+import { SocialLinksRow } from '~/features/site/components/SocialLinksRow'
 import { Link } from '~/interface/app/Link'
 import { Logo } from '~/interface/app/Logo'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
@@ -8,26 +9,37 @@ import { ThemeSwitch } from '~/interface/theme/ThemeSwitch'
 
 export const SiteHeader = () => {
   return (
-    <YStack py="$4" bg="transparent">
-      <PageContainer>
-        <XStack items="center">
-          <Link href="/">
-            <Logo />
-          </Link>
-
-          <Spacer flex />
-
-          <XStack gap="$4" items="center">
-            <LoginButton />
-
-            <Link href="/docs">
-              <ButtonSimple>Docs</ButtonSimple>
+    <Theme name="dark">
+      <YStack py="$4" bg="$color1">
+        <PageContainer>
+          <XStack px="$6" items="center">
+            <Link href="/">
+              <Logo />
             </Link>
 
-            <ThemeSwitch />
+            <Spacer flex />
+
+            <XStack gap="$4" items="center">
+              <XStack
+                containerType="normal"
+                items="center"
+                gap="$2"
+                $sm={{ justify: 'center' }}
+              >
+                <SocialLinksRow />
+              </XStack>
+
+              <LoginButton />
+
+              <Link href="/docs">
+                <ButtonSimple>Docs</ButtonSimple>
+              </Link>
+
+              <ThemeSwitch />
+            </XStack>
           </XStack>
-        </XStack>
-      </PageContainer>
-    </YStack>
+        </PageContainer>
+      </YStack>
+    </Theme>
   )
 }

@@ -1,4 +1,5 @@
-import { ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
+import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
+import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { XStack } from 'tamagui'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 
@@ -50,14 +51,14 @@ export const OnboardingControls = ({
           size="large"
           circular
           onPress={() => handleGoPrev()}
-          icon={ChevronLeft}
+          icon={CaretLeftIcon}
         />
 
         <ButtonSimple
           size="large"
           circular
           onPress={() => handleGoNext()}
-          icon={ChevronRight}
+          icon={CaretRightIcon}
         />
       </XStack>
     </>

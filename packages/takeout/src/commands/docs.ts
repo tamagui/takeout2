@@ -103,12 +103,27 @@ const getCommand = defineCommand({
     const results: Array<{ name: string; content: string }> = []
     const errors: Array<{ name: string; error: string }> = []
 
+    // check local ./docs folder first
+    const cwd = process.cwd()
+    const localDocsDir = join(cwd, 'docs')
+
     // collect all docs
     for (const name of names) {
       const fileName = name.endsWith('.md') ? name : `${name}.md`
-      const filePath = join(DOCS_DIR, fileName)
 
-      if (!existsSync(filePath)) {
+      // try local docs first
+      const localFilePath = join(localDocsDir, fileName)
+      const packageFilePath = join(DOCS_DIR, fileName)
+
+      let filePath: string | null = null
+
+      if (existsSync(localFilePath)) {
+        filePath = localFilePath
+      } else if (existsSync(packageFilePath)) {
+        filePath = packageFilePath
+      }
+
+      if (!filePath) {
         errors.push({ name, error: 'File not found' })
         continue
       }

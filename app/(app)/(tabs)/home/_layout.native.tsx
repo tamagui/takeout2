@@ -1,4 +1,5 @@
-import { Bell, ChevronLeft } from '@tamagui/lucide-icons'
+import { BellIcon } from '~/interface/icons/phosphor/BellIcon'
+import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { isLiquidGlassAvailable } from 'expo-glass-effect'
 import { router, Stack } from 'one'
 import { Pressable } from '~/interface/buttons/Pressable'
@@ -20,7 +21,7 @@ export function HomeLayout() {
           headerLargeTitle: true,
           headerRight: () => (
             <Pressable width={36} height={36} items="center" justify="center">
-              <Bell size={24} />
+              <BellIcon size={24} />
             </Pressable>
           ),
         }}
@@ -38,7 +39,7 @@ export function HomeLayout() {
               items="center"
               justify="center"
             >
-              <ChevronLeft size={24} />
+              <CaretLeftIcon size={24} />
             </Pressable>
           ),
         })}

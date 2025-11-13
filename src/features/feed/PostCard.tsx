@@ -1,4 +1,4 @@
-import { Dot } from '@tamagui/lucide-icons'
+import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
 import { router } from 'one'
 import { memo, useState } from 'react'
 import { Accordion, isWeb, SizableText, View, XStack, YStack } from 'tamagui'
@@ -48,7 +48,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
                   <SizableText size="$4" fontWeight="600" numberOfLines={1}>
                     {username}
                   </SizableText>
-                  <Dot size={16} color="$color10" />
+                  <DotIcon size={16} color="$color10" />
                   <SizableText size="$3" color="$color10">
                     {formatDistanceToNow(post.createdAt)}
                   </SizableText>

@@ -1,8 +1,6 @@
-import {
-  Home as HouseIcon,
-  Plus as PlusIcon,
-  User as UserIcon,
-} from '@tamagui/lucide-icons'
+import { HouseIcon } from '~/interface/icons/phosphor/HouseIcon'
+import { PlusIcon } from '~/interface/icons/phosphor/PlusIcon'
+import { UserCircleIcon } from '~/interface/icons/phosphor/UserCircleIcon'
 import type { Href } from 'one'
 import { Link, usePathname } from 'one'
 import { AnimatePresence, View, XStack, YStack } from 'tamagui'
@@ -19,7 +17,7 @@ const TAB_ITEM_WIDTH = 60
 const routes: TabRoute[] = [
   { name: 'home', href: '/home' as Href, icon: HouseIcon },
   { name: 'plus', href: '/plus' as Href, icon: PlusIcon },
-  { name: 'profile', href: '/profile' as Href, icon: UserIcon },
+  { name: 'profile', href: '/profile' as Href, icon: UserCircleIcon },
 ]
 
 export function NavigationTabs() {

@@ -1,13 +1,11 @@
-import {
-  Archive,
-  File,
-  FileImage,
-  FileJson,
-  FileSpreadsheet,
-  FileText,
-  FileVideo,
-  FileX,
-} from '@tamagui/lucide-icons'
+import { ArchiveIcon } from '~/interface/icons/phosphor/ArchiveIcon'
+import { FileIcon } from '~/interface/icons/phosphor/FileIcon'
+import { FileImageIcon } from '~/interface/icons/phosphor/FileImageIcon'
+import { FileJsIcon } from '~/interface/icons/phosphor/FileJsIcon'
+import { FileCsvIcon } from '~/interface/icons/phosphor/FileCsvIcon'
+import { FileTextIcon } from '~/interface/icons/phosphor/FileTextIcon'
+import { FileVideoIcon } from '~/interface/icons/phosphor/FileVideoIcon'
+import { FileXIcon } from '~/interface/icons/phosphor/FileXIcon'
 import type { AttachmentType } from './types'
 import { MAX_FILE_SIZE, SUPPORTED_FILE_EXTENSIONS } from './types'
 
@@ -122,26 +120,26 @@ export function getFileIcon(filename: string, size?: number) {
     case 'png':
     case 'gif':
     case 'webp':
-      return <FileImage {...iconProps} />
+      return <FileImageIcon {...iconProps} />
     case 'txt':
     case 'md':
     case 'mdx':
-      return <FileText {...iconProps} />
+      return <FileTextIcon {...iconProps} />
     case 'json':
-      return <FileJson {...iconProps} />
+      return <FileJsIcon {...iconProps} />
     case 'zip':
-      return <Archive {...iconProps} />
+      return <ArchiveIcon {...iconProps} />
     case 'xls':
     case 'xlsx':
-      return <FileSpreadsheet {...iconProps} />
+      return <FileCsvIcon {...iconProps} />
     case 'pdf':
-      return <File {...iconProps} />
+      return <FileIcon {...iconProps} />
     case 'mp4':
     case 'webm':
     case 'mov':
-      return <FileVideo {...iconProps} />
+      return <FileVideoIcon {...iconProps} />
     default:
-      return <FileX {...iconProps} />
+      return <FileXIcon {...iconProps} />
   }
 }
 

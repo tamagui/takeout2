@@ -1,5 +1,7 @@
 import { AnimatePresence } from '@tamagui/animate-presence'
-import { ChevronLeft, ChevronRight, X } from '@tamagui/lucide-icons'
+import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
+import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
+import { XIcon } from '~/interface/icons/phosphor/XIcon'
 import { useEmitterValue } from '@take-out/helpers'
 import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
@@ -127,7 +129,7 @@ export const Gallery = () => {
             <Button
               position="absolute"
               circular
-              icon={X}
+              icon={XIcon}
               z={100}
               size="$3"
               t="$4"
@@ -173,7 +175,7 @@ export const Gallery = () => {
             <GalleryButton
               aria-label="Carousel left"
               l="$4"
-              icon={ChevronLeft}
+              icon={CaretLeftIcon}
               onPress={(e) => {
                 e.stopPropagation()
                 paginate(-1)
@@ -184,7 +186,7 @@ export const Gallery = () => {
             <GalleryButton
               aria-label="Carousel right"
               r="$4"
-              icon={ChevronRight}
+              icon={CaretRightIcon}
               onPress={(e) => {
                 e.stopPropagation()
                 paginate(1)

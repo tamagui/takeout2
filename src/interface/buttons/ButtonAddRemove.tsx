@@ -1,5 +1,7 @@
 import { memo } from 'react'
-import { Check, Plus, X } from '@tamagui/lucide-icons'
+import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
+import { PlusIcon } from '~/interface/icons/phosphor/PlusIcon'
+import { XIcon } from '~/interface/icons/phosphor/XIcon'
 import { ButtonSimple, type ButtonSimpleProps } from './ButtonSimple'
 import { HoverHideIcon, HoverShowIcon } from './HoverIcon'
 import { YStack } from 'tamagui'
@@ -16,16 +18,21 @@ export const ButtonAddRemove = memo(
     removeText?: string
   }) => {
     return (
-      <ButtonSimple size="small" {...props} circular={false} icon={added ? null : Plus}>
+      <ButtonSimple
+        size="small"
+        {...props}
+        circular={false}
+        icon={added ? null : PlusIcon}
+      >
         <ButtonSimple.Text size="small">{added ? removeText : addText}</ButtonSimple.Text>
 
         {added && (
           <YStack group="icon" containerType="normal" fullscreen>
             <HoverShowIcon>
-              <X size={18} />
+              <XIcon size={18} />
             </HoverShowIcon>
             <HoverHideIcon>
-              <Check size={18} />
+              <CheckIcon size={18} />
             </HoverHideIcon>
           </YStack>
         )}

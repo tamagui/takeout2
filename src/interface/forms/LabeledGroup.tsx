@@ -1,4 +1,4 @@
-import { Check } from '@tamagui/lucide-icons'
+import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { createElement, isValidElement, type JSX } from 'react'
 import {
   AnimatePresence,
@@ -128,7 +128,7 @@ export const LabeledGroup = ({
                         {validation === 'checking' ? (
                           <Spinner color="$color8" size="small" />
                         ) : validation === 'valid' && !disableValidCheck ? (
-                          <Check size={14} color="$green10" />
+                          <CheckIcon size={14} color="$green10" />
                         ) : null}
                       </View>
                     )}

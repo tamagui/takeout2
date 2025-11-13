@@ -1,4 +1,4 @@
-import { Check } from '@tamagui/lucide-icons'
+import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { forwardRef, memo } from 'react'
 import type { CheckboxProps, TamaguiElement } from 'tamagui'
 import { Checkbox as TamaguiCheckbox } from 'tamagui'
@@ -8,7 +8,7 @@ export const Checkbox = memo(
     return (
       <TamaguiCheckbox ref={ref} {...props}>
         <TamaguiCheckbox.Indicator>
-          <Check />
+          <CheckIcon />
         </TamaguiCheckbox.Indicator>
       </TamaguiCheckbox>
     )

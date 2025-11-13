@@ -8,7 +8,6 @@
 import { defineCommand, runMain } from 'citty'
 import { existsSync, statSync } from 'node:fs'
 import { join } from 'node:path'
-import { completionCommand } from './commands/completion'
 import { docsCommand } from './commands/docs'
 import { envSetupCommand } from './commands/env-setup'
 import { onboardCommand } from './commands/onboard'
@@ -68,7 +67,6 @@ if (isShorthand) {
     'run',
     'script',
     'env:setup',
-    'completion',
     'sync',
     '--help',
     '-h',
@@ -114,7 +112,6 @@ const main = defineCommand({
     'env:setup': envSetupCommand,
     run: runCommand,
     script: scriptCommand,
-    completion: completionCommand,
     sync: syncCommand,
   },
   run() {

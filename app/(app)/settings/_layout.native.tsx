@@ -1,4 +1,4 @@
-import { ChevronLeft } from '@tamagui/lucide-icons'
+import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { isLiquidGlassAvailable } from 'expo-glass-effect'
 import { router, Stack } from 'one'
 import { Pressable } from '~/interface/buttons/Pressable'
@@ -26,7 +26,7 @@ export function SettingLayout() {
               items="center"
               justify="center"
             >
-              <ChevronLeft size={24} />
+              <CaretLeftIcon size={24} />
             </Pressable>
           ),
         }}
@@ -43,7 +43,7 @@ export function SettingLayout() {
               items="center"
               justify="center"
             >
-              <ChevronLeft size={24} />
+              <CaretLeftIcon size={24} />
             </Pressable>
           ),
         }}
@@ -60,7 +60,7 @@ export function SettingLayout() {
               items="center"
               justify="center"
             >
-              <ChevronLeft size={24} />
+              <CaretLeftIcon size={24} />
             </Pressable>
           ),
         }}

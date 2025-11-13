@@ -5,17 +5,16 @@ export const PageContainer = styled(YStack, {
   px: '$4',
   width: '100%',
   position: 'relative',
-  flex: 1,
 
   $md: {
     maxW: 760,
   },
 
   $lg: {
-    maxW: 760,
+    maxW: 860,
   },
 
   $xl: {
-    maxW: 840,
+    maxW: 1140,
   },
 })

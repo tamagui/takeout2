@@ -1,4 +1,5 @@
-import { Check, Copy } from '@tamagui/lucide-icons'
+import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
+import { CopyIcon } from '~/interface/icons/phosphor/CopyIcon'
 import { useState } from 'react'
 import { Button, SizableText, YStack } from 'tamagui'
 
@@ -27,7 +28,7 @@ export function DocsCodeBlock({
         top="$2"
         right="$2"
         size="$2"
-        icon={copied ? Check : Copy}
+        icon={copied ? CheckIcon : CopyIcon}
         onPress={handleCopy}
         bg="$color4"
         hoverStyle={{ bg: '$color5' }}

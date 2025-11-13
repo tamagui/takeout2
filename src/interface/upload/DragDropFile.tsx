@@ -4,7 +4,7 @@ import {
   uniqBy,
   useEmitterValue,
 } from '@take-out/helpers'
-import { Image } from '@tamagui/lucide-icons'
+import { ImageIcon } from '~/interface/icons/phosphor/ImageIcon'
 import {
   memo,
   type ReactElement,
@@ -249,7 +249,7 @@ export const DropOverlay: Component<{ hidden: boolean }> = memo(({ hidden }) => 
     >
       {hidden ? null : (
         <YStack items="center" justify="center" gap="$4">
-          <Image size={30} color="#fff" />
+          <ImageIcon size={30} color="$color" />
           <Paragraph fontFamily="$mono" size="$5" color="#fff">
             Drop to upload
           </Paragraph>

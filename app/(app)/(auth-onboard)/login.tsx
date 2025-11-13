@@ -1,5 +1,5 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
-import { Facebook } from '@tamagui/lucide-icons'
+import { FacebookLogoIcon } from '~/interface/icons/phosphor/FacebookLogoIcon'
 import { Circle, isWeb, Separator, SizableText, XStack, YStack } from 'tamagui'
 import { EULA_URL, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '~/constants/app'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
@@ -186,7 +186,7 @@ export const LoginPage = () => {
                 }}
                 animation="200ms"
                 enterStyle={{ opacity: 0, scale: 0.95 }}
-                icon={<Facebook size={20} />}
+                icon={<FacebookLogoIcon size={20} />}
               />
               <ButtonSimple
                 glass

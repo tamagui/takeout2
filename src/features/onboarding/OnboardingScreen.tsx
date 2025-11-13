@@ -1,4 +1,6 @@
-import { ArrowUp, Rocket, Sparkles } from '@tamagui/lucide-icons'
+import { ArrowUpIcon } from '~/interface/icons/phosphor/ArrowUpIcon'
+import { RocketIcon } from '~/interface/icons/phosphor/RocketIcon'
+import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
 import { useRouter } from 'one'
 import { Onboarding, type OnboardingStepInfo } from './Onboarding'
 import { StepContent } from './OnboardingStepContent'
@@ -9,7 +11,7 @@ const steps: OnboardingStepInfo[] = [
     Content: () => (
       <StepContent
         title="Kickstart"
-        icon={Sparkles}
+        icon={SparkleIcon}
         description="Auth, profile, settings, adaptive layouts and many more ready for you to build on top of"
       />
     ),
@@ -19,7 +21,7 @@ const steps: OnboardingStepInfo[] = [
     Content: () => (
       <StepContent
         title="Updates"
-        icon={ArrowUp}
+        icon={ArrowUpIcon}
         description="As we make the starter better, we'll keep sending PRs with our GitHub app so your app keeps improving"
       />
     ),
@@ -29,7 +31,7 @@ const steps: OnboardingStepInfo[] = [
     Content: () => (
       <StepContent
         title="Deploy"
-        icon={Rocket}
+        icon={RocketIcon}
         description="The Takeout starter is the best way to go from zero to deploy and target all platforms at the same time."
       />
     ),

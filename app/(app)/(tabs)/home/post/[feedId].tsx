@@ -1,5 +1,5 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
-import { Dot } from '@tamagui/lucide-icons'
+import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
 import { useParams } from 'one'
 import { memo, useState } from 'react'
 import { ScrollView, SizableText, XStack, YStack, isWeb } from 'tamagui'
@@ -56,7 +56,7 @@ export const FeedDetailPage = memo(() => {
                 <SizableText size="$4" fontWeight="600" numberOfLines={1}>
                   {user.username}
                 </SizableText>
-                <Dot size={16} color="$color10" />
+                <DotIcon size={16} color="$color10" />
                 <SizableText size="$3" color="$color10">
                   {formatDistanceToNow(post.createdAt)}
                 </SizableText>

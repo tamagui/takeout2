@@ -1,3 +1,13 @@
+- Resend Code should be actually stored on the server - if i refresh the page it
+  just counts down from 30 again when in fact ive waited already whihc is
+  anonying
+  - OTP isnt auto-submitting on paste
+  - {"code":"INVALID_OTP","message":"Invalid OTP"} getting this but used right
+    code
+
+- dark/light setting isnt being saved properly to cookies like ti does on
+  tamagui.dev/onestack.dev
+
 - we need to support / message about rebuilding the native app for a different
   port if they want something other than 8081
   - likewise i'd like there to be way less areas to touch when doing so

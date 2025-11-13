@@ -1,10 +1,8 @@
-import {
-  ChevronLeft,
-  ChevronRight,
-  Rocket,
-  Sparkles,
-  TrendingUp,
-} from '@tamagui/lucide-icons'
+import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
+import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
+import { RocketIcon } from '~/interface/icons/phosphor/RocketIcon'
+import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
+import { TrendUpIcon } from '~/interface/icons/phosphor/TrendUpIcon'
 import { useEffect, useState } from 'react'
 import {
   AnimatePresence,
@@ -92,7 +90,7 @@ const onboardingSteps: OnboardingStep[] = [
     title: 'Lightning Fast Development',
     description:
       'Build full-stack apps with the power of Tamagui, React Native, and modern web technologies',
-    icon: Sparkles,
+    icon: SparkleIcon,
     theme: 'orange',
   },
   {
@@ -100,7 +98,7 @@ const onboardingSteps: OnboardingStep[] = [
     title: 'Real-time Updates',
     description:
       'Live collaboration with instant updates powered by Zero sync and optimistic UI',
-    icon: TrendingUp,
+    icon: TrendUpIcon,
     theme: 'green',
   },
   {
@@ -108,7 +106,7 @@ const onboardingSteps: OnboardingStep[] = [
     title: 'Deploy Anywhere',
     description:
       'Ship to web, iOS, and Android from a single codebase with production-ready tooling',
-    icon: Rocket,
+    icon: RocketIcon,
     theme: 'blue',
   },
 ]
@@ -233,7 +231,7 @@ export function OnboardingCarousel({
             onPress={goPrev}
             disabled={currentStep === 0}
             opacity={currentStep === 0 ? 0.3 : 1}
-            icon={ChevronLeft}
+            icon={CaretLeftIcon}
             circular
             pressStyle={{
               scale: 0.95,
@@ -246,7 +244,7 @@ export function OnboardingCarousel({
           <NavigationButton
             side="right"
             onPress={goNext}
-            icon={ChevronRight}
+            icon={CaretRightIcon}
             circular
             pressStyle={{
               scale: 0.95,

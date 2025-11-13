@@ -1,8 +1,18 @@
-import { ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
 import { type Href, Link, Slot } from 'one'
-import { Paragraph, ScrollView, SizableText, Spacer, View, XStack, YStack } from 'tamagui'
+import {
+  EnsureFlexed,
+  Paragraph,
+  ScrollView,
+  SizableText,
+  Spacer,
+  View,
+  XStack,
+  YStack,
+} from 'tamagui'
 import { DocsMenuContents } from '~/features/docs/DocsMenuContents'
 import { useDocsMenu } from '~/features/docs/useDocsMenu'
+import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
+import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 
 const GITHUB_URL = 'https://github.com'
 const REPO_NAME = 'usetakeout/takeout3'
@@ -13,12 +23,11 @@ export function DocsLayout() {
   const editUrl = `${GITHUB_URL}/${REPO_NAME}/edit/${BRANCH}/src/features/site/docs${currentPath}.mdx`
 
   return (
-    <YStack flex={1} bg="$background">
+    <>
       <XStack
         flex={1}
         mx="auto"
         width="100%"
-        maxW={1250}
         $md={{
           flexDirection: 'row',
         }}
@@ -49,7 +58,10 @@ export function DocsLayout() {
 
         {/* Main Content */}
         <YStack flex={1} maxW={840} mx="auto" px="$4" py="$6">
+          <EnsureFlexed />
+
           <Spacer $md={{ display: 'none' }} />
+
           <Slot />
 
           {/* Pagination */}
@@ -76,7 +88,7 @@ export function DocsLayout() {
                     cursor="pointer"
                     {...({} as any)}
                   >
-                    <ChevronLeft size={20} color="$color11" />
+                    <CaretLeftIcon size={20} color="$color11" />
                     <View>
                       <SizableText select="none" size="$5">
                         Previous
@@ -118,7 +130,7 @@ export function DocsLayout() {
                         {next.title}
                       </Paragraph>
                     </View>
-                    <ChevronRight size={20} color="$color11" />
+                    <CaretRightIcon size={20} color="$color11" />
                   </XStack>
                 </Link>
               )}
@@ -145,6 +157,6 @@ export function DocsLayout() {
           </Link>
         </YStack>
       </XStack>
-    </YStack>
+    </>
   )
 }

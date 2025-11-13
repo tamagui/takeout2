@@ -68,6 +68,7 @@ export const SignupPage = memo(() => {
   const handleSmsConsentChange = useEvent((val: boolean | 'indeterminate') =>
     setSmsConsent(!!val)
   )
+
   const stopPropagation = useEvent((e: any) => e.stopPropagation())
   const handleGoBack = useEvent(() => router.back())
 
@@ -105,87 +106,6 @@ export const SignupPage = memo(() => {
     }
   })
 
-  const renderSmsConsent = () => {
-    if (!isPhone) return null
-
-    return (
-      <Pressable
-        data-testid="sms-consent-container"
-        onPress={toggleSmsConsent}
-        borderWidth={1}
-        borderColor="$color6"
-        rounded="$6"
-        p="$2"
-      >
-        <XStack gap="$3" items="flex-start">
-          <Checkbox
-            data-testid="sms-consent-checkbox"
-            size="$7"
-            checked={smsConsent}
-            onCheckedChange={handleSmsConsentChange}
-            overflow="hidden"
-          >
-            <Checkbox.Indicator backgroundColor="#AB4ABA" padding={8}>
-              <CheckIcon />
-            </Checkbox.Indicator>
-          </Checkbox>
-          <YStack gap="$2" flex={1}>
-            <SizableText fontSize={14} color="$accent8">
-              You agree to receive transactional texts from {APP_NAME}. Frequency varies.
-              Msg & data rates may apply. Reply STOP to unsubscribe.
-            </SizableText>
-            <XStack gap="$2" flexWrap="wrap">
-              <Link
-                href={PRIVACY_POLICY_URL}
-                onPress={stopPropagation}
-                textDecorationLine="underline"
-                fontSize={14}
-                color="$accent8"
-              >
-                Privacy Policy
-              </Link>
-              <SizableText opacity={0.3}>|</SizableText>
-              <Link
-                href={TERMS_OF_SERVICE_URL}
-                onPress={stopPropagation}
-                textDecorationLine="underline"
-                fontSize={14}
-                color="$accent8"
-              >
-                Terms of Service
-              </Link>
-            </XStack>
-          </YStack>
-        </XStack>
-      </Pressable>
-    )
-  }
-
-  const renderContent = () => {
-    const placeholder = isPhone ? '(202) 555-2813' : 'Enter email address'
-
-    return (
-      <YStack gap="$4">
-        <Input
-          data-testid={isPhone ? 'phone-input' : 'email-input'}
-          ref={inputRef}
-          placeholder={placeholder}
-          value={isPhone ? formatPhoneNumber(inputValue) : inputValue}
-          onChangeText={setInputValue}
-          keyboardType={isPhone ? 'phone-pad' : 'email-address'}
-          autoComplete={isPhone ? 'tel' : 'email'}
-          inputMode={isPhone ? 'tel' : 'email'}
-          autoCapitalize="none"
-          fontWeight="600"
-          rounded="$5"
-          maxLength={isPhone ? 14 : undefined} // (XXX) XXX-XXXX = 14 characters with formatting
-          onSubmitEditing={handleContinue}
-        />
-        {renderSmsConsent()}
-      </YStack>
-    )
-  }
-
   // Only show content for phone and email methods
   if (method !== 'phone' && method !== 'email') {
     return (
@@ -203,6 +123,8 @@ export const SignupPage = memo(() => {
       </YStack>
     )
   }
+
+  const placeholder = isPhone ? '(202) 555-2813' : 'Enter email address'
 
   return (
     <StepPageLayout
@@ -226,7 +148,80 @@ export const SignupPage = memo(() => {
         </ButtonSimple>
       }
     >
-      {renderContent()}
+      <YStack gap="$4">
+        <Input
+          data-testid={isPhone ? 'phone-input' : 'email-input'}
+          ref={inputRef}
+          placeholder={placeholder}
+          value={isPhone ? formatPhoneNumber(inputValue) : inputValue}
+          onChangeText={setInputValue}
+          autoCapitalize="none"
+          onSubmitEditing={handleContinue}
+          {...(isPhone
+            ? {
+                keyboardType: 'phone-pad',
+                autoComplete: 'tel',
+                inputMode: 'tel',
+                maxLength: 14, // (XXX) XXX-XXXX = 14 characters with formatting
+              }
+            : {
+                keyboardType: 'email-address',
+                autoComplete: 'email',
+                inputMode: 'email',
+              })}
+        />
+        {isPhone && (
+          <Pressable
+            data-testid="sms-consent-container"
+            onPress={toggleSmsConsent}
+            borderWidth={1}
+            borderColor="$color6"
+            rounded="$6"
+            p="$2"
+          >
+            <XStack gap="$3" items="flex-start">
+              <Checkbox
+                data-testid="sms-consent-checkbox"
+                size="$7"
+                checked={smsConsent}
+                onCheckedChange={handleSmsConsentChange}
+                overflow="hidden"
+              >
+                <Checkbox.Indicator backgroundColor="#AB4ABA" padding={8}>
+                  <CheckIcon />
+                </Checkbox.Indicator>
+              </Checkbox>
+              <YStack gap="$2" flex={1}>
+                <SizableText fontSize={14} color="$accent8">
+                  You agree to receive transactional texts from {APP_NAME}. Frequency
+                  varies. Msg & data rates may apply. Reply STOP to unsubscribe.
+                </SizableText>
+                <XStack gap="$2" flexWrap="wrap">
+                  <Link
+                    href={PRIVACY_POLICY_URL}
+                    onPress={stopPropagation}
+                    textDecorationLine="underline"
+                    fontSize={14}
+                    color="$accent8"
+                  >
+                    Privacy Policy
+                  </Link>
+                  <SizableText opacity={0.3}>|</SizableText>
+                  <Link
+                    href={TERMS_OF_SERVICE_URL}
+                    onPress={stopPropagation}
+                    textDecorationLine="underline"
+                    fontSize={14}
+                    color="$accent8"
+                  >
+                    Terms of Service
+                  </Link>
+                </XStack>
+              </YStack>
+            </XStack>
+          </Pressable>
+        )}
+      </YStack>
     </StepPageLayout>
   )
 })

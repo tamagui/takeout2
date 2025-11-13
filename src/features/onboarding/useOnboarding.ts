@@ -22,11 +22,6 @@ const isAdminUser = (username?: string) => username === 'nate' || username === '
 export function useOnboarding() {
   const { user, isLoading } = useUser()
 
-  console.info('[onboarding:hook]', {
-    user,
-    isLoading,
-  })
-
   const router = useRouter()
   const pathname = usePathname()
   const goBackToHome = useGoBackToHome()

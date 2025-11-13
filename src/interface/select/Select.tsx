@@ -1,4 +1,6 @@
-import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
+import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
+import { CaretDownIcon } from '~/interface/icons/phosphor/CaretDownIcon'
+import { CaretUpIcon } from '~/interface/icons/phosphor/CaretUpIcon'
 import React, { useState } from 'react'
 
 import type { FontSizeTokens, SelectProps as TamaguiSelectProps } from 'tamagui'
@@ -40,7 +42,7 @@ export function Select({
       {...props}
     >
       <TamaguiSelect.Trigger
-        iconAfter={ChevronDown}
+        iconAfter={CaretDownIcon}
         bg="transparent"
         borderColor="$color3"
         {...(width
@@ -83,7 +85,7 @@ export function Select({
           height="$3"
         >
           <YStack z={10}>
-            <ChevronUp size={20} />
+            <CaretUpIcon size={20} />
           </YStack>
           <LinearGradient
             start={[0, 0]}
@@ -105,7 +107,7 @@ export function Select({
                       <TamaguiSelect.ItemText ellipse>{item.name}</TamaguiSelect.ItemText>
                     </XStack>
                     <TamaguiSelect.ItemIndicator marginLeft="auto">
-                      <Check size={12} color="$color9" />
+                      <CheckIcon size={12} color="$color9" />
                     </TamaguiSelect.ItemIndicator>
                   </TamaguiSelect.Item>
                 )
@@ -125,7 +127,7 @@ export function Select({
               width={'$4'}
               pointerEvents="none"
             >
-              <ChevronDown
+              <CaretDownIcon
                 size={getFontSize((props.size as FontSizeTokens) ?? '$true')}
               />
             </YStack>
@@ -140,7 +142,7 @@ export function Select({
           height="$3"
         >
           <YStack z={10}>
-            <ChevronDown size={20} />
+            <CaretDownIcon size={20} />
           </YStack>
           <LinearGradient
             start={[0, 0]}

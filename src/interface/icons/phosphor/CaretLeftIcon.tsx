@@ -8,7 +8,7 @@ export const CaretLeftIcon = (props: IconProps) => {
   return (
     <Svg width={width} height={height} viewBox="0 0 256 256" fill="none" {...svgProps}>
       <Path
-        d="M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z"
+        d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"
         fill={fill}
       />
     </Svg>

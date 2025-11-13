@@ -1,5 +1,5 @@
-import type { IconProps } from '@tamagui/helpers-icon'
 import type React from 'react'
+import type { IconProps } from '~/interface/icons/types'
 import { SizableText, Text, YStack } from 'tamagui'
 import BodyText from '~/interface/text/BodyText'
 import { H1, H2, H4, H5 } from '~/interface/text/Headings'

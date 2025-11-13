@@ -1,141 +1,54 @@
 import { useNavigation } from '@react-navigation/native'
 import { router } from 'one'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Alert, Keyboard } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
-import { Spinner, useDebounceValue, View, XStack, YStack } from 'tamagui'
-import { userByUsername } from '~/data/queries/user'
-import { useUser } from '~/features/user/useUser'
+import { Spinner, View, XStack, YStack } from 'tamagui'
+import { useProfileEdit } from '~/features/user/useProfileEdit'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
-import { showError } from '~/interface/dialogs/actions'
 import { Input } from '~/interface/forms/Input'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { XIcon } from '~/interface/icons/phosphor/XIcon'
 import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter'
 import { MediumText, TinyText } from '~/interface/text/Body'
-import { showToast } from '~/interface/toast/helpers'
 import { AvatarUpload } from '~/interface/upload/AvatarUpload'
-import { useQuery } from '~/zero/client'
-
-function checkUsernameValid(username: string) {
-  if (username.length < 3) return false
-  if (!username.match(/^[a-z][a-z0-9_]+$/)) return false
-  return true
-}
 
 export const ProfileEditPage = () => {
-  const { user, update } = useUser()
   const navigation = useNavigation()
-  const [isSaving, setIsSaving] = useState<boolean>(false)
-
-  const [username, setUsername] = useState<string>(user?.username || '')
-  const [name, setName] = useState<string>(user?.name || '')
-  const [isUsernameBlocked, setIsUsernameBlocked] = useState<boolean>(false)
-
-  // Debounce username for availability check
-  const lowernameUsername = username.trim().toLowerCase()
-  const debouncedUsername = useDebounceValue(lowernameUsername)
-  const isUsernameValid = checkUsernameValid(debouncedUsername)
-  const isUsernameInvalid = (debouncedUsername && !isUsernameValid) || isUsernameBlocked
-  // Query to check if username exists
-  const [existingUser, availabilityStatus] = useQuery(
-    userByUsername,
-    { username: debouncedUsername },
-    {
-      enabled: isUsernameValid && debouncedUsername !== user?.username,
-    }
-  )
-
-  const handleAvatarUpload = async (url: string) => {
-    if (!user?.id) return
-    update({ image: url })
-  }
-
-  const handleAvatarReset = () => {
-    if (!user?.id) return
-    // reset to empty string or original image if you want to clear the avatar
-    update({ image: '' })
-  }
-
-  // Determine availability states
-  const trimmedUsername = username.trim().toLowerCase()
-  const isCheckingAvailability =
-    (isUsernameValid && trimmedUsername !== debouncedUsername) ||
-    (isUsernameValid &&
-      debouncedUsername !== user?.username &&
-      availabilityStatus.type !== 'complete')
-
-  const isAvailable =
-    debouncedUsername === user?.username || // current username is always available
-    (isUsernameValid && availabilityStatus.type === 'complete' && !existingUser)
-
-  const isUnavailable =
-    isUsernameValid &&
-    debouncedUsername !== user?.username &&
-    availabilityStatus.type === 'complete' &&
-    !!existingUser
-
-  const hasUnsavedChanges =
-    trimmedUsername !== user?.username || name.trim() !== user?.name
-
-  const canSave =
-    isUsernameValid && !isCheckingAvailability && !isUnavailable && hasUnsavedChanges
+  const {
+    user,
+    username,
+    name,
+    isSaving,
+    isCheckingAvailability,
+    isAvailable,
+    isUnavailable,
+    isUsernameInvalid,
+    hasUnsavedChanges,
+    canSave,
+    debouncedUsername,
+    handleAvatarUpload,
+    handleSave: saveProfile,
+    handleNameChange,
+    handleUsernameChange,
+  } = useProfileEdit()
 
   const handleSave = async () => {
-    if (isSaving) return
-
-    setIsSaving(true)
-
     Keyboard.dismiss()
-
-    try {
-      await update({
-        username: username.trim(),
-        name: name.trim(),
-      }).server
-
-      showToast('Profile updated', {
-        type: 'success',
-      })
-
+    const success = await saveProfile()
+    if (success) {
       router.back()
-    } catch (err: any) {
-      if (err.details === 'Blocked username') {
-        setIsUsernameBlocked(true)
-      } else {
-        showError(err)
-      }
-    } finally {
-      setIsSaving(false)
-    }
-  }
-
-  const handleNameChange = (text: string) => {
-    if (text.length <= 40) {
-      setName(text)
-    }
-  }
-
-  const handleUsernameChange = (text: string) => {
-    if (text.length <= 30) {
-      setUsername(text)
-      if (isUsernameBlocked) {
-        setIsUsernameBlocked(false)
-      }
     }
   }
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', (e) => {
-      // Allow navigation if saving or no unsaved changes
       if (isSaving || !hasUnsavedChanges) {
         return
       }
 
-      // Prevent default behavior of leaving the screen
       e.preventDefault()
 
-      // Prompt the user
       Alert.alert(
         'Discard changes?',
         'You have unsaved changes. Are you sure you want to discard them?',

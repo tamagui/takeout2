@@ -88,7 +88,7 @@ export const AvatarUpload = ({
               accept=".jpg,.jpeg,.png,.gif,.webp"
               onChange={handleFileChange}
             />
-            <ButtonSimple active size="small" tag="span">
+            <ButtonSimple size="small" tag="span" bg="$background">
               Pick
             </ButtonSimple>
           </label>

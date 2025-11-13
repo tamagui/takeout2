@@ -39,9 +39,6 @@ export const MainHeader = () => {
       items="center"
       justify="center"
       z={50}
-      $gtSm={{
-        px: '$1',
-      }}
     >
       <XStack width="100%" maxW={1200} position="relative">
         <XStack
@@ -62,8 +59,8 @@ export const MainHeader = () => {
             animation="quick"
             style={{
               ...(isScrolled && {
-                backdropFilter: 'blur(10px)',
-                WebkitBackdropFilter: 'blur(10px)',
+                backdropFilter: 'blur(5px)',
+                WebkitBackdropFilter: 'blur(5px)',
               }),
             }}
           />

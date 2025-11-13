@@ -30,15 +30,17 @@ export const FeedDetailPage = memo(() => {
   return (
     <>
       {/* Dark gradient background */}
-      <LinearGradient
-        colors={['#313131', 'transparent']}
-        position="absolute"
-        t={0}
-        l={0}
-        r={0}
-        b={0}
-        height={200}
-      />
+      {!isWeb && (
+        <LinearGradient
+          colors={['#313131', 'transparent']}
+          position="absolute"
+          t={0}
+          l={0}
+          r={0}
+          b={0}
+          height={200}
+        />
+      )}
 
       <ScrollView
         flex={1}
@@ -47,7 +49,7 @@ export const FeedDetailPage = memo(() => {
         contentInsetAdjustmentBehavior="automatic"
       >
         <XStack items="center" justify="space-between" py="$4">
-          <XStack justify="space-between" gap="$3">
+          <XStack justify="space-between" gap="$3" width="100%">
             <XStack items="center" gap="$3" flex={1}>
               <Avatar image={user.image as string} size={32} />
               <XStack items="center" gap="$1">

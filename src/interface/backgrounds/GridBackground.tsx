@@ -1,13 +1,44 @@
-import { memo } from 'react'
-import { View, useThemeName } from 'tamagui'
+import { useId } from 'react'
+import { View, useThemeName, type ViewProps } from 'tamagui'
 
-export interface GridBackgroundProps {
+export interface GridBackgroundProps extends Omit<ViewProps, 'children'> {
+  width?: number
+  height?: number
+  x?: number
+  y?: number
+  squares?: Array<[number, number]>
+  strokeDasharray?: string
+  strokeWidth?: number
   opacity?: number
 }
 
-export const GridBackground = memo(({ opacity = 1 }: GridBackgroundProps) => {
+const DEFAULT_SQUARES: Array<[number, number]> = [
+  [4, 4],
+  [5, 1],
+  [8, 2],
+  [5, 5],
+  [10, 10],
+  [15, 10],
+  [10, 15],
+]
+
+export const GridBackground = ({
+  width = 40,
+  height = 40,
+  x = -1,
+  y = -1,
+  strokeDasharray = '0',
+  strokeWidth = 1,
+  squares = DEFAULT_SQUARES,
+  opacity = 0.4,
+  ...props
+}: GridBackgroundProps) => {
+  const id = useId()
   const theme = useThemeName()
   const isDark = theme?.includes('dark')
+
+  const fillColor = 'rgba(150, 150, 170, 0.5)'
+  const strokeColor = isDark ? 'rgba(150, 150, 170, 0.2)' : 'rgba(147, 139, 255, 0.2)'
 
   return (
     <View
@@ -19,68 +50,55 @@ export const GridBackground = memo(({ opacity = 1 }: GridBackgroundProps) => {
       overflow="hidden"
       pointerEvents="none"
       opacity={opacity}
-      bg={isDark ? undefined : 'rgba(245, 243, 255, 0.3)'}
+      {...props}
     >
-      {/* CSS Grid Pattern */}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-            @keyframes grid-fade-in {
-              from {
-                opacity: 0;
-                transform: translateY(20px);
-              }
-              to {
-                opacity: 1;
-                transform: translateY(0);
-              }
-            }
-
-            .modern-grid-bg {
-              position: absolute;
-              inset: 0;
-              background-image:
-                linear-gradient(${isDark ? 'rgba(150, 150, 170, 0.03)' : 'rgba(147, 139, 255, 0.035)'} 1px, transparent 1px),
-                linear-gradient(90deg, ${isDark ? 'rgba(150, 150, 170, 0.03)' : 'rgba(147, 139, 255, 0.035)'} 1px, transparent 1px);
-              background-size: 50px 50px;
-              background-position: -1px -1px;
-              mask-image: radial-gradient(ellipse at center, transparent 0%, black 85%);
-              -webkit-mask-image: radial-gradient(ellipse at center, transparent 0%, black 85%);
-              animation: grid-fade-in 1s ease-out;
-              ${isDark ? 'filter: blur(0.6px);' : ''}
-            }
-
-            .modern-grid-highlight {
-              position: absolute;
-              inset: 0;
-              background: radial-gradient(
-                circle at 30% 20%,
-                ${isDark ? 'rgba(99, 102, 241, 0.06)' : 'rgba(147, 139, 255, 0.06)'} 0%,
-                transparent 50%
-              ),
-              radial-gradient(
-                circle at 70% 60%,
-                ${isDark ? 'rgba(236, 72, 153, 0.06)' : 'rgba(255, 139, 200, 0.05)'} 0%,
-                transparent 50%
-              ),
-              radial-gradient(
-                circle at 20% 80%,
-                ${isDark ? 'rgba(139, 92, 246, 0.06)' : 'rgba(180, 139, 255, 0.06)'} 0%,
-                transparent 50%
-              );
-              animation: grid-fade-in 1.5s ease-out;
-              ${isDark ? 'filter: blur(0.8px);' : ''}
-            }
-          `,
+      <svg
+        aria-hidden="true"
+        style={{
+          pointerEvents: 'none',
+          position: 'absolute',
+          inset: 0,
+          height: '100%',
+          width: '100%',
+          fill: fillColor,
+          stroke: strokeColor,
+          maskImage: 'radial-gradient(circle at center, white, transparent)',
+          WebkitMaskImage: 'radial-gradient(circle at center, white, transparent)',
         }}
-      />
-
-      <div className="modern-grid-bg" />
-      <div className="modern-grid-highlight" />
-
-      {/* Gradient overlay similar to PageContainer */}
+      >
+        <defs>
+          <pattern
+            id={id}
+            width={width}
+            height={height}
+            patternUnits="userSpaceOnUse"
+            x={x}
+            y={y}
+          >
+            <path
+              d={`M.5 ${height}V.5H${width}`}
+              fill="none"
+              strokeDasharray={strokeDasharray}
+              strokeWidth={strokeWidth}
+            />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" strokeWidth={0} fill={`url(#${id})`} />
+        {squares && (
+          <svg x={x} y={y} style={{ overflow: 'visible' }}>
+            {squares.map(([squareX, squareY], index) => (
+              <rect
+                strokeWidth="0"
+                key={`${squareX}-${squareY}-${index}`}
+                width={width - 1}
+                height={height - 1}
+                x={squareX * width + 1}
+                y={squareY * height + 1}
+              />
+            ))}
+          </svg>
+        )}
+      </svg>
     </View>
   )
-})
-
-GridBackground.displayName = 'GridBackground'
+}

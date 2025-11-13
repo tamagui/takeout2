@@ -35,7 +35,7 @@ export const OtpInput = memo(function OtpInput({
 }: IOtpInput) {
   const { color, color2, color3, color02, red10 } = useTheme()
   const { width: windowWidth } = useWindowDimensions()
-  const width = Math.min(500, windowWidth)
+  const width = Math.min(340, windowWidth)
 
   const inputRef = useRef<Array<Input>>([])
 

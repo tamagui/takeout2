@@ -18,9 +18,9 @@ const { values } = parseArgs({
 
 async function checkProjectTypes() {
   if (values.watch) {
-    await $`TSGO=1 tko run typecheck --watch`
+    await $`LAZY_TYPECHECK=1 tko run typecheck --watch`
   } else {
-    await $`TSGO=1 tko run typecheck`
+    await $`tko run typecheck`
   }
 }
 

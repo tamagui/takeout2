@@ -1,7 +1,7 @@
 import { createElement, useRef } from 'react'
 import { SizableText, Spacer, XStack, YStack } from 'tamagui'
 import { Link } from '~/interface/app/Link'
-import { ExternalIcon } from '~/interface/icons/ExternalIcon'
+import { ArrowSquareOutIcon } from '~/interface/icons/phosphor/ArrowSquareOutIcon'
 import type { NavItemProps } from './types'
 
 export const DocsRouteNavItem = function DocsRouteNavItem({
@@ -91,7 +91,7 @@ export const DocsRouteNavItem = function DocsRouteNavItem({
         {isExternal && (
           <XStack opacity={0.5}>
             <Spacer size="$2" />
-            <ExternalIcon />
+            <ArrowSquareOutIcon size={10} />
           </XStack>
         )}
         {pending ? (

@@ -143,6 +143,26 @@ bun tko aws health           # Run AWS health check
 bun tko run check/types      # Run type checking
 ```
 
+### Adding Icons
+
+This project uses [Phosphor Icons](https://phosphoricons.com/) for all UI icons. To add a new icon:
+
+```bash
+# Add a regular icon
+bun tko icon/add-phosphor Heart
+
+# Add a different weight (regular, bold, duotone, fill, light, thin)
+bun tko icon/add-phosphor User --weight=fill
+```
+
+Icons are automatically generated in `src/interface/icons/phosphor/` and can be imported:
+
+```tsx
+import { HeartIcon } from '~/interface/icons/phosphor/HeartIcon'
+```
+
+**Note:** For brand icons (Apple, Google, Discord, GitHub, X/Twitter), use the custom icons in `src/interface/icons/` as these are not available in Phosphor.
+
 ## Database
 
 ### Local Development

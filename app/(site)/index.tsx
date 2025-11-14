@@ -14,7 +14,7 @@ export function IndexPage() {
         <H1 size="$10" fontWeight="700">
           Build Better Apps
         </H1>
-        <H2 size="$7" color="$color11" maxW={700}>
+        <H2 size="$7" color="$color11" maxW={700} text="center">
           A modern framework for building web and native applications with React. Fast,
           flexible, and built for the future.
         </H2>

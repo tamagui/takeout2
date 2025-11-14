@@ -39,7 +39,10 @@ v2:
 
 ---
 
-small items:
+# detailed
+
+- Account button on site should borrow from tamagui.dev
+  - show avatar when logged in
 
 - Resend Code should be actually stored on the server - if i refresh the page it
   just counts down from 30 again when in fact ive waited already whihc is

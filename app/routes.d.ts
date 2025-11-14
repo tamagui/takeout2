@@ -10,6 +10,30 @@ declare module 'one' {
       DynamicRoutes: `/(app)/(auth-onboard)/signup/${OneRouter.SingleRoutePart<T>}` | `/(app)/(tabs)/home/post/${OneRouter.SingleRoutePart<T>}` | `/(app)/(tabs)/home/profile/${OneRouter.SingleRoutePart<T>}` | `/(app)/home/post/${OneRouter.SingleRoutePart<T>}` | `/(app)/home/profile/${OneRouter.SingleRoutePart<T>}` | `/(app)/signup/${OneRouter.SingleRoutePart<T>}` | `/(auth-onboard)/signup/${OneRouter.SingleRoutePart<T>}` | `/(site)/docs/${OneRouter.SingleRoutePart<T>}` | `/(tabs)/home/post/${OneRouter.SingleRoutePart<T>}` | `/(tabs)/home/profile/${OneRouter.SingleRoutePart<T>}` | `/docs/${OneRouter.SingleRoutePart<T>}` | `/home/post/${OneRouter.SingleRoutePart<T>}` | `/home/profile/${OneRouter.SingleRoutePart<T>}` | `/signup/${OneRouter.SingleRoutePart<T>}`
       DynamicRouteTemplate: `/(app)/(auth-onboard)/signup/[method]` | `/(app)/(tabs)/home/post/[feedId]` | `/(app)/(tabs)/home/profile/[userId]` | `/(app)/home/post/[feedId]` | `/(app)/home/profile/[userId]` | `/(app)/signup/[method]` | `/(auth-onboard)/signup/[method]` | `/(site)/docs/[slug]` | `/(tabs)/home/post/[feedId]` | `/(tabs)/home/profile/[userId]` | `/docs/[slug]` | `/home/post/[feedId]` | `/home/profile/[userId]` | `/signup/[method]`
       IsTyped: true
+      RouteTypes: {
+        '/(app)/(auth-onboard)/signup/[method]': RouteInfo<{ method: string }>
+        '/(app)/(tabs)/home/post/[feedId]': RouteInfo<{ feedId: string }>
+        '/(app)/(tabs)/home/profile/[userId]': RouteInfo<{ userId: string }>
+        '/(app)/home/post/[feedId]': RouteInfo<{ feedId: string }>
+        '/(app)/home/profile/[userId]': RouteInfo<{ userId: string }>
+        '/(app)/signup/[method]': RouteInfo<{ method: string }>
+        '/(auth-onboard)/signup/[method]': RouteInfo<{ method: string }>
+        '/(site)/docs/[slug]': RouteInfo<{ slug: string }>
+        '/(tabs)/home/post/[feedId]': RouteInfo<{ feedId: string }>
+        '/(tabs)/home/profile/[userId]': RouteInfo<{ userId: string }>
+        '/docs/[slug]': RouteInfo<{ slug: string }>
+        '/home/post/[feedId]': RouteInfo<{ feedId: string }>
+        '/home/profile/[userId]': RouteInfo<{ userId: string }>
+        '/signup/[method]': RouteInfo<{ method: string }>
+      }
     }
   }
+}
+
+/**
+ * Helper type for route information
+ */
+type RouteInfo<Params = Record<string, never>> = {
+  Params: Params
+  LoaderProps: { path: string; params: Params; request?: Request }
 }

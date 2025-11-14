@@ -1,3 +1,46 @@
+# Takeout Roadmap
+
+v1:
+
+- screens:
+  - auth, onboard, feed, profile, settings
+
+- site:
+  - improve home design and wording
+  - /docs with real docs
+
+- native:
+  - generally improved/native ui
+  - hot-updates
+
+- ci/cd:
+  - sst working and tested for aws setup
+  - uncloud working and tested for self-hosting
+  - working actions to build to both app stores
+    - can have eas and self-hosted options
+
+- cleanup:
+  - fix test.skip tests
+  - zero migrations cleanup and move into package
+  - move to new setupFile in one for client/server
+  - remove dead files and generally reduce size
+  - test thoroughly production builds / optimize
+  - remove reanimated dependency on web entirely
+  - publish tamagui config v5 and use that directly
+
+- docs:
+  - document asyncTasks/zero tips
+
+v2:
+
+- push notifications
+- job system
+- automated database backups on releases
+
+---
+
+small items:
+
 - Resend Code should be actually stored on the server - if i refresh the page it
   just counts down from 30 again when in fact ive waited already whihc is
   anonying
@@ -14,14 +57,6 @@
 
 - can we prevent vscode autocomplete of extenral overlaps:
   - Image, Link, Dialog
-
-general:
-
-- zero migrations needs improvement - lambda / part of migrate likely
-- fix test.skip tests
-- job system should be here
-- re-enable database backup in ci.ts once ./src/database/scripts/backup.ts is
-  available
 
 quan:
 
@@ -40,11 +75,6 @@ pokai:
 
 - deps optimization is a mess took me forever to fix issues and nothing worked
   like i expected (setting ssr.external/noExternal etc)
-- import '~/setupServer' (setupFile support web(server+client)/native)
-- [TODO one], cleanup vite.config as much as can via one itself
-- can we get app.config, react-native.config and .xcode-version by chance into a
-  sub-folder? maybe .xcode-version into ios/\*?
-  - could we have ios/android folder build into maybe src/ios?
 - ci/cd for native apps
 - production sst deploy (merge in good parts from fleek)
 - hot update cleanup / into package ideally

@@ -1,8 +1,8 @@
 import { useLinkTo, type LinkProps } from 'one'
 import { SizableText, styled, View, YStack, type SizableTextProps } from 'tamagui'
-import { DiscordIcon } from '~/interface/icons/DiscordIcon'
 import { GithubLogoIcon } from '~/interface/icons/GithubLogoIcon'
-import { XIcon } from '~/interface/icons/XIcon'
+import { DiscordLogo } from '~/interface/social-media/DiscordLogo'
+import { TwitterLogo } from '~/interface/social-media/TwitterLogo'
 
 export const SocialLinksRow = ({ large }: { large?: boolean }) => {
   const scale = large ? 1.5 : 0.8
@@ -16,16 +16,7 @@ export const SocialLinksRow = ({ large }: { large?: boolean }) => {
         aria-label="X (formerly Twitter)"
       >
         <Container minW={large ? 60 : 45}>
-          <XIcon
-            size={44 * scale}
-            style={{
-              marginBottom: -10 * scale,
-              marginTop: -10 * scale,
-              marginLeft: -11 * scale,
-              marginRight: -11 * scale,
-            }}
-            aria-hidden={true}
-          />
+          <TwitterLogo size={25 * scale} aria-hidden={true} />
           <SubTitle display={large ? 'flex' : 'none'}>X</SubTitle>
         </Container>
       </HoverableLink>
@@ -43,7 +34,7 @@ export const SocialLinksRow = ({ large }: { large?: boolean }) => {
       >
         <HoverableLink target="_blank" href="https://discord.gg" aria-label="Discord">
           <Container minW={large ? 60 : 45}>
-            <DiscordIcon size={25 * scale} aria-hidden={true} />
+            <DiscordLogo size={25 * scale} aria-hidden={true} />
             <SubTitle display={large ? 'flex' : 'none'}>Discord</SubTitle>
           </Container>
         </HoverableLink>

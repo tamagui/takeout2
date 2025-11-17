@@ -1,11 +1,14 @@
 import { useId } from 'react'
 import Svg, { Defs, LinearGradient, Stop, Rect, Circle } from 'react-native-svg'
+import { useIconProps } from '~/interface/icons/useIconProps'
+import type { IconProps } from '~/interface/icons/types'
 
-export const InstagramLogo = ({ size = 24 }: { size?: number }) => {
+export const InstagramLogo = (props: IconProps) => {
+  const { width, height, fill, ...svgProps } = useIconProps(props)
   const gradientId = useId()
 
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Svg width={width} height={height} viewBox="0 0 24 24" fill="none" {...svgProps}>
       <Defs>
         <LinearGradient id={gradientId} x1="0%" y1="100%" x2="100%" y2="0%">
           <Stop offset="0%" stopColor="#FDB913" />

@@ -112,7 +112,6 @@ export const ProfilePage = memo(() => {
     if (isLoading) return null
     return (
       <YStack p="$4" items="center" justify="center" mt="$4">
-        <Image src={images.iconPicture} width={78} height={78} />
         <H5 mt="$3">No posts yet</H5>
       </YStack>
     )

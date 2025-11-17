@@ -17,6 +17,7 @@ tmp
 dist
 .DS_Store
 .ultra.cache.json
+*.tsbuildinfo
 
 .build
 .tamagui

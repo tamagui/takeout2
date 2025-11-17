@@ -1,4 +1,3 @@
-import { CircleDashed } from '@tamagui/lucide-icons'
 import { useEffect, useRef, useState } from 'react'
 import { Circle, isWeb, SizableText, Spinner, YStack } from 'tamagui'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
@@ -9,6 +8,7 @@ import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { showError } from '~/interface/dialogs/actions'
 import { CameraIcon } from '~/interface/icons/phosphor/CameraIcon'
+import { CircleNotchIcon } from '~/interface/icons/phosphor/CircleNotchIcon'
 import { ImageIcon } from '~/interface/icons/phosphor/ImageIcon'
 import { PencilSimpleIcon } from '~/interface/icons/phosphor/PencilSimpleIcon'
 import { Image } from '~/interface/image/Image'
@@ -187,7 +187,7 @@ export const AvatarSetupPage = () => {
                 {localImageUri ? (
                   <Image src={localImageUri} width={IMAGE_SIZE} height={IMAGE_SIZE} />
                 ) : (
-                  <CircleDashed size={IMAGE_SIZE} color="$color5" />
+                  <CircleNotchIcon size={IMAGE_SIZE} color="$color5" />
                 )}
                 {isUploading && (
                   <YStack

@@ -1,11 +1,11 @@
 import { H1, H2, Paragraph, XStack, YStack } from 'tamagui'
-import { DatabaseIcon } from '~/interface/icons/phosphor/DatabaseIcon'
-import { StackIcon } from '~/interface/icons/phosphor/StackIcon'
-import { FolderOpenIcon } from '~/interface/icons/phosphor/FolderOpenIcon'
-import { CircleNotchIcon } from '~/interface/icons/phosphor/CircleNotchIcon'
-import { DeviceTabletIcon } from '~/interface/icons/phosphor/DeviceTabletIcon'
-import { TriangleIcon } from '~/interface/icons/phosphor/TriangleIcon'
 import { InfoCard } from '~/features/site/components/InfoCard'
+import { CircleNotchIcon } from '~/interface/icons/phosphor/CircleNotchIcon'
+import { DatabaseIcon } from '~/interface/icons/phosphor/DatabaseIcon'
+import { DeviceTabletIcon } from '~/interface/icons/phosphor/DeviceTabletIcon'
+import { FolderOpenIcon } from '~/interface/icons/phosphor/FolderOpenIcon'
+import { StackIcon } from '~/interface/icons/phosphor/StackIcon'
+import { TriangleIcon } from '~/interface/icons/phosphor/TriangleIcon'
 
 export function IndexPage() {
   return (
@@ -43,7 +43,7 @@ export function IndexPage() {
             Build for web with React, or native with React Native, or target both
             platforms at once.
           </InfoCard>
-          <InfoCard title="Modern Build System" Icon={ViteIcon}>
+          <InfoCard title="Modern Build System" Icon={TriangleIcon}>
             Powered by modern tooling for fast development and optimized production
             builds.
           </InfoCard>
@@ -62,5 +62,3 @@ export function IndexPage() {
     </YStack>
   )
 }
-
-const ViteIcon = (props: any) => <TriangleIcon rotate="180deg" {...props} />

@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "rootDir": ".",
+    "incremental": false,
     // "paths": {
     //   "@take-out/better-auth-utils": ["./better-auth-utils/src/index.ts"],
     //   "@take-out/helpers": ["./helpers/src/index.ts"],

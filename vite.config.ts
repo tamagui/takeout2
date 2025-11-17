@@ -45,11 +45,11 @@ export default {
     }),
 
     one({
-      // setupFile: {
-      //   client: './src/setupClient.ts',
-      //   server: './src/setupServer.ts',
-      //   // native: './src/setupNative.ts', // if you want to diverge
-      // },
+      setupFile: {
+        client: './src/setupClient.ts',
+        server: './src/setupServer.ts',
+        // native: './src/setupNative.ts', // if you want to diverge
+      },
 
       react: {
         compiler: true,

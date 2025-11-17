@@ -1,5 +1,6 @@
 import { Slot, Stack } from 'one'
 import { isWeb } from 'tamagui'
+import { Dialogs } from '~/interface/dialogs/Dialogs'
 import { NotificationProvider } from '~/interface/notification/Notification'
 import { ToastProvider } from '~/interface/toast/Toast'
 import { DragDropFile } from '~/interface/upload/DragDropFile'
@@ -18,11 +19,12 @@ export function AppLayout() {
               ) : (
                 // We need Stack here for transition animation to work on native
                 <Stack screenOptions={{ headerShown: false }}>
-                  <Stack.Screen name="(tabs)" />
                   <Stack.Screen name="(auth-onboard)" />
+                  <Stack.Screen name="(tabs)" />
                   <Stack.Screen name="settings" />
                 </Stack>
               )}
+              <Dialogs />
             </DragDropFile>
           </PlatformSpecificRootProvider>
         </NotificationProvider>

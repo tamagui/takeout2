@@ -1,5 +1,5 @@
 import { isNative } from '@take-out/helpers'
-import { Redirect, Slot } from 'one'
+import { Redirect, router, Slot, useFocusEffect, usePathname } from 'one'
 import { getNextOnboardingStep } from '~/features/onboarding/getNextOnboardingStep'
 import { SiteHeader } from '~/features/site/components/SiteHeader'
 import { useUser } from '~/features/user/useUser'
@@ -7,21 +7,22 @@ import { GridBackground } from '~/interface/backgrounds/GridBackground'
 import { PageContainer } from '~/interface/layout/PageContainer'
 
 export function AuthAndOnboardingLayout() {
+  const pathname = usePathname()
   const { user, state } = useUser()
 
-  // if (state === 'logged-out') {
-  //   return <Redirect href="/login" />
-  // }
+  useFocusEffect(() => {
+    if (state === 'logged-out' && pathname !== '/login') {
+      router.replace('/login')
+    }
 
-  // if (state === 'loading' || !user) {
-  //   return null
-  // }
+    if (state === 'loading' || !user) {
+      return
+    }
 
-  // const nextStep = getNextOnboardingStep(user)
+    const nextStep = getNextOnboardingStep(user)
 
-  // if (nextStep) {
-  //   return <Redirect href={nextStep} />
-  // }
+    router.replace(nextStep ?? '/home')
+  }, [state, user])
 
   if (isNative) {
     return <Slot />

@@ -11,10 +11,9 @@ import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 
 export const PasswordPage = () => {
+  const { goToNextStep } = useOnboarding()
   const params = useParams<{ method?: 'phone' | 'email'; value?: string }>()
   const [loading, setLoading] = useState<boolean>(false)
-
-  useOnboarding()
 
   const isPhone = params.method === 'phone'
 
@@ -42,6 +41,7 @@ export const PasswordPage = () => {
         showError(error)
         return
       }
+      await goToNextStep()
     } catch (err) {
       console.error(err)
     } finally {

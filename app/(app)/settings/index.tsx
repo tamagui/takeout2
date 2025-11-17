@@ -55,6 +55,7 @@ export const ProfileSettingsPage = () => {
             try {
               await authClient.signOut()
               clearAuthClientToken()
+              router.dismissAll()
               router.replace('/login')
             } catch (error) {
               console.error('Logout error:', error)

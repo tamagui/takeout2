@@ -8,6 +8,8 @@ import { initializeLogger } from '~/features/logger/logger'
 import { setupDev } from 'tamagui'
 // import { initializeSidecar } from '~/features/sidecar/initialize'
 
+console.info(`[client] start (SHA: ${process.env.GIT_SHA})`)
+
 initializeErrorHandling()
 initializeLogger()
 // initializeSidecar()

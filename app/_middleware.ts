@@ -1,3 +1,5 @@
+import '~/setupServer'
+
 import { createMiddleware } from 'one'
 import { analytics } from '~/features/analytics/analytics'
 

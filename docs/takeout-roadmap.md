@@ -41,6 +41,14 @@ v2:
 
 # detailed
 
+- dev server navigates us to `/help` on first load of `/` for some reason?
+
+- slow startup of vite server:
+  - i think in part its my last changes in one that run babel on all
+    node_modules, especially because reanimated builds into a giant chunk
+    - we should see if we can skip the babel processing of more files
+    - we can skip this for ssr too right?
+
 - Account button on site should borrow from tamagui.dev
   - show avatar when logged in
 

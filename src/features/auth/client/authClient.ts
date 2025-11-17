@@ -7,8 +7,6 @@ import { plugins } from './plugins'
 
 type AppUser = User & { role?: 'admin' }
 
-console.info(`[better-auth] client baseURL`, SERVER_URL)
-
 const betterAuthClient = createBetterAuthClient({
   baseURL: SERVER_URL,
   plugins,

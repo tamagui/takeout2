@@ -2,12 +2,12 @@ import { router } from 'one'
 import { Linking } from 'react-native'
 import { XStack, YStack } from 'tamagui'
 import { DISCORD_INVITE_URL } from '~/constants/app'
-import { images } from '~/constants/images'
 import { authClient } from '~/features/auth/client/authClient'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
+import { Logo } from '~/interface/app/Logo'
+import { Pressable } from '~/interface/buttons/Pressable'
 import { BasicHeader } from '~/interface/headers/BasicHeader'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
-import { Image } from '~/interface/image/Image'
 import { RepeatedTapToShowDevTools } from '~/interface/interactions/RepeatedTapToShowDevTools'
 import { MediumText } from '~/interface/text/Body'
 import { H3 } from '~/interface/text/Headings'
@@ -38,14 +38,9 @@ export const WaitingListPage = () => {
         <XStack>
           <RepeatedTapToShowDevTools>
             {({ handleTap }) => (
-              <Image
-                src={images.iconTakeout}
-                width={22}
-                height={56}
-                objectFit="contain"
-                tintColor="white"
-                onPress={handleTap}
-              />
+              <Pressable onPress={handleTap}>
+                <Logo size={22} />
+              </Pressable>
             )}
           </RepeatedTapToShowDevTools>
         </XStack>

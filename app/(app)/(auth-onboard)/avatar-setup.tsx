@@ -1,6 +1,6 @@
+import { CircleDashed } from '@tamagui/lucide-icons'
 import { useEffect, useRef, useState } from 'react'
 import { Circle, isWeb, SizableText, Spinner, YStack } from 'tamagui'
-import { images } from '~/constants/images'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { OnboardingStepPageLayout } from '~/features/user/ui/OnboardingStepPageLayout'
 import { useUser } from '~/features/user/useUser'
@@ -184,11 +184,11 @@ export const AvatarSetupPage = () => {
                 borderColor="$color5"
                 position="relative"
               >
-                <Image
-                  src={localImageUri ? localImageUri : images.avatarContainer}
-                  width={IMAGE_SIZE}
-                  height={IMAGE_SIZE}
-                />
+                {localImageUri ? (
+                  <Image src={localImageUri} width={IMAGE_SIZE} height={IMAGE_SIZE} />
+                ) : (
+                  <CircleDashed size={IMAGE_SIZE} color="$color5" />
+                )}
                 {isUploading && (
                   <YStack
                     position="absolute"

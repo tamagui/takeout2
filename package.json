@@ -193,8 +193,8 @@
     "@shopify/react-native-skia"
   ],
   "env": {
-    "AWS_ACCESS_KEY_ID": true,
-    "AWS_SECRET_ACCESS_KEY": true,
+    "AWS_ACCESS_KEY_ID": "",
+    "AWS_SECRET_ACCESS_KEY": "",
     "APNS_ENDPOINT": "https://api.sandbox.push.apple.com",
     "APNS_TEAM_ID": "",
     "APNS_KEY_ID": "",

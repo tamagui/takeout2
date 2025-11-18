@@ -1,9 +1,9 @@
+import { setSchemeSetting, useColorScheme } from '@vxrn/color-scheme'
+import type { SizeTokens } from 'tamagui'
+import { AnimatePresence, styled, View } from 'tamagui'
+import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { MoonStarsIcon } from '~/interface/icons/phosphor/MoonStarsIcon'
 import { SunIcon } from '~/interface/icons/phosphor/SunIcon'
-import { setSchemeSetting, useColorScheme } from '@vxrn/color-scheme'
-import { AnimatePresence, styled, View } from 'tamagui'
-import type { SizeTokens } from 'tamagui'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 
 const AnimatedIcon = styled(View, {
   animation: 'medium',
@@ -47,12 +47,12 @@ export function ThemeSwitch({ size = '$2' }: { size?: SizeTokens }) {
       <AnimatePresence>
         {!isDark && (
           <AnimatedIcon key="sun">
-            <SunIcon size={iconSize} color="$yellow12" />
+            <SunIcon size={iconSize} />
           </AnimatedIcon>
         )}
         {isDark && (
           <AnimatedIcon key="moon">
-            <MoonStarsIcon size={iconSize} color="$blue10" fill="$blue10" />
+            <MoonStarsIcon size={iconSize} />
           </AnimatedIcon>
         )}
       </AnimatePresence>

@@ -3,6 +3,7 @@
  */
 
 import { spawn } from 'node:child_process'
+import { cpus } from 'node:os'
 
 const colors = [
   '\x1b[36m', // Cyan
@@ -27,9 +28,10 @@ export async function runScriptsInParallel(
   options: {
     title?: string
     onError?: 'continue' | 'exit'
+    maxParallelism?: number
   } = {}
 ): Promise<void> {
-  const { title, onError = 'exit' } = options
+  const { title, onError = 'exit', maxParallelism = cpus().length } = options
 
   if (title) {
     console.info()
@@ -37,14 +39,27 @@ export async function runScriptsInParallel(
     console.info()
   }
 
-  const scriptPromises = scripts.map((script, index) => {
-    return runSingleScript(script, index)
-  })
+  const allPromises: Promise<void>[] = []
+  const executing: Set<Promise<void>> = new Set()
 
-  const results = await Promise.allSettled(scriptPromises)
+  for (let i = 0; i < scripts.length; i++) {
+    const script = scripts[i]!
+    const scriptPromise = runSingleScript(script, i).finally(() => {
+      executing.delete(scriptPromise)
+    })
+
+    allPromises.push(scriptPromise)
+    executing.add(scriptPromise)
+
+    if (executing.size >= maxParallelism) {
+      await Promise.race(executing)
+    }
+  }
+
+  const settledResults = await Promise.allSettled(allPromises)
 
   // Check for failures
-  const failures = results.filter((r) => r.status === 'rejected')
+  const failures = settledResults.filter((r) => r.status === 'rejected')
 
   if (failures.length > 0) {
     console.error(`\n${reset}\x1b[31m✗ ${failures.length} script(s) failed${reset}\n`)

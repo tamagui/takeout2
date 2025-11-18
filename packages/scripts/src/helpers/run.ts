@@ -1,4 +1,5 @@
 import type { ChildProcess } from 'node:child_process'
+import { cpus } from 'node:os'
 import type { Timer } from '@take-out/helpers'
 
 export type ProcessType = ChildProcess | Bun.Subprocess
@@ -268,7 +269,8 @@ export async function printTiming<T>(name: string, fn: () => Promise<T>): Promis
 }
 
 export async function runParallel(
-  tasks: Array<{ name: string; fn: () => Promise<void>; condition?: () => boolean }>
+  tasks: Array<{ name: string; fn: () => Promise<void>; condition?: () => boolean }>,
+  options?: { maxParallelism?: number }
 ) {
   const activeTasks = tasks.filter((task) => !task.condition || task.condition())
 
@@ -276,27 +278,43 @@ export async function runParallel(
     return
   }
 
+  const maxParallelism = options?.maxParallelism ?? cpus().length
   console.info(`\nStarting parallel tasks: ${activeTasks.map((t) => t.name).join(', ')}`)
+  console.info(`Max parallelism: ${maxParallelism}`)
 
   const taskStartTime = Date.now()
 
   try {
-    await Promise.all(
-      activeTasks.map(async (task) => {
-        const startTime = Date.now()
-        try {
-          await task.fn()
+    const results: Promise<void>[] = []
+    const executing: Set<Promise<void>> = new Set()
+
+    for (const task of activeTasks) {
+      const startTime = Date.now()
+      const taskPromise = task.fn().then(
+        () => {
           const duration = Date.now() - startTime
           console.info(
             `\x1b[32m✓\x1b[0m task: \x1b[35m${task.name}\x1b[0m completed in \x1b[33m${formatDuration(duration)}\x1b[0m`
           )
-        } catch (error) {
+          executing.delete(taskPromise)
+        },
+        (error) => {
           const duration = Date.now() - startTime
           console.error(`✗ task: ${task.name} failed after ${formatDuration(duration)}`)
+          executing.delete(taskPromise)
           throw error
         }
-      })
-    )
+      )
+
+      results.push(taskPromise)
+      executing.add(taskPromise)
+
+      if (executing.size >= maxParallelism) {
+        await Promise.race(executing)
+      }
+    }
+
+    await Promise.all(results)
 
     const totalDuration = Date.now() - taskStartTime
     console.info(

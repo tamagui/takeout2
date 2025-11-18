@@ -23,14 +23,7 @@ export const popoverEmitter = createEmitter<{
   }
 )
 
-export type PopoverName =
-  | 'topbar'
-  | 'add-reaction'
-  | 'user-profile'
-  | 'message-item-menu'
-  | 'menu'
-  | 'add-filter'
-  | 'onboard-tour-start'
+export type PopoverName = 'menu' | 'user-profile' | 'post-actions'
 
 export type PopoverContentProps = TamaguiPopoverContentProps & {
   arrow?: boolean | PopoverArrowProps

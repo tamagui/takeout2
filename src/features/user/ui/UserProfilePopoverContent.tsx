@@ -1,12 +1,17 @@
+import { router } from 'one'
 import { Separator, SizableText, Spinner, XStack, YStack } from 'tamagui'
+import { authClient, clearAuthClientToken } from '~/features/auth/client/authClient'
 import { useProfileEdit } from '~/features/user/useProfileEdit'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { dialogConfirm, showError } from '~/interface/dialogs/actions'
 import { Input } from '~/interface/forms/Input'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
+import { DoorIcon } from '~/interface/icons/phosphor/DoorIcon'
 import { XIcon } from '~/interface/icons/phosphor/XIcon'
+import { Popover } from '~/interface/popover/Popover'
 import { AvatarUpload } from '~/interface/upload/AvatarUpload'
 
-export const UserProfileEditPopover = () => {
+export const UserProfilePopoverContent = () => {
   const {
     user,
     username,
@@ -24,8 +29,35 @@ export const UserProfileEditPopover = () => {
     handleUsernameChange,
   } = useProfileEdit()
 
+  const handleLogout = async () => {
+    const confirmed = await dialogConfirm({
+      title: 'Log Out',
+      description: 'Are you sure you want to log out?',
+    })
+
+    if (!confirmed) return
+
+    try {
+      await authClient.signOut()
+      clearAuthClientToken()
+      router.dismissAll()
+      router.replace('/login')
+    } catch (error) {
+      console.error('logout error:', error)
+      showError(error, 'logout')
+    }
+  }
+
   return (
     <YStack p="$4" gap="$3" minW={320}>
+      <Popover.Close asChild>
+        <ButtonSimple size="small" onPress={handleLogout} icon={DoorIcon} self="flex-end">
+          Logout
+        </ButtonSimple>
+      </Popover.Close>
+
+      <Separator />
+
       {/* Avatar Upload */}
       <YStack items="center" py="$2">
         <AvatarUpload

@@ -1,17 +1,30 @@
 import './root.css'
 
-import { Slot } from 'one'
+import * as SplashScreen from 'expo-splash-screen'
+import { Slot, Stack } from 'one'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { isWeb } from 'tamagui'
-import { Dialogs } from '~/interface/dialogs/Dialogs'
 import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
+
+// NOTE: we need to set the splash options at root layout for it to work on native
+SplashScreen.setOptions({
+  duration: 250,
+  fade: true,
+})
+SplashScreen.preventAutoHideAsync()
 
 export function Layout() {
   const contents = (
     <TamaguiRootProvider>
       <SafeAreaProvider>
-        <Dialogs />
-        <Slot />
+        {isWeb ? (
+          <Slot />
+        ) : (
+          // We need specific Stack here to avoid (site) layout being used on native
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(app)" />
+          </Stack>
+        )}
       </SafeAreaProvider>
     </TamaguiRootProvider>
   )

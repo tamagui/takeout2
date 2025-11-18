@@ -5,12 +5,6 @@ import { KeyboardProvider } from 'react-native-keyboard-controller'
 import { View } from 'tamagui'
 import { useAuth } from '~/features/auth/client/authClient'
 
-SplashScreen.setOptions({
-  duration: 250,
-  fade: true,
-})
-SplashScreen.preventAutoHideAsync()
-
 export function PlatformSpecificRootProvider({ children }: { children: ReactNode }) {
   const { state } = useAuth()
 
@@ -18,6 +12,7 @@ export function PlatformSpecificRootProvider({ children }: { children: ReactNode
     if (state !== 'loading') {
       setTimeout(() => {
         SplashScreen.hide()
+        // NOTE: just wait for the transition animation to complete
       }, 500)
     }
   }, [state])

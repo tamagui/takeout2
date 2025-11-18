@@ -6,15 +6,19 @@ import { DeviceTabletIcon } from '~/interface/icons/phosphor/DeviceTabletIcon'
 import { FolderOpenIcon } from '~/interface/icons/phosphor/FolderOpenIcon'
 import { StackIcon } from '~/interface/icons/phosphor/StackIcon'
 import { TriangleIcon } from '~/interface/icons/phosphor/TriangleIcon'
+import { GradientGlitchText } from '~/interface/text/GradientGlitchText'
 
 export function IndexPage() {
   return (
     <YStack gap="$6" py="$8">
-      <YStack gap="$4" items="center">
-        <H1 size="$10" fontWeight="700">
-          Build Better Apps
+      <YStack items="center">
+        <H1 size="$12" fontWeight="800">
+          <GradientGlitchText>Build Stunning</GradientGlitchText>
         </H1>
-        <H2 size="$7" color="$color11" maxW={700} text="center">
+        <H1 size="$12" fontWeight="800" lineHeight="$8">
+          Better Apps
+        </H1>
+        <H2 size="$5" color="$color11" maxW={700} mt="$8" lineHeight="$4" text="center">
           A modern framework for building web and native applications with React. Fast,
           flexible, and built for the future.
         </H2>

@@ -31,6 +31,17 @@ const yamlEndMarker = `# ${markerEnd}`
 const jsStartMarker = `// ${markerStart}`
 const jsEndMarker = `// ${markerEnd}`
 
+function replaceYamlSection(
+  content: string,
+  lines: string,
+  options: { indent: string }
+): string {
+  return content.replace(
+    new RegExp(`${yamlStartMarker}(.|\n)*?${yamlEndMarker}`, 'gm'),
+    `${yamlStartMarker}\n${lines}\n${options.indent}${yamlEndMarker}`
+  )
+}
+
 function updateDeployYml() {
   const deployYmlPath = '.github/workflows/ci.yml'
   let deployYml = readFileSync(deployYmlPath, 'utf-8')
@@ -39,16 +50,12 @@ function updateDeployYml() {
     throw new Error(`Markers not found in ${deployYmlPath}`)
   }
 
-  const newlines = `          `
-
+  const indent = `          `
   const envSection = Object.keys(envVars)
-    .map((key) => `${newlines}${key}: \${{ secrets.${key} }}`)
+    .map((key) => `${indent}${key}: \${{ secrets.${key} }}`)
     .join('\n')
 
-  const newDeployYml = deployYml.replace(
-    new RegExp(`${yamlStartMarker}(.|\n)*?${yamlEndMarker}`, 'gm'),
-    `${yamlStartMarker}\n${envSection}\n${newlines}${yamlEndMarker}`
-  )
+  const newDeployYml = replaceYamlSection(deployYml, envSection, { indent })
 
   writeFileSync(deployYmlPath, newDeployYml, 'utf-8')
   console.info('✅ Updated Github workflow')
@@ -130,15 +137,12 @@ function updateDockerCompose() {
     return
   }
 
-  const indent = '      - '
+  const indent = '      '
   const envLines = Object.keys(envVars)
-    .map((key) => `${indent}${key}=\${${key}:-}`)
+    .map((key) => `${indent}- ${key}=\${${key}:-}`)
     .join('\n')
 
-  const newDockerCompose = dockerCompose.replace(
-    new RegExp(`${yamlStartMarker}(.|\n)*?${yamlEndMarker}`, 'gm'),
-    `${yamlStartMarker}\n${envLines}\n      ${yamlEndMarker}`
-  )
+  const newDockerCompose = replaceYamlSection(dockerCompose, envLines, { indent })
 
   writeFileSync(dockerComposePath, newDockerCompose, 'utf-8')
   console.info('✅ Updated docker-compose.yml')

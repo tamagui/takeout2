@@ -107,7 +107,7 @@ try {
       async fn() {
         await run('bun check:all', {
           prefix: 'checks',
-          timeout: time.ms.minutes(1),
+          timeout: time.ms.minutes(2),
           timing: 'bun check',
         })
       },

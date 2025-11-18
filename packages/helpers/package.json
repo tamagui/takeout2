@@ -15,7 +15,7 @@
   "scripts": {
     "build": "tamagui-build",
     "watch": "tamagui-build --watch",
-    "typecheck": "TSGO=1 tko run typecheck",
+    "typecheck": "tko run typecheck",
     "lint": "biome check src",
     "lint:fix": "biome check --write src",
     "clean": "tamagui-build clean",

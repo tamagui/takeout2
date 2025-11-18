@@ -18,7 +18,7 @@
   "scripts": {
     "lint": "biome check src",
     "lint:fix": "biome check --write src",
-    "typecheck": "TSGO=1 tko run typecheck"
+    "typecheck": "tko run typecheck"
   },
   "publishConfig": {
     "access": "public"

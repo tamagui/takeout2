@@ -1,9 +1,8 @@
 import { isNative } from '@take-out/helpers'
-import { Redirect, router, Slot, useFocusEffect, usePathname } from 'one'
+import { router, Slot, useFocusEffect, usePathname } from 'one'
 import { getNextOnboardingStep } from '~/features/onboarding/getNextOnboardingStep'
 import { SiteHeader } from '~/features/site/components/SiteHeader'
 import { useUser } from '~/features/user/useUser'
-import { GridBackground } from '~/interface/backgrounds/GridBackground'
 import { PageContainer } from '~/interface/layout/PageContainer'
 
 export function AuthAndOnboardingLayout() {
@@ -30,7 +29,6 @@ export function AuthAndOnboardingLayout() {
 
   return (
     <>
-      <GridBackground />
       <SiteHeader />
       <PageContainer>
         <Slot />

@@ -142,3 +142,75 @@ a {
   clip-path: polygon(0 45%, 100% 45%, 100% 100%, 0 100%);
   opacity: 0.8;
 }
+
+/* shape background effects */
+.shape-floating {
+  animation: floating 12s ease-in-out infinite;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.shape-inner {
+  background-color: transparent;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  will-change: auto;
+  transform: translateZ(0);
+  box-shadow: 0 8px 32px 0 rgba(147, 51, 234, 0.15);
+  border-radius: 9999px;
+}
+
+.shape-glow {
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.1),
+    transparent 70%
+  );
+  border-radius: 9999px;
+}
+
+.bg-gradient-purple {
+  background: radial-gradient(
+    circle at 40% 20%,
+    rgba(168, 85, 247, 0.05),
+    transparent 50%
+  );
+  filter: blur(40px);
+}
+
+.bg-gradient-pink {
+  background: radial-gradient(
+    circle at 80% 80%,
+    rgba(236, 72, 153, 0.05),
+    transparent 50%
+  );
+  filter: blur(40px);
+}
+
+.vignette-dark {
+  background: linear-gradient(
+    to top,
+    rgba(3, 3, 3, 0.9),
+    transparent 40%,
+    rgba(3, 3, 3, 0.7)
+  );
+}
+
+.vignette-light {
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.9),
+    transparent 40%,
+    rgba(255, 255, 255, 0.7)
+  );
+}
+
+@keyframes floating {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(15px);
+  }
+}

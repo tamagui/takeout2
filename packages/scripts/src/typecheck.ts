@@ -18,5 +18,5 @@ if (process.env.LAZY_TYPECHECK) {
 if (useTsgo) {
   await run(`bun tsgo --project ./tsconfig.json --noEmit --preserveWatchOutput ${args}`)
 } else {
-  await run(`tsc --project ./tsconfig.json --noEmit --preserveWatchOutput ${args}`)
+  await run(`bun x tsc --project ./tsconfig.json --noEmit --preserveWatchOutput ${args}`)
 }

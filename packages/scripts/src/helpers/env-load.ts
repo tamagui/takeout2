@@ -17,7 +17,7 @@ export async function loadEnv(
     if (options?.optional?.includes(key)) {
       continue
     }
-    if (!Environment[key as keyof typeof Environment]) {
+    if (typeof Environment[key as keyof typeof Environment] === 'undefined') {
       console.warn(`Missing key: ${key}`)
     }
   }

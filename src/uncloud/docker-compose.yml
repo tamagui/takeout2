@@ -47,7 +47,7 @@ services:
     depends_on:
       - migrate
     x-ports:
-      - zero-takeout.uncloud.run:4848/https
+      - zero.tamagui.dev:4848/https
     environment:
       - ZERO_ADMIN_PASSWORD=${ZERO_ADMIN_PASSWORD:-production-admin-change-me}
       - ZERO_LOG_LEVEL=${ZERO_LOG_LEVEL:-info}
@@ -109,7 +109,7 @@ services:
     depends_on:
       - zero
     x-ports:
-      - takeout.uncloud.run:8081/https
+      - takeout.tamagui.dev:8081/https
     environment:
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET:-production-secret-change-me}
       - BETTER_AUTH_URL=${BETTER_AUTH_URL:-http://localhost:8081}

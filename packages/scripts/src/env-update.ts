@@ -122,7 +122,10 @@ function updateDockerCompose() {
     return
   }
 
-  if (!dockerCompose.includes(yamlStartMarker) || !dockerCompose.includes(yamlEndMarker)) {
+  if (
+    !dockerCompose.includes(yamlStartMarker) ||
+    !dockerCompose.includes(yamlEndMarker)
+  ) {
     // no markers, skip
     return
   }

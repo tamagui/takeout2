@@ -228,52 +228,29 @@ function formatServiceStatus(state: ServiceState): string {
  */
 async function monitor() {
   const startTime = Date.now()
-  console.info('🔍 Monitoring uncloud deployment...\n')
-
-  // Initial status
-  const containers = await getContainerStatus()
-  const httpHealth = await checkHttpHealth()
-
-  console.info('📊 Initial Status:')
-
-  // Expected services (no pgdb for managed database deployment)
   const expectedServices = ['web', 'zero', 'minio']
 
-  if (verbose) {
-    console.info(
-      `  Found containers: ${Array.from(containers.keys()).join(', ') || 'none'}`
-    )
-  }
+  console.info('waiting for services to become healthy...')
 
+  // Quick initial check
+  const initialContainers = await getContainerStatus()
+  const initialHttpHealth = await checkHttpHealth()
+
+  // Initialize state tracking
   for (const serviceName of expectedServices) {
-    const container = containers.get(serviceName)
+    const container = initialContainers.get(serviceName)
     const state: ServiceState = {
       name: serviceName,
       status: container ? 'running' : 'stopped',
       healthy: false,
       containerId: container?.id,
     }
-
     if (container?.id) {
       state.healthy = await checkContainerHealth(container.id)
     }
-
-    if (verbose && container) {
-      console.info(`  Container ${serviceName}: ${container.names} (${container.state})`)
-    }
-
     detectStateChanges(state)
-    console.info(formatServiceStatus(state))
   }
 
-  if (httpHealth.healthy) {
-    console.info(`  🌐 HTTP: ${httpHealth.status} ${httpHealth.message || ''}`)
-  } else {
-    console.info(`  🌐 HTTP: ${httpHealth.message || 'Not responding'}`)
-  }
-  console.info('')
-
-  // Define expected services outside loop for reuse
   const monitoredServices = expectedServices
 
   // Monitoring loop
@@ -312,90 +289,87 @@ async function monitor() {
       }
     }
 
-    // Log state changes
+    // Log significant changes only
     if (hasChanges) {
-      console.info(`[${elapsedSeconds}s] State change detected:`)
-      for (const [name, state] of serviceStates) {
-        if (state.lastChange && currentTime - state.lastChange < CHECK_INTERVAL * 2) {
-          console.info(formatServiceStatus(state))
+      const changedServices = Array.from(serviceStates.values()).filter(
+        (s) => s.lastChange && currentTime - s.lastChange < CHECK_INTERVAL * 2
+      )
+      if (changedServices.length > 0) {
+        for (const state of changedServices) {
+          const icon = state.healthy ? '✅' : state.status === 'running' ? '⏳' : '❌'
+          const status = state.healthy ? 'healthy' : 'starting...'
+          console.info(`  ${icon} ${state.name}: ${status}`)
         }
       }
-      console.info('')
     }
 
-    // Verbose logging
-    if (verbose && currentTime - lastVerboseLog > VERBOSE_LOG_INTERVAL) {
-      lastVerboseLog = currentTime
-      console.info(`[${elapsedSeconds}s] Verbose status:`)
-
-      // Show unhealthy service logs
-      for (const [name, state] of serviceStates) {
-        if (!state.healthy && state.containerId) {
-          console.info(`\n  📋 Recent logs from ${name}:`)
-          const logs = await getContainerLogs(state.containerId, 5)
-          for (const line of logs) {
-            console.info(`    ${line}`)
-          }
-        }
-      }
-      console.info('')
-    }
-
-    // Periodic overview
-    if (currentTime - lastStatusOverview > STATUS_OVERVIEW_INTERVAL) {
-      lastStatusOverview = currentTime
-      console.info(`[${elapsedSeconds}s] Status overview:`)
-      for (const [name, state] of serviceStates) {
-        console.info(formatServiceStatus(state))
-      }
-      if (httpHealth.healthy) {
-        console.info(`  🌐 HTTP: ${httpHealth.status} ${httpHealth.message || ''}`)
-      } else {
-        console.info(`  🌐 HTTP: ${httpHealth.message || 'Not responding'}`)
-      }
-      console.info('')
-    }
-
-    // Check for success
-    if (allHealthy && !allHealthyDetected) {
-      allHealthyDetected = true
-      console.info(`✅ [${elapsedSeconds}s] All services are healthy and stable!`)
-
-      // Wait a bit to ensure stability
-      await new Promise((resolve) => setTimeout(resolve, 5000))
-
-      // Double-check health
-      const finalHealth = await checkHttpHealth()
-      if (finalHealth.healthy) {
+    // Periodic minimal progress update
+    if (!allHealthy && currentTime - lastProgressUpdate > PROGRESS_UPDATE_INTERVAL) {
+      lastProgressUpdate = currentTime
+      const unhealthyServices = Array.from(serviceStates.values())
+        .filter((s) => !s.healthy)
+        .map((s) => s.name)
+      if (unhealthyServices.length > 0) {
         console.info(
-          `\n🎉 Deployment successful! Application is accessible at http://${deployHost}:8081`
+          `  [${elapsedSeconds}s] waiting for: ${unhealthyServices.join(', ')}`
         )
-        process.exit(0)
-      } else {
-        console.warn(
-          '⚠️ HTTP check failed after services became healthy, continuing monitoring...'
-        )
-        allHealthyDetected = false
       }
+    }
+
+    // Check for success with stability verification
+    if (allHealthy) {
+      consecutiveHealthyChecks++
+
+      // Require 2 consecutive healthy checks for stability
+      if (consecutiveHealthyChecks >= 2 && !allHealthyDetected) {
+        allHealthyDetected = true
+        console.info(`✅ all services healthy`)
+        console.info(`🎉 deployment successful!`)
+
+        // Show access info
+        const webDomain = process.env.WEB_DOMAIN || deployHost
+        const zeroDomain = process.env.ZERO_DOMAIN
+        console.info()
+        console.info(`  web:  https://${webDomain}`)
+        if (zeroDomain) {
+          console.info(`  zero: https://${zeroDomain}`)
+        }
+
+        process.exit(0)
+      }
+    } else {
+      consecutiveHealthyChecks = 0
     }
   }
 
   // Timeout reached
-  console.error(`\n⏱️ Timeout reached after ${TIMEOUT / 1000} seconds`)
-  console.error('\n❌ Final status:')
+  const unhealthyServices = Array.from(serviceStates.values()).filter((s) => !s.healthy)
 
-  for (const [name, state] of serviceStates) {
-    console.error(formatServiceStatus(state))
+  console.error(
+    `\n❌ deployment health check timed out after ${TIMEOUT / 1000 / 60} minutes`
+  )
+  console.error(
+    `\nunhealthy services: ${unhealthyServices.map((s) => s.name).join(', ')}`
+  )
+  console.error()
 
-    // Show logs for unhealthy services
-    if (!state.healthy && state.containerId) {
-      console.error(`\n  Recent logs from ${name}:`)
-      const logs = await getContainerLogs(state.containerId, 10)
-      for (const line of logs) {
-        console.error(`    ${line}`)
+  // Show logs for unhealthy services only
+  for (const state of unhealthyServices) {
+    if (state.containerId) {
+      console.error(`📋 ${state.name} logs:`)
+      const logs = await getContainerLogs(state.containerId, 15)
+      for (const line of logs.slice(-10)) {
+        // only last 10 lines
+        console.error(`   ${line}`)
       }
+      console.error()
     }
   }
+
+  console.error(`💡 troubleshooting:`)
+  console.error(`   ssh ${deployUser}@${deployHost}`)
+  console.error(`   docker ps`)
+  console.error(`   docker logs <container-name>`)
 
   process.exit(1)
 }

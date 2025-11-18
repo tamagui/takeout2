@@ -680,6 +680,90 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   console.info()
   showSuccess(`✓ Saved configuration to ${envFile}`)
 
+  // Custom domain setup (optional)
+  console.info()
+  showInfo('Custom Domain Setup (Optional)')
+  console.info(pc.gray('By default, your app will use:'))
+  console.info(pc.gray(`  ${deployHost} (cluster subdomain from Uncloud DNS)`))
+  console.info()
+  console.info(
+    pc.gray('You can optionally configure custom domains (e.g., app.yourdomain.com) by:')
+  )
+  console.info(pc.gray('  1. Adding CNAME records in your DNS provider'))
+  console.info(pc.gray(`  2. Pointing to your cluster subdomain`))
+  console.info(pc.gray('  3. Setting WEB_DOMAIN and ZERO_DOMAIN in .env.production'))
+  console.info()
+
+  const configureCustomDomain = await confirmContinue(
+    'Configure custom domain now?',
+    false
+  )
+
+  if (configureCustomDomain) {
+    console.info()
+    console.info(pc.gray('First, run: uc dns reserve'))
+    console.info(
+      pc.gray('This will give you a cluster subdomain like: abc123.cluster.uncloud.run')
+    )
+    console.info()
+
+    const clusterSubdomain = await promptText(
+      'Enter your cluster subdomain from uc dns show:',
+      '',
+      ''
+    )
+
+    if (clusterSubdomain) {
+      console.info()
+      showInfo('DNS Setup Instructions:')
+      console.info(
+        pc.gray('Add these CNAME records in your DNS provider (e.g., Cloudflare):')
+      )
+      console.info()
+
+      const webDomain = await promptText(
+        'Custom domain for web app (e.g., app.yourdomain.com):',
+        '',
+        ''
+      )
+
+      const zeroDomain = await promptText(
+        'Custom domain for zero sync (e.g., zero.yourdomain.com):',
+        '',
+        ''
+      )
+
+      if (webDomain) {
+        console.info()
+        console.info(pc.cyan(`  CNAME: ${webDomain} → ${clusterSubdomain}`))
+        if (zeroDomain) {
+          console.info(pc.cyan(`  CNAME: ${zeroDomain} → ${clusterSubdomain}`))
+        }
+        console.info()
+        console.info(pc.yellow('⚠️  Set DNS to "DNS only" mode (gray cloud), not proxied'))
+        console.info()
+
+        updateEnvVariable(cwd, 'WEB_DOMAIN', webDomain, envFile)
+        updateEnvVariable(cwd, 'BETTER_AUTH_URL', `https://${webDomain}`, envFile)
+        updateEnvVariable(cwd, 'ONE_SERVER_URL', `https://${webDomain}`, envFile)
+
+        if (zeroDomain) {
+          updateEnvVariable(cwd, 'ZERO_DOMAIN', zeroDomain, envFile)
+          updateEnvVariable(
+            cwd,
+            'VITE_PUBLIC_ZERO_SERVER',
+            `https://${zeroDomain}`,
+            envFile
+          )
+        }
+
+        showSuccess('✓ Custom domains configured')
+        console.info()
+        showInfo(pc.gray('DNS propagation typically takes 5-30 minutes'))
+      }
+    }
+  }
+
   // update package.json env section to remove sst-specific vars
   console.info()
   showInfo('Updating package.json env section for Uncloud deployment...')

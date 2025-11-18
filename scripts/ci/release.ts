@@ -4,18 +4,7 @@
  * @description Run full CI/CD pipeline with builds, tests, and deployment
  */
 
-import {
-  CreateRepositoryCommand,
-  DescribeImagesCommand,
-  ECRClient,
-  GetAuthorizationTokenCommand,
-} from '@aws-sdk/client-ecr'
-import { sleep, slugify, time } from '@take-out/helpers'
-import { existsSync } from 'node:fs'
-import { mkdir, writeFile } from 'node:fs/promises'
-import { homedir } from 'node:os'
-import { join } from 'node:path'
-import { parseArgs } from 'node:util'
+import { sleep, time } from '@take-out/helpers'
 import { checkPort } from '@take-out/scripts/helpers/check-port'
 import { getTestEnv } from '@take-out/scripts/helpers/get-test-env'
 import { handleProcessExit } from '@take-out/scripts/helpers/handleProcessExit'
@@ -27,8 +16,13 @@ import {
   waitForRun,
 } from '@take-out/scripts/helpers/run'
 import { waitForPort } from '@take-out/scripts/helpers/wait-for-port'
-import pc from 'picocolors'
-import * as uncloudHelpers from './helpers/uncloud'
+import { existsSync } from 'node:fs'
+import { mkdir, writeFile } from 'node:fs/promises'
+import { homedir } from 'node:os'
+import { join } from 'node:path'
+import { parseArgs } from 'node:util'
+import * as sstDeploy from '../sst/helpers/deploy'
+import * as uncloudDeploy from '../uncloud/helpers/deploy'
 
 const { exit } = handleProcessExit({
   onExit: async () => {
@@ -103,13 +97,15 @@ const failures: Array<{ task: string; error: any }> = []
 const SEPARATOR = '\n' + '='.repeat(80)
 
 try {
+  // clear port 8081 before starting
+  await ensurePort8081Clear()
+
   await runParallel([
     {
       name: 'checks',
       condition: () => !values['skip-checks'],
       async fn() {
-        await ensurePort8081Clear()
-        await run('bun check', {
+        await run('bun check:all', {
           prefix: 'checks',
           timeout: time.ms.minutes(1),
           timing: 'bun check',
@@ -161,10 +157,7 @@ try {
               timing: 'web:build',
             })
           }
-          await Promise.all([
-            printTiming('production build tests', () => runIntegrationTests()),
-            printTiming('prebuild docker image', () => prebuildDockerImage()),
-          ])
+          await printTiming('production build tests', () => runIntegrationTests())
         } catch (error) {
           failures.push({ task: 'build', error })
           throw error
@@ -173,36 +166,8 @@ try {
     },
   ])
 
-  // if we skipped build, try to use the last saved Docker image
-  if (values['skip-build'] && !values['skip-deploy']) {
-    const lastImage = await readLastDockerImage()
-    if (lastImage) {
-      console.info(`\nUsing last Docker image from previous build: ${lastImage}`)
-      process.env.WEB_APP_DOCKER_IMAGE = lastImage
-    } else {
-      console.warn(
-        `\n⚠️ No saved Docker image found. SST will build a new image during deployment.`
-      )
-    }
-  }
-
   if (!values['skip-deploy']) {
     await printTiming('deploy to production', () => deployProduction())
-  }
-
-  // cleanup docker image after successful deployment
-  if (process.env.DOCKER_IMAGE_TO_CLEAN) {
-    try {
-      console.info('\nCleaning up local Docker image...')
-      await run(`docker rmi ${process.env.DOCKER_IMAGE_TO_CLEAN}`, {
-        silent: true,
-        timeout: time.ms.minutes(1),
-      })
-      console.info('Docker image cleaned up successfully')
-    } catch {
-      // ignore cleanup errors - not critical
-      console.info('Could not clean up Docker image (may already be removed)')
-    }
   }
 
   console.info('\n✅ CI completed successfully!')
@@ -399,36 +364,39 @@ async function detectDeploymentPlatform(): Promise<'sst' | 'uncloud'> {
 }
 
 async function deploySST() {
+  // handle Docker image for ECR
+  if (values['skip-build']) {
+    const lastImage = await sstDeploy.loadLastDockerImage()
+    if (lastImage) {
+      console.info(`\nUsing last Docker image from previous build: ${lastImage}`)
+      process.env.WEB_APP_DOCKER_IMAGE = lastImage
+    } else {
+      console.warn(
+        `\n⚠️ No saved Docker image found. SST will build a new image during deployment.`
+      )
+    }
+  } else {
+    await printTiming('build docker image for ECR', () =>
+      sstDeploy.buildAndPushDockerImage()
+    )
+  }
+
+  // deploy to SST
   try {
-    await run('bun sst unlock --stage production', {
-      prefix: 'deploy',
-      timeout: time.ms.minutes(2),
-      timing: 'sst unlock',
-    })
+    await sstDeploy.deploy()
   } catch (error) {
     failures.push({ task: 'deploy', error })
     throw error
   }
 
-  try {
-    await run('bun tko sst deploy production', {
-      prefix: 'deploy',
-      timeout: time.ms.minutes(10),
-      timing: 'sst deploy',
-    })
-  } catch (error) {
-    failures.push({ task: 'deploy', error })
-    throw error
+  // cleanup
+  if (process.env.DOCKER_IMAGE_TO_CLEAN) {
+    await sstDeploy.cleanupDockerImage(process.env.DOCKER_IMAGE_TO_CLEAN)
   }
 
-  // Only run health check if deployment succeeded
-  console.info('\nChecking deployment health...')
+  // health check
   try {
-    await run('bun ./scripts/ci/check-deployment.ts', {
-      prefix: 'health',
-      timeout: time.ms.minutes(10),
-      timing: 'deployment health check',
-    })
+    await sstDeploy.runHealthCheck()
   } catch (error) {
     failures.push({ task: 'health check', error })
     throw error
@@ -440,42 +408,42 @@ async function deployUncloud() {
   console.info()
 
   // check if uncloud is properly configured
-  const isConfigured = await uncloudHelpers.checkUncloudConfigured()
+  const isConfigured = await uncloudDeploy.checkUncloudConfigured()
   if (!isConfigured) {
-    uncloudHelpers.showMissingConfigWarning()
+    uncloudDeploy.showMissingConfigWarning()
     return
   }
 
   // install uncloud cli if not present
-  await uncloudHelpers.installUncloudCLI()
+  await uncloudDeploy.installUncloudCLI()
 
   // setup ssh key for deployment
-  await uncloudHelpers.setupSSHKey()
+  await uncloudDeploy.setupSSHKey()
 
   // run uncloud deployment
   try {
-    await uncloudHelpers.runDeployment()
+    await uncloudDeploy.runDeployment()
   } catch (error) {
     failures.push({ task: 'deploy', error })
     throw error
   }
 
   // show status
-  await uncloudHelpers.showDeploymentStatus()
+  await uncloudDeploy.showDeploymentStatus()
 
   // run health check
   try {
-    await uncloudHelpers.runHealthCheck()
+    await uncloudDeploy.runHealthCheck()
   } catch (error) {
     failures.push({ task: 'health check', error })
     throw error
   }
 
   // tail logs
-  await uncloudHelpers.tailLogs()
+  await uncloudDeploy.tailLogs()
 
   // show deployment info
-  uncloudHelpers.showDeploymentInfo()
+  uncloudDeploy.showDeploymentInfo()
 }
 
 // TODO: re-enable once backup script is available
@@ -556,152 +524,6 @@ aws_secret_access_key=${process.env.AWS_SECRET_ACCESS_KEY}`
 }
 
 // ----------- helpers -----------
-
-async function prebuildDockerImage() {
-  if (values['skip-deploy']) {
-    return
-  }
-
-  console.info('\nBuilding Docker image for production...')
-
-  const accountId = await getAwsAccountId()
-
-  if (!accountId) {
-    console.warn(
-      `⚠️ No accountId - maybe running locally, falling back to sst building image`
-    )
-    return
-  }
-
-  const ecrClient = new ECRClient({
-    region: 'us-west-1',
-    credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-    },
-  })
-
-  const repositoryName = 'start-dot-chat/webapp'
-  const ecrRegistry = `${accountId}.dkr.ecr.us-west-1.amazonaws.com`
-  const imageUri = `${ecrRegistry}/${repositoryName}`
-
-  try {
-    // create ecr repository if it doesn't exist
-    await ecrClient.send(
-      new CreateRepositoryCommand({
-        repositoryName,
-      })
-    )
-    console.info(`Created ECR repository: ${repositoryName}`)
-  } catch (error: any) {
-    if (!error.name?.includes('RepositoryAlreadyExistsException')) {
-      throw error
-    }
-    console.info(`ECR repository already exists: ${repositoryName}`)
-  }
-
-  // get ecr login token
-  const authTokenResponse = await ecrClient.send(new GetAuthorizationTokenCommand({}))
-  const authData = authTokenResponse.authorizationData?.[0]
-  if (!authData?.authorizationToken) {
-    throw new Error('Failed to get ECR authorization token')
-  }
-
-  // decode the token (it's base64 encoded username:password)
-  const decodedToken = Buffer.from(authData.authorizationToken, 'base64').toString(
-    'utf-8'
-  )
-  const [username, password] = decodedToken.split(':')
-
-  // build the docker image
-  const gitSha = await run('git rev-parse HEAD', {
-    captureOutput: true,
-    silent: true,
-    timeout: time.ms.seconds(5),
-  })
-  const shortSha = gitSha.stdout.trim().substring(0, 7)
-  const timestamp = slugify(new Date().toISOString())
-  const imageTag = `${shortSha}-${timestamp}`
-  const fullImageUri = `${imageUri}:${imageTag}`
-
-  console.info(`Building Docker image: ${fullImageUri}...`)
-  await run(`bun tko web build-docker -t ${fullImageUri} --load .`, {
-    prefix: 'docker-build',
-    timeout: time.ms.minutes(10),
-  })
-
-  console.info('Logging into ECR...')
-  await run(
-    `echo "${password}" | docker login --username ${username} --password-stdin ${ecrRegistry}`,
-    { timeout: time.ms.minutes(1), silent: true }
-  )
-
-  console.info(`Pushing image to ECR...`)
-  await run(`docker push ${fullImageUri}`, {
-    prefix: 'docker-push',
-    timeout: time.ms.minutes(5),
-  })
-
-  // get the image digest
-  const describeResponse = await ecrClient.send(
-    new DescribeImagesCommand({
-      repositoryName,
-      imageIds: [{ imageTag }],
-    })
-  )
-
-  const imageDigest = describeResponse.imageDetails?.[0]?.imageDigest
-  if (!imageDigest) {
-    throw new Error('Failed to get image digest')
-  }
-
-  const imageWithDigest = `${imageUri}@${imageDigest}`
-  console.info(`Docker image pushed successfully: ${imageWithDigest}`)
-
-  // set the environment variable for sst deploy
-  process.env.WEB_APP_DOCKER_IMAGE = imageWithDigest
-
-  // save the image URI for future use
-  await saveLastDockerImage(imageWithDigest)
-
-  // store image tag for cleanup later
-  process.env.DOCKER_IMAGE_TO_CLEAN = fullImageUri
-}
-
-async function getAwsAccountId(): Promise<string> {
-  const { stdout } = await run(
-    'aws sts get-caller-identity --query Account --output text',
-    {
-      captureOutput: true,
-      timeout: time.ms.minutes(1),
-    }
-  )
-  return stdout.trim()
-}
-
-async function saveLastDockerImage(imageUri: string): Promise<void> {
-  const distDir = join(process.cwd(), 'dist')
-  if (!existsSync(distDir)) {
-    await mkdir(distDir, { recursive: true })
-  }
-  const filePath = join(distDir, '.last-docker-image')
-  await writeFile(filePath, imageUri, 'utf-8')
-  console.info(`Saved Docker image URI to ${filePath}`)
-}
-
-async function readLastDockerImage(): Promise<string | null> {
-  const filePath = join(process.cwd(), 'dist', '.last-docker-image')
-  if (!existsSync(filePath)) {
-    return null
-  }
-  try {
-    const content = await Bun.file(filePath).text()
-    return content.trim()
-  } catch (error) {
-    console.warn(`Failed to read last Docker image: ${error}`)
-    return null
-  }
-}
 
 async function ensurePort8081Clear() {
   const isPortTaken = await checkPort(8081)

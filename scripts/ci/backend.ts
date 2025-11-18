@@ -5,9 +5,9 @@
  */
 
 import { run } from '@take-out/scripts/helpers/run'
-import { getTestWebEnv } from './helpers/getTestEnv'
+import { getTestEnv } from '@take-out/scripts/helpers/get-test-env'
 
 await run(`bun backend:clean`)
 await run(`bun backend --no-color`, {
-  env: await getTestWebEnv(),
+  env: await getTestEnv(),
 })

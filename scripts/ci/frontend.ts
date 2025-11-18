@@ -5,9 +5,9 @@
  */
 
 import { run } from '@take-out/scripts/helpers/run'
-import { getTestWebEnv } from './helpers/getTestEnv'
+import { getTestEnv } from '@take-out/scripts/helpers/get-test-env'
 
 await run(`bun run web serve`, {
   prefix: 'web-serve',
-  env: await getTestWebEnv(),
+  env: await getTestEnv(),
 })

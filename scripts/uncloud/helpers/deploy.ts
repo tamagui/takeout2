@@ -33,7 +33,19 @@ export async function setupSSHKey() {
     return
   }
 
-  console.info('🔑 setting up ssh key...')
+  const sshKeyValue = process.env.DEPLOY_SSH_KEY
+
+  // check if it's a path to an existing file (local usage) or key content (CI usage)
+  const isFilePath = existsSync(sshKeyValue)
+
+  if (isFilePath) {
+    // local usage - DEPLOY_SSH_KEY is already a valid file path
+    console.info(pc.gray(`  using ssh key from: ${sshKeyValue}`))
+    return
+  }
+
+  // CI usage - DEPLOY_SSH_KEY contains the actual key content
+  console.info('🔑 setting up ssh key from environment...')
   const sshDir = join(homedir(), '.ssh')
   const keyPath = join(sshDir, 'uncloud_deploy')
 
@@ -42,8 +54,8 @@ export async function setupSSHKey() {
     await mkdir(sshDir, { recursive: true })
   }
 
-  // write ssh key
-  await writeFile(keyPath, process.env.DEPLOY_SSH_KEY, { mode: 0o600 })
+  // write ssh key content to file
+  await writeFile(keyPath, sshKeyValue, { mode: 0o600 })
 
   // add host to known_hosts
   if (process.env.DEPLOY_HOST) {
@@ -68,7 +80,7 @@ export async function setupSSHKey() {
 export async function runDeployment() {
   await run('bun tko uncloud deploy-prod', {
     prefix: 'deploy',
-    timeout: time.ms.minutes(10),
+    timeout: time.ms.minutes(15),
     timing: 'uncloud deploy',
   })
 }

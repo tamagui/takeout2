@@ -647,6 +647,36 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   updateEnvVariable(cwd, 'DEPLOY_HOST', deployHost, envFile)
   updateEnvVariable(cwd, 'DEPLOY_USER', 'root', envFile)
 
+  // SSH key setup
+  console.info()
+  showInfo('SSH Key Configuration')
+  console.info(pc.gray('Deployment requires SSH access to your server'))
+  console.info()
+
+  const sshKeyPath = await promptText(
+    'Path to SSH private key:',
+    `${process.env.HOME}/.ssh/id_rsa`,
+    `${process.env.HOME}/.ssh/id_rsa`
+  )
+
+  if (sshKeyPath) {
+    // verify the key exists
+    if (existsSync(sshKeyPath)) {
+      updateEnvVariable(cwd, 'DEPLOY_SSH_KEY', sshKeyPath, envFile)
+      showSuccess(`✓ SSH key configured: ${sshKeyPath}`)
+      console.info()
+      showInfo(
+        pc.gray(
+          "For CI/CD, you'll need to add the SSH private key content as a GitHub secret"
+        )
+      )
+      showInfo(pc.gray('The sync script will help with this'))
+    } else {
+      showWarning(`SSH key not found at: ${sshKeyPath}`)
+      showInfo('You can add DEPLOY_SSH_KEY to .env.production manually later')
+    }
+  }
+
   console.info()
   showSuccess(`✓ Saved configuration to ${envFile}`)
 

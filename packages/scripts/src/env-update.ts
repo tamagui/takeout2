@@ -137,7 +137,7 @@ function updateDockerCompose() {
 
   const newDockerCompose = dockerCompose.replace(
     new RegExp(`${yamlStartMarker}(.|\n)*?${yamlEndMarker}`, 'gm'),
-    `${yamlStartMarker}\n${envLines}\n${indent}${yamlEndMarker}`
+    `${yamlStartMarker}\n${envLines}\n      ${yamlEndMarker}`
   )
 
   writeFileSync(dockerComposePath, newDockerCompose, 'utf-8')

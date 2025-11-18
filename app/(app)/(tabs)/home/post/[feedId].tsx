@@ -1,20 +1,18 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
-import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
 import { useParams } from 'one'
 import { memo, useState } from 'react'
 import { ScrollView, SizableText, XStack, YStack, isWeb } from 'tamagui'
+import { PostActionsPopover } from '~/features/feed/PostActionsPopover'
+import { usePostById } from '~/features/feed/usePostById'
+import { useUser } from '~/features/user/useUser'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
 import { Avatar } from '~/interface/avatars/Avatar'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
-import { GalleryWrapper, GalleryImage } from '~/interface/gallery/Gallery'
+import { GalleryImage, GalleryWrapper } from '~/interface/gallery/Gallery'
 import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
-import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
+import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
 import { Image } from '~/interface/image/Image'
-import { showPostActionSheet } from '~/interface/sheet/postActionSheetHelper'
 import { BodyText } from '~/interface/text/Body'
-import { useUser } from '~/features/user/useUser'
-import { usePostById } from '~/features/feed/usePostById'
 
 export const FeedDetailPage = memo(() => {
   const { feedId } = useParams()
@@ -62,18 +60,7 @@ export const FeedDetailPage = memo(() => {
                 </SizableText>
               </XStack>
             </XStack>
-            <ButtonSimple
-              size="small"
-              circular
-              glass
-              onPress={() =>
-                showPostActionSheet(post, isOwnProfile, {
-                  shouldNavigateBackOnDelete: true,
-                })
-              }
-            >
-              <DotsThreeIcon size={16} color="$color12" />
-            </ButtonSimple>
+            <PostActionsPopover post={post} isOwnPost={isOwnProfile} />
           </XStack>
         </XStack>
         {isWeb ? (

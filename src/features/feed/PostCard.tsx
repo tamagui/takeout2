@@ -1,4 +1,4 @@
-import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
+import { useToastController } from '@tamagui/toast'
 import { router } from 'one'
 import { memo, useState } from 'react'
 import { Accordion, isWeb, SizableText, View, XStack, YStack } from 'tamagui'
@@ -8,13 +8,13 @@ import { useAuth } from '~/features/auth/client/authClient'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
-import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
+import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
 import { Image } from '~/interface/image/Image'
 import { LinearGradientSeparator } from '~/interface/separators/LinearGradientSeparator'
-import { showPostActionSheet } from '~/interface/sheet/postActionSheetHelper'
 import { BodyText } from '~/interface/text/Body'
 import { useQuery } from '~/zero/client'
 import { AvatarWithMenu } from './AvatarWithMenu'
+import { PostActionsPopover } from './PostActionsPopover'
 
 interface PostCardProps {
   post: Post
@@ -53,16 +53,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
                     {formatDistanceToNow(post.createdAt)}
                   </SizableText>
                 </XStack>
-                <ButtonSimple
-                  size="small"
-                  circular
-                  glass
-                  onPress={() => {
-                    showPostActionSheet(post, isOwnProfile)
-                  }}
-                >
-                  <DotsThreeIcon size={16} color="$color12" />
-                </ButtonSimple>
+                <PostActionsPopover post={post} isOwnPost={isOwnProfile} />
               </XStack>
             </YStack>
           </XStack>

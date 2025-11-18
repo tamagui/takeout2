@@ -125,6 +125,7 @@
     "expo-image-picker": "~17.0.8",
     "expo-linear-gradient": "~15.0.7",
     "expo-linking": "^8.0.8",
+    "expo-media-library": "~18.2.0",
     "expo-notifications": "~0.32.12",
     "expo-plugin-ios-static-libraries": "^1.0.4",
     "expo-secure-store": "~15.0.7",

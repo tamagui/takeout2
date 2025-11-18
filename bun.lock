@@ -124,7 +124,7 @@
         "react-native-pager-view": "^6.9.1",
         "sst": "3.17.10",
         "subset-font": "^2.4.0",
-        "typescript": "^5.8.3",
+        "typescript": "^5.9.3",
         "vite": "^7.1.12",
         "vitest": "^4.0.3",
       },

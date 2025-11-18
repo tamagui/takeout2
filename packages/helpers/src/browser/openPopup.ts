@@ -5,7 +5,7 @@ export function openCenteredPopup(
   title: string,
   width: number,
   height: number
-) {
+): Window | null {
   // availWidth/availHeight accounts for taskbars, docks, and other UI elements
   const screenWidth = screen.availWidth || screen.width
   const screenHeight = screen.availHeight || screen.height

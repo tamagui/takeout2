@@ -7,7 +7,7 @@
  */
 const protocols = new Set(['http:', 'https:', 'mailto:', 'tel:', 'sms:'])
 
-export function urlSanitize(url: string) {
+export function urlSanitize(url: string): string {
   try {
     const parsedUrl = new URL(url)
     if (!protocols.has(parsedUrl.protocol)) {

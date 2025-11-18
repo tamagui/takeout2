@@ -1,6 +1,6 @@
 let pluralRules = new Intl.PluralRules('en-US')
 
-export function pluralize(count: number, singular: string, plural: string) {
+export function pluralize(count: number, singular: string, plural: string): string {
   const grammaticalNumber = pluralRules.select(count)
   switch (grammaticalNumber) {
     case 'one':
@@ -14,7 +14,7 @@ export function pluralize(count: number, singular: string, plural: string) {
   }
 }
 
-export function setPluralizeLocale(locale: Intl.LocalesArgument) {
+export function setPluralizeLocale(locale: Intl.LocalesArgument): void {
   pluralRules = new Intl.PluralRules(locale)
 }
 

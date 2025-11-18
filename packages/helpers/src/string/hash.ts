@@ -1,6 +1,6 @@
 // simple reversible encoding - alphanumeric only
 
-export function hashString(str: string) {
+export function hashString(str: string): string {
   // convert to hex (0-9a-f)
   return str
     .split('')
@@ -8,7 +8,7 @@ export function hashString(str: string) {
     .join('')
 }
 
-export function unhashString(encoded: string) {
+export function unhashString(encoded: string): string {
   // convert from hex back to string
   return (
     encoded

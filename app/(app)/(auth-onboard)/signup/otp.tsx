@@ -14,14 +14,13 @@ import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 
 export const OtpPage = () => {
+  const { goToNextStep } = useOnboarding()
   const timer = useTimer()
   const params = useParams<{ method?: 'phone' | 'email'; value?: string }>()
   const [otpCode, setOtpCode] = useState<string>('')
   const [isError, setIsError] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
   const [otpKey, setOtpKey] = useState(0)
-
-  useOnboarding()
 
   const isPhone = params.method === 'phone'
 
@@ -76,10 +75,10 @@ export const OtpPage = () => {
         setOtpKey(Math.random())
         setLoading(false)
         return
-      } else {
-        timer.pause()
-        // useOnboarding hook will handle navigation
       }
+
+      timer.pause()
+      await goToNextStep()
     } catch (err) {
       console.error(err)
     } finally {

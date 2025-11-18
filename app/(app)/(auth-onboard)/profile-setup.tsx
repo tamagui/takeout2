@@ -21,6 +21,7 @@ function checkUsernameValid(username: string) {
 }
 
 export const ProfileSetupPage = () => {
+  const { goToNextStep } = useOnboarding()
   const { from } = useParams()
   const { user, update } = useUser()
   const [username, setUsername] = useState<string>('')
@@ -72,8 +73,6 @@ export const ProfileSetupPage = () => {
     }, delay)
     return () => clearTimeout(timer)
   }, [fromOtp])
-
-  const { goToNextStep } = useOnboarding()
 
   const handleContinue = async () => {
     if (!user || !canContinue) return

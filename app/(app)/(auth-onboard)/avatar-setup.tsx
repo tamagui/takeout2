@@ -8,7 +8,7 @@ import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { showError } from '~/interface/dialogs/actions'
 import { CameraIcon } from '~/interface/icons/phosphor/CameraIcon'
-import { CircleNotchIcon } from '~/interface/icons/phosphor/CircleNotchIcon'
+import { CircleDashedIcon } from '~/interface/icons/phosphor/CircleDashedIcon'
 import { ImageIcon } from '~/interface/icons/phosphor/ImageIcon'
 import { PencilSimpleIcon } from '~/interface/icons/phosphor/PencilSimpleIcon'
 import { Image } from '~/interface/image/Image'
@@ -23,6 +23,7 @@ const IMAGE_SIZE = isWeb ? 100 : 220
 const PENCIL_SIZE = isWeb ? 28 : 52
 
 export const AvatarSetupPage = () => {
+  const { goToNextStep } = useOnboarding()
   const [localImageUri, setLocalImageUri] = useState<string | null>(null)
   const { user, update } = useUser()
 
@@ -118,8 +119,6 @@ export const AvatarSetupPage = () => {
     },
   ]
 
-  const { goToNextStep } = useOnboarding()
-
   return (
     <>
       {isWeb && (
@@ -187,7 +186,7 @@ export const AvatarSetupPage = () => {
                 {localImageUri ? (
                   <Image src={localImageUri} width={IMAGE_SIZE} height={IMAGE_SIZE} />
                 ) : (
-                  <CircleNotchIcon size={IMAGE_SIZE} color="$color5" />
+                  <CircleDashedIcon size={IMAGE_SIZE} color="$color5" />
                 )}
                 {isUploading && (
                   <YStack

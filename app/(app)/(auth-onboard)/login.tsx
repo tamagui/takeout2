@@ -14,13 +14,14 @@ import { H2 } from '~/interface/text/Headings'
 import { showToast } from '~/interface/toast/helpers'
 
 export const LoginPage = () => {
-  useOnboarding()
+  const { goToNextStep } = useOnboarding()
 
   const handleSignInAdmin = async () => {
     dialogEmit({ type: 'admin-password' })
+    await goToNextStep()
   }
 
-  const handleSocialLogin = async (provider: 'google' | 'apple') => {
+  const handleSocialLogin = async (provider: 'google' | 'apple' | 'facebook') => {
     showToast(`${provider} login coming soon!`, { type: 'info' })
   }
 
@@ -176,7 +177,7 @@ export const LoginPage = () => {
               <ButtonSimple
                 glass
                 size="large"
-                onPress={() => handleSocialLogin('apple')}
+                onPress={() => handleSocialLogin('facebook')}
                 pressStyle={{
                   scale: 0.97,
                   bg: '$color2',

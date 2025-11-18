@@ -8,10 +8,9 @@
 import { $ } from 'bun'
 import { readFileSync } from 'node:fs'
 
-const TIMEOUT = 5 * 60 * 1000 // 5 minutes
-const CHECK_INTERVAL = 5000 // 5 seconds
-const VERBOSE_LOG_INTERVAL = 30000 // 30 seconds for verbose logs
-const STATUS_OVERVIEW_INTERVAL = 60000 // 1 minute for status overview
+const TIMEOUT = 3 * 60 * 1000 // 3 minutes
+const CHECK_INTERVAL = 3000 // 3 seconds
+const PROGRESS_UPDATE_INTERVAL = 15000 // 15 seconds for progress updates
 
 // State tracking
 interface ServiceState {
@@ -23,9 +22,9 @@ interface ServiceState {
 }
 
 const serviceStates = new Map<string, ServiceState>()
-let lastVerboseLog = Date.now()
-let lastStatusOverview = Date.now()
+let lastProgressUpdate = Date.now()
 let allHealthyDetected = false
+let consecutiveHealthyChecks = 0
 
 // Parse arguments
 const args = process.argv.slice(2)

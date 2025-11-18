@@ -202,10 +202,10 @@
     "BETTER_AUTH_SECRET": true,
     "BETTER_AUTH_URL": true,
     "CLOUDFLARE_API_TOKEN": true,
-    "CLOUDFLARE_R2_ACCESS_KEY": true,
-    "CLOUDFLARE_R2_ENDPOINT": true,
-    "CLOUDFLARE_R2_PUBLIC_URL": true,
-    "CLOUDFLARE_R2_SECRET_KEY": true,
+    "CLOUDFLARE_R2_ACCESS_KEY": "minio",
+    "CLOUDFLARE_R2_ENDPOINT": "http://minio:9000/chat",
+    "CLOUDFLARE_R2_PUBLIC_URL": "http://localhost:9200/chat",
+    "CLOUDFLARE_R2_SECRET_KEY": "minio_password",
     "DEPLOYMENT_PLATFORM": "uncloud",
     "DEPLOYMENT_ARCH": "linux/amd64",
     "DEPLOY_HOST": true,
@@ -215,7 +215,10 @@
     "ONE_SERVER_URL": true,
     "POSTMARK_SERVER_TOKEN": true,
     "VITE_POSTHOG_API_KEY": "",
-    "VITE_POSTHOG_HOST": ""
+    "VITE_POSTHOG_HOST": "",
+    "VITE_PUBLIC_ZERO_SERVER": "",
+    "WEB_DOMAIN": "",
+    "ZERO_DOMAIN": ""
   },
   "publishConfig": {
     "access": "public"

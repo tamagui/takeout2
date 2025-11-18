@@ -111,11 +111,41 @@ function updateEnvServerTs() {
 //   console.info('✅ Updated Dockerfile')
 // }
 
+function updateDockerCompose() {
+  const dockerComposePath = 'src/uncloud/docker-compose.yml'
+
+  let dockerCompose = ''
+  try {
+    dockerCompose = readFileSync(dockerComposePath, 'utf-8')
+  } catch (_error) {
+    // file doesn't exist, skip
+    return
+  }
+
+  if (!dockerCompose.includes(yamlStartMarker) || !dockerCompose.includes(yamlEndMarker)) {
+    // no markers, skip
+    return
+  }
+
+  const indent = '      - '
+  const envLines = Object.keys(envVars)
+    .map((key) => `${indent}${key}=\${${key}:-}`)
+    .join('\n')
+
+  const newDockerCompose = dockerCompose.replace(
+    new RegExp(`${yamlStartMarker}(.|\n)*?${yamlEndMarker}`, 'gm'),
+    `${yamlStartMarker}\n${envLines}\n${indent}${yamlEndMarker}`
+  )
+
+  writeFileSync(dockerComposePath, newDockerCompose, 'utf-8')
+  console.info('✅ Updated docker-compose.yml')
+}
+
 async function updateAll() {
   try {
     updateDeployYml()
     updateEnvServerTs()
-    // updateDockerfile()
+    updateDockerCompose()
     console.info('✅ All files updated successfully')
   } catch (error: any) {
     console.error('❌ Update failed:', error.message)

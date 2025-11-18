@@ -52,36 +52,12 @@ export const envCategories: EnvCategory[] = [
   {
     id: 'database',
     name: 'Database (PostgreSQL)',
-    description: 'Production database configuration for Zero sync',
-    required: true,
+    description:
+      'Production database configuration - set by deployment platform (SST/uncloud)',
+    required: false,
     variables: [
-      {
-        key: 'ZERO_UPSTREAM_DB',
-        label: 'Main Database URL',
-        description: 'PostgreSQL connection string for your main database',
-        instructions: `Use a managed PostgreSQL service like:\n- AWS RDS/Aurora\n- Supabase\n- Neon\n- Railway\n\nFormat: postgresql://user:password@host:5432/dbname`,
-        required: true,
-        type: 'text',
-        placeholder: 'postgresql://user:password@host:5432/postgres',
-      },
-      {
-        key: 'ZERO_CVR_DB',
-        label: 'CVR Database URL',
-        description: 'Database for Zero conflict resolution',
-        instructions: 'Usually the same host as main DB but different database name',
-        required: true,
-        type: 'text',
-        placeholder: 'postgresql://user:password@host:5432/zero_cvr',
-      },
-      {
-        key: 'ZERO_CHANGE_DB',
-        label: 'Change Database URL',
-        description: 'Database for Zero change tracking',
-        instructions: 'Usually the same host as main DB but different database name',
-        required: true,
-        type: 'text',
-        placeholder: 'postgresql://user:password@host:5432/zero_cdb',
-      },
+      // Note: ZERO_UPSTREAM_DB, ZERO_CVR_DB, and ZERO_CHANGE_DB are set dynamically
+      // by the deployment platform (SST or uncloud) and should NOT be configured here
     ],
   },
   {

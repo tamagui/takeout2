@@ -14,7 +14,12 @@ if (!(await exists(`./node_modules/.bin/tko`))) {
   symlinkBins()
 }
 
-if (!(await exists(`./packages/helpers/dist`))) {
+// check if critical packages are built - both helpers and takeout are needed for tko to work
+const needsBuild =
+  !(await exists(`./packages/helpers/dist`)) ||
+  !(await exists(`./packages/takeout/dist/esm`))
+
+if (needsBuild) {
   // can't use our package command as its not built yet
   await $`bun ./packages/scripts/src/run.ts build --no-root`
 }

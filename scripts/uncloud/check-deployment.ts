@@ -140,7 +140,7 @@ async function checkContainerHealth(containerId: string): Promise<boolean> {
   try {
     // first check if container has a health check configured
     const healthResult =
-      await $`ssh ${deployUser}@${deployHost} "docker inspect ${containerId} --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}no-healthcheck{{end}}'"`.quiet()
+      await $`ssh -o ConnectTimeout=5 -o ServerAliveInterval=2 -o ServerAliveCountMax=2 ${deployUser}@${deployHost} "docker inspect ${containerId} --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}no-healthcheck{{end}}'"`.quiet()
     const healthStatus = healthResult.stdout.toString().trim()
 
     if (healthStatus === 'healthy') {
@@ -148,14 +148,15 @@ async function checkContainerHealth(containerId: string): Promise<boolean> {
     } else if (healthStatus === 'no-healthcheck') {
       // fall back to checking if running for containers without healthcheck
       const statusResult =
-        await $`ssh ${deployUser}@${deployHost} "docker inspect ${containerId} --format '{{.State.Status}}'"`.quiet()
+        await $`ssh -o ConnectTimeout=5 -o ServerAliveInterval=2 -o ServerAliveCountMax=2 ${deployUser}@${deployHost} "docker inspect ${containerId} --format '{{.State.Status}}'"`.quiet()
       const status = statusResult.stdout.toString().trim()
       return status === 'running'
     }
 
     // unhealthy, starting, or other health status - not ready yet
     return false
-  } catch {
+  } catch (error) {
+    console.error(`  error checking ${containerId}: ${error}`)
     return false
   }
 }
@@ -262,12 +263,22 @@ async function monitor() {
   const expectedServices = ['web', 'zero', 'minio']
 
   console.info('waiting for services to become healthy...')
+  console.info('')
 
   // Quick initial check
+  console.info('checking initial container status...')
   const initialContainers = await getContainerStatus()
+  console.info(`found ${initialContainers.size} containers`)
+
   const initialHttpHealth = await checkHttpHealth()
+  console.info(
+    `http health: ${initialHttpHealth.healthy ? '✅' : '❌'} ${initialHttpHealth.message || ''}`
+  )
+  console.info('')
 
   // Initialize state tracking
+  console.info('checking service health:')
+  let allInitiallyHealthy = initialHttpHealth.healthy
   for (const serviceName of expectedServices) {
     const container = initialContainers.get(serviceName)
     const state: ServiceState = {
@@ -278,17 +289,32 @@ async function monitor() {
     }
     if (container?.id) {
       state.healthy = await checkContainerHealth(container.id)
+      const icon = state.healthy ? '✅' : '⏳'
+      console.info(
+        `  ${icon} ${serviceName}: ${state.status} (${state.healthy ? 'healthy' : 'checking...'})`
+      )
+      if (!state.healthy) {
+        allInitiallyHealthy = false
+      }
+    } else {
+      console.info(`  ❌ ${serviceName}: not found`)
+      allInitiallyHealthy = false
     }
     detectStateChanges(state)
   }
+  console.info('')
 
   const monitoredServices = expectedServices
 
-  // wait for docker healthcheck start_period before first check (web/zero have 40s start period)
-  if (verbose) {
-    console.info('waiting 45s for service start_period before health checks...')
+  // only wait for grace period if services aren't already healthy
+  if (!allInitiallyHealthy) {
+    console.info('waiting 45s for docker health check grace period...')
+    await new Promise((resolve) => setTimeout(resolve, 45000))
+  } else {
+    console.info('✅ all services already healthy, skipping grace period')
   }
-  await new Promise((resolve) => setTimeout(resolve, 45000))
+  console.info('starting health monitoring...')
+  console.info('')
 
   // Monitoring loop
   while (Date.now() - startTime < TIMEOUT) {
@@ -297,9 +323,14 @@ async function monitor() {
     const currentTime = Date.now()
     const elapsedSeconds = Math.floor((currentTime - startTime) / 1000)
 
+    console.info(`[${elapsedSeconds}s] checking health...`)
+
     // Get current state
     const containers = await getContainerStatus()
+    console.info(`  containers found: ${containers.size}`)
+
     const httpHealth = await checkHttpHealth()
+    console.info(`  http health: ${httpHealth.healthy ? '✅' : '❌'}`)
     let allHealthy = httpHealth.healthy
     let hasChanges = false
 
@@ -315,14 +346,17 @@ async function monitor() {
 
       if (container?.id) {
         state.healthy = await checkContainerHealth(container.id)
+        console.info(`  ${serviceName}: ${state.healthy ? '✅ healthy' : '⏳ checking'}`)
 
         // in verbose mode, show why service is unhealthy
         if (verbose && !state.healthy && state.status === 'running') {
           const healthResult =
             await $`ssh ${deployUser}@${deployHost} "docker inspect ${container.id} --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}no-healthcheck{{end}}'"`.quiet()
           const healthStatus = healthResult.stdout.toString().trim()
-          console.info(`  [debug] ${serviceName}: health status = ${healthStatus}`)
+          console.info(`    [debug] health status = ${healthStatus}`)
         }
+      } else {
+        console.info(`  ${serviceName}: ❌ not found`)
       }
 
       if (detectStateChanges(state)) {
@@ -333,6 +367,9 @@ async function monitor() {
         allHealthy = false
       }
     }
+
+    console.info(`  all healthy: ${allHealthy}`)
+    console.info('')
 
     // Log significant changes only
     if (hasChanges) {
@@ -364,11 +401,13 @@ async function monitor() {
     // Check for success with stability verification
     if (allHealthy) {
       consecutiveHealthyChecks++
+      console.info(`  ✅ all healthy (${consecutiveHealthyChecks}/2 consecutive checks)`)
 
       // Require 2 consecutive healthy checks for stability
       if (consecutiveHealthyChecks >= 2 && !allHealthyDetected) {
         allHealthyDetected = true
-        console.info(`✅ all services healthy`)
+        console.info('')
+        console.info(`✅ all services healthy and stable!`)
         console.info(`🎉 deployment successful!`)
 
         // Show access info
@@ -383,6 +422,9 @@ async function monitor() {
         process.exit(0)
       }
     } else {
+      if (consecutiveHealthyChecks > 0) {
+        console.info(`  ⚠️  health check failed, resetting counter`)
+      }
       consecutiveHealthyChecks = 0
     }
   }

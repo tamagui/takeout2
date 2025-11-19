@@ -201,7 +201,7 @@
     "APNS_KEY": "",
     "BETTER_AUTH_SECRET": true,
     "BETTER_AUTH_URL": true,
-    "CLOUDFLARE_API_TOKEN": true,
+    "CLOUDFLARE_API_TOKEN": "sst",
     "CLOUDFLARE_R2_ACCESS_KEY": "minio",
     "CLOUDFLARE_R2_ENDPOINT": "http://minio:9000/chat",
     "CLOUDFLARE_R2_PUBLIC_URL": "http://localhost:9200/chat",

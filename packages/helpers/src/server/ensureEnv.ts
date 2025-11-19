@@ -4,7 +4,7 @@ export function ensureEnv(name: string, defaultValue?: string): string {
   if (typeof process.env[name] === 'string') {
     return process.env[name] || defaultValue || ''
   }
-  if (defaultValue) {
+  if (defaultValue !== undefined) {
     return defaultValue
   }
   if (process.env.ALLOW_MISSING_ENV) {

@@ -31,15 +31,12 @@ export const ScrollHeader = ({ children }: { children: ReactNode }) => {
       <XStack width="100%" position="relative" maxW={1200}>
         <XStack
           animation="medium"
-          px="$4"
+          px="$2"
           width="100%"
           overflow="hidden"
-          rounded={'$10'}
-          y={isScrolled ? 6 : 0}
           contain="paint"
+          $sm={{ px: '$4', rounded: '$10', y: isScrolled ? 6 : 0 }}
         >
-          {isScrolled && <Glint rounded="$10" />}
-
           <YStack
             position="absolute"
             animation="medium"
@@ -57,10 +54,10 @@ export const ScrollHeader = ({ children }: { children: ReactNode }) => {
             position="absolute"
             inset={0}
             bg="$color2"
-            rounded={'$10'}
+            $sm={{ rounded: '$10' }}
           />
 
-          <XStack z={1} width="100%">
+          <XStack z={1} width="100%" items="center">
             {children}
           </XStack>
         </XStack>

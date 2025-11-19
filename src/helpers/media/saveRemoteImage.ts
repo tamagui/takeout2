@@ -1,4 +1,4 @@
-import * as FileSystem from 'expo-file-system/legacy'
+import { Directory, File, Paths } from 'expo-file-system'
 import { requestMediaLibraryPermissionsAsync } from 'expo-image-picker'
 import * as MediaLibrary from 'expo-media-library'
 import { showError } from '~/interface/dialogs/actions'
@@ -6,11 +6,10 @@ import { showToast } from '~/interface/toast/helpers'
 
 /**
  * Save a remote image to the local device
- * This is a stub implementation - needs proper implementation for production
  */
 export async function saveRemoteImage(imageUrl: string): Promise<boolean> {
   try {
-    console.info('saveRemoteImage stub called with:', imageUrl)
+    console.info('saveRemoteImage called with:', imageUrl)
 
     // Web implementation - download the image
     if (typeof window !== 'undefined' && typeof document !== 'undefined') {
@@ -35,28 +34,13 @@ export async function saveRemoteImage(imageUrl: string): Promise<boolean> {
       return false
     }
 
-    // Extract file extension from URL
-    const fileExtension = extractFileExtension(imageUrl)
-    const timestamp = Date.now()
-    const localUri = `${FileSystem.documentDirectory}temp-image-${timestamp}.${fileExtension}`
+    // Download the image using the new File API to the cache directory
+    const file = await File.downloadFileAsync(imageUrl, new Directory(Paths.cache))
 
-    // Download the image using FileSystem
-    const downloadResult = await FileSystem.downloadAsync(imageUrl, localUri)
-
-    console.info('downloadResult:', downloadResult)
-    if (downloadResult.status !== 200) {
-      throw new Error('Failed to download image')
-    }
+    console.info('downloadResult:', file.uri)
 
     // Save the downloaded image to gallery
-    const asset = await saveImageToGallery(downloadResult.uri)
-
-    // Clean up temporary file
-    try {
-      await FileSystem.deleteAsync(localUri, { idempotent: true })
-    } catch (cleanupError) {
-      console.info('Error cleaning up temp file:', cleanupError)
-    }
+    const asset = await saveImageToGallery(file.uri)
 
     if (asset) {
       showToast('Image saved to gallery!', {
@@ -101,22 +85,4 @@ export async function saveRemoteImageWithProxy(
 ): Promise<boolean> {
   const finalUrl = proxyUrl ? `${proxyUrl}${encodeURIComponent(imageUrl)}` : imageUrl
   return saveRemoteImage(finalUrl)
-}
-
-/**
- * Extract file extension from URL
- */
-const extractFileExtension = (url: string): string => {
-  const urlParts = url.split('?')[0] // Remove query params
-  const pathParts = urlParts?.split('/')
-  const filename = pathParts?.[pathParts.length - 1]
-
-  if (filename && filename.includes('.')) {
-    const ext = filename.split('.').pop()
-    if (ext && ext.length <= 4) {
-      return ext
-    }
-  }
-
-  return 'jpg' // default extension
 }

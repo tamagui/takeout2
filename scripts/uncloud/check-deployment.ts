@@ -134,15 +134,27 @@ async function getContainerStatus(): Promise<Map<string, any>> {
 
 /**
  * Check health status of a specific container
- * Note: uncloud containers don't have docker healthcheck configured,
- * so we just check if the container is running
+ * Uses docker's built-in health check status if available
  */
 async function checkContainerHealth(containerId: string): Promise<boolean> {
   try {
-    const result =
-      await $`ssh ${deployUser}@${deployHost} "docker inspect ${containerId} --format '{{.State.Status}}'"`.quiet()
-    const status = result.stdout.toString().trim()
-    return status === 'running'
+    // first check if container has a health check configured
+    const healthResult =
+      await $`ssh ${deployUser}@${deployHost} "docker inspect ${containerId} --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}no-healthcheck{{end}}'"`.quiet()
+    const healthStatus = healthResult.stdout.toString().trim()
+
+    if (healthStatus === 'healthy') {
+      return true
+    } else if (healthStatus === 'no-healthcheck') {
+      // fall back to checking if running for containers without healthcheck
+      const statusResult =
+        await $`ssh ${deployUser}@${deployHost} "docker inspect ${containerId} --format '{{.State.Status}}'"`.quiet()
+      const status = statusResult.stdout.toString().trim()
+      return status === 'running'
+    }
+
+    // unhealthy, starting, or other health status - not ready yet
+    return false
   } catch {
     return false
   }
@@ -272,6 +284,12 @@ async function monitor() {
 
   const monitoredServices = expectedServices
 
+  // wait for docker healthcheck start_period before first check (web/zero have 40s start period)
+  if (verbose) {
+    console.info('waiting 45s for service start_period before health checks...')
+  }
+  await new Promise((resolve) => setTimeout(resolve, 45000))
+
   // Monitoring loop
   while (Date.now() - startTime < TIMEOUT) {
     await new Promise((resolve) => setTimeout(resolve, CHECK_INTERVAL))
@@ -297,6 +315,14 @@ async function monitor() {
 
       if (container?.id) {
         state.healthy = await checkContainerHealth(container.id)
+
+        // in verbose mode, show why service is unhealthy
+        if (verbose && !state.healthy && state.status === 'running') {
+          const healthResult =
+            await $`ssh ${deployUser}@${deployHost} "docker inspect ${container.id} --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}no-healthcheck{{end}}'"`.quiet()
+          const healthStatus = healthResult.stdout.toString().trim()
+          console.info(`  [debug] ${serviceName}: health status = ${healthStatus}`)
+        }
       }
 
       if (detectStateChanges(state)) {

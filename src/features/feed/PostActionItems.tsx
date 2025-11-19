@@ -1,10 +1,10 @@
 import { router } from 'one'
-import { Alert } from 'react-native'
 import { useState } from 'react'
 import { YStack } from 'tamagui'
+import { isNative } from '~/constants/platform'
 import type { Post } from '~/data/types'
 import { saveRemoteImage } from '~/helpers/media/saveImage'
-import { showError } from '~/interface/dialogs/actions'
+import { dialogConfirm, showError } from '~/interface/dialogs/actions'
 import { DownloadSimpleIcon } from '~/interface/icons/phosphor/DownloadSimpleIcon'
 import { ShieldCheckIcon } from '~/interface/icons/phosphor/ShieldCheckIcon'
 import { UserCircleIcon } from '~/interface/icons/phosphor/UserCircleIcon'
@@ -13,7 +13,6 @@ import { ListItem } from '~/interface/lists/ListItem'
 import { showToast } from '~/interface/toast/helpers'
 import { zero } from '~/zero/client'
 import { ReportPostDialog } from './ReportPostDialog'
-import { isNative } from '~/constants/platform'
 
 interface PostActionItemsProps {
   post: Post
@@ -56,28 +55,23 @@ export function PostActionItems({
   const handleBlock = async () => {
     if (!post) return
 
-    Alert.alert(
-      'Block User',
-      "Are you sure you want to block this user? You won't see their posts anymore.",
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Block',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await zero.mutate.block.insert({
-                blockedId: post.userId,
-              })
-              showToast('User blocked')
-              onClose?.()
-            } catch (error) {
-              showError(error, 'Block User')
-            }
-          },
-        },
-      ]
-    )
+    const confirmed = await dialogConfirm({
+      title: 'Block User',
+      description:
+        "Are you sure you want to block this user? You won't see their posts anymore.",
+    })
+
+    if (!confirmed) return
+
+    try {
+      await zero.mutate.block.insert({
+        blockedId: post.userId,
+      })
+      showToast('User blocked')
+      onClose?.()
+    } catch (error) {
+      showError(error, 'Block User')
+    }
   }
 
   const handleAdminHide = async () => {
@@ -98,14 +92,12 @@ export function PostActionItems({
   return (
     <>
       <YStack gap="$2" py="$2">
-        {isNative && post.image && (
-          <ListItem onPress={handleSaveImage} size="large" height={50}>
-            <ListItem.Icon>
-              <DownloadSimpleIcon size={22} color="$color10" />
-            </ListItem.Icon>
-            <ListItem.Text>Save Image</ListItem.Text>
-          </ListItem>
-        )}
+        <ListItem onPress={handleSaveImage} size="large" height={50}>
+          <ListItem.Icon>
+            <DownloadSimpleIcon size={22} color="$color10" />
+          </ListItem.Icon>
+          <ListItem.Text>Save Image</ListItem.Text>
+        </ListItem>
 
         {!isOwnPost && (
           <ListItem onPress={handleViewProfile} size="large" height={50}>

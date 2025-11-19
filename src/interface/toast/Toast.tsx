@@ -7,7 +7,6 @@ import {
   useToastState,
 } from '@tamagui/toast'
 import { useState, type ReactNode } from 'react'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { YStack } from 'tamagui'
 import { Z_INDICES } from '../constants'
 import { toastEmitter } from './emitter'
@@ -16,8 +15,6 @@ import { toastEmitter } from './emitter'
 export { showToast } from './helpers'
 
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
-  const { top } = useSafeAreaInsets()
-
   return (
     <TamaguiToastProvider native={!isWeb} swipeDirection="horizontal">
       <ToastDisplay />
@@ -26,7 +23,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
         portalToRoot
         z={Z_INDICES.toast}
         flexDirection="column-reverse"
-        top={top + 10}
+        top={0}
         left={0}
         right={0}
         mx="auto"
@@ -70,8 +67,9 @@ const ToastDisplay = () => {
     <Toast
       key={currentToast?.id}
       duration={duration}
-      enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
-      exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
+      enterStyle={{ opacity: 0, scale: 1, y: 0 }}
+      exitStyle={{ opacity: 0, scale: 1, y: 0 }}
+      y={20}
       opacity={1}
       scale={1}
       animation="quick"
@@ -79,7 +77,7 @@ const ToastDisplay = () => {
       overflow="hidden"
       viewportName={currentToast?.viewportName}
       themeInverse
-      bg="red"
+      bg="$color2"
       py="$1.5"
       px="$3"
       theme={

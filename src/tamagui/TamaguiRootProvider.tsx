@@ -19,8 +19,6 @@ export const TamaguiRootProvider = memo(({ children }: { children: any }) => {
   useLayoutEffect(() => {
     if (forceDark) {
       setSchemeSetting('dark')
-    } else {
-      setSchemeSetting('system')
     }
   }, [forceDark])
 

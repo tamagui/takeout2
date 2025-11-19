@@ -18,15 +18,29 @@ export function initUncloud(
 ) {
   console.info('\n🚀 initializing uncloud...\n')
 
-  // check if already initialized
+  // check if already initialized by checking for both uncloud binary and caddy container
   try {
     exec(`ssh -i ${sshKey} -o StrictHostKeyChecking=no ${host} "which uncloud"`, {
       silent: true,
     })
-    console.info('✅ uncloud already initialized')
-    return
+
+    // also check if caddy is running (indicates machine is fully initialized)
+    try {
+      exec(
+        `ssh -i ${sshKey} -o StrictHostKeyChecking=no ${host} "docker ps --filter name=caddy --format '{{.Names}}' | grep -q caddy"`,
+        {
+          silent: true,
+        }
+      )
+      console.info('✅ uncloud already initialized (caddy running)')
+      return
+    } catch {
+      // caddy not running, but uncloud exists - might need reinitialization
+      console.info('⚠️  uncloud installed but caddy not running - will reinitialize')
+    }
   } catch {
     // not initialized, continue
+    console.info('📦 uncloud not installed - initializing for first time')
   }
 
   const flags = []

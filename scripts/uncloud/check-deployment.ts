@@ -134,13 +134,15 @@ async function getContainerStatus(): Promise<Map<string, any>> {
 
 /**
  * Check health status of a specific container
+ * Note: uncloud containers don't have docker healthcheck configured,
+ * so we just check if the container is running
  */
 async function checkContainerHealth(containerId: string): Promise<boolean> {
   try {
     const result =
-      await $`ssh ${deployUser}@${deployHost} "docker inspect ${containerId} --format '{{.State.Health.Status}}'"`.quiet()
-    const health = result.stdout.toString().trim()
-    return health === 'healthy'
+      await $`ssh ${deployUser}@${deployHost} "docker inspect ${containerId} --format '{{.State.Status}}'"`.quiet()
+    const status = result.stdout.toString().trim()
+    return status === 'running'
   } catch {
     return false
   }
@@ -160,7 +162,7 @@ async function getContainerLogs(containerId: string, lines = 20): Promise<string
 }
 
 /**
- * Check HTTP health endpoint
+ * Check HTTP health endpoint from inside web container
  */
 async function checkHttpHealth(): Promise<{
   healthy: boolean
@@ -168,9 +170,18 @@ async function checkHttpHealth(): Promise<{
   message?: string
 }> {
   try {
-    // Check the /api/health endpoint on port 8081
+    // Get web container name
+    const containersResult =
+      await $`ssh ${deployUser}@${deployHost} "docker ps --filter 'name=web' --format '{{.Names}}'"`.quiet()
+    const webContainer = containersResult.stdout.toString().trim()
+
+    if (!webContainer) {
+      return { healthy: false, message: 'Web container not found' }
+    }
+
+    // Check the /api/health endpoint from inside the container
     const result =
-      await $`curl -s -o /dev/null -w "%{http_code}" -m 5 http://${deployHost}:8081/api/health`.quiet()
+      await $`ssh ${deployUser}@${deployHost} "docker exec ${webContainer} curl -s -o /dev/null -w '%{http_code}' -m 5 http://localhost:8081/api/health"`.quiet()
     const statusCode = parseInt(result.stdout.toString().trim(), 10)
 
     if (statusCode === 200) {

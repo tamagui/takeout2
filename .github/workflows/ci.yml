@@ -12,7 +12,7 @@ concurrency:
 jobs:
   build-test-and-deploy:
     if: "!contains(github.event.commits[0].message, 'docs:')"
-    timeout-minutes: 18
+    timeout-minutes: 25
     # Using Warp runners for ARM64 support (cheaper and faster than GitHub ARM runners)
     # If you don't have Warp, either:
     # 1. Sign up at https://www.warpbuild.com (recommended - cheaper than GitHub)

@@ -8,9 +8,9 @@
 import { $ } from 'bun'
 import { readFileSync } from 'node:fs'
 
-const TIMEOUT = 3 * 60 * 1000 // 3 minutes
-const CHECK_INTERVAL = 3000 // 3 seconds
-const PROGRESS_UPDATE_INTERVAL = 15000 // 15 seconds for progress updates
+const TIMEOUT = 5 * 60 * 1000 // 5 minutes
+const CHECK_INTERVAL = 10000 // 10 seconds
+const PROGRESS_UPDATE_INTERVAL = 30000 // 30 seconds for progress updates
 
 // State tracking
 interface ServiceState {

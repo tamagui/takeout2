@@ -1,4 +1,4 @@
-import { H1, H2, Paragraph, XStack, YStack } from 'tamagui'
+import { H1, H2, Paragraph, XStack, YStack, styled } from 'tamagui'
 import { InfoCard } from '~/features/site/components/InfoCard'
 import { CircleNotchIcon } from '~/interface/icons/phosphor/CircleNotchIcon'
 import { DatabaseIcon } from '~/interface/icons/phosphor/DatabaseIcon'
@@ -8,31 +8,47 @@ import { StackIcon } from '~/interface/icons/phosphor/StackIcon'
 import { TriangleIcon } from '~/interface/icons/phosphor/TriangleIcon'
 import { GradientGlitchText } from '~/interface/text/GradientGlitchText'
 
+const Hero = styled(H1, {
+  size: '$9',
+  fontWeight: '800',
+
+  $sm: {
+    size: '$10',
+    fontWeight: '800',
+  },
+
+  $md: {
+    size: '$12',
+    fontWeight: '800',
+  },
+})
+
 export function IndexPage() {
   return (
     <YStack gap="$6" py="$8">
       <YStack items="center">
-        <H1 size="$12" fontWeight="800">
+        <Hero>
           <GradientGlitchText>Build Stunning</GradientGlitchText>
-        </H1>
-        <H1 size="$12" fontWeight="800" lineHeight="$8">
+        </Hero>
+        <Hero lineHeight="$5" $sm={{ lineHeight: '$6' }} $md={{ lineHeight: '$8' }}>
           Better Apps
-        </H1>
-        <H2 size="$5" color="$color11" maxW={700} mt="$8" lineHeight="$4" text="center">
+        </Hero>
+        <H2
+          size="$4"
+          color="$color11"
+          maxW={700}
+          mt="$8"
+          lineHeight="$4"
+          text="center"
+          $md={{ size: '$5' }}
+        >
           A modern framework for building web and native applications with React. Fast,
           flexible, and built for the future.
         </H2>
       </YStack>
 
-      <YStack gap="$4" mt="$8">
-        <XStack
-          mx="$-8"
-          flexWrap="wrap"
-          columnGap="$5"
-          rowGap="$1"
-          mb="$8"
-          $sm={{ mx: 0 }}
-        >
+      <YStack gap="$4" mt="$4" $md={{ mt: '$8' }}>
+        <XStack flexWrap="wrap" columnGap="$5" rowGap="$1" mb="$8">
           <InfoCard title="Typed FS Routing" Icon={FolderOpenIcon}>
             Typed file-system routing with nested layouts and groups for organized
             navigation.

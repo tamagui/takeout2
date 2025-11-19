@@ -1,6 +1,5 @@
 'use client'
 
-import { FileText, Menu } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import { Adapt, Button, H3, Separator, Sheet, Spacer, XStack, YStack } from 'tamagui'
 import { LoginButton } from '~/features/auth/ui/LoginButton'
@@ -9,6 +8,8 @@ import { Link } from '~/interface/app/Link'
 import { Logo } from '~/interface/app/Logo'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { ScrollHeader } from '~/interface/headers/ScrollHeader'
+import { FileIcon } from '~/interface/icons/phosphor/FileIcon'
+import { ListIcon } from '~/interface/icons/phosphor/ListIcon'
 import { PageContainer } from '~/interface/layout/PageContainer'
 import { ListItem } from '~/interface/lists/ListItem'
 import { ThemeSwitch } from '~/interface/theme/ThemeSwitch'
@@ -45,7 +46,7 @@ export const SiteHeader = () => {
               size="$3"
               chromeless
               circular
-              icon={Menu}
+              icon={ListIcon}
               aria-label="Menu"
               onPress={() => setOpen(true)}
               $sm={{ display: 'none' }}
@@ -79,7 +80,7 @@ export const SiteHeader = () => {
                       <Link href="/docs" asChild>
                         <ListItem>
                           <ListItem.Icon>
-                            <FileText />
+                            <FileIcon />
                           </ListItem.Icon>
                           <ListItem.Text>Documentation</ListItem.Text>
                         </ListItem>

@@ -1,30 +1,19 @@
 import type { ComponentType } from 'react'
-import type { ReactNode } from 'react'
-import { Card, H5, Paragraph, View, styled } from 'tamagui'
-import Glint from '~/interface/effects/Glint'
+import { H5, Paragraph, View, YStack, styled } from 'tamagui'
 import type { IconProps } from '~/interface/icons/types'
 
 interface InfoCardProps {
   title: string
   Icon: ComponentType<IconProps>
-  children: ReactNode
+  children: React.ReactNode
 }
 
-const StyledCard = styled(Card, {
-  elevate: true,
-  size: '$4',
-  rounded: '$6',
+const CardContainer = styled(YStack, {
+  gap: '$2',
   mb: '$2',
+  p: '$4',
+  position: 'relative',
   width: '100%',
-  animation: '200ms',
-  scale: 1,
-  bordered: false,
-  hoverStyle: {
-    scale: 1.02,
-  },
-  pressStyle: {
-    scale: 0.98,
-  },
 
   $md: {
     width: 'calc(50% - 12px)',
@@ -39,21 +28,18 @@ const StyledCard = styled(Card, {
 
 export const InfoCard = ({ title, Icon, children }: InfoCardProps) => {
   return (
-    <StyledCard>
-      {/* <Glint rounded="$4" /> */}
-      <Card.Header padded gap="$2">
-        <View position="absolute" t="$4" r="$4" opacity={0.25}>
-          <Icon size={24} />
-        </View>
+    <CardContainer>
+      <View self="flex-end" mb={-20} opacity={0.25}>
+        <Icon size={24} />
+      </View>
 
-        <H5 fontFamily="$mono" size="$5">
-          {title}
-        </H5>
+      <H5 fontFamily="$mono" size="$5" mt={-10}>
+        {title}
+      </H5>
 
-        <Paragraph size="$4" color="$color11">
-          {children}
-        </Paragraph>
-      </Card.Header>
-    </StyledCard>
+      <Paragraph size="$5" color="$color9">
+        {children}
+      </Paragraph>
+    </CardContainer>
   )
 }

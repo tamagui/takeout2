@@ -7,4 +7,4 @@
 import { $ } from 'bun'
 
 const args = process.argv.slice(2)
-await $`bun tko update-deps ${args} one '@vxrn/*' over-zero`
+await $`bun tko update-deps ${args} one '@vxrn/*'`

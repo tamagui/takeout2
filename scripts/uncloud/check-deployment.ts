@@ -93,12 +93,12 @@ async function getContainerStatus(): Promise<Map<string, any>> {
         let serviceName = null
 
         // try takeout prefix with dash or underscore
-        let match = name.match(/takeout[_-]([^_-]+)[_-]\d+/)
+        let match = name.match(/takeout[_-]([^_-]+)[_-]\w+/)
         if (match) {
           serviceName = match[1]
         } else {
-          // try without takeout prefix
-          match = name.match(/^([^_-]+)[_-]\d+$/)
+          // try without takeout prefix (uncloud format: service-xxxx where xxxx is alphanumeric)
+          match = name.match(/^([^_-]+)[_-]\w+$/)
           if (match) {
             serviceName = match[1]
           } else {
@@ -180,9 +180,18 @@ async function checkHttpHealth(): Promise<{
     }
 
     // Check the /api/health endpoint from inside the container
+    // use -f to fail on HTTP errors, check exit code separately
     const result =
-      await $`ssh ${deployUser}@${deployHost} "docker exec ${webContainer} curl -s -o /dev/null -w '%{http_code}' -m 5 http://localhost:8081/api/health"`.quiet()
-    const statusCode = parseInt(result.stdout.toString().trim(), 10)
+      await $`ssh ${deployUser}@${deployHost} "docker exec ${webContainer} curl -sf -o /dev/null -w '%{http_code}' -m 5 http://localhost:8081/api/health || echo $?"`.quiet()
+    const output = result.stdout.toString().trim()
+
+    // if output is just a number 0-255, curl failed (exit code)
+    if (/^\d{1,3}$/.test(output) && parseInt(output, 10) !== 200) {
+      // curl failed - app not ready yet, keep trying
+      return { healthy: false, message: 'App starting...' }
+    }
+
+    const statusCode = parseInt(output, 10)
 
     if (statusCode === 200) {
       return { healthy: true, status: statusCode }
@@ -192,13 +201,12 @@ async function checkHttpHealth(): Promise<{
       return { healthy: true, status: statusCode, message: 'Not found (server running)' }
     } else if (statusCode >= 500) {
       return { healthy: false, status: statusCode, message: 'Server error' }
-    } else if (statusCode === 0) {
-      return { healthy: false, message: 'Connection failed' }
     }
 
-    return { healthy: false, status: statusCode }
+    return { healthy: false, message: 'App starting...' }
   } catch {
-    return { healthy: false, message: 'Connection failed' }
+    // container or curl command failed - app not ready yet
+    return { healthy: false, message: 'App starting...' }
   }
 }
 

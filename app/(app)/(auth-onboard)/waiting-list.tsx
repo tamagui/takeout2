@@ -6,9 +6,7 @@ import { authClient } from '~/features/auth/client/authClient'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { Logo } from '~/interface/app/Logo'
 import { Pressable } from '~/interface/buttons/Pressable'
-import { BasicHeader } from '~/interface/headers/BasicHeader'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
-import { RepeatedTapToShowDevTools } from '~/interface/interactions/RepeatedTapToShowDevTools'
 import { MediumText } from '~/interface/text/Body'
 import { H3 } from '~/interface/text/Headings'
 
@@ -31,18 +29,9 @@ export const WaitingListPage = () => {
 
   return (
     <YStack flex={1} bg="$background">
-      <YStack pt={22}>
-        <BasicHeader BackIcon={CaretLeftIcon} onClose={handleLogout} />
-      </YStack>
       <YStack flex={1} px="$3" items="center" justify="center" gap="$6" pb="$14">
         <XStack>
-          <RepeatedTapToShowDevTools>
-            {({ handleTap }) => (
-              <Pressable onPress={handleTap}>
-                <Logo size={22} />
-              </Pressable>
-            )}
-          </RepeatedTapToShowDevTools>
+          <Logo size={22} />
         </XStack>
 
         <YStack gap="$4" items="center">

@@ -8,9 +8,9 @@ import { Alert } from 'react-native'
 import { YStack } from 'tamagui'
 import { pickImageFromLibrary, takePhotoWithCamera } from '~/helpers/media/imagePicker'
 import { CameraIcon } from '~/interface/icons/phosphor/CameraIcon'
+import { ImageIcon } from '~/interface/icons/phosphor/ImageIcon'
 import { ListItem } from '~/interface/lists/ListItem'
 import { Sheet, type SheetRef } from '~/interface/sheet/Sheet'
-import { ImagesSquareIcon } from '../icons/phosphor/ImagesSquareIcon'
 
 export interface ImageUploadSheetRef {
   show: (
@@ -102,7 +102,7 @@ export const ImageUploadSheet = forwardRef<ImageUploadSheetRef>((_, ref) => {
   const avatarOptions = [
     { icon: CameraIcon, label: 'Camera', onPress: () => handleChooseImage('camera') },
     {
-      icon: ImagesSquareIcon,
+      icon: ImageIcon,
       label: 'Photos',
       onPress: () => handleChooseImage('library'),
     },

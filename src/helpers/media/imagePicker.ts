@@ -100,7 +100,3 @@ export const takePhotoWithCamera = async (
 
   return null
 }
-
-// Alias for compatibility
-export const launchImageLibrary = pickImageFromLibrary
-export const takePhoto = takePhotoWithCamera

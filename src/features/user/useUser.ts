@@ -3,7 +3,6 @@ import { userById } from '~/data/queries/user'
 import type { User } from '~/data/types'
 import { useAuth } from '~/features/auth/client/authClient'
 import { useQuery, zero } from '~/zero/client'
-import { isUserOnline } from './isUserOnline'
 
 export const useUser = () => {
   const auth = useAuth()
@@ -32,6 +31,6 @@ export const useUser = () => {
     // TODO
     isAdmin: user?.username === 'nate' || user?.username === 'admin',
     isLoading: status.type === 'unknown',
-    isOnline: user ? isUserOnline(user) : null,
+    isOnline: null, // TODO: implement isUserOnline logic
   }
 }

@@ -1,4 +1,6 @@
-export type SimpleSize = 'large' | 'medium' | 'small'
+import type { SimpleSize } from '~/interface/types/sizes'
+
+export type { SimpleSize }
 
 export const simpleSizeContentHeight: Record<SimpleSize, number> = {
   small: 24,

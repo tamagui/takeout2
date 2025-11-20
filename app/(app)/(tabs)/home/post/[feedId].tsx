@@ -2,8 +2,8 @@ import { LinearGradient } from '@tamagui/linear-gradient'
 import { useParams } from 'one'
 import { memo, useState } from 'react'
 import { ScrollView, SizableText, XStack, YStack, isWeb } from 'tamagui'
+import { postById } from '~/data/queries/post'
 import { PostActionsPopover } from '~/features/feed/PostActionsPopover'
-import { usePostById } from '~/features/feed/usePostById'
 import { useUser } from '~/features/user/useUser'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
 import { Avatar } from '~/interface/avatars/Avatar'
@@ -13,11 +13,12 @@ import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
 import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
 import { Image } from '~/interface/image/Image'
 import { BodyText } from '~/interface/text/Body'
+import { useQuery } from '~/zero/client'
 
 export const FeedDetailPage = memo(() => {
   const { feedId } = useParams()
   const { user } = useUser()
-  const { post } = usePostById({ postId: feedId })
+  const [post] = useQuery(postById, { postId: feedId })
   const [aspectRatio, setAspectRatio] = useState<number>(1)
   const isOwnProfile = post?.userId === user?.id
 

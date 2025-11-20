@@ -1,5 +1,5 @@
 import { H1, H2, Paragraph, XStack, YStack, styled } from 'tamagui'
-import { InfoCard } from '~/features/site/components/InfoCard'
+import { InfoCard } from '~/features/site/ui/InfoCard'
 import { CircleNotchIcon } from '~/interface/icons/phosphor/CircleNotchIcon'
 import { DatabaseIcon } from '~/interface/icons/phosphor/DatabaseIcon'
 import { DeviceTabletIcon } from '~/interface/icons/phosphor/DeviceTabletIcon'

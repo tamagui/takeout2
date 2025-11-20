@@ -9,7 +9,6 @@ import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { showError } from '~/interface/dialogs/actions'
 import { Input } from '~/interface/forms/Input'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
-import { SignatureIcon } from '~/interface/icons/phosphor/SignatureIcon'
 import { XIcon } from '~/interface/icons/phosphor/XIcon'
 import { SubTitle } from '~/interface/text/SubTitle'
 import { useQuery, zero } from '~/zero/client'
@@ -95,7 +94,6 @@ export const ProfileSetupPage = () => {
   return (
     <OnboardingStepPageLayout
       title="Enter Username"
-      Icon={SignatureIcon}
       description="Choose a unique username for your account."
       bottom={
         <ButtonSimple

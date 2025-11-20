@@ -7,7 +7,13 @@ import { FileTextIcon } from '~/interface/icons/phosphor/FileTextIcon'
 import { FileVideoIcon } from '~/interface/icons/phosphor/FileVideoIcon'
 import { FileXIcon } from '~/interface/icons/phosphor/FileXIcon'
 import type { AttachmentType } from './types'
-import { MAX_FILE_SIZE, SUPPORTED_FILE_EXTENSIONS } from './types'
+import {
+  MAX_DOCUMENT_FILE_SIZE,
+  MAX_FILE_SIZE,
+  MAX_IMAGE_FILE_SIZE,
+  MAX_VIDEO_FILE_SIZE,
+  SUPPORTED_FILE_EXTENSIONS,
+} from './types'
 
 export function getFileType(filename: string): AttachmentType {
   const ext = filename.toLowerCase().split('.').pop()
@@ -73,13 +79,13 @@ export function validateFileSize(file: File): { valid: boolean; error?: string }
   let fileType = 'file'
 
   if (isVideoFile(filename)) {
-    maxSize = 100 * 1024 * 1024 // 100MB for videos
+    maxSize = MAX_VIDEO_FILE_SIZE
     fileType = 'video'
   } else if (isImageFile(filename)) {
-    maxSize = 10 * 1024 * 1024 // 10MB for images
+    maxSize = MAX_IMAGE_FILE_SIZE
     fileType = 'image'
   } else {
-    maxSize = 10 * 1024 * 1024 // 10MB for other files
+    maxSize = MAX_DOCUMENT_FILE_SIZE
     fileType = 'file'
   }
 

@@ -1,7 +1,7 @@
 import { createStyledContext, type FontTokens } from 'tamagui'
+import type { SimpleSize } from '~/interface/types/sizes'
 
 export type ListItemVariant = 'default' | 'sidebar' | 'compact'
-export type SimpleSize = 'small' | 'medium' | 'large'
 
 const defaults = {
   active: false as boolean | 'strong',

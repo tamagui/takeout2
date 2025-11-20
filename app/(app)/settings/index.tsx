@@ -4,7 +4,6 @@ import { ScrollView, SizableText, View, XStack, YStack } from 'tamagui'
 import { APP_NAME_LOWERCASE, HELP_ROADMAP_URL } from '~/constants/app'
 import { authClient, clearAuthClientToken } from '~/features/auth/client/authClient'
 import { useUser } from '~/features/user/useUser'
-import { getHumanReadableVersionString } from '~/helpers/getHumanReadableVersionString'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { showError } from '~/interface/dialogs/actions'
 import { Switch } from '~/interface/forms/Switch'
@@ -14,11 +13,9 @@ import { DoorIcon } from '~/interface/icons/phosphor/DoorIcon'
 import { FileIcon } from '~/interface/icons/phosphor/FileIcon'
 import { InfoIcon } from '~/interface/icons/phosphor/InfoIcon'
 import { LockIcon } from '~/interface/icons/phosphor/LockIcon'
-import { ShieldCheckIcon } from '~/interface/icons/phosphor/ShieldCheckIcon'
-import { ShootingStarIcon } from '~/interface/icons/phosphor/ShootingStarIcon'
 import { UserIcon } from '~/interface/icons/phosphor/UserIcon'
+import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
 import { Image } from '~/interface/image/Image'
-import { RepeatedTapToShowDevTools } from '~/interface/interactions/RepeatedTapToShowDevTools'
 import { H4 } from '~/interface/text/Headings'
 
 interface SettingItem {
@@ -87,7 +84,7 @@ export const ProfileSettingsPage = () => {
         {
           id: 'blocked-users',
           title: 'Blocked Users',
-          icon: ShieldCheckIcon,
+          icon: LockIcon,
           route: '/settings/blocked-users',
         },
       ],
@@ -104,7 +101,7 @@ export const ProfileSettingsPage = () => {
         {
           id: 'request-feature',
           title: 'Request Feature',
-          icon: ShootingStarIcon,
+          icon: SparkleIcon,
           url: HELP_ROADMAP_URL,
         },
         {
@@ -270,27 +267,22 @@ export const ProfileSettingsPage = () => {
 
 function LogoAndVersion() {
   return (
-    <RepeatedTapToShowDevTools>
-      {({ handleTap, tapsRemaining }) => (
-        <YStack items="center" pb={100} pt="$4" onPress={handleTap}>
-          <XStack items="center" gap="$2">
-            <Image
-              src={require('../../../assets/logo.png')}
-              width={16}
-              height={16}
-              objectFit="contain"
-              tintColor="white"
-            />
-            <H4 color="$color8" fontWeight="600">
-              {APP_NAME_LOWERCASE}
-            </H4>
-          </XStack>
-          <SizableText size="$1" color="$color8" mt="$2">
-            {tapsRemaining <= 8 ? `${tapsRemaining}... ` : ''}
-            {getHumanReadableVersionString()}
-          </SizableText>
-        </YStack>
-      )}
-    </RepeatedTapToShowDevTools>
+    <YStack items="center" pb={100} pt="$4">
+      <XStack items="center" gap="$2">
+        <Image
+          src={require('../../../assets/logo.png')}
+          width={16}
+          height={16}
+          objectFit="contain"
+          tintColor="white"
+        />
+        <H4 color="$color8" fontWeight="600">
+          {APP_NAME_LOWERCASE}
+        </H4>
+      </XStack>
+      <SizableText size="$1" color="$color8" mt="$2">
+        v1.0.0
+      </SizableText>
+    </YStack>
   )
 }

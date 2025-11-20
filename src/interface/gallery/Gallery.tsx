@@ -176,7 +176,7 @@ export const Gallery = () => {
               aria-label="Carousel left"
               l="$4"
               icon={CaretLeftIcon}
-              onPress={(e) => {
+              onPress={(e: any) => {
                 e.stopPropagation()
                 paginate(-1)
               }}
@@ -187,7 +187,7 @@ export const Gallery = () => {
               aria-label="Carousel right"
               r="$4"
               icon={CaretRightIcon}
-              onPress={(e) => {
+              onPress={(e: any) => {
                 e.stopPropagation()
                 paginate(1)
               }}

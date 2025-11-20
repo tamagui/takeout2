@@ -11,7 +11,7 @@ import { Pressable } from '~/interface/buttons/Pressable'
 import { ChatCircleIcon } from '~/interface/icons/phosphor/ChatCircleIcon'
 import { UserIcon } from '~/interface/icons/phosphor/UserIcon'
 import { EnvelopeIcon } from '~/interface/icons/phosphor/EnvelopeIcon'
-import { ShootingStarIcon } from '~/interface/icons/phosphor/ShootingStarIcon'
+import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
 import { H1, H2 } from '~/interface/text/Headings'
 
 export const HelpPage = () => {
@@ -98,7 +98,7 @@ export const HelpPage = () => {
               }}
             >
               <YStack gap="$2">
-                <ShootingStarIcon size={24} color="$color11" />
+                <SparkleIcon size={24} color="$color11" />
                 <SizableText size="$5" fontWeight="600" color="$color12">
                   Request a Feature
                 </SizableText>

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Adapt, Button, H3, Separator, Sheet, Spacer, XStack, YStack } from 'tamagui'
 import { LoginButton } from '~/features/auth/ui/LoginButton'
-import { SocialLinksRow } from '~/features/site/components/SocialLinksRow'
+import { SocialLinksRow } from '~/features/site/ui/SocialLinksRow'
 import { Link } from '~/interface/app/Link'
 import { Logo } from '~/interface/app/Logo'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'

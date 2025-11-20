@@ -1,7 +1,7 @@
 import { isNative } from '@take-out/helpers'
 import { router, Slot, useFocusEffect, usePathname } from 'one'
 import { getNextOnboardingStep } from '~/features/onboarding/getNextOnboardingStep'
-import { SiteHeader } from '~/features/site/components/SiteHeader'
+import { SiteHeader } from '~/features/site/ui/SiteHeader'
 import { useUser } from '~/features/user/useUser'
 import { PageContainer } from '~/interface/layout/PageContainer'
 

@@ -6,7 +6,7 @@ import type { Post } from '~/data/types'
 import { saveRemoteImage } from '~/helpers/media/saveImage'
 import { dialogConfirm, showError } from '~/interface/dialogs/actions'
 import { DownloadSimpleIcon } from '~/interface/icons/phosphor/DownloadSimpleIcon'
-import { ShieldCheckIcon } from '~/interface/icons/phosphor/ShieldCheckIcon'
+import { XCircleIcon } from '~/interface/icons/phosphor/XCircleIcon'
 import { UserCircleIcon } from '~/interface/icons/phosphor/UserCircleIcon'
 import { WarningCircleIcon } from '~/interface/icons/phosphor/WarningCircleIcon'
 import { ListItem } from '~/interface/lists/ListItem'
@@ -117,7 +117,7 @@ export function PostActionItems({
 
         <ListItem onPress={handleBlock} size="large" height={50}>
           <ListItem.Icon>
-            <ShieldCheckIcon />
+            <XCircleIcon />
           </ListItem.Icon>
           <ListItem.Text>Block User</ListItem.Text>
         </ListItem>

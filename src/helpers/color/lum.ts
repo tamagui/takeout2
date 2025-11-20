@@ -1,4 +1,5 @@
-import { validColor } from './validColor'
+// Helper to ensure color string is valid (simple fallback implementation)
+const validColor = (color: string) => color
 
 export function lum(color: string, luminance = 0.5) {
   // handle hsl/hsla

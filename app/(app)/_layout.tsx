@@ -1,6 +1,5 @@
 import { Slot, Stack } from 'one'
 import { isWeb } from 'tamagui'
-import { ShapeBackground } from '~/interface/backgrounds/ShapeBackground'
 import { Dialogs } from '~/interface/dialogs/Dialogs'
 import { NotificationProvider } from '~/interface/notification/Notification'
 import { ToastProvider } from '~/interface/toast/Toast'
@@ -16,10 +15,7 @@ export function AppLayout() {
           <PlatformSpecificRootProvider>
             <DragDropFile>
               {isWeb ? (
-                <>
-                  <ShapeBackground />
-                  <Slot />
-                </>
+                <Slot />
               ) : (
                 // We need Stack here for transition animation to work on native
                 <Stack screenOptions={{ headerShown: false }}>

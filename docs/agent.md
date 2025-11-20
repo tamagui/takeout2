@@ -82,3 +82,9 @@ folders and files and automatically turn them into CLI commands. When creating
 new scripts generally try and group them logically into scripts. Read over the
 ./scripts dir and run `bun tko` to see a list of all scripts and get a feel for
 how it works.
+
+## Testing / Release
+
+in general run a `bun run ci release --dry-run` to test that everything still
+works and CI passes, it should work so long as .env.production exists and is
+filled out

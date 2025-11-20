@@ -22,12 +22,14 @@ import type { AuthData, GenericModels, GetZeroMutators, ZeroEvent } from './type
 export function createZeroClient<
   Schema extends ZeroSchema,
   Models extends GenericModels,
->({ schema, models, disable }: { schema: Schema; models: Models; disable?: boolean }) {
+>({ schema, models }: { schema: Schema; models: Models }) {
   type ZeroMutators = GetZeroMutators<Models>
   type ZeroInstance = Zero<Schema, ZeroMutators>
   type TableName = keyof ZeroInstance['query']
 
   setSchema(schema)
+
+  const DisabledContext = createContext(false)
 
   const modelWritePermissions = mapObject(models, (val) => val.permissions) as {
     [K in TableName]: K extends keyof Models ? Models[K]['permissions'] : never
@@ -67,6 +69,7 @@ export function createZeroClient<
     enabled = typeof objOrId !== 'undefined',
     debug = false
   ): boolean | null {
+    const disabled = use(DisabledContext)
     // const cacheVal = permissionCache.get(key) ?? permissionCache.get(keyBase)
     const authData = useAuthData()
     const permission = modelWritePermissions[table]
@@ -74,7 +77,7 @@ export function createZeroClient<
     const query = (() => {
       let baseQuery = zero.query[table].one()
 
-      if (!enabled || !permission) {
+      if (disabled || !enabled || !permission) {
         return baseQuery
       }
 
@@ -151,6 +154,7 @@ export function createZeroClient<
 
   // Implementation - keep it simple with any
   function useQuery(...args: any[]): any {
+    const disabled = use(DisabledContext)
     const [queryOrFn, paramsOrOptions, optionsArg] = args
 
     // Detect which calling pattern is being used
@@ -200,7 +204,7 @@ export function createZeroClient<
       useZeroDebug(actualQuery, options, out)
     }
 
-    if (disable) {
+    if (disabled) {
       return [null, { type: 'unknown' }] as never
     }
 
@@ -209,12 +213,16 @@ export function createZeroClient<
 
   const ProvideZero = ({
     children,
-    authData,
+    authData: authDataIn,
+    disable,
     ...props
   }: Omit<ZeroOptions<Schema, ZeroMutators>, 'schema' | 'mutators'> & {
     children: ReactNode
-    authData?: any
+    authData?: AuthData
+    disable?: boolean
   }) => {
+    const authData = authDataIn as AuthData
+
     const mutators = useMemo(() => {
       setAuthData(authData)
 
@@ -226,6 +234,7 @@ export function createZeroClient<
       })
     }, [models, authData])
 
+    // for now we re-parent
     if (disable) {
       return children
     }

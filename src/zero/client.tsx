@@ -10,12 +10,6 @@ import { useAuth } from '~/features/auth/client/authClient'
 import type { AuthData } from '~/features/auth/types'
 import { setDevGlobal } from '~/features/devtools/devGlobal'
 
-const disable = false
-
-if (disable) {
-  console.info(`0️⃣ Zero disabled on this page`)
-}
-
 export const {
   usePermission,
   useQuery,
@@ -25,7 +19,6 @@ export const {
 } = createZeroClient({
   models,
   schema,
-  disable,
 })
 
 export const ProvideZero = ({ children }: { children: ReactNode }) => {

@@ -17,14 +17,15 @@ your job is to be thorough and do things right, never to take shortcuts.
 
 # Principles
 
-- always run `bun lint:fix && bun tko check types` after code changes
-- use `~` alias for non-relative imports, prefer it always
-  - except in `./packages/*` always use relative imports
+- ALWAYS run `bun lint:fix && bun tko check types` after code changes
+- ALWAYS prefer `~` alias for non-relative imports
+  - except in `./packages/*` they need relative imports
 - use `console.info()` instead of `console.log()`
 - use `node:` prefix for built-in modules
-- write few comments, code should be self-documenting, write comments lowercase
-- never git commit or push code without explicit user permission
-- if you are asked to git commit, keep it one-line and lowercase
+- write FEW, LOWERCASE comments, code should be mostly self-documenting
+- NEVER git commit or push code without explicit user permission
+  - don't add this as the final step in your todo list, again unless asked
+- ONLY IF you are asked to git commit, keep it one-line and lowercase
 
 ## Context
 

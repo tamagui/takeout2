@@ -20,7 +20,10 @@ const needsBuild =
   !(await exists(`./packages/takeout/dist/esm`))
 
 if (needsBuild) {
-  // can't use our package command as its not built yet
+  // build helpers first as other packages depend on it
+  await $`cd packages/helpers && bun run build`
+
+  // then build all other packages in parallel
   await $`bun ./packages/scripts/src/run.ts build --no-root`
 }
 

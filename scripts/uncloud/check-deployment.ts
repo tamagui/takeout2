@@ -50,6 +50,7 @@ Monitors the deployment and exits when all services are healthy or on timeout.
 const envFile = '.env.production'
 let deployHost: string | undefined = process.env.DEPLOY_HOST
 let deployUser: string | undefined = process.env.DEPLOY_USER || 'root'
+let deploySshKey: string | undefined = process.env.DEPLOY_SSH_KEY
 
 // try to load from .env.production if env vars not set (local use)
 if (!deployHost) {
@@ -59,6 +60,7 @@ if (!deployHost) {
       const [key, value] = line.split('=')
       if (key === 'DEPLOY_HOST') deployHost = value?.trim()
       if (key === 'DEPLOY_USER') deployUser = value?.trim()
+      if (key === 'DEPLOY_SSH_KEY') deploySshKey = value?.trim()
     })
   } catch (error) {
     // file doesn't exist - likely running in CI without deployment configured
@@ -72,13 +74,19 @@ if (!deployHost) {
   process.exit(1)
 }
 
+// build SSH options - use identity file if key path exists
+const sshIdentity =
+  deploySshKey && deploySshKey.startsWith('/') ? `-i ${deploySshKey}` : ''
+const sshOpts =
+  `${sshIdentity} -o ConnectTimeout=10 -o StrictHostKeyChecking=no -o BatchMode=yes`.trim()
+
 /**
  * Get container status via SSH using docker ps with better pattern matching
  */
 async function getContainerStatus(): Promise<Map<string, any>> {
   try {
-    const result =
-      await $`ssh ${deployUser}@${deployHost} "docker ps --format json"`.quiet()
+    const sshCmd = `ssh ${sshOpts} ${deployUser}@${deployHost}`
+    const result = await $`${sshCmd.split(' ')} "docker ps --format json"`.quiet()
     const lines = result.stdout.toString().trim().split('\n').filter(Boolean)
 
     const containers = new Map()
@@ -138,9 +146,10 @@ async function getContainerStatus(): Promise<Map<string, any>> {
  */
 async function checkContainerHealth(containerId: string): Promise<boolean> {
   try {
+    const sshCmd = `ssh ${sshOpts} ${deployUser}@${deployHost}`
     // first check if container has a health check configured
     const healthResult =
-      await $`ssh -o ConnectTimeout=5 -o ServerAliveInterval=2 -o ServerAliveCountMax=2 ${deployUser}@${deployHost} "docker inspect ${containerId} --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}no-healthcheck{{end}}'"`.quiet()
+      await $`${sshCmd.split(' ')} "docker inspect ${containerId} --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}no-healthcheck{{end}}'"`.quiet()
     const healthStatus = healthResult.stdout.toString().trim()
 
     if (healthStatus === 'healthy') {
@@ -148,7 +157,7 @@ async function checkContainerHealth(containerId: string): Promise<boolean> {
     } else if (healthStatus === 'no-healthcheck') {
       // fall back to checking if running for containers without healthcheck
       const statusResult =
-        await $`ssh -o ConnectTimeout=5 -o ServerAliveInterval=2 -o ServerAliveCountMax=2 ${deployUser}@${deployHost} "docker inspect ${containerId} --format '{{.State.Status}}'"`.quiet()
+        await $`${sshCmd.split(' ')} "docker inspect ${containerId} --format '{{.State.Status}}'"`.quiet()
       const status = statusResult.stdout.toString().trim()
       return status === 'running'
     }
@@ -166,8 +175,9 @@ async function checkContainerHealth(containerId: string): Promise<boolean> {
  */
 async function getContainerLogs(containerId: string, lines = 20): Promise<string[]> {
   try {
+    const sshCmd = `ssh ${sshOpts} ${deployUser}@${deployHost}`
     const result =
-      await $`ssh ${deployUser}@${deployHost} "docker logs ${containerId} --tail ${lines} 2>&1"`.quiet()
+      await $`${sshCmd.split(' ')} "docker logs ${containerId} --tail ${lines} 2>&1"`.quiet()
     return result.stdout.toString().trim().split('\n')
   } catch {
     return []
@@ -183,9 +193,10 @@ async function checkHttpHealth(): Promise<{
   message?: string
 }> {
   try {
+    const sshCmd = `ssh ${sshOpts} ${deployUser}@${deployHost}`
     // Get web container name
     const containersResult =
-      await $`ssh ${deployUser}@${deployHost} "docker ps --filter 'name=web' --format '{{.Names}}'"`.quiet()
+      await $`${sshCmd.split(' ')} "docker ps --filter 'name=web' --format '{{.Names}}'"`.quiet()
     const webContainer = containersResult.stdout.toString().trim()
 
     if (!webContainer) {
@@ -195,7 +206,7 @@ async function checkHttpHealth(): Promise<{
     // Check the /api/health endpoint from inside the container
     // use -f to fail on HTTP errors, check exit code separately
     const result =
-      await $`ssh ${deployUser}@${deployHost} "docker exec ${webContainer} curl -sf -o /dev/null -w '%{http_code}' -m 5 http://localhost:8081/api/health || echo $?"`.quiet()
+      await $`${sshCmd.split(' ')} "docker exec ${webContainer} curl -sf -o /dev/null -w '%{http_code}' -m 5 http://localhost:8081/api/health || echo $?"`.quiet()
     const output = result.stdout.toString().trim()
 
     // if output is just a number 0-255, curl failed (exit code)
@@ -350,8 +361,9 @@ async function monitor() {
 
         // in verbose mode, show why service is unhealthy
         if (verbose && !state.healthy && state.status === 'running') {
+          const sshCmd = `ssh ${sshOpts} ${deployUser}@${deployHost}`
           const healthResult =
-            await $`ssh ${deployUser}@${deployHost} "docker inspect ${container.id} --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}no-healthcheck{{end}}'"`.quiet()
+            await $`${sshCmd.split(' ')} "docker inspect ${container.id} --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}no-healthcheck{{end}}'"`.quiet()
           const healthStatus = healthResult.stdout.toString().trim()
           console.info(`    [debug] health status = ${healthStatus}`)
         }

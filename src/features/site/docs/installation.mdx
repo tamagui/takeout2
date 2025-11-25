@@ -1,0 +1,64 @@
+---
+title: Installation
+description: Troubleshooting and manual setup
+---
+
+## Requirements
+
+| Tool | Version |
+|------|---------|
+| Bun | 1.2+ |
+| Docker | Latest |
+| Git | Any |
+
+Mobile: Xcode 15+ (iOS), Android Studio + JDK 17+ (Android)
+
+## Install Bun
+
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
+
+## Manual setup
+
+If you skip onboarding:
+
+```bash
+cp .env.development .env
+```
+
+Edit `.env`:
+```bash
+BETTER_AUTH_SECRET=your-secret
+BETTER_AUTH_URL=http://localhost:8081
+ONE_SERVER_URL=http://localhost:8081
+```
+
+Database runs in Docker automatically:
+```
+postgresql://user:password@localhost:5433/postgres
+```
+
+## Troubleshooting
+
+**Docker not running**
+```bash
+open -a Docker        # macOS
+sudo systemctl start docker  # Linux
+```
+
+**Port conflicts**
+```bash
+lsof -i :8081
+kill -9 <PID>
+```
+
+**Bun version**
+```bash
+bun upgrade
+```
+
+**Node version** (some tools need Node)
+```bash
+fnm use   # or nvm use
+```

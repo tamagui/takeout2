@@ -1,0 +1,44 @@
+---
+title: Introduction
+description: Full-stack starter for real-time cross-platform apps
+---
+
+Takeout is a production-ready starter for building real-time, cross-platform apps with [One](https://onestack.dev), [Zero](https://zero.rocicorp.dev), and [Tamagui](https://tamagui.dev).
+
+## Stack
+
+- **One** - Universal React framework (web, iOS, Android)
+- **Zero** - Offline-first sync via postgres replication
+- **Tamagui** - Universal UI with compile-time optimization
+- **Better Auth** - Email, OAuth, passwordless
+- **Drizzle** - Type-safe database schema
+- **SST / Uncloud** - AWS or self-hosted deployment
+
+## What's included
+
+**Fast CI/CD** - GitHub Actions pipeline gets from commit to deployed in ~5 minutes. Includes Playwright tests, health checks, and rollback monitoring.
+
+**over-zero** - Our Zero wrapper with query generation, permission helpers, and cleaner mutation patterns.
+
+**Dev helpers** - Event emitter, keyboard shortcuts, URL unfurling, drag-and-drop, image upload with progress. Hooks like `useAsyncEffect`, `useLazyMount`, idle detection.
+
+**Scripts** - `tko` CLI organizes ~50 scripts for builds, deploys, upgrades, database ops. Font subsetting, REPL with app context, env pulling from production.
+
+**Environment** - Code-driven env management with validation. Auto-generates env files and syncs to GitHub secrets.
+
+## Structure
+
+Single package.json, no monorepo complexity. Everything lives here:
+
+```
+app/           # routes (One file-based routing)
+src/features/  # feature modules
+src/data/      # Zero queries, mutations, models
+src/interface/ # shared UI components
+scripts/       # organized CLI scripts
+packages/      # optional internal packages
+```
+
+## Next
+
+[Getting Started](/docs/getting-started)

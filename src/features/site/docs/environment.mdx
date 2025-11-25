@@ -1,0 +1,173 @@
+---
+title: Environment
+description: Environment variables and configuration
+---
+
+Takeout uses a layered environment system for development, testing, and production.
+
+## Environment files
+
+| File | Purpose | Committed |
+|------|---------|-----------|
+| `.env.development` | Development defaults | Yes |
+| `.env` | Active environment | No |
+| `.env.local` | Personal overrides | No |
+| `.env.production` | Production values | No |
+| `.env.production.example` | Production template | Yes |
+
+## Loading order
+
+Environment variables load in this order (later overrides earlier):
+
+1. `.env.development` (base defaults)
+2. `.env` (current environment)
+3. `.env.local` (personal overrides)
+
+## Key variables
+
+### Authentication
+
+```bash
+BETTER_AUTH_SECRET=your-secret-key
+BETTER_AUTH_URL=http://localhost:8081
+```
+
+Generate a secret:
+```bash
+openssl rand -base64 32
+```
+
+### Server
+
+```bash
+ONE_SERVER_URL=http://localhost:8081
+```
+
+### Database
+
+```bash
+ZERO_UPSTREAM_DB=postgresql://user:password@localhost:5433/postgres
+ZERO_CVR_DB=postgresql://user:password@localhost:5433/zero_cvr
+ZERO_CHANGE_DB=postgresql://user:password@localhost:5433/zero_cdb
+```
+
+### Storage (S3/R2)
+
+```bash
+CLOUDFLARE_R2_ENDPOINT=http://localhost:9000/chat
+CLOUDFLARE_R2_ACCESS_KEY=minio
+CLOUDFLARE_R2_SECRET_KEY=minio_password
+CLOUDFLARE_R2_PUBLIC_URL=http://localhost:9200/chat
+```
+
+### Analytics (optional)
+
+```bash
+VITE_POSTHOG_API_KEY=your-key
+VITE_POSTHOG_HOST=https://app.posthog.com
+```
+
+### Deployment
+
+```bash
+DEPLOYMENT_PLATFORM=uncloud  # or sst
+DEPLOY_HOST=your-server-ip
+DEPLOY_USER=root
+DEPLOY_SSH_KEY=/path/to/key
+```
+
+## Adding new variables
+
+1. Add to `env` section in `package.json`:
+
+```json
+{
+  "env": {
+    "MY_NEW_VAR": "",           // optional, empty default
+    "MY_REQUIRED_VAR": true     // required, no default
+  }
+}
+```
+
+2. Run the update script:
+
+```bash
+bun env:update
+```
+
+This updates:
+- `src/server/env-server.ts` - Server-side exports
+- `.github/workflows/ci.yml` - CI secrets
+
+3. Add to `.env.development` if needed:
+
+```bash
+MY_NEW_VAR=development-value
+```
+
+## Using variables
+
+### Server-side
+
+```ts
+import { MY_NEW_VAR } from '~/server/env-server'
+```
+
+### Client-side (Vite)
+
+Only variables prefixed with `VITE_` are available on the client:
+
+```ts
+const apiKey = import.meta.env.VITE_POSTHOG_API_KEY
+```
+
+## GitHub Actions
+
+CI/CD uses GitHub secrets. Sync your production env:
+
+```bash
+bun tko env/sync-to-github
+```
+
+Or manually add secrets in GitHub repo settings.
+
+## Production setup
+
+1. Copy the example:
+
+```bash
+cp .env.production.example .env.production
+```
+
+2. Fill in production values
+
+3. Sync to GitHub (optional):
+
+```bash
+bun tko env/sync-to-github
+```
+
+## Validation
+
+Environment variables are validated at startup:
+
+- Required variables (marked `true` in package.json) throw if missing
+- Optional variables (marked with default) use the default if missing
+- In development/test mode, warnings are logged for missing optional vars
+
+## Debugging
+
+Check which variables are loaded:
+
+```bash
+# development
+bun run:dev node -e "console.info(process.env)"
+
+# production
+bun run:prod node -e "console.info(process.env)"
+```
+
+## Next steps
+
+- [Deployment Overview](/docs/deployment-overview) - Production deployment
+- [Scripts & CLI](/docs/scripts-cli) - Environment scripts

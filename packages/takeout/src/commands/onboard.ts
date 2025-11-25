@@ -262,12 +262,14 @@ export const onboardCommand = defineCommand({
       markOnboarded(cwd)
 
       console.info()
-      showInfo('Next steps:')
+      showInfo('Next steps (run in separate terminals):')
       console.info()
-      console.info('  bun dev            # Start development server')
-      console.info('  bun ios            # Build iOS dev app')
-      console.info('  bun android        # Build Android dev app')
-      console.info('  takeout docs list  # View Takeout docs')
+      console.info('  bun backend        # start docker services first')
+      console.info('  bun dev            # start web dev server')
+      console.info()
+      console.info('  bun ios            # build iOS dev app')
+      console.info('  bun android        # build Android dev app')
+      console.info('  bun tko docs list  # view Takeout docs')
       console.info()
     }
 

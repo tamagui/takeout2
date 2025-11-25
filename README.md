@@ -3,6 +3,18 @@
 A full-stack, cross-platform starter kit for building modern web and mobile
 applications with React Native, Zero sync, and AWS deployment.
 
+## Prerequisites
+
+Before you begin, ensure you have:
+
+- **Bun** 1.2+ - [Install Bun](https://bun.sh)
+- **Docker** - [Install Docker](https://docs.docker.com/get-docker/) (must be running)
+- **Git** - For version control
+
+For mobile development:
+- **iOS**: macOS with Xcode 15+
+- **Android**: Android Studio with JDK 17+
+
 ## Quick Start
 
 ```bash
@@ -10,7 +22,12 @@ bun install
 bun onboard
 ```
 
-The onboarding wizard will guide you through setup.
+The onboarding wizard will guide you through setup. After onboarding, run in separate terminals:
+
+```bash
+bun backend      # start docker services (postgres, zero, minio)
+bun dev          # start web dev server
+```
 
 ## Getting Familiar
 
@@ -22,11 +39,10 @@ At a high level, the primary technologies used are:
 
 - [One](https://onestack.dev) - Universal React framework
 - [Zero](https://zero.rocicorp.dev) - Real-time sync
-- [Tamagui](https://tamagui.dev) - Real-time sync
-- [Better Auth](https://www.better-auth.com) - Authentication
 - [Tamagui](https://tamagui.dev) - Universal UI
-- [Drizzle ORM](https://orm.drizzle.team) - Database Schema
-- [SST](https://sst.dev) - Infrastructure as code
+- [Better Auth](https://www.better-auth.com) - Authentication
+- [Drizzle ORM](https://orm.drizzle.team) - Database schema
+- [SST](https://sst.dev) / Uncloud - Deployment
 
 And high level structure that is good to start learning:
 
@@ -167,9 +183,9 @@ import { HeartIcon } from '~/interface/icons/phosphor/HeartIcon'
 
 ### Local Development
 
-PostgreSQL runs in Docker:
+PostgreSQL runs in Docker on port 5433:
 
-- Main database: `postgresql://user:password@localhost:5432/postgres`
+- Main database: `postgresql://user:password@localhost:5433/postgres`
 - Zero sync databases: `zero_cvr` and `zero_cdb`
 - Connect with TablePlus or any PostgreSQL client
 
@@ -221,17 +237,26 @@ See `.env.production.example` for complete production configuration.
 
 ## Deployment
 
-This starter kit deploys to AWS using [SST](https://sst.dev/):
+Takeout supports two deployment options:
 
-[todo]
+**Uncloud (self-hosted)** - Deploy to any VPS with Docker:
+```bash
+bun tko uncloud deploy-prod
+```
+
+**AWS via SST** - Full serverless deployment:
+```bash
+bun tko sst deploy production
+```
+
+See [deployment docs](./docs/deployment.md) for detailed setup instructions.
 
 ## Mobile Apps
 
 ### iOS
 
 ```bash
-bun ios          # Run in simulator
-bun ios:device   # Run on physical device
+bun ios          # run in simulator
 ```
 
 Requires macOS, Xcode 15+, and iOS 17.0+ deployment target.
@@ -239,8 +264,7 @@ Requires macOS, Xcode 15+, and iOS 17.0+ deployment target.
 ### Android
 
 ```bash
-bun android              # Run in emulator
-bun android:device       # Run on physical device
+bun android      # run in emulator
 ```
 
 Requires Android Studio, JDK 17+, and Android SDK 34+.

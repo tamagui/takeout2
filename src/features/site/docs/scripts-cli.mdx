@@ -1,0 +1,191 @@
+---
+title: Scripts & CLI
+description: Using the Takeout CLI and available scripts
+---
+
+Takeout includes a CLI (`tko`) that organizes scripts and provides helpful commands.
+
+## Using the CLI
+
+```bash
+# see all commands
+bun tko
+
+# run a script
+bun tko <script-name>
+
+# nested scripts use /
+bun tko web/build
+bun tko check/types
+```
+
+## Common commands
+
+### Development
+
+```bash
+bun dev              # start web dev server
+bun backend          # start docker services
+bun ios              # run iOS simulator
+bun android          # run Android emulator
+```
+
+### Code quality
+
+```bash
+bun tko check        # run all checks (lint, types, deps)
+bun lint:fix         # auto-fix lint issues
+bun tko check types  # type check only
+```
+
+### Database
+
+```bash
+bun migrate              # run migrations
+bun db:migrate-add name  # create one-off migration
+bun tko db generate      # generate drizzle types
+```
+
+### Zero
+
+```bash
+bun tko zero generate    # generate Zero schema types
+```
+
+### Testing
+
+```bash
+bun test:unit            # unit tests
+bun test:integration     # integration tests (playwright)
+bun test                 # all tests
+```
+
+### Build
+
+```bash
+bun tko web build        # build web for production
+bun tko web serve        # serve production build locally
+```
+
+### Deployment
+
+```bash
+bun tko uncloud deploy-prod   # deploy to Uncloud
+bun tko sst deploy production # deploy to AWS
+```
+
+## Script categories
+
+### check/
+
+Code quality checks:
+
+```bash
+bun tko check/lint         # run linter
+bun tko check/types        # TypeScript check
+bun tko check/dependencies # circular dependency check
+```
+
+### web/
+
+Web platform scripts:
+
+```bash
+bun tko web/build          # production build
+bun tko web/serve          # serve build locally
+bun tko web/build-docker   # build docker image
+```
+
+### db/
+
+Database operations:
+
+```bash
+bun tko db/generate-drizzle   # generate types
+bun tko db/add-migration      # create migration file
+bun tko db/migrate-drizzle    # run drizzle migrations
+```
+
+### ci/
+
+CI/CD scripts:
+
+```bash
+bun tko ci/release         # full CI pipeline
+bun tko ci/check           # CI checks only
+bun tko ci/backend         # start CI backend
+```
+
+### uncloud/
+
+Self-hosted deployment:
+
+```bash
+bun tko uncloud/deploy-prod    # deploy to production
+bun tko uncloud/deploy-local   # deploy to local VM
+bun tko uncloud/logs           # view production logs
+```
+
+### upgrade/
+
+Dependency upgrades:
+
+```bash
+bun tko upgrade/tamagui    # upgrade Tamagui
+bun tko upgrade/zero       # upgrade Zero
+bun tko upgrade/one        # upgrade One framework
+```
+
+## Documentation
+
+```bash
+bun tko docs list          # list available docs
+bun tko docs read <name>   # read a doc in terminal
+```
+
+## Environment
+
+```bash
+bun env:update             # sync env from package.json
+bun env:pull               # pull env from production
+```
+
+## Creating custom scripts
+
+Add a new script in `scripts/`:
+
+```ts
+// scripts/my-script.ts
+export const description = 'Description of my script'
+
+export default async function main() {
+  console.info('Running my script')
+}
+```
+
+Run it with:
+
+```bash
+bun tko my-script
+```
+
+### Nested scripts
+
+Organize scripts in folders:
+
+```
+scripts/
+├── my-feature/
+│   ├── setup.ts
+│   └── cleanup.ts
+```
+
+```bash
+bun tko my-feature/setup
+bun tko my-feature/cleanup
+```
+
+## Next steps
+
+- [Environment](/docs/environment) - Environment variables
+- [Testing](/docs/testing) - Testing strategies

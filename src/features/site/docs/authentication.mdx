@@ -1,0 +1,77 @@
+---
+title: Authentication
+description: Better Auth setup
+---
+
+[Better Auth](https://www.better-auth.com) handles email/password, OAuth, and passwordless. Sessions sync with Zero permissions.
+
+## Config
+
+`src/auth/auth.ts`:
+
+```ts
+export const auth = betterAuth({
+  database: drizzleAdapter(db, { provider: 'pg' }),
+  emailAndPassword: { enabled: true },
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    },
+  },
+})
+```
+
+## Usage
+
+```tsx
+import { useAuth } from '~/auth/useAuth'
+
+function Profile() {
+  const { user, signOut } = useAuth()
+  if (!user) return <SignInPrompt />
+  return <Button onPress={signOut}>Sign Out</Button>
+}
+```
+
+## Sign up / Sign in
+
+```tsx
+import { authClient } from '~/auth/auth-client'
+
+await authClient.signUp.email({ email, password, name })
+await authClient.signIn.email({ email, password })
+await authClient.signIn.social({ provider: 'github' })
+await authClient.signOut()
+```
+
+## Adding OAuth providers
+
+1. Add to auth config:
+```ts
+socialProviders: {
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  },
+},
+```
+
+2. Add env vars
+
+## Zero integration
+
+User ID available in permissions:
+
+```ts
+const permission = where('post', (q, auth) =>
+  q.cmp('userId', auth?.id || '')
+)
+```
+
+## Environment
+
+```bash
+BETTER_AUTH_SECRET=your-secret  # openssl rand -base64 32
+BETTER_AUTH_URL=http://localhost:8081
+```

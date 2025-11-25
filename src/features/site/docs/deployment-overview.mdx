@@ -1,0 +1,158 @@
+---
+title: Deployment Overview
+description: Deploy Takeout to production
+---
+
+Takeout supports two deployment options: Uncloud for self-hosting and SST for AWS.
+
+## Deployment options
+
+| Feature | Uncloud | SST (AWS) |
+|---------|---------|-----------|
+| Setup time | ~10 minutes | ~30-60 minutes |
+| Cost | VPS cost only | Pay-as-you-go AWS |
+| Scaling | Manual | Auto-scaling |
+| Complexity | Simple | More complex |
+| Database | Self-hosted or managed | Aurora (managed) |
+
+## Quick comparison
+
+### Uncloud (self-hosted)
+
+Best for:
+- Starting out
+- Predictable costs
+- Full control over infrastructure
+- Simpler setup
+
+Deploy with:
+```bash
+bun tko uncloud deploy-prod
+```
+
+### SST (AWS)
+
+Best for:
+- Auto-scaling requirements
+- Enterprise compliance needs
+- AWS ecosystem integration
+- Managed services
+
+Deploy with:
+```bash
+bun tko sst deploy production
+```
+
+## CI/CD
+
+Both options integrate with GitHub Actions. On push to main:
+
+1. Run checks (lint, types)
+2. Run tests (unit + integration)
+3. Build the app
+4. Deploy to production
+5. Run health checks
+
+Skip deployment for non-main branches with `--skip-deploy`.
+
+## Prerequisites
+
+### For Uncloud
+
+- A VPS (DigitalOcean, Hetzner, etc.)
+- SSH access to the server
+- Docker installed on server
+
+### For SST
+
+- AWS account
+- AWS CLI configured
+- Sufficient IAM permissions
+
+## Production environment
+
+Set up `.env.production` with:
+
+```bash
+# required
+BETTER_AUTH_SECRET=your-production-secret
+BETTER_AUTH_URL=https://your-domain.com
+ONE_SERVER_URL=https://your-domain.com
+
+# database
+ZERO_UPSTREAM_DB=postgresql://...
+ZERO_CVR_DB=postgresql://...
+ZERO_CHANGE_DB=postgresql://...
+
+# storage
+CLOUDFLARE_R2_ENDPOINT=...
+CLOUDFLARE_R2_ACCESS_KEY=...
+CLOUDFLARE_R2_SECRET_KEY=...
+
+# deployment
+DEPLOYMENT_PLATFORM=uncloud  # or sst
+```
+
+## Database options
+
+### Self-hosted (Uncloud)
+
+PostgreSQL runs alongside your app:
+- Automatic backups
+- Lower cost
+- You manage it
+
+### Managed (both)
+
+Use a managed PostgreSQL service:
+- Neon, Supabase, or RDS
+- Automatic backups
+- Professional support
+- Higher cost
+
+## Domain setup
+
+1. Point your domain to your server/load balancer
+2. Update environment:
+   ```bash
+   BETTER_AUTH_URL=https://your-domain.com
+   ONE_SERVER_URL=https://your-domain.com
+   ```
+3. SSL is handled automatically (Uncloud uses Caddy, SST uses ALB)
+
+## Monitoring
+
+### Logs
+
+```bash
+# Uncloud
+bun tko uncloud/logs
+
+# SST
+bun tko aws/logs
+```
+
+### Health checks
+
+Both platforms run health checks after deployment:
+- HTTP endpoint check
+- Database connection check
+- Zero sync status
+
+## Rollback
+
+If a deployment fails:
+
+```bash
+# Uncloud - redeploy previous version
+git revert HEAD
+git push
+
+# SST - rollback in AWS console or CLI
+```
+
+## Next steps
+
+- [Uncloud Deployment](/docs/deployment-uncloud) - Self-hosted setup
+- [SST Deployment](/docs/deployment-sst) - AWS setup
+- [Migrations](/docs/deployment-migrations) - Database migrations

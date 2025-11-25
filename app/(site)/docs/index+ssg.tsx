@@ -38,13 +38,13 @@ export function DocsIndexPage() {
         </YStack>
 
         <YStack gap="$3">
-          <H2 size="$7">Configuration</H2>
+          <H2 size="$7">Architecture</H2>
           <Paragraph size="$5" lineHeight="$6" color="$color11">
-            Customize Takeout to match your needs with our flexible configuration options.
+            Understand how Takeout works under the hood.
           </Paragraph>
-          <Link href="/docs/configuration">
+          <Link href="/docs/architecture">
             <Paragraph color="$blue10" hoverStyle={{ color: '$blue11' }}>
-              Explore configuration options →
+              Explore the architecture →
             </Paragraph>
           </Link>
         </YStack>

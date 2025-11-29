@@ -6,7 +6,6 @@ import type { User } from '~/data/types'
  *
  * If the user is fully onboarded, returns null.
  *
- * NOTE: The `user` argument here should be the `user.user` object returned by `useUser`, not `useAuth`.
  */
 export function getNextOnboardingStep(
   user: User,

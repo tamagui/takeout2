@@ -1,5 +1,8 @@
 # Takeout Roadmap
 
+- getNextOnboardingStep / whitelist is messy need to plan/fix
+  - see // Check whitelist status first (only if feature flag is enabled)
+
 v1:
 
 - screens:

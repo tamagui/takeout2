@@ -8,7 +8,7 @@
   "type": "module",
   "types": "./types/index.d.ts",
   "bin": {
-    "over-zero": "./dist/cjs/cli.cjs"
+    "over-zero": "./cli.cjs"
   },
   "files": [
     "src",

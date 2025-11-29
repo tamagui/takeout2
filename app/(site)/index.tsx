@@ -6,44 +6,39 @@ import { DeviceTabletIcon } from '~/interface/icons/phosphor/DeviceTabletIcon'
 import { FolderOpenIcon } from '~/interface/icons/phosphor/FolderOpenIcon'
 import { StackIcon } from '~/interface/icons/phosphor/StackIcon'
 import { TriangleIcon } from '~/interface/icons/phosphor/TriangleIcon'
-import { GradientGlitchText } from '~/interface/text/GradientGlitchText'
 
 const Hero = styled(H1, {
-  size: '$9',
+  size: '$8',
   fontWeight: '800',
 
   $sm: {
-    size: '$10',
+    size: '$9',
     fontWeight: '800',
   },
 
   $md: {
-    size: '$12',
+    size: '$10',
     fontWeight: '800',
   },
 })
 
 export function IndexPage() {
   return (
-    <YStack gap="$6" py="$8">
+    <YStack gap="$4" py="$10">
       <YStack items="center">
-        <Hero>
-          <GradientGlitchText>Build Stunning</GradientGlitchText>
-        </Hero>
-        <Hero lineHeight="$5" $sm={{ lineHeight: '$6' }} $md={{ lineHeight: '$8' }}>
-          Better Apps
-        </Hero>
+        <Hero>Build better</Hero>
+        <Hero>cross-platform apps</Hero>
+
         <H2
           size="$4"
           color="$color11"
-          maxW={700}
-          mt="$8"
-          lineHeight="$4"
+          maxW={650}
+          mt="$5"
           text="center"
-          $md={{ size: '$5' }}
+          $md={{ size: '$6' }}
         >
-          A modern framework for building web and native applications with React. Fast,
-          flexible, and built for the future.
+          A modern framework for building web and native applications with&nbsp;React.
+          Fast, flexible, and built for the future.
         </H2>
       </YStack>
 

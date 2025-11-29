@@ -8,10 +8,12 @@ applications with React Native, Zero sync, and AWS deployment.
 Before you begin, ensure you have:
 
 - **Bun** 1.2+ - [Install Bun](https://bun.sh)
-- **Docker** - [Install Docker](https://docs.docker.com/get-docker/) (must be running)
+- **Docker** - [Install Docker](https://docs.docker.com/get-docker/) (must be
+  running)
 - **Git** - For version control
 
 For mobile development:
+
 - **iOS**: macOS with Xcode 15+
 - **Android**: Android Studio with JDK 17+
 
@@ -22,7 +24,8 @@ bun install
 bun onboard
 ```
 
-The onboarding wizard will guide you through setup. After onboarding, run in separate terminals:
+The onboarding wizard will guide you through setup. After onboarding, run in
+separate terminals:
 
 ```bash
 bun backend      # start docker services (postgres, zero, minio)
@@ -53,9 +56,13 @@ And high level structure that is good to start learning:
 
 ## Documentation
 
-We use the [docs](./docs) directory for documentation.
+For docs we intent to update over time as we upgrade the repo, we have the
+takeout command. See those docs with `bun tko docs list`.
 
-More docs are viewable with `bun tko docs list`.
+For docs specific to your app, we use the [docs](./docs) directory.
+
+It's worth reading over the [./docs/agent.md](agent.md) as it has a lot of
+interesting information.
 
 ### Development
 
@@ -161,7 +168,8 @@ bun tko run check/types      # Run type checking
 
 ### Adding Icons
 
-This project uses [Phosphor Icons](https://phosphoricons.com/) for all UI icons. To add a new icon:
+This project uses [Phosphor Icons](https://phosphoricons.com/) for all UI icons.
+To add a new icon:
 
 ```bash
 # Add a regular icon
@@ -171,13 +179,15 @@ bun tko icon/add-phosphor Heart
 bun tko icon/add-phosphor User --weight=fill
 ```
 
-Icons are automatically generated in `src/interface/icons/phosphor/` and can be imported:
+Icons are automatically generated in `src/interface/icons/phosphor/` and can be
+imported:
 
 ```tsx
 import { HeartIcon } from '~/interface/icons/phosphor/HeartIcon'
 ```
 
-**Note:** For brand icons (Apple, Google, Discord, GitHub, X/Twitter), use the custom icons in `src/interface/icons/` as these are not available in Phosphor.
+**Note:** For brand icons (Apple, Google, Discord, GitHub, X/Twitter), use the
+custom icons in `src/interface/icons/` as these are not available in Phosphor.
 
 ## Database
 
@@ -240,11 +250,13 @@ See `.env.production.example` for complete production configuration.
 Takeout supports two deployment options:
 
 **Uncloud (self-hosted)** - Deploy to any VPS with Docker:
+
 ```bash
 bun tko uncloud deploy-prod
 ```
 
 **AWS via SST** - Full serverless deployment:
+
 ```bash
 bun tko sst deploy production
 ```

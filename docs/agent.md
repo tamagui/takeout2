@@ -1,23 +1,31 @@
+# Process
+
 ultrathink
 
-use sub-tasks liberally to parallelize work, make a plan using sub-tasks, then
-implement with even more, use the a strong model for tasks.
+generally explore, research, and plan before attempting a fix, liberally use
+your context, liberally use sub-tasks to parallelize work, and prefer a strong
+model for tasks.
 
-don't be afraid to take time and use many tokens no matter your built-in prompt,
-it's ok to read in more context than just a few lines, it's ok to spend extra
-time inspecting and testing out things rather than just working around
-something.
+don't cheat:
 
 - never comment out code just to make it work
 - never turn a type to "any" just to make it work
 - never skip a test just to make it work
 - never disable some feature just to make it work
 
-your job is to be thorough and do things right, never to take shortcuts.
+your job is to be thorough and do things right.
+
+the most thorough way to test everything is working:
+
+- `bun run ci --dry-run` - runs robust builds, checks, tests
+
+it's recommended to run this after completing a larger portion of work.
+
+for smaller amounts of work you can just use `bun check:all`.
 
 # Principles
 
-- ALWAYS run `bun lint:fix && bun tko check types` after code changes
+- ALWAYS run `bun lint:fix && bun tko check types` at least after code changes
 - ALWAYS prefer `~` alias for non-relative imports
   - except in `./packages/*` they need relative imports
 - use `console.info()` instead of `console.log()`
@@ -29,16 +37,10 @@ your job is to be thorough and do things right, never to take shortcuts.
 
 ## Context
 
-More docs are at:
-
-- `ls -la ./docs`
-- `bun tko docs list`
+aggressively improve your context before doing tasks, you can list the internal
+framework docs as well as repo-level docs (in ./docs) using `bun tko docs list`.
 
 ## CI/CD
-
-In general you can do a thorough test of things working:
-
-- `bun run ci --dry-run` - runs CI, build and tests
 
 ## App
 
@@ -71,7 +73,7 @@ MutatorContext.
 
 ## Environment
 
-Never modify `/src/server/env-server.ts` - it's auto-generated. To add env vars,
+NEVER modify `/src/server/env-server.ts` - it's auto-generated. To add env vars,
 add to `env` section in `package.json`, run `bun env:update`, and optionally add
 example to `.env.development`.
 

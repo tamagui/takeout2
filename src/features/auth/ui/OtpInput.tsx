@@ -111,13 +111,15 @@ export const OtpInput = memo(function OtpInput({
     }
   }
 
+  const codeString = otpValue.join('')
+  const isFilled = codeString.length === otpCount
+
   useEffect(() => {
-    const codeString = otpValue.join('')
     onCodeChanged?.(codeString)
-    if (codeString.length === otpCount) {
+    if (isFilled) {
       onCodeFilled?.(codeString)
     }
-  }, [otpValue, onCodeChanged, onCodeFilled, otpCount])
+  }, [onCodeChanged, onCodeFilled, codeString, isFilled])
 
   return (
     <YStack gap="$3">
@@ -180,7 +182,14 @@ export const OtpInput = memo(function OtpInput({
           })}
       </XStack>
 
-      <ButtonSimple variant="transparent" onPress={handlePaste}>
+      <ButtonSimple
+        variant="transparent"
+        onPress={handlePaste}
+        {...(isFilled && {
+          opacity: 0,
+          disabled: true,
+        })}
+      >
         <SizableText size="$2" color="$color9">
           Tap to paste code
         </SizableText>

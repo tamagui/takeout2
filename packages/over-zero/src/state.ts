@@ -23,8 +23,7 @@ export const setSchema = (_: Schema) => {
 }
 
 export const getAuthData = () => {
-  if (authData === undefined) throw new Error(errMessage)
-  return authData
+  return authData || null
 }
 
 export const setAuthData = (_: AuthData) => {

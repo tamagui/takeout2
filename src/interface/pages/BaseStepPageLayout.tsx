@@ -33,13 +33,14 @@ export const BaseStepPageLayout = ({
         showsVerticalScrollIndicator={false}
       >
         <YStack
+          minW="100%"
           flex={1}
           pt={!hideBackButton ? top + 24 : 0}
           bg="$background"
           rounded="$6"
           {...(isWeb && { flex: 'unset', mt: '$10', maxW: 400, p: '$6', self: 'center' })}
         >
-          <YStack px={14}>
+          <YStack maxW={600} self="center" px={14}>
             <EnsureFlexed />
             {children}
             {isWeb ? <YStack pt="$6">{bottomElement}</YStack> : null}

@@ -1,5 +1,6 @@
 import { isNative } from '@take-out/helpers'
 import { router, Slot, useFocusEffect, usePathname } from 'one'
+import { Spacer } from 'tamagui'
 import { getNextOnboardingStep } from '~/features/onboarding/getNextOnboardingStep'
 import { SiteHeader } from '~/features/site/ui/SiteHeader'
 import { useUser } from '~/features/user/useUser'
@@ -31,6 +32,8 @@ export function AuthAndOnboardingLayout() {
     <>
       <SiteHeader />
       <PageContainer>
+        {/* header height push down */}
+        <Spacer size={70} />
         <Slot />
       </PageContainer>
     </>

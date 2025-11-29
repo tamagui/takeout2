@@ -12,6 +12,7 @@ import { AppleIcon } from '~/interface/icons/AppleIcon'
 import { GoogleIcon } from '~/interface/icons/GoogleIcon'
 import { H2 } from '~/interface/text/Headings'
 import { showToast } from '~/interface/toast/helpers'
+import { ButtonAction } from '~/interface/buttons/ButtonAction'
 
 export const LoginPage = () => {
   const { goToNextStep } = useOnboarding()
@@ -38,6 +39,7 @@ export const LoginPage = () => {
           height={200}
         />
       )}
+
       <YStack flex={1} justify="center" items="center">
         <Circle
           size={80}
@@ -84,9 +86,8 @@ export const LoginPage = () => {
                 animation="200ms"
                 enterStyle={{ opacity: 0, y: -10 }}
               >
-                Welcome back
+                Welcome
               </H2>
-              <SizableText color="$color8">Sign in to your account</SizableText>
             </YStack>
           </YStack>
           <YStack
@@ -105,7 +106,7 @@ export const LoginPage = () => {
           >
             <YStack width="100%" gap="$3">
               <Link href="/signup/email" asChild>
-                <ButtonSimple
+                <ButtonAction
                   glass
                   size="large"
                   width="100%"
@@ -117,7 +118,7 @@ export const LoginPage = () => {
                   enterStyle={{ opacity: 0, scale: 0.95 }}
                 >
                   Continue with Email
-                </ButtonSimple>
+                </ButtonAction>
               </Link>
 
               {isWeb && window.location.search.includes('showAdmin') && (
@@ -137,26 +138,7 @@ export const LoginPage = () => {
                 </ButtonSimple>
               )}
             </YStack>
-            <XStack
-              width="100%"
-              items="center"
-              gap="$4"
-              py="$2"
-              animation="200ms"
-              enterStyle={{ opacity: 0 }}
-            >
-              <Separator flex={1} borderColor="$color3" />
-              <SizableText
-                color="$color10"
-                size="$2"
-                fontFamily="$mono"
-                textTransform="uppercase"
-                letterSpacing={1}
-              >
-                or
-              </SizableText>
-              <Separator flex={1} borderColor="$color3" />
-            </XStack>
+
             <XStack width="100%" gap="$3" justify="center" overflow="visible">
               <ButtonSimple
                 glass

@@ -24,7 +24,7 @@ export const OtpPage = () => {
   const isPhone = params.method === 'phone'
 
   const displayValue =
-    params.value || (isPhone ? '1 (203) 962-2415' : 'example@gmail.com')
+    params.value || (isPhone ? '1 (203) 555-2415' : 'email@example.com')
 
   const handleResendOtp = useEvent(async () => {
     if (!params.method || !params.value) {
@@ -133,7 +133,7 @@ export const OtpPage = () => {
           isError={isError}
         />
         {timer.count > 0 ? (
-          <SizableText fontSize={16} opacity={0.6}>
+          <SizableText size="$4" color="$color9">
             Resend Code in ({timer.count})
           </SizableText>
         ) : (

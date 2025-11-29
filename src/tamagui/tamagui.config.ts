@@ -45,7 +45,7 @@ const heading = createSystemFont({
     },
   },
   sizeSize: (x) => Math.round(x * 1.25),
-  sizeLineHeight: (x) => Math.round(x * 1.2 + 5),
+  sizeLineHeight: (x) => Math.round(x * 1.12 + 5),
 })
 
 const mono = createSystemFont({

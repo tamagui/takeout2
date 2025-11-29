@@ -1,11 +1,29 @@
 import { router } from 'one'
 import type { ReactNode } from 'react'
-import { Circle, EnsureFlexed, H5, isWeb, Spacer, XStack, YStack } from 'tamagui'
+import { Circle, H5, isWeb, Spacer, XStack, YStack } from 'tamagui'
 import { Pressable } from '../buttons/Pressable'
 import { CaretLeftIcon } from '../icons/phosphor/CaretLeftIcon'
 import type { IconComponent } from '../icons/types'
 import { PageHeading } from '../text/PageHeading'
 import { BaseStepPageLayout } from './BaseStepPageLayout'
+
+export type StepPageProps = {
+  title: string
+  description?: string
+  descriptionSecondLine?: string
+  headerTitle?: string
+  Icon?: IconComponent
+  IconGroup?: ReactNode
+  children: ReactNode
+  bottom?: ReactNode
+  buttonRight?: ReactNode
+  disableBackButton?: boolean
+  hideBackButton?: boolean
+  disableScroll?: boolean
+  linearGradientFooter?: boolean
+  disableKeyboardAvoidingView?: boolean
+  keyboardOffset?: number
+}
 
 export const StepPageLayout = ({
   title,
@@ -23,23 +41,7 @@ export const StepPageLayout = ({
   linearGradientFooter = false,
   disableKeyboardAvoidingView = false,
   keyboardOffset = 0,
-}: {
-  title: string
-  description?: string
-  descriptionSecondLine?: string
-  headerTitle?: string
-  Icon?: IconComponent
-  IconGroup?: ReactNode
-  children: ReactNode
-  bottom?: ReactNode
-  buttonRight?: ReactNode
-  disableBackButton?: boolean
-  hideBackButton?: boolean
-  disableScroll?: boolean
-  linearGradientFooter?: boolean
-  disableKeyboardAvoidingView?: boolean
-  keyboardOffset?: number
-}) => {
+}: StepPageProps) => {
   return (
     <BaseStepPageLayout
       bottom={bottom}

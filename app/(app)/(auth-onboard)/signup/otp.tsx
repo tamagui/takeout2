@@ -7,7 +7,6 @@ import { OtpInput } from '~/features/auth/ui/OtpInput'
 import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { useTimer } from '~/helpers/time/useTimer'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
-import { Pressable } from '~/interface/buttons/Pressable'
 import { showError } from '~/interface/dialogs/actions'
 import { isSmallScreen } from '~/interface/dimensions'
 import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
@@ -63,7 +62,9 @@ export const OtpPage = () => {
       showError('Authentication method or value is not specified.')
       return
     }
+
     setLoading(true)
+
     try {
       const { error } = await otpLogin(params.method, params.value, otpCode)
 
@@ -115,6 +116,7 @@ export const OtpPage = () => {
           size="large"
           // No need func here because we have onCodeFilled in OtpInput
           disabled={otpCode.length !== 6 || loading}
+          onPress={handleContinue}
         >
           {loading ? 'Verifying...' : 'Next'}
         </ButtonSimple>
@@ -135,11 +137,9 @@ export const OtpPage = () => {
             Resend Code in ({timer.count})
           </SizableText>
         ) : (
-          <Pressable data-testid="resend-otp-button" onPress={handleResendOtp}>
-            <SizableText textDecorationLine="underline" fontWeight="500">
-              Resend
-            </SizableText>
-          </Pressable>
+          <ButtonSimple data-testid="resend-otp-button" onPress={handleResendOtp}>
+            Resend
+          </ButtonSimple>
         )}
       </YStack>
     </StepPageLayout>

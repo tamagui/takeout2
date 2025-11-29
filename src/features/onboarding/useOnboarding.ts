@@ -59,6 +59,7 @@ export function useOnboarding() {
       user,
       onboardingConfig,
     })
+
     if (!user) return
 
     const nextRoute = getNextOnboardingStep(user, onboardingConfig)

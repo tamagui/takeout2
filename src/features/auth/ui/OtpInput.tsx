@@ -11,6 +11,8 @@ import {
 } from 'tamagui'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { getClipboardText } from '~/helpers/clipboard'
+import { InfoIcon } from '~/interface/icons/phosphor/InfoIcon'
+import { ClipboardIcon } from '~/interface/icons/phosphor/ClipboardIcon'
 
 export interface IOtpInput {
   otpCount?: number
@@ -184,15 +186,15 @@ export const OtpInput = memo(function OtpInput({
 
       <ButtonSimple
         variant="transparent"
+        size="small"
         onPress={handlePaste}
+        icon={ClipboardIcon}
         {...(isFilled && {
           opacity: 0,
           disabled: true,
         })}
       >
-        <SizableText size="$2" color="$color9">
-          Tap to paste code
-        </SizableText>
+        <ButtonSimple.Text color="$color9">Paste code</ButtonSimple.Text>
       </ButtonSimple>
     </YStack>
   )

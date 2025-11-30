@@ -25,28 +25,35 @@ export const BaseStepPageLayout = ({
 
   const content = (
     <>
-      <ScrollView
-        scrollEnabled={!disableScroll}
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 50 }}
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="interactive"
-        showsVerticalScrollIndicator={false}
-      >
-        <YStack
-          minW="100%"
-          flex={1}
-          pt={!hideBackButton ? top + 24 : 0}
-          bg="$background"
-          rounded="$6"
-          {...(isWeb && { flex: 'unset', mt: '$10', maxW: 400, p: '$6', self: 'center' })}
-        >
-          <YStack maxW={600} self="center" px={14}>
-            <EnsureFlexed />
+      {isWeb ? (
+        <YStack flex={1} items="center">
+          <YStack width="100%" maxW={400} p="$2">
             {children}
-            {isWeb ? <YStack pt="$6">{bottomElement}</YStack> : null}
+            {bottomElement && <YStack pt="$4">{bottomElement}</YStack>}
           </YStack>
         </YStack>
-      </ScrollView>
+      ) : (
+        <ScrollView
+          scrollEnabled={!disableScroll}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 50 }}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+          showsVerticalScrollIndicator={false}
+        >
+          <YStack
+            minW="100%"
+            flex={1}
+            pt={!hideBackButton ? top + 24 : 0}
+            bg="$background"
+            rounded="$6"
+          >
+            <YStack maxW={600} self="center" px={14}>
+              <EnsureFlexed />
+              {children}
+            </YStack>
+          </YStack>
+        </ScrollView>
+      )}
 
       {linearGradientFooter && (
         <LinearGradient

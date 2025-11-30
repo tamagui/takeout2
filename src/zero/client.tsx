@@ -27,9 +27,9 @@ export const ProvideZero = ({ children }: { children: ReactNode }) => {
   const jwtToken = auth?.token || ''
   const role = auth.user?.role
 
-  const authData = useMemo((): AuthData | undefined => {
+  const authData = useMemo((): AuthData | null => {
     if (userId === 'anon') {
-      return
+      return null
     }
 
     return {

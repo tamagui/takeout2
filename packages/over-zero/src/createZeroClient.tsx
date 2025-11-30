@@ -218,10 +218,10 @@ export function createZeroClient<
     ...props
   }: Omit<ZeroOptions<Schema, ZeroMutators>, 'schema' | 'mutators'> & {
     children: ReactNode
-    authData?: AuthData
+    authData?: AuthData | null
     disable?: boolean
   }) => {
-    const authData = authDataIn as AuthData
+    const authData = (authDataIn ?? null) as AuthData
 
     const mutators = useMemo(() => {
       setAuthData(authData)

@@ -1,11 +1,11 @@
 import { router, type Href } from 'one'
-import { Alert, Linking } from 'react-native'
+import { Linking } from 'react-native'
 import { ScrollView, SizableText, View, XStack, YStack } from 'tamagui'
 import { APP_NAME_LOWERCASE, HELP_ROADMAP_URL } from '~/constants/app'
-import { authClient, clearAuthClientToken } from '~/features/auth/client/authClient'
+import { useLogout } from '~/features/auth/useLogout'
 import { useUser } from '~/features/user/useUser'
 import { Pressable } from '~/interface/buttons/Pressable'
-import { showError } from '~/interface/dialogs/actions'
+import { dialogConfirm, showError } from '~/interface/dialogs/actions'
 import { Switch } from '~/interface/forms/Switch'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { ChatCircleIcon } from '~/interface/icons/phosphor/ChatCircleIcon'
@@ -35,40 +35,13 @@ interface SettingSection {
 
 export const ProfileSettingsPage = () => {
   const { isAdmin } = useUser()
+  const { logout } = useLogout()
 
-  const handleLogout = () => {
-    Alert.alert(
-      'Log Out',
-      'Are you sure you want to log out?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Log Out',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await authClient.signOut()
-              clearAuthClientToken()
-              router.dismissAll()
-              router.replace('/login')
-            } catch (error) {
-              console.error('Logout error:', error)
-              showError(error, 'Logout')
-            }
-          },
-        },
-      ],
-      { cancelable: true }
-    )
-  }
-
-  const handleDeleteAccount = () => {
-    Alert.alert('Delete Account', 'Account deletion is not currently available.', [
-      { text: 'OK' },
-    ])
+  const handleDeleteAccount = async () => {
+    await dialogConfirm({
+      title: 'Delete Account',
+      description: 'Account deletion is not currently available.',
+    })
   }
 
   const allSections: SettingSection[] = [
@@ -159,7 +132,7 @@ export const ProfileSettingsPage = () => {
           id: 'logout',
           title: 'Log Out',
           icon: DoorIcon,
-          action: handleLogout,
+          action: logout,
         },
       ],
     },
@@ -269,13 +242,6 @@ function LogoAndVersion() {
   return (
     <YStack items="center" pb={100} pt="$4">
       <XStack items="center" gap="$2">
-        <Image
-          src={require('../../../assets/logo.png')}
-          width={16}
-          height={16}
-          objectFit="contain"
-          tintColor="white"
-        />
         <H4 color="$color8" fontWeight="600">
           {APP_NAME_LOWERCASE}
         </H4>

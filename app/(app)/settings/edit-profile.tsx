@@ -74,7 +74,7 @@ export const ProfileEditPage = () => {
         keyboardShouldPersistTaps="handled"
         contentInsetAdjustmentBehavior="automatic"
       >
-        <YStack px="$3" pt="$3" gap="$3">
+        <YStack px="$3" pt="$3" gap="$3" $platform-web={{ width: 400, self: 'center' }}>
           <YStack py="$3" justify="center" items="center">
             <AvatarUpload
               id="avatar"
@@ -117,7 +117,7 @@ export const ProfileEditPage = () => {
                 autoCorrect={false}
                 pr="$10"
               />
-              <XStack position="absolute" end={0} marginEnd={12}>
+              <XStack position="absolute" r="$4">
                 {isCheckingAvailability ? (
                   <Spinner size="small" color="$color10" />
                 ) : isUsernameInvalid || isUnavailable ? (

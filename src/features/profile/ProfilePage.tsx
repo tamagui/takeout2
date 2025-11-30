@@ -78,12 +78,7 @@ export const ProfilePage = memo(() => {
                     })
                   }}
                 >
-                  <Image
-                    src={item.image}
-                    width={columnWidth}
-                    height={height}
-                    rounded="$4"
-                  />
+                  <Image src={item.image} width="100%" aspectRatio={1} />
                 </Pressable>
               )
             }

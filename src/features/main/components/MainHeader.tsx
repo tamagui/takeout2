@@ -1,12 +1,13 @@
-import { Link } from 'one'
-import { useEffect, useState } from 'react'
-import { XStack, YStack, isClient, isWeb } from 'tamagui'
+import { Link, router } from 'one'
+import { Spacer, XStack, YStack } from 'tamagui'
 import { useUser } from '~/features/user/useUser'
 import { Logo } from '~/interface/app/Logo'
 import { Avatar } from '~/interface/avatars/Avatar'
+import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
-import { PageContainer } from '~/interface/layout/PageContainer'
 import { ScrollHeader } from '~/interface/headers/ScrollHeader'
+import { GearIcon } from '~/interface/icons/phosphor/GearIcon'
+import { PageContainer } from '~/interface/layout/PageContainer'
 import { ThemeSwitch } from '~/interface/theme/ThemeSwitch'
 import { UserProfilePopover } from '../../user/ui/UserProfilePopover'
 import { NavigationTabs } from './NavigationTabs'
@@ -23,6 +24,7 @@ export const MainHeader = () => {
               <Link href="/">
                 <Logo />
               </Link>
+              <Spacer width={70} />
             </XStack>
 
             <NavigationTabs />
@@ -37,7 +39,14 @@ export const MainHeader = () => {
                   }
                 />
               )}
+
               <ThemeSwitch size="$2" />
+              <ButtonSimple
+                size="large"
+                circular
+                onPress={() => router.push('/settings')}
+                icon={<GearIcon size={20} />}
+              />
             </XStack>
           </XStack>
         </YStack>

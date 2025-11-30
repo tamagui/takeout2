@@ -107,25 +107,15 @@ async function main() {
   pushImage()
 
   // process environment variables in compose file
+  // spreads process.env so all vars are available, only derived db urls need explicit override
   console.info('\n📝 processing compose file with production env...\n')
   const processedCompose = 'src/uncloud/docker-compose.processed.yml'
   processComposeEnv('src/uncloud/docker-compose.yml', processedCompose, {
+    ...process.env,
+    // derived zero database urls from DEPLOY_DB
     ZERO_UPSTREAM_DB,
     ZERO_CVR_DB,
     ZERO_CHANGE_DB,
-    ZERO_ADMIN_PASSWORD: process.env.ZERO_ADMIN_PASSWORD,
-    ZERO_LOG_LEVEL: process.env.ZERO_LOG_LEVEL,
-    ZERO_NUM_SYNC_WORKERS: process.env.ZERO_NUM_SYNC_WORKERS,
-    ZERO_CVR_MAX_CONNS: process.env.ZERO_CVR_MAX_CONNS,
-    ZERO_UPSTREAM_MAX_CONNS: process.env.ZERO_UPSTREAM_MAX_CONNS,
-    BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
-    BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
-    ONE_SERVER_URL: process.env.ONE_SERVER_URL,
-    VITE_PUBLIC_ZERO_SERVER: process.env.VITE_PUBLIC_ZERO_SERVER,
-    CLOUDFLARE_R2_ENDPOINT: process.env.CLOUDFLARE_R2_ENDPOINT,
-    CLOUDFLARE_R2_ACCESS_KEY: process.env.CLOUDFLARE_R2_ACCESS_KEY,
-    CLOUDFLARE_R2_SECRET_KEY: process.env.CLOUDFLARE_R2_SECRET_KEY,
-    CLOUDFLARE_R2_PUBLIC_URL: process.env.CLOUDFLARE_R2_PUBLIC_URL,
   })
 
   // deploy without pgdb profile since using external database

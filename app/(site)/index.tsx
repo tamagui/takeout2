@@ -62,7 +62,7 @@ export function IndexPage() {
 
         <Paragraph size="$6">
           Unlike Rails, Takeout is a "take it or leave it" stack that leverages
-          best-in-class third party libaries and lets you unplug any part. That said,{' '}
+          best-in-class third party libraries and lets you unplug any part. That said,{' '}
           <em>the hard part of modern React is</em> finding great libraries, gluing them
           together, and making them work well.
         </Paragraph>
@@ -109,7 +109,7 @@ export function IndexPage() {
                 <b>website</b> with great Lighthouse scores using all the latest CSS
                 features and perfectly hydrated static or server rendered pages even when
                 using animations, media queries, and light/dark mode.{' '}
-                <b>But also a web app</b> that can be client-noly, no server fuss, great
+                <b>But also a web app</b> that can be client-only, no server fuss, great
                 performance and fully shared code. And finally, of course,{' '}
                 <b>native apps</b> with native UI, navigation, Liquid Glass and Material
                 UI.
@@ -195,7 +195,7 @@ export function IndexPage() {
         <Paragraph size="$6">
           We spent the last year deploying it to production across multiple apps,
           re-writing everything a few times, finding the right abstractions between the
-          apps, and then pullng it out into a library and this repo. The library is{' '}
+          apps, and then pulling it out into a library and this repo. The library is{' '}
           <b>over-zero</b>. It's small, but helps a ton in setting up a nice Zero setup,
           and includes a little CLI that can generate a lot of glue code you'd normally
           have to write.
@@ -226,7 +226,7 @@ export function IndexPage() {
           Second, Tamagui simply has a ton of vertically integrated investment. We
           designed the style engine for both platforms from the start, including advanced
           features like media queries, container queries, themes, and more that either
-          break, don't work at all, or don't support server rendering .
+          break, don't work at all, or don't support server rendering.
         </Paragraph>
 
         <Paragraph size="$6">
@@ -249,7 +249,7 @@ export function IndexPage() {
         </Paragraph>
 
         <Paragraph size="$6">
-          Tamagui 2 is out and it's an big improvement in every way - more aligned to web
+          Tamagui 2 is out and it's a big improvement in every way - more aligned to web
           and native, less sharp edges, simpler usage and setup, more components, better
           docs, and better performance.
         </Paragraph>
@@ -265,9 +265,9 @@ export function IndexPage() {
 
         <Paragraph size="$6">
           Takeout does this a few ways, but mainly{' '}
-          <b>a lot documentation provided at the right time and place</b>, an incredibly{' '}
-          <b>well-structured, DRY codebase</b>, plus a lot of nice <b>glue and scripts</b>{' '}
-          to link it all together.
+          <b>a lot of documentation provided at the right time and place</b>, an
+          incredibly <b>well-structured, DRY codebase</b>, plus a lot of nice{' '}
+          <b>glue and scripts</b> to link it all together.
         </Paragraph>
 
         <Paragraph size="$6">
@@ -321,7 +321,7 @@ export function IndexPage() {
 
         <Paragraph size="$6">
           But I do seriously love this stack, nearly every inch of it. While it's still
-          definitely in beta and there's many way to improve, the fundamentals and tech
+          definitely in beta and there's many ways to improve, the fundamentals and tech
           are exactly what I've dreamed of for so long.{' '}
           <b>I hope you and/or your team enjoy it and find it useful, too</b>.
         </Paragraph>

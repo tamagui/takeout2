@@ -33,7 +33,8 @@ for smaller amounts of work you can just use `bun check:all`.
 - write FEW, LOWERCASE comments, code should be mostly self-documenting
 - NEVER git commit or push code without explicit user permission
   - don't add this as the final step in your todo list, again unless asked
-- ONLY IF you are asked to git commit, keep it one-line and lowercase
+  - ONLY IF you are asked to git commit, keep it one-line and lowercase, don't
+    add yourself as a contributor
 
 ## Context
 

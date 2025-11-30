@@ -1,25 +1,23 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
-import { FacebookLogoIcon } from '~/interface/icons/phosphor/FacebookLogoIcon'
-import { Circle, isWeb, Separator, SizableText, XStack, YStack } from 'tamagui'
+import { router } from 'one'
+import { Circle, isWeb, SizableText, XStack, YStack } from 'tamagui'
 import { EULA_URL, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '~/constants/app'
-import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { Link } from '~/interface/app/Link'
 import { Logo } from '~/interface/app/Logo'
+import { ButtonAction } from '~/interface/buttons/ButtonAction'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { dialogEmit } from '~/interface/dialogs/shared'
 import Glint from '~/interface/effects/Glint'
 import { AppleIcon } from '~/interface/icons/AppleIcon'
 import { GoogleIcon } from '~/interface/icons/GoogleIcon'
+import { FacebookLogoIcon } from '~/interface/icons/phosphor/FacebookLogoIcon'
 import { H2 } from '~/interface/text/Headings'
 import { showToast } from '~/interface/toast/helpers'
-import { ButtonAction } from '~/interface/buttons/ButtonAction'
 
 export const LoginPage = () => {
-  const { goToNextStep } = useOnboarding()
-
-  const handleSignInAdmin = async () => {
+  const handleSignInAdmin = () => {
     dialogEmit({ type: 'admin-password' })
-    await goToNextStep()
+    router.replace('/home')
   }
 
   const handleSocialLogin = async (provider: 'google' | 'apple' | 'facebook') => {

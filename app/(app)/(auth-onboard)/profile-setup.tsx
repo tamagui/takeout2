@@ -1,8 +1,7 @@
-import { useParams } from 'one'
+import { router, useParams } from 'one'
 import { useEffect, useRef, useState } from 'react'
 import { Spinner, useDebounceValue, XStack, YStack } from 'tamagui'
 import { userByUsername } from '~/data/queries/user'
-import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { OnboardingStepPageLayout } from '~/features/user/ui/OnboardingStepPageLayout'
 import { useUser } from '~/features/user/useUser'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
@@ -20,12 +19,10 @@ function checkUsernameValid(username: string) {
 }
 
 export const ProfileSetupPage = () => {
-  const { goToNextStep } = useOnboarding()
   const { from } = useParams()
   const { user, update } = useUser()
   const [username, setUsername] = useState<string>('')
   const [isValidating, setIsValidating] = useState<boolean>(false)
-  // const [name, setName] = useState<string>('')
   const nameInputRef = useRef<Input>(null)
 
   // check if we're coming from OTP
@@ -82,7 +79,7 @@ export const ProfileSetupPage = () => {
       await update({
         username: username.trim(),
       }).client
-      goToNextStep()
+      router.replace('/avatar-setup')
     } catch (err) {
       console.error(err)
       showError(err, 'Invalid Username')

@@ -1,8 +1,7 @@
-import { useParams } from 'one'
+import { router, useParams } from 'one'
 import { useState } from 'react'
 import { Keyboard } from 'react-native'
 import { YStack } from 'tamagui'
-import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { showError } from '~/interface/dialogs/actions'
 import { Input } from '~/interface/forms/Input'
@@ -13,8 +12,6 @@ import { passwordLogin } from '../client/passwordLogin'
 export const PasswordPage = () => {
   const params = useParams<{ method?: 'phone' | 'email'; value?: string }>()
   const [loading, setLoading] = useState<boolean>(false)
-
-  useOnboarding()
 
   const isPhone = params.method === 'phone'
 
@@ -29,9 +26,6 @@ export const PasswordPage = () => {
       return
     }
 
-    // Keep loading state active - useAfterLoginRedirect will handle navigation
-    // Loading will be cleared when component unmounts due to navigation
-
     setLoading(true)
 
     try {
@@ -40,9 +34,9 @@ export const PasswordPage = () => {
       if (error) {
         Keyboard.dismiss()
         showError(error)
-
         return
       }
+      router.replace('/home')
     } catch (err) {
       console.error(err)
     } finally {

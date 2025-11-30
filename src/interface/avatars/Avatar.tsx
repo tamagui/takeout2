@@ -2,6 +2,7 @@ import { memo } from 'react'
 import { Circle, styled, YStack, type CircleProps } from 'tamagui'
 import { Image } from '~/interface/image/Image'
 import { getSimpleSize, type SimpleSize } from './sizes'
+import { UserIcon } from '../icons/phosphor/UserIcon'
 
 export const Avatar = memo(
   ({
@@ -46,7 +47,11 @@ export const Avatar = memo(
           }
           {...rest}
         >
-          {image ? <Image src={image} width={size} height={size} /> : null}
+          {image ? (
+            <Image src={image} width={size} height={size} />
+          ) : (
+            <UserIcon size={size / 2} />
+          )}
         </SelectableCircle>
 
         {typeof isOnline === 'boolean' ? (

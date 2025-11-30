@@ -6,7 +6,6 @@ import { Checkbox, SizableText, useEvent, XStack, YStack } from 'tamagui'
 import { APP_NAME, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '~/constants/app'
 import { validateLoginOtpCode } from '~/features/auth/client/otpLogin'
 import { shouldUsePasswordOnlyAuth } from '~/features/auth/constants'
-import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { formatPhoneNumber } from '~/helpers/number/formatNumber'
 import { Link } from '~/interface/app/Link'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
@@ -21,8 +20,6 @@ import { EnvelopeSimpleIcon } from '~/interface/icons/phosphor/EnvelopeSimpleIco
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 
 export const SignupPage = memo(() => {
-  useOnboarding()
-
   const { method } = useParams<{
     method?: 'phone' | 'email'
   }>()

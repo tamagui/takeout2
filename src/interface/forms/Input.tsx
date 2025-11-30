@@ -12,7 +12,6 @@ export const Input = memo(({ ref, ...props }: InputProps) => {
     <TamaguiInput
       borderWidth={0.5}
       ref={ref}
-      // minH={44}
       focusVisibleStyle={inputFocusStyle}
       // TODO rnwlite
       placeholderTextColor="$color8"

@@ -33,7 +33,7 @@ export function NavigationTabs() {
           <Link key={route.name} href={route.href}>
             <YStack gap="$2" items="center" width={TAB_ITEM_WIDTH} cursor="pointer">
               <Pressable items="center">
-                <Icon size={24} color="$color" />
+                <Icon size={20} $sm={{ size: 24 }} color="$color" />
               </Pressable>
               {isActive && (
                 <AnimatePresence>
@@ -41,7 +41,8 @@ export function NavigationTabs() {
                     animation="medium"
                     theme="blue"
                     height={3}
-                    width={TAB_ITEM_WIDTH}
+                    width={TAB_ITEM_WIDTH / 2}
+                    $sm={{ width: TAB_ITEM_WIDTH }}
                     bg="$color10"
                     rounded="$2"
                     enterStyle={{

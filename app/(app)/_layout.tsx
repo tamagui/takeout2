@@ -1,10 +1,8 @@
 import { Redirect, Slot, Stack, usePathname } from 'one'
 import { isWeb, SizableText } from 'tamagui'
 import { useAuth } from '~/features/auth/client/authClient'
-import { MainHeader } from '~/features/main/components/MainHeader'
 import { Dialogs } from '~/interface/dialogs/Dialogs'
 import { Gallery } from '~/interface/gallery/Gallery'
-import { PageContainer } from '~/interface/layout/PageContainer'
 import { NotificationProvider } from '~/interface/notification/Notification'
 import { ToastProvider } from '~/interface/toast/Toast'
 import { DragDropFile } from '~/interface/upload/DragDropFile'
@@ -38,11 +36,8 @@ export function AppLayout() {
           <PlatformSpecificRootProvider>
             {isWeb ? (
               <DragDropFile>
-                <MainHeader />
                 <Gallery />
-                <PageContainer pt="$10" $xl={{ maxW: 760 }}>
-                  <Slot />
-                </PageContainer>
+                <Slot />
               </DragDropFile>
             ) : (
               // We need Stack here for transition animation to work on native

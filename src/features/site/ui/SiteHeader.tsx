@@ -82,7 +82,7 @@ export const SiteHeader = () => {
                           <ListItem.Icon>
                             <FileIcon />
                           </ListItem.Icon>
-                          <ListItem.Text>Documentation</ListItem.Text>
+                          <ListItem.Text>Docs</ListItem.Text>
                         </ListItem>
                       </Link>
                     </YStack>

@@ -1,10 +1,9 @@
-import { useParams } from 'one'
+import { router, useParams, useRouter } from 'one'
 import { useEffect, useState } from 'react'
 import { Keyboard } from 'react-native'
 import { SizableText, useEvent, YStack } from 'tamagui'
 import { otpLogin, validateLoginOtpCode } from '~/features/auth/client/otpLogin'
 import { OtpInput } from '~/features/auth/ui/OtpInput'
-import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { useTimer } from '~/helpers/time/useTimer'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { showError } from '~/interface/dialogs/actions'
@@ -13,7 +12,6 @@ import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 
 export const OtpPage = () => {
-  const { goToNextStep } = useOnboarding()
   const timer = useTimer()
   const params = useParams<{ method?: 'phone' | 'email'; value?: string }>()
   const [otpCode, setOtpCode] = useState<string>('')
@@ -79,7 +77,7 @@ export const OtpPage = () => {
       }
 
       timer.pause()
-      await goToNextStep()
+      router.replace('/home')
     } catch (err) {
       console.error(err)
     } finally {

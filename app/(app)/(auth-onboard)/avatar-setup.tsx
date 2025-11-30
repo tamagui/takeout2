@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Circle, isWeb, SizableText, Spinner, YStack } from 'tamagui'
-import { useOnboarding } from '~/features/onboarding/useOnboarding'
 import { OnboardingStepPageLayout } from '~/features/user/ui/OnboardingStepPageLayout'
 import { useUser } from '~/features/user/useUser'
+import { useGoBackToHome } from '~/hooks/useGoBackToHome'
+import { zero } from '~/zero/client'
 import { pickImageFromLibrary, takePhotoWithCamera } from '~/helpers/media/imagePicker'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
@@ -23,7 +24,7 @@ const IMAGE_SIZE = isWeb ? 100 : 220
 const PENCIL_SIZE = isWeb ? 28 : 52
 
 export const AvatarSetupPage = () => {
-  const { goToNextStep } = useOnboarding()
+  const goBackToHome = useGoBackToHome()
   const [localImageUri, setLocalImageUri] = useState<string | null>(null)
   const { user, update } = useUser()
 
@@ -143,7 +144,12 @@ export const AvatarSetupPage = () => {
               scale: 0.97,
               opacity: 0.9,
             }}
-            onPress={goToNextStep}
+            onPress={async () => {
+              if (user) {
+                await zero.mutate.userPublic.finishOnboarding()
+              }
+              goBackToHome()
+            }}
             disabled={!localImageUri || isUploading}
           >
             {isUploading ? 'Uploading...' : 'Next'}

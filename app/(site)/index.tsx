@@ -1,16 +1,12 @@
-import { H1, H2, H3, H4, Paragraph, Separator, XStack, YStack, styled } from 'tamagui'
-import { InfoCard } from '~/features/site/ui/InfoCard'
+import { Paragraph, Separator, YStack, styled } from 'tamagui'
 import { Link } from '~/interface/app/Link'
-import { CircleNotchIcon } from '~/interface/icons/phosphor/CircleNotchIcon'
-import { DatabaseIcon } from '~/interface/icons/phosphor/DatabaseIcon'
-import { DeviceTabletIcon } from '~/interface/icons/phosphor/DeviceTabletIcon'
-import { FolderOpenIcon } from '~/interface/icons/phosphor/FolderOpenIcon'
-import { StackIcon } from '~/interface/icons/phosphor/StackIcon'
-import { TriangleIcon } from '~/interface/icons/phosphor/TriangleIcon'
+import { H2, H3, H4, SepHeading } from '~/interface/text/Headings'
 
-const Hero = styled(H1, {
+const Hero = styled(H2, {
   size: '$8',
   fontWeight: '800',
+  maxW: 650,
+  text: 'center',
 
   $sm: {
     size: '$9',
@@ -27,52 +23,63 @@ export function IndexPage() {
   return (
     <YStack gap="$4" py="$12">
       <YStack items="center">
-        <Hero>Build better</Hero>
-        <Hero>cross-platform apps</Hero>
+        <Hero>Build better cross-platform apps</Hero>
 
-        <H2
-          size="$4"
+        <H3
           color="$color11"
-          maxW={650}
+          maxW={620}
           mt="$5"
-          text="center"
-          $md={{ size: '$6' }}
+          size="$7"
+          fontWeight="400"
+          $md={{
+            text: 'center',
+          }}
         >
           Takeout is a better starting point for building cross-platform applications
           with&nbsp;React and React&nbsp;Native.
-        </H2>
+        </H3>
       </YStack>
 
       <Separator my="$6" mx={100} opacity={0.5} />
 
       <YStack gap="$5" maxW={550} self="center">
         <Paragraph size="$6">
-          Takeout is the result of years of effort to try to bring{' '}
-          <em>Rails-like simplicity</em> to modern React - including React Native. It
-          makes shipping cross-platform apps dramatically easier, but it's also a great
-          web-only or native-only stack.
+          Takeout is the result of years of effort to bring <em>Rails-like elegance</em>{' '}
+          to modern cross-platform React and React Native projects. We wanted to bring the
+          DRY, simple, cohesive parts of Rails to React, while avoiding the
+          overly-abstracted, NIH, magical parts.
         </Paragraph>
 
         <Paragraph size="$6">
-          We think it represents the first time ever you can ship world-class{' '}
-          <b>web and native</b> experiences with large amounts of shared code ‒ without
-          sacrificing one of the usual suspects: simplicity, performance, or user
-          experience.
+          We think Takeout represents the first time you can ship world-class{' '}
+          <b>web and native</b> experiences, even with large amounts of shared code. By
+          world-class, we mean you won't sacrifice one of the usual suspects: simplicity,
+          performance, or user experience.
         </Paragraph>
 
         <Paragraph size="$6">
-          Unlike Rails, Takeout is a "take it or leave it" stack that leverages
-          best-in-class third party libraries and lets you unplug any part. That said,{' '}
-          <em>the hard part of modern React is</em> finding great libraries, gluing them
-          together, and making them work well.
+          Takeout is a "take it or leave it" stack that leverages best-in-class third
+          party libraries, letting you unplug any part. It's a bit experimental, it puts
+          together a few newer libraries to achieve{' '}
+          <Link href="https://www.youtube.com/watch?v=HHTYHm6qLFY" target="_blank">
+            a vision we've had for a decade
+          </Link>
+          .
         </Paragraph>
 
-        <XStack mt="$6" mb="$4" items="center" gap="$6">
-          <H3 size="$3" color="$color10">
-            Goals
-          </H3>
-          <Separator opacity={0.5} />
-        </XStack>
+        <Paragraph size="$6">
+          What makes React great is the fundamental model and the ecosystem. The worst
+          parts as we see it came mostly down to dealing with data, picking from a
+          thousand options, and then the extensive time it takes to refine everything once
+          you do pick your stack.
+        </Paragraph>
+
+        <Paragraph size="$6">
+          Takeout is a cutting edge stack with a couple suprisingly great libraries and
+          few strong opinions that solve the above problems.
+        </Paragraph>
+
+        <SepHeading>Goals</SepHeading>
 
         <Paragraph size="$6">
           We can save a lot of time in the next section by first establishing the goals of
@@ -93,11 +100,13 @@ export function IndexPage() {
           <li style={{ marginBottom: 20 }}>
             <div>
               <Paragraph size="$6">
-                <b>DRY and simple</b> — A single router, bundler, framework, and set of
-                routes. A single UI kit, data layer, and suite of utilities. A single repo
-                infrastructure as code. No monorepo or mess. Data just works - no glue
-                code, automatic syncing and optimistic mutations with simple permissions,
-                schema and migrations.
+                <b>DRY and simple</b> — A single repo, bundler, framework, router, and set
+                of routes. A single way to do styling, UI, data. All of your backend,
+                frontend, and infrastructure in code, in one place, without a monorepo. A
+                solid suite of hooks and helpers. And data that is simple to use,
+                typesafe, syncs in realtime and mutates optimistically, all without any
+                glue code - with rich querying, relations, permissions, schema and
+                migrations.
               </Paragraph>
             </div>
           </li>
@@ -105,16 +114,40 @@ export function IndexPage() {
           <li style={{ marginBottom: 20 }}>
             <div>
               <Paragraph size="$6">
-                <b>Platform-native</b> — Ship a top-tier experience on every platform. A{' '}
-                <b>website</b> with great Lighthouse scores using all the latest CSS
-                features and perfectly hydrated static or server rendered pages even when
-                using animations, media queries, and light/dark mode.{' '}
-                <b>But also a web app</b> that can be client-only, no server fuss, great
-                performance and fully shared code. And finally, of course,{' '}
-                <b>native apps</b> with native UI, navigation, Liquid Glass and Material
-                UI.
+                <b>Platform-native</b> — A top-tier experience on every platform, served
+                from a single Vite app and file system route setup:
               </Paragraph>
             </div>
+
+            <ul>
+              <li style={{ marginTop: 15 }}>
+                <div>
+                  <Paragraph size="$6">
+                    A <b>website</b> with great Lighthouse scores using all the latest CSS
+                    features and perfectly hydrated static or server rendered pages even
+                    when using animations, media queries, and light/dark mode.
+                  </Paragraph>
+                </div>
+              </li>
+
+              <li style={{ marginTop: 15 }}>
+                <div>
+                  <Paragraph size="$6">
+                    A <b>web app</b> that can be client-only, no server fuss, great
+                    performance and fully shared code.
+                  </Paragraph>
+                </div>
+              </li>
+
+              <li style={{ marginTop: 15 }}>
+                <div>
+                  <Paragraph size="$6">
+                    And of course, <b>native iOS and Android apps</b> with native UI and
+                    navigation, leveraging Liquid Glass and Material UI.
+                  </Paragraph>
+                </div>
+              </li>
+            </ul>
           </li>
 
           <li style={{ marginBottom: 20 }}>
@@ -129,19 +162,14 @@ export function IndexPage() {
           <li>
             <div>
               <Paragraph size="$6">
-                <b>Low risk</b> — Every library chosen aims to maximize the stats:
-                OSS-friendly, popular, type-safe, fast, powerful, and well-documented.
+                <b>Low risk</b> — Every library chosen aims to maximize for: OSS, popular,
+                type-safe, fast, single-purpose, well-maintained, and well-documented.
               </Paragraph>
             </div>
           </li>
         </ul>
 
-        <XStack mt="$6" mb="$4" items="center" gap="$6">
-          <H3 size="$3" color="$color10">
-            In the box
-          </H3>
-          <Separator opacity={0.5} />
-        </XStack>
+        <SepHeading>In the box</SepHeading>
 
         <H4 mt="$2" size="$5" fontWeight="bold">
           One
@@ -149,24 +177,28 @@ export function IndexPage() {
 
         <Paragraph size="$6">
           A huge obstacle to building truly great cross-platform apps is the
-          bundler/framework. While Expo Router is well designed, Metro struggles with web.
-          So One does something simple - port Expo Router to Vite. Then it adds a few
-          features we think are necessary for great websites and webapps.
+          bundler/framework. While Expo Router is well designed, its choice of Metro means
+          it struggles to ship great web experiences. One does something simple - it ports
+          Expo Router to Vite, then it adds a few features we think are necessary.
         </Paragraph>
 
         <Paragraph size="$6">
-          You end up with a single set of typed file-system routes that Just Work™️ on
-          native and web. And, One now <b>defaults to Metro</b> for native to remove the
-          risk of a custom bundler and let us focus on shipping great features.
+          When One launched it ambitously aimed to make Vite work as the bundler for
+          Native, but we realized it was too hard a sell - a small team supporting a new
+          platform with an ecosystem famous for terrible publishing practices. So, to fix
+          that, <b>One introduces Metro-mode</b> - get the beautiful configuration
+          simplicity of Vite, but have it optionally run Metro for native for the proven
+          track record. It lets us focus on shipping features, and greatly de-risks the
+          framework.
         </Paragraph>
 
         <Paragraph size="$6">
-          Those features are many - server-render or statically generate <em>some</em>{' '}
-          pages, while keeping others client-only for simplicity. Add in powerful, fully
-          typed loaders to the simple per-page render modes (SSR, SSG, and SPA) and you
-          finally don't have to sacrifice your Lighthouse score, or get a PhD in server
-          components to ship great web experiences. Plus other goodies, like API routes
-          and a built-in Hono production server.
+          One lets you server render or statically generate <em>some</em> pages, while
+          keeping others client-only. Add in powerful, typed loaders and routing, API
+          routes, an included Hono production server, and smart configuration to make
+          React Native behave well on Vite, and you have the only universal stack that
+          lets you get amazing Lighthouse scores on the routes you need it and simple
+          client-side apps wherever else.
         </Paragraph>
 
         <H4 mt="$2" size="$5" fontWeight="bold">
@@ -301,29 +333,19 @@ export function IndexPage() {
           make native UI and functionality much better.
         </Paragraph>
 
-        <XStack mt="$6" mb="$4" items="center" gap="$6">
-          <H3 size="$3" color="$color10">
-            Fin
-          </H3>
-          <Separator opacity={0.5} />
-        </XStack>
-
-        <Paragraph size="$6">I love this stack.</Paragraph>
+        <SepHeading>Fin</SepHeading>
 
         <Paragraph size="$6">
-          That, my friends, is such a relief to finally say.
+          For 10 years with React, and 6 years with React Native, I've loved the model,
+          but never loved the stack. I can now finally say, with Takeout, I love the big
+          picture. <b>I hope you and your team do too</b>.
         </Paragraph>
 
         <Paragraph size="$6">
-          For 10 years with React, and 6 years with React Native,{' '}
-          <b>this was never even remotely true</b>.
-        </Paragraph>
-
-        <Paragraph size="$6">
-          But I do seriously love this stack, nearly every inch of it. While it's still
-          definitely in beta and there's many ways to improve, the fundamentals and tech
-          are exactly what I've dreamed of for so long.{' '}
-          <b>I hope you and/or your team enjoy it and find it useful, too</b>.
+          -{' '}
+          <Link href="https://x.com/natebirdman" target="_blank">
+            Nate
+          </Link>
         </Paragraph>
       </YStack>
 

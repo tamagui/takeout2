@@ -2,7 +2,6 @@ export * from './constants'
 export * from './emitter'
 
 // array
-export * from './array/fuzzy'
 export * from './array/getRandomItem'
 export * from './array/takeLast'
 export * from './array/uniqBy'

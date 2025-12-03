@@ -1,7 +1,5 @@
-'use client'
-
 import { useState } from 'react'
-import { Adapt, Button, H3, Separator, Sheet, Spacer, XStack, YStack } from 'tamagui'
+import { Adapt, Button, Separator, Sheet, Spacer, XStack, YStack } from 'tamagui'
 import { LoginButton } from '~/features/auth/ui/LoginButton'
 import { SocialLinksRow } from '~/features/site/ui/SocialLinksRow'
 import { Link } from '~/interface/app/Link'
@@ -64,12 +62,7 @@ export const SiteHeader = () => {
                 <Sheet.Frame bg="$color2">
                   <YStack flex={1} gap="$2">
                     <XStack p="$4" pb="$3" justify="space-between">
-                      <XStack gap="$3" items="center">
-                        <Logo size={32} />
-                        <H3 size="$4" fontWeight="600" fontFamily="$mono">
-                          takeout
-                        </H3>
-                      </XStack>
+                      <Logo height={32} />
                       <ThemeSwitch />
                     </XStack>
 

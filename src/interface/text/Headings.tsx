@@ -1,37 +1,71 @@
-import { SizableText, styled } from 'tamagui'
+import type { ReactNode } from 'react'
+import { Separator, SizableText, XStack, styled } from 'tamagui'
 
 export const H1 = styled(SizableText, {
+  tag: 'h1',
+  role: 'heading',
   fontFamily: '$heading',
   size: '$10',
   fontWeight: '700',
 })
 
 export const H2 = styled(SizableText, {
+  tag: 'h2',
+  role: 'heading',
   fontFamily: '$heading',
   size: '$9',
   fontWeight: '700',
 })
 
 export const H3 = styled(SizableText, {
+  tag: 'h3',
+  role: 'heading',
   fontFamily: '$heading',
   size: '$8',
   fontWeight: '600',
 })
 
 export const H4 = styled(SizableText, {
+  tag: 'h4',
+  role: 'heading',
   fontFamily: '$heading',
   size: '$6',
   fontWeight: '600',
 })
 
 export const H5 = styled(SizableText, {
+  tag: 'h5',
+  role: 'heading',
   fontFamily: '$heading',
   size: '$5',
   fontWeight: '500',
 })
 
 export const H6 = styled(SizableText, {
+  tag: 'h6',
+  role: 'heading',
   fontFamily: '$heading',
   size: '$4',
   fontWeight: '500',
 })
+
+export const SubHeading = styled(SizableText, {
+  size: '$5',
+  color: '$color10',
+  fontWeight: '300',
+
+  $lg: {
+    size: '$6',
+  },
+})
+
+export const SepHeading = ({ children }: { children: ReactNode }) => {
+  return (
+    <XStack mt="$6" mb="$4" items="center" gap="$6">
+      <H3 size="$4" color="$color10">
+        {children}
+      </H3>
+      <Separator opacity={0.5} />
+    </XStack>
+  )
+}

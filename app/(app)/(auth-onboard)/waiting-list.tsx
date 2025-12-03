@@ -8,7 +8,7 @@ export const WaitingListPage = () => {
     <YStack flex={1} bg="$background">
       <YStack flex={1} px="$3" items="center" justify="center" gap="$6" pb="$14">
         <XStack>
-          <Logo size={22} />
+          <Logo height={22} />
         </XStack>
 
         <YStack gap="$4" items="center">

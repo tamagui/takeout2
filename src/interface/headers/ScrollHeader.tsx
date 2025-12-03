@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
 import { XStack, YStack, isClient } from 'tamagui'
-import Glint from '~/interface/effects/Glint'
 
 export const ScrollHeader = ({ children }: { children: ReactNode }) => {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -31,11 +30,22 @@ export const ScrollHeader = ({ children }: { children: ReactNode }) => {
       <XStack width="100%" position="relative" maxW={1200}>
         <XStack
           animation="medium"
-          px="$2"
-          width="100%"
+          mx="$3"
+          flex={1}
           overflow="hidden"
           contain="paint"
-          $sm={{ px: '$4', rounded: '$10', y: isScrolled ? 6 : 0 }}
+          $sm={{
+            px: '$1',
+            rounded: '$10',
+            y: 0,
+            shadowColor: 'transparent',
+            ...(isScrolled && {
+              y: 6,
+              shadowColor: '$shadow4',
+              shadowRadius: 8,
+              shadowOffset: { height: 2, width: 0 },
+            }),
+          }}
         >
           <YStack
             position="absolute"

@@ -56,8 +56,7 @@
   },
   "dependencies": {
     "@tamagui/constants": "*",
-    "dequal": "^2.0.3",
-    "fuse.js": "^7.1.0"
+    "dequal": "^2.0.3"
   },
   "peerDependencies": {
     "@rocicorp/zero": "*",

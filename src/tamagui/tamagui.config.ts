@@ -9,27 +9,29 @@ import { animations } from './animations'
 import { breakpoints } from './breakpoints'
 import { themes } from './themes-out'
 
+const baseFontSizes = {
+  1: 11,
+  2: 12,
+  3: 13,
+  4: 15,
+  true: 15,
+  5: 16,
+  6: 18,
+  7: 20,
+  8: 23,
+  9: 32,
+  10: 38,
+  11: 44,
+  12: 52,
+  13: 60,
+  14: 70,
+  15: 85,
+  16: 100,
+}
+
 const body = createSystemFont({
   font: {
-    size: {
-      1: 11,
-      2: 12,
-      3: 13,
-      4: 14,
-      true: 14,
-      5: 16,
-      6: 18,
-      7: 20,
-      8: 23,
-      9: 32,
-      10: 38,
-      11: 44,
-      12: 52,
-      13: 60,
-      14: 70,
-      15: 85,
-      16: 100,
-    },
+    size: baseFontSizes,
     weight: {
       0: '400',
     },
@@ -40,11 +42,12 @@ const body = createSystemFont({
 
 const heading = createSystemFont({
   font: {
+    size: baseFontSizes,
     weight: {
-      0: '400',
+      0: '600',
     },
   },
-  sizeSize: (x) => Math.round(x * 1.25),
+  sizeSize: (x) => Math.round(x * 1.1),
   sizeLineHeight: (x) => Math.round(x * 1.12 + 5),
 })
 

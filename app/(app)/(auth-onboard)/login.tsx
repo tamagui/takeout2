@@ -52,7 +52,7 @@ export const LoginPage = () => {
           items="center"
           justify="center"
         >
-          <Logo size={42} />
+          <Logo height={42} />
         </Circle>
 
         <YStack

@@ -8,7 +8,7 @@ export function SiteLayout() {
   return (
     <>
       <SiteHeader />
-      <PageContainer py="$4">
+      <PageContainer py="$12">
         <Slot />
       </PageContainer>
       <SiteFooter />

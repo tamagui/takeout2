@@ -9,7 +9,7 @@ import { showError } from '~/interface/dialogs/actions'
 import { Input } from '~/interface/forms/Input'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { XIcon } from '~/interface/icons/phosphor/XIcon'
-import { SubTitle } from '~/interface/text/SubTitle'
+import { SubHeading } from '~/interface/text/Headings'
 import { useQuery, zero } from '~/zero/client'
 
 function checkUsernameValid(username: string) {
@@ -136,18 +136,18 @@ export const ProfileSetupPage = () => {
         </XStack>
 
         {isUnavailable && !isCheckingAvailability ? (
-          <SubTitle size="$3" mt="$1" color="$red10">
+          <SubHeading size="$3" mt="$1" color="$red10">
             That username is not available. Try another.
-          </SubTitle>
+          </SubHeading>
         ) : isUsernameInvalid ? (
-          <SubTitle size="$3" mt="$1" color="$red10">
+          <SubHeading size="$3" mt="$1" color="$red10">
             Username must be at least 3 characters, start with a letter, and only contain
             letters, numbers, and underscores.
-          </SubTitle>
+          </SubHeading>
         ) : (
-          <SubTitle size="$3" mt="$2">
+          <SubHeading size="$3" mt="$2">
             Everyone can see your username, you can change it later!
-          </SubTitle>
+          </SubHeading>
         )}
       </YStack>
     </OnboardingStepPageLayout>

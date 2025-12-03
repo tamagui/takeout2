@@ -3,6 +3,10 @@
 - getNextOnboardingStep / whitelist is messy need to plan/fix
   - see // Check whitelist status first (only if feature flag is enabled)
 
+- package.json resolutions remove
+  - "motion": "12.23.22, verify we can upgrade this again and remove
+  - same for fingerprint
+
 v1:
 
 - screens:

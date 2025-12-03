@@ -50,7 +50,12 @@ export const onboardCommand = defineCommand({
   args: {
     skip: {
       type: 'boolean',
-      description: 'Skip interactive prompts',
+      description: 'Skip onboarding entirely',
+      default: false,
+    },
+    defaults: {
+      type: 'boolean',
+      description: 'Run with defaults (non-interactive)',
       default: false,
     },
   },
@@ -59,6 +64,36 @@ export const onboardCommand = defineCommand({
 
     if (args.skip) {
       showInfo('Skipping onboarding (--skip flag)')
+      return
+    }
+
+    // non-interactive defaults mode
+    if (args.defaults) {
+      showInfo('Running onboarding with defaults (--defaults flag)')
+      console.info()
+
+      // setup environment
+      const hasEnv = envFileExists(cwd, '.env')
+      if (!hasEnv) {
+        const copyResult = copyEnvFile(cwd, '.env.development', '.env')
+        if (copyResult.success) {
+          showSuccess('Created .env from .env.development')
+        } else {
+          showError(`Failed to create .env: ${copyResult.error}`)
+          return
+        }
+        createEnvLocal(cwd)
+        showSuccess('Created .env.local for personal overrides')
+      } else {
+        showInfo('.env already exists, skipping')
+      }
+
+      markOnboarded(cwd)
+      showSuccess('Onboarding complete with defaults')
+      console.info()
+      showInfo('Next steps:')
+      console.info('  bun backend        # start docker services')
+      console.info('  bun dev            # start web dev server')
       return
     }
 

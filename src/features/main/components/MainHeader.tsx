@@ -1,12 +1,14 @@
 import { Link, router } from 'one'
 import { useState } from 'react'
 import { Adapt, Button, H3, Separator, Sheet, Spacer, XStack, YStack } from 'tamagui'
+import { useLogout } from '~/features/auth/useLogout'
 import { useUser } from '~/features/user/useUser'
 import { Logo } from '~/interface/app/Logo'
 import { Avatar } from '~/interface/avatars/Avatar'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { ScrollHeader } from '~/interface/headers/ScrollHeader'
+import { DoorIcon } from '~/interface/icons/phosphor/DoorIcon'
 import { GearIcon } from '~/interface/icons/phosphor/GearIcon'
 import { ListIcon } from '~/interface/icons/phosphor/ListIcon'
 import { PageContainer } from '~/interface/layout/PageContainer'
@@ -14,8 +16,6 @@ import { ListItem } from '~/interface/lists/ListItem'
 import { ThemeSwitch } from '~/interface/theme/ThemeSwitch'
 import { UserProfilePopover } from '../../user/ui/UserProfilePopover'
 import { NavigationTabs } from './NavigationTabs'
-import { DoorIcon } from '~/interface/icons/phosphor/DoorIcon'
-import { useLogout } from '~/features/auth/useLogout'
 
 export const MainHeader = () => {
   const { user } = useUser()
@@ -92,10 +92,7 @@ export const MainHeader = () => {
                   <YStack flex={1} gap="$2">
                     <XStack p="$4" pb="$3" justify="space-between" items="center">
                       <XStack gap="$3" items="center">
-                        <Logo size={32} />
-                        <H3 size="$4" fontWeight="600" fontFamily="$mono">
-                          takeout
-                        </H3>
+                        <Logo height={32} />
                       </XStack>
                       <ThemeSwitch />
                     </XStack>

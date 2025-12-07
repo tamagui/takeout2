@@ -1,5 +1,6 @@
-import type { ReactNode } from 'react'
 import { ScrollView, type ScrollViewProps } from 'react-native'
+
+import type { ReactNode } from 'react'
 
 type KeyboardAwareScrollViewProps = ScrollViewProps & {
   children?: ReactNode

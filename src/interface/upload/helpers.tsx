@@ -1,12 +1,12 @@
 import { ArchiveIcon } from '~/interface/icons/phosphor/ArchiveIcon'
+import { FileCsvIcon } from '~/interface/icons/phosphor/FileCsvIcon'
 import { FileIcon } from '~/interface/icons/phosphor/FileIcon'
 import { FileImageIcon } from '~/interface/icons/phosphor/FileImageIcon'
 import { FileJsIcon } from '~/interface/icons/phosphor/FileJsIcon'
-import { FileCsvIcon } from '~/interface/icons/phosphor/FileCsvIcon'
 import { FileTextIcon } from '~/interface/icons/phosphor/FileTextIcon'
 import { FileVideoIcon } from '~/interface/icons/phosphor/FileVideoIcon'
 import { FileXIcon } from '~/interface/icons/phosphor/FileXIcon'
-import type { AttachmentType } from './types'
+
 import {
   MAX_DOCUMENT_FILE_SIZE,
   MAX_FILE_SIZE,
@@ -14,6 +14,8 @@ import {
   MAX_VIDEO_FILE_SIZE,
   SUPPORTED_FILE_EXTENSIONS,
 } from './types'
+
+import type { AttachmentType } from './types'
 
 export function getFileType(filename: string): AttachmentType {
   const ext = filename.toLowerCase().split('.').pop()

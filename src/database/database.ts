@@ -1,4 +1,5 @@
 import { Pool } from 'pg'
+
 import { ZERO_UPSTREAM_DB } from '~/server/env-server'
 
 if (!ZERO_UPSTREAM_DB) {

@@ -1,15 +1,17 @@
+import { ensure, EnsureError } from '@vxrn/helpers'
+
+import { setDidRunPermissionCheck } from './helpers/didRunPermissionCheck'
+import { mutatorContext } from './helpers/mutatorContext'
+import { prettyFormatZeroQuery } from './helpers/prettyFormatZeroQuery'
+import { getWhereTableName } from './where'
+
+import type { AuthData, Can, TableName, Transaction, Where } from './types'
 import type {
   Condition,
   ExpressionBuilder,
   Query,
   Schema as ZeroSchema,
 } from '@rocicorp/zero'
-import { ensure, EnsureError } from '@vxrn/helpers'
-import { setDidRunPermissionCheck } from './helpers/didRunPermissionCheck'
-import { mutatorContext } from './helpers/mutatorContext'
-import { prettyFormatZeroQuery } from './helpers/prettyFormatZeroQuery'
-import type { AuthData, Can, TableName, Transaction, Where } from './types'
-import { getWhereTableName } from './where'
 
 export function createPermissions<Schema extends ZeroSchema>({
   environment,

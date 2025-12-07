@@ -1,6 +1,8 @@
-import type { ReactNode } from 'react'
 import { SizableText, YStack } from 'tamagui'
+
 import { H1 } from '~/interface/text/Headings'
+
+import type { ReactNode } from 'react'
 
 type LegalPageProps = {
   title: string

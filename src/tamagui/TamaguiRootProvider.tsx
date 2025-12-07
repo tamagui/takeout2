@@ -9,6 +9,7 @@ import {
 import { usePathname } from 'one'
 import { memo, useLayoutEffect } from 'react'
 import { isWeb, TamaguiProvider, useTheme } from 'tamagui'
+
 import { config } from './tamagui.config'
 
 export const TamaguiRootProvider = memo(({ children }: { children: any }) => {

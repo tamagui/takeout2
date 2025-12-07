@@ -1,5 +1,6 @@
 import * as Haptics from 'expo-haptics'
 import { View, type ViewProps } from 'tamagui'
+
 import { isIos } from '~/constants/platform'
 
 export const HapticTab = (props: ViewProps) => {

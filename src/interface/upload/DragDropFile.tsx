@@ -4,7 +4,6 @@ import {
   uniqBy,
   useEmitterValue,
 } from '@take-out/helpers'
-import { ImageIcon } from '~/interface/icons/phosphor/ImageIcon'
 import {
   memo,
   type ReactElement,
@@ -23,14 +22,18 @@ import {
   type ViewProps,
   YStack,
 } from 'tamagui'
-import type { Component } from '../types'
+
+import { ImageIcon } from '~/interface/icons/phosphor/ImageIcon'
+
 import { getFileType, isSupportedFile } from './helpers'
-import type { FileUpload } from './types'
 import {
   ProvideUploadFiles,
   type UploadFilesCallback,
   useUploadFiles,
 } from './uploadFile'
+
+import type { Component } from '../types'
+import type { FileUpload } from './types'
 
 export const attachmentEmitter = createEmitter<FileUpload[]>('attachment', [])
 

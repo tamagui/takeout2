@@ -1,11 +1,14 @@
 import { AbortError, createGlobalContext, isWeb, useAsyncEffect } from '@take-out/helpers'
-import type React from 'react'
 import { useContext, useEffect, useState } from 'react'
 import { useEvent } from 'tamagui'
+
 import { SERVER_URL } from '~/constants/urls'
+
 import { getFileType, isImageFile, isVideoFile, validateFile } from './helpers'
 import { prepareImageForUpload } from './resizeImage'
+
 import type { FileUpload } from './types'
+import type React from 'react'
 
 interface UploadResponse {
   url?: string

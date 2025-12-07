@@ -1,5 +1,6 @@
 import { Link } from 'one'
 import { Paragraph, Separator, XStack, YStack } from 'tamagui'
+
 import {
   ADMIN_EMAIL,
   APP_NAME,

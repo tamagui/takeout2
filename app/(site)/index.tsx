@@ -1,4 +1,5 @@
 import { Paragraph, Separator, YStack, styled } from 'tamagui'
+
 import { Link } from '~/interface/app/Link'
 import { H2, H3, H4, SepHeading } from '~/interface/text/Headings'
 

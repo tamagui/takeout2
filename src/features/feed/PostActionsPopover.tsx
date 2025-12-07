@@ -1,8 +1,10 @@
-import type { Post } from '~/data/types'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
 import { PopoverMenu } from '~/interface/popover/PopoverMenu'
+
 import { PostActionItems } from './PostActionItems'
+
+import type { Post } from '~/data/types'
 
 interface PostActionsPopoverProps {
   post: Post

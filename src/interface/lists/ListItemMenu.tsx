@@ -1,6 +1,8 @@
 import { use } from 'react'
 import { YStack } from 'tamagui'
+
 import { DotsThreeVerticalIcon } from '~/interface/icons/phosphor/DotsThreeVerticalIcon'
+
 import { animationClamped } from '../animations/animationClamped'
 import { ButtonSimple } from '../buttons/ButtonSimple'
 import { Menu } from '../menu/Menu'

@@ -1,12 +1,14 @@
-import type { SizableStackProps } from '@tamagui/stacks'
+import { createEmitter, useEmitterSelector, useEmitterValue } from '@take-out/helpers'
+import { isEqualIdentity } from '@take-out/helpers'
 import { Paragraph } from '@tamagui/text'
 import { Children, memo, useState, type ReactElement, type ReactNode } from 'react'
 import { Tooltip, type TooltipProps } from 'tamagui'
-import { createEmitter, useEmitterSelector, useEmitterValue } from '@take-out/helpers'
-import { isEqualIdentity } from '@take-out/helpers'
+
 import { animationClamped } from '../animations/animationClamped'
 import { Z_INDICES } from '../constants'
 import { popoverEmitter, type PopoverName } from '../popover/Popover'
+
+import type { SizableStackProps } from '@tamagui/stacks'
 
 export type TooltipSimpleProps = TooltipProps & {
   disabled?: boolean

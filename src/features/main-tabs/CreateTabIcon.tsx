@@ -1,9 +1,12 @@
 import { router } from 'one'
-import type { StyleProp, ViewStyle } from 'react-native'
+
 import { PlusCircleIcon } from '~/interface/icons/phosphor/PlusCircleIcon'
-import type { SheetRef } from '~/interface/sheet/Sheet.types'
 import { HapticTab } from '~/interface/tabs/HapticTab'
+
 import { useTabIconSize } from './useTabIconSize'
+
+import type { StyleProp, ViewStyle } from 'react-native'
+import type { SheetRef } from '~/interface/sheet/Sheet.types'
 
 let sheetRef: SheetRef | null = null
 

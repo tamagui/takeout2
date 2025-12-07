@@ -1,5 +1,6 @@
 import { sql } from '~/database/helpers'
 import { handleError } from '~/features/errors/handleError'
+
 import { migrations } from './migrations'
 
 const ZERO_MIGRATION_PREFIX = `zero-migration-`

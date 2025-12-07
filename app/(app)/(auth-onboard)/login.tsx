@@ -1,6 +1,7 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
 import { router } from 'one'
 import { Circle, isWeb, SizableText, XStack, YStack } from 'tamagui'
+
 import { EULA_URL, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '~/constants/app'
 import { Link } from '~/interface/app/Link'
 import { Logo } from '~/interface/app/Logo'

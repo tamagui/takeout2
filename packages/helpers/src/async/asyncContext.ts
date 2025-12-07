@@ -96,7 +96,7 @@ function createBrowserAsyncContext<T>(): AsyncContext<T> {
       }
 
       // patch Promise methods to capture and restore context
-      // biome-ignore lint/suspicious/noThenProperty: intentional patching for context propagation
+      // eslint-disable-next-line no-then-property -- intentional patching for context propagation
       OriginalPromise.prototype.then = function (
         this: Promise<any>,
         onFulfilled?: any,
@@ -131,7 +131,7 @@ function createBrowserAsyncContext<T>(): AsyncContext<T> {
         return result
       } finally {
         // restore original Promise methods
-        // biome-ignore lint/suspicious/noThenProperty: restoring original methods
+        // eslint-disable-next-line no-then-property -- restoring original methods
         OriginalPromise.prototype.then = OriginalThen
         OriginalPromise.prototype.catch = OriginalCatch
         OriginalPromise.prototype.finally = OriginalFinally

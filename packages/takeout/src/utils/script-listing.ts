@@ -4,6 +4,7 @@
 
 import { existsSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
+
 import pc from 'picocolors'
 
 // re-export needed functions from script command

@@ -1,6 +1,8 @@
 #!/usr/bin/env node
-import { defineCommand, runMain } from 'citty'
 import { join } from 'node:path'
+
+import { defineCommand, runMain } from 'citty'
+
 import { buildMigrations as buildMigrationsRun } from './scripts/build-migrations'
 import { syncDrizzleMigrations } from './scripts/drizzle-migrations-sync'
 import { addMigration } from './scripts/migration-add'

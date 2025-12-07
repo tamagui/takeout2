@@ -8,15 +8,17 @@ import {
   XStack,
   YStack,
 } from 'tamagui'
-import type { ContextMenuItem } from '../menu/types'
+
 import { LineShimmer } from '../shimmer/LineShimmer'
 import { ListItemBackground } from './ListItemBackground'
-import type { ListItemContextProps } from './ListItemContext'
 import { ListItemFrame } from './ListItemFrame'
 import { ListItemIcon } from './ListItemIcon'
 import { ListItemInput } from './ListItemInput'
 import { ListItemMenu } from './ListItemMenu'
 import { ListItemText, ProvideTriggerListItemEditing } from './ListItemText'
+
+import type { ContextMenuItem } from '../menu/types'
+import type { ListItemContextProps } from './ListItemContext'
 
 export type ListItemProps = Omit<
   GetProps<typeof ListItemFrame>,

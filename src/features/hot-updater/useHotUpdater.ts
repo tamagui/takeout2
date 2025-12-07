@@ -1,6 +1,7 @@
 import { createHotUpdater } from '@take-out/native-hot-update'
 import { createMMKVStorage } from '@take-out/native-hot-update/mmkv'
 import { MMKV } from 'react-native-mmkv'
+
 import { DYNAMIC_CONFIGS, FEATURE_FLAGS } from '~/features/feature-flags/featureFlags'
 import { usePostHogClient } from '~/features/feature-flags/usePostHog'
 

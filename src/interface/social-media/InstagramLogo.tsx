@@ -1,6 +1,8 @@
 import { useId } from 'react'
 import Svg, { Defs, LinearGradient, Stop, Rect, Circle } from 'react-native-svg'
+
 import { useIconProps } from '~/interface/icons/useIconProps'
+
 import type { IconProps } from '~/interface/icons/types'
 
 export const InstagramLogo = (props: IconProps) => {

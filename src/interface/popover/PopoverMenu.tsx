@@ -1,8 +1,10 @@
-import type { ReactNode } from 'react'
 import { cloneElement, isValidElement, useState } from 'react'
 import { Adapt, Sheet, YStack } from 'tamagui'
-import type { PopoverName } from '~/interface/popover/Popover'
+
 import { Popover } from '~/interface/popover/Popover'
+
+import type { ReactNode } from 'react'
+import type { PopoverName } from '~/interface/popover/Popover'
 
 interface PopoverMenuProps {
   trigger: ReactNode

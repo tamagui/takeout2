@@ -3,11 +3,13 @@ import { isNative } from '@take-out/helpers'
 import { useCallback } from 'react'
 import { Alert, RefreshControl } from 'react-native'
 import { ListItem, SizableText, Spinner, View, YStack } from 'tamagui'
-import type { User } from '~/data/types'
+
 import { useBlockedUsers } from '~/features/profile/useBlockedUsers'
 import { Avatar } from '~/interface/avatars/Avatar'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { BodyText } from '~/interface/text/Body'
+
+import type { User } from '~/data/types'
 
 export const ProfileBlockedUsersPage = () => {
   const { blockedUsers, isLoading, hasMore, loadMore, refresh, unblockUser } =

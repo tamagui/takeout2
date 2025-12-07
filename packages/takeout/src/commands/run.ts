@@ -1,7 +1,8 @@
-import { defineCommand } from 'citty'
+import { spawn } from 'node:child_process'
 import { existsSync, readFileSync, statSync } from 'node:fs'
 import { resolve, join } from 'node:path'
-import { spawn } from 'node:child_process'
+
+import { defineCommand } from 'citty'
 
 export const runCommand = defineCommand({
   meta: {

@@ -1,8 +1,9 @@
 import { View, XStack, YStack } from 'tamagui'
+
 import { CircleShimmer } from './CircleShimmer'
 import { LineShimmer } from './LineShimmer'
-import { ShimmerProvider } from './ShimmerContext'
 import { Shimmer } from './Shimmer'
+import { ShimmerProvider } from './ShimmerContext'
 
 interface ProfileShimmerProps {
   size?: number

@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Paragraph, Progress, XStack, YStack } from 'tamagui'
+
 import { pickImageFromLibrary } from '~/helpers/media/imagePicker'
+
 import { Avatar } from '../avatars/Avatar'
 import { ButtonSimple } from '../buttons/ButtonSimple'
 import { PencilSimpleIcon } from '../icons/phosphor/PencilSimpleIcon'

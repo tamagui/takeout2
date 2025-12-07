@@ -1,8 +1,9 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
-import type { ReactNode } from 'react'
 import { KeyboardStickyView } from 'react-native-keyboard-controller'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { YStack } from 'tamagui'
+
+import type { ReactNode } from 'react'
 
 export const KeyboardStickyFooter = ({ children }: { children: ReactNode }) => {
   const { bottom } = useSafeAreaInsets()

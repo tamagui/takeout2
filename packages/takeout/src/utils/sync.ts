@@ -2,9 +2,10 @@
  * Sync utilities for updating docs and scripts between repositories
  */
 
+import { createHash } from 'node:crypto'
 import { existsSync, readFileSync, writeFileSync, mkdirSync, statSync } from 'node:fs'
 import { join, relative, dirname } from 'node:path'
-import { createHash } from 'node:crypto'
+
 import { confirm } from '@clack/prompts'
 import pc from 'picocolors'
 

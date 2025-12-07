@@ -2,6 +2,7 @@
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { basename, join } from 'node:path'
+
 import subsetFont from 'subset-font'
 
 export async function subset({

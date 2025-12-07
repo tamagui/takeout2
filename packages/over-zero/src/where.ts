@@ -1,7 +1,9 @@
-import type { Condition, ExpressionBuilder } from '@rocicorp/zero'
 import { globalValue, isClient } from '@vxrn/helpers'
+
 import { getQueryOrMutatorAuthData } from './helpers/getQueryOrMutatorAuthData'
+
 import type { TableName, Where } from './types'
+import type { Condition, ExpressionBuilder } from '@rocicorp/zero'
 
 export function where<Table extends TableName, Builder extends Where<Table>>(
   tableName: Table,

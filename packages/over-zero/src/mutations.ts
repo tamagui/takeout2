@@ -1,5 +1,5 @@
-import type { TableBuilderWithColumns } from '@rocicorp/zero'
 import { getDidRunPermissionCheck } from './helpers/didRunPermissionCheck'
+
 import type {
   MutatorContext,
   TableInsertRow,
@@ -7,6 +7,7 @@ import type {
   TableUpdateRow,
   Where,
 } from './types'
+import type { TableBuilderWithColumns } from '@rocicorp/zero'
 
 // two ways to use it:
 //  - mutations({}) which doesn't add the "allowed" helper or add CRUD

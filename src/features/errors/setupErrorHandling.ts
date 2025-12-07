@@ -1,5 +1,7 @@
 import { isWeb } from 'tamagui'
+
 import { postHog } from '../../posthog/posthog'
+
 import type { ErrorReport } from './types'
 
 let ogWindowErrorHandler: OnErrorEventHandler | null = null

@@ -1,10 +1,12 @@
+import { Link, usePathname } from 'one'
+import { AnimatePresence, View, XStack, YStack } from 'tamagui'
+
+import { Pressable } from '~/interface/buttons/Pressable'
 import { HouseIcon } from '~/interface/icons/phosphor/HouseIcon'
 import { PlusIcon } from '~/interface/icons/phosphor/PlusIcon'
 import { UserCircleIcon } from '~/interface/icons/phosphor/UserCircleIcon'
+
 import type { Href } from 'one'
-import { Link, usePathname } from 'one'
-import { AnimatePresence, View, XStack, YStack } from 'tamagui'
-import { Pressable } from '~/interface/buttons/Pressable'
 
 type TabRoute = {
   name: string

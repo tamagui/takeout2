@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
 
-import { $ } from 'bun'
 import { parseArgs } from 'node:util'
+
+import { $ } from 'bun'
 
 // Configuration
 const SSO_REGION = 'us-west-1'

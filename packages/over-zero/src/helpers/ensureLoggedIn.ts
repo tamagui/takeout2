@@ -1,6 +1,8 @@
 import { ensure } from '@vxrn/helpers'
-import type { AuthData } from '../types'
+
 import { mutatorContext } from './mutatorContext'
+
+import type { AuthData } from '../types'
 
 export const ensureLoggedIn = (): AuthData => {
   const { authData } = mutatorContext()

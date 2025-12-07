@@ -1,4 +1,5 @@
 import { writeFileSync } from 'node:fs'
+
 import { exec } from './exec'
 
 const VM_NAME = 'takeout-deploy'

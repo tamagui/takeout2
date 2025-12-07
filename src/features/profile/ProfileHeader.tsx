@@ -1,8 +1,8 @@
 import { router } from 'one'
 import { memo } from 'react'
 import { SizableText, View, XStack, YStack } from 'tamagui'
+
 import { SERVER_URL } from '~/constants/urls'
-import type { User } from '~/data/types'
 import { formatCount, formatReactionCount } from '~/helpers/number/formatNumber'
 import { useShareProfile } from '~/helpers/share/useShareProfile'
 import { Avatar } from '~/interface/avatars/Avatar'
@@ -11,6 +11,8 @@ import { PencilSimpleIcon } from '~/interface/icons/phosphor/PencilSimpleIcon'
 import { ShareFatIcon } from '~/interface/icons/phosphor/ShareFatIcon'
 import { SocialLinks } from '~/interface/social-media/platforms'
 import { BodyText } from '~/interface/text/Body'
+
+import type { User } from '~/data/types'
 
 interface ProfileHeaderProps {
   userInfo?: User

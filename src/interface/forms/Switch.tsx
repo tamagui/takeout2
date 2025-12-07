@@ -5,6 +5,7 @@ import {
   useControllableState,
   type SwitchProps,
 } from 'tamagui'
+
 import { animationClamped } from '../animations/animationClamped'
 
 export const Switch = memo((props: SwitchProps) => {
@@ -31,6 +32,5 @@ export const Switch = memo((props: SwitchProps) => {
     >
       <TamaguiSwitch.Thumb animation={animationClamped('quickestLessBouncy')} />
     </TamaguiSwitch>
-    // </Theme>
-  )
+  ) // </Theme>
 })

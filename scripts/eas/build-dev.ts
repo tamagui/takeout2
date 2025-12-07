@@ -5,8 +5,9 @@
  * @args --android, --ios
  */
 
-import { $ } from 'bun'
 import { parseArgs } from 'node:util'
+
+import { $ } from 'bun'
 
 const { values } = parseArgs({
   args: process.argv.slice(2),

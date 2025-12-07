@@ -2,6 +2,7 @@ import { BlurView } from 'expo-blur'
 import { GlassView as ExpoGlassView, isLiquidGlassAvailable } from 'expo-glass-effect'
 import { memo } from 'react'
 import { View } from 'tamagui'
+
 import type { GlassViewProps } from './GlassViewProps'
 
 export const GlassView = memo(

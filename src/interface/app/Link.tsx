@@ -1,4 +1,3 @@
-import { ArrowSquareOutIcon } from '~/interface/icons/phosphor/ArrowSquareOutIcon'
 import {
   router,
   useLinkTo,
@@ -7,6 +6,9 @@ import {
   type LinkProps as OneLinkProps,
 } from 'one'
 import { isWeb, SizableText, useDebounce, type SizableTextProps } from 'tamagui'
+
+import { ArrowSquareOutIcon } from '~/interface/icons/phosphor/ArrowSquareOutIcon'
+
 import { wrapWithTooltip, type TooltipWrapperProps } from '../tooltip/TooltipSimple'
 
 type ResetStackConfig = {

@@ -1,9 +1,10 @@
+import path, { join } from 'node:path'
+
 // note! this is an helper script used by tamagui team for publishing the takeout packages
 // you can delete this from your own app
 
 import { run } from '@take-out/scripts/helpers/run'
 import fs, { ensureDir, writeJSON } from 'fs-extra'
-import path, { join } from 'node:path'
 import pMap from 'p-map'
 
 // avoid emitter error

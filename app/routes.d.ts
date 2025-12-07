@@ -1,6 +1,6 @@
 // deno-lint-ignore-file
 /* eslint-disable */
-// biome-ignore: needed import
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { OneRouter } from 'one'
 
 declare module 'one' {

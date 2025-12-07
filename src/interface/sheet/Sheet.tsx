@@ -1,7 +1,10 @@
 import { forwardRef, useImperativeHandle, useState } from 'react'
 import { Sheet as TamaguiSheet, SizableText, View, XStack } from 'tamagui'
+
 import { XCircleIcon } from '~/interface/icons/phosphor/XCircleIcon'
+
 import { Pressable } from '../buttons/Pressable'
+
 import type { SheetProps, SheetRef } from './Sheet.types'
 
 export const Sheet = forwardRef<SheetRef, SheetProps>(

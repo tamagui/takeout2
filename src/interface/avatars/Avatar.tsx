@@ -1,8 +1,10 @@
 import { memo } from 'react'
 import { Circle, styled, YStack, type CircleProps } from 'tamagui'
+
 import { Image } from '~/interface/image/Image'
-import { getSimpleSize, type SimpleSize } from './sizes'
+
 import { UserIcon } from '../icons/phosphor/UserIcon'
+import { getSimpleSize, type SimpleSize } from './sizes'
 
 export const Avatar = memo(
   ({

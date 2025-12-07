@@ -1,8 +1,3 @@
-import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
-import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
-import { RocketIcon } from '~/interface/icons/phosphor/RocketIcon'
-import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
-import { TrendUpIcon } from '~/interface/icons/phosphor/TrendUpIcon'
 import { useEffect, useState } from 'react'
 import {
   AnimatePresence,
@@ -15,6 +10,12 @@ import {
   YStack,
   styled,
 } from 'tamagui'
+
+import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
+import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
+import { RocketIcon } from '~/interface/icons/phosphor/RocketIcon'
+import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
+import { TrendUpIcon } from '~/interface/icons/phosphor/TrendUpIcon'
 
 const CarouselContainer = styled(YStack, {
   width: '100%',

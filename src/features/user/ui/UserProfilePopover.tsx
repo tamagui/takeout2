@@ -1,6 +1,8 @@
-import type { ReactNode } from 'react'
 import { PopoverMenu } from '~/interface/popover/PopoverMenu'
+
 import { UserProfilePopoverContent } from './UserProfilePopoverContent'
+
+import type { ReactNode } from 'react'
 
 interface UserProfilePopoverProps {
   trigger: ReactNode

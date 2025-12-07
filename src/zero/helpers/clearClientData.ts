@@ -1,4 +1,5 @@
 import { showToast } from '~/interface/toast/Toast'
+
 import { zero } from '../client'
 
 export const clearClientData = async () => {

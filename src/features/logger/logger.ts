@@ -1,5 +1,5 @@
-import { handleError } from '../errors/handleError'
 import { analytics } from '../analytics/analytics'
+import { handleError } from '../errors/handleError'
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error'
 

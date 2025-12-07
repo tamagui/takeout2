@@ -4,11 +4,14 @@
  * @description Deploy to production droplet with managed database
  */
 
-import { config } from 'dotenv'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
+
+import { config } from 'dotenv'
 import pc from 'picocolors'
+
 import { buildMigrations, buildWeb, buildDockerImage } from './helpers/build'
+import { processComposeEnv } from './helpers/processEnv'
 import { checkSSHKey, testSSHConnection } from './helpers/ssh'
 import {
   checkUncloudCLI,
@@ -17,7 +20,6 @@ import {
   deployStack,
   showStatus,
 } from './helpers/uncloud'
-import { processComposeEnv } from './helpers/processEnv'
 
 // parse args
 const args = process.argv.slice(2)

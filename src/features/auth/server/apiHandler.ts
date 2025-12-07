@@ -1,8 +1,10 @@
 import { prettyPrintResponse } from '@take-out/helpers'
 import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
+
 import { getDb } from '~/database'
 import * as schema from '~/database/schema'
 import { ADMIN_WHITELIST } from '~/server/constants-server'
+
 import { authServer } from './authServer'
 
 export function authAPIHandler(method: 'GET' | 'POST') {

@@ -9,10 +9,11 @@ import {
   XStack,
   YStack,
 } from 'tamagui'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+
 import { getClipboardText } from '~/helpers/clipboard'
-import { InfoIcon } from '~/interface/icons/phosphor/InfoIcon'
+import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { ClipboardIcon } from '~/interface/icons/phosphor/ClipboardIcon'
+import { InfoIcon } from '~/interface/icons/phosphor/InfoIcon'
 
 export interface IOtpInput {
   otpCount?: number

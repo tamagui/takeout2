@@ -1,5 +1,5 @@
-import { join } from 'node:path'
 import { readdirSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 
 export type MigrationAddOptions = {
   migrationsDir: string

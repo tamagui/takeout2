@@ -4,10 +4,12 @@
  * @description Run multiple scripts in parallel or sequence
  */
 
-import { handleProcessExit } from '@take-out/scripts/helpers/handleProcessExit'
 import { spawn } from 'node:child_process'
 import { promises as fs } from 'node:fs'
 import { join, relative, resolve } from 'node:path'
+
+import { handleProcessExit } from '@take-out/scripts/helpers/handleProcessExit'
+
 import { getIsExiting } from './helpers/run'
 import { checkNodeVersion } from './node-version-check'
 

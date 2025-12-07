@@ -1,9 +1,11 @@
 import { eq, ne, and } from 'drizzle-orm'
+
 import { getDb } from '~/database'
 import { user as userTable, whitelist } from '~/database/schema-private'
 import { post, userPublic, userState } from '~/database/schema-public'
-import type { AuthData } from '~/features/auth/types'
 import { getIsAdmin } from '~/server/getIsAdmin'
+
+import type { AuthData } from '~/features/auth/types'
 
 export const userActions = {
   onboardUser,

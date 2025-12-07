@@ -1,4 +1,5 @@
 import { createRemoteJWKSet, jwtVerify } from 'jose'
+
 import { ONE_SERVER_URL } from '~/server/env-server'
 
 export async function validateToken(token: string) {

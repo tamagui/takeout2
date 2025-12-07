@@ -1,5 +1,7 @@
 import { View, type ViewStyle } from 'tamagui'
+
 import { Shimmer } from './Shimmer.native'
+
 import type { CircleShimmerNativeProps } from './CircleShimmer'
 
 export const CircleShimmer = ({ size = 36, style }: CircleShimmerNativeProps) => {

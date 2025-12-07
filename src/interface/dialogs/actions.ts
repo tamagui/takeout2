@@ -1,5 +1,7 @@
 import { AbortError, createEmitter, isEqualNever } from '@take-out/helpers'
+
 import { dialogEmit } from './shared'
+
 import type { DialogConfirmType, DialogErrorType } from './types'
 
 export const confirmEmitter = createEmitter<boolean>('confirm', false, {

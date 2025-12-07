@@ -1,4 +1,5 @@
 import { isWeb, SizableText, XStack, type SizableTextProps } from 'tamagui'
+
 import type { User } from '~/data/types'
 
 export type UsernameProps = SizableTextProps & {

@@ -1,12 +1,14 @@
 import { dequal } from 'dequal'
-import type { JSX, PropsWithChildren } from 'react'
 import * as React from 'react'
 import { use, useLayoutEffect, useState } from 'react'
+
 import { handleAbortError } from './async/abortable'
 import { DEBUG_LEVEL, EMPTY_ARRAY } from './constants'
 import { AbortError } from './error/errors'
-import { createGlobalContext } from './react/createGlobalContext'
 import { globalValue } from './global/globalValue'
+import { createGlobalContext } from './react/createGlobalContext'
+
+import type { JSX, PropsWithChildren } from 'react'
 
 // keeps a reference to the current value easily
 
@@ -121,9 +123,8 @@ export function createEmitter<T>(
   return new Emitter<T>(existing || defaultValue, { name, ...options })
 }
 
-export type EmitterType<E extends Emitter<any>> = E extends Emitter<infer Val>
-  ? Val
-  : never
+export type EmitterType<E extends Emitter<any>> =
+  E extends Emitter<infer Val> ? Val : never
 
 export const useEmitter = <E extends Emitter<any>>(
   emitter: E,
@@ -207,7 +208,7 @@ export const useEmitterSelector = <E extends Emitter<any>, T extends EmitterType
     }
   }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: we are using args fine
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useLayoutEffect(() => {
     if (disabled) return
     return emitter.listen((val) => {
@@ -240,7 +241,7 @@ export const useEmittersSelector = <const E extends readonly Emitter<any>[], R>(
     return getSelector()(values)
   })
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: ignore
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useLayoutEffect(() => {
     if (disabled) {
       return

@@ -1,16 +1,18 @@
-import type { ComponentType, FC } from 'react'
-import { TwitterLogo } from './TwitterLogo'
-import { InstagramLogo } from './InstagramLogo'
-import { TikTokLogo } from './TikTokLogo'
-import { FacebookLogo } from './FacebookLogo'
-import { YoutubeLogo } from './YoutubeLogo'
-import { TwitchLogo } from './TwitchLogo'
-import { SnapchatLogo } from './SnapchatLogo'
-import { DiscordLogo } from './DiscordLogo'
-import { View, XStack } from 'tamagui'
-import { Linking } from 'react-native'
 import { memo } from 'react'
+import { Linking } from 'react-native'
+import { View, XStack } from 'tamagui'
+
 import { ButtonSimple } from '../buttons/ButtonSimple'
+import { DiscordLogo } from './DiscordLogo'
+import { FacebookLogo } from './FacebookLogo'
+import { InstagramLogo } from './InstagramLogo'
+import { SnapchatLogo } from './SnapchatLogo'
+import { TikTokLogo } from './TikTokLogo'
+import { TwitchLogo } from './TwitchLogo'
+import { TwitterLogo } from './TwitterLogo'
+import { YoutubeLogo } from './YoutubeLogo'
+
+import type { ComponentType, FC } from 'react'
 
 export interface SocialPlatform {
   id:

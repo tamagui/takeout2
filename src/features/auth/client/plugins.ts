@@ -1,11 +1,13 @@
-import type { BetterAuthClientPlugin } from 'better-auth'
 import {
   adminClient,
   emailOTPClient,
   magicLinkClient,
   phoneNumberClient,
 } from 'better-auth/client/plugins'
+
 import { platformClient } from './platformClient'
+
+import type { BetterAuthClientPlugin } from 'better-auth'
 
 export const plugins = [
   adminClient(),

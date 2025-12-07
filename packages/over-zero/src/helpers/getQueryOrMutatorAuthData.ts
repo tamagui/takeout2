@@ -1,6 +1,7 @@
 import { getAuthData } from '../state'
-import type { AuthData } from '../types'
 import { isInZeroMutation, mutatorContext } from './mutatorContext'
+
+import type { AuthData } from '../types'
 
 export function getQueryOrMutatorAuthData(): AuthData | null {
   if (isInZeroMutation()) {

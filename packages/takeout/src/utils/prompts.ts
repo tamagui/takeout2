@@ -4,6 +4,7 @@
 
 import * as p from '@clack/prompts'
 import pc from 'picocolors'
+
 import type { PortCheck, PrerequisiteCheck } from '../types'
 
 export function displayWelcome(projectName = 'Takeout'): void {

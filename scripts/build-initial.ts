@@ -4,10 +4,11 @@
  * @description Bootstrap project workspace and build initial packages
  */
 
-import { $ } from 'bun'
 import { existsSync, mkdirSync, symlinkSync } from 'node:fs'
 import { exists } from 'node:fs/promises'
 import { join } from 'node:path'
+
+import { $ } from 'bun'
 
 // only run once:
 if (!(await exists(`./node_modules/.bin/tko`))) {

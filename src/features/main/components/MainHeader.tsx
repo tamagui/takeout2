@@ -1,6 +1,7 @@
 import { Link, router } from 'one'
 import { useState } from 'react'
 import { Adapt, Button, H3, Separator, Sheet, Spacer, XStack, YStack } from 'tamagui'
+
 import { useLogout } from '~/features/auth/useLogout'
 import { useUser } from '~/features/user/useUser'
 import { Logo } from '~/interface/app/Logo'
@@ -14,6 +15,7 @@ import { ListIcon } from '~/interface/icons/phosphor/ListIcon'
 import { PageContainer } from '~/interface/layout/PageContainer'
 import { ListItem } from '~/interface/lists/ListItem'
 import { ThemeSwitch } from '~/interface/theme/ThemeSwitch'
+
 import { UserProfilePopover } from '../../user/ui/UserProfilePopover'
 import { NavigationTabs } from './NavigationTabs'
 

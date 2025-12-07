@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { Circle, isWeb, SizableText, Spinner, YStack } from 'tamagui'
+
 import { OnboardingStepPageLayout } from '~/features/user/ui/OnboardingStepPageLayout'
 import { useUser } from '~/features/user/useUser'
-import { useGoBackToHome } from '~/hooks/useGoBackToHome'
-import { zero } from '~/zero/client'
 import { pickImageFromLibrary, takePhotoWithCamera } from '~/helpers/media/imagePicker'
+import { useGoBackToHome } from '~/hooks/useGoBackToHome'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { showError } from '~/interface/dialogs/actions'
@@ -17,6 +17,7 @@ import { ListItem } from '~/interface/lists/ListItem'
 import { Sheet } from '~/interface/sheet/Sheet'
 import { showToast } from '~/interface/toast/helpers'
 import { useUploadFiles } from '~/interface/upload/uploadFile'
+import { zero } from '~/zero/client'
 
 const MAX_IMAGE_SIZE = 600
 const IMAGE_QUALITY = 0.9

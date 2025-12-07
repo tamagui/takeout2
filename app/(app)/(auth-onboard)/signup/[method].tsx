@@ -3,6 +3,7 @@ import { memo, useLayoutEffect, useRef, useState } from 'react'
 import { Keyboard } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Checkbox, SizableText, useEvent, XStack, YStack } from 'tamagui'
+
 import { APP_NAME, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '~/constants/app'
 import { validateLoginOtpCode } from '~/features/auth/client/otpLogin'
 import { shouldUsePasswordOnlyAuth } from '~/features/auth/constants'

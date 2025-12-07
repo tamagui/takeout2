@@ -1,5 +1,7 @@
 import { createEmitter, useEmitter } from '@take-out/helpers'
+
 import { closeOpenTooltips } from '~/interface/tooltip/closeOpenTooltips'
+
 import type { DialogLayer2, DialogType } from './types'
 
 export const dialogEmitter = createEmitter<DialogType>('dialog', {

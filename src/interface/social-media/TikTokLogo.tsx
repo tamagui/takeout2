@@ -1,5 +1,7 @@
 import Svg, { Path, G } from 'react-native-svg'
+
 import { useIconProps } from '~/interface/icons/useIconProps'
+
 import type { IconProps } from '~/interface/icons/types'
 
 export const TikTokLogo = (props: IconProps) => {

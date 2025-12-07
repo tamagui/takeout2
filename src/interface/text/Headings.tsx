@@ -1,5 +1,6 @@
-import type { ReactNode } from 'react'
 import { Separator, SizableText, XStack, styled } from 'tamagui'
+
+import type { ReactNode } from 'react'
 
 export const H1 = styled(SizableText, {
   tag: 'h1',

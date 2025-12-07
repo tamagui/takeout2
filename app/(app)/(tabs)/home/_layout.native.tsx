@@ -1,8 +1,9 @@
-import { BellIcon } from '~/interface/icons/phosphor/BellIcon'
-import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { isLiquidGlassAvailable } from 'expo-glass-effect'
 import { router, Stack } from 'one'
+
 import { Pressable } from '~/interface/buttons/Pressable'
+import { BellIcon } from '~/interface/icons/phosphor/BellIcon'
+import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 
 export function HomeLayout() {
   return (

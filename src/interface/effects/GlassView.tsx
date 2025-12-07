@@ -1,4 +1,5 @@
 import { memo } from 'react'
+
 import type { GlassViewProps } from './GlassViewProps'
 
 // empty on web

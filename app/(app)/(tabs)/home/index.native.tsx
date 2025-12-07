@@ -10,6 +10,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { AnimatePresence, SizableText, Spinner, View, YStack } from 'tamagui'
+
 import { PostCard } from '~/features/feed/PostCard'
 import { usePostsPaginated } from '~/features/feed/usePosts'
 import { scrollToTopEmitter } from '~/features/main-tabs/scrollToTopEmitter'

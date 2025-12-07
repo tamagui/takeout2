@@ -4,6 +4,7 @@ import * as SplashScreen from 'expo-splash-screen'
 import { Slot, Stack } from 'one'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { isWeb } from 'tamagui'
+
 import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
 
 // NOTE: we need to set the splash options at root layout for it to work on native

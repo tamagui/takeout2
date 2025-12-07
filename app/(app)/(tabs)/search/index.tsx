@@ -4,6 +4,7 @@ import { useNavigation } from 'one'
 import { memo, useCallback, useLayoutEffect, useRef } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Input, SizableText, Spinner, View, YStack } from 'tamagui'
+
 import { PostCard } from '~/features/feed/PostCard'
 import { usePostsSearch } from '~/features/feed/usePosts'
 

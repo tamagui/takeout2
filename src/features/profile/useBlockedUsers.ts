@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react'
+
 import { blockedByUser } from '~/data/queries/block'
-import type { User } from '~/data/types'
 import { useAuth } from '~/features/auth/client/authClient'
 import { useQuery, zero } from '~/zero/client'
+
+import type { User } from '~/data/types'
 
 interface UseBlockedUsersOptions {
   pageSize?: number

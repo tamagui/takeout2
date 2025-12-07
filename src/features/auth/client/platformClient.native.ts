@@ -1,9 +1,11 @@
 import '~/helpers/crypto/polyfill.native' // `better-auth/client/plugins` uses `@better-auth/utils` which requires `crypto` in globalThis
 
 import { expoClient } from '@better-auth/expo/client'
-import type { BetterAuthClientPlugin } from 'better-auth'
 import * as SecureStore from 'expo-secure-store'
+
 import { APP_SCHEME } from '../constants'
+
+import type { BetterAuthClientPlugin } from 'better-auth'
 
 export function platformClient(): BetterAuthClientPlugin {
   return expoClient({

@@ -6,6 +6,7 @@
  */
 
 import { join } from 'node:path'
+
 import { addMigration } from '../../packages/postgres/src/scripts/migration-add'
 
 const name = process.argv[2]

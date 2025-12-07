@@ -1,4 +1,5 @@
 import { test as setup } from '@playwright/test'
+
 import { loginAsAdmin } from './helpers'
 
 // This setup is currently commented out in playwright.config.ts

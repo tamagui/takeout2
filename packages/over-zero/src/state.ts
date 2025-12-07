@@ -1,4 +1,5 @@
 import { createBuilder, type Schema } from '@rocicorp/zero'
+
 import type { AuthData, QueryBuilder } from './types'
 
 let schema: Schema | null = null

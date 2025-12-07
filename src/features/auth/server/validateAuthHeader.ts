@@ -1,6 +1,7 @@
-import type { AuthData } from 'over-zero'
-import type { JWTPayload } from '../types'
 import { InvalidTokenError, validateToken } from './validateToken'
+
+import type { JWTPayload } from '../types'
+import type { AuthData } from 'over-zero'
 
 export async function validateAuthHeader(req: Request) {
   const payload = await getAuthHeader(req)

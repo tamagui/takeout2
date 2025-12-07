@@ -1,4 +1,5 @@
 import { createFetch } from '@better-fetch/fetch'
+
 import { authState } from './authClient'
 
 if (!process.env.ONE_SERVER_URL) {

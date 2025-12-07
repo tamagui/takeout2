@@ -1,6 +1,7 @@
 import { isNative } from '@take-out/helpers'
 import { Slot } from 'one'
 import { Spacer } from 'tamagui'
+
 import { SiteHeader } from '~/features/site/ui/SiteHeader'
 import { PageContainer } from '~/interface/layout/PageContainer'
 

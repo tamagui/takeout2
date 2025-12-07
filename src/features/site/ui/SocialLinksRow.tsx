@@ -1,5 +1,6 @@
 import { useLinkTo, type LinkProps } from 'one'
 import { SizableText, styled, View, YStack, type SizableTextProps } from 'tamagui'
+
 import { GithubLogoIcon } from '~/interface/icons/GithubLogoIcon'
 import { DiscordLogo } from '~/interface/social-media/DiscordLogo'
 import { TwitterLogo } from '~/interface/social-media/TwitterLogo'

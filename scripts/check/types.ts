@@ -5,9 +5,10 @@
  * @args --watch
  */
 
-import { $ } from 'bun'
 import { existsSync } from 'node:fs'
 import { parseArgs } from 'node:util'
+
+import { $ } from 'bun'
 
 const { values } = parseArgs({
   args: process.argv.slice(2),

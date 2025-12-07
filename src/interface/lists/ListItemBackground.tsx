@@ -1,5 +1,6 @@
 import { memo, useContext } from 'react'
 import { YStack } from 'tamagui'
+
 import { animationClamped } from '../animations/animationClamped'
 import { ListItemContext } from './ListItemContext'
 

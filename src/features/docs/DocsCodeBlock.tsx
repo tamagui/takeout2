@@ -1,7 +1,8 @@
-import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
-import { CopyIcon } from '~/interface/icons/phosphor/CopyIcon'
 import { useState } from 'react'
 import { Button, SizableText, YStack } from 'tamagui'
+
+import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
+import { CopyIcon } from '~/interface/icons/phosphor/CopyIcon'
 
 export function DocsCodeBlock({
   children,

@@ -1,7 +1,9 @@
-import type React from 'react'
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg'
-import type { ViewStyle, StyleProp } from 'react-native'
+
 import { extractOpacityFromColor } from '~/helpers/color/extractOpacityFromColor'
+
+import type React from 'react'
+import type { ViewStyle, StyleProp } from 'react-native'
 
 export interface GradientConfig {
   colors: string[]

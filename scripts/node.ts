@@ -4,8 +4,9 @@
  * @description Start interactive Node REPL with SST resources
  */
 
-import { Resource } from 'sst'
 import './ensure-tunnel'
+
+import { Resource } from 'sst'
 
 // this isn't working really at least to fetch urls i'm trying like http://WebApp.production.start-dot-chat.sst
 

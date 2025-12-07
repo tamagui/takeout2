@@ -1,4 +1,5 @@
 import { getZQL } from './state'
+
 import type { QueryBuilder } from './types'
 
 export const zql = new Proxy({} as QueryBuilder, {

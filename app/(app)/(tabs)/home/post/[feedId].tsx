@@ -2,6 +2,7 @@ import { LinearGradient } from '@tamagui/linear-gradient'
 import { useParams } from 'one'
 import { memo, useState } from 'react'
 import { ScrollView, SizableText, XStack, YStack, isWeb } from 'tamagui'
+
 import { postById } from '~/data/queries/post'
 import { PostActionsPopover } from '~/features/feed/PostActionsPopover'
 import { useUser } from '~/features/user/useUser'

@@ -1,4 +1,5 @@
 import { styled, Text, withStaticProperties } from 'tamagui'
+
 import { ListItemContext } from './ListItemContext'
 import { ListItemFrame } from './ListItemFrame'
 import { ListItemIcon } from './ListItemIcon'

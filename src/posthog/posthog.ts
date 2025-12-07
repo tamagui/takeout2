@@ -1,4 +1,5 @@
 import { DEBUG_LEVEL } from '~/features/devtools/constants'
+
 import type { PostHogInstance } from './types'
 
 /**

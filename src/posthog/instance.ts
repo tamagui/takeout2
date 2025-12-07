@@ -1,4 +1,5 @@
 import posthog from 'posthog-js'
+
 import type { PostHogInstance } from './types'
 
 class WebPostHog implements PostHogInstance {

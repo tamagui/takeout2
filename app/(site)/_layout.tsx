@@ -1,4 +1,5 @@
 import { Slot } from 'one'
+
 import { SiteFooter } from '~/features/site/ui/SiteFooter'
 import { SiteHeader } from '~/features/site/ui/SiteHeader'
 import { PageContainer } from '~/interface/layout/PageContainer'

@@ -1,4 +1,5 @@
 import { XStack, YStack } from 'tamagui'
+
 import { Logo } from '~/interface/app/Logo'
 import { MediumText } from '~/interface/text/Body'
 import { H3 } from '~/interface/text/Headings'

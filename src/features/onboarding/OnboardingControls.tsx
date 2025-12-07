@@ -1,7 +1,8 @@
+import { XStack } from 'tamagui'
+
+import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
-import { XStack } from 'tamagui'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 
 export type OnboardingControlsProps = {
   currentIdx: number

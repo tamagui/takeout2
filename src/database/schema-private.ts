@@ -1,5 +1,6 @@
-import type { InferSelectModel } from 'drizzle-orm'
 import { pgTable } from 'drizzle-orm/pg-core'
+
+import type { InferSelectModel } from 'drizzle-orm'
 
 export type Whitelist = InferSelectModel<typeof whitelist>
 

@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { Accordion, Paragraph, Square, XStack, YStack } from 'tamagui'
+
 import { CaretDownIcon } from '~/interface/icons/phosphor/CaretDownIcon'
+
 import { DocsRouteNavItem } from './DocsRouteNavItem'
 import { docsRoutes } from './docsRoutes'
 import { useDocsMenu } from './useDocsMenu'

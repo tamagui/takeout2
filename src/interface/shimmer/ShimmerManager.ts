@@ -192,7 +192,7 @@ class ShimmerManager {
       gl.clear(gl.COLOR_BUFFER_BIT)
 
       // Enable the program
-      // biome-ignore lint/correctness/useHookAtTopLevel: not a hook
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- not a hook
       gl.useProgram(this.program)
 
       // Set up attributes

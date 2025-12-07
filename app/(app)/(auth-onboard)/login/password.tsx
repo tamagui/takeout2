@@ -2,6 +2,7 @@ import { router, useParams } from 'one'
 import { useState } from 'react'
 import { Keyboard } from 'react-native'
 import { YStack } from 'tamagui'
+
 import { passwordLogin } from '~/features/auth/client/passwordLogin'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { showError } from '~/interface/dialogs/actions'

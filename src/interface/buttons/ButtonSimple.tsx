@@ -1,7 +1,5 @@
-import type { IconProps } from '@tamagui/helpers-icon'
 import { IS_SAFARI, isWeb, sleep } from '@take-out/helpers'
 import { createElement, forwardRef, isValidElement } from 'react'
-import type { FontFamilyTokens, RadiusTokens } from 'tamagui'
 import {
   createStyledContext,
   type GetProps,
@@ -13,12 +11,17 @@ import {
   withStaticProperties,
   XStack,
 } from 'tamagui'
+
 import { useIsDark } from '~/features/theme/useIsDark'
+
 import { GlassView } from '../effects/GlassView'
 import Glint from '../effects/Glint'
-import { type TooltipWrapperProps, wrapWithTooltip } from '../tooltip/TooltipSimple'
 import { closeOpenTooltips } from '../tooltip/closeOpenTooltips'
+import { type TooltipWrapperProps, wrapWithTooltip } from '../tooltip/TooltipSimple'
 import { wrapChildrenInText } from './wrapChildrenInText'
+
+import type { IconProps } from '@tamagui/helpers-icon'
+import type { FontFamilyTokens, RadiusTokens } from 'tamagui'
 
 type ButtonSimpleAdditionalProps = {
   delayPress?: boolean

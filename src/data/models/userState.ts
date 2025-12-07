@@ -1,6 +1,7 @@
 import { boolean, number, string, table } from '@rocicorp/zero'
-import type { TableInsertRow } from 'over-zero'
 import { mutations, serverWhere } from 'over-zero'
+
+import type { TableInsertRow } from 'over-zero'
 
 export type UserState = TableInsertRow<typeof schema>
 

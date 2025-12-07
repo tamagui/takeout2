@@ -1,5 +1,6 @@
-import * as v from 'valibot'
 import { syncedQuery } from '@rocicorp/zero'
+import * as v from 'valibot'
+
 import * as blockQueries from '../queries/block'
 import * as postQueries from '../queries/post'
 import * as userQueries from '../queries/user'

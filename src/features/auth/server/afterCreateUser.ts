@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm'
+
 import { getDb } from '~/database'
 import { user as userTable, whitelist } from '~/database/schema-private'
 import { userPublic, userState } from '~/database/schema-public'

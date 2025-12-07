@@ -1,8 +1,10 @@
 import { useEmitterSelector } from '@take-out/helpers'
 import { useState } from 'react'
 import { XStack, YStack } from 'tamagui'
+
 import { signInAsAdmin } from '~/features/auth/client/signInAsAdmin'
 import { useGoBackToHome } from '~/hooks/useGoBackToHome'
+
 import { ButtonAction } from '../buttons/ButtonAction'
 import { ButtonSimple } from '../buttons/ButtonSimple'
 import { Input } from '../forms/Input'

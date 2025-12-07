@@ -25,6 +25,7 @@ import {
   unlinkSync,
 } from 'node:fs'
 import { join } from 'node:path'
+
 import { getZeroVersion } from '@take-out/scripts/helpers/zero-get-version'
 
 const ENV_PATH = join(process.cwd(), '.env')

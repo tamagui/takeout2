@@ -5,9 +5,11 @@
  * Interactive tools for Takeout starter kit setup and management
  */
 
-import { defineCommand, runMain } from 'citty'
 import { existsSync, statSync } from 'node:fs'
 import { join } from 'node:path'
+
+import { defineCommand, runMain } from 'citty'
+
 import { docsCommand } from './commands/docs'
 import { envSetupCommand } from './commands/env-setup'
 import { onboardCommand } from './commands/onboard'

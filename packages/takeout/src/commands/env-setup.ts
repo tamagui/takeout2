@@ -1,5 +1,6 @@
 import { defineCommand } from 'citty'
 import pc from 'picocolors'
+
 import { setupProductionEnv, listCategories } from '../utils/env-setup'
 
 export const envSetupCommand = defineCommand({

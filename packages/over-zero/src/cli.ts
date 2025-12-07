@@ -1,9 +1,10 @@
 #!/usr/bin/env node
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { basename, resolve } from 'node:path'
+
 import { ModelToValibot } from '@sinclair/typebox-codegen/model'
 import { TypeScriptToModel } from '@sinclair/typebox-codegen/typescript'
 import { defineCommand, runMain } from 'citty'
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
-import { basename, resolve } from 'node:path'
 import * as ts from 'typescript'
 
 /**

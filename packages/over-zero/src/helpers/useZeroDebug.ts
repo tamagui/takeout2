@@ -1,7 +1,9 @@
-import type { Query } from '@rocicorp/zero'
 import { getCurrentComponentStack } from '@vxrn/helpers'
 import { useEffect, useId } from 'react'
+
 import { prettyFormatZeroQuery } from './prettyFormatZeroQuery'
+
+import type { Query } from '@rocicorp/zero'
 
 const activeQueries = new Map<string, number>()
 

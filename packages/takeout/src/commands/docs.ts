@@ -2,11 +2,13 @@
  * Docs command - list and retrieve documentation files from the package
  */
 
-import { defineCommand } from 'citty'
 import { existsSync, readdirSync, readFileSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import pc from 'picocolors'
+
 import { confirm } from '@clack/prompts'
+import { defineCommand } from 'citty'
+import pc from 'picocolors'
+
 import {
   type FileToSync,
   compareFiles,

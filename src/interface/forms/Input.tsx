@@ -1,7 +1,8 @@
 import { memo } from 'react'
+import { Input as TamaguiInput } from 'tamagui'
+
 import type { RefObject } from 'react'
 import type { InputProps as TamaguiInputProps, ViewProps } from 'tamagui'
-import { Input as TamaguiInput } from 'tamagui'
 
 export type InputProps = TamaguiInputProps & { ref?: RefObject<TamaguiInput | null> }
 

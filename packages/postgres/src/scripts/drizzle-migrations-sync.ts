@@ -6,9 +6,9 @@
  * and imports the SQL with ?raw
  */
 
+import { existsSync } from 'node:fs'
 import { readdir, writeFile, stat, rename } from 'node:fs/promises'
 import { join, basename, extname } from 'node:path'
-import { existsSync } from 'node:fs'
 
 export type DrizzleSyncOptions = {
   migrationsDir: string

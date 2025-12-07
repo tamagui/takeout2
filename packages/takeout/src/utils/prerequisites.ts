@@ -3,6 +3,7 @@
  */
 
 import { execSync } from 'node:child_process'
+
 import type { PrerequisiteCheck } from '../types'
 
 function execCommand(command: string): string | null {

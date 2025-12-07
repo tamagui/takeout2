@@ -5,8 +5,9 @@
  * Inspired by chat project's excellent monitoring patterns
  */
 
-import { $ } from 'bun'
 import { readFileSync } from 'node:fs'
+
+import { $ } from 'bun'
 
 const TIMEOUT = 5 * 60 * 1000 // 5 minutes
 const CHECK_INTERVAL = 10000 // 10 seconds

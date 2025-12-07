@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
 
-import { $ } from 'bun'
 import { execSync } from 'node:child_process'
+
+import { $ } from 'bun'
 
 const AWS_PROFILE = 'tamagui-prod'
 const AWS_REGION = 'us-west-1'

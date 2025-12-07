@@ -1,6 +1,7 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
 import { memo } from 'react'
 import { SizableText, XStack, YStack } from 'tamagui'
+
 import type { PageHeaderProps } from './PageHeader.types'
 
 // web version - static header without animations

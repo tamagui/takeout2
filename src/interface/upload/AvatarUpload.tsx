@@ -1,4 +1,5 @@
 import { Paragraph, Progress, XStack, YStack } from 'tamagui'
+
 import { Avatar } from '../avatars/Avatar'
 import { ButtonSimple } from '../buttons/ButtonSimple'
 import { useDropArea } from './DragDropFile'

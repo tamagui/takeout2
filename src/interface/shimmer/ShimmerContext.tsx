@@ -1,4 +1,5 @@
 import { createContext, useMemo, type FunctionComponent } from 'react'
+
 import type { GradientConfig } from './LinearGradient'
 
 // web version - no reanimated, just a passthrough provider

@@ -1,8 +1,9 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
-import type { ReactNode } from 'react'
 import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { EnsureFlexed, isWeb, YStack } from 'tamagui'
+
+import type { ReactNode } from 'react'
 
 export const BaseStepPageLayout = ({
   children,

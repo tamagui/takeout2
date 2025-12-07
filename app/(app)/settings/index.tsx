@@ -1,6 +1,7 @@
 import { router, type Href } from 'one'
 import { Linking } from 'react-native'
 import { ScrollView, SizableText, View, XStack, YStack } from 'tamagui'
+
 import { APP_NAME_LOWERCASE, HELP_ROADMAP_URL } from '~/constants/app'
 import { useLogout } from '~/features/auth/useLogout'
 import { useUser } from '~/features/user/useUser'
@@ -13,8 +14,8 @@ import { DoorIcon } from '~/interface/icons/phosphor/DoorIcon'
 import { FileIcon } from '~/interface/icons/phosphor/FileIcon'
 import { InfoIcon } from '~/interface/icons/phosphor/InfoIcon'
 import { LockIcon } from '~/interface/icons/phosphor/LockIcon'
-import { UserIcon } from '~/interface/icons/phosphor/UserIcon'
 import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
+import { UserIcon } from '~/interface/icons/phosphor/UserIcon'
 import { Image } from '~/interface/image/Image'
 import { H4 } from '~/interface/text/Headings'
 

@@ -1,9 +1,10 @@
+import { getAuthDataFromRequest } from '~/features/auth/server/validateAuthHeader'
+import { zeroServer } from '~/zero/server'
+
 // this sets up the synced queries endpoint
 // see: https://zero.rocicorp.dev/docs/synced-queries
 
 import type { Endpoint } from 'one'
-import { getAuthDataFromRequest } from '~/features/auth/server/validateAuthHeader'
-import { zeroServer } from '~/zero/server'
 
 export const POST: Endpoint = async (request) => {
   try {

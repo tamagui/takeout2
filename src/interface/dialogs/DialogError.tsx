@@ -1,5 +1,6 @@
 import { useEmitterSelector } from '@take-out/helpers'
 import { isWeb, useWindowDimensions, XStack, YStack } from 'tamagui'
+
 import { ButtonAction } from '../buttons/ButtonAction'
 import { Dialog } from './Dialog'
 import { closeDialogLayer2, dialogLayer2Emitter } from './shared'

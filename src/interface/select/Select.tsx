@@ -1,9 +1,4 @@
-import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
-import { CaretDownIcon } from '~/interface/icons/phosphor/CaretDownIcon'
-import { CaretUpIcon } from '~/interface/icons/phosphor/CaretUpIcon'
 import React, { useState } from 'react'
-
-import type { FontSizeTokens, SelectProps as TamaguiSelectProps } from 'tamagui'
 import {
   Adapt,
   Sheet,
@@ -13,6 +8,12 @@ import {
   getFontSize,
 } from 'tamagui'
 import { LinearGradient } from 'tamagui/linear-gradient'
+
+import { CaretDownIcon } from '~/interface/icons/phosphor/CaretDownIcon'
+import { CaretUpIcon } from '~/interface/icons/phosphor/CaretUpIcon'
+import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
+
+import type { FontSizeTokens, SelectProps as TamaguiSelectProps } from 'tamagui'
 
 export type SelectProps = Omit<TamaguiSelectProps, 'children'> & {
   items: { name: string; id: string; icon?: React.ReactNode }[]

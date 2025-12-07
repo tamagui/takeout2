@@ -1,4 +1,5 @@
 import { startTransition, useState } from 'react'
+
 import { idle, type IdleOptions } from './idle'
 import { useAsyncEffect } from './useAsyncEffect'
 

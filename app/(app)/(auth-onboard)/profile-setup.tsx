@@ -1,6 +1,7 @@
 import { router, useParams } from 'one'
 import { useEffect, useRef, useState } from 'react'
 import { Spinner, useDebounceValue, XStack, YStack } from 'tamagui'
+
 import { userByUsername } from '~/data/queries/user'
 import { OnboardingStepPageLayout } from '~/features/user/ui/OnboardingStepPageLayout'
 import { useUser } from '~/features/user/useUser'

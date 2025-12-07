@@ -1,6 +1,7 @@
 // see analytics.native.ts
 
 import { postHog } from '~/posthog/posthog'
+
 import type { Analytics, AnalyticsEvent, EventProperties } from './types'
 
 class WebAnalytics implements Analytics {

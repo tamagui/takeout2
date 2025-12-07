@@ -1,5 +1,5 @@
-import { authClient } from '~/features/auth/client/authClient'
 import { ADMIN_EMAIL } from '~/constants/app'
+import { authClient } from '~/features/auth/client/authClient'
 
 export const signInAsAdmin = async (password: string) => {
   const { error } = await authClient.signUp.email({

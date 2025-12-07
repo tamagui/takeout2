@@ -1,5 +1,6 @@
-import { Shimmer } from './Shimmer.native'
 import { View, type ViewStyle } from 'tamagui'
+
+import { Shimmer } from './Shimmer.native'
 
 interface LineShimmerProps {
   width?: number

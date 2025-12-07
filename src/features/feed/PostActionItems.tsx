@@ -1,18 +1,21 @@
 import { router } from 'one'
 import { useState } from 'react'
 import { YStack } from 'tamagui'
+
 import { isNative } from '~/constants/platform'
-import type { Post } from '~/data/types'
 import { saveRemoteImage } from '~/helpers/media/saveImage'
 import { dialogConfirm, showError } from '~/interface/dialogs/actions'
 import { DownloadSimpleIcon } from '~/interface/icons/phosphor/DownloadSimpleIcon'
-import { XCircleIcon } from '~/interface/icons/phosphor/XCircleIcon'
 import { UserCircleIcon } from '~/interface/icons/phosphor/UserCircleIcon'
 import { WarningCircleIcon } from '~/interface/icons/phosphor/WarningCircleIcon'
+import { XCircleIcon } from '~/interface/icons/phosphor/XCircleIcon'
 import { ListItem } from '~/interface/lists/ListItem'
 import { showToast } from '~/interface/toast/helpers'
 import { zero } from '~/zero/client'
+
 import { ReportPostDialog } from './ReportPostDialog'
+
+import type { Post } from '~/data/types'
 
 interface PostActionItemsProps {
   post: Post

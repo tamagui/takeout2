@@ -2,6 +2,7 @@
 
 import { existsSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+
 import { getEnvironment } from './sst-get-environment'
 
 const rootDir = process.cwd()

@@ -1,5 +1,5 @@
-import { useEffect, useId, useRef } from 'react'
 import { getCurrentComponentStack } from '@take-out/helpers'
+import { useEffect, useId, useRef } from 'react'
 
 export interface UseWarnIfDepsChangeOptions {
   maxChanges?: number

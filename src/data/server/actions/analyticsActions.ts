@@ -1,4 +1,5 @@
 import { postHog } from '~/posthog/instance.node'
+
 import type { AnalyticsEvent, EventProperties } from '~/features/analytics/types'
 
 export const analyticsActions = () => {

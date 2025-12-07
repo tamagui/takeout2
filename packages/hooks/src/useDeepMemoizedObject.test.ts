@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+
 import { deepMemoize, type Options } from './useDeepMemoizedObject'
 
 function testMemoization<T>(

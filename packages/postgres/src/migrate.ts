@@ -9,8 +9,10 @@
  */
 
 import { basename } from 'node:path'
-import type { PoolClient } from 'pg'
+
 import { getDBClient } from './helpers/getDBClient'
+
+import type { PoolClient } from 'pg'
 
 export type Migration = {
   name: string

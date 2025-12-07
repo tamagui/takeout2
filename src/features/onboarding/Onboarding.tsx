@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { PanResponder } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
   AnimatePresence,
   Circle,
@@ -9,7 +10,7 @@ import {
   YStack,
   useWindowDimensions,
 } from 'tamagui'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+
 import { OnboardingControls } from './OnboardingControls'
 
 export type OnboardingStepInfo = {

@@ -1,5 +1,6 @@
-import type { SizeTokens } from '@tamagui/web'
 import React, { Fragment } from 'react'
+
+import type { SizeTokens } from '@tamagui/web'
 import type { TextParentStyles } from 'tamagui'
 
 type Props = TextParentStyles & {

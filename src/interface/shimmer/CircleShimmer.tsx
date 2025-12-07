@@ -1,4 +1,5 @@
 import { Circle, type CircleProps, type ViewStyle } from 'tamagui'
+
 import { Shimmer } from './Shimmer'
 
 export interface CircleShimmerNativeProps {

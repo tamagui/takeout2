@@ -1,10 +1,12 @@
 import { expo } from '@better-auth/expo'
-import { betterAuth } from 'better-auth'
 // import { emailHarmony, phoneHarmony } from 'better-auth-harmony'
 import { time } from '@take-out/helpers'
+import { betterAuth } from 'better-auth'
 import { admin, bearer, emailOTP, jwt, magicLink, phoneNumber } from 'better-auth/plugins'
+
 import { database } from '~/database/database'
 import { BETTER_AUTH_SECRET, BETTER_AUTH_URL } from '~/server/env-server'
+
 import { APP_SCHEME } from '../constants'
 import { afterCreateUser } from './afterCreateUser'
 import { storeOTP } from './lastOTP'

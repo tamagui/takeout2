@@ -1,4 +1,5 @@
 import { Separator, SizableText, Spinner, XStack, YStack } from 'tamagui'
+
 import { useLogout } from '~/features/auth/useLogout'
 import { useProfileEdit } from '~/features/user/useProfileEdit'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'

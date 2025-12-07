@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useDebounceValue } from 'tamagui'
+
 import { blockedByUser } from '~/data/queries/block'
 import {
   allPosts,
@@ -7,9 +8,10 @@ import {
   searchPosts,
   userPostsPaginated,
 } from '~/data/queries/post'
-import type { Post } from '~/data/types'
 import { useAuth } from '~/features/auth/client/authClient'
 import { useQuery } from '~/zero/client'
+
+import type { Post } from '~/data/types'
 
 interface UsePostsOptions {
   limit?: number

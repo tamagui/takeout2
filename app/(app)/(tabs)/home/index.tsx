@@ -2,6 +2,7 @@ import { LegendList, type LegendListRef } from '@legendapp/list'
 import { useEmitter } from '@take-out/helpers'
 import { memo, useCallback, useRef, useState } from 'react'
 import { AnimatePresence, SizableText, Spinner, View, YStack } from 'tamagui'
+
 import { PostCard } from '~/features/feed/PostCard'
 import { usePostsPaginated } from '~/features/feed/usePosts'
 import { scrollToTopEmitter } from '~/features/main-tabs/scrollToTopEmitter'
@@ -11,7 +12,7 @@ import { HomeShimmer } from '~/interface/shimmer/HomeShimmer'
 
 export const HomePage = memo(() => {
   const listRef = useRef<LegendListRef>(null)
-  const { posts, loadMore, refresh, isLoading, hasMore } = usePostsPaginated()
+  const { posts, loadMore, isLoading, hasMore } = usePostsPaginated()
   const [showScrollToTop, setShowScrollToTop] = useState(false)
   const headerHeight = 60
 

@@ -22,7 +22,7 @@ export function objectFromEntries<ARR_T extends EntriesType>(
   return Object.fromEntries(arr) as EntriesToObject<ARR_T>
 }
 
-export function objectKeys<O extends Object>(obj: O) {
+export function objectKeys<O extends object>(obj: O) {
   return Object.keys(obj) as Array<keyof O>
 }
 

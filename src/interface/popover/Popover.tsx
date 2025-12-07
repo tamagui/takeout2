@@ -1,4 +1,4 @@
-import type { RefObject } from 'react'
+import { createEmitter } from '@take-out/helpers'
 import {
   AnimatePresence,
   Popover as TamaguiPopover,
@@ -8,9 +8,11 @@ import {
   type PopoverProps,
   type PopoverContentProps as TamaguiPopoverContentProps,
 } from 'tamagui'
-import { createEmitter } from '@take-out/helpers'
+
 import { animationClamped } from '../animations/animationClamped'
 import { hasSelection } from '../forms/hasSelection'
+
+import type { RefObject } from 'react'
 
 export const popoverEmitter = createEmitter<{
   state: 'open' | 'closed'

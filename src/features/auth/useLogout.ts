@@ -1,4 +1,5 @@
 import { router } from 'one'
+
 import { authClient, clearAuthClientToken } from '~/features/auth/client/authClient'
 import { dialogConfirm, showError } from '~/interface/dialogs/actions'
 

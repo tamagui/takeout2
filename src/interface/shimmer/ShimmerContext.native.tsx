@@ -15,6 +15,7 @@ import {
   withTiming,
   type SharedValue,
 } from 'react-native-reanimated'
+
 import type { GradientConfig } from './LinearGradient'
 
 interface ShimmerContextType {

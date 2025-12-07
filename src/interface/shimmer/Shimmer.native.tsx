@@ -1,10 +1,12 @@
-import type React from 'react'
 import { useContext, useEffect } from 'react'
 import { StyleSheet } from 'react-native'
 import Animated, { useAnimatedStyle, interpolate } from 'react-native-reanimated'
 import { View } from 'tamagui'
-import type { ShimmerNativeProps } from './Shimmer'
+
 import { ShimmerContext } from './ShimmerContext'
+
+import type { ShimmerNativeProps } from './Shimmer'
+import type React from 'react'
 
 export const Shimmer = ({ style, speed = 1 }: ShimmerNativeProps): React.ReactNode => {
   const shimmer = useContext(ShimmerContext)

@@ -1,4 +1,5 @@
 import { postHog } from '../../posthog/posthog'
+
 import type { Analytics, AnalyticsEvent, EventProperties } from './types'
 
 class NativeAnalytics implements Analytics {

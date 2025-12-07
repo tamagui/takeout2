@@ -1,10 +1,12 @@
 import { useSchemeSetting } from '@vxrn/color-scheme'
-import type { SizeTokens } from 'tamagui'
 import { AnimatePresence, Paragraph, styled, View, YStack, TooltipSimple } from 'tamagui'
+
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { MoonStarsIcon } from '~/interface/icons/phosphor/MoonStarsIcon'
 import { SunIcon } from '~/interface/icons/phosphor/SunIcon'
 import { SunMoonIcon } from '~/interface/icons/phosphor/SunMoonIcon'
+
+import type { SizeTokens } from 'tamagui'
 
 const AnimatedIcon = styled(View, {
   animation: 'medium',

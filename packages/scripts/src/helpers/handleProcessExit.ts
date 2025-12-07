@@ -1,11 +1,13 @@
-import type { ChildProcess } from 'node:child_process'
 import { spawn } from 'node:child_process'
+
 import {
   addProcessHandler,
   setExitCleanupState,
   type ProcessHandler,
   type ProcessType,
 } from './run'
+
+import type { ChildProcess } from 'node:child_process'
 
 type ExitCallback = (info: { signal: NodeJS.Signals | string }) => void | Promise<void>
 

@@ -1,5 +1,6 @@
 import { boolean, number, string, table } from '@rocicorp/zero'
 import { mutations, serverWhere } from 'over-zero'
+
 import type { Post } from '../types'
 
 export const schema = table('post')

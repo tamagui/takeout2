@@ -1,5 +1,6 @@
-import type { ComponentType } from 'react'
 import { H5, Paragraph, View, YStack, styled } from 'tamagui'
+
+import type { ComponentType } from 'react'
 import type { IconProps } from '~/interface/icons/types'
 
 interface InfoCardProps {

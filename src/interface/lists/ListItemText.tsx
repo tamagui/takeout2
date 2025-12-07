@@ -1,3 +1,4 @@
+import { createContextualEmitter, useEmitter } from '@take-out/helpers'
 import { forwardRef, useContext, useEffect } from 'react'
 import {
   styled,
@@ -6,10 +7,11 @@ import {
   type GetProps,
   type TamaguiElement,
 } from 'tamagui'
+
+import { useHandleEscapeIf } from '~/features/shortcuts/handleKeyboardEscape'
+
 import { ListItemContext } from './ListItemContext'
 import { ListItemInput } from './ListItemInput'
-import { useHandleEscapeIf } from '~/features/shortcuts/handleKeyboardEscape'
-import { createContextualEmitter, useEmitter } from '@take-out/helpers'
 
 export type ListItemTextProps = GetProps<typeof ListItemTextFrame>
 

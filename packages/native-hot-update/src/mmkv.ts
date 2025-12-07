@@ -1,5 +1,5 @@
-import type { MMKV } from 'react-native-mmkv'
 import type { HotUpdateStorage } from './types'
+import type { MMKV } from 'react-native-mmkv'
 
 /**
  * Create a storage adapter for MMKV.

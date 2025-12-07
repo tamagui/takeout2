@@ -1,4 +1,5 @@
 import { processError } from './setupErrorHandling'
+
 import type { ErrorContext } from './types'
 
 export function handleError(

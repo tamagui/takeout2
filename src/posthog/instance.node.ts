@@ -1,4 +1,5 @@
 import { PostHog } from 'posthog-node'
+
 import type { PostHogInstance } from './types'
 
 class NodePostHog implements PostHogInstance {

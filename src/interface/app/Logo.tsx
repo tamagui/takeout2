@@ -1,4 +1,5 @@
 import { SizableText, XStack } from 'tamagui'
+
 import { LogoIcon } from './LogoIcon'
 
 export const Logo = ({ height = 24 }: { height?: number }) => {

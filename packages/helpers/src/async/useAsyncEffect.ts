@@ -1,6 +1,7 @@
 // adopted from https://github.com/franciscop/use-async/blob/master/src/index.js
 
 import { useEffect, useId, useLayoutEffect } from 'react'
+
 import { EMPTY_OBJECT } from '../constants'
 import { handleAbortError } from './abortable'
 
@@ -40,7 +41,7 @@ function useAsyncEffectImpl(
   options: AsyncEffectOptions = EMPTY_OBJECT
 ): void {
   const effectHook = isLayoutEffect ? useLayoutEffect : useEffect
-  // biome-ignore lint/correctness/useHookAtTopLevel: ignore
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const effectId = process.env.NODE_ENV === 'development' ? useId() : ''
 
   effectHook(() => {
@@ -103,7 +104,7 @@ if (process.env.NODE_ENV === 'development') {
       const message = `🚨 useAsyncEffect infinite loop detected! Effect ran ${runCount} times in <${circuitBreakPeriod}ms`
       if (process.env.NODE_ENV === 'development') {
         console.error(message)
-        // biome-ignore lint/suspicious/noDebugger: ignore
+        // eslint-disable-next-line no-debugger
         debugger
       } else {
         alert(message)

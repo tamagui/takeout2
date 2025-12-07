@@ -1,17 +1,20 @@
-import { AnimatePresence } from '@tamagui/animate-presence'
-import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
-import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
-import { XIcon } from '~/interface/icons/phosphor/XIcon'
 import { useEmitterValue } from '@take-out/helpers'
-import type { ReactNode } from 'react'
+import { AnimatePresence } from '@tamagui/animate-presence'
 import { useEffect, useState } from 'react'
 import { useWindowDimensions } from 'react-native'
 import { Button, type ButtonProps, Portal, styled, XStack, YStack } from 'tamagui'
+
 import { animationClamped } from '~/interface/animations/animationClamped'
+import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
+import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
+import { XIcon } from '~/interface/icons/phosphor/XIcon'
 import { Image } from '~/interface/image/Image'
 import { isVideoFile } from '~/interface/upload/helpers'
 import { Video } from '~/interface/video/Video'
+
 import { galleryEmitter } from './galleryEmitter'
+
+import type { ReactNode } from 'react'
 
 export type GalleryProps = { urls: string[]; children: ReactNode }
 export type GalleryImageProps = { index?: number; children: ReactNode }
@@ -94,7 +97,7 @@ export const Gallery = () => {
 
   const firstItem = galleryItems?.firstItem
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: ignore
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (firstItem) {
       setPage([items.findIndex((x) => x.id === firstItem), 0])

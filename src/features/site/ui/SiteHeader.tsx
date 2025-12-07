@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Adapt, Button, Separator, Sheet, Spacer, XStack, YStack } from 'tamagui'
+
 import { LoginButton } from '~/features/auth/ui/LoginButton'
 import { SocialLinksRow } from '~/features/site/ui/SocialLinksRow'
 import { Link } from '~/interface/app/Link'

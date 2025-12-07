@@ -4,9 +4,10 @@
  * @description Sync .env.production variables to GitHub repository secrets
  */
 
-import * as clack from '@clack/prompts'
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+
+import * as clack from '@clack/prompts'
 import pc from 'picocolors'
 
 interface PackageJson {

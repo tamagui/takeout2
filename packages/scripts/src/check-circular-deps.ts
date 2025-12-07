@@ -1,8 +1,9 @@
 #!/usr/bin/env bun
 
+import { basename } from 'node:path'
+
 import { $ } from 'bun'
 import { globSync } from 'glob'
-import { basename } from 'node:path'
 
 const projectRoot = process.cwd()
 

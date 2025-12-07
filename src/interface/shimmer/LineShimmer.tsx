@@ -1,4 +1,5 @@
 import { YStack, type YStackProps } from 'tamagui'
+
 import { Shimmer } from './Shimmer'
 
 export const LineShimmer = (props: YStackProps) => {

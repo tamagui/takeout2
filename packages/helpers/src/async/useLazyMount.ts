@@ -1,7 +1,9 @@
-import type React from 'react'
 import { startTransition, useState } from 'react'
+
 import { idle, type IdleOptions } from './idle'
 import { useAsyncEffect } from './useAsyncEffect'
+
+import type React from 'react'
 
 export type LazyMountProps = IdleOptions
 

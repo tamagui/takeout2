@@ -1,9 +1,12 @@
 import { createBetterAuthClient } from '@take-out/better-auth-utils'
-import type { User } from 'better-auth'
+
 import { SERVER_URL } from '~/constants/urls'
 import { setUser } from '~/features/user/getUser'
 import { showToast } from '~/interface/toast/Toast'
+
 import { plugins } from './plugins'
+
+import type { User } from 'better-auth'
 
 type AppUser = User & { role?: 'admin' }
 

@@ -1,7 +1,9 @@
+import { useRouter } from 'one'
+
 import { ArrowUpIcon } from '~/interface/icons/phosphor/ArrowUpIcon'
 import { RocketIcon } from '~/interface/icons/phosphor/RocketIcon'
 import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
-import { useRouter } from 'one'
+
 import { Onboarding, type OnboardingStepInfo } from './Onboarding'
 import { StepContent } from './OnboardingStepContent'
 

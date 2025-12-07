@@ -1,4 +1,5 @@
 import { styled, Input } from 'tamagui'
+
 import { ListItemContext } from './ListItemContext'
 
 export const ListItemInput = styled(Input, {

@@ -4,6 +4,12 @@
  * @description Run full CI/CD pipeline with builds, tests, and deployment
  */
 
+import { existsSync } from 'node:fs'
+import { mkdir, writeFile } from 'node:fs/promises'
+import { homedir } from 'node:os'
+import { join } from 'node:path'
+import { parseArgs } from 'node:util'
+
 import { sleep, time } from '@take-out/helpers'
 import { checkPort } from '@take-out/scripts/helpers/check-port'
 import { getTestEnv } from '@take-out/scripts/helpers/get-test-env'
@@ -16,11 +22,7 @@ import {
   waitForRun,
 } from '@take-out/scripts/helpers/run'
 import { waitForPort } from '@take-out/scripts/helpers/wait-for-port'
-import { existsSync } from 'node:fs'
-import { mkdir, writeFile } from 'node:fs/promises'
-import { homedir } from 'node:os'
-import { join } from 'node:path'
-import { parseArgs } from 'node:util'
+
 import * as sstDeploy from '../sst/helpers/deploy'
 import * as uncloudDeploy from '../uncloud/helpers/deploy'
 

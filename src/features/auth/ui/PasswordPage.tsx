@@ -2,11 +2,13 @@ import { router, useParams } from 'one'
 import { useState } from 'react'
 import { Keyboard } from 'react-native'
 import { YStack } from 'tamagui'
+
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { showError } from '~/interface/dialogs/actions'
 import { Input } from '~/interface/forms/Input'
 import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
+
 import { passwordLogin } from '../client/passwordLogin'
 
 export const PasswordPage = () => {

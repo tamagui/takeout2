@@ -1,3 +1,15 @@
+import { syncedQuery } from '@rocicorp/zero'
+import { useZero, ZeroProvider, useQuery as zeroUseQuery } from '@rocicorp/zero/react'
+import { createEmitter, mapObject } from '@vxrn/helpers'
+import { createContext, use, useMemo, type ReactNode } from 'react'
+
+import { createPermissions } from './createPermissions'
+import { createMutators } from './helpers/createMutators'
+import { prettyFormatZeroQuery } from './helpers/prettyFormatZeroQuery'
+import { useZeroDebug } from './helpers/useZeroDebug'
+import { setAuthData, setSchema } from './state'
+
+import type { AuthData, GenericModels, GetZeroMutators, ZeroEvent } from './types'
 import type {
   HumanReadable,
   Query,
@@ -8,16 +20,6 @@ import type {
   ZeroOptions,
   Schema as ZeroSchema,
 } from '@rocicorp/zero'
-import { syncedQuery } from '@rocicorp/zero'
-import { useZero, ZeroProvider, useQuery as zeroUseQuery } from '@rocicorp/zero/react'
-import { createEmitter, mapObject } from '@vxrn/helpers'
-import { createContext, use, useMemo, type ReactNode } from 'react'
-import { createPermissions } from './createPermissions'
-import { createMutators } from './helpers/createMutators'
-import { prettyFormatZeroQuery } from './helpers/prettyFormatZeroQuery'
-import { useZeroDebug } from './helpers/useZeroDebug'
-import { setAuthData, setSchema } from './state'
-import type { AuthData, GenericModels, GetZeroMutators, ZeroEvent } from './types'
 
 export function createZeroClient<
   Schema extends ZeroSchema,
@@ -200,7 +202,7 @@ export function createZeroClient<
     const out = zeroUseQuery(actualQuery, options)
 
     if (process.env.NODE_ENV === 'development') {
-      // biome-ignore lint/correctness/useHookAtTopLevel: ok
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       useZeroDebug(actualQuery, options, out)
     }
 

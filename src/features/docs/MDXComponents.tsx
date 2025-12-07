@@ -1,5 +1,6 @@
-import { H1, H2, H3, H4, H5, Paragraph, YStack } from 'tamagui'
 import { Link } from 'one'
+import { H1, H2, H3, H4, H5, Paragraph, YStack } from 'tamagui'
+
 import { CodeInline } from './Code'
 import { DocsCodeBlock } from './DocsCodeBlock'
 

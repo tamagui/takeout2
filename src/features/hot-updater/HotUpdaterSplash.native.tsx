@@ -1,5 +1,6 @@
 import { ActivityIndicator, Text } from 'react-native'
 import { View } from 'tamagui'
+
 import { useHotUpdater } from './useHotUpdater'
 
 interface HotUpdaterSplashProps {

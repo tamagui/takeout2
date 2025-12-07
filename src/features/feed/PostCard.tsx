@@ -1,8 +1,8 @@
 import { router } from 'one'
 import { memo, useState } from 'react'
 import { Accordion, isWeb, SizableText, View, XStack, YStack } from 'tamagui'
+
 import { userById } from '~/data/queries/user'
-import type { Post } from '~/data/types'
 import { useAuth } from '~/features/auth/client/authClient'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
 import { Pressable } from '~/interface/buttons/Pressable'
@@ -11,8 +11,11 @@ import { Image } from '~/interface/image/Image'
 import { LinearGradientSeparator } from '~/interface/separators/LinearGradientSeparator'
 import { BodyText } from '~/interface/text/Body'
 import { useQuery } from '~/zero/client'
+
 import { AvatarWithMenu } from './AvatarWithMenu'
 import { PostActionsPopover } from './PostActionsPopover'
+
+import type { Post } from '~/data/types'
 
 interface PostCardProps {
   post: Post

@@ -1,4 +1,5 @@
 import { migrate } from '@take-out/postgres/migrate'
+
 import { ZERO_CHANGE_DB, ZERO_CVR_DB, ZERO_UPSTREAM_DB } from '~/server/env-server'
 
 const migrationsTS = import.meta.glob(`./migrations/*.ts`)

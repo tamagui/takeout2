@@ -1,4 +1,5 @@
 import PostHog from 'posthog-react-native'
+
 import type { PostHogInstance } from './types'
 
 class NativePostHog implements PostHogInstance {

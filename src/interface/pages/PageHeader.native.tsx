@@ -1,6 +1,5 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
 import { memo } from 'react'
-import type { ViewStyle } from 'react-native'
 import Animated, {
   Extrapolation,
   interpolate,
@@ -9,7 +8,9 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { SizableText, XStack } from 'tamagui'
+
 import type { PageHeaderProps } from './PageHeader.types'
+import type { ViewStyle } from 'react-native'
 
 export const usePageHeader = () => {
   const { top } = useSafeAreaInsets()

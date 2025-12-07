@@ -1,5 +1,6 @@
-import type { EnvVariable, EnvCategory } from '../types'
 import pc from 'picocolors'
+
+import type { EnvVariable, EnvCategory } from '../types'
 
 export const envCategories: EnvCategory[] = [
   {

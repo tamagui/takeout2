@@ -11,15 +11,16 @@ import {
   XStack,
   YStack,
 } from 'tamagui'
+
 import { useUser } from '~/features/user/useUser'
 import { pickImageFromLibrary } from '~/helpers/media/imagePicker'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
+import { showError } from '~/interface/dialogs/actions'
 import { TextArea } from '~/interface/forms/TextArea'
 import { ImageIcon } from '~/interface/icons/phosphor/ImageIcon'
 import { XIcon } from '~/interface/icons/phosphor/XIcon'
 import { Image } from '~/interface/image/Image'
-import { showError } from '~/interface/dialogs/actions'
 import { showToast } from '~/interface/toast/helpers'
 import { useUploadFiles } from '~/interface/upload/uploadFile'
 import { zero } from '~/zero/client'

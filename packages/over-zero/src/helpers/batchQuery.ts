@@ -1,5 +1,6 @@
-import type { Query, Row } from '@rocicorp/zero'
 import { sleep } from '@vxrn/helpers'
+
+import type { Query, Row } from '@rocicorp/zero'
 
 export async function batchQuery<Q extends Query<any, any, any>, Item extends Row<Q>>(
   q: Q,

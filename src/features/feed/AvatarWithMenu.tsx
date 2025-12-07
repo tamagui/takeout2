@@ -2,6 +2,7 @@ import { useRouter } from 'one'
 import { memo } from 'react'
 import { View } from 'tamagui'
 import * as DropdownMenu from 'zeego/dropdown-menu'
+
 import { Avatar } from '~/interface/avatars/Avatar'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { HeartIcon } from '~/interface/icons/phosphor/HeartIcon'

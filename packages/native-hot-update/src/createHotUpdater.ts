@@ -6,6 +6,7 @@ import {
 import * as Application from 'expo-application'
 import { useEffect, useRef, useState } from 'react'
 import { Alert } from 'react-native'
+
 import type { HotUpdaterConfig, HotUpdaterInstance, UpdateInfo } from './types'
 
 const INITIAL_OTA_ID = '00000000-0000-0000-0000-000000000000'

@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+
 import { useWarnIfDepsChange } from './useWarnIfDepsChange'
 
 // create a useMemo that can log when it changes too often
@@ -19,6 +20,6 @@ export function useMemoStable<Value, T extends readonly unknown[]>(
 ): Value {
   useWarnIfDepsChange(deps, options)
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: ignore
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   return useMemo(getValue, deps)
 }

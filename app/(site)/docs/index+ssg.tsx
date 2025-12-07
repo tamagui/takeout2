@@ -1,4 +1,5 @@
 import { H1, H2, Paragraph, YStack } from 'tamagui'
+
 import { Link } from '~/interface/app/Link'
 
 export function DocsIndexPage() {

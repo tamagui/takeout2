@@ -1,14 +1,17 @@
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+
 import * as clack from '@clack/prompts'
 import pc from 'picocolors'
+
 import { updateEnvVariable, readEnvVariable, envFileExists, copyEnvFile } from './env'
 import {
   envCategories,
   getRequiredCategories,
   getOptionalCategories,
 } from './env-categories'
+
 import type { EnvCategory, EnvVariable } from '../types'
-import { existsSync, readFileSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 
 interface SetupOptions {
   skipOptional?: boolean

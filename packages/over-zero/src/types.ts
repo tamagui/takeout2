@@ -47,13 +47,15 @@ export type TableName = keyof Schema['tables'] extends string
 
 export type Transaction = ZeroTransaction<Schema>
 
-export type AuthData = FinalConfig['authData'] extends Record<string, unknown>
-  ? FinalConfig['authData']
-  : Record<string, unknown>
+export type AuthData =
+  FinalConfig['authData'] extends Record<string, unknown>
+    ? FinalConfig['authData']
+    : Record<string, unknown>
 
-export type ServerActions = FinalConfig['serverActions'] extends Record<string, unknown>
-  ? FinalConfig['serverActions']
-  : Record<string, unknown>
+export type ServerActions =
+  FinalConfig['serverActions'] extends Record<string, unknown>
+    ? FinalConfig['serverActions']
+    : Record<string, unknown>
 
 export type QueryBuilder = SchemaQuery<Schema>
 
@@ -112,9 +114,8 @@ export type AsyncAction = () => Promise<void>
 
 type GenericTable = TableBuilderWithColumns<any>
 
-type GetTableSchema<TS extends GenericTable> = TS extends TableBuilderWithColumns<infer S>
-  ? S
-  : never
+type GetTableSchema<TS extends GenericTable> =
+  TS extends TableBuilderWithColumns<infer S> ? S : never
 
 // all non-optional keys required (but optional can be undefined)
 export type TableInsertRow<TS extends GenericTable> = NullToOptional<

@@ -1,5 +1,6 @@
-import React, { startTransition, useEffect } from 'react'
 import { usePathname, useRouter } from 'one'
+import React, { startTransition, useEffect } from 'react'
+
 import { allNotPending } from './docsRoutes'
 
 export const useDocsMenu = () => {

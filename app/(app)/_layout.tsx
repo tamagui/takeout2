@@ -1,5 +1,6 @@
 import { Redirect, Slot, Stack, usePathname } from 'one'
 import { isWeb, SizableText } from 'tamagui'
+
 import { useAuth } from '~/features/auth/client/authClient'
 import { Dialogs } from '~/interface/dialogs/Dialogs'
 import { Gallery } from '~/interface/gallery/Gallery'

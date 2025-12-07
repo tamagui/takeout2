@@ -1,11 +1,13 @@
 import { router } from 'one'
-import type { ReactNode } from 'react'
 import { Circle, H5, isWeb, Spacer, XStack, YStack } from 'tamagui'
+
 import { Pressable } from '../buttons/Pressable'
 import { CaretLeftIcon } from '../icons/phosphor/CaretLeftIcon'
-import type { IconComponent } from '../icons/types'
 import { PageHeading } from '../text/PageHeading'
 import { BaseStepPageLayout } from './BaseStepPageLayout'
+
+import type { IconComponent } from '../icons/types'
+import type { ReactNode } from 'react'
 
 export type StepPageProps = {
   title: string

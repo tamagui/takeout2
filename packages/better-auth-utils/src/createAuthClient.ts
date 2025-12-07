@@ -16,8 +16,9 @@ import {
   isEqualDeepLite,
   useEmitterValue,
 } from '@take-out/helpers'
-import type { Session, User } from 'better-auth'
 import { type BetterAuthClientOptions, createAuthClient } from 'better-auth/client'
+
+import type { Session, User } from 'better-auth'
 
 export interface StorageKeys {
   token: string
@@ -31,8 +32,9 @@ export type AuthState<U extends User = User> = {
   token: string | null
 }
 
-export interface BetterAuthClientProps<TUser extends User = User>
-  extends BetterAuthClientOptions {
+export interface BetterAuthClientProps<
+  TUser extends User = User,
+> extends BetterAuthClientOptions {
   /**
    * Callback to transform and type the user object
    * This allows you to add app-specific fields and ensure proper typing

@@ -1,5 +1,6 @@
-import type { Query } from '@rocicorp/zero'
 import { ellipsis } from '@vxrn/helpers'
+
+import type { Query } from '@rocicorp/zero'
 
 export const prettyFormatZeroQuery = (
   query: Query<any, any, any>,

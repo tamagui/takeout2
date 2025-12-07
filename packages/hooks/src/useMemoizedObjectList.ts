@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef } from 'react'
 import { isEqualDeepLite } from '@take-out/helpers'
+import { useEffect, useMemo, useRef } from 'react'
 
 /**
  * When zero mutates and inserts, it creates all new objects for everything, but this
@@ -13,7 +13,7 @@ import { isEqualDeepLite } from '@take-out/helpers'
  * NOTE: this leaks memory
  */
 export function useMemoizedObjectList<
-  Items extends readonly Object[],
+  Items extends readonly object[],
   Item extends Items[0] = Items[0],
   ItemKey extends keyof Item = keyof Item,
 >(list: Items, identityKey: ItemKey): Items {

@@ -1,7 +1,9 @@
 import { createElement, useRef } from 'react'
 import { SizableText, Spacer, XStack, YStack } from 'tamagui'
+
 import { Link } from '~/interface/app/Link'
 import { ArrowSquareOutIcon } from '~/interface/icons/phosphor/ArrowSquareOutIcon'
+
 import type { NavItemProps } from './types'
 
 export const DocsRouteNavItem = function DocsRouteNavItem({

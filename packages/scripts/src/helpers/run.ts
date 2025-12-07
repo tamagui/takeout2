@@ -1,6 +1,7 @@
-import type { ChildProcess } from 'node:child_process'
 import { cpus } from 'node:os'
+
 import type { Timer } from '@take-out/helpers'
+import type { ChildProcess } from 'node:child_process'
 
 export type ProcessType = ChildProcess | Bun.Subprocess
 export type ProcessHandler = (process: ProcessType) => void
@@ -92,7 +93,7 @@ export async function run(
 
     try {
       const shell = Bun.spawn(['bash', '-c', command], {
-        env: { ...process.env, ...(env || {}) },
+        env: { ...process.env, ...env },
         cwd,
         stdout: 'pipe',
         stderr: 'pipe', // always pipe stderr so we can capture it for error messages

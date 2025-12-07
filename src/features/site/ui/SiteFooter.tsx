@@ -1,4 +1,5 @@
 import { SizableText, XStack, YStack } from 'tamagui'
+
 import { Link } from '~/interface/app/Link'
 import { PageContainer } from '~/interface/layout/PageContainer'
 

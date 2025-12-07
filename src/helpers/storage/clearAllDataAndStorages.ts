@@ -46,11 +46,11 @@ export async function clearCookies() {
   document.cookie.split(';').forEach((cookie) => {
     const eqPos = cookie.indexOf('=')
     const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie
-    // biome-ignore lint/suspicious/noDocumentCookie: ignore
+    // eslint-disable-next-line no-document-cookie
     document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`
-    // biome-ignore lint/suspicious/noDocumentCookie: ignore
+    // eslint-disable-next-line no-document-cookie
     document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=${window.location.hostname}`
-    // biome-ignore lint/suspicious/noDocumentCookie: ignore
+    // eslint-disable-next-line no-document-cookie
     document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=.${window.location.hostname}`
   })
 }

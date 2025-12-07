@@ -2,11 +2,14 @@
  * Onboard command - interactive setup for Takeout starter kit
  */
 
-import { defineCommand } from 'citty'
 import { execSync } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+
+import { defineCommand } from 'citty'
+import pc from 'picocolors'
+
 import {
   copyEnvFile,
   createEnvLocal,
@@ -40,7 +43,6 @@ import {
   showSuccess,
   showWarning,
 } from '../utils/prompts'
-import pc from 'picocolors'
 
 export const onboardCommand = defineCommand({
   meta: {

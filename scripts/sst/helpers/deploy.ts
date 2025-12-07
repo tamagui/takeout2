@@ -2,6 +2,10 @@
  * SST deployment helpers for ci/cd
  */
 
+import { existsSync } from 'node:fs'
+import { mkdir, writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
+
 import {
   CreateRepositoryCommand,
   DescribeImagesCommand,
@@ -10,9 +14,6 @@ import {
 } from '@aws-sdk/client-ecr'
 import { slugify, time } from '@take-out/helpers'
 import { run } from '@take-out/scripts/helpers/run'
-import { existsSync } from 'node:fs'
-import { mkdir, writeFile } from 'node:fs/promises'
-import { join } from 'node:path'
 
 export async function buildAndPushDockerImage() {
   console.info('\nBuilding Docker image for ECR...')

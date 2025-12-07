@@ -2,7 +2,6 @@
  * Enhanced Script command - hybrid script runner with filesystem discovery
  */
 
-import { defineCommand } from 'citty'
 import {
   existsSync,
   readdirSync,
@@ -11,9 +10,12 @@ import {
   writeFileSync,
   mkdirSync,
 } from 'node:fs'
-import { join, relative, dirname, basename, extname } from 'node:path'
-import pc from 'picocolors'
 import { homedir } from 'node:os'
+import { join, relative, dirname, basename, extname } from 'node:path'
+
+import { defineCommand } from 'citty'
+import pc from 'picocolors'
+
 import { listAllScripts, listCategoryScripts } from '../utils/script-listing'
 import {
   type FileToSync,

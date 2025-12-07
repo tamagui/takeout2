@@ -2,11 +2,14 @@
  * Sync command - sync fork with upstream Takeout repository
  */
 
-import { defineCommand } from 'citty'
 import { spawn, spawnSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+
+import { defineCommand } from 'citty'
+import pc from 'picocolors'
+
 import {
   confirmContinue,
   promptSelect,
@@ -15,7 +18,6 @@ import {
   showStep,
   showSuccess,
 } from '../utils/prompts'
-import pc from 'picocolors'
 
 function getSyncPrompt(): string {
   try {

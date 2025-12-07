@@ -31,7 +31,7 @@ export function useAsync<T>(
     return () => {
       isMounted = false
     }
-    // biome-ignore lint/correctness/useExhaustiveDependencies: ignore
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, args)
 
   return [data as T, error ? 'error' : loading ? 'loading' : 'idle', error]

@@ -1,6 +1,7 @@
-import type { Pool } from 'pg'
-import { createSql, setDefaultPool } from './sql'
 import { getDBClient, type GetDBClientOptions } from './helpers/getDBClient'
+import { createSql, setDefaultPool } from './sql'
+
+import type { Pool } from 'pg'
 
 export type ServerHelpers = {
   sql: ReturnType<typeof createSql>

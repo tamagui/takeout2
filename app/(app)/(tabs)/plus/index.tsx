@@ -53,16 +53,17 @@ export const PlusPage = memo(() => {
     if (isWeb) {
       fileInputRef.current?.click()
     } else {
-      pickImageFromLibrary(false).then((result: any) => {
+      pickImageFromLibrary(false).then((result) => {
         if (result && !result.canceled && result.assets?.[0]) {
           const asset = result.assets[0]
+          // native pseudo-file with uri property - handled specially by uploadFile.ts
           const pseudoFile = {
             uri: asset.uri,
             name: asset.fileName || `image-${Date.now()}.jpg`,
             type: asset.mimeType || asset.type || 'image/jpeg',
             size: asset.fileSize || 0,
             lastModified: Date.now(),
-          } as any
+          } as unknown as File
           handleUpload([pseudoFile])
         }
       })
@@ -224,7 +225,7 @@ export const PlusPage = memo(() => {
     <Dialog open={open} onOpenChange={handleOpenChange} modal>
       {isWeb && (
         <input
-          ref={fileInputRef as any}
+          ref={fileInputRef}
           type="file"
           accept="image/*"
           style={{ display: 'none' }}

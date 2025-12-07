@@ -10,8 +10,6 @@ import { analytics } from '~/features/analytics/analytics'
  */
 
 export default createMiddleware(async ({ request, next }) => {
-  const url = new URL(request.url)
-
   const response = await next()
 
   if (response && response.status >= 400) {
@@ -19,7 +17,7 @@ export default createMiddleware(async ({ request, next }) => {
     const endpoint = url.pathname
     const method = request.method
 
-    let responseBody: any = null
+    let responseBody: Record<string, unknown> | null = null
     let errorCode: string | undefined
     let errorMessage: string | undefined
 
@@ -27,15 +25,15 @@ export default createMiddleware(async ({ request, next }) => {
       const contentType = response.headers.get('content-type')
       if (contentType?.includes('application/json')) {
         const clonedResponse = response.clone()
-        responseBody = await clonedResponse.json()
+        responseBody = (await clonedResponse.json()) as Record<string, unknown>
 
-        if (responseBody.error) {
+        if (typeof responseBody.error === 'string') {
           errorMessage = responseBody.error
         }
-        if (responseBody.code) {
+        if (typeof responseBody.code === 'string') {
           errorCode = responseBody.code
         }
-        if (responseBody.message) {
+        if (typeof responseBody.message === 'string') {
           errorMessage = responseBody.message
         }
       }

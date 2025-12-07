@@ -5,6 +5,12 @@ import { Pressable } from '~/interface/buttons/Pressable'
 import { BellIcon } from '~/interface/icons/phosphor/BellIcon'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 
+import type { RouteProp } from '@react-navigation/native'
+
+type PostRouteParams = {
+  'post/[feedId]': { feedId: string; username?: string }
+}
+
 export function HomeLayout() {
   return (
     <Stack
@@ -30,8 +36,8 @@ export function HomeLayout() {
       <Stack.Screen name="profile/[userId]" />
       <Stack.Screen
         name="post/[feedId]"
-        options={({ route }: { route: any }) => ({
-          title: route.params.username,
+        options={({ route }: { route: RouteProp<PostRouteParams, 'post/[feedId]'> }) => ({
+          title: route.params?.username,
           headerLeft: () => (
             <Pressable
               onPress={() => router.back()}

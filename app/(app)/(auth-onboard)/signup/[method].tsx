@@ -20,6 +20,9 @@ import { DeviceMobileSpeakerIcon } from '~/interface/icons/phosphor/DeviceMobile
 import { EnvelopeSimpleIcon } from '~/interface/icons/phosphor/EnvelopeSimpleIcon'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 
+import type React from 'react'
+import type { GestureResponderEvent } from 'react-native'
+
 export const SignupPage = memo(() => {
   const { method } = useParams<{
     method?: 'phone' | 'email'
@@ -67,7 +70,9 @@ export const SignupPage = memo(() => {
     setSmsConsent(!!val)
   )
 
-  const stopPropagation = useEvent((e: any) => e.stopPropagation())
+  const stopPropagation = useEvent((e: GestureResponderEvent | React.MouseEvent) =>
+    e.stopPropagation()
+  )
   const handleGoBack = useEvent(() => router.back())
 
   const handleContinue = useEvent(async () => {

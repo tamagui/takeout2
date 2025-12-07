@@ -8,6 +8,9 @@ import { Input, SizableText, Spinner, View, YStack } from 'tamagui'
 import { PostCard } from '~/features/feed/PostCard'
 import { usePostsSearch } from '~/features/feed/usePosts'
 
+import type { NativeSyntheticEvent, TextInputChangeEventData } from 'react-native'
+import type { Post } from '~/data/types'
+
 export const SearchPage = memo(() => {
   const navigation = useNavigation()
   const { top, bottom } = useSafeAreaInsets()
@@ -27,7 +30,7 @@ export const SearchPage = memo(() => {
       navigation.setOptions({
         headerSearchBarOptions: {
           placeholder: 'Search posts...',
-          onChangeText: (e: any) => {
+          onChangeText: (e: NativeSyntheticEvent<TextInputChangeEventData>) => {
             handleSearchTextChange(e.nativeEvent.text)
           },
         },
@@ -35,11 +38,11 @@ export const SearchPage = memo(() => {
     }
   }, [navigation, handleSearchTextChange])
 
-  const renderItem = useCallback(({ item }: any) => {
+  const renderItem = useCallback(({ item }: { item: Post }) => {
     return <PostCard post={item} />
   }, [])
 
-  const keyExtractor = useCallback((item: any) => item.id, [])
+  const keyExtractor = useCallback((item: Post) => item.id, [])
 
   const renderEmpty = useCallback(() => {
     if (isSearching) {

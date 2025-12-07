@@ -14,7 +14,7 @@ export async function generateStaticParams() {
   return paths
 }
 
-export async function loader({ params }: { params: any }) {
+export async function loader({ params }: { params: { slug: string } }) {
   const { getMDXBySlug } = await import('@vxrn/mdx')
   const { frontmatter, code } = await getMDXBySlug('src/features/site/docs', params.slug)
   return {

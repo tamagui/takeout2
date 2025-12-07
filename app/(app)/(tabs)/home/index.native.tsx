@@ -1,4 +1,4 @@
-import { LegendList, type LegendListRef } from '@legendapp/list'
+import { LegendList, type LegendListProps, type LegendListRef } from '@legendapp/list'
 import { isAndroid, useEmitter } from '@take-out/helpers'
 import { memo, useCallback, useRef } from 'react'
 import { RefreshControl } from 'react-native'
@@ -18,7 +18,11 @@ import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { ArrowUpIcon } from '~/interface/icons/phosphor/ArrowUpIcon'
 import { HomeShimmer } from '~/interface/shimmer/HomeShimmer'
 
-const AnimatedLegendList = Animated.createAnimatedComponent(LegendList)
+import type { Post } from '~/data/types'
+
+const AnimatedLegendList = Animated.createAnimatedComponent(LegendList) as <T>(
+  props: LegendListProps<T> & { ref?: React.Ref<LegendListRef> }
+) => React.ReactElement
 
 export const HomePage = memo(() => {
   const safeAreaInsets = useSafeAreaInsets()
@@ -53,11 +57,11 @@ export const HomePage = memo(() => {
     }
   })
 
-  const renderItem = useCallback(({ item }: any) => {
+  const renderItem = useCallback(({ item }: { item: Post }) => {
     return <PostCard post={item} />
   }, [])
 
-  const keyExtractor = useCallback((item: any) => item.id, [])
+  const keyExtractor = useCallback((item: Post) => item.id, [])
 
   const renderEmpty = useCallback(() => {
     if (isLoading) {

@@ -63,6 +63,9 @@
     "motion": "12.23.22",
     "@expo/fingerprint": "0.15.3"
   },
+  "overrides": {
+    "react-native-web": "npm:@tamagui/react-native-web-lite"
+  },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.709.0",
     "@aws-sdk/lib-storage": "^3.709.0",

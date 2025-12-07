@@ -1,6 +1,7 @@
 import { tamaguiPlugin } from '@tamagui/vite-plugin'
 import { one } from 'one/vite'
 import { visualizer } from 'rollup-plugin-visualizer'
+
 import type { UserConfig } from 'vite'
 
 const analyze = process.env.ANALYZE === '1'
@@ -37,7 +38,6 @@ export default {
         optimize: false,
         disableExtraction: true,
       }),
-      useReactNativeWebLite: true,
       components: ['tamagui'],
       config: './src/tamagui/tamagui.config.ts',
       outputCSS: './src/tamagui/tamagui.css',

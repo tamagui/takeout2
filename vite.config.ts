@@ -1,6 +1,9 @@
 import { tamaguiPlugin } from '@tamagui/vite-plugin'
 import { one } from 'one/vite'
+import { visualizer } from 'rollup-plugin-visualizer'
 import type { UserConfig } from 'vite'
+
+const analyze = process.env.ANALYZE === '1'
 
 export default {
   envPrefix: ['VITE_', 'TAMAGUI_'],
@@ -43,6 +46,15 @@ export default {
         output: './src/tamagui/themes-out.ts',
       },
     }),
+
+    analyze &&
+      visualizer({
+        filename: 'dist/stats-client.html',
+        open: false,
+        gzipSize: true,
+        brotliSize: true,
+        emitFile: true,
+      }),
 
     one({
       setupFile: './src/setupClient.ts',

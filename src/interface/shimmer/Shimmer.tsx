@@ -1,17 +1,16 @@
+import './shimmer.css'
 import { memo, useEffect, useRef } from 'react'
-import { AnimatePresence, XStack, YStack, type ViewStyle } from 'tamagui'
-import { useLazyMount } from '@take-out/helpers'
-import { getCurrentComponentStack } from '@take-out/helpers'
+import { AnimatePresence, XStack, YStack } from 'tamagui'
+import { useLazyMount, getCurrentComponentStack } from '@take-out/helpers'
 import { animationClamped } from '../animations/animationClamped'
 import { useShimmerEffect } from './ShimmerManager'
-import type { EasingFunction } from 'react-native-reanimated'
 
 export interface ShimmerNativeProps {
-  style?: ViewStyle | ViewStyle[]
+  style?: any
   linearGradients?: string[]
   gradientStart?: { x: number; y: number }
   gradientEnd?: { x: number; y: number }
-  easing?: EasingFunction
+  easing?: any
   speed?: number
 }
 
@@ -30,8 +29,6 @@ export const Shimmer = memo(() => {
       console.warn(`‼️ disabled shimmer effect after 4 seconds`, name)
     }
   }, [disableShimmer, name])
-
-  // Use the shared shimmer effect
 
   return (
     <XStack

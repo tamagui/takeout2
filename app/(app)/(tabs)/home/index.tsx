@@ -1,14 +1,6 @@
 import { LegendList, type LegendListRef } from '@legendapp/list'
-import { isAndroid, isNative, useEmitter } from '@take-out/helpers'
-import { memo, useCallback, useRef } from 'react'
-import { RefreshControl } from 'react-native'
-import Animated, {
-  useAnimatedScrollHandler,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useEmitter } from '@take-out/helpers'
+import { memo, useCallback, useRef, useState } from 'react'
 import { AnimatePresence, SizableText, Spinner, View, YStack } from 'tamagui'
 import { PostCard } from '~/features/feed/PostCard'
 import { usePostsPaginated } from '~/features/feed/usePosts'
@@ -17,34 +9,16 @@ import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { ArrowUpIcon } from '~/interface/icons/phosphor/ArrowUpIcon'
 import { HomeShimmer } from '~/interface/shimmer/HomeShimmer'
 
-const AnimatedLegendList = Animated.createAnimatedComponent(LegendList)
-
 export const HomePage = memo(() => {
-  const safeAreaInsets = useSafeAreaInsets()
   const listRef = useRef<LegendListRef>(null)
   const { posts, loadMore, refresh, isLoading, hasMore } = usePostsPaginated()
+  const [showScrollToTop, setShowScrollToTop] = useState(false)
+  const headerHeight = 60
 
-  const scrollY = useSharedValue<number>(0)
-  const headerHeight = 60 + safeAreaInsets.top
-
-  const scrollHandler = useAnimatedScrollHandler((event) => {
-    scrollY.value = event.contentOffset.y
-  })
-  const scrollToTopStyle = useAnimatedStyle(() => {
-    const showButton = scrollY.value > 300
-    return {
-      opacity: withSpring(showButton ? 1 : 0),
-      transform: [
-        {
-          scale: withSpring(showButton ? 1 : 0.5),
-        },
-        {
-          translateY: withSpring(showButton ? 0 : 20),
-        },
-      ],
-      pointerEvents: showButton ? 'auto' : 'none',
-    }
-  })
+  const handleScroll = useCallback((event: any) => {
+    const scrollY = event.nativeEvent?.contentOffset?.y ?? 0
+    setShowScrollToTop(scrollY > 300)
+  }, [])
 
   useEmitter(scrollToTopEmitter, (tab) => {
     if (tab === 'home') {
@@ -71,12 +45,6 @@ export const HomePage = memo(() => {
         <SizableText size="$5" color="$color10">
           No posts yet
         </SizableText>
-
-        {isNative && (
-          <SizableText size="$3" color="$color8" mt="$2">
-            Pull to refresh
-          </SizableText>
-        )}
       </YStack>
     )
   }, [isLoading])
@@ -113,7 +81,7 @@ export const HomePage = memo(() => {
         )}
       </AnimatePresence>
 
-      <AnimatedLegendList
+      <LegendList
         ref={listRef}
         data={posts}
         renderItem={renderItem}
@@ -121,38 +89,41 @@ export const HomePage = memo(() => {
         ListEmptyComponent={renderEmpty}
         ListFooterComponent={renderFooter}
         onEndReached={loadMore}
-        onScroll={scrollHandler}
+        onScroll={handleScroll}
         scrollEventThrottle={16}
         onEndReachedThreshold={0.5}
-        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refresh} />}
         contentContainerStyle={{
-          paddingBottom: safeAreaInsets.bottom + 100,
+          paddingBottom: 100,
         }}
         showsVerticalScrollIndicator={false}
-        contentInsetAdjustmentBehavior="automatic"
       />
 
-      {/* Scroll to top button */}
-      <Animated.View
-        style={[
-          {
-            position: 'absolute',
-            bottom: isAndroid ? 33 : 66 + safeAreaInsets.bottom,
-            right: 16,
-            zIndex: 1000,
-          },
-          scrollToTopStyle,
-        ]}
-      >
-        <ButtonSimple
-          size="large"
-          circular
-          glass
-          onPress={() => listRef.current?.scrollToOffset({ offset: 0, animated: true })}
-        >
-          <ArrowUpIcon size={20} color="white" />
-        </ButtonSimple>
-      </Animated.View>
+      {/* scroll to top button */}
+      <AnimatePresence>
+        {showScrollToTop && (
+          <YStack
+            key="scroll-to-top"
+            animation="quick"
+            position="absolute"
+            b={66}
+            r={16}
+            z={1000}
+            enterStyle={{ opacity: 0, scale: 0.5, y: 20 }}
+            exitStyle={{ opacity: 0, scale: 0.5, y: 20 }}
+          >
+            <ButtonSimple
+              size="large"
+              circular
+              glass
+              onPress={() =>
+                listRef.current?.scrollToOffset({ offset: 0, animated: true })
+              }
+            >
+              <ArrowUpIcon size={20} color="white" />
+            </ButtonSimple>
+          </YStack>
+        )}
+      </AnimatePresence>
     </View>
   )
 })

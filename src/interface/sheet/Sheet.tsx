@@ -1,122 +1,76 @@
-import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet'
-import {
-  forwardRef,
-  useCallback,
-  useImperativeHandle,
-  useRef,
-  type ReactNode,
-} from 'react'
-import { SizableText, useTheme, View, XStack, type ViewProps } from 'tamagui'
+import { forwardRef, useImperativeHandle, useState } from 'react'
+import { Sheet as TamaguiSheet, SizableText, View, XStack } from 'tamagui'
 import { XCircleIcon } from '~/interface/icons/phosphor/XCircleIcon'
 import { Pressable } from '../buttons/Pressable'
-
-export interface SheetProps {
-  onClose?: () => void
-  title?: string
-  children: ReactNode
-  snapPoints?: string[]
-  contentStyle?: ViewProps
-}
-
-export interface SheetRef {
-  expand: () => void
-  collapse: () => void
-}
+import type { SheetProps, SheetRef } from './Sheet.types'
 
 export const Sheet = forwardRef<SheetRef, SheetProps>(
-  ({ onClose, title, children, snapPoints, contentStyle }, ref) => {
-    const bottomSheetRef = useRef<BottomSheet>(null)
-    const theme = useTheme()
+  (
+    {
+      open: controlledOpen,
+      onOpenChange,
+      onClose,
+      title,
+      children,
+      snapPoints,
+      contentStyle,
+    },
+    ref
+  ) => {
+    const [internalOpen, setInternalOpen] = useState(false)
+    const isControlled = controlledOpen !== undefined
+    const open = isControlled ? controlledOpen : internalOpen
 
     useImperativeHandle(ref, () => ({
       expand: () => {
-        bottomSheetRef.current?.snapToIndex(0)
+        if (!isControlled) setInternalOpen(true)
+        onOpenChange?.(true)
       },
       collapse: () => {
-        bottomSheetRef.current?.close()
+        if (!isControlled) setInternalOpen(false)
+        onOpenChange?.(false)
+        onClose?.()
       },
     }))
 
-    const renderBackdrop = useCallback(
-      (props: any) => (
-        <BottomSheetBackdrop
-          {...props}
-          disappearsOnIndex={-1}
-          appearsOnIndex={0}
-          opacity={0.8}
-          pressBehavior="close"
-        />
-      ),
-      []
-    )
-
-    const handleSheetChanges = useCallback(
-      (index: number) => {
-        if (index === -1) {
-          onClose?.()
-        }
-      },
-      [onClose]
-    )
+    const handleOpenChange = (isOpen: boolean) => {
+      if (!isControlled) setInternalOpen(isOpen)
+      onOpenChange?.(isOpen)
+      if (!isOpen) onClose?.()
+    }
 
     return (
-      <BottomSheet
-        ref={bottomSheetRef}
-        index={-1}
-        {...(snapPoints ? { snapPoints } : {})}
-        onChange={handleSheetChanges}
-        backdropComponent={renderBackdrop}
-        enablePanDownToClose
-        enableDynamicSizing
-        backgroundComponent={({ style }) => (
-          <View
-            style={[
-              style,
-              { borderTopRightRadius: 28, borderTopLeftRadius: 28, overflow: 'hidden' },
-            ]}
-            bg="$color2"
-          />
-        )}
-        handleIndicatorStyle={{
-          backgroundColor: theme.color6?.val,
-          width: 36,
-          height: 5,
-          borderRadius: 3,
-        }}
-        style={{
-          borderTopLeftRadius: 28,
-          borderTopRightRadius: 28,
-        }}
-        bottomInset={0}
+      <TamaguiSheet
+        modal
+        open={open}
+        onOpenChange={handleOpenChange}
+        snapPoints={snapPoints as number[] | undefined}
+        dismissOnSnapToBottom
+        animation="quick"
       >
-        <BottomSheetView
-          style={{
-            flex: 1,
-            paddingBottom: 40,
-          }}
-        >
+        <TamaguiSheet.Overlay
+          animation="quick"
+          enterStyle={{ opacity: 0 }}
+          exitStyle={{ opacity: 0 }}
+          bg="$background08"
+        />
+        <TamaguiSheet.Handle bg="$color6" />
+        <TamaguiSheet.Frame bg="$color2" rounded="$6" pt="$2">
           <View flex={1} px={14} gap="$4" {...contentStyle}>
-            {/* Header */}
             {!!title && (
               <XStack items="center" justify="space-between" px="$1">
                 <SizableText text="center" fontWeight="600" fontSize={20}>
                   {title}
                 </SizableText>
-                <Pressable
-                  onPress={() => {
-                    bottomSheetRef.current?.close()
-                  }}
-                >
+                <Pressable onPress={() => handleOpenChange(false)}>
                   <XCircleIcon size={28} color="$color" opacity={0.2} />
                 </Pressable>
               </XStack>
             )}
-
-            {/* Content */}
             {children}
           </View>
-        </BottomSheetView>
-      </BottomSheet>
+        </TamaguiSheet.Frame>
+      </TamaguiSheet>
     )
   }
 )

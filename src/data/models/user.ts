@@ -53,8 +53,12 @@ export const mutate = mutations(schema, permissions, {
     // Create a mutable copy for modification
     let updateData = { ...user }
 
-    // convert data URL to actual R2 upload
-    if (server && updateData.image?.startsWith('data:')) {
+    // convert data URL to actual R2 upload (server-only to avoid bundling AWS SDK on client)
+    if (
+      process.env.VITE_ENVIRONMENT === 'ssr' &&
+      server &&
+      updateData.image?.startsWith('data:')
+    ) {
       const { uploadDataUrlToR2 } = await import('~/features/upload/uploadDataUrl')
       updateData.image = await uploadDataUrlToR2(updateData.image)
     }

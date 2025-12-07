@@ -183,6 +183,7 @@
     "fs-extra": "^11.2.0",
     "p-map": "^7.0.3",
     "react-native-pager-view": "^6.9.1",
+    "rollup-plugin-visualizer": "^6.0.5",
     "sst": "3.17.10",
     "subset-font": "^2.4.0",
     "typescript": "^5.9.3",

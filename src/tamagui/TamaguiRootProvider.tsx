@@ -1,40 +1,29 @@
 import './tamagui.css'
 
-import {
-  MetaTheme,
-  SchemeProvider,
-  setSchemeSetting,
-  useColorScheme,
-} from '@vxrn/color-scheme'
-import { usePathname } from 'one'
-import { memo, useLayoutEffect } from 'react'
+import { MetaTheme, SchemeProvider, useColorScheme } from '@vxrn/color-scheme'
+import { type ReactNode } from 'react'
 import { isWeb, TamaguiProvider, useTheme } from 'tamagui'
 
 import { config } from './tamagui.config'
 
-export const TamaguiRootProvider = memo(({ children }: { children: any }) => {
-  const [scheme] = useColorScheme()
-  const pathname = usePathname()
-  const forceDark = pathname.startsWith('/_/')
+export const TamaguiRootProvider = ({ children }: { children: ReactNode }) => {
+  return (
+    <SchemeProvider>
+      <TamaguiInnerProvider>{children}</TamaguiInnerProvider>
+    </SchemeProvider>
+  )
+}
 
-  useLayoutEffect(() => {
-    if (forceDark) {
-      setSchemeSetting('dark')
-    }
-  }, [forceDark])
+const TamaguiInnerProvider = ({ children }: { children: ReactNode }) => {
+  const [scheme] = useColorScheme()
 
   return (
-    <TamaguiProvider
-      disableInjectCSS
-      config={config}
-      defaultTheme={forceDark ? 'dark' : scheme}
-    >
+    <TamaguiProvider disableInjectCSS config={config} defaultTheme={scheme}>
       {isWeb && <ThemeMetaTag />}
-      {forceDark && isWeb && <div className="body-dark" />}
-      <SchemeProvider>{children}</SchemeProvider>
+      {children}
     </TamaguiProvider>
   )
-})
+}
 
 const ThemeMetaTag = () => {
   const theme = useTheme()

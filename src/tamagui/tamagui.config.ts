@@ -119,8 +119,21 @@ export const config = createTamagui({
     disableRootThemeClass: true, // vxrn color scheme handles this
     themeClassNameOnRoot: true,
     onlyAllowShorthands: true,
-    maxDarkLightNesting: 2,
+    maxDarkLightNesting: 1,
     allowedStyleValues: 'somewhat-strict-web',
+  },
+
+  defaultProps: {
+    Button: {
+      fontFamily: '$mono',
+      cursor: 'default',
+
+      focusVisibleStyle: {
+        outlineWidth: 3,
+        outlineStyle: 'solid',
+        outlineColor: '$background04',
+      },
+    },
   },
 })
 

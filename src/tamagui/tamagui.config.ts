@@ -114,7 +114,7 @@ export const config = createTamagui({
   settings: {
     mediaQueryDefaultActive,
     defaultFont: 'body',
-    fastSchemeChange: false,
+    fastSchemeChange: true,
     shouldAddPrefersColorThemes: true,
     disableRootThemeClass: true, // vxrn color scheme handles this
     themeClassNameOnRoot: true,

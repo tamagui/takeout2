@@ -121,7 +121,6 @@ export const config = createTamagui({
     onlyAllowShorthands: true,
     maxDarkLightNesting: 2,
     allowedStyleValues: 'somewhat-strict-web',
-    disableSSR: true,
   },
 
   defaultProps: {

@@ -1,5 +1,5 @@
 import { Redirect, Slot, Stack, usePathname } from 'one'
-import { isWeb, SizableText } from 'tamagui'
+import { Configuration, isWeb, SizableText } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
 import { Dialogs } from '~/interface/dialogs/Dialogs'
@@ -31,27 +31,30 @@ export function AppLayout() {
   }
 
   return (
-    <ProvideZero>
-      <ToastProvider>
-        <NotificationProvider>
-          <PlatformSpecificRootProvider>
-            {isWeb ? (
-              <DragDropFile>
-                <Gallery />
-                <Slot />
-              </DragDropFile>
-            ) : (
-              // We need Stack here for transition animation to work on native
-              <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="(auth-onboard)" />
-                <Stack.Screen name="(tabs)" />
-                <Stack.Screen name="settings" />
-              </Stack>
-            )}
-            <Dialogs />
-          </PlatformSpecificRootProvider>
-        </NotificationProvider>
-      </ToastProvider>
-    </ProvideZero>
+    // our app is SPA from here on down, we avoid extra rendering by doing this
+    <Configuration disableSSR>
+      <ProvideZero>
+        <ToastProvider>
+          <NotificationProvider>
+            <PlatformSpecificRootProvider>
+              {isWeb ? (
+                <DragDropFile>
+                  <Gallery />
+                  <Slot />
+                </DragDropFile>
+              ) : (
+                // We need Stack here for transition animation to work on native
+                <Stack screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name="(auth-onboard)" />
+                  <Stack.Screen name="(tabs)" />
+                  <Stack.Screen name="settings" />
+                </Stack>
+              )}
+              <Dialogs />
+            </PlatformSpecificRootProvider>
+          </NotificationProvider>
+        </ToastProvider>
+      </ProvideZero>
+    </Configuration>
   )
 }

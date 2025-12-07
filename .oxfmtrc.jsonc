@@ -1,0 +1,62 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 90,
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": false,
+  "singleQuote": true,
+  "jsxSingleQuote": false,
+  "trailingComma": "es5",
+  "endOfLine": "lf",
+  "experimentalSortImports": {
+    "groups": [
+      // side effects first
+      ["side-effect", "side-effect-style"],
+      // node builtins
+      ["builtin"],
+      // external packages
+      ["external"],
+      // internal aliases (~)
+      ["internal"],
+      // parent/sibling
+      ["parent", "sibling", "index"],
+      // types
+      ["builtin-type", "external-type", "internal-type", "parent-type", "sibling-type", "index-type"],
+      // styles
+      ["style"],
+      // unknown/other
+      ["unknown"]
+    ],
+    "newlinesBetween": true,
+    "order": "asc",
+    "ignoreCase": true
+  },
+  "ignorePatterns": [
+    "**/generated-new.ts",
+    "**/generated-v2.ts",
+    "**/.tamagui/**",
+    "**/package.json",
+    "**/env-server.ts",
+    ".docker/**",
+    ".dist/**",
+    "**/tmp-data/**",
+    "**/.build/**",
+    "storage/**",
+    "**/.sst/**",
+    "**/.output/**",
+    "**/.vscode/**",
+    "**/.claude/**",
+    "**/migrations/meta/**",
+    "**/migrate-dist.js",
+    "**/themes-out.ts",
+    "**/*.d.ts",
+    "**/ios/**",
+    "**/android/**",
+    "**/dist/**",
+    "**/tamagui.css",
+    "**/.ultra.cache.json",
+    "**/tsconfig.json",
+    "**/bun.lock",
+    "**/*.lock"
+  ]
+}

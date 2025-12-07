@@ -98,7 +98,7 @@ Check if the user has ejected from the monorepo setup:
 
 **Configuration files:**
 - `package.json`: Merge dependencies carefully, don't overwrite user's custom scripts/config
-- `tsconfig.json`, `biome.json`: Merge carefully, preserving user customizations
+- `tsconfig.json`, `.oxfmtrc.jsonc`, `.oxlintrc.json`: Merge carefully, preserving user customizations
 - `app.config.ts`: Never overwrite (contains user's app identity)
 
 **Database migrations:**

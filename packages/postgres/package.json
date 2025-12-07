@@ -23,8 +23,8 @@
     "build": "tamagui-build",
     "watch": "tamagui-build --watch",
     "typecheck": "tko run typecheck",
-    "lint": "biome check src",
-    "lint:fix": "biome check --write src",
+    "lint": "oxlint src",
+    "lint:fix": "oxfmt src && oxlint --fix --fix-suggestions src",
     "clean": "tamagui-build clean",
     "clean:build": "tamagui-build clean:build"
   },
@@ -58,11 +58,12 @@
     "pg": "^8.16.3"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.1.2",
     "@tamagui/build": "*",
     "@types/async-retry": "^1.4.8",
     "@types/node": "24.0.3",
     "drizzle-kit": "^0.30.5",
-    "drizzle-orm": "^0.40.0"
+    "drizzle-orm": "^0.40.0",
+    "oxfmt": "^0.16.0",
+    "oxlint": "^1.31.0"
   }
 }

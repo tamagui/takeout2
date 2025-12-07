@@ -16,8 +16,8 @@
     "build": "tamagui-build --skip-types",
     "watch": "tamagui-build --skip-types --watch",
     "typecheck": "tko run typecheck",
-    "lint": "biome check src",
-    "lint:fix": "biome check --write src",
+    "lint": "oxlint src",
+    "lint:fix": "oxfmt src && oxlint --fix --fix-suggestions src",
     "clean": "tamagui-build clean",
     "clean:build": "tamagui-build clean:build"
   },

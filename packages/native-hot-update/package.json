@@ -34,7 +34,7 @@
     "watch": "tamagui-build --skip-types --watch",
     "clean": "tamagui-build clean",
     "typecheck": "tko run typecheck",
-    "lint": "biome check src/",
+    "lint": "oxlint src",
     "check": "tsc --noEmit"
   },
   "dependencies": {

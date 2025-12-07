@@ -16,8 +16,8 @@
     }
   },
   "scripts": {
-    "lint": "biome check src",
-    "lint:fix": "biome check --write src",
+    "lint": "oxlint src",
+    "lint:fix": "oxfmt src && oxlint --fix --fix-suggestions src",
     "typecheck": "tko run typecheck"
   },
   "publishConfig": {

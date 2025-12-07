@@ -33,8 +33,8 @@
     "build": "tamagui-build",
     "watch": "tamagui-build --watch",
     "typecheck": "tko run typecheck",
-    "lint": "biome check src",
-    "lint:fix": "biome check --write src",
+    "lint": "oxlint src",
+    "lint:fix": "oxfmt src && oxlint --fix --fix-suggestions src",
     "clean": "tamagui-build clean",
     "clean:build": "tamagui-build clean:build",
     "dev": "bun --watch src/cli.ts"
@@ -54,10 +54,11 @@
     }
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.1.2",
     "@tamagui/build": "1.135.2",
     "@types/node": "24.0.3",
-    "bun-types": "latest"
+    "bun-types": "latest",
+    "oxfmt": "^0.16.0",
+    "oxlint": "^1.31.0"
   },
   "publishConfig": {
     "access": "public"

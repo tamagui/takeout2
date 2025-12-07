@@ -1,12 +1,13 @@
 #!/usr/bin/env bun
 
 /**
- * @description Run biome linter
+ * @description Run oxlint linter
  * @args --fix
  */
 
-import { $ } from 'bun'
 import { parseArgs } from 'node:util'
+
+import { $ } from 'bun'
 
 const { values } = parseArgs({
   args: process.argv.slice(2),
@@ -16,7 +17,7 @@ const { values } = parseArgs({
 })
 
 if (values.fix) {
-  await $`biome check --fix --unsafe`
+  await $`oxfmt && oxlint --fix --fix-suggestions`
 } else {
-  await $`biome check`
+  await $`oxlint`
 }

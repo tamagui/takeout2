@@ -2,7 +2,6 @@ import '~/helpers/crypto/polyfill'
 import '~/storage/setupStorage'
 import '~/features/analytics/analytics'
 import '~/posthog/posthog'
-import '~/zero/helpers/setupClientGlobalEffects'
 
 import { setupDev } from 'tamagui'
 

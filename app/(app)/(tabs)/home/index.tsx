@@ -10,14 +10,17 @@ import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { ArrowUpIcon } from '~/interface/icons/phosphor/ArrowUpIcon'
 import { HomeShimmer } from '~/interface/shimmer/HomeShimmer'
 
+import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native'
+import type { Post } from '~/data/types'
+
 export const HomePage = memo(() => {
   const listRef = useRef<LegendListRef>(null)
   const { posts, loadMore, isLoading, hasMore } = usePostsPaginated()
   const [showScrollToTop, setShowScrollToTop] = useState(false)
   const headerHeight = 60
 
-  const handleScroll = useCallback((event: any) => {
-    const scrollY = event.nativeEvent?.contentOffset?.y ?? 0
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const scrollY = event.nativeEvent.contentOffset.y
     setShowScrollToTop(scrollY > 300)
   }, [])
 
@@ -27,11 +30,11 @@ export const HomePage = memo(() => {
     }
   })
 
-  const renderItem = useCallback(({ item }: any) => {
+  const renderItem = useCallback(({ item }: { item: Post }) => {
     return <PostCard post={item} />
   }, [])
 
-  const keyExtractor = useCallback((item: any) => item.id, [])
+  const keyExtractor = useCallback((item: Post) => item.id, [])
 
   const renderEmpty = useCallback(() => {
     if (isLoading) {

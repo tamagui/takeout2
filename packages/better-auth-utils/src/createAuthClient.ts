@@ -11,7 +11,7 @@
 
 import {
   createEmitter,
-  createLocalStorageValue,
+  createStorageValue,
   type Emitter,
   isEqualDeepLite,
   useEmitterValue,
@@ -117,8 +117,8 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
     })
   }
 
-  const keysStorage = createLocalStorageValue<StorageKeys>(`${storagePrefix}-keys`)
-  const stateStorage = createLocalStorageValue<AuthState<TUser>>(`${storagePrefix}-state`)
+  const keysStorage = createStorageValue<StorageKeys>(`${storagePrefix}-keys`)
+  const stateStorage = createStorageValue<AuthState<TUser>>(`${storagePrefix}-state`)
 
   let authClient = (() => {
     const existingSession = keysStorage.get()?.session
@@ -274,8 +274,8 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
   }
 
   function clearState() {
-    keysStorage.clear()
-    stateStorage.clear()
+    keysStorage.remove()
+    stateStorage.remove()
     setState(empty)
   }
 

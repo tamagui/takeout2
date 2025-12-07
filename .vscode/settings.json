@@ -2,6 +2,7 @@
   // cursor not working with tsgo yet:
   // and a bit slow in vscode i think
   // "typescript.experimental.useTsgo": true,
+  "biome.enabled": false,
   "oxc.fmt.experimental": true,
   "editor.defaultFormatter": "oxc.oxc-vscode",
   "typescript.preferences.importModuleSpecifier": "shortest",

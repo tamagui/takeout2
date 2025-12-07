@@ -86,7 +86,6 @@ export default {
     primaryColor: '#FFFFFF',
     plugins: [
       'vxrn/expo-plugin',
-      'expo-secure-store',
       'expo-web-browser',
       'expo-font',
       'react-native-bottom-tabs',

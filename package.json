@@ -131,7 +131,6 @@
     "expo-media-library": "~18.2.0",
     "expo-notifications": "~0.32.12",
     "expo-plugin-ios-static-libraries": "^1.0.4",
-    "expo-secure-store": "~15.0.7",
     "expo-splash-screen": "^31.0.10",
     "expo-web-browser": "^15.0.9",
     "hot-updater": "^0.21.4",

@@ -34,7 +34,8 @@ export class PostHog implements PostHogInstance {
         const { postHog } = await import('./instance.native')
         return postHog
       } else {
-        const { postHog } = await import('./instance')
+        // use lite client on web to save ~160KB
+        const { postHog } = await import('./instance.lite')
         return postHog
       }
     })()

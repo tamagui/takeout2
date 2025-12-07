@@ -24,7 +24,6 @@ export * from './async/useLazyValue'
 // browser
 export * from './browser/clearIndexedDB'
 export * from './browser/isActiveElementFormField'
-export * from './browser/localStorage'
 export * from './browser/openPopup'
 
 // debug
@@ -66,6 +65,9 @@ export * from './object/objectUniqueKey'
 // react
 export * from './react/createGlobalContext'
 export * from './react/getCurrentComponentStack'
+
+// storage
+export * from './storage'
 
 // server
 export * from './server/ensureEnv'

@@ -125,8 +125,7 @@ capabilities:
 **Data & Storage**
 
 - @op-engineering/op-sqlite for local SQLite database (used by Zero)
-- react-native-mmkv for fast key-value storage
-- expo-secure-store for encrypted credential storage
+- react-native-mmkv for fast key-value storage (localStorage abstraction + auth credentials)
 
 **System & Utilities**
 

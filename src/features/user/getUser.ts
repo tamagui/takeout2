@@ -1,10 +1,10 @@
-import { createLocalStorageValue } from '@take-out/helpers'
+import { createStorageValue } from '@take-out/helpers'
 
 import type { User } from '~/data/types'
 
 let user: User | null | undefined
 
-const userCache = createLocalStorageValue<User | null>('user-cache')
+const userCache = createStorageValue<User | null>('user-cache')
 
 export const getUser = () => {
   return user === undefined ? userCache.get() : user

@@ -104,7 +104,7 @@
       "devDependencies": {
         "@aws-sdk/client-ecr": "^3.859.0",
         "@dotenvx/dotenvx": "^1.44.1",
-        "@glideapps/ts-helper": "^6.0.0",
+        "@glideapps/ts-helper": "6.0.1",
         "@playwright/test": "^1.55.0",
         "@react-native-community/cli": "^20.0.2",
         "@tamagui/cli": "1.139.1",
@@ -781,7 +781,7 @@
 
     "@glideapps/graphs": ["@glideapps/graphs@0.0.3", "", { "dependencies": { "@glideapps/ts-necessities": "^2.1.1" } }, "sha512-E38F+b4dA6jxXH0vlAsrjEPuY7kEow1iN7kJIoJd82cbBPOTwmw6ORM2hYlFfdmg3WuGDqpSICa5AKDys5/JkA=="],
 
-    "@glideapps/ts-helper": ["@glideapps/ts-helper@6.0.0", "", { "dependencies": { "@glideapps/graphs": "0.0.3", "@glideapps/ts-necessities": "2.4.0", "arg": "^5.0.1", "glob": "11.0.2", "typescript": "5.8.3" }, "bin": { "ts-helper": "build/index.js" } }, "sha512-QrzzrPUbYYpKs8fIZxCCRyWLtX89xJkY4eoOrA4SoS9zJAPZJkQrcOHANwBhcZyDYl59DpRyb6+SiHIXFRJCGg=="],
+    "@glideapps/ts-helper": ["@glideapps/ts-helper@6.0.1", "", { "dependencies": { "@glideapps/graphs": "0.0.3", "@glideapps/ts-necessities": "2.4.0", "arg": "^5.0.1", "glob": "11.1.0", "typescript": "5.8.3" }, "bin": { "ts-helper": "build/index.js" } }, "sha512-u2Obbsj0N0QzXILkIgCpK7iKLUhVpXierDIkSp2rwqjnoIuCvY7VUnHAyF9dTxYX2oA0V/MNMJ1OB0AUdvPPFA=="],
 
     "@glideapps/ts-necessities": ["@glideapps/ts-necessities@2.4.0", "", {}, "sha512-mDC+qosuNa4lxR3ioMBb6CD0XLRsQBplU+zRPUYiMLXKeVPZ6UYphdNG/EGReig0YyfnVlBKZEXl1wzTotYmPA=="],
 
@@ -2753,7 +2753,7 @@
 
     "github-slugger": ["github-slugger@2.0.0", "", {}, "sha512-IaOQ9puYtjrkq7Y0Ygl9KDZnrf/aiUJYUpVf89y8kyaxbRG7Y1SrX/jaumrv81vc61+kiMempujsM3Yw7w5qcw=="],
 
-    "glob": ["glob@11.0.2", "", { "dependencies": { "foreground-child": "^3.1.0", "jackspeak": "^4.0.1", "minimatch": "^10.0.0", "minipass": "^7.1.2", "package-json-from-dist": "^1.0.0", "path-scurry": "^2.0.0" }, "bin": { "glob": "dist/esm/bin.mjs" } }, "sha512-YT7U7Vye+t5fZ/QMkBFrTJ7ZQxInIUjwyAjVj84CYXqgBdv30MFUPGnBR6sQaVq6Is15wYJUsnzTuWaGRBhBAQ=="],
+    "glob": ["glob@11.1.0", "", { "dependencies": { "foreground-child": "^3.3.1", "jackspeak": "^4.1.1", "minimatch": "^10.1.1", "minipass": "^7.1.2", "package-json-from-dist": "^1.0.0", "path-scurry": "^2.0.0" }, "bin": { "glob": "dist/esm/bin.mjs" } }, "sha512-vuNwKSaKiqm7g0THUBu2x7ckSs3XJLXE+2ssL7/MfTGPLLcrJQ/4Uq1CjPTtO5cCIiRxqvN6Twy1qOwhL0Xjcw=="],
 
     "glob-parent": ["glob-parent@5.1.2", "", { "dependencies": { "is-glob": "^4.0.1" } }, "sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow=="],
 

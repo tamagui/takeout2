@@ -61,6 +61,21 @@ try {
   // parse the output to check for cycles
   const output = error.stderr?.toString() || error.stdout?.toString() || ''
 
+  // check if this is a tool crash (assertion error) rather than actual cycle detection
+  if (output.includes('Assertion failed') || output.includes('at panic')) {
+    const nodeVersion = process.versions.node
+    const majorVersion = parseInt(nodeVersion.split('.')[0] || '0', 10)
+    if (majorVersion >= 24) {
+      console.warn(`⚠️ @glideapps/ts-helper crashes on Node.js ${nodeVersion}`)
+      console.warn('   skipping locally - CI uses Node 20 where this check runs properly')
+      process.exit(0)
+    }
+    // unknown crash on older node, fail
+    console.error(output)
+    console.error('❌ Circular dependency check crashed unexpectedly')
+    process.exit(1)
+  }
+
   // parse cycle arrays from output
   const cycleRegex = /\[([^\]]+)\]/g
   const cycles: string[][] = []

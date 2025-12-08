@@ -5,9 +5,9 @@ import { useAuth } from '~/features/auth/client/authClient'
 import { Dialogs } from '~/interface/dialogs/Dialogs'
 import { Gallery } from '~/interface/gallery/Gallery'
 import { NotificationProvider } from '~/interface/notification/Notification'
+import { PlatformSpecificRootProvider } from '~/interface/platform/PlatformSpecificRootProvider'
 import { ToastProvider } from '~/interface/toast/Toast'
 import { DragDropFile } from '~/interface/upload/DragDropFile'
-import { PlatformSpecificRootProvider } from '~/providers/PlatformSpecificRootProvider'
 import { ProvideZero } from '~/zero/client'
 
 export function AppLayout() {

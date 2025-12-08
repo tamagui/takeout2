@@ -1,0 +1,13 @@
+# fastlane match configuration
+# certificates and profiles stored in this repo under fastlane/certs/
+
+git_url(ENV["APPLE_CODE_SIGNING_GIT_URL"] || "git@github.com:tamagui/takeout3.git")
+git_branch("match")
+
+storage_mode("git")
+
+type("appstore")
+
+app_identifier(["com.takeout.app"])
+
+team_id("399WY8X9HY")

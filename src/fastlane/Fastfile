@@ -1,0 +1,61 @@
+# fastlane configuration
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Register bundle ID"
+  lane :register_bundle_id do
+    app_store_connect_api_key(
+      key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+      key_content: ENV["APP_STORE_CONNECT_API_KEY_P8"],
+      is_key_content_base64: false
+    )
+    
+    produce(
+      app_identifier: "com.takeout.app",
+      app_name: "Takeout",
+      team_id: "399WY8X9HY",
+      skip_itc: true
+    )
+  end
+
+  desc "Setup certificates and profiles"
+  lane :setup_certs do
+    app_store_connect_api_key(
+      key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+      key_content: ENV["APP_STORE_CONNECT_API_KEY_P8"],
+      is_key_content_base64: false
+    )
+    
+    match(
+      type: "appstore",
+      app_identifier: ["com.takeout.app"],
+      team_id: "399WY8X9HY",
+      git_url: ENV["APPLE_CODE_SIGNING_GIT_URL"] || "git@github.com:tamagui/takeout3.git",
+      git_branch: "match"
+    )
+  end
+
+  desc "Build and upload to TestFlight"
+  lane :beta do
+    app_store_connect_api_key(
+      key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+      key_content: ENV["APP_STORE_CONNECT_API_KEY_P8"],
+      is_key_content_base64: false
+    )
+    
+    setup_certs
+    
+    build_app(
+      scheme: "takeout",
+      export_method: "app-store"
+    )
+    
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true
+    )
+  end
+end

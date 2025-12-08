@@ -17,7 +17,7 @@ export async function ensureAuth(req: Request, role?: 'admin') {
         error: `Not authorized`,
       },
       {
-        status: 500,
+        status: 401,
       }
     )
   }
@@ -29,7 +29,7 @@ export async function ensureAuth(req: Request, role?: 'admin') {
         error: `Not authorized`,
       },
       {
-        status: 500,
+        status: 403,
       }
     )
   }

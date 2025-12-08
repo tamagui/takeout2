@@ -2,34 +2,11 @@ import { useMemo, useState } from 'react'
 import { useDebounceValue } from 'tamagui'
 
 import { blockedByUser } from '~/data/queries/block'
-import {
-  allPosts,
-  postsWithBlocking,
-  searchPosts,
-  userPostsPaginated,
-} from '~/data/queries/post'
+import { postsPaginated, postsWithBlocks, searchPosts } from '~/data/queries/post'
 import { useAuth } from '~/features/auth/client/authClient'
 import { useQuery } from '~/zero/client'
 
 import type { Post } from '~/data/types'
-
-interface UsePostsOptions {
-  limit?: number
-  offset?: number
-}
-
-export function usePosts(options?: UsePostsOptions) {
-  const { limit = 20 } = options || {}
-
-  const [posts, status] = useQuery(allPosts, { limit })
-
-  return {
-    posts: (posts || []) as Post[],
-    isLoading: status.type === 'unknown',
-    isEmpty: posts ? posts.length === 0 : true,
-    hasMore: posts ? posts.length === limit : false,
-  }
-}
 
 export function usePostsPaginated(pageSize = 3) {
   const { user } = useAuth()
@@ -51,7 +28,7 @@ export function usePostsPaginated(pageSize = 3) {
   }, [blockedByMe])
 
   // Query posts with blocking filter
-  const [posts, status] = useQuery(postsWithBlocking, {
+  const [posts, status] = useQuery(postsWithBlocks, {
     userId: user?.id,
     blockedUserIds,
     pageSize,
@@ -117,7 +94,7 @@ export function usePostsByUserId(userId: string, pageSize = 12) {
   const [cursor, setCursor] = useState<Post | null>(null)
 
   const [posts, status] = useQuery(
-    userPostsPaginated,
+    postsPaginated,
     {
       userId,
       pageSize,

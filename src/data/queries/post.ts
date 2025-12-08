@@ -5,14 +5,6 @@ const permission = serverWhere('post', () => {
   return true
 })
 
-export const allPosts = (props: { limit?: number }) => {
-  return zql.post
-    .where(permission)
-    .orderBy('createdAt', 'desc')
-    .orderBy('id', 'desc')
-    .limit(props.limit || 20)
-}
-
 export const postById = (props: { postId: string }) => {
   return zql.post.where(permission).where('id', props.postId).one()
 }
@@ -26,8 +18,8 @@ export const postsByUserId = (props: { userId: string; limit?: number }) => {
     .limit(props.limit || 20)
 }
 
-// Paginated posts query with cursor support
 export const postsPaginated = (props: {
+  userId?: string
   pageSize: number
   cursor?: { id: string } | null
 }) => {
@@ -37,25 +29,9 @@ export const postsPaginated = (props: {
     .orderBy('id', 'desc')
     .limit(props.pageSize)
 
-  if (props.cursor) {
-    query = query.start(props.cursor)
+  if (props.userId) {
+    query = query.where('userId', props.userId)
   }
-
-  return query
-}
-
-// User posts with pagination
-export const userPostsPaginated = (props: {
-  userId: string
-  pageSize: number
-  cursor?: { id: string } | null
-}) => {
-  let query = zql.post
-    .where(permission)
-    .where('userId', props.userId)
-    .orderBy('createdAt', 'desc')
-    .orderBy('id', 'desc')
-    .limit(props.pageSize)
 
   if (props.cursor) {
     query = query.start(props.cursor)
@@ -64,8 +40,7 @@ export const userPostsPaginated = (props: {
   return query
 }
 
-// Posts filtered with blocking logic
-export const postsWithBlocking = (props: {
+export const postsWithBlocks = (props: {
   userId?: string
   blockedUserIds: string[]
   pageSize: number
@@ -95,7 +70,6 @@ export const postsWithBlocking = (props: {
   return query
 }
 
-// Search posts by caption
 export const searchPosts = (props: {
   searchText: string
   userId?: string

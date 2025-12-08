@@ -7,20 +7,6 @@ import * as blockQueries from '../queries/block'
 import * as postQueries from '../queries/post'
 import * as userQueries from '../queries/user'
 
-const allPostsSynced = syncedQuery(
-  'post.allPosts',
-  v.parser(
-    v.tuple([
-      v.object({
-        limit: v.optional(v.number()),
-      }),
-    ])
-  ),
-  (arg) => {
-    return postQueries.allPosts(arg)
-  }
-)
-
 const blockedByUserSynced = syncedQuery(
   'block.blockedByUser',
   v.parser(
@@ -70,6 +56,7 @@ const postsPaginatedSynced = syncedQuery(
   v.parser(
     v.tuple([
       v.object({
+        userId: v.optional(v.string()),
         pageSize: v.number(),
         cursor: v.optional(
           v.union([
@@ -87,8 +74,8 @@ const postsPaginatedSynced = syncedQuery(
   }
 )
 
-const postsWithBlockingSynced = syncedQuery(
-  'post.postsWithBlocking',
+const postsWithBlocksSynced = syncedQuery(
+  'post.postsWithBlocks',
   v.parser(
     v.tuple([
       v.object({
@@ -107,7 +94,7 @@ const postsWithBlockingSynced = syncedQuery(
     ])
   ),
   (arg) => {
-    return postQueries.postsWithBlocking(arg)
+    return postQueries.postsWithBlocks(arg)
   }
 )
 
@@ -164,29 +151,6 @@ const userByUsernameSynced = syncedQuery(
   }
 )
 
-const userPostsPaginatedSynced = syncedQuery(
-  'post.userPostsPaginated',
-  v.parser(
-    v.tuple([
-      v.object({
-        userId: v.string(),
-        pageSize: v.number(),
-        cursor: v.optional(
-          v.union([
-            v.object({
-              id: v.string(),
-            }),
-            v.null(),
-          ])
-        ),
-      }),
-    ])
-  ),
-  (arg) => {
-    return postQueries.userPostsPaginated(arg)
-  }
-)
-
 const userWithStateSynced = syncedQuery(
   'user.userWithState',
   v.parser(
@@ -206,13 +170,11 @@ export const serverQueries = {
     blockedByUser: blockedByUserSynced,
   },
   post: {
-    allPosts: allPostsSynced,
     postById: postByIdSynced,
     postsByUserId: postsByUserIdSynced,
     postsPaginated: postsPaginatedSynced,
-    postsWithBlocking: postsWithBlockingSynced,
+    postsWithBlocks: postsWithBlocksSynced,
     searchPosts: searchPostsSynced,
-    userPostsPaginated: userPostsPaginatedSynced,
   },
   user: {
     userById: userByIdSynced,

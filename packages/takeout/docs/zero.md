@@ -159,7 +159,7 @@ export const currentUser = (props: { userId: string }) => {
 use expression builder for advanced filtering:
 
 ```tsx
-const postsWithBlocking = (props: {
+const postsWithBlocks = (props: {
   userId?: string
   blockedUserIds: string[]
   pageSize: number

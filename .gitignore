@@ -33,6 +33,7 @@ dist
 .env.test.local
 .env.production.local
 .env.backup
+.env.ios-release
 
 .expo
 

@@ -2,13 +2,17 @@ import { LinearGradient } from '@tamagui/linear-gradient'
 import { router } from 'one'
 import { Circle, isWeb, SizableText, XStack, YStack } from 'tamagui'
 
-import { EULA_URL, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '~/constants/app'
+import {
+  APP_NAME,
+  EULA_URL,
+  PRIVACY_POLICY_URL,
+  TERMS_OF_SERVICE_URL,
+} from '~/constants/app'
 import { Link } from '~/interface/app/Link'
-import { Logo } from '~/interface/app/Logo'
+import { LogoIcon } from '~/interface/app/LogoIcon'
 import { ButtonAction } from '~/interface/buttons/ButtonAction'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { dialogEmit } from '~/interface/dialogs/shared'
-import Glint from '~/interface/effects/Glint'
 import { AppleIcon } from '~/interface/icons/AppleIcon'
 import { GoogleIcon } from '~/interface/icons/GoogleIcon'
 import { FacebookLogoIcon } from '~/interface/icons/phosphor/FacebookLogoIcon'
@@ -42,64 +46,32 @@ export const LoginPage = () => {
       <YStack flex={1} justify="center" items="center">
         <Circle
           size={80}
-          mb="$4"
-          animation="superLazy"
-          enterStyle={{ scale: 0.5, opacity: 0 }}
-          shadowColor="$color12"
-          shadowOpacity={0.1}
-          shadowRadius={20}
-          borderWidth={0.5}
-          borderColor="$color3"
-          items="center"
-          justify="center"
+          my="$4"
+          animation="medium"
+          enterStyle={{ scale: 0.95, opacity: 0 }}
         >
-          <Logo height={42} />
+          <LogoIcon size={42} />
         </Circle>
 
         <YStack
-          gap="$4"
+          gap="$6"
           width="100%"
           items="center"
           bg="$background"
           rounded="$8"
           p={isWeb ? '$6' : '$4'}
           maxW={isWeb ? 400 : '90%'}
-          shadowColor="$shadowColor"
-          shadowOffset={{ width: 0, height: 2 }}
-          shadowOpacity={0.08}
-          shadowRadius={10}
-          elevation="$4"
         >
-          <Glint rounded="$8" />
-          <YStack
-            animation="bouncy"
-            enterStyle={{ scale: 0.9, opacity: 0 }}
-            exitStyle={{ scale: 0.9, opacity: 0 }}
-            items="center"
-            gap="$2"
-          >
-            <YStack items="center" gap="$2">
-              <H2
-                text="center"
-                color="$color12"
-                animation="200ms"
-                enterStyle={{ opacity: 0, y: -10 }}
-              >
-                Welcome
-              </H2>
-            </YStack>
-          </YStack>
+          <H2 text="center">Login to {APP_NAME}</H2>
+
           <YStack
             key="welcome-content"
             gap="$4"
             items="center"
             width="100%"
             animation="medium"
-            enterStyle={{ opacity: 0, y: 20 }}
-            exitStyle={{ opacity: 0, y: -20 }}
-            shadowColor="$shadowColor"
-            shadowOpacity={0.05}
-            shadowRadius={10}
+            enterStyle={{ opacity: 0, y: 10 }}
+            exitStyle={{ opacity: 0, y: -10 }}
             position="relative"
             overflow="hidden"
           >
@@ -108,7 +80,6 @@ export const LoginPage = () => {
                 <ButtonAction
                   glass
                   size="large"
-                  width="100%"
                   pressStyle={{
                     scale: 0.97,
                     opacity: 0.9,

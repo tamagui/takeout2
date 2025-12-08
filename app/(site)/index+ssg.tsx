@@ -45,39 +45,42 @@ export function IndexPage() {
 
       <YStack gap="$5" maxW={550} self="center">
         <Paragraph size="$6">
-          Takeout is the result of years of effort to bring <em>Rails-like elegance</em>{' '}
-          to modern cross-platform React and React Native projects. We wanted to bring the
-          DRY, simple, cohesive parts of Rails to React, while avoiding the
-          overly-abstracted, NIH, magical parts.
-        </Paragraph>
-
-        <Paragraph size="$6">
-          We think Takeout represents the first time you can ship world-class{' '}
-          <b>web and native</b> experiences, even with large amounts of shared code. By
-          world-class, we mean you won't sacrifice one of the usual suspects: simplicity,
-          performance, or user experience.
-        </Paragraph>
-
-        <Paragraph size="$6">
-          Takeout is a "take it or leave it" stack that leverages best-in-class third
-          party libraries, letting you unplug any part. It's a bit experimental, it puts
-          together a few newer libraries to achieve{' '}
+          Takeout is a{' '}
           <Link href="https://www.youtube.com/watch?v=HHTYHm6qLFY" target="_blank">
-            a vision we've had for a decade
-          </Link>
-          .
+            long-term effort
+          </Link>{' '}
+          to bring more Rails-like elegance to cross-platform React and React Native. We
+          want a cohesive, simple, and DRY stack that makes some exciting emerging
+          frontend practices as easy as possible.
         </Paragraph>
 
         <Paragraph size="$6">
-          What makes React great is the fundamental model and the ecosystem. The worst
-          parts as we see it came mostly down to dealing with data, picking from a
-          thousand options, and then the extensive time it takes to refine everything once
-          you do pick your stack.
+          We think Takeout represents the first time you can{' '}
+          <b>
+            ship world-class web and native experiences, even with large amounts of shared
+            code
+          </b>
+          . For example: this homepage uses the same styling, UI and framework as our
+          native app, yet gets a 100 Lighthouse score while server rendering nicely with
+          advanced media queries, dark and light mode, spring animations, and no
+          flickering or layout shifts.
         </Paragraph>
 
         <Paragraph size="$6">
-          Takeout is a cutting edge stack with a couple suprisingly great libraries and
-          few strong opinions that solve the above problems.
+          Takeout avoids NIH and pedantism by leveraging a few great third party
+          libraries, and letting you unplug where you want.
+        </Paragraph>
+
+        <Paragraph size="$6">
+          React can be great, with effort (and unfortunately, today, by choosing the good
+          parts). Takeout is our take on that. When we announced{' '}
+          <Link href="https://onestack.dev" target="_blank">
+            One
+          </Link>{' '}
+          we re-affirmed our opinion that RSC was an anti-pattern, and sync engines with
+          simpler render modes filled our needs. Today, Takeout realizes this long-held
+          and consistent vision, something nearly no other framework in the space took
+          until recently.
         </Paragraph>
 
         <SepHeading>Goals</SepHeading>
@@ -288,7 +291,7 @@ export function IndexPage() {
         </Paragraph>
 
         <H4 mt="$2" size="$5" fontWeight="bold">
-          Agents / Harnessing
+          Agents / Harness
         </H4>
 
         <Paragraph size="$6">
@@ -337,9 +340,9 @@ export function IndexPage() {
         <SepHeading>Fin</SepHeading>
 
         <Paragraph size="$6">
-          For 10 years with React, and 6 years with React Native, I've loved the model,
-          but never loved the stack. I can now finally say, with Takeout, I love the big
-          picture. <b>I hope you and your team do too</b>.
+          We built Takeout for ourselves, much like Tamagui and One - passion projects
+          born out of stubbornly wanting better things. We hope you enjoy this somewhat
+          early version of our new stack.
         </Paragraph>
 
         <Paragraph size="$6">

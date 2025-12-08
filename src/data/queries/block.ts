@@ -1,7 +1,7 @@
 import { serverWhere, zql } from 'over-zero'
 
-const permission = serverWhere('block', (_, auth) => {
-  return _.cmp('blockerId', auth?.id || '')
+const permission = serverWhere('block', (row, auth) => {
+  return row.cmp('blockerId', auth?.id || '')
 })
 
 export const blockedByUser = (props: { userId: string; limit?: number }) => {

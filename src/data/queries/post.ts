@@ -1,6 +1,7 @@
 import { serverWhere, zql } from 'over-zero'
 
 const permission = serverWhere('post', () => {
+  // TODO
   return true
 })
 

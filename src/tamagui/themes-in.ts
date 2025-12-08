@@ -1,3 +1,5 @@
+// TODO move to config v5
+
 import {
   blueDark as blueDarkIn,
   blue as blueIn,
@@ -19,12 +21,6 @@ import {
 import { createThemes, defaultComponentThemes } from '@tamagui/theme-builder'
 
 import { opacify } from './opacify'
-
-// TODO v5: new way to define new keys on `createThemes` that is way easier:
-//   just createThemes({ extras: values => extraValues })
-//   that way you can take color1 and just opacify() it easily across every sub-theme
-
-// TODO we need grey which is neutral on both white and black
 
 const blue = adjustPaletteLight('blue', blueIn)
 const blueDark = adjustPaletteDark('blueDark', blueDarkIn)
@@ -214,9 +210,6 @@ const whiteColors = {
 }
 
 export const themes = createThemes({
-  // ‼️ we can probably get rid of this since we have mostly moved off the default component themes
-  componentThemes: defaultComponentThemes,
-
   base: {
     palette: {
       dark: darkPalette,

@@ -7,6 +7,13 @@ import type { UserConfig } from 'vite'
 export default {
   envPrefix: ['VITE_', 'TAMAGUI_'],
 
+  resolve: {
+    alias: {
+      // use lightweight svg for web (~2KB vs ~50KB)
+      'react-native-svg': '@tamagui/react-native-svg',
+    },
+  },
+
   server: {
     allowedHosts: ['host.docker.internal', 'onechat-dev-n8.start.chat'],
     port: 8081,

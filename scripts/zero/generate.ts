@@ -15,8 +15,7 @@ const { values } = parseArgs({
   },
 })
 
-const afterCmd =
-  'bunx oxfmt src/data/generated/queries.client.ts src/data/generated/queries.server.ts'
+const afterCmd = 'bunx oxfmt src/data/generated'
 
 if (values.watch) {
   await $`bun over-zero generate --watch --after ${afterCmd}`

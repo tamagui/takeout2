@@ -4,8 +4,6 @@ import { visualizer } from 'rollup-plugin-visualizer'
 
 import type { UserConfig } from 'vite'
 
-const analyze = process.env.ANALYZE === '1'
-
 export default {
   envPrefix: ['VITE_', 'TAMAGUI_'],
 
@@ -21,12 +19,6 @@ export default {
   ssr: {
     noExternal: true,
     external: ['over-zero', '@vxrn/mdx'],
-  },
-
-  esbuild: {
-    // for `over-zero`, may change how we do things here since queries depend on function.name
-    // i can see the argument that this is a standard JS feature though
-    minifyIdentifiers: false,
   },
 
   plugins: [
@@ -47,7 +39,7 @@ export default {
       },
     }),
 
-    analyze &&
+    process.env.ANALYZE === '1' &&
       visualizer({
         filename: 'dist/stats-client.html',
         open: false,
@@ -99,15 +91,6 @@ export default {
 
       deps: {
         pg: true,
-        'react-native-reanimated': {
-          'lib/module/createAnimatedComponent/createAnimatedComponent.js': (contents) => {
-            // if not using layout animations, this saves a super expensive repaint that happens often
-            return contents?.replace(
-              `return this._componentDOMRef.getBoundingClientRect();`,
-              'return null;'
-            )
-          },
-        },
       },
 
       build: {

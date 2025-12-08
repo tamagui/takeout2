@@ -7,6 +7,7 @@ import { createPermissions } from './createPermissions'
 import { createMutators } from './helpers/createMutators'
 import { prettyFormatZeroQuery } from './helpers/prettyFormatZeroQuery'
 import { useZeroDebug } from './helpers/useZeroDebug'
+import { registerQuery, getQueryName } from './queryRegistry'
 import { setAuthData, setSchema } from './state'
 
 import type { AuthData, GenericModels, GetZeroMutators, ZeroEvent } from './types'
@@ -21,15 +22,33 @@ import type {
   Schema as ZeroSchema,
 } from '@rocicorp/zero'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ClientQueries = Record<string, Record<string, (...args: any[]) => any>>
+
 export function createZeroClient<
   Schema extends ZeroSchema,
   Models extends GenericModels,
->({ schema, models }: { schema: Schema; models: Models }) {
+>({
+  schema,
+  models,
+  clientQueries,
+}: {
+  schema: Schema
+  models: Models
+  clientQueries: ClientQueries
+}) {
   type ZeroMutators = GetZeroMutators<Models>
   type ZeroInstance = Zero<Schema, ZeroMutators>
   type TableName = keyof ZeroInstance['query']
 
   setSchema(schema)
+
+  // build query registry from namespaced clientQueries
+  for (const [namespace, queries] of Object.entries(clientQueries)) {
+    for (const [name, fn] of Object.entries(queries)) {
+      registerQuery(fn, `${namespace}.${name}`)
+    }
+  }
 
   const DisabledContext = createContext(false)
 
@@ -172,7 +191,7 @@ export function createZeroClient<
       }
 
       const fn = queryOrFn
-      const queryName = fn.name || 'anonymousQuery'
+      const queryName = getQueryName(fn) || fn.name || 'anonymousQuery'
 
       // Determine if this is Pattern 2 (with params) or Pattern 3 (no params)
       const hasParams =

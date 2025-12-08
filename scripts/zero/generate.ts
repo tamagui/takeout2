@@ -4,7 +4,22 @@
  * @description Generate Zero sync code
  */
 
+import { parseArgs } from 'node:util'
+
 import { $ } from 'bun'
 
-console.info('Generating Zero sync code...')
-await $`bun over-zero generate`
+const { values } = parseArgs({
+  args: Bun.argv.slice(2),
+  options: {
+    watch: { type: 'boolean', short: 'w' },
+  },
+})
+
+const afterCmd =
+  'bunx oxfmt src/data/generated/queries.client.ts src/data/generated/queries.server.ts'
+
+if (values.watch) {
+  await $`bun over-zero generate --watch --after ${afterCmd}`
+} else {
+  await $`bun over-zero generate --after ${afterCmd}`
+}

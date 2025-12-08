@@ -24,20 +24,22 @@ import type {
 } from '@rocicorp/zero'
 import type { TransactionProviderInput } from '@rocicorp/zero/pg'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ServerQueries = Record<
+  string,
+  Record<string, SyncedQuery<any, any, any, any, any>>
+>
+
 export function createZeroServer<
   Schema extends ZeroSchema,
   Models extends GenericModels,
   ServerActions extends Record<string, unknown>,
-  Queries extends Record<string, SyncedQuery<any, any, any, any, any>> = Record<
-    string,
-    never
-  >,
 >({
   createServerActions,
   database,
   schema,
   models,
-  queries,
+  serverQueries,
 }: {
   /**
    * The DB connection string, same as ZERO_UPSTREAM_DB
@@ -46,7 +48,7 @@ export function createZeroServer<
   schema: Schema
   models: Models
   createServerActions: () => ServerActions
-  queries?: Queries
+  serverQueries?: ServerQueries
 }) {
   setSchema(schema)
 
@@ -117,7 +119,9 @@ export function createZeroServer<
     request: Request
   }) => {
     function getQuery(name: string, args: readonly ReadonlyJSONValue[]) {
-      const q = queries?.[name]
+      // name format: "namespace.queryName" (e.g. "post.allPosts")
+      const [namespace, queryName] = name.split('.')
+      const q = serverQueries?.[namespace!]?.[queryName!]
       if (!q) {
         throw new Error(`No such query: ${name}`)
       }

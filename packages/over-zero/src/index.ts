@@ -1,4 +1,5 @@
 export * from './createPermissions'
+export * from './queryRegistry'
 export * from './helpers/batchQuery'
 export * from './helpers/createMutators'
 export * from './helpers/ensureLoggedIn'

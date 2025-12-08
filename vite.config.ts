@@ -89,11 +89,13 @@ export default {
       router: {
         experimental: {
           preventLayoutRemounting: true,
+          typedRoutesGeneration: 'runtime',
         },
       },
 
       web: {
         defaultRenderMode: 'spa',
+        inlineLayoutCSS: true,
       },
 
       deps: {

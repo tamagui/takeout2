@@ -1,9 +1,11 @@
 import { getMDXComponent } from 'mdx-bundler/client'
-import { useLoader } from 'one'
+import { useLoader, createRoute } from 'one'
 import { useMemo } from 'react'
 import { H1, Paragraph } from 'tamagui'
 
 import { components } from '~/features/docs/MDXComponents'
+
+const route = createRoute<'/(site)/docs/[slug]'>()
 
 export async function generateStaticParams() {
   const { getAllFrontmatter } = await import('@vxrn/mdx')

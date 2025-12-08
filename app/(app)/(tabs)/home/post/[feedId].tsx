@@ -1,5 +1,5 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
-import { useParams } from 'one'
+import { createRoute } from 'one'
 import { memo, useState } from 'react'
 import { ScrollView, SizableText, XStack, YStack, isWeb } from 'tamagui'
 
@@ -16,8 +16,10 @@ import { Image } from '~/interface/image/Image'
 import { BodyText } from '~/interface/text/Body'
 import { useQuery } from '~/zero/client'
 
+const route = createRoute<'/(app)/(tabs)/home/post/[feedId]'>()
+
 export const FeedDetailPage = memo(() => {
-  const { feedId } = useParams()
+  const { feedId = '' } = route.useParams()
   const { user } = useUser()
   const [post] = useQuery(postById, { postId: feedId })
   const [aspectRatio, setAspectRatio] = useState<number>(1)

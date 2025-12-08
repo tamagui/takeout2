@@ -1,4 +1,4 @@
-import { useParams, useRouter } from 'one'
+import { useParams, useRouter, createRoute } from 'one'
 import { memo, useLayoutEffect, useRef, useState } from 'react'
 import { Keyboard } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -22,6 +22,8 @@ import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 
 import type React from 'react'
 import type { GestureResponderEvent } from 'react-native'
+
+const route = createRoute<'/(app)/(auth-onboard)/signup/[method]'>()
 
 export const SignupPage = memo(() => {
   const { method } = useParams<{

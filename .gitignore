@@ -53,3 +53,4 @@ dist
 # cluster config (encrypted, optionally commit for team)
 # .uncloud-cluster.enc
 src/uncloud/docker-compose.processed.yml
+report.xml

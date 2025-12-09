@@ -23,6 +23,7 @@ export const {
   models,
   schema,
   groupedQueries,
+  disableInlineQueries: true,
 })
 
 export const ProvideZero = ({ children }: { children: ReactNode }) => {

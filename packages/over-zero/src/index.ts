@@ -6,6 +6,7 @@ export * from './helpers/ensureLoggedIn'
 export * from './helpers/mutatorContext'
 
 export * from './createZeroClient'
+export * from './createUseQuery'
 export * from './mutations'
 export * from './where'
 export * from './serverWhere'

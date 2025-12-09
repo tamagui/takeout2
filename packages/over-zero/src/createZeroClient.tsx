@@ -1,42 +1,33 @@
-import { syncedQuery } from '@rocicorp/zero'
-import { useZero, ZeroProvider, useQuery as zeroUseQuery } from '@rocicorp/zero/react'
+import { useZero, ZeroProvider } from '@rocicorp/zero/react'
 import { createEmitter, mapObject } from '@vxrn/helpers'
 import { createContext, use, useMemo, type ReactNode } from 'react'
 
 import { createPermissions } from './createPermissions'
+import { createUseQuery } from './createUseQuery'
 import { createMutators } from './helpers/createMutators'
 import { prettyFormatZeroQuery } from './helpers/prettyFormatZeroQuery'
-import { useZeroDebug } from './helpers/useZeroDebug'
-import { registerQuery, getQueryName } from './queryRegistry'
+import { registerQuery } from './queryRegistry'
 import { setAuthData, setSchema } from './state'
 
 import type { AuthData, GenericModels, GetZeroMutators, ZeroEvent } from './types'
-import type {
-  HumanReadable,
-  Query,
-  ReadonlyJSONValue,
-  Row,
-  SyncedQuery,
-  Zero,
-  ZeroOptions,
-  Schema as ZeroSchema,
-} from '@rocicorp/zero'
+import type { Row, Zero, ZeroOptions, Schema as ZeroSchema } from '@rocicorp/zero'
 
-// grouped queries: { namespace: { queryName: queryFn } }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type GroupedQueries = Record<string, Record<string, (...args: any[]) => any>>
 
 export function createZeroClient<
   Schema extends ZeroSchema,
   Models extends GenericModels,
+  const DisableInlineQueries extends boolean = false,
 >({
   schema,
   models,
   groupedQueries,
+  disableInlineQueries = false as DisableInlineQueries,
 }: {
   schema: Schema
   models: Models
   groupedQueries: GroupedQueries
+  disableInlineQueries?: DisableInlineQueries
 }) {
   type ZeroMutators = GetZeroMutators<Models>
   type ZeroInstance = Zero<Schema, ZeroMutators>
@@ -81,6 +72,11 @@ export function createZeroClient<
   const AuthDataContext = createContext<AuthData>({} as AuthData)
   const useAuthData = () => use(AuthDataContext)
 
+  const useQuery = createUseQuery<Schema, DisableInlineQueries>({
+    DisabledContext,
+    disableInlineQueries,
+  })
+
   // we don't want flickers as you move around and these queries are re-run
   // and things generally aren't changing with permissions rapidly, so lets
   // cache the last results and use that when first rendering, they will
@@ -113,7 +109,9 @@ export function createZeroClient<
       })
     })()
 
-    const [data, status] = useQuery(query, {
+    // note: usePermission is internal and uses inline queries intentionally
+    // if disableInlineQueries is enabled, this will error and need a cast
+    const [data, status] = useQuery(query as any, {
       enabled: Boolean(enabled && permission && authData && objOrId),
     })
 
@@ -134,109 +132,6 @@ export function createZeroClient<
     }
 
     return allowed
-  }
-
-  type PlainQueryFn<
-    TArg = any,
-    TReturn extends Query<any, any, any> = Query<any, any, any>,
-  > = (args: TArg) => TReturn
-
-  type UseQueryOptions = {
-    enabled?: boolean | undefined
-    ttl?: 'always' | 'never' | number | undefined
-  }
-
-  type QueryResultDetails = ReturnType<typeof zeroUseQuery>[1]
-  type QueryResult<TReturn> = readonly [HumanReadable<TReturn>, QueryResultDetails]
-
-  const queryCache = new Map<string, SyncedQuery<any, any, any, any, any>>()
-
-  const parseAny = (x: unknown[]): [ReadonlyJSONValue] => [x[0] as ReadonlyJSONValue]
-
-  // Overload 1: Original API - Query or SyncedQuery with options
-  function useQuery<TTable extends keyof Schema['tables'] & string, TReturn>(
-    query:
-      | Query<Schema, TTable, TReturn>
-      | SyncedQuery<any, any, any, any, Query<Schema, TTable, TReturn>>,
-    options?: UseQueryOptions | boolean
-  ): QueryResult<TReturn>
-
-  // Overload 2: Plain function with params
-  function useQuery<TArg, TTable extends keyof Schema['tables'] & string, TReturn>(
-    fn: PlainQueryFn<TArg, Query<Schema, TTable, TReturn>>,
-    params: TArg,
-    options?: UseQueryOptions | boolean
-  ): QueryResult<TReturn>
-
-  // Overload 3: Plain function with no params
-  function useQuery<TTable extends keyof Schema['tables'] & string, TReturn>(
-    fn: PlainQueryFn<void, Query<Schema, TTable, TReturn>>,
-    options?: UseQueryOptions | boolean
-  ): QueryResult<TReturn>
-
-  // Implementation - keep it simple with any
-  function useQuery(...args: any[]): any {
-    const disabled = use(DisabledContext)
-    const [queryOrFn, paramsOrOptions, optionsArg] = args
-
-    // Detect which calling pattern is being used
-    const isPlainFunction = typeof queryOrFn === 'function' && !('queryName' in queryOrFn)
-
-    const { actualQuery, options } = useMemo(() => {
-      if (!isPlainFunction) {
-        // Pattern 1: Original API - useQuery(query, options)
-        return {
-          actualQuery: queryOrFn,
-          options: paramsOrOptions,
-        }
-      }
-
-      const fn = queryOrFn
-      const queryName = getQueryName(fn)
-
-      if (!queryName) {
-        throw new Error(`No query name?`)
-      }
-
-      // Determine if this is Pattern 2 (with params) or Pattern 3 (no params)
-      const hasParams =
-        optionsArg !== undefined ||
-        (paramsOrOptions &&
-          typeof paramsOrOptions === 'object' &&
-          !('enabled' in paramsOrOptions) &&
-          !('ttl' in paramsOrOptions))
-
-      const params = hasParams ? paramsOrOptions : undefined
-      const opts = hasParams ? optionsArg : paramsOrOptions
-
-      let synced = queryCache.get(queryName)
-      if (!synced) {
-        synced = syncedQuery(queryName, parseAny, (arg: ReadonlyJSONValue) => {
-          return fn(arg)
-        })
-        queryCache.set(queryName, synced)
-      }
-
-      // Call the SyncedQuery with params if provided
-      const query = params !== undefined ? (synced as any)(params) : synced
-
-      return { actualQuery: query, options: opts }
-    }, [queryOrFn, paramsOrOptions, optionsArg, isPlainFunction])
-
-    console.info('running', { actualQuery, options, queryOrFn })
-
-    const out = zeroUseQuery(actualQuery, options)
-
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      useZeroDebug(actualQuery, options, out)
-    }
-
-    if (disabled) {
-      return [null, { type: 'unknown' }] as never
-    }
-
-    return out
   }
 
   const ProvideZero = ({

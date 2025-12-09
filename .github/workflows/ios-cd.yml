@@ -67,22 +67,23 @@ jobs:
         env:
           APP_VARIANT: ${{ env.APP_VARIANT }}
 
+      - name: Pod Install
+        run: pod install --project-directory=ios
+
       - name: Detect Xcode Project
         id: detect-project
         run: |
-          # find the .xcworkspace in ios/
+          # find the .xcworkspace in ios/ (created by pod install)
           workspace=$(find ios -maxdepth 1 -name "*.xcworkspace" -type d | head -1)
           if [ -z "$workspace" ]; then
             echo "Error: No .xcworkspace found in ios/"
+            ls -la ios/
             exit 1
           fi
           workspace_name=$(basename "$workspace" .xcworkspace)
           echo "workspace=$workspace" >> $GITHUB_OUTPUT
           echo "scheme=$workspace_name" >> $GITHUB_OUTPUT
           echo "Found workspace: $workspace, scheme: $workspace_name"
-
-      - name: Pod Install
-        run: pod install --project-directory=ios
 
       - name: Build Archive
         env:

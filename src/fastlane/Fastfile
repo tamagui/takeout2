@@ -3,8 +3,8 @@
 default_platform(:ios)
 
 platform :ios do
-  desc "Register bundle ID"
-  lane :register_bundle_id do
+  desc "Check bundle ID and app record"
+  lane :check_app do
     api_key = app_store_connect_api_key(
       key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
       issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
@@ -12,17 +12,23 @@ platform :ios do
       is_key_content_base64: false
     )
 
-    # Use Spaceship directly since produce requires username
     require 'spaceship'
     Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.from(hash: api_key)
 
-    # Check if app ID exists
-    app_id = Spaceship::ConnectAPI::BundleId.find("dev.tamagui.takeout", includes: nil)
-
-    if app_id
-      UI.success("Bundle ID dev.tamagui.takeout already exists!")
+    # check bundle id
+    bundle_id = Spaceship::ConnectAPI::BundleId.find("dev.tamagui.takeout", includes: nil)
+    if bundle_id
+      UI.success("Bundle ID dev.tamagui.takeout exists")
     else
-      UI.error("Bundle ID dev.tamagui.takeout not found - please create it in Apple Developer Portal")
+      UI.error("Bundle ID dev.tamagui.takeout not found")
+    end
+
+    # check app record
+    app = Spaceship::ConnectAPI::App.find("dev.tamagui.takeout")
+    if app
+      UI.success("App record exists: #{app.name} (#{app.bundle_id})")
+    else
+      UI.message("App record not found in App Store Connect - will be created on first upload")
     end
   end
 
@@ -41,8 +47,7 @@ platform :ios do
       team_id: "399WY8X9HY",
       git_url: ENV["APPLE_CODE_SIGNING_GIT_URL"] || "git@github.com:tamagui/takeout3.git",
       git_branch: "match",
-      force_for_new_devices: false,
-      include_all_certificates: false
+      readonly: true
     )
   end
 

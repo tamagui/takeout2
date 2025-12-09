@@ -151,8 +151,8 @@ jobs:
           MATCH_PASSWORD="$APPLE_CODE_SIGNING_GIT_PASSPHRASE" fastlane match run \
             --type appstore \
             --readonly \
-            --skip_certificate_matching true \
             --git_url "$APPLE_CODE_SIGNING_GIT_URL" \
+            --git_branch match \
             --git_private_key "$APPLE_CODE_SIGNING_GIT_SSH_KEY" \
             --keychain_name "$KEYCHAIN_NAME" \
             --keychain_password "$KEYCHAIN_PASSWORD" \

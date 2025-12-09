@@ -15,13 +15,13 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## iOS
 
-### ios register_bundle_id
+### ios check_app
 
 ```sh
-[bundle exec] fastlane ios register_bundle_id
+[bundle exec] fastlane ios check_app
 ```
 
-Register bundle ID
+Check bundle ID and app record
 
 ### ios setup_certs
 

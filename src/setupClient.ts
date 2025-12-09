@@ -1,5 +1,5 @@
 import '~/helpers/crypto/polyfill'
-import '~/storage/setupStorage'
+import '~/features/storage/setupStorage'
 import '~/features/analytics/analytics'
 import '~/posthog/posthog'
 

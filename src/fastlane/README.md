@@ -31,6 +31,14 @@ Register bundle ID
 
 Setup certificates and profiles
 
+### ios import_profile
+
+```sh
+[bundle exec] fastlane ios import_profile
+```
+
+Import provisioning profile to match
+
 ### ios beta
 
 ```sh

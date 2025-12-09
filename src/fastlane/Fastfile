@@ -34,13 +34,27 @@ platform :ios do
       key_content: ENV["APP_STORE_CONNECT_API_KEY_P8"],
       is_key_content_base64: false
     )
-    
+
     match(
       type: "appstore",
       app_identifier: ["dev.tamagui.takeout"],
       team_id: "399WY8X9HY",
       git_url: ENV["APPLE_CODE_SIGNING_GIT_URL"] || "git@github.com:tamagui/takeout3.git",
-      git_branch: "match"
+      git_branch: "match",
+      force_for_new_devices: false,
+      include_all_certificates: false
+    )
+  end
+
+  desc "Import provisioning profile to match"
+  lane :import_profile do
+    match(
+      type: "appstore",
+      app_identifier: ["dev.tamagui.takeout"],
+      team_id: "399WY8X9HY",
+      git_url: ENV["APPLE_CODE_SIGNING_GIT_URL"] || "git@github.com:tamagui/takeout3.git",
+      git_branch: "match",
+      skip_certificate_matching: true
     )
   end
 

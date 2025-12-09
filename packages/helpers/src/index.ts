@@ -67,7 +67,9 @@ export * from './react/createGlobalContext'
 export * from './react/getCurrentComponentStack'
 
 // storage
-export * from './storage'
+export * from './storage/createStorage'
+export * from './storage/driver'
+export type { StorageDriver } from './storage/types'
 
 // server
 export * from './server/ensureEnv'

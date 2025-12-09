@@ -8,6 +8,6 @@ storage_mode("git")
 
 type("appstore")
 
-app_identifier(["com.takeout.app"])
+app_identifier(["dev.tamagui.takeout"])
 
 team_id("399WY8X9HY")

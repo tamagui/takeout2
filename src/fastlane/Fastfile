@@ -2,6 +2,13 @@
 
 default_platform(:ios)
 
+# Configurable via environment variables:
+#   IOS_BUNDLE_ID - iOS app bundle identifier (default: dev.tamagui.takeout)
+#   APPLE_DEVELOPER_TEAM_ID - Apple Developer Team ID (default: 399WY8X9HY)
+
+BUNDLE_ID = ENV["IOS_BUNDLE_ID"] || "dev.tamagui.takeout"
+TEAM_ID = ENV["APPLE_DEVELOPER_TEAM_ID"] || "399WY8X9HY"
+
 platform :ios do
   desc "Check bundle ID and app record"
   lane :check_app do
@@ -16,15 +23,15 @@ platform :ios do
     Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.from(hash: api_key)
 
     # check bundle id
-    bundle_id = Spaceship::ConnectAPI::BundleId.find("dev.tamagui.takeout", includes: nil)
+    bundle_id = Spaceship::ConnectAPI::BundleId.find(BUNDLE_ID, includes: nil)
     if bundle_id
-      UI.success("Bundle ID dev.tamagui.takeout exists")
+      UI.success("Bundle ID #{BUNDLE_ID} exists")
     else
-      UI.error("Bundle ID dev.tamagui.takeout not found")
+      UI.error("Bundle ID #{BUNDLE_ID} not found")
     end
 
     # check app record
-    app = Spaceship::ConnectAPI::App.find("dev.tamagui.takeout")
+    app = Spaceship::ConnectAPI::App.find(BUNDLE_ID)
     if app
       UI.success("App record exists: #{app.name} (#{app.bundle_id})")
     else
@@ -43,8 +50,8 @@ platform :ios do
 
     match(
       type: "appstore",
-      app_identifier: ["dev.tamagui.takeout"],
-      team_id: "399WY8X9HY",
+      app_identifier: [BUNDLE_ID],
+      team_id: TEAM_ID,
       git_url: ENV["APPLE_CODE_SIGNING_GIT_URL"] || "git@github.com:tamagui/takeout3.git",
       git_branch: "match",
       readonly: true
@@ -55,8 +62,8 @@ platform :ios do
   lane :import_profile do
     match(
       type: "appstore",
-      app_identifier: ["dev.tamagui.takeout"],
-      team_id: "399WY8X9HY",
+      app_identifier: [BUNDLE_ID],
+      team_id: TEAM_ID,
       git_url: ENV["APPLE_CODE_SIGNING_GIT_URL"] || "git@github.com:tamagui/takeout3.git",
       git_branch: "match",
       skip_certificate_matching: true

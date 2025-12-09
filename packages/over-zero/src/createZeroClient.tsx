@@ -192,7 +192,11 @@ export function createZeroClient<
       }
 
       const fn = queryOrFn
-      const queryName = getQueryName(fn) || fn.name || 'anonymousQuery'
+      const queryName = getQueryName(fn)
+
+      if (!queryName) {
+        throw new Error(`No query name?`)
+      }
 
       // Determine if this is Pattern 2 (with params) or Pattern 3 (no params)
       const hasParams =
@@ -218,6 +222,8 @@ export function createZeroClient<
 
       return { actualQuery: query, options: opts }
     }, [queryOrFn, paramsOrOptions, optionsArg, isPlainFunction])
+
+    console.info('running', { actualQuery, options, queryOrFn })
 
     const out = zeroUseQuery(actualQuery, options)
 

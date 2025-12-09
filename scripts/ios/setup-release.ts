@@ -67,6 +67,11 @@ const APPLE_SECRETS: AppleSecret[] = [
     description: 'Apple Developer Team ID (10 character string)',
     sensitive: false,
   },
+  {
+    key: 'IOS_BUNDLE_ID',
+    description: 'iOS app bundle identifier (e.g., com.example.app)',
+    sensitive: false,
+  },
 ]
 
 interface SecretValue {

@@ -8,6 +8,6 @@ storage_mode("git")
 
 type("appstore")
 
-app_identifier(["dev.tamagui.takeout"])
+app_identifier([ENV["IOS_BUNDLE_ID"] || "dev.tamagui.takeout"])
 
-team_id("399WY8X9HY")
+team_id(ENV["APPLE_DEVELOPER_TEAM_ID"] || "399WY8X9HY")

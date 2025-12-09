@@ -29,23 +29,15 @@ Check bundle ID and app record
 [bundle exec] fastlane ios setup_certs
 ```
 
-Setup certificates and profiles
+Setup certificates and profiles (readonly)
 
-### ios import_profile
-
-```sh
-[bundle exec] fastlane ios import_profile
-```
-
-Import provisioning profile to match
-
-### ios beta
+### ios sync_certs
 
 ```sh
-[bundle exec] fastlane ios beta
+[bundle exec] fastlane ios sync_certs
 ```
 
-Build and upload to TestFlight
+Create/sync certificates and profiles (writes to match repo)
 
 ----
 

@@ -153,6 +153,36 @@ ${pc.bold('Getting credentials:')}
     process.exit(1)
   }
 
+  // check fastlane version (>= 2.228.0 required for templateName fix)
+  const MIN_FASTLANE_VERSION = '2.228.0'
+  try {
+    const versionOutput = await Bun.$`fastlane --version 2>&1`.text()
+    const versionMatch = versionOutput.match(/(\d+\.\d+\.\d+)/)
+    if (versionMatch) {
+      const currentVersion = versionMatch[1]
+      const [curMajor, curMinor, curPatch] = currentVersion.split('.').map(Number)
+      const [minMajor, minMinor, minPatch] = MIN_FASTLANE_VERSION.split('.').map(Number)
+
+      const isOldVersion =
+        curMajor < minMajor ||
+        (curMajor === minMajor && curMinor < minMinor) ||
+        (curMajor === minMajor && curMinor === minMinor && curPatch < minPatch)
+
+      if (isOldVersion) {
+        clack.log.warning(
+          `fastlane ${currentVersion} is outdated. Version >= ${MIN_FASTLANE_VERSION} required.\n` +
+            `  Run: ${pc.cyan('brew upgrade fastlane')} or ${pc.cyan('gem install fastlane')}`
+        )
+      } else {
+        clack.log.info(`fastlane ${currentVersion} ✓`)
+      }
+    }
+  } catch {
+    clack.log.warning(
+      `fastlane not found. Install with: ${pc.cyan('brew install fastlane')}`
+    )
+  }
+
   const secretsFilePath = resolve(cwd, '.env.ios')
 
   // check mode

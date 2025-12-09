@@ -62,13 +62,34 @@ jobs:
           PUBLIC_ENV: ${{ vars.PUBLIC_ENV }}
         run: echo "${PUBLIC_ENV}" >> .env
 
+      - name: Generate Native Fingerprint
+        id: fingerprint
+        run: |
+          # generate expo fingerprint for native code - used for cache key
+          fingerprint=$(bunx @expo/fingerprint . --platform ios 2>/dev/null | tail -1 || echo "no-fingerprint-${{ github.sha }}")
+          echo "hash=$fingerprint" >> $GITHUB_OUTPUT
+          echo "Native fingerprint: $fingerprint"
+
+      - name: Cache iOS Native Build
+        id: cache-ios
+        uses: actions/cache@v4
+        with:
+          path: |
+            ios/
+            ci_build/
+          key: ios-native-${{ steps.fingerprint.outputs.hash }}-${{ env.APP_VARIANT }}
+
       - name: Prebuild iOS
+        if: steps.cache-ios.outputs.cache-hit != 'true'
         run: bun run prebuild:native --platform ios --no-install
         env:
           APP_VARIANT: ${{ env.APP_VARIANT }}
 
       - name: Pod Install
-        run: pod install --project-directory=ios
+        if: steps.cache-ios.outputs.cache-hit != 'true'
+        run: |
+          # enable RN 0.81 precompiled builds for faster compilation
+          RCT_USE_RN_DEP=1 RCT_USE_PREBUILT_RNCORE=1 pod install --project-directory=ios
 
       - name: Detect Xcode Project
         id: detect-project
@@ -86,11 +107,14 @@ jobs:
           echo "Found workspace: $workspace, scheme: $workspace_name"
 
       - name: Build Archive
+        if: steps.cache-ios.outputs.cache-hit != 'true'
+        timeout-minutes: 40
         env:
           SCHEME: ${{ steps.detect-project.outputs.scheme }}
           WORKSPACE: ${{ steps.detect-project.outputs.workspace }}
         run: |
           set -o pipefail
+          # use xcodebuild with less verbose output but without xcpretty which can hang
           xcrun xcodebuild \
             -scheme "$SCHEME" \
             -workspace "$WORKSPACE" \
@@ -100,7 +124,17 @@ jobs:
             -derivedDataPath ci_build \
             -archivePath ci_build/app.xcarchive \
             CODE_SIGNING_ALLOWED=NO \
-            archive | xcpretty
+            -quiet \
+            archive
+          echo "Archive completed successfully"
+
+      - name: Verify Archive Exists
+        run: |
+          if [ ! -d "ci_build/app.xcarchive" ]; then
+            echo "Error: Archive not found at ci_build/app.xcarchive"
+            exit 1
+          fi
+          echo "Archive found: $(du -sh ci_build/app.xcarchive)"
 
       - name: Generate Changelog
         id: changelog
@@ -124,9 +158,20 @@ jobs:
 
       - name: Install Fastlane
         run: |
-          if ! command -v fastlane &> /dev/null; then
+          # require fastlane >= 2.228.0 to fix templateName API issue
+          MIN_VERSION="2.228.0"
+          if command -v fastlane &> /dev/null; then
+            CURRENT=$(fastlane --version 2>&1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+            if [ "$(printf '%s\n' "$MIN_VERSION" "$CURRENT" | sort -V | head -1)" = "$MIN_VERSION" ]; then
+              echo "fastlane $CURRENT is sufficient"
+            else
+              echo "fastlane $CURRENT is too old, upgrading..."
+              gem install fastlane --no-document
+            fi
+          else
             gem install fastlane --no-document
           fi
+          fastlane --version
 
       - name: Sync Code Signing
         id: signing

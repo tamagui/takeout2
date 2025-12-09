@@ -5,8 +5,8 @@ import { memo, useEffect, useMemo, type ReactNode } from 'react'
 import { isClient, isWeb } from 'tamagui'
 
 import { ZERO_SERVER_URL } from '~/constants/urls'
+import * as groupedQueries from '~/data/generated/groupedQueries'
 import { models } from '~/data/generated/models'
-import { clientQueries } from '~/data/generated/queries.client'
 import { schema } from '~/data/schema'
 import { useAuth } from '~/features/auth/client/authClient'
 import { setDevGlobal } from '~/features/devtools/devGlobal'
@@ -22,7 +22,7 @@ export const {
 } = createZeroClient({
   models,
   schema,
-  clientQueries,
+  groupedQueries,
 })
 
 export const ProvideZero = ({ children }: { children: ReactNode }) => {

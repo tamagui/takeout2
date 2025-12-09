@@ -22,8 +22,9 @@ import type {
   Schema as ZeroSchema,
 } from '@rocicorp/zero'
 
+// grouped queries: { namespace: { queryName: queryFn } }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ClientQueries = Record<string, Record<string, (...args: any[]) => any>>
+export type GroupedQueries = Record<string, Record<string, (...args: any[]) => any>>
 
 export function createZeroClient<
   Schema extends ZeroSchema,
@@ -31,11 +32,11 @@ export function createZeroClient<
 >({
   schema,
   models,
-  clientQueries,
+  groupedQueries,
 }: {
   schema: Schema
   models: Models
-  clientQueries: ClientQueries
+  groupedQueries: GroupedQueries
 }) {
   type ZeroMutators = GetZeroMutators<Models>
   type ZeroInstance = Zero<Schema, ZeroMutators>
@@ -43,8 +44,8 @@ export function createZeroClient<
 
   setSchema(schema)
 
-  // build query registry from namespaced clientQueries
-  for (const [namespace, queries] of Object.entries(clientQueries)) {
+  // build query registry from grouped queries
+  for (const [namespace, queries] of Object.entries(groupedQueries)) {
     for (const [name, fn] of Object.entries(queries)) {
       registerQuery(fn, `${namespace}.${name}`)
     }

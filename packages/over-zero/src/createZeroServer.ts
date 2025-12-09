@@ -24,8 +24,8 @@ import type {
 } from '@rocicorp/zero'
 import type { TransactionProviderInput } from '@rocicorp/zero/pg'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ServerQueries = Record<
+// grouped synced queries: { namespace: { queryName: SyncedQuery } }
+export type SyncedQueries = Record<
   string,
   Record<string, SyncedQuery<any, any, any, any, any>>
 >
@@ -34,12 +34,13 @@ export function createZeroServer<
   Schema extends ZeroSchema,
   Models extends GenericModels,
   ServerActions extends Record<string, unknown>,
+  Queries extends SyncedQueries = Record<string, never>,
 >({
   createServerActions,
   database,
   schema,
   models,
-  serverQueries,
+  syncedQueries,
 }: {
   /**
    * The DB connection string, same as ZERO_UPSTREAM_DB
@@ -48,7 +49,7 @@ export function createZeroServer<
   schema: Schema
   models: Models
   createServerActions: () => ServerActions
-  serverQueries?: ServerQueries
+  syncedQueries?: Queries
 }) {
   setSchema(schema)
 
@@ -111,6 +112,16 @@ export function createZeroServer<
     }
   }
 
+  // build flat lookup map from grouped syncedQueries: "namespace.queryName" => SyncedQuery
+  const queryLookup = new Map<string, SyncedQuery<any, any, any, any, any>>()
+  if (syncedQueries) {
+    for (const [namespace, queries] of Object.entries(syncedQueries)) {
+      for (const [queryName, syncedQuery] of Object.entries(queries)) {
+        queryLookup.set(`${namespace}.${queryName}`, syncedQuery)
+      }
+    }
+  }
+
   const handleQueryRequest = async ({
     authData,
     request,
@@ -119,9 +130,7 @@ export function createZeroServer<
     request: Request
   }) => {
     function getQuery(name: string, args: readonly ReadonlyJSONValue[]) {
-      // name format: "namespace.queryName" (e.g. "post.allPosts")
-      const [namespace, queryName] = name.split('.')
-      const q = serverQueries?.[namespace!]?.[queryName!]
+      const q = queryLookup.get(name)
       if (!q) {
         throw new Error(`No such query: ${name}`)
       }

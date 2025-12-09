@@ -37,7 +37,8 @@ jobs:
   build-and-deploy:
     needs: check-trigger
     if: needs.check-trigger.outputs.should-run == 'true' && github.event.pull_request.draft != true
-    runs-on: macos-15
+    # use warpbuild macos runner for faster builds (16 cores, 32GB RAM)
+    runs-on: warp-macos-15-arm64-6x
     timeout-minutes: 60
     env:
       # select bundle id based on variant
@@ -114,6 +115,12 @@ jobs:
           WORKSPACE: ${{ steps.detect-project.outputs.workspace }}
         run: |
           set -o pipefail
+
+          # [vxrn/one] set CLI_PATH to main CLI endpoint so vxrn bundle command override works
+          export NODE_BINARY=node
+          export CLI_PATH="$("$NODE_BINARY" --print "require('path').dirname(require.resolve('react-native/package.json')) + '/cli.js'")"
+          echo "CLI_PATH: $CLI_PATH"
+
           # use xcodebuild with less verbose output but without xcpretty which can hang
           xcrun xcodebuild \
             -scheme "$SCHEME" \

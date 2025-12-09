@@ -1,12 +1,9 @@
-# fastlane configuration
+# fastlane configuration for iOS CD
+# most build logic is in .github/workflows/ios-cd.yml
 
 default_platform(:ios)
 
-# Configurable via environment variables:
-#   IOS_BUNDLE_ID - iOS app bundle identifier (default: dev.tamagui.takeout)
-#   APPLE_DEVELOPER_TEAM_ID - Apple Developer Team ID (default: 399WY8X9HY)
-
-BUNDLE_ID = ENV["IOS_BUNDLE_ID"] || "dev.tamagui.takeout"
+BUNDLE_ID = ENV["IOS_BUNDLE_ID"]
 TEAM_ID = ENV["APPLE_DEVELOPER_TEAM_ID"] || "399WY8X9HY"
 
 platform :ios do
@@ -22,7 +19,6 @@ platform :ios do
     require 'spaceship'
     Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.from(hash: api_key)
 
-    # check bundle id
     bundle_id = Spaceship::ConnectAPI::BundleId.find(BUNDLE_ID, includes: nil)
     if bundle_id
       UI.success("Bundle ID #{BUNDLE_ID} exists")
@@ -30,16 +26,15 @@ platform :ios do
       UI.error("Bundle ID #{BUNDLE_ID} not found")
     end
 
-    # check app record
     app = Spaceship::ConnectAPI::App.find(BUNDLE_ID)
     if app
       UI.success("App record exists: #{app.name} (#{app.bundle_id})")
     else
-      UI.message("App record not found in App Store Connect - will be created on first upload")
+      UI.message("App record not found - will be created on first upload")
     end
   end
 
-  desc "Setup certificates and profiles"
+  desc "Setup certificates and profiles (readonly)"
   lane :setup_certs do
     app_store_connect_api_key(
       key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
@@ -58,36 +53,22 @@ platform :ios do
     )
   end
 
-  desc "Import provisioning profile to match"
-  lane :import_profile do
-    match(
-      type: "appstore",
-      app_identifier: [BUNDLE_ID],
-      team_id: TEAM_ID,
-      git_url: ENV["APPLE_CODE_SIGNING_GIT_URL"] || "git@github.com:tamagui/takeout3.git",
-      git_branch: "match",
-      skip_certificate_matching: true
-    )
-  end
-
-  desc "Build and upload to TestFlight"
-  lane :beta do
+  desc "Create/sync certificates and profiles (writes to match repo)"
+  lane :sync_certs do
     app_store_connect_api_key(
       key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
       issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
       key_content: ENV["APP_STORE_CONNECT_API_KEY_P8"],
       is_key_content_base64: false
     )
-    
-    setup_certs
-    
-    build_app(
-      scheme: "takeout",
-      export_method: "app-store"
-    )
-    
-    upload_to_testflight(
-      skip_waiting_for_build_processing: true
+
+    match(
+      type: "appstore",
+      app_identifier: [BUNDLE_ID],
+      team_id: TEAM_ID,
+      git_url: ENV["APPLE_CODE_SIGNING_GIT_URL"] || "git@github.com:tamagui/takeout3.git",
+      git_branch: "match",
+      readonly: false
     )
   end
 end

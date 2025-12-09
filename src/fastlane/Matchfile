@@ -1,5 +1,5 @@
 # fastlane match configuration
-# certificates and profiles stored in this repo under fastlane/certs/
+# certificates and profiles stored in this repo under match branch
 
 git_url(ENV["APPLE_CODE_SIGNING_GIT_URL"] || "git@github.com:tamagui/takeout3.git")
 git_branch("match")
@@ -8,6 +8,7 @@ storage_mode("git")
 
 type("appstore")
 
-app_identifier([ENV["IOS_BUNDLE_ID"] || "dev.tamagui.takeout"])
+# bundle id is passed via IOS_BUNDLE_ID env var from workflow
+app_identifier([ENV["IOS_BUNDLE_ID"]])
 
 team_id(ENV["APPLE_DEVELOPER_TEAM_ID"] || "399WY8X9HY")

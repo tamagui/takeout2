@@ -68,8 +68,13 @@ const APPLE_SECRETS: AppleSecret[] = [
     sensitive: false,
   },
   {
-    key: 'IOS_BUNDLE_ID',
-    description: 'iOS app bundle identifier (e.g., com.example.app)',
+    key: 'IOS_BUNDLE_ID_PREVIEW',
+    description: 'iOS bundle ID for preview/staging builds (e.g., com.example.app.preview)',
+    sensitive: false,
+  },
+  {
+    key: 'IOS_BUNDLE_ID_PRODUCTION',
+    description: 'iOS bundle ID for production builds (e.g., com.example.app)',
     sensitive: false,
   },
 ]
@@ -148,7 +153,7 @@ ${pc.bold('Getting credentials:')}
     process.exit(1)
   }
 
-  const secretsFilePath = resolve(cwd, '.env.ios-release')
+  const secretsFilePath = resolve(cwd, '.env.ios')
 
   // check mode
   if (checkOnly) {
@@ -172,9 +177,9 @@ ${pc.bold('Getting credentials:')}
   console.info()
   clack.note(
     `This will configure Apple secrets for iOS App Store deployment.
-Secrets are stored locally in ${pc.cyan('.env.ios-release')} and synced to GitHub.
+Secrets are stored locally in ${pc.cyan('.env.ios')} and synced to GitHub.
 
-${pc.yellow('Note:')} Add .env.ios-release to .gitignore (it contains sensitive data)`,
+${pc.yellow('Note:')} Add .env.ios to .gitignore (it contains sensitive data)`,
     'Setup'
   )
 
@@ -277,10 +282,10 @@ ${pc.yellow('Note:')} Add .env.ios-release to .gitignore (it contains sensitive 
   }).join('\n')
 
   writeFileSync(secretsFilePath, envContent + '\n')
-  spinner.stop('Secrets saved to .env.ios-release')
+  spinner.stop('Secrets saved to .env.ios')
 
   // ensure gitignore
-  ensureGitignore(cwd, '.env.ios-release')
+  ensureGitignore(cwd, '.env.ios')
 
   // offer to sync to github
   console.info()

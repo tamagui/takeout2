@@ -14,7 +14,7 @@ interface PackageJson {
   env?: Record<string, string | boolean>
 }
 
-// iOS secrets that should be synced from .env.ios-release
+// iOS secrets that should be synced from .env.ios
 const IOS_SECRETS = [
   'APP_STORE_CONNECT_API_KEY_ID',
   'APP_STORE_CONNECT_API_KEY_ISSUER_ID',
@@ -23,7 +23,8 @@ const IOS_SECRETS = [
   'APPLE_CODE_SIGNING_GIT_SSH_KEY',
   'APPLE_CODE_SIGNING_GIT_PASSPHRASE',
   'APPLE_DEVELOPER_TEAM_ID',
-  'IOS_BUNDLE_ID',
+  'IOS_BUNDLE_ID_PREVIEW',
+  'IOS_BUNDLE_ID_PRODUCTION',
 ]
 
 async function main() {
@@ -70,8 +71,8 @@ async function main() {
     }
   }
 
-  // load .env.ios-release for iOS secrets
-  const iosEnvPath = resolve(cwd, '.env.ios-release')
+  // load .env.ios for iOS secrets
+  const iosEnvPath = resolve(cwd, '.env.ios')
   const iosSecrets: Record<string, string> = {}
   if (existsSync(iosEnvPath)) {
     const iosContent = readFileSync(iosEnvPath, 'utf-8')
@@ -158,14 +159,14 @@ async function main() {
       if (!value || value === '') continue
 
       const isSensitive = /SECRET|KEY|PASSWORD|TOKEN|PRIVATE|PASSPHRASE/i.test(key)
-      varsToSync.push({ key, value, isSensitive, source: '.env.ios-release' })
+      varsToSync.push({ key, value, isSensitive, source: '.env.ios' })
     }
   }
 
   if (varsToSync.length === 0) {
     clack.outro(pc.yellow('No variables to sync'))
     console.info(pc.gray('\nAll environment variables are either:'))
-    console.info(pc.gray('  - Not set in .env.production or .env.ios-release'))
+    console.info(pc.gray('  - Not set in .env.production or .env.ios'))
     console.info(pc.gray('  - Using default values'))
     return
   }
@@ -175,7 +176,7 @@ async function main() {
   console.info(pc.bold('Variables to sync:'))
 
   const productionVars = varsToSync.filter((v) => v.source === '.env.production')
-  const iosVars = varsToSync.filter((v) => v.source === '.env.ios-release')
+  const iosVars = varsToSync.filter((v) => v.source === '.env.ios')
 
   if (productionVars.length > 0) {
     console.info('')
@@ -190,7 +191,7 @@ async function main() {
 
   if (iosVars.length > 0) {
     console.info('')
-    console.info(pc.gray('  From .env.ios-release:'))
+    console.info(pc.gray('  From .env.ios:'))
     for (const { key, value, isSensitive } of iosVars) {
       const displayValue = isSensitive
         ? pc.gray(`${'*'.repeat(Math.min(value.length, 40))}`)

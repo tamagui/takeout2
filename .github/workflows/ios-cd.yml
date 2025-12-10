@@ -219,9 +219,19 @@ jobs:
           rm -rf .apple-signing
 
           # write ssh key to temp file with proper permissions
-          # GitHub secrets may have literal \n strings - use awk to convert them to actual newlines
+          # GitHub secrets stored the key with literal backslash-n characters
+          # Try multiple replacements: \\n, \n, and check what we're actually getting
           ssh_key_file=$(mktemp)
-          echo "$APPLE_CODE_SIGNING_GIT_SSH_KEY" | awk '{gsub(/\\n/,"\n")}1' > "$ssh_key_file"
+
+          # First, write raw key to see what format it is
+          echo "$APPLE_CODE_SIGNING_GIT_SSH_KEY" > "${ssh_key_file}.raw"
+          echo "Raw key size: $(wc -c < "${ssh_key_file}.raw")"
+          echo "Raw key lines: $(wc -l < "${ssh_key_file}.raw")"
+          echo "Raw key contains backslash-n: $(grep -c '\\n' "${ssh_key_file}.raw" || echo '0')"
+
+          # Try using printf with %b which interprets escape sequences
+          printf '%b' "$APPLE_CODE_SIGNING_GIT_SSH_KEY" > "$ssh_key_file"
+          echo "" >> "$ssh_key_file"
           chmod 600 "$ssh_key_file"
 
           # debug: show key file info (not content, just structure)

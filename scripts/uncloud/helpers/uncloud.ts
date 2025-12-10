@@ -18,28 +18,37 @@ export function initUncloud(
 ) {
   console.info('\n🚀 initializing uncloud...\n')
 
+  const sshCmd = `ssh -i ${sshKey} -o StrictHostKeyChecking=no ${host}`
+
   // check if already initialized by checking for both uncloud binary and caddy container
   try {
-    exec(`ssh -i ${sshKey} -o StrictHostKeyChecking=no ${host} "which uncloud"`, {
-      silent: true,
-    })
+    exec(`${sshCmd} "which uncloud"`, { silent: true })
 
-    // also check if caddy is running (indicates machine is fully initialized)
+    // check if caddy is running (indicates machine is fully initialized)
     try {
       exec(
-        `ssh -i ${sshKey} -o StrictHostKeyChecking=no ${host} "docker ps --filter name=caddy --format '{{.Names}}' | grep -q caddy"`,
-        {
-          silent: true,
-        }
+        `${sshCmd} "docker ps --filter name=caddy --format '{{.Names}}' | grep -q caddy"`,
+        { silent: true }
       )
       console.info('✅ uncloud already initialized (caddy running)')
       return
     } catch {
-      // caddy not running, but uncloud exists - might need reinitialization
-      console.info('⚠️  uncloud installed but caddy not running - will reinitialize')
+      // caddy not running - need to clean up and reinitialize
+      console.info('⚠️  uncloud installed but caddy not running - cleaning up...')
+
+      // stop and remove any existing caddy containers (running or stopped)
+      // this prevents port 80 conflicts when uc machine init creates a new caddy
+      try {
+        exec(`${sshCmd} "docker ps -a --filter name=caddy -q | xargs -r docker rm -f"`, {
+          silent: true,
+        })
+        console.info('   removed stale caddy container(s)')
+      } catch {
+        // no containers to remove, that's fine
+      }
     }
   } catch {
-    // not initialized, continue
+    // uncloud not installed, continue with fresh init
     console.info('📦 uncloud not installed - initializing for first time')
   }
 

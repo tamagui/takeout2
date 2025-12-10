@@ -146,32 +146,27 @@ jobs:
         env:
           SCHEME: ${{ steps.detect-project.outputs.scheme }}
           WORKSPACE: ${{ steps.detect-project.outputs.workspace }}
-          # disable vxrn metro bundler - use vxrn's native bundler which works in CI
-          DISABLE_METRO: "1"
         run: |
-          export NODE_BINARY=node
-
-          # [vxrn/one] set CLI_PATH to main CLI endpoint so vxrn bundle command override works
-          export CLI_PATH="$("$NODE_BINARY" --print "require('path').dirname(require.resolve('react-native/package.json')) + '/cli.js'")"
-
-          # get xcode build settings for the archive configuration
-          xcode_env="$(
-            xcrun xcodebuild -workspace "$WORKSPACE" -scheme "$SCHEME" -configuration Release -showBuildSettings \
-              | awk -F ' = ' '/^ *(PROJECT_DIR|TARGET_BUILD_DIR|UNLOCALIZED_RESOURCES_FOLDER_PATH|DERIVED_FILE_DIR|INFOPLIST_PATH|DWARF_DSYM_FOLDER_PATH|CONFIGURATION|SDK_NAME|PODS_ROOT) = / {print "export " $1 "=\"" $2 "\""}'
-          )"
-          echo "Xcode env:"
-          echo "$xcode_env"
-          eval "$xcode_env"
-
           # find the app inside the archive
           app_location="$(find ci_build/app.xcarchive/Products/Applications -name "*.app" | head -1)"
           echo "App location: $app_location"
 
-          export CONFIGURATION_BUILD_DIR="$(dirname "$app_location")"
-          echo "CONFIGURATION_BUILD_DIR: $CONFIGURATION_BUILD_DIR"
+          # get PODS_ROOT from xcode build settings (needed for hermesc)
+          PODS_ROOT="$(xcrun xcodebuild -workspace "$WORKSPACE" -scheme "$SCHEME" -configuration Release -showBuildSettings | grep '^\s*PODS_ROOT = ' | head -1 | sed 's/.*= //')"
+          echo "PODS_ROOT: $PODS_ROOT"
 
-          # run react-native-xcode.sh to bundle JS
-          `node --print "require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'"`
+          # bundle JS using expo export:embed (uses Expo's Metro config, bypasses vxrn issues)
+          bunx expo export:embed \
+            --platform ios \
+            --entry-file index.js \
+            --bundle-output "$app_location/main.jsbundle" \
+            --assets-dest "$app_location" \
+            --dev false \
+            --reset-cache \
+            --bytecode
+
+          echo "Bundle created at: $app_location/main.jsbundle"
+          ls -la "$app_location/main.jsbundle" || echo "Warning: bundle file not found"
 
       - name: Generate Changelog
         id: changelog

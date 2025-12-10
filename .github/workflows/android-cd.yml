@@ -127,13 +127,14 @@ jobs:
         working-directory: android
         run: |
           # build only arm64 to save disk space and time (most devices use arm64 now)
-          # bundleInRelease=false since we pre-built the JS bundle above
+          # skip the createBundleReleaseJsAndAssets task since we pre-built the bundle
           ./gradlew assembleRelease --no-daemon --stacktrace \
             -PreactNativeArchitectures=arm64-v8a \
-            -PbundleInRelease=false
+            -x createBundleReleaseJsAndAssets
         env:
           GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Xmx4g
           NODE_ENV: production
+          SKIP_BUNDLING: 1
 
       - name: Find APK
         id: find-apk

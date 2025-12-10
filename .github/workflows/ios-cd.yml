@@ -219,10 +219,14 @@ jobs:
           rm -rf .apple-signing
 
           # write ssh key to temp file with proper permissions
-          # use printf %b to interpret escape sequences (GitHub may store \n literally)
+          # GitHub secrets may have literal \n strings that need to be converted to newlines
           ssh_key_file=$(mktemp)
-          printf '%b\n' "$APPLE_CODE_SIGNING_GIT_SSH_KEY" > "$ssh_key_file"
+          echo "$APPLE_CODE_SIGNING_GIT_SSH_KEY" | sed 's/\\n/\n/g' > "$ssh_key_file"
           chmod 600 "$ssh_key_file"
+
+          # debug: show first/last lines of key (safe, don't show middle)
+          echo "Key file starts with: $(head -1 "$ssh_key_file")"
+          echo "Key file ends with: $(tail -1 "$ssh_key_file")"
 
           MATCH_PASSWORD="$APPLE_CODE_SIGNING_GIT_PASSPHRASE" fastlane match run \
             --type appstore \

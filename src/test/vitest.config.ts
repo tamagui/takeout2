@@ -9,7 +9,12 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['src/test/unit/**/*.test.ts', 'src/test/unit/**/*.test.tsx'],
+    include: [
+      'src/test/unit/**/*.test.ts',
+      'src/test/unit/**/*.test.tsx',
+      'packages/*/src/**/*.test.ts',
+      'packages/*/src/**/*.test.tsx',
+    ],
     outputFile: {
       json: 'src/test/unit/.output/results.json',
     },

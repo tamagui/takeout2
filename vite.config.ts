@@ -58,8 +58,8 @@ export default {
     one({
       setupFile: {
         client: './src/setupClient.ts',
+        native: './src/setupClient.ts',
         server: './src/setupServer.ts',
-        // native: './src/setupNative.ts', // if you want to diverge
       },
 
       react: {

@@ -101,14 +101,39 @@ jobs:
         id: changelog
         uses: ./.github/actions/generate-changelog
 
+      - name: Build JS Bundle
+        if: steps.cache-android.outputs.cache-hit != 'true'
+        run: |
+          # create assets directory if it doesn't exist
+          mkdir -p android/app/src/main/assets
+
+          # bundle JS separately using expo export:embed (same approach as iOS CD)
+          # this bypasses vxrn's metro plugin issues in CI
+          bunx expo export:embed \
+            --platform android \
+            --entry-file index.js \
+            --bundle-output android/app/src/main/assets/index.android.bundle \
+            --assets-dest android/app/src/main/res \
+            --dev false \
+            --reset-cache
+
+          echo "Bundle created at: android/app/src/main/assets/index.android.bundle"
+          ls -la android/app/src/main/assets/
+        env:
+          NODE_ENV: production
+
       - name: Build APK
         if: steps.cache-android.outputs.cache-hit != 'true'
         working-directory: android
         run: |
           # build only arm64 to save disk space and time (most devices use arm64 now)
-          ./gradlew assembleRelease --no-daemon --stacktrace -PreactNativeArchitectures=arm64-v8a
+          # bundleInRelease=false since we pre-built the JS bundle above
+          ./gradlew assembleRelease --no-daemon --stacktrace \
+            -PreactNativeArchitectures=arm64-v8a \
+            -PbundleInRelease=false
         env:
           GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Xmx4g
+          NODE_ENV: production
 
       - name: Find APK
         id: find-apk

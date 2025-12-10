@@ -146,6 +146,8 @@ jobs:
         env:
           SCHEME: ${{ steps.detect-project.outputs.scheme }}
           WORKSPACE: ${{ steps.detect-project.outputs.workspace }}
+          # disable vxrn metro bundler - use vxrn's native bundler which works in CI
+          DISABLE_METRO: "1"
         run: |
           export NODE_BINARY=node
 

@@ -12,7 +12,8 @@ DO NOT STOP WORKING. Keep verifying, testing, improving. The goal is a fully wor
 - [x] iOS Build Archive passes (using SKIP_BUNDLING=1)
 - [x] JS Bundling step works (using expo export:embed)
 - [x] Changelog generation works (fixed cwd issue - was using __dirname instead of GITHUB_WORKSPACE)
-- [ ] Code signing works
+- [x] SSH key sync works (fixed multiline parsing in sync-to-github.ts)
+- [ ] Code signing works (MAC verification error on PKCS12 import)
 - [ ] TestFlight upload works
 - [ ] Cache is saved and restored properly
 - [ ] Full end-to-end test passes
@@ -22,54 +23,54 @@ DO NOT STOP WORKING. Keep verifying, testing, improving. The goal is a fully wor
 - ~/chat - may have helpful examples
 
 ## Current Run
-Run ID: 20086474231 PASSED changelog step - now fixing code signing
-Status: Changelog fix worked! Code signing failed - SSH key format issue
+Run ID: 20087536859 - Testing fastlane 2.229.0+ with WWDR cert
+Status: SSH key issue FIXED! Now testing certificate import issue
 
-### Issue 5: Code signing SSH key format error
-**Error:** `Error loading key "(stdin)": invalid format` and `git@github.com: Permission denied (publickey)`
-**Cause:** fastlane's `git_private_key` option passes the key via stdin, but GitHub secrets may strip or alter newlines
-**Fix:** Write the SSH key to a temp file first, then pass the file path to `git_private_key`
+### Issue 6: Certificate import fails with MAC verification error
+**Error:** `MAC verification failed during PKCS12 import (wrong password?)`
+**Observed:** fastlane match says "All required keys, certificates and provisioning profiles are installed" but then `security set-key-partition-list` fails with `SecItemCopyMatching: The specified item could not be found in the keychain`
+**Hypothesis:**
+1. Match repo was created with fastlane 2.229.1 but CI was running 2.228.0
+2. Missing WWDR intermediate certificate
+**Fix Attempts:**
+1. Upgraded fastlane min version to 2.229.0
+2. Added Apple WWDR G3 certificate installation step
+3. Enabled verbose mode for match
 
 ## Issue History
 
 ### Issue 1: Metro bundler "Failed to construct transformer" error
 **Error:** `TypeError [ERR_INVALID_ARG_TYPE]: The "request" argument must be of type string. Received undefined`
 **Cause:** vxrn's Metro bundler fails in CI during xcodebuild archive phase
-**Fix Attempts:**
-1. Added CLI_PATH environment variable - FAILED (still ran bundling)
-2. Added SKIP_BUNDLING=1 in env block - FAILED (not passed to xcode build phase)
-3. Created .xcode.env.updates in root - FAILED (wrong location)
-4. Created .xcode.env.updates in ios/ folder - PARTIAL SUCCESS (Build Archive passed!)
+**Fix:** Created .xcode.env.updates in ios/ folder with SKIP_BUNDLING=1
 
 ### Issue 2: Metro bundler fails in Build JS Bundle step
 **Error:** Same "Failed to construct transformer" error
-**Cause:** The vite.config.ts has `native.bundler: 'metro'` which uses Metro for bundling
-**Fix Attempt 1:** Added `DISABLE_METRO=1` env var - FAILED (vxrn bundler includes Node.js code like `async_hooks`)
-**Fix Attempt 2:** Using `expo export:embed` directly - TESTING NOW
+**Fix:** Use `expo export:embed` which uses Expo's Metro config directly, not vxrn's
 
 ### Issue 3: vxrn bundler includes Node.js code
 **Error:** `main.jsbundle:282346:13: error: Invalid expression encountered - import('node:async_hooks')`
-**Cause:** The `@vxrn/helpers` package has `asyncContext` which uses `import('node:async_hooks')`. This gets pulled in via `over-zero` → `@vxrn/helpers` → `createAsyncContext`. The vxrn bundler (when DISABLE_METRO=1) doesn't properly tree-shake server-only code.
-**Fix:** Use `expo export:embed` which uses Expo's Metro config directly, not vxrn's
+**Cause:** The `@vxrn/helpers` package has `asyncContext` which uses `import('node:async_hooks')`
+**Fix:** Use `expo export:embed` instead of vxrn bundler
 
-### Next Steps If Current Fix Fails
-1. Check if .xcode.env.updates is being sourced properly
-2. Check the build phase script in pbxproj
-3. Consider modifying the build phase script directly
-4. Look at how fleek handles this
+### Issue 4: Changelog generation fails with "Invalid revision range"
+**Error:** `fatal: Invalid revision range`
+**Cause:** The `executeCommand` function used `cwd: __dirname` instead of repo root
+**Fix:** Changed to use `process.env.GITHUB_WORKSPACE || process.cwd()`
+
+### Issue 5: Code signing SSH key format error
+**Error:** `Error loading key "(stdin)": invalid format` and `git@github.com: Permission denied (publickey)`
+**Cause:** sync-to-github.ts used `echo ${value} | gh secret set` which strips newlines from multiline values
+**Fix:**
+1. Updated sync-to-github.ts to write multiline values to temp files
+2. Fixed multiline parsing in loadSecretsFile() for both sync scripts
+3. Re-synced iOS secrets to GitHub
 
 ## Commits Made
 - 50f0c87: native: skip metro bundling during native build, bundle JS separately
-- 5cb7dfc: native: fix path for .xcode.env.updates file (ios/ folder)
-- a3c4785: native: use expo export:embed for JS bundling in CI
-- 1620131: native: fetch full git history for changelog generation
 - 756c417: native: fix changelog cwd to use GITHUB_WORKSPACE
-- (pending): native: write ssh key to file for code signing
-
-### Issue 4: Changelog generation fails with "Invalid revision range"
-**Error:** `fatal: Invalid revision range 7d922047f821607f28e4e03e03e54b2d25db068a..a3c47855b42660f895cbf69acb79c4204ad4d816`
-**Cause:** The `executeCommand` function in generate-changelog-from-github-context.cjs was using `cwd: __dirname` which points to `.github/actions/generate-changelog/`, not the repository root. Git commands couldn't find commits because they were running in the wrong directory.
-**Fix:** Changed to use `process.env.GITHUB_WORKSPACE || process.cwd()` instead of `__dirname`
+- 384ca3d: native: fix multiline env parsing for ssh keys in sync scripts
+- 4b589ab: native: upgrade fastlane to 2.229.0+, add wwdr cert, enable verbose match
 
 ## DO NOT FINISH CHECKLIST
 - [ ] Did you verify the build passes?
@@ -85,3 +86,4 @@ Status: Changelog fix worked! Code signing failed - SSH key format issue
 - [ ] Have you spent at least 2 hours verifying?
 
 KEEP WORKING UNTIL ALL BOXES ARE CHECKED
+# Regenerated certificates 2025-12-09

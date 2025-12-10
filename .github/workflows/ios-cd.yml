@@ -192,20 +192,28 @@ jobs:
 
       - name: Install Fastlane
         run: |
-          # require fastlane >= 2.228.0 to fix templateName API issue
-          MIN_VERSION="2.228.0"
+          # match repo was created with 2.229.1, ensure we use same or newer version
+          MIN_VERSION="2.229.0"
           if command -v fastlane &> /dev/null; then
             CURRENT=$(fastlane --version 2>&1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
             if [ "$(printf '%s\n' "$MIN_VERSION" "$CURRENT" | sort -V | head -1)" = "$MIN_VERSION" ]; then
               echo "fastlane $CURRENT is sufficient"
             else
-              echo "fastlane $CURRENT is too old, upgrading..."
+              echo "fastlane $CURRENT is too old (need >= $MIN_VERSION), upgrading..."
               gem install fastlane --no-document
             fi
           else
             gem install fastlane --no-document
           fi
           fastlane --version
+
+      - name: Install Apple WWDR Certificate
+        run: |
+          # download and install Apple WWDR (Worldwide Developer Relations) intermediate certificates
+          # these are required to validate developer certificates
+          curl -sL https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer -o /tmp/AppleWWDRCAG3.cer
+          security import /tmp/AppleWWDRCAG3.cer -k ${{ steps.keychain.outputs.keychain-name }} -T /usr/bin/codesign -T /usr/bin/security
+          rm /tmp/AppleWWDRCAG3.cer
 
       - name: Sync Code Signing
         id: signing
@@ -249,7 +257,8 @@ jobs:
             --keychain_name "$KEYCHAIN_NAME" \
             --keychain_password "$KEYCHAIN_PASSWORD" \
             --output_path .apple-signing \
-            --app_identifier "$IOS_BUNDLE_ID"
+            --app_identifier "$IOS_BUNDLE_ID" \
+            --verbose true
 
           # cleanup ssh key
           rm -f "$ssh_key_file"

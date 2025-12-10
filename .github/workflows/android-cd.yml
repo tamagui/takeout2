@@ -91,6 +91,30 @@ jobs:
         env:
           APP_VARIANT: ${{ env.APP_VARIANT }}
 
+      - name: Patch build.gradle for CI bundling
+        if: steps.cache-android.outputs.cache-hit != 'true'
+        run: |
+          # patch build.gradle to skip JS bundling when SKIP_BUNDLING=1
+          # this adds release to debuggableVariants, which prevents the createBundleReleaseJsAndAssets task from being created
+          # we pre-bundle JS separately with expo export:embed
+
+          BUILD_GRADLE="android/app/build.gradle"
+
+          # add skipBundling check before react block
+          sed -i 's|^react {|// check if we should skip JS bundling (for CI where we pre-bundle with expo export:embed)\ndef skipBundling = System.getenv("SKIP_BUNDLING") == "1"\n\nreact {|' "$BUILD_GRADLE"
+
+          # add debuggableVariants config inside react block after the comment about debuggableVariants
+          sed -i 's|// debuggableVariants = \["liteDebug", "prodDebug"\]|// debuggableVariants = ["liteDebug", "prodDebug"]\n    // In CI (SKIP_BUNDLING=1), add release to skip Metro bundling since we pre-bundle\n    if (skipBundling) {\n        debuggableVariants = ["debug", "release"]\n    }|' "$BUILD_GRADLE"
+
+          # wrap the vxrn task registration with skipBundling check
+          sed -i 's|gradle.taskGraph.whenReady { taskGraph ->|if (!skipBundling) {\n    gradle.taskGraph.whenReady { taskGraph ->|' "$BUILD_GRADLE"
+
+          # add closing brace for the if block at the end
+          echo "}" >> "$BUILD_GRADLE"
+
+          echo "Patched build.gradle for CI bundling"
+          grep -A5 "skipBundling" "$BUILD_GRADLE" | head -20
+
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
@@ -127,10 +151,10 @@ jobs:
         working-directory: android
         run: |
           # build only arm64 to save disk space and time (most devices use arm64 now)
-          # skip the createBundleReleaseJsAndAssets task since we pre-built the bundle
+          # SKIP_BUNDLING=1 tells build.gradle to add release to debuggableVariants,
+          # which skips the createBundleReleaseJsAndAssets task (we pre-bundle with expo export:embed)
           ./gradlew assembleRelease --no-daemon --stacktrace \
-            -PreactNativeArchitectures=arm64-v8a \
-            -x createBundleReleaseJsAndAssets
+            -PreactNativeArchitectures=arm64-v8a
         env:
           GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Xmx4g
           NODE_ENV: production

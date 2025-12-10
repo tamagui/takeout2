@@ -224,9 +224,10 @@ jobs:
           echo "$APPLE_CODE_SIGNING_GIT_SSH_KEY" | sed 's/\\n/\n/g' > "$ssh_key_file"
           chmod 600 "$ssh_key_file"
 
-          # debug: show first/last lines of key (safe, don't show middle)
-          echo "Key file starts with: $(head -1 "$ssh_key_file")"
-          echo "Key file ends with: $(tail -1 "$ssh_key_file")"
+          # debug: show key file info (not content, just structure)
+          echo "Key file line count: $(wc -l < "$ssh_key_file")"
+          echo "Key file first 10 chars: $(head -c 10 "$ssh_key_file" | od -c)"
+          echo "Key contains PRIVATE KEY: $(grep -c 'PRIVATE KEY' "$ssh_key_file" || echo '0')"
 
           MATCH_PASSWORD="$APPLE_CODE_SIGNING_GIT_PASSPHRASE" fastlane match run \
             --type appstore \

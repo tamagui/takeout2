@@ -192,19 +192,8 @@ jobs:
 
       - name: Install Fastlane
         run: |
-          # match repo was created with 2.229.1, ensure we use same or newer version
-          MIN_VERSION="2.229.0"
-          if command -v fastlane &> /dev/null; then
-            CURRENT=$(fastlane --version 2>&1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-            if [ "$(printf '%s\n' "$MIN_VERSION" "$CURRENT" | sort -V | head -1)" = "$MIN_VERSION" ]; then
-              echo "fastlane $CURRENT is sufficient"
-            else
-              echo "fastlane $CURRENT is too old (need >= $MIN_VERSION), upgrading..."
-              gem install fastlane --no-document
-            fi
-          else
-            gem install fastlane --no-document
-          fi
+          # always install latest fastlane for match compatibility
+          gem install fastlane --no-document
           fastlane --version
 
       - name: Install Apple WWDR Certificate
@@ -247,8 +236,7 @@ jobs:
           echo "Key file first 10 chars: $(head -c 10 "$ssh_key_file" | od -c)"
           echo "Key contains PRIVATE KEY: $(grep -c 'PRIVATE KEY' "$ssh_key_file" || echo '0')"
 
-          MATCH_PASSWORD="$APPLE_CODE_SIGNING_GIT_PASSPHRASE" fastlane match run \
-            --type appstore \
+          MATCH_PASSWORD="$APPLE_CODE_SIGNING_GIT_PASSPHRASE" fastlane match appstore \
             --readonly \
             --skip_certificate_matching true \
             --git_url "$APPLE_CODE_SIGNING_GIT_URL" \

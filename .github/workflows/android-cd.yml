@@ -1,0 +1,161 @@
+name: Android CD
+
+on:
+  push:
+    branches:
+      - native-android
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: android-cd-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  APP_VARIANT: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
+
+jobs:
+  check-trigger:
+    runs-on: ubuntu-latest
+    outputs:
+      should-run: ${{ steps.check.outputs.should-run }}
+    steps:
+      - name: Check if should run
+        id: check
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "should-run=true" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.head_commit.message }}" == *"native:"* ]] || \
+               [[ "${{ github.event.head_commit.message }}" == *"android:"* ]] || \
+               [[ "${{ github.event.pull_request.title }}" == *"native:"* ]] || \
+               [[ "${{ github.event.pull_request.title }}" == *"android:"* ]]; then
+            echo "should-run=true" >> $GITHUB_OUTPUT
+          else
+            echo "should-run=false" >> $GITHUB_OUTPUT
+          fi
+
+  build-android:
+    needs: check-trigger
+    if: needs.check-trigger.outputs.should-run == 'true' && github.event.pull_request.draft != true
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Install
+        uses: ./.github/actions/install
+
+      - name: Write Public Env
+        env:
+          PUBLIC_ENV: ${{ vars.PUBLIC_ENV }}
+        run: echo "${PUBLIC_ENV}" >> .env
+
+      - name: Generate Native Fingerprint
+        id: fingerprint
+        run: |
+          fingerprint=$(bunx @expo/fingerprint . --platform android 2>/dev/null | tail -1 || echo "no-fingerprint-${{ github.sha }}")
+          echo "hash=$fingerprint" >> $GITHUB_OUTPUT
+          echo "Native fingerprint: $fingerprint"
+
+      - name: Cache Android Native Build
+        id: cache-android
+        uses: actions/cache@v4
+        with:
+          path: |
+            android/
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: android-native-${{ steps.fingerprint.outputs.hash }}-${{ env.APP_VARIANT }}
+
+      - name: Prebuild Android
+        if: steps.cache-android.outputs.cache-hit != 'true'
+        run: bun run prebuild:native --platform android --no-install
+        env:
+          APP_VARIANT: ${{ env.APP_VARIANT }}
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Make gradlew executable
+        run: chmod +x android/gradlew
+
+      - name: Build JS Bundle
+        run: |
+          mkdir -p android/app/src/main/assets
+
+          bunx expo export:embed \
+            --platform android \
+            --entry-file index.js \
+            --bundle-output android/app/src/main/assets/index.android.bundle \
+            --assets-dest android/app/src/main/res \
+            --dev false \
+            --reset-cache
+
+          echo "Bundle created at: android/app/src/main/assets/index.android.bundle"
+          ls -la android/app/src/main/assets/
+
+      - name: Generate Changelog
+        id: changelog
+        uses: ./.github/actions/generate-changelog
+
+      - name: Build APK (Debug)
+        if: steps.cache-android.outputs.cache-hit != 'true'
+        working-directory: android
+        run: |
+          # set gradle property to skip JS bundling (we did it manually above)
+          echo "bundleInRelease=false" >> gradle.properties
+          echo "bundleInDebug=false" >> gradle.properties
+
+          ./gradlew assembleRelease --no-daemon --stacktrace
+        env:
+          GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true
+
+      - name: Find APK
+        id: find-apk
+        run: |
+          apk_path=$(find android/app/build/outputs/apk -name "*.apk" | head -1)
+          if [ -z "$apk_path" ]; then
+            echo "Error: No APK found"
+            find android -name "*.apk" 2>/dev/null || echo "No APKs anywhere"
+            exit 1
+          fi
+          echo "apk-path=$apk_path" >> $GITHUB_OUTPUT
+          echo "APK found at: $apk_path"
+          ls -la "$apk_path"
+
+      - name: Get Version Info
+        id: version
+        run: |
+          version=$(grep "versionName" android/app/build.gradle | head -1 | sed 's/.*"\(.*\)".*/\1/')
+          version_code=$(grep "versionCode" android/app/build.gradle | head -1 | awk '{print $2}')
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "version-code=$version_code" >> $GITHUB_OUTPUT
+          echo "Version: $version ($version_code)"
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: takeout-android-${{ steps.version.outputs.version }}-${{ github.sha }}
+          path: ${{ steps.find-apk.outputs.apk-path }}
+          retention-days: 30
+
+      - name: Build Summary
+        run: |
+          echo "## Android Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version Code**: ${{ steps.version.outputs.version-code }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **APK**: ${{ steps.find-apk.outputs.apk-path }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Changelog" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.changelog.outputs.changelog }}" >> $GITHUB_STEP_SUMMARY

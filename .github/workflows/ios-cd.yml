@@ -117,8 +117,8 @@ jobs:
           set -o pipefail
 
           # skip metro bundling during native build - we'll bundle JS separately
-          # this file is sourced by the react-native xcode build phase
-          echo "export SKIP_BUNDLING=1" > .xcode.env.updates
+          # this file is sourced by the react-native xcode build phase (in ios/ folder)
+          echo "export SKIP_BUNDLING=1" > ios/.xcode.env.updates
 
           # use xcodebuild with less verbose output but without xcpretty which can hang
           xcrun xcodebuild \

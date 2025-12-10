@@ -116,10 +116,9 @@ jobs:
         run: |
           set -o pipefail
 
-          # [vxrn/one] set CLI_PATH to main CLI endpoint so vxrn bundle command override works
-          export NODE_BINARY=node
-          export CLI_PATH="$("$NODE_BINARY" --print "require('path').dirname(require.resolve('react-native/package.json')) + '/cli.js'")"
-          echo "CLI_PATH: $CLI_PATH"
+          # skip metro bundling during native build - we'll bundle JS separately
+          # this file is sourced by the react-native xcode build phase
+          echo "export SKIP_BUNDLING=1" > .xcode.env.updates
 
           # use xcodebuild with less verbose output but without xcpretty which can hang
           xcrun xcodebuild \
@@ -142,6 +141,35 @@ jobs:
             exit 1
           fi
           echo "Archive found: $(du -sh ci_build/app.xcarchive)"
+
+      - name: Build JS Bundle
+        env:
+          SCHEME: ${{ steps.detect-project.outputs.scheme }}
+          WORKSPACE: ${{ steps.detect-project.outputs.workspace }}
+        run: |
+          export NODE_BINARY=node
+
+          # [vxrn/one] set CLI_PATH to main CLI endpoint so vxrn bundle command override works
+          export CLI_PATH="$("$NODE_BINARY" --print "require('path').dirname(require.resolve('react-native/package.json')) + '/cli.js'")"
+
+          # get xcode build settings for the archive configuration
+          xcode_env="$(
+            xcrun xcodebuild -workspace "$WORKSPACE" -scheme "$SCHEME" -configuration Release -showBuildSettings \
+              | awk -F ' = ' '/^ *(PROJECT_DIR|TARGET_BUILD_DIR|UNLOCALIZED_RESOURCES_FOLDER_PATH|DERIVED_FILE_DIR|INFOPLIST_PATH|DWARF_DSYM_FOLDER_PATH|CONFIGURATION|SDK_NAME|PODS_ROOT) = / {print "export " $1 "=\"" $2 "\""}'
+          )"
+          echo "Xcode env:"
+          echo "$xcode_env"
+          eval "$xcode_env"
+
+          # find the app inside the archive
+          app_location="$(find ci_build/app.xcarchive/Products/Applications -name "*.app" | head -1)"
+          echo "App location: $app_location"
+
+          export CONFIGURATION_BUILD_DIR="$(dirname "$app_location")"
+          echo "CONFIGURATION_BUILD_DIR: $CONFIGURATION_BUILD_DIR"
+
+          # run react-native-xcode.sh to bundle JS
+          `node --print "require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'"`
 
       - name: Generate Changelog
         id: changelog

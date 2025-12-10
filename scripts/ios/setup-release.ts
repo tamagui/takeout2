@@ -68,8 +68,13 @@ const APPLE_SECRETS: AppleSecret[] = [
     sensitive: false,
   },
   {
-    key: 'IOS_BUNDLE_ID',
-    description: 'iOS app bundle identifier (e.g., com.example.app)',
+    key: 'IOS_BUNDLE_ID_PREVIEW',
+    description: 'iOS bundle ID for preview/staging builds (e.g., com.example.app.preview)',
+    sensitive: false,
+  },
+  {
+    key: 'IOS_BUNDLE_ID_PRODUCTION',
+    description: 'iOS bundle ID for production builds (e.g., com.example.app)',
     sensitive: false,
   },
 ]
@@ -148,7 +153,39 @@ ${pc.bold('Getting credentials:')}
     process.exit(1)
   }
 
-  const secretsFilePath = resolve(cwd, '.env.ios-release')
+  // check fastlane version (>= 2.228.0 required for templateName fix)
+  const MIN_FASTLANE_VERSION = '2.228.0'
+  try {
+    const versionOutput = await Bun.$`fastlane --version 2>&1`.text()
+    const versionMatch = versionOutput.match(/(\d+\.\d+\.\d+)/)
+    if (versionMatch && versionMatch[1]) {
+      const currentVersion = versionMatch[1]
+      const curParts = currentVersion.split('.').map(Number)
+      const minParts = MIN_FASTLANE_VERSION.split('.').map(Number)
+      const [curMajor = 0, curMinor = 0, curPatch = 0] = curParts
+      const [minMajor = 0, minMinor = 0, minPatch = 0] = minParts
+
+      const isOldVersion =
+        curMajor < minMajor ||
+        (curMajor === minMajor && curMinor < minMinor) ||
+        (curMajor === minMajor && curMinor === minMinor && curPatch < minPatch)
+
+      if (isOldVersion) {
+        clack.log.warning(
+          `fastlane ${currentVersion} is outdated. Version >= ${MIN_FASTLANE_VERSION} required.\n` +
+            `  Run: ${pc.cyan('brew upgrade fastlane')} or ${pc.cyan('gem install fastlane')}`
+        )
+      } else {
+        clack.log.info(`fastlane ${currentVersion} ✓`)
+      }
+    }
+  } catch {
+    clack.log.warning(
+      `fastlane not found. Install with: ${pc.cyan('brew install fastlane')}`
+    )
+  }
+
+  const secretsFilePath = resolve(cwd, '.env.ios')
 
   // check mode
   if (checkOnly) {
@@ -172,9 +209,9 @@ ${pc.bold('Getting credentials:')}
   console.info()
   clack.note(
     `This will configure Apple secrets for iOS App Store deployment.
-Secrets are stored locally in ${pc.cyan('.env.ios-release')} and synced to GitHub.
+Secrets are stored locally in ${pc.cyan('.env.ios')} and synced to GitHub.
 
-${pc.yellow('Note:')} Add .env.ios-release to .gitignore (it contains sensitive data)`,
+${pc.yellow('Note:')} Add .env.ios to .gitignore (it contains sensitive data)`,
     'Setup'
   )
 
@@ -277,10 +314,10 @@ ${pc.yellow('Note:')} Add .env.ios-release to .gitignore (it contains sensitive 
   }).join('\n')
 
   writeFileSync(secretsFilePath, envContent + '\n')
-  spinner.stop('Secrets saved to .env.ios-release')
+  spinner.stop('Secrets saved to .env.ios')
 
   // ensure gitignore
-  ensureGitignore(cwd, '.env.ios-release')
+  ensureGitignore(cwd, '.env.ios')
 
   // offer to sync to github
   console.info()
@@ -315,21 +352,69 @@ function loadSecretsFile(filePath: string): Record<string, string> {
 
   const content = readFileSync(filePath, 'utf-8')
   const secrets: Record<string, string> = {}
+  const lines = content.split('\n')
+  let currentKey: string | null = null
+  let currentValue: string[] = []
+  let inMultiline = false
 
-  for (const line of content.split('\n')) {
+  const saveCurrentKey = () => {
+    if (currentKey) {
+      let value = currentValue.join('\n')
+      // remove surrounding quotes if present
+      if ((value.startsWith('"') && value.endsWith('"')) ||
+          (value.startsWith("'") && value.endsWith("'"))) {
+        value = value.slice(1, -1)
+      }
+      // unescape quotes
+      value = value.replace(/\\"/g, '"')
+      secrets[currentKey] = value
+    }
+    currentKey = null
+    currentValue = []
+    inMultiline = false
+  }
+
+  for (const line of lines) {
+    if (inMultiline) {
+      currentValue.push(line)
+      // check if this line ends the multiline value
+      if (line.includes('-----END') && line.includes('KEY-----')) {
+        const trimmed = line.trim()
+        if (trimmed.endsWith('"') || trimmed.endsWith("'")) {
+          saveCurrentKey()
+        }
+      } else if (line.trim().endsWith('"') || line.trim().endsWith("'")) {
+        saveCurrentKey()
+      }
+      continue
+    }
+
     const trimmed = line.trim()
     if (!trimmed || trimmed.startsWith('#')) continue
 
-    // handle quoted multiline values
-    const match = trimmed.match(/^([A-Z_][A-Z0-9_]*)=["']?([\s\S]*?)["']?$/)
+    // match KEY=value or KEY="value
+    const match = trimmed.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/)
     if (match && match[1]) {
-      const key = match[1]
-      let value = match[2] || ''
-      // unescape quotes
-      value = value.replace(/\\"/g, '"')
-      secrets[key] = value
+      // save any previous key
+      if (currentKey) saveCurrentKey()
+
+      currentKey = match[1]
+      const valueStart = match[2] || ''
+
+      // check if value starts with quote and doesn't end with it (multiline)
+      if ((valueStart.startsWith('"') && !valueStart.endsWith('"')) ||
+          (valueStart.startsWith("'") && !valueStart.endsWith("'"))) {
+        inMultiline = true
+        currentValue = [valueStart]
+      } else {
+        // single line value
+        currentValue = [valueStart]
+        saveCurrentKey()
+      }
     }
   }
+  // handle any remaining key
+  if (currentKey) saveCurrentKey()
 
   return secrets
 }
@@ -388,7 +473,11 @@ async function syncToGitHub(
 
   for (const [key, value] of varsToSync) {
     try {
-      await Bun.$`echo ${value} | gh secret set ${key}`.quiet()
+      // write to temp file to preserve multiline values (esp SSH keys)
+      const tmpFile = `/tmp/gh-secret-${key}-${Date.now()}`
+      await Bun.write(tmpFile, value)
+      await Bun.$`gh secret set ${key} < ${tmpFile}`.quiet()
+      await Bun.$`rm -f ${tmpFile}`.quiet()
       results.push({ key, success: true })
     } catch (error) {
       results.push({

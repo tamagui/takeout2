@@ -16,15 +16,13 @@ if (
 const IS_DEV = APP_VARIANT === 'development'
 
 const getBundleId = () => {
-  const base = `com.takeout.app`
-
+  // use tamagui bundle ids for production/preview, takeout for dev
   if (APP_VARIANT === 'development') {
-    return `${base}.dev`
+    return 'com.takeout.app.dev'
   } else if (APP_VARIANT === 'preview') {
-    return `${base}.preview`
+    return 'dev.tamagui.takeout.preview'
   }
-
-  return base
+  return 'dev.tamagui.takeout'
 }
 
 const getAppIcon = () => {

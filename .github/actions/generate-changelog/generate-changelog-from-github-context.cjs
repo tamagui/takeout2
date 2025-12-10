@@ -173,7 +173,9 @@ const gh = JSON.parse(githubContextJson)
 })
 
 function executeCommand(command) {
-  const output = execSync(command, { encoding: 'utf-8', cwd: __dirname })
+  // use GITHUB_WORKSPACE or cwd for git commands (not __dirname which is the action directory)
+  const cwd = process.env.GITHUB_WORKSPACE || process.cwd()
+  const output = execSync(command, { encoding: 'utf-8', cwd })
   return output.trim()
 }
 

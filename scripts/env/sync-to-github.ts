@@ -14,7 +14,7 @@ interface PackageJson {
   env?: Record<string, string | boolean>
 }
 
-// iOS secrets that should be synced from .env.ios-release
+// iOS secrets that should be synced from .env.ios
 const IOS_SECRETS = [
   'APP_STORE_CONNECT_API_KEY_ID',
   'APP_STORE_CONNECT_API_KEY_ISSUER_ID',
@@ -23,7 +23,8 @@ const IOS_SECRETS = [
   'APPLE_CODE_SIGNING_GIT_SSH_KEY',
   'APPLE_CODE_SIGNING_GIT_PASSPHRASE',
   'APPLE_DEVELOPER_TEAM_ID',
-  'IOS_BUNDLE_ID',
+  'IOS_BUNDLE_ID_PREVIEW',
+  'IOS_BUNDLE_ID_PRODUCTION',
 ]
 
 async function main() {
@@ -70,27 +71,79 @@ async function main() {
     }
   }
 
-  // load .env.ios-release for iOS secrets
-  const iosEnvPath = resolve(cwd, '.env.ios-release')
+  // load .env.ios for iOS secrets
+  const iosEnvPath = resolve(cwd, '.env.ios')
   const iosSecrets: Record<string, string> = {}
   if (existsSync(iosEnvPath)) {
     const iosContent = readFileSync(iosEnvPath, 'utf-8')
-    for (const line of iosContent.split('\n')) {
+    const lines = iosContent.split('\n')
+    let currentKey: string | null = null
+    let currentValue: string[] = []
+    let inMultiline = false
+
+    const saveCurrentKey = () => {
+      if (currentKey && IOS_SECRETS.includes(currentKey)) {
+        let value = currentValue.join('\n')
+        // remove surrounding quotes if present
+        if (
+          (value.startsWith('"') && value.endsWith('"')) ||
+          (value.startsWith("'") && value.endsWith("'"))
+        ) {
+          value = value.slice(1, -1)
+        }
+        // unescape quotes
+        value = value.replace(/\\"/g, '"')
+        iosSecrets[currentKey] = value
+      }
+      currentKey = null
+      currentValue = []
+      inMultiline = false
+    }
+
+    for (const line of lines) {
+      if (inMultiline) {
+        currentValue.push(line)
+        // check if this line ends the multiline value
+        if (line.includes('-----END') && line.includes('KEY-----')) {
+          // look for closing quote on next line or same line
+          const trimmed = line.trim()
+          if (trimmed.endsWith('"') || trimmed.endsWith("'")) {
+            saveCurrentKey()
+          }
+        } else if (line.trim().endsWith('"') || line.trim().endsWith("'")) {
+          saveCurrentKey()
+        }
+        continue
+      }
+
       const trimmed = line.trim()
       if (!trimmed || trimmed.startsWith('#')) continue
 
-      // handle multiline quoted values
-      const match = trimmed.match(/^([A-Z_][A-Z0-9_]*)=["']?([\s\S]*?)["']?$/)
+      // match KEY=value or KEY="value
+      const match = trimmed.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/)
       if (match && match[1]) {
-        const key = match[1]
-        let value = match[2] || ''
-        // unescape quotes
-        value = value.replace(/\\"/g, '"')
-        if (IOS_SECRETS.includes(key)) {
-          iosSecrets[key] = value
+        // save any previous key
+        if (currentKey) saveCurrentKey()
+
+        currentKey = match[1]
+        const valueStart = match[2] || ''
+
+        // check if value starts with quote and doesn't end with it (multiline)
+        if (
+          (valueStart.startsWith('"') && !valueStart.endsWith('"')) ||
+          (valueStart.startsWith("'") && !valueStart.endsWith("'"))
+        ) {
+          inMultiline = true
+          currentValue = [valueStart]
+        } else {
+          // single line value
+          currentValue = [valueStart]
+          saveCurrentKey()
         }
       }
     }
+    // handle any remaining key
+    if (currentKey) saveCurrentKey()
   }
 
   // collect vars to sync
@@ -158,14 +211,14 @@ async function main() {
       if (!value || value === '') continue
 
       const isSensitive = /SECRET|KEY|PASSWORD|TOKEN|PRIVATE|PASSPHRASE/i.test(key)
-      varsToSync.push({ key, value, isSensitive, source: '.env.ios-release' })
+      varsToSync.push({ key, value, isSensitive, source: '.env.ios' })
     }
   }
 
   if (varsToSync.length === 0) {
     clack.outro(pc.yellow('No variables to sync'))
     console.info(pc.gray('\nAll environment variables are either:'))
-    console.info(pc.gray('  - Not set in .env.production or .env.ios-release'))
+    console.info(pc.gray('  - Not set in .env.production or .env.ios'))
     console.info(pc.gray('  - Using default values'))
     return
   }
@@ -175,7 +228,7 @@ async function main() {
   console.info(pc.bold('Variables to sync:'))
 
   const productionVars = varsToSync.filter((v) => v.source === '.env.production')
-  const iosVars = varsToSync.filter((v) => v.source === '.env.ios-release')
+  const iosVars = varsToSync.filter((v) => v.source === '.env.ios')
 
   if (productionVars.length > 0) {
     console.info('')
@@ -190,7 +243,7 @@ async function main() {
 
   if (iosVars.length > 0) {
     console.info('')
-    console.info(pc.gray('  From .env.ios-release:'))
+    console.info(pc.gray('  From .env.ios:'))
     for (const { key, value, isSensitive } of iosVars) {
       const displayValue = isSensitive
         ? pc.gray(`${'*'.repeat(Math.min(value.length, 40))}`)
@@ -238,8 +291,11 @@ async function main() {
 
   for (const { key, value } of varsToSync) {
     try {
-      // use gh secret set with piped input
-      await Bun.$`echo ${value} | gh secret set ${key}`.quiet()
+      // write to temp file to preserve multiline values (esp SSH keys)
+      const tmpFile = `/tmp/gh-secret-${key}-${Date.now()}`
+      await Bun.write(tmpFile, value)
+      await Bun.$`gh secret set ${key} < ${tmpFile}`.quiet()
+      await Bun.$`rm -f ${tmpFile}`.quiet()
       results.push({ key, success: true })
     } catch (error) {
       results.push({

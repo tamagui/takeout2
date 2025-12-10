@@ -158,10 +158,12 @@ ${pc.bold('Getting credentials:')}
   try {
     const versionOutput = await Bun.$`fastlane --version 2>&1`.text()
     const versionMatch = versionOutput.match(/(\d+\.\d+\.\d+)/)
-    if (versionMatch) {
+    if (versionMatch && versionMatch[1]) {
       const currentVersion = versionMatch[1]
-      const [curMajor, curMinor, curPatch] = currentVersion.split('.').map(Number)
-      const [minMajor, minMinor, minPatch] = MIN_FASTLANE_VERSION.split('.').map(Number)
+      const curParts = currentVersion.split('.').map(Number)
+      const minParts = MIN_FASTLANE_VERSION.split('.').map(Number)
+      const [curMajor = 0, curMinor = 0, curPatch = 0] = curParts
+      const [minMajor = 0, minMinor = 0, minPatch = 0] = minParts
 
       const isOldVersion =
         curMajor < minMajor ||
@@ -350,21 +352,69 @@ function loadSecretsFile(filePath: string): Record<string, string> {
 
   const content = readFileSync(filePath, 'utf-8')
   const secrets: Record<string, string> = {}
+  const lines = content.split('\n')
+  let currentKey: string | null = null
+  let currentValue: string[] = []
+  let inMultiline = false
 
-  for (const line of content.split('\n')) {
+  const saveCurrentKey = () => {
+    if (currentKey) {
+      let value = currentValue.join('\n')
+      // remove surrounding quotes if present
+      if ((value.startsWith('"') && value.endsWith('"')) ||
+          (value.startsWith("'") && value.endsWith("'"))) {
+        value = value.slice(1, -1)
+      }
+      // unescape quotes
+      value = value.replace(/\\"/g, '"')
+      secrets[currentKey] = value
+    }
+    currentKey = null
+    currentValue = []
+    inMultiline = false
+  }
+
+  for (const line of lines) {
+    if (inMultiline) {
+      currentValue.push(line)
+      // check if this line ends the multiline value
+      if (line.includes('-----END') && line.includes('KEY-----')) {
+        const trimmed = line.trim()
+        if (trimmed.endsWith('"') || trimmed.endsWith("'")) {
+          saveCurrentKey()
+        }
+      } else if (line.trim().endsWith('"') || line.trim().endsWith("'")) {
+        saveCurrentKey()
+      }
+      continue
+    }
+
     const trimmed = line.trim()
     if (!trimmed || trimmed.startsWith('#')) continue
 
-    // handle quoted multiline values
-    const match = trimmed.match(/^([A-Z_][A-Z0-9_]*)=["']?([\s\S]*?)["']?$/)
+    // match KEY=value or KEY="value
+    const match = trimmed.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/)
     if (match && match[1]) {
-      const key = match[1]
-      let value = match[2] || ''
-      // unescape quotes
-      value = value.replace(/\\"/g, '"')
-      secrets[key] = value
+      // save any previous key
+      if (currentKey) saveCurrentKey()
+
+      currentKey = match[1]
+      const valueStart = match[2] || ''
+
+      // check if value starts with quote and doesn't end with it (multiline)
+      if ((valueStart.startsWith('"') && !valueStart.endsWith('"')) ||
+          (valueStart.startsWith("'") && !valueStart.endsWith("'"))) {
+        inMultiline = true
+        currentValue = [valueStart]
+      } else {
+        // single line value
+        currentValue = [valueStart]
+        saveCurrentKey()
+      }
     }
   }
+  // handle any remaining key
+  if (currentKey) saveCurrentKey()
 
   return secrets
 }
@@ -423,7 +473,11 @@ async function syncToGitHub(
 
   for (const [key, value] of varsToSync) {
     try {
-      await Bun.$`echo ${value} | gh secret set ${key}`.quiet()
+      // write to temp file to preserve multiline values (esp SSH keys)
+      const tmpFile = `/tmp/gh-secret-${key}-${Date.now()}`
+      await Bun.write(tmpFile, value)
+      await Bun.$`gh secret set ${key} < ${tmpFile}`.quiet()
+      await Bun.$`rm -f ${tmpFile}`.quiet()
       results.push({ key, success: true })
     } catch (error) {
       results.push({

@@ -49,46 +49,44 @@ export function IndexPage() {
           <Link href="https://www.youtube.com/watch?v=HHTYHm6qLFY" target="_blank">
             long-term effort
           </Link>{' '}
-          to bring more Rails-like elegance to cross-platform React and React Native. We
-          want a cohesive, simple, and DRY stack that makes some exciting emerging
-          frontend practices as easy as possible.
+          to bring more Rails-like elegance to cross-platform React and React Native,
+          aimed at creating a performant, cohesive, simple, and DRY stack that's been
+          enabled by recent exciting frontend technologies.
         </Paragraph>
 
         <Paragraph size="$6">
-          We think Takeout represents the first time you can{' '}
-          <b>
-            ship world-class web and native experiences, even with large amounts of shared
-            code
-          </b>
-          . For example: this homepage uses the same styling, UI and framework as our
-          native app, yet gets a 100 Lighthouse score while server rendering nicely with
-          advanced media queries, dark and light mode, spring animations, and no
-          flickering or layout shifts.
+          We think Takeout achieves something for the first time - the ability to ship
+          first-class web <em>and</em> native experiences, even with large amounts of
+          shared code.
+        </Paragraph>
+
+        <Paragraph size="$6">
+          But what do we mean "first-class"? Here's an example: this entire site is part a
+          a native and web app built with Takeout, and this homepage shares all code with
+          the rest of the app - routing, styling, UI, framework - yet achieves a 100
+          Lighthouse perfomrance score, server rendered to static content and utilizing
+          advanced media queries, dark and light mode, and spring animations, all without
+          a single layout shift or flicker as it hydrates and hands off to fully dynamic
+          client-side routing.
         </Paragraph>
 
         <Paragraph size="$6">
           Takeout avoids NIH and pedantism by leveraging a few great third party
-          libraries, and letting you unplug where you want.
+          libraries. It also lets you unplug the pieces you don't want.
         </Paragraph>
 
         <Paragraph size="$6">
-          React can be great, with effort (and unfortunately, today, by choosing the good
-          parts). Takeout is our take on that. When we announced{' '}
+          React is great when you put in enough effort. Takeout is our take on baking that
+          effort into something cohesive. When we announced{' '}
           <Link href="https://onestack.dev" target="_blank">
             One
           </Link>{' '}
-          we re-affirmed our opinion that RSC was an anti-pattern, and sync engines with
-          simpler render modes filled our needs. Today, Takeout realizes this long-held
-          and consistent vision, something nearly no other framework in the space took
-          until recently.
+          about a year ago we came out against RSC, instead claiming that sync engines and
+          simpler server rendering were the future of frontend. Today, Takeout realizes
+          this long-held and consistent vision.
         </Paragraph>
 
         <SepHeading>Goals</SepHeading>
-
-        <Paragraph size="$6">
-          We can save a lot of time in the next section by first establishing the goals of
-          Takeout.
-        </Paragraph>
 
         <ul>
           <li style={{ marginBottom: 20 }}>
@@ -183,26 +181,32 @@ export function IndexPage() {
           A huge obstacle to building truly great cross-platform apps is the
           bundler/framework. While Expo Router is well designed, its choice of Metro means
           it struggles to ship great web experiences. One does something simple - it ports
-          Expo Router to Vite, then it adds a few features we think are necessary.
-        </Paragraph>
-
-        <Paragraph size="$6">
-          When One launched it ambitously aimed to make Vite work as the bundler for
-          Native, but we realized it was too hard a sell - a small team supporting a new
-          platform with an ecosystem famous for terrible publishing practices. So, to fix
-          that, <b>One introduces Metro-mode</b> - get the beautiful configuration
-          simplicity of Vite, but have it optionally run Metro for native for the proven
-          track record. It lets us focus on shipping features, and greatly de-risks the
-          framework.
+          Expo Router to Vite, then it adds a few features we think make for great
+          websites like loaders and render modes.
         </Paragraph>
 
         <Paragraph size="$6">
           One lets you server render or statically generate <em>some</em> pages, while
-          keeping others client-only. Add in powerful, typed loaders and routing, API
-          routes, an included Hono production server, and smart configuration to make
-          React Native behave well on Vite, and you have the only universal stack that
-          lets you get amazing Lighthouse scores on the routes you need it and simple
-          client-side apps wherever else.
+          keeping others client-only. Add in loaders, routing, API routes, a Hono
+          production server, and lots of nice configuration to make React Native packages
+          behave well on Vite, and you have a universal stack that actually makes it easy
+          to both get amazing Lighthouse scores on some routes, while saving the server
+          rendering complexity on others.
+        </Paragraph>
+
+        <Paragraph size="$6">
+          When One launched, it ambitously aimed to make Vite work standalone as a new
+          bundler for React Native. We then realized that was a bit ambitious - the React
+          Native ecosystem has incredibly (ahem) <em>diverse</em> package publishing
+          standards, our team is small, and the undertaking is large. We still liked Vite
+          as a clearly superior bundler, especially for web, but we wanted to both de-risk
+          One and improve it's native compatibility. So, <b>introducing Metro-mode</b>.
+          You get the configuration simplicity of Vite, unified configuration and FS
+          routes of One, but can optionally have Vite{' '}
+          <em>run Metro for you in the background</em> to serve your native app. It gives
+          you the assurance of a tried-and-true bundler, and lets us focus on both
+          shipping features, and more carefully implementing a proper native bundler with
+          Rolldown for a future version of One.
         </Paragraph>
 
         <H4 mt="$2" size="$5" fontWeight="bold">
@@ -220,21 +224,28 @@ export function IndexPage() {
         </Paragraph>
 
         <Paragraph size="$6">
-          Zero is revolutionary technology, in our opinion the biggest step change in
-          frontend since React itself. The biggest, hairiest problem in frontend has been{' '}
-          <em>how do you get data to the client, keep it up to date, and mutate it</em> in
-          a simple, fast manner. Zero does just that. The shortest description of it is if
-          Firebase was OSS, ran on top of Postgres, supported relations, and automatically
-          handled optimistic mutations.
+          Zero is revolutionary technology, in our opinion the biggest step-change in
+          frontend since React itself. The worst part of frontend, for a long time, has
+          been{' '}
+          <em>
+            how do you get data to the client, keep it up to date with the server, and
+            mutate it simply and instantly
+          </em>
+          . Zero does just that in a truly incredible way. You could think of Zero as
+          "Firebase but OSS, runs on Postgres, with types, relations, a schema, and
+          optimistic mutations".
         </Paragraph>
 
         <Paragraph size="$6">
           We spent the last year deploying it to production across multiple apps,
-          re-writing everything a few times, finding the right abstractions between the
-          apps, and then pulling it out into a library and this repo. The library is{' '}
-          <b>over-zero</b>. It's small, but helps a ton in setting up a nice Zero setup,
-          and includes a little CLI that can generate a lot of glue code you'd normally
-          have to write.
+          re-writing everything a few times, and then finding some simple abstractions
+          between the apps. We then pulled what we could into a shared library. That
+          library is{' '}
+          <Link href="https://github.com/tamagui/takeout3/blob/main/packages/over-zero/readme.md">
+            <b>over-zero</b>
+          </Link>
+          . It's small, but makes Zero setup and integration with auth a lot simpler,
+          including a little CLI that can generate code to keep things DRY.
         </Paragraph>
 
         <H4 mt="$2" size="$5" fontWeight="bold">
@@ -242,52 +253,25 @@ export function IndexPage() {
         </H4>
 
         <Paragraph size="$6">
-          No other universal styling solution has the deep investment in making both web
-          and native performant, feature-complete, platform-native, and easy to use like
-          Tamagui.
+          We still like Tamagui because of its deep investment in making both web and
+          native performant and platform-native, alongside the fact it's got the richest
+          amount of features while maintaining inline, typed styles.
         </Paragraph>
 
         <Paragraph size="$6">
-          We'd venture that even if your team is intimately familiar with Tailwind, you'd
-          not only ship a better universal app with Tamagui, but you'd even do it faster
-          in the short-term. A bold claim, but -
+          We've spent this year fixing what was most broken with Tamagui - stability,
+          docs, ease of setup, and LLM-friendliness, and are releasing
+          <Link href="https://tamagui.dev/blog/version-two">Version 2</Link> alongside
+          Takeout 2.
         </Paragraph>
 
         <Paragraph size="$6">
-          First, Tamagui is actually great with LLMs. It's been around for 5 years, and
-          we've invested recently into auto-generating great prompts to much success.
-        </Paragraph>
-
-        <Paragraph size="$6">
-          Second, Tamagui simply has a ton of vertically integrated investment. We
-          designed the style engine for both platforms from the start, including advanced
-          features like media queries, container queries, themes, and more that either
-          break, don't work at all, or don't support server rendering.
-        </Paragraph>
-
-        <Paragraph size="$6">
-          Building on that, the component library also was designed from the start to work
-          well, and adapt to both native and web. The team has spent countless nights
-          hammering at arcane issues (thanks, Safari), and we think it shows when you're
-          actually in the weeds building real apps. The Takeout repo has incredibly
-          elegant Dialogs, Sheets, Tooltips, etc.
-        </Paragraph>
-
-        <Paragraph size="$6">
-          And finally, we think that{' '}
-          <em>
-            generating and learning style syntax is easy, what's hard is the stuff you run
-            into on month 2 - sharing animations performantly, flicker-free server
-            rendering, complex components
-          </em>
-          and Tamagui has deep vertically integrated investment into getting the low-level
-          stuff right.
-        </Paragraph>
-
-        <Paragraph size="$6">
-          Tamagui 2 is out and it's a big improvement in every way - more aligned to web
-          and native, less sharp edges, simpler usage and setup, more components, better
-          docs, and better performance.
+          Tamagui is a real secret weapon, especially in the Takeout repo where we've
+          included a ton of interface pieces we've designed over the last few years.
+          Because the style engine and component kit were designed to be great on both web
+          and native from the start, you get advanced features like container queries,
+          nesting themes, and swappable spring animation drivers that are super fast
+          everywhere.
         </Paragraph>
 
         <H4 mt="$2" size="$5" fontWeight="bold">

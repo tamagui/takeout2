@@ -157,11 +157,11 @@ export const Link = ({
       asChild={asChild ? 'except-style' : false}
       className="t_Link"
       cursor="pointer"
+      debug="verbose"
       $platform-web={{
         color: 'inherit',
         fontSize: 'inherit',
         lineHeight: 'inherit',
-        fontFamily: 'inherit',
       }}
       focusVisibleStyle={{
         outlineWidth: 2,

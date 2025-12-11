@@ -1,0 +1,91 @@
+appId: com.takeout.app.dev
+---
+# Test 7: Full Login Flow with OTP Entry
+# Tests the complete login flow: email -> OTP -> profile setup
+
+- launchApp:
+    clearState: true
+
+# Handle dev server picker (appears after clearState)
+- runFlow:
+    when:
+      visible: "http://localhost:8081"
+    commands:
+      - tapOn: "http://localhost:8081"
+      - extendedWaitUntil:
+          notVisible: "DEVELOPMENT SERVERS"
+          timeout: 20000
+
+# Handle dev menu onboarding (appears after first connect)
+- runFlow:
+    when:
+      visible: "This is the developer menu"
+    commands:
+      - tapOn: "Continue"
+      - waitForAnimationToEnd
+
+# Handle dev menu tools screen (close button)
+- runFlow:
+    when:
+      visible:
+        id: "xmark"
+    commands:
+      - tapOn:
+          id: "xmark"
+      - waitForAnimationToEnd
+
+# Wait for login screen
+- extendedWaitUntil:
+    visible: "Login to Takeout"
+    timeout: 30000
+
+# Navigate to email input
+- tapOn: "Continue with Email"
+- extendedWaitUntil:
+    visible: "Sign in or sign up with your email."
+    timeout: 10000
+
+# Enter test email - use unique email based on timestamp
+- inputText: "maestrotest@example.com"
+
+# Hide keyboard before tapping Next
+- hideKeyboard
+
+# Submit email
+- tapOn: "Next"
+
+# Wait for OTP screen
+- extendedWaitUntil:
+    visible: "Enter Code"
+    timeout: 30000
+
+# Verify email is displayed on OTP screen
+- assertVisible: "maestrotest@example.com"
+
+# Get OTP from dev API
+- runScript:
+    file: ../scripts/get-otp.js
+    env:
+      EMAIL: "maestrotest@example.com"
+
+# Tap center of screen to focus OTP input area (OTP inputs are centered)
+- tapOn:
+    point: "50%,40%"
+
+# Wait for keyboard
+- waitForAnimationToEnd
+
+# Enter OTP code - component handles multi-digit paste
+- inputText: "${output.otp}"
+
+# Hide keyboard and wait for verification
+- hideKeyboard
+- waitForAnimationToEnd
+
+# Wait for navigation after OTP verification
+- extendedWaitUntil:
+    visible: "Create your profile"
+    timeout: 30000
+
+# Verify we reached profile setup
+- assertVisible: "Choose a username"

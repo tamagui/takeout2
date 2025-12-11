@@ -1,0 +1,46 @@
+appId: com.takeout.app.dev
+---
+# Test 1: Verify Login Screen UI Elements
+
+- launchApp:
+    clearState: true
+
+# Handle dev server picker (appears after clearState)
+- runFlow:
+    when:
+      visible: "http://localhost:8081"
+    commands:
+      - tapOn: "http://localhost:8081"
+      - extendedWaitUntil:
+          notVisible: "DEVELOPMENT SERVERS"
+          timeout: 20000
+
+# Handle dev menu onboarding (appears after first connect)
+- runFlow:
+    when:
+      visible: "This is the developer menu"
+    commands:
+      - tapOn: "Continue"
+      - waitForAnimationToEnd
+
+# Handle dev menu tools screen (close button)
+- runFlow:
+    when:
+      visible:
+        id: "xmark"
+    commands:
+      - tapOn:
+          id: "xmark"
+      - waitForAnimationToEnd
+
+# Wait for login screen to load
+- extendedWaitUntil:
+    visible: "Login to Takeout"
+    timeout: 30000
+
+# Verify all login screen UI elements
+- assertVisible: "Login to Takeout"
+- assertVisible: "Continue with Email"
+- assertVisible: "Terms of Service"
+- assertVisible: "Privacy Policy"
+- assertVisible: "EULA."

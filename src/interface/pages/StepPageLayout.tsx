@@ -60,6 +60,8 @@ export const StepPageLayout = ({
               disabled={disableBackButton}
               hitSlop={10}
               onPress={() => router.back()}
+              aria-label="Go back"
+              role="button"
             >
               <CaretLeftIcon size={24} />
             </Pressable>

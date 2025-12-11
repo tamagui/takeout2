@@ -1,0 +1,51 @@
+appId: com.takeout.app.dev
+---
+# Test 3: Enter Email and Verify Input
+
+- launchApp:
+    clearState: true
+
+# Handle dev server picker (appears after clearState)
+- runFlow:
+    when:
+      visible: "http://localhost:8081"
+    commands:
+      - tapOn: "http://localhost:8081"
+      - extendedWaitUntil:
+          notVisible: "DEVELOPMENT SERVERS"
+          timeout: 20000
+
+# Handle dev menu onboarding (appears after first connect)
+- runFlow:
+    when:
+      visible: "This is the developer menu"
+    commands:
+      - tapOn: "Continue"
+      - waitForAnimationToEnd
+
+# Handle dev menu tools screen (close button)
+- runFlow:
+    when:
+      visible:
+        id: "xmark"
+    commands:
+      - tapOn:
+          id: "xmark"
+      - waitForAnimationToEnd
+
+# Wait for login screen
+- extendedWaitUntil:
+    visible: "Login to Takeout"
+    timeout: 30000
+
+# Go to email input
+- tapOn: "Continue with Email"
+- extendedWaitUntil:
+    visible: "Sign in or sign up with your email."
+    timeout: 10000
+
+# Enter test email
+- inputText: "testuser@example.com"
+
+# Verify email was entered (the text should be visible)
+- assertVisible: "testuser@example.com"

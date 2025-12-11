@@ -19,9 +19,10 @@ export function AppLayout() {
   }
 
   const isAuthRoute = pathname === '/login' || pathname.startsWith('/signup')
+  const isAdminRoute = pathname === '/admin'
 
-  // redirect logged-out users away from protected routes
-  if (state === 'logged-out' && !isAuthRoute) {
+  // redirect logged-out users away from protected routes (except admin which handles its own auth)
+  if (state === 'logged-out' && !isAuthRoute && !isAdminRoute) {
     return <Redirect href="/login" />
   }
 

@@ -158,6 +158,35 @@ export const onboardCommand = defineCommand({
       )
 
       if (shouldEject) {
+        // first run a dry-run to show what will happen
+        const dryResult = await ejectFromMonorepo(cwd, { dryRun: true })
+
+        if (!dryResult.success) {
+          showError(`Cannot eject: ${dryResult.error}`)
+          clearOnboardState(cwd)
+          return
+        }
+
+        console.info()
+        showInfo(`Found ${dryResult.packages?.length} packages to convert:`)
+        for (const pkg of dryResult.packages || []) {
+          console.info(pc.gray(`  • ${pkg.name}@${pkg.version}`))
+        }
+        if (dryResult.warnings?.length) {
+          for (const warn of dryResult.warnings) {
+            showWarning(warn)
+          }
+        }
+        console.info()
+
+        const confirmEject = await confirmContinue('Proceed with ejection?', true)
+        if (!confirmEject) {
+          showInfo('Eject cancelled')
+          clearOnboardState(cwd)
+          displayOutro('Done!')
+          return
+        }
+
         const spinner = showSpinner('Ejecting from monorepo...')
 
         const result = await ejectFromMonorepo(cwd)
@@ -175,7 +204,7 @@ export const onboardCommand = defineCommand({
             })
             showSuccess('✓ Committed eject changes')
           } catch {
-            // ignore if git commit fails
+            showWarning('Git commit skipped (not a git repo or no changes)')
           }
 
           console.info()
@@ -183,6 +212,10 @@ export const onboardCommand = defineCommand({
         } else {
           spinner.stop('Ejection failed')
           showError(`Failed to eject: ${result.error}`)
+          if (result.error?.includes('install failed')) {
+            showInfo('You may be able to fix this by running "bun install" manually')
+            showInfo('Or restore the repo from git with "git checkout ."')
+          }
         }
       } else {
         showInfo('Eject cancelled')
@@ -410,33 +443,61 @@ export const onboardCommand = defineCommand({
       )
 
       if (shouldEject) {
-        const spinner = showSpinner('Ejecting from monorepo...')
+        // first run a dry-run to show what will happen
+        const dryResult = await ejectFromMonorepo(cwd, { dryRun: true })
 
-        const result = await ejectFromMonorepo(cwd)
-
-        if (result.success) {
-          spinner.stop('Ejected from monorepo')
-          showSuccess('✓ Removed ./packages directory')
-          showSuccess('✓ Updated package.json to use published versions')
-          showSuccess('✓ Installed published packages')
-
-          // commit the eject changes
-          try {
-            execSync('git add -A && git commit -m "ejected from monorepo"', {
-              cwd,
-              stdio: 'ignore',
-            })
-            showSuccess('✓ Committed eject changes')
-          } catch {
-            // ignore if git commit fails (maybe not a git repo or no changes)
-          }
-
-          console.info()
-          showInfo('You can now upgrade packages with: bun up takeout')
+        if (!dryResult.success) {
+          showError(`Cannot eject: ${dryResult.error}`)
         } else {
-          spinner.stop('Ejection failed')
-          showError(`Failed to eject: ${result.error}`)
           console.info()
+          showInfo(`Found ${dryResult.packages?.length} packages to convert:`)
+          for (const pkg of dryResult.packages || []) {
+            console.info(pc.gray(`  • ${pkg.name}@${pkg.version}`))
+          }
+          if (dryResult.warnings?.length) {
+            for (const warn of dryResult.warnings) {
+              showWarning(warn)
+            }
+          }
+          console.info()
+
+          const confirmEject = await confirmContinue('Proceed with ejection?', true)
+          if (confirmEject) {
+            const spinner = showSpinner('Ejecting from monorepo...')
+
+            const result = await ejectFromMonorepo(cwd)
+
+            if (result.success) {
+              spinner.stop('Ejected from monorepo')
+              showSuccess('✓ Removed ./packages directory')
+              showSuccess('✓ Updated package.json to use published versions')
+              showSuccess('✓ Installed published packages')
+
+              // commit the eject changes
+              try {
+                execSync('git add -A && git commit -m "ejected from monorepo"', {
+                  cwd,
+                  stdio: 'ignore',
+                })
+                showSuccess('✓ Committed eject changes')
+              } catch {
+                showWarning('Git commit skipped (not a git repo or no changes)')
+              }
+
+              console.info()
+              showInfo('You can now upgrade packages with: bun up takeout')
+            } else {
+              spinner.stop('Ejection failed')
+              showError(`Failed to eject: ${result.error}`)
+              if (result.error?.includes('install failed')) {
+                showInfo('You may be able to fix this by running "bun install" manually')
+                showInfo('Or restore the repo from git with "git checkout ."')
+              }
+            }
+          } else {
+            showInfo('Keeping monorepo setup - you can customize packages locally')
+            showInfo('Run "bun tko sync" to sync with upstream Takeout updates later')
+          }
         }
       } else {
         showInfo('Keeping monorepo setup - you can customize packages locally')

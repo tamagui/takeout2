@@ -87,6 +87,7 @@
     "@take-out/better-auth-utils": "workspace:*",
     "@take-out/helpers": "workspace:*",
     "@take-out/hooks": "workspace:*",
+    "@take-out/native-hot-update": "workspace:*",
     "@take-out/postgres": "workspace:*",
     "@take-out/takeout": "workspace:*",
     "@tamagui/animations-moti": "1.139.1",

@@ -78,11 +78,21 @@ appId: com.takeout.app.dev
 # Take screenshot after OTP entry
 - takeScreenshot: otp-screen-after
 
-# Wait for OTP verification and auto-navigation
+# Wait for OTP verification and navigation away from OTP screen
 # When 6 digits are entered, handleContinue is called automatically
+# Could land on profile setup (new user) or Feed (existing user)
 - extendedWaitUntil:
-    visible: "Create your profile"
+    notVisible: "Enter Code"
     timeout: 30000
 
-# Verify we reached profile setup
-- assertVisible: "Choose a username"
+- runFlow:
+    when:
+      visible: "Create your profile"
+    commands:
+      - assertVisible: "Choose a username"
+
+- runFlow:
+    when:
+      visible: "Feed"
+    commands:
+      - assertVisible: "No posts yet"

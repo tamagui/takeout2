@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef, useState } from 'react'
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react'
 import {
   Input,
   type InputProps,
@@ -13,7 +13,6 @@ import {
 import { getClipboardText } from '~/helpers/clipboard'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { ClipboardIcon } from '~/interface/icons/phosphor/ClipboardIcon'
-import { InfoIcon } from '~/interface/icons/phosphor/InfoIcon'
 
 export interface IOtpInput {
   otpCount?: number
@@ -40,102 +39,73 @@ export const OtpInput = memo(function OtpInput({
   const { width: windowWidth } = useWindowDimensions()
   const width = Math.min(340, windowWidth)
 
-  const inputRef = useRef<Array<Input>>([])
+  const hiddenInputRef = useRef<Input>(null)
 
-  const [focus, setFocus] = useState<number>(defaultValue?.length === otpCount ? -1 : 0)
-
-  const [otpValue, setOtpValue] = useState<string[]>(() => {
+  const [code, setCode] = useState<string>(() => {
     if (defaultValue) {
-      const values = defaultValue.split('').slice(0, otpCount)
-      return [...values, ...Array(otpCount - values.length).fill('')]
+      return defaultValue.replace(/\D/g, '').slice(0, otpCount)
     }
-    return Array(otpCount).fill('')
+    return ''
   })
 
   const inputWidth = (width - 58) / otpCount
 
-  const handlePasteValue = (value: string) => {
-    console.info('[OtpInput] handlePasteValue called:', { value })
-    const digits = value.replace(/\D/g, '').slice(0, otpCount)
-    console.info('[OtpInput] extracted digits:', { digits, length: digits.length })
-    const newOtpValue = Array(otpCount).fill('')
-    for (let i = 0; i < digits.length; i++) {
-      newOtpValue[i] = digits[i] ?? ''
-    }
-    console.info('[OtpInput] setting otpValue:', newOtpValue)
-    setOtpValue(newOtpValue)
-
-    if (digits.length >= otpCount) {
-      setFocus(-1)
-      inputRef.current[otpCount - 1]?.blur()
-    } else {
-      const nextIndex = Math.min(digits.length, otpCount - 1)
-      setFocus(nextIndex)
-      inputRef.current[nextIndex]?.focus()
-    }
-  }
-
-  const onFocusNext = (value: string, index: number) => {
-    console.info('[OtpInput] onFocusNext called:', { value, index, valueLength: value.length })
-    if (value.length > 1) {
-      console.info('[OtpInput] handling as paste/multi-digit:', value)
-      handlePasteValue(value)
-      return
-    }
-
-    const newOtpValue = [...otpValue]
-    newOtpValue[index] = value
-    setOtpValue(newOtpValue)
-
-    if (index < otpCount - 1 && value) {
-      inputRef.current[index + 1]?.focus()
-      setFocus(index + 1)
-    } else if (index === otpCount - 1) {
-      setFocus(-1)
-      inputRef.current[index]?.blur()
-    }
-  }
-
-  const onFocusPrevious = (key: string, index: number) => {
-    if (key === 'Backspace') {
-      if (index !== 0) {
-        inputRef.current[index - 1]?.focus()
-        setFocus(index - 1)
-        const newOtpValue = [...otpValue]
-        newOtpValue[index - 1] = ''
-        setOtpValue(newOtpValue)
-      } else {
-        const newOtpValue = [...otpValue]
-        newOtpValue[0] = ''
-        setOtpValue(newOtpValue)
-      }
-    }
-  }
+  const handleChangeText = useCallback(
+    (value: string) => {
+      const digits = value.replace(/\D/g, '').slice(0, otpCount)
+      setCode(digits)
+    },
+    [otpCount]
+  )
 
   const handlePaste = async () => {
     const text = await getClipboardText()
     if (text) {
-      handlePasteValue(text)
+      handleChangeText(text)
     }
   }
 
-  const codeString = otpValue.join('')
-  const isFilled = codeString.length === otpCount
+  const handleBoxPress = useCallback(() => {
+    hiddenInputRef.current?.focus()
+  }, [])
+
+  const isFilled = code.length === otpCount
 
   useEffect(() => {
-    onCodeChanged?.(codeString)
-    if (isFilled) {
-      onCodeFilled?.(codeString)
+    onCodeChanged?.(code)
+    if (code.length === otpCount) {
+      onCodeFilled?.(code)
     }
-  }, [onCodeChanged, onCodeFilled, codeString, isFilled])
+  }, [onCodeChanged, onCodeFilled, code, otpCount])
+
+  // split code into individual digits for display
+  const digits = code.split('')
 
   return (
     <YStack gap="$3">
-      <XStack gap={8}>
+      {/* hidden input that captures all keyboard input */}
+      <Input
+        ref={hiddenInputRef}
+        testID={testId}
+        position="absolute"
+        opacity={0}
+        width={1}
+        height={1}
+        keyboardType="number-pad"
+        value={code}
+        onChangeText={handleChangeText}
+        textContentType="oneTimeCode"
+        autoFocus={autoFocus}
+        maxLength={otpCount}
+        {...inputProps}
+      />
+
+      <XStack gap={8} onPress={handleBoxPress}>
         {Array(otpCount)
           .fill(null)
           .map((_, i) => {
-            const isFocused = focus === i
+            const digit = digits[i] ?? ''
+            const isFocused = code.length === i
             const borderColor = isError
               ? red10.val
               : isFocused
@@ -143,44 +113,21 @@ export const OtpInput = memo(function OtpInput({
                 : 'transparent'
 
             return (
-              <View key={i} position="relative">
-                <Input
-                  testID={testId ? `${testId}-${i}` : undefined}
+              <View key={i} position="relative" onPress={handleBoxPress} cursor="pointer">
+                <View
                   width={inputWidth}
                   height={inputWidth}
-                  rounded={12}
-                  keyboardType="number-pad"
-                  ref={(ref) => {
-                    if (ref) inputRef.current[i] = ref
-                  }}
-                  value={otpValue[i]}
-                  onChangeText={(v: string) => onFocusNext(v, i)}
-                  onKeyPress={(e: any) => onFocusPrevious(e.nativeEvent.key, i)}
-                  textContentType="oneTimeCode"
-                  autoFocus={autoFocus && i === 0}
-                  {...inputProps}
-                />
-                <View
-                  position="absolute"
-                  inset={0}
                   items="center"
                   justify="center"
-                  width={inputWidth}
-                  height={inputWidth}
                   bg={color2}
                   rounded={12}
-                  borderColor={color3 as any}
-                  borderWidth={1}
-                  pointerEvents="none"
+                  borderColor={borderColor as any}
+                  borderWidth={isFocused ? 2 : 1}
+                  style={!isFocused ? { borderColor: color3.val } : undefined}
                 >
-                  {otpValue[i] !== '' && (
-                    <SizableText
-                      fontWeight="500"
-                      fontSize={18}
-                      color={color as any}
-                      position="absolute"
-                    >
-                      {otpValue[i]}
+                  {digit !== '' && (
+                    <SizableText fontWeight="500" fontSize={18} color={color as any}>
+                      {digit}
                     </SizableText>
                   )}
                 </View>

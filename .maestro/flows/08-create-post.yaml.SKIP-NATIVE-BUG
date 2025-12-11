@@ -1,0 +1,125 @@
+appId: com.takeout.app.dev
+---
+# Test 8: Create a New Post
+# Tests the full flow: login -> navigate to create post -> add image -> add caption -> post
+
+- launchApp:
+    clearState: false
+
+# Dismiss any console error popups (HMR-related)
+- runFlow:
+    when:
+      visible: "Dismiss"
+    commands:
+      - tapOn: "Dismiss"
+      - waitForAnimationToEnd
+
+# If we're not logged in, we need to log in first
+# Check if we see Feed (logged in) or Login (not logged in)
+- runFlow:
+    when:
+      visible: "Login to Takeout"
+    commands:
+      # Do the full login flow
+      - tapOn: "Continue with Email"
+      - extendedWaitUntil:
+          visible: "Sign in or sign up with your email."
+          timeout: 10000
+      - inputText: "maestrotest@example.com"
+      - hideKeyboard
+      - tapOn: "Next"
+      - extendedWaitUntil:
+          visible: "Enter Code"
+          timeout: 30000
+      - runScript:
+          file: ../scripts/get-otp.js
+          env:
+            EMAIL: "maestrotest@example.com"
+      - inputText: "${output.otp}"
+      - extendedWaitUntil:
+          notVisible: "Enter Code"
+          timeout: 30000
+
+# Wait until we're on the Feed screen
+- extendedWaitUntil:
+    visible: "Feed"
+    timeout: 30000
+
+# Dismiss any console error toast that may have appeared after login
+# The toast has an X button on the right side
+- runFlow:
+    when:
+      visible: "findHostInstance_DEPRECATED"
+    commands:
+      - tapOn:
+          point: "95%,93%"
+      - waitForAnimationToEnd
+
+# Tap on the "Add" tab (plus button) to create a new post
+# The plus tab has resource-id: "plus"
+- tapOn:
+    id: "plus"
+
+# Wait for animation - give more time for dialog to render
+- waitForAnimationToEnd:
+    timeout: 5000
+
+# Take a screenshot to debug
+- takeScreenshot: after-tap-plus
+
+# Wait for the Create Post dialog
+- extendedWaitUntil:
+    visible: "Create Post"
+    timeout: 10000
+
+# Verify we see the expected UI elements
+- assertVisible: "What's on your mind?"
+- assertVisible: "Add Image"
+
+# Enter a caption
+- tapOn: "What's on your mind?"
+- inputText: "Test post from Maestro automation"
+
+# Tap on "Add Image" to open the image picker
+- tapOn: "Add Image"
+
+# Handle iOS photo library permission if it appears
+- runFlow:
+    when:
+      visible: "Allow Full Access"
+    commands:
+      - tapOn: "Allow Full Access"
+
+- runFlow:
+    when:
+      visible: "Select Photos..."
+    commands:
+      - tapOn: "Allow Full Access"
+
+# Wait for photo picker to appear
+- extendedWaitUntil:
+    visible: "Recents"
+    timeout: 10000
+
+# Tap on the first photo (most recent - our test image)
+- tapOn:
+    point: "15%,25%"
+
+# Wait for image to upload (should see the image preview)
+- extendedWaitUntil:
+    notVisible: "Add Image"
+    timeout: 15000
+
+# Verify Post button is now enabled and tap it
+- tapOn: "Post"
+
+# Wait for success and navigation back to Feed
+- extendedWaitUntil:
+    visible: "Feed"
+    timeout: 15000
+
+# Verify the post appears - look for our caption text
+- assertVisible: "Test post from Maestro automation"
+
+# Take a screenshot to confirm
+- takeScreenshot: post-created-success

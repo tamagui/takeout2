@@ -3,7 +3,8 @@
  */
 
 import { spawn, spawnSync } from 'node:child_process'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -158,11 +159,18 @@ export const syncCommand = defineCommand({
           return
         }
 
-        // run claude in print mode with the prompt
-        const claude = spawn('claude', ['-p', prompt], {
-          stdio: 'inherit',
-          shell: true,
+        // write prompt to temp file to avoid shell escaping issues
+        const tempDir = mkdtempSync(join(tmpdir(), 'takeout-sync-'))
+        const promptFile = join(tempDir, 'prompt.md')
+        writeFileSync(promptFile, prompt)
+
+        // run claude with prompt from stdin
+        const claude = spawn('claude', ['-p', '-'], {
+          stdio: ['pipe', 'inherit', 'inherit'],
         })
+
+        claude.stdin?.write(prompt)
+        claude.stdin?.end()
 
         claude.on('close', (code) => {
           console.info()
@@ -182,11 +190,13 @@ export const syncCommand = defineCommand({
           return
         }
 
-        // run cursor agent in print mode
-        const cursor = spawn('cursor-agent', ['-p', prompt], {
-          stdio: 'inherit',
-          shell: true,
+        // run cursor agent with prompt from stdin
+        const cursor = spawn('cursor-agent', ['-p', '-'], {
+          stdio: ['pipe', 'inherit', 'inherit'],
         })
+
+        cursor.stdin?.write(prompt)
+        cursor.stdin?.end()
 
         cursor.on('close', (code) => {
           console.info()
@@ -206,10 +216,14 @@ export const syncCommand = defineCommand({
           return
         }
 
-        // run aider with message flag
-        const aider = spawn('aider', ['--message', prompt, '--no-stream'], {
+        // write prompt to temp file for aider
+        const tempDir = mkdtempSync(join(tmpdir(), 'takeout-sync-'))
+        const promptFile = join(tempDir, 'prompt.md')
+        writeFileSync(promptFile, prompt)
+
+        // run aider with message from file
+        const aider = spawn('aider', ['--message-file', promptFile, '--no-stream'], {
           stdio: 'inherit',
-          shell: true,
         })
 
         aider.on('close', (code) => {

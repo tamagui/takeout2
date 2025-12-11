@@ -62,27 +62,24 @@ appId: com.takeout.app.dev
 # Verify email is displayed on OTP screen
 - assertVisible: "maestrotest@example.com"
 
+# Take screenshot before OTP entry
+- takeScreenshot: otp-screen-before
+
 # Get OTP from dev API
 - runScript:
     file: ../scripts/get-otp.js
     env:
       EMAIL: "maestrotest@example.com"
 
-# Tap center of screen to focus OTP input area (OTP inputs are centered)
-- tapOn:
-    point: "50%,40%"
-
-# Wait for keyboard
-- waitForAnimationToEnd
-
-# Enter OTP code - component handles multi-digit paste
+# The first OTP input has autoFocus, so it's already focused
+# Enter all 6 digits - the component handles multi-digit input
 - inputText: "${output.otp}"
 
-# Hide keyboard and wait for verification
-- hideKeyboard
-- waitForAnimationToEnd
+# Take screenshot after OTP entry
+- takeScreenshot: otp-screen-after
 
-# Wait for navigation after OTP verification
+# Wait for OTP verification and auto-navigation
+# When 6 digits are entered, handleContinue is called automatically
 - extendedWaitUntil:
     visible: "Create your profile"
     timeout: 30000

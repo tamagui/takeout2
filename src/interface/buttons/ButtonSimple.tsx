@@ -232,29 +232,7 @@ const ButtonText = styled(Text, {
   variants: {
     active: {
       true: {
-        // '$theme-light': {
-        //   color: '$color1',
-        // },
-      },
-    },
-
-    variant: {
-      ':string': (val: string, { props }: any) => {
-        if (val === 'outlined') {
-          if (props.active) {
-            return {
-              // '$theme-light': {
-              //   color: '$color11',
-              // },
-            }
-          }
-
-          return {
-            // '$theme-light': {
-            //   color: '$color11',
-            // },
-          }
-        }
+        // can add active styles
       },
     },
 
@@ -357,8 +335,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
       />
     ) : null
 
-    // determine if glint should be shown
-    const shouldShowGlint = () => {
+    const shouldShowGlint = (() => {
       if (disableGlint) return false
       if (rest.size === 'square') return false
       if (variant === 'transparent' || variant === 'subtle') return false
@@ -368,7 +345,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
 
       // on native, don't show glint with glass
       return !glass
-    }
+    })()
 
     const buttonElement = (
       <ButtonFrame
@@ -397,7 +374,8 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
           },
         })}
       >
-        {shouldShowGlint() && <ButtonGlint bottomShadow />}
+        {/* temp disable had some normalizeColor color.startsWith is undefined bug */}
+        {/* {shouldShowGlint && <ButtonGlint bottomShadow />} */}
 
         {variant !== 'outlined' && !disableBackground && <ButtonBackground />}
         {variant === 'outlined' && <ButtonOutline />}
@@ -500,11 +478,6 @@ const ButtonBackground = styled(View, {
     opacity: 0.05,
   },
 
-  // '$theme-light': {
-  //   borderWidth: 1,
-  //   borderColor: '$color5',
-  // },
-
   variants: {
     ...buttonFrameVariants,
 
@@ -517,12 +490,6 @@ const ButtonBackground = styled(View, {
         '$group-button-hover': {
           bg: '$color4',
           opacity: 1,
-
-          // TODO tamagui bug: applying on dark mode!
-          // '$theme-light': {
-          //   bg: '$color11',
-          //   opacity: 1,
-          // },
         },
 
         '$group-button-press': {

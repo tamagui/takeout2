@@ -55,11 +55,14 @@ export const OtpInput = memo(function OtpInput({
   const inputWidth = (width - 58) / otpCount
 
   const handlePasteValue = (value: string) => {
+    console.info('[OtpInput] handlePasteValue called:', { value })
     const digits = value.replace(/\D/g, '').slice(0, otpCount)
+    console.info('[OtpInput] extracted digits:', { digits, length: digits.length })
     const newOtpValue = Array(otpCount).fill('')
     for (let i = 0; i < digits.length; i++) {
       newOtpValue[i] = digits[i] ?? ''
     }
+    console.info('[OtpInput] setting otpValue:', newOtpValue)
     setOtpValue(newOtpValue)
 
     if (digits.length >= otpCount) {
@@ -73,7 +76,9 @@ export const OtpInput = memo(function OtpInput({
   }
 
   const onFocusNext = (value: string, index: number) => {
+    console.info('[OtpInput] onFocusNext called:', { value, index, valueLength: value.length })
     if (value.length > 1) {
+      console.info('[OtpInput] handling as paste/multi-digit:', value)
       handlePasteValue(value)
       return
     }

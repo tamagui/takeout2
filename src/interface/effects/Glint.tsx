@@ -6,11 +6,13 @@ const Glint = styled(YStack, {
   pointerEvents: 'none',
   borderTopWidth: 0.5,
   borderColor: '$white',
+
   // Workaround for native
   ...(isNative && {
     borderLeftWidth: 0.5,
     borderRightWidth: 0.5,
   }),
+
   z: 100_000_000,
 
   '$theme-dark': {
@@ -28,12 +30,14 @@ const Glint = styled(YStack, {
         '$theme-dark': {
           shadowRadius: 2,
           shadowOffset: { height: 2, width: 0 },
-          shadowColor: '$shadow6',
+          shadowOpacity: 1,
+          shadowColor: '$shadow5',
         },
 
         '$theme-light': {
           shadowRadius: 4,
           shadowOffset: { height: 2, width: 0 },
+          shadowOpacity: 1,
           shadowColor: '$shadow2',
         },
       },

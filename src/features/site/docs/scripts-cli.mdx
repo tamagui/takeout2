@@ -3,7 +3,8 @@ title: Scripts & CLI
 description: Using the Takeout CLI and available scripts
 ---
 
-Takeout includes a CLI (`tko`) that organizes scripts and provides helpful commands.
+Takeout includes a CLI (`tko`) that organizes scripts and provides helpful
+commands.
 
 ## Using the CLI
 
@@ -99,6 +100,12 @@ bun tko web/build-docker   # build docker image
 ### db/
 
 Database operations:
+
+We provide some db operations, but in general you should only really need to
+change your schema files or use `bun db:migrate-add` to add a one-off migration,
+and then use `bun migrate run` to actually persist the migration locally.
+
+These scripts are to do lower-level operations.
 
 ```bash
 bun tko db/generate-drizzle   # generate types

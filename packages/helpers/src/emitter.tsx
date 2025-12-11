@@ -144,20 +144,30 @@ export const useEmitter = <E extends Emitter<any>>(
   }, [emitter, getCallback])
 }
 
+// i think this was useSyncExternalStore but removed for concurrent rendering improvements
+// wondering if we could just always return a deferred value? or default to it?
+
 export const useEmitterValue = <E extends Emitter<any>>(
   emitter: E,
   options?: { disable?: boolean }
 ): EmitterType<E> => {
-  const [state, setState] = useState<EmitterType<E>>(emitter.value)
   const disabled = options?.disable
+
+  // use a function initializer to get current emitter value
+  const [state, setState] = useState<EmitterType<E>>(() => emitter.value)
 
   useLayoutEffect(() => {
     if (disabled) return
+
+    // sync immediately in case emitter changed between render and effect
     if (emitter.value !== state) {
       setState(emitter.value)
     }
+
     return emitter.listen(setState)
-  }, [disabled, emitter, state])
+    // intentionally omit state from deps - we only want to re-subscribe when emitter changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [disabled, emitter])
 
   return state
 }

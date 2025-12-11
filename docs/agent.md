@@ -41,6 +41,11 @@ for smaller amounts of work you can just use `bun check:all`.
 aggressively improve your context before doing tasks, you can list the internal
 framework docs as well as repo-level docs (in ./docs) using `bun tko docs list`.
 
+### State Management
+
+in general zero + useState are great, for ephemeral global state use emitters
+from `@take-out/helpers`.
+
 ## CI/CD
 
 ## App

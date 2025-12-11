@@ -97,7 +97,6 @@ bun dev                      # Start web + mobile dev server
 bun ios                      # Run iOS simulator
 bun android                  # Run Android emulator
 bun backend                  # Start Docker services
-bun migrate                  # Run database migrations
 
 # Code Quality
 bun tko check                # Run all checks (lint, types, dependencies)
@@ -109,7 +108,7 @@ bun test:unit                # Unit tests
 bun test:integration         # Integration tests
 
 # Database
-bun migrate                  # Run current migrations
+bun migrate run              # Build and run migrations
 bun db:migrate-add <name>    # Create one-off migrations
 
 # Deployment

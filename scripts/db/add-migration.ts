@@ -7,7 +7,7 @@
 
 import { join } from 'node:path'
 
-import { addMigration } from '../../packages/postgres/src/scripts/migration-add'
+import { addMigration } from '@take-out/postgres/scripts/migration-add'
 
 const name = process.argv[2]
 const migrationsDir = join(process.cwd(), 'src/database/migrations')

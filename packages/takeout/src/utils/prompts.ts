@@ -118,6 +118,7 @@ export async function promptStartStep(): Promise<
   | 'environment'
   | 'identity'
   | 'ports'
+  | 'eject'
   | 'production'
   | 'cancel'
 > {
@@ -150,6 +151,11 @@ export async function promptStartStep(): Promise<
       value: 'ports',
       label: 'Check ports',
       hint: 'Verify required ports are available',
+    },
+    {
+      value: 'eject',
+      label: 'Eject from monorepo',
+      hint: 'Remove ./packages, use published versions',
     },
     {
       value: 'production',

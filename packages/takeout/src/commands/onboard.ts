@@ -109,6 +109,7 @@ export const onboardCommand = defineCommand({
       | 'environment'
       | 'identity'
       | 'ports'
+      | 'eject'
       | 'ci-runners'
       | 'production'
       | 'cancel'
@@ -130,6 +131,65 @@ export const onboardCommand = defineCommand({
 
     if (startStep === 'cancel') {
       displayOutro('Setup cancelled')
+      return
+    }
+
+    // Direct eject - skip to eject step
+    if (startStep === 'eject') {
+      showStep('Monorepo Ejection')
+      console.info()
+
+      console.info(
+        pc.gray(
+          "We've included a variety of packages we found useful building apps with this stack:"
+        )
+      )
+      console.info(pc.gray('  • @take-out/takeout - CLI tools and onboarding'))
+      console.info(pc.gray('  • @take-out/helpers - Utility functions'))
+      console.info(pc.gray('  • @take-out/hooks - React hooks'))
+      console.info(pc.gray('  • @take-out/postgres - Database utilities'))
+      console.info(pc.gray('  • @take-out/scripts - Build and dev scripts'))
+      console.info(pc.gray('  • @take-out/better-auth-utils - Auth helpers'))
+      console.info()
+
+      const shouldEject = await confirmContinue(
+        'Eject from monorepo setup? (removes ./packages, uses published versions)',
+        true
+      )
+
+      if (shouldEject) {
+        const spinner = showSpinner('Ejecting from monorepo...')
+
+        const result = await ejectFromMonorepo(cwd)
+
+        if (result.success) {
+          spinner.stop('Ejected from monorepo')
+          showSuccess('✓ Removed ./packages directory')
+          showSuccess('✓ Updated package.json to use published versions')
+          showSuccess('✓ Installed published packages')
+
+          try {
+            execSync('git add -A && git commit -m "ejected from monorepo"', {
+              cwd,
+              stdio: 'ignore',
+            })
+            showSuccess('✓ Committed eject changes')
+          } catch {
+            // ignore if git commit fails
+          }
+
+          console.info()
+          showInfo('You can now upgrade packages with: bun up takeout')
+        } else {
+          spinner.stop('Ejection failed')
+          showError(`Failed to eject: ${result.error}`)
+        }
+      } else {
+        showInfo('Eject cancelled')
+      }
+
+      clearOnboardState(cwd)
+      displayOutro('Done!')
       return
     }
 
@@ -1214,6 +1274,7 @@ interface OnboardState {
     | 'environment'
     | 'identity'
     | 'ports'
+    | 'eject'
     | 'ci-runners'
     | 'production'
   platform?: 'uncloud' | 'sst'

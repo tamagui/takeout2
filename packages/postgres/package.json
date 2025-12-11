@@ -45,6 +45,11 @@
       "types": "./src/build.ts",
       "import": "./dist/esm/build.mjs",
       "require": "./dist/cjs/build.cjs"
+    },
+    "./scripts/*": {
+      "types": "./src/scripts/*.ts",
+      "import": "./dist/esm/scripts/*.mjs",
+      "require": "./dist/cjs/scripts/*.cjs"
     }
   },
   "dependencies": {

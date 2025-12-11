@@ -110,7 +110,7 @@ bun test:integration         # Integration tests
 
 # Database
 bun migrate                  # Run current migrations
-bun db:migrate:add <name>    # Create one-off migrations
+bun db:migrate-add <name>    # Create one-off migrations
 
 # Deployment
 bun ci                       # Full CI/CD pipeline

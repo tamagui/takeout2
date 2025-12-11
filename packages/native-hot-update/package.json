@@ -6,7 +6,9 @@
   "source": "src/index.ts",
   "main": "dist/cjs",
   "module": "dist/esm",
-  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
   "types": "./src/index.ts",
   "exports": {
     "./package.json": "./package.json",

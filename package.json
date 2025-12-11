@@ -43,7 +43,7 @@
     "lint": "oxlint",
     "migrate": "tko migrate",
     "onboard": "tko onboard",
-    "one:dev": "bun tko ensure-port 8081 && bun run one dev",
+    "one:dev": "bun tko ensure-port 8081 --auto-kill Onejs:dev && bun run one dev",
     "postinstall": "bun ./scripts/build-initial.ts && bun run bootstrap && bun run one patch",
     "prebuild:native": "one prebuild",
     "repl": "tko run repl",

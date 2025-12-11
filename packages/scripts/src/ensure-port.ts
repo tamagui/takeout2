@@ -1,0 +1,97 @@
+#!/usr/bin/env bun
+
+/**
+ * @description Ensure a port is available, exit with error if in use
+ * @args --auto-kill <prefix>
+ */
+
+import { execSync } from 'node:child_process'
+import { parseArgs } from 'node:util'
+
+const { values, positionals } = parseArgs({
+  args: process.argv.slice(2),
+  options: {
+    'auto-kill': {
+      type: 'string',
+      short: 'k',
+    },
+  },
+  allowPositionals: true,
+})
+
+const port = positionals[0]
+
+if (!port) {
+  console.error('usage: bun tko ensure-port <port> [--auto-kill <prefix>]')
+  process.exit(1)
+}
+
+const portNum = Number.parseInt(port, 10)
+
+if (Number.isNaN(portNum) || portNum < 1 || portNum > 65535) {
+  console.error(`invalid port: ${port}`)
+  process.exit(1)
+}
+
+function getListeningProcess(p: number): { pid?: number; command?: string } {
+  try {
+    // use -sTCP:LISTEN to only find processes LISTENING on the port (servers)
+    // not clients connected to it
+    const output = execSync(`lsof -i :${p} -sTCP:LISTEN -t`, {
+      encoding: 'utf-8',
+      stdio: ['pipe', 'pipe', 'ignore'],
+    }).trim()
+
+    if (!output) return {}
+
+    const pid = Number.parseInt(output.split('\n')[0] || '', 10)
+    if (Number.isNaN(pid)) return {}
+
+    // get command name
+    const ps = execSync(`ps -p ${pid} -o comm=`, {
+      encoding: 'utf-8',
+      stdio: ['pipe', 'pipe', 'ignore'],
+    }).trim()
+
+    return { pid, command: ps }
+  } catch {
+    return {}
+  }
+}
+
+function killProcess(pid: number): boolean {
+  try {
+    execSync(`kill ${pid}`, { stdio: 'ignore' })
+    return true
+  } catch {
+    return false
+  }
+}
+
+const { pid, command } = getListeningProcess(portNum)
+
+if (pid) {
+  const autoKillPrefix = values['auto-kill']
+
+  // check if we should auto-kill this process
+  if (autoKillPrefix && command?.startsWith(autoKillPrefix)) {
+    console.info(`killing ${command} (pid ${pid}) on port ${portNum}`)
+    if (killProcess(pid)) {
+      // give it a moment to release the port
+      Bun.sleepSync(100)
+      // verify it's gone
+      const check = getListeningProcess(portNum)
+      if (!check.pid) {
+        process.exit(0)
+      }
+      console.error(`failed to free port ${portNum}`)
+      process.exit(1)
+    }
+    console.error(`failed to kill pid ${pid}`)
+    process.exit(1)
+  }
+
+  console.error(`port ${portNum} in use by ${command || 'unknown'} (pid ${pid})`)
+  console.error(`run: kill ${pid}`)
+  process.exit(1)
+}

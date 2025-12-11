@@ -160,15 +160,28 @@ export function updatePackageJsonEnv(
   }
 }
 
+export interface EjectOptions {
+  dryRun?: boolean
+}
+
+export interface EjectResult {
+  success: boolean
+  error?: string
+  packages?: { name: string; version: string }[]
+  warnings?: string[]
+}
+
 /**
  * Ejects from monorepo setup by removing ./packages and updating workspace:* versions
  */
-export async function ejectFromMonorepo(cwd: string): Promise<{
-  success: boolean
-  error?: string
-}> {
+export async function ejectFromMonorepo(
+  cwd: string,
+  options: EjectOptions = {}
+): Promise<EjectResult> {
+  const { dryRun = false } = options
   const packagePath = join(cwd, 'package.json')
   const packagesDir = join(cwd, 'packages')
+  const warnings: string[] = []
 
   if (!existsSync(packagePath)) {
     return { success: false, error: 'package.json not found' }
@@ -179,24 +192,66 @@ export async function ejectFromMonorepo(cwd: string): Promise<{
     const content = readFileSync(packagePath, 'utf-8')
     const pkg = JSON.parse(content)
 
+    // check if already ejected
+    if (!existsSync(packagesDir)) {
+      return { success: false, error: 'packages directory not found - already ejected?' }
+    }
+
+    if (!pkg.workspaces) {
+      return { success: false, error: 'no workspaces field found - already ejected?' }
+    }
+
     // dynamically discover workspace packages from ./packages directory
     const workspacePackages: { name: string; version: string }[] = []
 
-    if (existsSync(packagesDir)) {
-      const entries = readdirSync(packagesDir, { withFileTypes: true })
-      for (const entry of entries) {
-        if (!entry.isDirectory()) continue
-        const pkgJsonPath = join(packagesDir, entry.name, 'package.json')
-        if (existsSync(pkgJsonPath)) {
-          try {
-            const pkgJson = JSON.parse(readFileSync(pkgJsonPath, 'utf-8'))
-            if (pkgJson.name && pkgJson.version) {
-              workspacePackages.push({ name: pkgJson.name, version: pkgJson.version })
-            }
-          } catch {
-            // skip invalid package.json files
+    const entries = readdirSync(packagesDir, { withFileTypes: true })
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue
+      const pkgJsonPath = join(packagesDir, entry.name, 'package.json')
+      if (existsSync(pkgJsonPath)) {
+        try {
+          const pkgJson = JSON.parse(readFileSync(pkgJsonPath, 'utf-8'))
+          if (pkgJson.name && pkgJson.version) {
+            workspacePackages.push({ name: pkgJson.name, version: pkgJson.version })
+          } else {
+            warnings.push(`skipped ${entry.name}: missing name or version`)
           }
+        } catch (e) {
+          warnings.push(`skipped ${entry.name}: invalid package.json`)
         }
+      }
+    }
+
+    if (workspacePackages.length === 0) {
+      return { success: false, error: 'no valid workspace packages found' }
+    }
+
+    // check for workspace:* references that won't be resolved
+    const unresolvedDeps: string[] = []
+    const allDeps = { ...pkg.dependencies, ...pkg.devDependencies }
+    for (const [name, version] of Object.entries(allDeps)) {
+      if (version === 'workspace:*') {
+        const found = workspacePackages.find((p) => p.name === name)
+        if (!found) {
+          unresolvedDeps.push(name)
+        }
+      }
+    }
+
+    if (unresolvedDeps.length > 0) {
+      return {
+        success: false,
+        error: `unresolved workspace dependencies: ${unresolvedDeps.join(', ')}`,
+        packages: workspacePackages,
+      }
+    }
+
+    // dry run returns here without making changes
+    if (dryRun) {
+      return {
+        success: true,
+        packages: workspacePackages,
+        warnings: warnings.length > 0 ? warnings : undefined,
       }
     }
 
@@ -217,22 +272,27 @@ export async function ejectFromMonorepo(cwd: string): Promise<{
     writeFileSync(packagePath, JSON.stringify(pkg, null, 2) + '\n', 'utf-8')
 
     // remove packages directory
-    if (existsSync(packagesDir)) {
-      rmSync(packagesDir, { recursive: true, force: true })
-    }
+    rmSync(packagesDir, { recursive: true, force: true })
 
     // install the published packages
     try {
       execSync('bun install', { cwd, stdio: 'inherit' })
-    } catch (installError) {
+    } catch {
+      // restore packages directory hint in error
       return {
         success: false,
         error:
-          'Failed to install published packages. You may need to run "bun install" manually.',
+          'failed to install published packages. package.json was modified but install failed. ' +
+          'try running "bun install" manually, or restore from git.',
+        packages: workspacePackages,
       }
     }
 
-    return { success: true }
+    return {
+      success: true,
+      packages: workspacePackages,
+      warnings: warnings.length > 0 ? warnings : undefined,
+    }
   } catch (error) {
     return {
       success: false,

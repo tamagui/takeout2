@@ -16,7 +16,7 @@
   "scripts": {
     "android": "one run:android",
     "aws": "tko aws",
-    "backend:clean": "docker compose down; rm -rf ./.docker/*",
+    "backend:clean": "docker compose down --volumes --remove-orphans --rmi local; rm -rf ./.docker/*",
     "backend": "tko migrate build && docker compose up --remove-orphans",
     "bootstrap": "tko run bootstrap",
     "build": "tko run build",

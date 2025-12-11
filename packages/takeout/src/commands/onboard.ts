@@ -359,6 +359,18 @@ export const onboardCommand = defineCommand({
           showSuccess('✓ Removed ./packages directory')
           showSuccess('✓ Updated package.json to use published versions')
           showSuccess('✓ Installed published packages')
+
+          // commit the eject changes
+          try {
+            execSync('git add -A && git commit -m "ejected from monorepo"', {
+              cwd,
+              stdio: 'ignore',
+            })
+            showSuccess('✓ Committed eject changes')
+          } catch {
+            // ignore if git commit fails (maybe not a git repo or no changes)
+          }
+
           console.info()
           showInfo('You can now upgrade packages with: bun up takeout')
         } else {

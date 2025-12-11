@@ -27,6 +27,16 @@
       "import": "./dist/esm/index.mjs",
       "require": "./dist/cjs/index.cjs"
     },
+    "./utils/*": {
+      "types": "./types/utils/*.d.ts",
+      "import": "./dist/esm/utils/*.mjs",
+      "require": "./dist/cjs/utils/*.cjs"
+    },
+    "./constants/*": {
+      "types": "./types/constants/*.d.ts",
+      "import": "./dist/esm/constants/*.mjs",
+      "require": "./dist/cjs/constants/*.cjs"
+    },
     "./withOpSqliteStatic": "./src/withOpSqliteStatic.cjs"
   },
   "scripts": {

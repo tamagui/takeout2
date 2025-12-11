@@ -1,5 +1,10 @@
 # Takeout Roadmap
 
+- "Customize web server port"
+  - i cant find a way to make the native app default to a differnet port
+    shockingly so this is sort of bad, id love to keep it though else we should
+    dsiable before release
+
 - getNextOnboardingStep / whitelist is messy need to plan/fix
   - see // Check whitelist status first (only if feature flag is enabled)
 

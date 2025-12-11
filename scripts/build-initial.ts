@@ -8,6 +8,7 @@ import { existsSync, mkdirSync, symlinkSync } from 'node:fs'
 import { exists } from 'node:fs/promises'
 import { join } from 'node:path'
 
+import { checkAndShowWelcome } from '@take-out/takeout/utils/welcome'
 import { $ } from 'bun'
 
 // only run once:
@@ -27,6 +28,9 @@ if (needsBuild) {
   // then build all other packages in parallel
   await $`bun ./packages/scripts/src/run.ts build --no-root`
 }
+
+// show welcome message if not onboarded
+checkAndShowWelcome()
 
 function symlinkBins() {
   // workaround for https://github.com/oven-sh/bun/issues/19782

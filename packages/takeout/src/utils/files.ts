@@ -3,7 +3,7 @@
  */
 
 import { execSync } from 'node:child_process'
-import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 export function updatePackageJson(
@@ -179,31 +179,34 @@ export async function ejectFromMonorepo(cwd: string): Promise<{
     const content = readFileSync(packagePath, 'utf-8')
     const pkg = JSON.parse(content)
 
-    // get the current version from takeout package
-    const takeoutPkgPath = join(packagesDir, 'takeout/package.json')
-    let latestVersion = '0.0.26' // fallback version
+    // dynamically discover workspace packages from ./packages directory
+    const workspacePackages: { name: string; version: string }[] = []
 
-    if (existsSync(takeoutPkgPath)) {
-      const takeoutPkg = JSON.parse(readFileSync(takeoutPkgPath, 'utf-8'))
-      latestVersion = takeoutPkg.version
+    if (existsSync(packagesDir)) {
+      const entries = readdirSync(packagesDir, { withFileTypes: true })
+      for (const entry of entries) {
+        if (!entry.isDirectory()) continue
+        const pkgJsonPath = join(packagesDir, entry.name, 'package.json')
+        if (existsSync(pkgJsonPath)) {
+          try {
+            const pkgJson = JSON.parse(readFileSync(pkgJsonPath, 'utf-8'))
+            if (pkgJson.name && pkgJson.version) {
+              workspacePackages.push({ name: pkgJson.name, version: pkgJson.version })
+            }
+          } catch {
+            // skip invalid package.json files
+          }
+        }
+      }
     }
 
-    // replace workspace:* with actual version for all @take-out/* packages
-    const workspacePackages = [
-      '@take-out/better-auth-utils',
-      '@take-out/helpers',
-      '@take-out/hooks',
-      '@take-out/postgres',
-      '@take-out/scripts',
-      '@take-out/takeout',
-    ]
-
-    for (const pkgName of workspacePackages) {
-      if (pkg.dependencies?.[pkgName] === 'workspace:*') {
-        pkg.dependencies[pkgName] = `^${latestVersion}`
+    // replace workspace:* with actual versions
+    for (const { name, version } of workspacePackages) {
+      if (pkg.dependencies?.[name] === 'workspace:*') {
+        pkg.dependencies[name] = `^${version}`
       }
-      if (pkg.devDependencies?.[pkgName] === 'workspace:*') {
-        pkg.devDependencies[pkgName] = `^${latestVersion}`
+      if (pkg.devDependencies?.[name] === 'workspace:*') {
+        pkg.devDependencies[name] = `^${version}`
       }
     }
 

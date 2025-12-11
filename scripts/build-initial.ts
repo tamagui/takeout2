@@ -8,8 +8,9 @@ import { existsSync, mkdirSync, symlinkSync } from 'node:fs'
 import { exists } from 'node:fs/promises'
 import { join } from 'node:path'
 
-import { checkAndShowWelcome } from '@take-out/takeout/utils/welcome'
 import { $ } from 'bun'
+
+import { checkAndShowWelcome } from '../packages/takeout/src/utils/welcome'
 
 // only run once:
 if (!(await exists(`./node_modules/.bin/tko`))) {

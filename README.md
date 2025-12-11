@@ -1,7 +1,7 @@
 # Takeout
 
 A full-stack, cross-platform starter kit for building modern web and mobile
-applications with React Native, Zero sync, and AWS deployment.
+applications with React Native.
 
 ## Prerequisites
 

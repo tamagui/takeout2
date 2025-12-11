@@ -27,6 +27,24 @@
     ],
     "UserPromptSubmit": [
       {
+        "matcher": "package.json",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun tko docs get package-json scripts"
+          }
+        ]
+      },
+      {
+        "matcher": "scripts/**/*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun tko docs get scripts"
+          }
+        ]
+      },
+      {
         "matcher": "src/**/*.tsx",
         "hooks": [
           {

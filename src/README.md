@@ -1,13 +1,11 @@
-The src directory contains all code.
+The src directory contains all code that deals with your actual app - frontend,
+backend, and infrastructure.
 
-Most app-specific code will be contained in `./src/features`, but not all code
-can be organized by "feature", so it goes here directly.
+Any code that can be organized by "feature" (think: account, feed, etc), should
+live in `./src/features`, and all the rest lives directly in `./src` - things
+like infrastructure, or very generic helpers used across many features (like the
+UI-related code in `interface` and `hooks`).
 
-The general idea is that `./src` has things like infrastructure (for example
-`storage` directory used by docker-compose s3 storage service in local dev, or
-`posthog` which is not a feature but setup code for analytics), or very generic
-helpers that are used across many features (like the UI-related code in
-`interface` and `hooks`).
-
-The only files directly here for now are `setupClient` and `setupServer` as they
-run before anything else via the One `setupFile` option.
+Note also `setupClient` and `setupServer` directly in this folder. Since they
+run before anything else via the One `setupFile` option, we like them being
+directly here.

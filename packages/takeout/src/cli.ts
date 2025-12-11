@@ -30,6 +30,21 @@ function isScriptCategory(name: string): boolean {
   }
 }
 
+// check if a name is a local script in ./scripts/
+function isLocalScript(name: string): boolean {
+  const scriptsDir = join(process.cwd(), 'scripts')
+  const normalizedName = name.replace(/:/g, '/')
+
+  for (const ext of ['.ts', '.js', '']) {
+    const scriptPath = join(scriptsDir, `${normalizedName}${ext}`)
+    if (existsSync(scriptPath)) {
+      return true
+    }
+  }
+
+  return false
+}
+
 // check if a name could be a built-in script
 function isBuiltInScript(name: string): boolean {
   try {
@@ -91,8 +106,8 @@ if (isShorthand) {
     } else if (firstArg?.includes('/')) {
       // inject "run" into args to use the run command directly
       process.argv.splice(2, 0, 'run')
-    } else if (isBuiltInScript(firstArg)) {
-      // check if it's a built-in script (like update-deps, clean, etc.)
+    } else if (isLocalScript(firstArg) || isBuiltInScript(firstArg)) {
+      // check if it's a local or built-in script (like update-deps, clean, etc.)
       // use "run" to avoid citty parsing issues with hyphens
       process.argv.splice(2, 0, 'run')
     } else {

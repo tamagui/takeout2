@@ -3,8 +3,7 @@ export const APP_NAME = 'Takeout'
 export const APP_NAME_LOWERCASE = 'takeout'
 
 // Domain
-export const DOMAIN = 'example.com'
-export const HELP_DOMAIN = 'help.example.com'
+export const DOMAIN = 'takeout.tamagui.dev'
 
 // Paths
 export const HELP_REQUESTS_PATH = '/requests'
@@ -14,8 +13,8 @@ export const PRIVACY_POLICY_PATH = '/privacy-policy'
 export const EULA_PATH = '/eula'
 
 // URLs (constructed from domains + paths)
-export const HELP_REQUESTS_URL = `https://${HELP_DOMAIN}${HELP_REQUESTS_PATH}`
-export const HELP_ROADMAP_URL = `https://${HELP_DOMAIN}${HELP_ROADMAP_PATH}`
+export const HELP_REQUESTS_URL = `https://${DOMAIN}${HELP_REQUESTS_PATH}`
+export const HELP_ROADMAP_URL = `https://${DOMAIN}${HELP_ROADMAP_PATH}`
 export const TERMS_OF_SERVICE_URL = `https://${DOMAIN}${TERMS_OF_SERVICE_PATH}`
 export const PRIVACY_POLICY_URL = `https://${DOMAIN}${PRIVACY_POLICY_PATH}`
 export const EULA_URL = `https://${DOMAIN}${EULA_PATH}`

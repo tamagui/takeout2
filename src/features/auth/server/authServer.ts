@@ -4,6 +4,7 @@ import { time } from '@take-out/helpers'
 import { betterAuth } from 'better-auth'
 import { admin, bearer, emailOTP, jwt, magicLink, phoneNumber } from 'better-auth/plugins'
 
+import { DOMAIN } from '~/constants/app'
 import { database } from '~/database/database'
 import { BETTER_AUTH_SECRET, BETTER_AUTH_URL } from '~/server/env-server'
 
@@ -28,8 +29,8 @@ export const authServer = betterAuth({
   },
 
   trustedOrigins: [
-    // matches webApp.url in sst.config
-    'https://start.chat',
+    // match dev, prod, tauri
+    `https://${DOMAIN}`,
     'http://localhost:8081',
     `${APP_SCHEME}://`,
   ],

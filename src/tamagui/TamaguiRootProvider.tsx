@@ -1,6 +1,6 @@
 import './tamagui.css'
 
-import { MetaTheme, SchemeProvider, useColorScheme } from '@vxrn/color-scheme'
+import { MetaTheme, SchemeProvider, useUserScheme } from '@vxrn/color-scheme'
 import { type ReactNode } from 'react'
 import { isWeb, TamaguiProvider, useTheme } from 'tamagui'
 
@@ -15,10 +15,10 @@ export const TamaguiRootProvider = ({ children }: { children: ReactNode }) => {
 }
 
 const TamaguiInnerProvider = ({ children }: { children: ReactNode }) => {
-  const [scheme] = useColorScheme()
+  const userScheme = useUserScheme()
 
   return (
-    <TamaguiProvider disableInjectCSS config={config} defaultTheme={scheme}>
+    <TamaguiProvider disableInjectCSS config={config} defaultTheme={userScheme.value}>
       {isWeb && <ThemeMetaTag />}
       {children}
     </TamaguiProvider>

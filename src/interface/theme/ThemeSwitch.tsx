@@ -1,4 +1,4 @@
-import { useSchemeSetting } from '@vxrn/color-scheme'
+import { useUserScheme } from '@vxrn/color-scheme'
 import { AnimatePresence, Paragraph, styled, View, YStack, TooltipSimple } from 'tamagui'
 
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
@@ -73,19 +73,23 @@ export function ThemeSwitch({ size = '$2' }: { size?: SizeTokens }) {
 }
 
 export function useToggleTheme() {
-  const [{ setting, scheme }, setSchemeSetting] = useSchemeSetting()
+  const userScheme = useUserScheme()
   const Icon =
-    setting === 'system' ? SunMoonIcon : setting === 'dark' ? MoonStarsIcon : SunIcon
+    userScheme.setting === 'system'
+      ? SunMoonIcon
+      : userScheme.setting === 'dark'
+        ? MoonStarsIcon
+        : SunIcon
 
   return {
-    setting,
-    scheme,
+    setting: userScheme.setting,
+    scheme: userScheme.value,
     Icon,
     onPress: () => {
-      const currentIndex = schemeSettings.indexOf(setting)
+      const currentIndex = schemeSettings.indexOf(userScheme.setting)
       const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % 3 : 0
       const next = schemeSettings[nextIndex]!
-      setSchemeSetting(next)
+      userScheme.set(next)
     },
   }
 }

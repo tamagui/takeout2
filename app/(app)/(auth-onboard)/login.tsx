@@ -15,7 +15,6 @@ import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { dialogEmit } from '~/interface/dialogs/shared'
 import { AppleIcon } from '~/interface/icons/AppleIcon'
 import { GoogleIcon } from '~/interface/icons/GoogleIcon'
-import { FacebookLogoIcon } from '~/interface/icons/phosphor/FacebookLogoIcon'
 import { H2 } from '~/interface/text/Headings'
 import { showToast } from '~/interface/toast/helpers'
 
@@ -25,7 +24,7 @@ export const LoginPage = () => {
     router.replace('/home')
   }
 
-  const handleSocialLogin = async (provider: 'google' | 'apple' | 'facebook') => {
+  const handleSocialLogin = async (provider: 'google' | 'apple') => {
     showToast(`${provider} login coming soon!`, { type: 'info' })
   }
 
@@ -126,21 +125,6 @@ export const LoginPage = () => {
                 icon={<GoogleIcon size={18} />}
               />
 
-              <ButtonSimple
-                glass
-                size="large"
-                onPress={() => handleSocialLogin('facebook')}
-                pressStyle={{
-                  scale: 0.97,
-                  bg: '$color2',
-                }}
-                hoverStyle={{
-                  bg: '$color2',
-                }}
-                animation="200ms"
-                enterStyle={{ opacity: 0, scale: 0.95 }}
-                icon={<FacebookLogoIcon size={20} />}
-              />
               <ButtonSimple
                 glass
                 size="large"

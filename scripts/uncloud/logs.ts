@@ -13,10 +13,12 @@ let machine: string | null = null
 
 for (let i = 0; i < args.length; i++) {
   const arg = args[i]
+  if (!arg) continue
   if (arg === '-f' || arg === '--follow') {
     follow = true
   } else if (arg === '-m' || arg === '--machine') {
-    machine = args[++i]
+    const nextArg = args[++i]
+    if (nextArg) machine = nextArg
   } else if (!arg.startsWith('-')) {
     services.push(arg)
   }

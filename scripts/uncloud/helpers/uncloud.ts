@@ -24,36 +24,46 @@ export function initUncloud(
 
   const sshCmd = `ssh -i ${sshKey} -o StrictHostKeyChecking=no ${host}`
 
-  // check if already initialized by checking for both uncloud binary and caddy container
+  // check if uncloud is installed on the server
   try {
     exec(`${sshCmd} "which uncloud"`, { silent: true })
 
-    // check if caddy is running (indicates machine is fully initialized)
+    // server has uncloud - check if it's a cluster member
     try {
-      exec(
-        `${sshCmd} "docker ps --filter name=caddy --format '{{.Names}}' | grep -q caddy"`,
-        { silent: true }
-      )
-      console.info('✅ uncloud already initialized (caddy running)')
-      return
-    } catch {
-      // caddy not running - need to clean up and reinitialize
-      console.info('⚠️  uncloud installed but caddy not running - cleaning up...')
+      // check if uncloud service is active and machine is part of cluster
+      exec(`${sshCmd} "uncloud cluster info"`, { silent: true })
+      console.info('✅ server is already a cluster member')
 
-      // stop and remove any existing caddy containers (running or stopped)
-      // this prevents port 80 conflicts when uc machine init creates a new caddy
+      // ensure we have local context - try uc ls first
       try {
-        exec(`${sshCmd} "docker ps -a --filter name=caddy -q | xargs -r docker rm -f"`, {
-          silent: true,
-        })
-        console.info('   removed stale caddy container(s)')
+        exec('uc ls', { silent: true })
+        console.info('✅ local cluster context exists')
+        return
       } catch {
-        // no containers to remove, that's fine
+        // no local context - need to add this machine to our local config
+        console.info('   adding cluster context locally...')
+        try {
+          // use --yes to auto-accept adding to existing cluster
+          exec(`echo "y" | uc machine init ${host} -i ${sshKey}`, { silent: true })
+          console.info('✅ cluster context added')
+        } catch {
+          // might fail if already configured - that's ok
+          console.info('   cluster context may already exist')
+        }
+        return
+      }
+    } catch {
+      // uncloud installed but not part of cluster - check if docker is running
+      try {
+        exec(`${sshCmd} "docker ps"`, { silent: true })
+        console.info('   docker is available, attempting to join/init cluster...')
+      } catch {
+        console.info('⚠️  docker not running on server')
       }
     }
   } catch {
-    // uncloud not installed, continue with fresh init
-    console.info('📦 uncloud not installed - initializing for first time')
+    // uncloud not installed on server - fresh init needed
+    console.info('📦 uncloud not installed on server - initializing for first time')
   }
 
   const flags = []
@@ -62,7 +72,7 @@ export function initUncloud(
 
   const flagStr = flags.join(' ')
 
-  // pipe 'y' to auto-reset if machine is already initialized
+  // for fresh init, use 'y' to accept initializing a new cluster
   exec(`echo "y" | uc machine init ${host} -i ${sshKey} ${flagStr}`)
 
   console.info('✅ uncloud initialized')

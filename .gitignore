@@ -54,3 +54,10 @@ dist
 # .uncloud-cluster.enc
 src/uncloud/docker-compose.processed.yml
 report.xml
+certs/
+
+# Origin CA certs (keep .gitkeep)
+src/uncloud/certs/origin.*
+
+# Custom Caddyfile (generated during onboard if custom domains configured)
+src/uncloud/Caddyfile

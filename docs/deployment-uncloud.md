@@ -275,6 +275,62 @@ checks:
 - database connectivity
 - storage is accessible
 
+## ssl certificates
+
+### default: let's encrypt (acme)
+
+by default, caddy automatically obtains ssl certificates from let's encrypt.
+this works well but has rate limits:
+
+- **5 duplicate certificates** per exact domain set per 168 hours (7 days)
+- redeploying frequently or resetting the cluster can hit these limits
+- if rate limited, you'll see ssl handshake errors
+
+**avoiding rate limits:**
+
+1. don't reset the cluster unnecessarily (`uc machine init` with reset)
+2. the deploy script now preserves existing clusters when possible
+3. use cloudflare origin ca for frequently changing setups
+
+### cloudflare origin ca (recommended for custom domains)
+
+if using cloudflare for dns, origin ca certificates bypass rate limits entirely:
+
+**benefits:**
+
+- no rate limits (15 year validity)
+- enable cloudflare proxy for ddos protection and caching
+- faster ssl handshakes (cloudflare edge)
+
+**setup:**
+
+1. during onboarding, choose "use cloudflare origin ca" when configuring custom domains
+2. or manually:
+
+```bash
+# generate certificate at cloudflare dashboard → ssl/tls → origin server
+# save to certs/origin.pem and certs/origin.key
+
+# add to .env.production
+ORIGIN_CA_CERT=certs/origin.pem
+ORIGIN_CA_KEY=certs/origin.key
+```
+
+3. in cloudflare dashboard:
+   - enable proxy (orange cloud) for your domains
+   - set ssl mode to "full (strict)"
+
+**note:** origin ca certs only work when traffic goes through cloudflare proxy.
+direct access to the server ip will show certificate errors.
+
+### recovering from rate limits
+
+if you've hit let's encrypt rate limits:
+
+1. **wait 7 days** for the rate limit to reset, or
+2. **switch to origin ca** (recommended), or
+3. **use the uncld.dev fallback domain** (e.g., `web.abc123.uncld.dev`)
+
 ## common issues
 
 ### deployment fails: "uncloud cli not found"

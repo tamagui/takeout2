@@ -932,6 +932,62 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
         showSuccess('✓ Custom domains configured')
         console.info()
         showInfo(pc.gray('DNS propagation typically takes 5-30 minutes'))
+
+        // offer cloudflare origin ca option
+        console.info()
+        showInfo('SSL Certificate Options')
+        console.info(
+          pc.gray("By default, Caddy will use Let's Encrypt for SSL certificates.")
+        )
+        console.info(pc.gray('If using Cloudflare, you can use Origin CA instead to:'))
+        console.info(pc.gray("  • Bypass Let's Encrypt rate limits"))
+        console.info(pc.gray('  • Enable Cloudflare proxy (DDoS protection, caching)'))
+        console.info()
+
+        const useOriginCA = await confirmContinue(
+          'Use Cloudflare Origin CA? (requires Cloudflare account)',
+          false
+        )
+
+        if (useOriginCA) {
+          console.info()
+          showInfo('Cloudflare Origin CA Setup')
+          console.info(pc.gray('1. Go to Cloudflare Dashboard → SSL/TLS → Origin Server'))
+          console.info(pc.gray('2. Click "Create Certificate"'))
+          console.info(
+            pc.gray(
+              `3. Add hostnames: ${webDomain}${zeroDomain ? `, ${zeroDomain}` : ''}`
+            )
+          )
+          console.info(pc.gray('4. Choose 15 year validity'))
+          console.info(pc.gray('5. Save certificate to: certs/origin.pem'))
+          console.info(pc.gray('6. Save private key to: certs/origin.key'))
+          console.info()
+
+          const certPath = await promptText(
+            'Path to Origin CA certificate:',
+            'certs/origin.pem',
+            'certs/origin.pem'
+          )
+
+          const keyPath = await promptText(
+            'Path to Origin CA private key:',
+            'certs/origin.key',
+            'certs/origin.key'
+          )
+
+          if (certPath && keyPath) {
+            updateEnvVariable(cwd, 'ORIGIN_CA_CERT', certPath, envFile)
+            updateEnvVariable(cwd, 'ORIGIN_CA_KEY', keyPath, envFile)
+
+            showSuccess('✓ Origin CA configured')
+            console.info(pc.gray('  Caddyfile will be auto-generated during deploy'))
+            console.info()
+            console.info(pc.yellow('Important: In Cloudflare Dashboard:'))
+            console.info(pc.yellow('  1. Enable proxy (orange cloud) for your domains'))
+            console.info(pc.yellow('  2. Set SSL mode to "Full (strict)"'))
+          }
+        }
       }
     }
   }

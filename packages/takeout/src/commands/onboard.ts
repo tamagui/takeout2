@@ -674,7 +674,7 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   console.info()
   console.info(
     pc.gray(
-      'Uncloud provides:\n  • Managed PostgreSQL with logical replication\n  • Free subdomain (your-app.uncloud.run)\n  • Automatic SSL certificates\n  • Easy scaling'
+      'Uncloud provides:\n  • Managed PostgreSQL with logical replication\n  • Free subdomain (your-app.uncld.dev)\n  • Automatic SSL certificates\n  • Easy scaling'
     )
   )
   console.info()
@@ -736,8 +736,8 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
       defaultAppName,
       defaultAppName
     )
-    domain = `https://${appName}.uncloud.run`
-    zeroUrl = `https://zero-${appName}.uncloud.run`
+    domain = `https://${appName}.uncld.dev`
+    zeroUrl = `https://zero-${appName}.uncld.dev`
   } else {
     domain = await promptText(
       'Enter your custom domain:',
@@ -875,7 +875,7 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
     console.info()
     console.info(pc.gray('First, run: uc dns reserve'))
     console.info(
-      pc.gray('This will give you a cluster subdomain like: abc123.cluster.uncloud.run')
+      pc.gray('This will give you a cluster subdomain like: abc123.cluster.uncld.dev')
     )
     console.info()
 

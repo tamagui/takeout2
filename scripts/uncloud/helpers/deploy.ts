@@ -15,16 +15,21 @@ export async function checkUncloudConfigured(): Promise<boolean> {
   return Boolean(process.env.DEPLOY_HOST && process.env.DEPLOY_DB)
 }
 
+const UNCLOUD_VERSION = '0.15.0'
+
 export async function installUncloudCLI() {
   console.info('🔧 checking uncloud cli...')
   try {
     await run('uc --version', { silent: true, timeout: time.ms.seconds(5) })
     console.info(pc.gray('  uncloud cli already installed'))
   } catch {
-    console.info(pc.gray('  installing uncloud cli...'))
-    await run('curl -fsS https://get.uncloud.run/install.sh | sh', {
-      timeout: time.ms.seconds(30),
-    })
+    console.info(pc.gray(`  installing uncloud cli v${UNCLOUD_VERSION}...`))
+    await run(
+      `curl -fsS https://get.uncloud.run/install.sh | sh -s -- --version ${UNCLOUD_VERSION}`,
+      {
+        timeout: time.ms.seconds(30),
+      }
+    )
     console.info(pc.gray('  ✓ uncloud cli installed'))
   }
 }

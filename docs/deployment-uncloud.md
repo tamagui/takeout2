@@ -24,9 +24,9 @@ breaking changes may occur.
 
 ### prerequisites
 
-1. uncloud cli installed: `curl -fsS https://get.uncloud.run/install.sh | sh`
+1. uncloud cli installed: `curl -fsS https://get.uncloud.run/install.sh | sh -s -- --version 0.15.0`
 2. digital ocean account (or any VM/dedicated provider)
-3. domain name (optional - can use `yourapp.uncloud.run` subdomain)
+3. domain name (optional - can use `yourapp.uncld.dev` subdomain)
 4. managed postgresql database with logical replication enabled
 
 ### quick start
@@ -39,7 +39,7 @@ breaking changes may occur.
 
    - choose "set up production deployment"
    - select "uncloud" platform
-   - enter your app subdomain (e.g., `takeout` → `takeout.uncloud.run`)
+   - enter your app subdomain (e.g., `takeout` → `takeout.uncld.dev`)
    - configure database credentials
    - sync to github when prompted
 
@@ -217,22 +217,39 @@ enabled by default. for other providers, ensure `wal_level = logical`.
 ### view logs
 
 ```bash
-# local
+# single service
 uc logs web              # view web service logs
 uc logs web -f           # follow logs
-uc logs zero             # zero sync logs
-uc logs minio            # minio storage logs
+
+# multiple services (0.15.0+)
+uc logs web api          # multiple services at once
+uc logs                  # all services
+
+# machine targeting (0.15.0+)
+uc logs web -m machine1  # logs from specific machine
 
 # or via script
-bun tko uncloud logs
+bun tko uncloud logs              # all services
+bun tko uncloud logs web          # single service
+bun tko uncloud logs web api -f   # multiple, follow
+bun tko uncloud logs -m machine1  # specific machine
 ```
 
 ### service status
 
 ```bash
 uc ls                    # list all services
-uc ps                    # container status
+uc ps                    # container status (0.15.0+)
 uc machine ls            # machine status
+```
+
+### service management (0.15.0+)
+
+```bash
+uc start web             # start a service
+uc stop web              # stop a service
+uc start                 # start all services
+uc stop                  # stop all services
 ```
 
 ### ssh access
@@ -265,7 +282,18 @@ checks:
 install uncloud cli:
 
 ```bash
-curl -fsS https://get.uncloud.run/install.sh | sh
+curl -fsS https://get.uncloud.run/install.sh | sh -s -- --version 0.15.0
+```
+
+### ssh+cli connection mode (0.15.0+)
+
+if you use 1password, yubikey, or other ssh agents, use `ssh+cli://` mode:
+
+```bash
+# uses system openssh instead of built-in ssh
+uc machine init ssh+cli://your-server.com
+
+# this works if "ssh your-server.com" works
 ```
 
 ### ssh connection fails

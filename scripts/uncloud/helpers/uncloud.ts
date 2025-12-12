@@ -1,12 +1,16 @@
 import { exec } from './exec'
 
+const UNCLOUD_VERSION = '0.15.0'
+
 export function checkUncloudCLI() {
   try {
-    exec('uc --version', { silent: true })
-    console.info('✅ uncloud cli installed')
+    const version = exec('uc --version', { silent: true }).trim()
+    console.info(`✅ uncloud cli installed (${version})`)
   } catch {
     console.error('❌ uncloud cli not found')
-    console.error('\ninstall: curl -fsS https://get.uncloud.run/install.sh | sh')
+    console.error(
+      `\ninstall: curl -fsS https://get.uncloud.run/install.sh | sh -s -- --version ${UNCLOUD_VERSION}`
+    )
     process.exit(1)
   }
 }
@@ -87,5 +91,41 @@ export function showStatus() {
     exec('uc ls')
   } catch {
     console.error('could not fetch status')
+  }
+}
+
+export function showContainers() {
+  console.info('\n📦 container status:\n')
+
+  try {
+    exec('uc ps')
+  } catch {
+    console.error('could not fetch container status')
+  }
+}
+
+export function startService(service?: string) {
+  const target = service || 'all services'
+  console.info(`\n▶️  starting ${target}...\n`)
+
+  try {
+    exec(`uc start${service ? ` ${service}` : ''}`)
+    console.info(`✅ ${target} started`)
+  } catch {
+    console.error(`❌ failed to start ${target}`)
+    throw new Error(`failed to start ${target}`)
+  }
+}
+
+export function stopService(service?: string) {
+  const target = service || 'all services'
+  console.info(`\n⏹️  stopping ${target}...\n`)
+
+  try {
+    exec(`uc stop${service ? ` ${service}` : ''}`)
+    console.info(`✅ ${target} stopped`)
+  } catch {
+    console.error(`❌ failed to stop ${target}`)
+    throw new Error(`failed to stop ${target}`)
   }
 }

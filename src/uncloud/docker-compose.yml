@@ -75,7 +75,7 @@ services:
     depends_on:
       - migrate
     x-ports:
-      - ${ZERO_DOMAIN:-zero-takeout.uncloud.run}:4848/https
+      - ${ZERO_DOMAIN:-zero-takeout.uncld.dev}:4848/https
     environment:
       - ZERO_ADMIN_PASSWORD=${ZERO_ADMIN_PASSWORD:-production-admin-change-me}
       - ZERO_LOG_LEVEL=${ZERO_LOG_LEVEL:-info}
@@ -137,7 +137,7 @@ services:
     depends_on:
       - zero
     x-ports:
-      - ${WEB_DOMAIN:-takeout.uncloud.run}:8081/https
+      - ${WEB_DOMAIN:-takeout.uncld.dev}:8081/https
     environment:
       - NODE_ENV=production
       - ZERO_AUTH_JWKS_URL=http://web:8081/api/auth/jwks

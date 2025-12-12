@@ -320,6 +320,16 @@ ORIGIN_CA_KEY=certs/origin.key
    - enable proxy (orange cloud) for your domains
    - set ssl mode to "full (strict)"
 
+4. for ci/cd, add the certs as base64-encoded github secrets:
+
+```bash
+# encode and add to github secrets
+base64 -i certs/origin.pem | gh secret set ORIGIN_CA_CERT_B64
+base64 -i certs/origin.key | gh secret set ORIGIN_CA_KEY_B64
+```
+
+the ci workflow will automatically decode these and use them during deploy.
+
 **note:** origin ca certs only work when traffic goes through cloudflare proxy.
 direct access to the server ip will show certificate errors.
 

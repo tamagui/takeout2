@@ -14,7 +14,6 @@ import {
   copyEnvFile,
   createEnvLocal,
   envFileExists,
-  generateSecret,
   updateEnvVariable,
 } from '../utils/env'
 import { setupProductionEnv } from '../utils/env-setup'
@@ -106,7 +105,6 @@ export const onboardCommand = defineCommand({
     let startStep:
       | 'full'
       | 'prerequisites'
-      | 'environment'
       | 'identity'
       | 'ports'
       | 'eject'
@@ -251,38 +249,9 @@ export const onboardCommand = defineCommand({
       console.info()
     }
 
-    // Phase 2: Environment Setup
+    // Phase 2: Project Identity
     if (
       startStep === 'prerequisites' ||
-      startStep === 'environment' ||
-      startStep === 'full'
-    ) {
-      saveOnboardState(cwd, { step: 'environment', timestamp: Date.now() })
-      showStep('Setting up environment files...')
-      console.info()
-
-      const hasEnv = envFileExists(cwd, '.env')
-
-      if (hasEnv) {
-        showInfo('.env file already exists')
-        const shouldReconfigure = await confirmContinue('Reconfigure environment?', false)
-
-        if (!shouldReconfigure) {
-          showInfo('Skipping environment setup')
-        } else {
-          await setupEnvironment(cwd)
-        }
-      } else {
-        await setupEnvironment(cwd)
-      }
-
-      console.info()
-    }
-
-    // Phase 3: Project Identity
-    if (
-      startStep === 'prerequisites' ||
-      startStep === 'environment' ||
       startStep === 'identity' ||
       startStep === 'full'
     ) {
@@ -304,10 +273,9 @@ export const onboardCommand = defineCommand({
       console.info()
     }
 
-    // Phase 4: Web Port Configuration
+    // Phase 3: Web Port Configuration
     if (
       startStep === 'prerequisites' ||
-      startStep === 'environment' ||
       startStep === 'identity' ||
       startStep === 'ports' ||
       startStep === 'full'
@@ -352,10 +320,9 @@ export const onboardCommand = defineCommand({
       console.info()
     }
 
-    // Phase 5: CI/CD Runner Configuration
+    // Phase 4: CI/CD Runner Configuration
     if (
       startStep === 'prerequisites' ||
-      startStep === 'environment' ||
       startStep === 'identity' ||
       startStep === 'ports' ||
       startStep === 'full'
@@ -535,57 +502,6 @@ export const onboardCommand = defineCommand({
     displayOutro('Happy coding! 🚀')
   },
 })
-
-async function setupEnvironment(cwd: string): Promise<void> {
-  // Copy .env.development to .env
-  const copyResult = copyEnvFile(cwd, '.env.development', '.env')
-
-  if (!copyResult.success) {
-    showError(`Failed to create .env: ${copyResult.error}`)
-    return
-  }
-
-  showSuccess('Created .env from .env.development')
-
-  // Generate auth secret
-  const useExisting = await confirmContinue(
-    'Use existing BETTER_AUTH_SECRET from .env.development?',
-    true
-  )
-
-  if (!useExisting) {
-    const secret = generateSecret()
-    updateEnvVariable(cwd, 'BETTER_AUTH_SECRET', secret)
-    showSuccess('Generated new BETTER_AUTH_SECRET')
-  }
-
-  // GitHub OAuth (optional)
-  const setupGithub = await confirmContinue('Set up GitHub OAuth?', false)
-
-  if (setupGithub) {
-    const clientId = await promptText(
-      'GitHub Client ID:',
-      undefined,
-      'Iv23liNaYfNSauaySodL'
-    )
-    if (clientId) {
-      updateEnvVariable(cwd, 'ONECHAT_GITHUB_CLIENT_ID', clientId)
-    }
-
-    const clientSecret = await promptText(
-      'GitHub Client Secret (optional):',
-      undefined,
-      'Leave empty to skip'
-    )
-    if (clientSecret) {
-      updateEnvVariable(cwd, 'ONECHAT_GITHUB_CLIENT_SECRET', clientSecret)
-    }
-  }
-
-  // Create .env.local
-  createEnvLocal(cwd)
-  showSuccess('Created .env.local for personal overrides')
-}
 
 async function customizeProject(cwd: string): Promise<void> {
   const projectName = await promptText('Project name:', 'takeout', 'my-awesome-app')
@@ -1386,14 +1302,7 @@ async function replacePortInProject(
 
 // State management helpers
 interface OnboardState {
-  step:
-    | 'prerequisites'
-    | 'environment'
-    | 'identity'
-    | 'ports'
-    | 'eject'
-    | 'ci-runners'
-    | 'production'
+  step: 'prerequisites' | 'identity' | 'ports' | 'eject' | 'ci-runners' | 'production'
   platform?: 'uncloud' | 'sst'
   timestamp: number
 }

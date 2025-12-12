@@ -113,14 +113,7 @@ export async function promptSelect<T extends string>(
 }
 
 export async function promptStartStep(): Promise<
-  | 'full'
-  | 'prerequisites'
-  | 'environment'
-  | 'identity'
-  | 'ports'
-  | 'eject'
-  | 'production'
-  | 'cancel'
+  'full' | 'prerequisites' | 'identity' | 'ports' | 'eject' | 'production' | 'cancel'
 > {
   console.info()
   console.info(pc.gray('What would you like to do?'))
@@ -136,11 +129,6 @@ export async function promptStartStep(): Promise<
       value: 'prerequisites',
       label: 'Check prerequisites',
       hint: 'Verify bun, docker, git, etc.',
-    },
-    {
-      value: 'environment',
-      label: 'Configure environment',
-      hint: 'Set up .env files for development',
     },
     {
       value: 'identity',

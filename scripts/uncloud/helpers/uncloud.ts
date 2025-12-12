@@ -1,3 +1,7 @@
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { homedir } from 'node:os'
+import { join } from 'node:path'
+
 import { exec } from './exec'
 
 const UNCLOUD_VERSION = '0.15.0'
@@ -15,6 +19,32 @@ export function checkUncloudCLI() {
   }
 }
 
+export function getConnectionFlag(): string {
+  // no longer using --connect flag, we create config directly
+  return ''
+}
+
+function createUncloudConfig(host: string, sshKey: string) {
+  const configDir = join(homedir(), '.config', 'uncloud')
+  const configPath = join(configDir, 'config.yaml')
+
+  if (!existsSync(configDir)) {
+    mkdirSync(configDir, { recursive: true })
+  }
+
+  // simple yaml config that points to the existing cluster
+  const config = `current_context: default
+contexts:
+  default:
+    connections:
+      - ssh: ${host}
+        ssh_key_file: ${sshKey}
+`
+
+  writeFileSync(configPath, config)
+  console.info(`✅ created uncloud config at ${configPath}`)
+}
+
 export function initUncloud(
   host: string,
   sshKey: string,
@@ -22,57 +52,49 @@ export function initUncloud(
 ) {
   console.info('\n🚀 initializing uncloud...\n')
 
+  // first check if we already have local context that works
+  try {
+    exec('uc ls', { silent: true })
+    console.info('✅ local cluster context exists and connected')
+    return
+  } catch {
+    // no local context - check if server has uncloud running
+  }
+
   const sshCmd = `ssh -i ${sshKey} -o StrictHostKeyChecking=no ${host}`
 
-  // check if uncloud is installed on the server
+  // check if server already has uncloud daemon running
+  let serverHasUncloud = false
   try {
-    exec(`${sshCmd} "which uncloud"`, { silent: true })
-
-    // server has uncloud - check if it's a cluster member
-    try {
-      // check if uncloud service is active and machine is part of cluster
-      exec(`${sshCmd} "uncloud cluster info"`, { silent: true })
-      console.info('✅ server is already a cluster member')
-
-      // ensure we have local context - try uc ls first
-      try {
-        exec('uc ls', { silent: true })
-        console.info('✅ local cluster context exists')
-        return
-      } catch {
-        // no local context - need to add this machine to our local config
-        console.info('   adding cluster context locally...')
-        try {
-          // use --yes to auto-accept adding to existing cluster
-          exec(`echo "y" | uc machine init ${host} -i ${sshKey}`, { silent: true })
-          console.info('✅ cluster context added')
-        } catch {
-          // might fail if already configured - that's ok
-          console.info('   cluster context may already exist')
-        }
-        return
-      }
-    } catch {
-      // uncloud installed but not part of cluster - check if docker is running
-      try {
-        exec(`${sshCmd} "docker ps"`, { silent: true })
-        console.info('   docker is available, attempting to join/init cluster...')
-      } catch {
-        console.info('⚠️  docker not running on server')
-      }
-    }
+    exec(`${sshCmd} "systemctl is-active uncloud.service"`, { silent: true })
+    serverHasUncloud = true
+    console.info('✅ server has uncloud daemon running')
   } catch {
-    // uncloud not installed on server - fresh init needed
-    console.info('📦 uncloud not installed on server - initializing for first time')
+    // check if uncloudd binary exists as fallback
+    try {
+      exec(`${sshCmd} "test -f /usr/local/bin/uncloudd"`, { silent: true })
+      serverHasUncloud = true
+      console.info('✅ server has uncloud installed')
+    } catch {
+      // server doesn't have uncloud - needs fresh init
+    }
   }
+
+  if (serverHasUncloud) {
+    // server already has cluster - create config manually to avoid reset prompt
+    createUncloudConfig(host, sshKey)
+    console.info('   (skipping init to avoid cluster reset)')
+    return
+  }
+
+  // fresh server - need to initialize
+  console.info('📦 uncloud not installed on server - initializing...')
 
   const flags = []
   if (options.noDNS) flags.push('--no-dns')
   if (options.noCaddy) flags.push('--no-caddy')
-
   const flagStr = flags.join(' ')
 
-  // for fresh init, use 'y' to accept initializing a new cluster
   exec(`echo "y" | uc machine init ${host} -i ${sshKey} ${flagStr}`)
 
   console.info('✅ uncloud initialized')

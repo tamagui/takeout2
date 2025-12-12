@@ -1,6 +1,7 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
 import { router } from 'one'
-import { Circle, isWeb, SizableText, XStack, YStack } from 'tamagui'
+import { useState } from 'react'
+import { Circle, isWeb, SizableText, Spinner, XStack, YStack } from 'tamagui'
 
 import {
   APP_NAME,
@@ -8,6 +9,7 @@ import {
   PRIVACY_POLICY_URL,
   TERMS_OF_SERVICE_URL,
 } from '~/constants/app'
+import { authClient } from '~/features/auth/client/authClient'
 import { Link } from '~/interface/app/Link'
 import { LogoIcon } from '~/interface/app/LogoIcon'
 import { ButtonAction } from '~/interface/buttons/ButtonAction'
@@ -19,6 +21,8 @@ import { H2 } from '~/interface/text/Headings'
 import { showToast } from '~/interface/toast/helpers'
 
 export const LoginPage = () => {
+  const [demoLoading, setDemoLoading] = useState(false)
+
   const handleSignInAdmin = () => {
     dialogEmit({ type: 'admin-password' })
     router.replace('/home')
@@ -104,6 +108,37 @@ export const LoginPage = () => {
                   enterStyle={{ opacity: 0, scale: 0.95 }}
                 >
                   Continue as admin (dev)
+                </ButtonSimple>
+              )}
+
+              {/* DEMO mode - just for takeout demo site, you can remove! */}
+              {import.meta.env.VITE_DEMO_MODE === '1' && (
+                <ButtonSimple
+                  variant="outlined"
+                  size="large"
+                  onPress={async () => {
+                    setDemoLoading(true)
+                    const { error } = await authClient.signIn.email({
+                      email: 'demo@takeout.tamagui.dev',
+                      password: 'demopassword123',
+                    })
+                    setDemoLoading(false)
+                    if (error) {
+                      showToast('Demo login failed', { type: 'error' })
+                      return
+                    }
+                    router.replace('/home')
+                  }}
+                  disabled={demoLoading}
+                  width="100%"
+                  data-testid="login-as-demo"
+                  pressStyle={{
+                    scale: 0.97,
+                  }}
+                  animation="200ms"
+                  enterStyle={{ opacity: 0, scale: 0.95 }}
+                >
+                  {demoLoading ? <Spinner size="small" /> : 'Login as Demo User'}
                 </ButtonSimple>
               )}
             </YStack>

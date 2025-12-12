@@ -1,9 +1,10 @@
 import { getMDXComponent } from 'mdx-bundler/client'
-import { useLoader, createRoute } from 'one'
+import { createRoute, useLoader } from 'one'
 import { useMemo } from 'react'
 import { H1, Paragraph } from 'tamagui'
 
 import { components } from '~/features/docs/MDXComponents'
+import { HeadInfo } from '~/interface/app/HeadInfo'
 
 const route = createRoute<'/(site)/docs/[slug]'>()
 
@@ -38,6 +39,7 @@ export function DocsSlugPage() {
 
   return (
     <>
+      <HeadInfo title={frontmatter.title} description={frontmatter.description} />
       <H1
         mb="$4"
         mt="$2"

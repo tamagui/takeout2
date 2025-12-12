@@ -5,10 +5,15 @@ import {
   LegalSection,
   LegalText,
 } from '~/features/site/ui/LegalPage'
+import { HeadInfo } from '~/interface/app/HeadInfo'
 
 export function EULAPage() {
   return (
     <LegalPage title="End User License Agreement (EULA)">
+      <HeadInfo
+        title="End User License Agreement"
+        description="Review the End User License Agreement (EULA) for Takeout."
+      />
       <LegalText>
         Welcome to {APP_NAME}! Before using the app, please review this agreement. By
         continuing to use {APP_NAME}, you agree to comply with the following terms:

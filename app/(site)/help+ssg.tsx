@@ -1,4 +1,3 @@
-import { Link } from 'one'
 import { Paragraph, Separator, XStack, YStack } from 'tamagui'
 
 import {
@@ -9,6 +8,8 @@ import {
   HELP_ROADMAP_URL,
 } from '~/constants/app'
 import { InfoCard } from '~/features/site/ui/InfoCard'
+import { HeadInfo } from '~/interface/app/HeadInfo'
+import { Link } from '~/interface/app/Link'
 import { ChatCircleIcon } from '~/interface/icons/phosphor/ChatCircleIcon'
 import { EnvelopeIcon } from '~/interface/icons/phosphor/EnvelopeIcon'
 import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
@@ -18,6 +19,10 @@ import { H2, H3, H5, SubHeading } from '~/interface/text/Headings'
 export const HelpPage = () => {
   return (
     <YStack maxW={850} self="center" gap="$4">
+      <HeadInfo
+        title="Help & Support"
+        description="Get help with Takeout. Contact support, submit requests, or browse frequently asked questions."
+      />
       <H2>Help & Support</H2>
 
       <SubHeading>Got a question about {APP_NAME}? We're here to help.</SubHeading>

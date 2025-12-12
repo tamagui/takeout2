@@ -1,5 +1,6 @@
 import { Paragraph, Separator, YStack, styled } from 'tamagui'
 
+import { HeadInfo } from '~/interface/app/HeadInfo'
 import { Link } from '~/interface/app/Link'
 import { H2, H3, H4, SepHeading } from '~/interface/text/Headings'
 
@@ -23,6 +24,10 @@ const Hero = styled(H2, {
 export function IndexPage() {
   return (
     <YStack gap="$4" py="$12">
+      <HeadInfo
+        title="Takeout"
+        description="A better starting point for building cross-platform applications with React and React Native."
+      />
       <YStack items="center">
         <Hero>Build better cross-platform apps</Hero>
 

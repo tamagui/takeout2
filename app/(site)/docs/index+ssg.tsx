@@ -1,10 +1,15 @@
 import { H1, H2, Paragraph, YStack } from 'tamagui'
 
+import { HeadInfo } from '~/interface/app/HeadInfo'
 import { Link } from '~/interface/app/Link'
 
 export function DocsIndexPage() {
   return (
     <YStack gap="$4">
+      <HeadInfo
+        title="Documentation"
+        description="Learn how to use and customize Takeout for building cross-platform applications."
+      />
       <H1 size="$10" mb="$4">
         Documentation
       </H1>

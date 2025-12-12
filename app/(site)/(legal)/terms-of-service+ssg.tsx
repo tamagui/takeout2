@@ -5,10 +5,15 @@ import {
   LegalSection,
   LegalText,
 } from '~/features/site/ui/LegalPage'
+import { HeadInfo } from '~/interface/app/HeadInfo'
 
 export function TermsOfServicePage() {
   return (
     <LegalPage title="Terms of Service">
+      <HeadInfo
+        title="Terms of Service"
+        description="Read the Terms of Service for using Takeout."
+      />
       <LegalSection title="Agreement to Terms">
         <LegalText>
           By accessing or using {APP_NAME}, you agree to be bound by these Terms of

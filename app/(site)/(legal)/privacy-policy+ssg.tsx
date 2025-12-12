@@ -5,10 +5,15 @@ import {
   LegalSection,
   LegalText,
 } from '~/features/site/ui/LegalPage'
+import { HeadInfo } from '~/interface/app/HeadInfo'
 
 export function PrivacyPolicyPage() {
   return (
     <LegalPage title="Privacy Policy">
+      <HeadInfo
+        title="Privacy Policy"
+        description="Learn how Takeout handles your personal data and protects your privacy."
+      />
       <LegalSection title="Introduction">
         <LegalText>
           Welcome to {APP_NAME}. We respect your privacy and are committed to protecting

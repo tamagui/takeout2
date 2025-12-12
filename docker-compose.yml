@@ -21,14 +21,6 @@ services:
       -c max_replication_slots=5
       -c hot_standby=on
       -c max_connections=256
-    # for verbose logging when debugging (uncomment as needed):
-      # -c log_error_verbosity=default
-      # -c log_min_messages=info
-      # -c log_statement=all
-      # -c log_connections=on
-      # -c log_disconnections=on
-      # -c log_duration=on
-      # -c log_line_prefix='%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
     volumes:
       - ./.docker/pgdb:/var/lib/postgresql/data
       - ./src/database/:/docker-entrypoint-initdb.d

@@ -15,6 +15,62 @@ export async function checkUncloudConfigured(): Promise<boolean> {
   return Boolean(process.env.DEPLOY_HOST && process.env.DEPLOY_DB)
 }
 
+export async function verifyDatabaseConfig(): Promise<{
+  valid: boolean
+  errors: string[]
+}> {
+  const errors: string[] = []
+
+  const deployDb = process.env.DEPLOY_DB
+  const upstreamDb = process.env.ZERO_UPSTREAM_DB
+  const cvrDb = process.env.ZERO_CVR_DB
+  const changeDb = process.env.ZERO_CHANGE_DB
+
+  // check all required vars exist
+  if (!deployDb) errors.push('DEPLOY_DB is not set')
+  if (!upstreamDb) errors.push('ZERO_UPSTREAM_DB is not set')
+  if (!cvrDb) errors.push('ZERO_CVR_DB is not set')
+  if (!changeDb) errors.push('ZERO_CHANGE_DB is not set')
+
+  if (errors.length > 0) {
+    return { valid: false, errors }
+  }
+
+  // extract hosts from database URLs
+  const getHost = (url: string): string | null => {
+    try {
+      const match = url.match(/@([^:/]+)/)
+      return match?.[1] || null
+    } catch {
+      return null
+    }
+  }
+
+  const deployHost = getHost(deployDb!)
+  const upstreamHost = getHost(upstreamDb!)
+  const cvrHost = getHost(cvrDb!)
+  const changeHost = getHost(changeDb!)
+
+  // verify all database hosts match
+  if (deployHost && upstreamHost && deployHost !== upstreamHost) {
+    errors.push(
+      `ZERO_UPSTREAM_DB host (${upstreamHost}) does not match DEPLOY_DB host (${deployHost})`
+    )
+  }
+  if (deployHost && cvrHost && deployHost !== cvrHost) {
+    errors.push(
+      `ZERO_CVR_DB host (${cvrHost}) does not match DEPLOY_DB host (${deployHost})`
+    )
+  }
+  if (deployHost && changeHost && deployHost !== changeHost) {
+    errors.push(
+      `ZERO_CHANGE_DB host (${changeHost}) does not match DEPLOY_DB host (${deployHost})`
+    )
+  }
+
+  return { valid: errors.length === 0, errors }
+}
+
 const UNCLOUD_VERSION = '0.15.0'
 
 export async function installUncloudCLI() {

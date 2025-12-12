@@ -309,7 +309,7 @@ async function runIntegrationTests() {
   console.info('\nRunning production integration tests...')
 
   try {
-    await waitForRun('playwright-install')
+    await waitForRun('playwright install')
 
     void run(`bun tko ci frontend`, {
       detached: true,

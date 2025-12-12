@@ -67,6 +67,30 @@ function checkPrerequisites() {
   const ZERO_CVR_DB = `${baseUrl}/zero_cvr${queryParams}`
   const ZERO_CHANGE_DB = `${baseUrl}/zero_cdb${queryParams}`
 
+  // verify env vars match DEPLOY_DB (warn if stale values exist)
+  const envUpstream = process.env.ZERO_UPSTREAM_DB
+  const envCvr = process.env.ZERO_CVR_DB
+  const envChange = process.env.ZERO_CHANGE_DB
+
+  const getHost = (url: string): string | null => url.match(/@([^:/]+)/)?.[1] || null
+  const deployDbHost = getHost(deployDb)
+
+  if (envUpstream && getHost(envUpstream) !== deployDbHost) {
+    console.warn(
+      pc.yellow(`⚠️  ZERO_UPSTREAM_DB in env has different host than DEPLOY_DB`)
+    )
+    console.warn(pc.yellow(`   env: ${getHost(envUpstream)}, deploy_db: ${deployDbHost}`))
+    console.warn(pc.yellow(`   using derived value from DEPLOY_DB`))
+  }
+  if (envCvr && getHost(envCvr) !== deployDbHost) {
+    console.warn(pc.yellow(`⚠️  ZERO_CVR_DB in env has different host than DEPLOY_DB`))
+    console.warn(pc.yellow(`   using derived value from DEPLOY_DB`))
+  }
+  if (envChange && getHost(envChange) !== deployDbHost) {
+    console.warn(pc.yellow(`⚠️  ZERO_CHANGE_DB in env has different host than DEPLOY_DB`))
+    console.warn(pc.yellow(`   using derived value from DEPLOY_DB`))
+  }
+
   console.info(`✅ zero databases configured`)
   console.info(
     pc.gray(`   upstream: ${deployDb.split('@')[1]?.split('/')[0] || 'configured'}`)

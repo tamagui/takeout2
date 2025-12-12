@@ -799,20 +799,20 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   updateEnvVariable(cwd, 'ONE_SERVER_URL', domain, envFile)
   updateEnvVariable(cwd, 'VITE_PUBLIC_ZERO_SERVER', zeroUrl, envFile)
 
-  // for local dev, also set the three zero vars (read from DEPLOY_DB in production)
+  // derive zero database URLs from the main database URL
+  const dbBase = dbUrl.split('/').slice(0, -1).join('/')
+  const zeroCvrDb = `${dbBase}/zero_cvr`
+  const zeroChangeDb = `${dbBase}/zero_cdb`
+
+  // set zero database vars in .env.production (for production deployment)
+  updateEnvVariable(cwd, 'ZERO_UPSTREAM_DB', dbUrl, envFile)
+  updateEnvVariable(cwd, 'ZERO_CVR_DB', zeroCvrDb, envFile)
+  updateEnvVariable(cwd, 'ZERO_CHANGE_DB', zeroChangeDb, envFile)
+
+  // also set in .env for local dev
   updateEnvVariable(cwd, 'ZERO_UPSTREAM_DB', dbUrl, '.env')
-  updateEnvVariable(
-    cwd,
-    'ZERO_CVR_DB',
-    `${dbUrl.split('/').slice(0, -1).join('/')}/zero_cvr`,
-    '.env'
-  )
-  updateEnvVariable(
-    cwd,
-    'ZERO_CHANGE_DB',
-    `${dbUrl.split('/').slice(0, -1).join('/')}/zero_cdb`,
-    '.env'
-  )
+  updateEnvVariable(cwd, 'ZERO_CVR_DB', zeroCvrDb, '.env')
+  updateEnvVariable(cwd, 'ZERO_CHANGE_DB', zeroChangeDb, '.env')
 
   // Extract host from domain URL and save for deployment
   const deployHost = new URL(domain).hostname

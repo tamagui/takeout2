@@ -9,7 +9,7 @@ import {
   PRIVACY_POLICY_URL,
   TERMS_OF_SERVICE_URL,
 } from '~/constants/app'
-import { authClient } from '~/features/auth/client/authClient'
+import { signInAsDemo } from '~/features/auth/client/signInAsDemo'
 import { Link } from '~/interface/app/Link'
 import { LogoIcon } from '~/interface/app/LogoIcon'
 import { ButtonAction } from '~/interface/buttons/ButtonAction'
@@ -118,10 +118,7 @@ export const LoginPage = () => {
                   size="large"
                   onPress={async () => {
                     setDemoLoading(true)
-                    const { error } = await authClient.signIn.email({
-                      email: 'demo@takeout.tamagui.dev',
-                      password: 'demopassword123',
-                    })
+                    const { error } = await signInAsDemo()
                     setDemoLoading(false)
                     if (error) {
                       showToast('Demo login failed', { type: 'error' })
@@ -177,25 +174,14 @@ export const LoginPage = () => {
               />
             </XStack>
           </YStack>
-          <YStack
-            animation="200ms"
-            enterStyle={{ opacity: 0 }}
-            items="center"
-            gap="$2"
-            mt="$4"
-          >
-            <YStack gap="$1">
-              <SizableText text="center" color="$color11">
-                By continuing, you agree to our
-              </SizableText>
-              <XStack justify="center" gap="$1">
-                <Link href={TERMS_OF_SERVICE_URL}>Terms of Service</Link>
-                <SizableText color="$color11">,</SizableText>
-                <Link href={PRIVACY_POLICY_URL}>Privacy Policy</Link>
-                <SizableText color="$color11">and</SizableText>
-                <Link href={EULA_URL}>EULA.</Link>
-              </XStack>
-            </YStack>
+          <YStack items="center" gap="$2" mt="$4">
+            <SizableText size="$3" text="center" color="$color10">
+              By continuing, you agree to our
+              <br />
+              <Link href={TERMS_OF_SERVICE_URL}>Terms of Service</Link>,{' '}
+              <Link href={PRIVACY_POLICY_URL}>Privacy Policy</Link> and{' '}
+              <Link href={EULA_URL}>EULA.</Link>
+            </SizableText>
           </YStack>
         </YStack>
       </YStack>

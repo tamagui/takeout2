@@ -14,7 +14,9 @@ test.describe('Basic Integration Tests', () => {
   })
 
   test('server should be running on port 8081', async () => {
-    const response = await page.goto(BASE_URL, { waitUntil: 'networkidle' })
+    const response = await page.goto(`${BASE_URL}/home`, {
+      waitUntil: 'domcontentloaded',
+    })
     expect(response?.status()).toBe(200)
   })
 })

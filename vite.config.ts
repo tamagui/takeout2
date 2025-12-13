@@ -20,7 +20,23 @@ export default {
   },
 
   optimizeDeps: {
-    include: ['async-retry'],
+    include: [
+      'async-retry',
+      // pre-bundle common web deps to avoid mid-navigation optimization
+      'better-auth/client',
+      'better-auth/client/plugins',
+      '@tamagui/toast',
+      '@tamagui/animate-presence',
+      '@tamagui/react-native-svg',
+      '@tamagui/image-next',
+      '@tamagui/linear-gradient',
+      '@rocicorp/zero',
+      '@rocicorp/zero/react',
+      'react-dom',
+      '@vxrn/helpers',
+      '@legendapp/list',
+      'zeego/dropdown-menu',
+    ],
   },
 
   ssr: {

@@ -16,9 +16,7 @@ export const createPool = (connectionString?: string) => {
   return new Pool({
     connectionString: connStr,
     // handle self-signed certificates in production
-    ssl: connStr?.includes('sslmode=require')
-      ? { rejectUnauthorized: false }
-      : undefined,
+    ssl: connStr?.includes('sslmode=require') ? { rejectUnauthorized: false } : undefined,
   })
 }
 

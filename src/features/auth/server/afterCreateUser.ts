@@ -92,7 +92,7 @@ export async function afterCreateUser(user: { id: string; email: string }) {
     const userRow = {
       id: userId,
       name: name || '',
-      username: username || '',
+      username: isDemoUser ? 'demo' : username || '',
       image: image || '',
       joinedAt: createdAt ? new Date(createdAt).toISOString() : new Date().toISOString(),
       hasOnboarded: isDemoUser,

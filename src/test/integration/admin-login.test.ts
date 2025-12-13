@@ -10,39 +10,25 @@ test.beforeEach(async ({ context }) => {
   await context.clearCookies()
 })
 
+// skipped: showAdmin query param is being stripped by framework routing
 test.skip('admin login via UI', async ({ page }) => {
-  // Track auth requests
-  let signupRequest: any = null
-  page.on('response', async (response) => {
-    if (response.url().includes('/api/auth/sign-up/email')) {
-      signupRequest = {
-        status: response.status(),
-        body: await response.json().catch(() => ({})),
-      }
-    }
-  })
+  test.setTimeout(60000)
+
   await page.goto('http://localhost:8081/login?showAdmin', {
-    waitUntil: 'domcontentloaded',
+    waitUntil: 'networkidle',
   })
-  await page.waitForTimeout(2000)
+  await page.waitForTimeout(3000)
+
   const adminButton = page.locator('[data-testid="login-as-admin"]')
-  await expect(adminButton).toBeVisible({ timeout: 5000 })
+  await expect(adminButton).toBeVisible({ timeout: 10000 })
   await adminButton.click()
   await page.waitForTimeout(3000)
 
-  // Check current URL
-  const currentUrl = page.url()
-
-  // Should be redirected away from login
-  expect(currentUrl).not.toContain('/login')
-
-  // Check if signup was successful
-  if (signupRequest) {
-    if (signupRequest.status === 200) {
-    }
-  }
+  // should be redirected away from login
+  expect(page.url()).not.toContain('/login')
 })
 
+// skipped: showAdmin query param is being stripped by framework routing
 test.skip('admin login shows username attribute', async ({ page }) => {
   await page.goto('http://localhost:8081/login?showAdmin')
   await page.waitForTimeout(1000)
@@ -50,11 +36,9 @@ test.skip('admin login shows username attribute', async ({ page }) => {
   const adminButton = page.locator('[data-testid="login-as-admin"]')
   await adminButton.click()
 
-  // Wait for redirect
+  // wait for redirect
   await page.waitForTimeout(3000)
 
-  // For now, just verify we're authenticated by checking we're not on login page
-  // The data-username attribute requires the user to have a username set
-  const url = page.url()
-  expect(url).not.toContain('/login')
+  // verify we're authenticated by checking we're not on login page
+  expect(page.url()).not.toContain('/login')
 })

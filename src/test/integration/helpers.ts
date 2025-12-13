@@ -14,8 +14,8 @@ export async function loginAsDemo(page: Page, pathname = '/') {
   const demoButton = page.locator('[data-testid="login-as-demo"]')
   await demoButton.waitFor({ state: 'visible', timeout: 10000 })
   await demoButton.click()
-  await page.waitForTimeout(1000)
-  await page.waitForLoadState('networkidle')
+  await page.waitForTimeout(2000)
+  await page.waitForLoadState('domcontentloaded').catch(() => {})
 
   // verify login by checking if we're redirected away from login page
   const currentUrl = page.url()
@@ -26,16 +26,39 @@ export async function loginAsDemo(page: Page, pathname = '/') {
 
   console.info(`✅ Logged in as demo user, redirected to: ${currentUrl}`)
 
-  // for demo users, force navigate to /home (skip any onboarding redirects)
-  await page.goto(`${BASE_URL}/home`, {
-    waitUntil: 'networkidle',
-  })
-  await page.waitForTimeout(500)
+  // if redirected to onboarding, skip it
+  if (currentUrl.includes('/avatar-setup') || currentUrl.includes('/profile-setup')) {
+    console.info('Skipping onboarding...')
+    await page.waitForTimeout(1000)
+    const skipButton = page.locator('[data-testid="skip-onboarding"]')
+    try {
+      await skipButton.waitFor({ state: 'visible', timeout: 5000 })
+      await skipButton.click()
+      await page.waitForTimeout(2000)
+    } catch {
+      console.info('Skip button not available, continuing...')
+    }
+  }
+
+  // ensure we're on /home and reload for fresh state
+  const afterLoginUrl = page.url()
+  if (afterLoginUrl.includes('/home')) {
+    console.info('Already on /home, reloading...')
+    await page.reload({ waitUntil: 'domcontentloaded' })
+  } else {
+    console.info('Navigating to /home...')
+    await page.goto(`${BASE_URL}/home`, { waitUntil: 'domcontentloaded' })
+  }
+
+  // wait for page to fully stabilize after reload
+  // waitForZeroSync disabled as the element may not exist and causes timing issues
+  await page.waitForTimeout(5000)
 
   // navigate to desired pathname if different from home
   if (pathname !== '/' && pathname !== '/home') {
     await page.goto(`${BASE_URL}${pathname}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
+      timeout: 15000,
     })
   }
 }

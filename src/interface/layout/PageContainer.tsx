@@ -5,6 +5,7 @@ export const PageContainer = styled(YStack, {
   px: '$4',
   width: '100%',
   position: 'relative',
+  minW: 380,
 
   $md: {
     maxW: 760,

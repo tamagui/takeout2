@@ -75,7 +75,7 @@ const [data] = useQuery(userById, { userId }, { enabled: Boolean(userId) })
 ### query generation
 
 when you run `over-zero generate`, it scans your query files and creates
-`src/data/generated/queries.ts`:
+`src/data/generated/syncedQueries.ts`:
 
 ```ts
 // auto-generated
@@ -455,7 +455,7 @@ this creates:
 - `src/data/generated/types.ts` - TypeScript types from schemas
 - `src/data/generated/tables.ts` - table schema exports
 - `src/data/generated/models.ts` - model aggregation
-- `src/data/generated/queries.ts` - synced query definitions with validators
+- `src/data/generated/syncedQueries.ts` - synced query definitions with validators
 
 use generated types:
 
@@ -501,7 +501,7 @@ src/data/
 │   ├── types.ts
 │   ├── tables.ts
 │   ├── models.ts
-│   └── queries.ts
+│   └── syncedQueries.ts
 ├── relationships.ts  # relationship definitions
 ├── schema.ts         # schema assembly
 └── types.ts          # type exports + custom types
@@ -705,7 +705,7 @@ this runs drizzle migrations and updates zero's cvr database.
 ## resources
 
 - zero docs: https://zero.rocicorp.dev
-- over-zero readme: /Users/n8/chat/packages/over-zero/readme.md
+- over-zero readme: packages/over-zero/readme.md
 - models: src/data/models/
 - queries: src/data/queries/
 - schema: src/data/schema.ts

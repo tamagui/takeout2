@@ -212,7 +212,7 @@ generates all files needed to connect your models and queries:
 - `models.ts` - aggregates all model files into a single import
 - `types.ts` - generates TypeScript types from table schemas
 - `tables.ts` - exports table schemas (separate to avoid circular types)
-- `queries.ts` - generates synced query definitions with valibot validators
+- `syncedQueries.ts` - generates synced query definitions with valibot validators
 
 **options:**
 
@@ -283,7 +283,7 @@ export { schema as channel } from '~/data/models/channel'
 export { schema as message } from '~/data/models/message'
 ```
 
-**queries.ts:**
+**syncedQueries.ts:**
 
 ```ts
 import * as v from 'valibot'
@@ -329,12 +329,14 @@ client:
 
 ```tsx
 import { createZeroClient } from 'over-zero'
-import { schema } from './data/schema'
-import { models } from './data/models'
+import { schema } from '~/data/schema'
+import { models } from '~/data/generated/models'
+import * as groupedQueries from '~/data/generated/groupedQueries'
 
-export const { ProvideZero, useQuery, zero } = createZeroClient({
+export const { ProvideZero, useQuery, zero, usePermission } = createZeroClient({
   schema,
   models,
+  groupedQueries,
 })
 
 // in your app root
@@ -352,20 +354,32 @@ server:
 
 ```ts
 import { createZeroServer } from 'over-zero/server'
+import { syncedQueries } from '~/data/generated/syncedQueries'
 
 export const zeroServer = createZeroServer({
   schema,
   models,
   database: process.env.DATABASE_URL,
+  queries: syncedQueries, // required for synced queries / pull endpoint
   createServerActions: () => ({
     sendEmail: async (to, subject, body) => { ... }
   })
 })
 
-// in your api endpoint
+// push endpoint for mutations
 app.post('/api/zero/push', async (req) => {
   const authData = await getAuthFromRequest(req)
   const { response } = await zeroServer.handleMutationRequest({
+    authData,
+    request: req
+  })
+  return response
+})
+
+// pull endpoint for synced queries
+app.post('/api/zero/pull', async (req) => {
+  const authData = await getAuthFromRequest(req)
+  const { response } = await zeroServer.handleQueryRequest({
     authData,
     request: req
   })

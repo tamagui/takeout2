@@ -1,3 +1,4 @@
+import { defineQueries, defineQuery } from '@rocicorp/zero'
 import {
   useConnectionState,
   useQuery as zeroUseQuery,
@@ -24,6 +25,7 @@ import { setAuthData, setSchema } from './state'
 
 import type { AuthData, GenericModels, GetZeroMutators, Where, ZeroEvent } from './types'
 import type { Row, Zero, ZeroOptions, Schema as ZeroSchema } from '@rocicorp/zero'
+import type { AnyQueryRegistry } from '@rocicorp/zero'
 
 export type GroupedQueries = Record<string, Record<string, (...args: any[]) => any>>
 
@@ -46,11 +48,25 @@ export function createZeroClient<
   setSchema(schema)
 
   // build query registry from grouped queries
+  // this creates ONE shared defineQueries registry that matches the server's structure
+  const wrappedNamespaces: Record<
+    string,
+    Record<string, ReturnType<typeof defineQuery>>
+  > = {}
+
   for (const [namespace, queries] of Object.entries(groupedQueries)) {
+    wrappedNamespaces[namespace] = {}
     for (const [name, fn] of Object.entries(queries)) {
       registerQuery(fn, `${namespace}.${name}`)
+      // wrap each plain function in defineQuery
+      wrappedNamespaces[namespace][name] = defineQuery(({ args }: { args: any }) =>
+        fn(args)
+      )
     }
   }
+
+  // create the single shared CustomQuery registry
+  const customQueries = defineQueries(wrappedNamespaces)
 
   const DisabledContext = createContext(false)
 
@@ -61,11 +77,16 @@ export function createZeroClient<
 
   let latestZeroInstance: ZeroInstance | null = null
 
-  // when we log in this is swapped out and later the exported zero is just a proxy
-  // may cause some issues, ideally zero itself supports this
+  // Proxy allows swapping the Zero instance on login without breaking existing references.
+  // Ideally rocicorp/zero would support .setAuth() natively, but for now we swap instances.
   const zero: ZeroInstance = new Proxy({} as never, {
     get(_, key) {
-      return Reflect.get(latestZeroInstance!, key, latestZeroInstance)
+      if (latestZeroInstance === null) {
+        throw new Error(
+          `Zero instance not initialized. Ensure ZeroProvider is mounted before accessing 'zero'.`
+        )
+      }
+      return Reflect.get(latestZeroInstance, key, latestZeroInstance)
     },
   })
 
@@ -85,6 +106,7 @@ export function createZeroClient<
 
   const useQuery = createUseQuery<Schema>({
     DisabledContext,
+    customQueries,
   })
 
   // we don't want flickers as you move around and these queries are re-run

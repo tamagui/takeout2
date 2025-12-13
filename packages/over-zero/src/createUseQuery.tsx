@@ -1,4 +1,3 @@
-import { defineQuery } from '@rocicorp/zero'
 import { useQuery as zeroUseQuery } from '@rocicorp/zero/react'
 import { use, useMemo, type Context } from 'react'
 
@@ -6,10 +5,9 @@ import { useZeroDebug } from './helpers/useZeroDebug'
 import { getQueryName } from './queryRegistry'
 
 import type {
-  AnyCustomQuery,
+  AnyQueryRegistry,
   HumanReadable,
   Query,
-  ReadonlyJSONValue,
   Schema as ZeroSchema,
 } from '@rocicorp/zero'
 
@@ -43,21 +41,22 @@ export type UseQueryHook<Schema extends ZeroSchema> = {
 
 export function createUseQuery<Schema extends ZeroSchema>({
   DisabledContext,
+  customQueries,
 }: {
   DisabledContext: Context<boolean>
+  customQueries: AnyQueryRegistry
 }): UseQueryHook<Schema> {
-  const queryCache = new Map<string, AnyCustomQuery>()
-
   function useQuery(...args: any[]): any {
     const disabled = use(DisabledContext)
     const [fn, paramsOrOptions, optionsArg] = args
 
-    const { actualQuery, options } = useMemo(() => {
+    const { queryRequest, options } = useMemo(() => {
       const queryName = getQueryName(fn)
-
       if (!queryName) {
+        const fnName = fn?.name || 'anonymous'
         throw new Error(
-          `Query function not registered. Make sure to export it from a queries file.`
+          `Query function '${fnName}' not registered. ` +
+            `Ensure it is exported from a queries file and passed to createZeroClient via groupedQueries.`
         )
       }
 
@@ -72,37 +71,28 @@ export function createUseQuery<Schema extends ZeroSchema>({
       const params = hasParams ? paramsOrOptions : undefined
       const opts = hasParams ? optionsArg : paramsOrOptions
 
-      let customQuery = queryCache.get(queryName)
+      // look up the CustomQuery from the shared registry
+      // queryName is "namespace.name" format, e.g., "user.userById"
+      const [namespace, name] = queryName.split('.', 2)
+      const customQuery = (customQueries as any)[namespace]?.[name]
+
       if (!customQuery) {
-        // create a defineQuery wrapper for the plain function
-        const definition = defineQuery(({ args }: { args: ReadonlyJSONValue }) => {
-          return fn(args)
-        })
-        // manually create a callable CustomQuery structure
-        const callable = (inputArgs?: ReadonlyJSONValue) => ({
-          query: callable,
-          args: inputArgs,
-          '~': 'QueryRequest' as const,
-        })
-        callable.queryName = queryName
-        callable.fn = definition.fn
-        callable['~'] = definition['~']
-        customQuery = callable as unknown as AnyCustomQuery
-        queryCache.set(queryName, customQuery)
+        throw new Error(
+          `CustomQuery '${queryName}' not found. ` +
+            `Check that the query is exported and the namespace/name matches.`
+        )
       }
 
-      // call the CustomQuery with params if provided to get a QueryRequest
-      const query =
-        params !== undefined ? (customQuery as any)(params) : (customQuery as any)()
+      const queryRequest = params !== undefined ? customQuery(params) : customQuery()
 
-      return { actualQuery: query, options: opts }
+      return { queryRequest, options: opts }
     }, [fn, paramsOrOptions, optionsArg])
 
-    const out = zeroUseQuery(actualQuery, options)
+    const out = zeroUseQuery(queryRequest as any, options)
 
     if (process.env.NODE_ENV === 'development') {
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      useZeroDebug(actualQuery, options, out)
+      useZeroDebug(queryRequest as any, options, out)
     }
 
     if (disabled) {

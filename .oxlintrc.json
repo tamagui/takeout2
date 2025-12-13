@@ -14,9 +14,18 @@
               "Select",
               "Input",
               "Switch",
-              "TextArea"
+              "TextArea",
+              "Image"
             ],
             "message": "Use custom component from ~/interface instead"
+          },
+          {
+            "name": "@tamagui/image-next",
+            "message": "Use Image from ~/interface/image/Image instead"
+          },
+          {
+            "name": "~/interface/text/Body",
+            "message": "Use Text from ~/interface/text/Text instead"
           }
         ]
       }

@@ -7,7 +7,7 @@ import { ListItem, SizableText, Spinner, View, YStack } from 'tamagui'
 import { useBlockedUsers } from '~/features/profile/useBlockedUsers'
 import { Avatar } from '~/interface/avatars/Avatar'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
-import { BodyText } from '~/interface/text/Body'
+import { Text } from '~/interface/text/Text'
 
 import type { User } from '~/data/types'
 
@@ -43,9 +43,9 @@ export const ProfileBlockedUsersPage = () => {
         <Avatar image={item.image} size={44} mr="$3" />
 
         <YStack gap="$1" flex={1}>
-          <BodyText color="$color10" fontSize="$3" numberOfLines={1}>
+          <Text size="$3" color="$color10" numberOfLines={1}>
             @{item.username}
-          </BodyText>
+          </Text>
         </YStack>
 
         <ButtonSimple

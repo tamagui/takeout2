@@ -13,7 +13,7 @@ import { GalleryImage, GalleryWrapper } from '~/interface/gallery/Gallery'
 import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
 import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
 import { Image } from '~/interface/image/Image'
-import { BodyText } from '~/interface/text/Body'
+import { Text } from '~/interface/text/Text'
 import { useQuery } from '~/zero/client'
 
 const route = createRoute<'/(app)/(tabs)/home/post/[feedId]'>()
@@ -110,7 +110,7 @@ export const FeedDetailPage = memo(() => {
         )}
 
         <YStack>
-          <BodyText color="$color12">{post.caption}</BodyText>
+          <Text>{post.caption}</Text>
         </YStack>
       </ScrollView>
     </>

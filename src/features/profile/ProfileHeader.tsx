@@ -10,7 +10,7 @@ import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { PencilSimpleIcon } from '~/interface/icons/phosphor/PencilSimpleIcon'
 import { ShareFatIcon } from '~/interface/icons/phosphor/ShareFatIcon'
 import { SocialLinks } from '~/interface/social-media/platforms'
-import { BodyText } from '~/interface/text/Body'
+import { Text } from '~/interface/text/Text'
 
 import type { User } from '~/data/types'
 
@@ -47,7 +47,7 @@ export const ProfileHeader = memo(
 
             <YStack gap="$1" flex={1} pr="$4">
               {/* Username */}
-              <BodyText color="$color12">{userInfo?.username}</BodyText>
+              <Text>{userInfo?.username}</Text>
               {/* Stats */}
               <XStack justify="space-between">
                 <YStack items="flex-start">

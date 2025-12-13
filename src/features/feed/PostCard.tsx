@@ -9,7 +9,7 @@ import { Pressable } from '~/interface/buttons/Pressable'
 import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
 import { Image } from '~/interface/image/Image'
 import { LinearGradientSeparator } from '~/interface/separators/LinearGradientSeparator'
-import { BodyText } from '~/interface/text/Body'
+import { Text } from '~/interface/text/Text'
 import { useQuery } from '~/zero/client'
 
 import { AvatarWithMenu } from './AvatarWithMenu'
@@ -72,19 +72,20 @@ export const PostCard = memo(({ post }: PostCardProps) => {
                 borderWidth={0}
               >
                 {({ open }: { open: boolean }) => (
-                  <BodyText
-                    color="$color12"
+                  <Text
                     numberOfLines={open ? undefined : 3}
                     flex={1}
                     text="left"
-                    onTextLayout={(e) => {
-                      if (e.nativeEvent.lines.length >= 3) {
-                        setIsTruncated(true)
-                      }
-                    }}
+                    {...(!isWeb && {
+                      onTextLayout: (e: { nativeEvent: { lines: unknown[] } }) => {
+                        if (e.nativeEvent.lines.length >= 3) {
+                          setIsTruncated(true)
+                        }
+                      },
+                    })}
                   >
                     {post.caption}
-                  </BodyText>
+                  </Text>
                 )}
               </Accordion.Trigger>
               <Accordion.HeightAnimator animation="200ms">

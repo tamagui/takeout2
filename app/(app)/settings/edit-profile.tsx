@@ -11,7 +11,7 @@ import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { XIcon } from '~/interface/icons/phosphor/XIcon'
 import { KeyboardAwareScrollView } from '~/interface/keyboard/KeyboardAwareScrollView'
 import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter'
-import { MediumText, TinyText } from '~/interface/text/Body'
+import { Text } from '~/interface/text/Text'
 import { AvatarUpload } from '~/interface/upload/AvatarUpload'
 
 export const ProfileEditPage = () => {
@@ -87,10 +87,12 @@ export const ProfileEditPage = () => {
           </YStack>
           <YStack>
             <XStack justify="space-between" items="center" mb="$2">
-              <MediumText fontWeight="500" color="$color11">
+              <Text size="$3" fontWeight="500" color="$color11">
                 Name
-              </MediumText>
-              <MediumText color="$color9">{name.length}/40</MediumText>
+              </Text>
+              <Text size="$3" color="$color9">
+                {name.length}/40
+              </Text>
             </XStack>
             <Input
               width="100%"
@@ -103,10 +105,12 @@ export const ProfileEditPage = () => {
           </YStack>
           <YStack>
             <XStack justify="space-between" items="center" mb="$2">
-              <MediumText fontWeight="500" color="$color11">
+              <Text size="$3" fontWeight="500" color="$color11">
                 Username
-              </MediumText>
-              <MediumText color="$color9">{username.length}/30</MediumText>
+              </Text>
+              <Text size="$3" color="$color9">
+                {username.length}/30
+              </Text>
             </XStack>
             <XStack items="center" position="relative">
               <Input
@@ -129,13 +133,13 @@ export const ProfileEditPage = () => {
               </XStack>
             </XStack>
             {isUnavailable && !isCheckingAvailability ? (
-              <TinyText mt="$1" color="$red10">
+              <Text size="$2" mt="$1" color="$red10">
                 Username is not available
-              </TinyText>
+              </Text>
             ) : isUsernameInvalid ? (
-              <TinyText mt="$1" color="$red10">
+              <Text size="$2" mt="$1" color="$red10">
                 Must be 3+ chars, start with letter, only letters/numbers/_
-              </TinyText>
+              </Text>
             ) : null}
           </YStack>
         </YStack>

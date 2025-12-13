@@ -1,8 +1,8 @@
 import { XStack, YStack } from 'tamagui'
 
 import { Logo } from '~/interface/app/Logo'
-import { MediumText } from '~/interface/text/Body'
 import { H3 } from '~/interface/text/Headings'
+import { Text } from '~/interface/text/Text'
 
 export const WaitingListPage = () => {
   return (
@@ -17,10 +17,10 @@ export const WaitingListPage = () => {
             You're on the list
           </H3>
 
-          <MediumText color="$color11" text="center" fontWeight="300" maxW="90%">
+          <Text size="$3" color="$color11" text="center" fontWeight="300" maxW="90%">
             Users are being let in waves, and your invite will arrive soon. Keep an eye on
             your email for access in the coming days.
-          </MediumText>
+          </Text>
         </YStack>
       </YStack>
     </YStack>

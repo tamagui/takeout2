@@ -11,7 +11,6 @@
 // allow self-signed certs for managed databases
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 
-import { hashPassword } from 'better-auth/crypto'
 import { Pool } from 'pg'
 
 const connectionString = process.env.ZERO_UPSTREAM_DB
@@ -26,16 +25,6 @@ const pool = new Pool({
   connectionString,
   ssl: isLocalhost ? false : { rejectUnauthorized: false },
 })
-
-// demo user credentials - must match constants in src/constants/app.ts
-const DEMO_USER = {
-  id: 'demo-user-1',
-  name: 'Demo User',
-  username: 'demo',
-  email: 'demo@takeout.tamagui.dev',
-  password: 'demopassword123',
-  image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400',
-}
 
 const seedUsers = [
   {
@@ -98,79 +87,7 @@ const seedPosts = [
 async function seed() {
   const now = new Date().toISOString()
 
-  // create demo user with password
-  console.info('creating demo user...')
-  const hashedPassword = await hashPassword(DEMO_USER.password)
-
-  // insert demo user into private user table (auth)
-  await pool.query(
-    `INSERT INTO "user" (id, name, username, email, "emailVerified", image, role)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
-     ON CONFLICT (id) DO UPDATE SET
-       name = EXCLUDED.name,
-       username = EXCLUDED.username,
-       email = EXCLUDED.email,
-       "emailVerified" = EXCLUDED."emailVerified",
-       image = EXCLUDED.image`,
-    [
-      DEMO_USER.id,
-      DEMO_USER.name,
-      DEMO_USER.username,
-      DEMO_USER.email,
-      true,
-      DEMO_USER.image,
-      'user',
-    ]
-  )
-
-  // insert demo user account with password
-  await pool.query(
-    `INSERT INTO "account" (id, "accountId", "providerId", "userId", password, "createdAt", "updatedAt")
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
-     ON CONFLICT (id) DO UPDATE SET
-       password = EXCLUDED.password,
-       "updatedAt" = EXCLUDED."updatedAt"`,
-    [
-      `${DEMO_USER.id}-credential`,
-      DEMO_USER.id,
-      'credential',
-      DEMO_USER.id,
-      hashedPassword,
-      now,
-      now,
-    ]
-  )
-
-  // insert demo user into public user table
-  await pool.query(
-    `INSERT INTO "userPublic" (id, name, username, image, "joinedAt", "hasOnboarded", whitelisted, "migrationVersion", "postsCount")
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-     ON CONFLICT (id) DO UPDATE SET
-       name = EXCLUDED.name,
-       username = EXCLUDED.username,
-       image = EXCLUDED.image`,
-    [
-      DEMO_USER.id,
-      DEMO_USER.name,
-      DEMO_USER.username,
-      DEMO_USER.image,
-      now,
-      true,
-      true,
-      0,
-      0,
-    ]
-  )
-
-  // insert demo user state
-  await pool.query(
-    `INSERT INTO "userState" ("userId", "darkMode", locale, "timeZone", "onlineStatus")
-     VALUES ($1, $2, $3, $4, $5)
-     ON CONFLICT ("userId") DO NOTHING`,
-    [DEMO_USER.id, false, 'en', 'UTC', 'online']
-  )
-
-  console.info(`  created demo user: ${DEMO_USER.email}`)
+  // demo user is created lazily via signInAsDemo helper, no need to seed it
 
   console.info('seeding users...')
 

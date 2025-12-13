@@ -22,3 +22,8 @@ export const DISCORD_INVITE_URL = 'https://discord.com/invite/your-server'
 
 // Email
 export const ADMIN_EMAIL = `admin@${DOMAIN}`
+
+// Demo user (for takeout demo site)
+export const DEMO_EMAIL = `demo@${DOMAIN}`
+export const DEMO_PASSWORD = 'demopassword123'
+export const DEMO_NAME = 'Demo User'

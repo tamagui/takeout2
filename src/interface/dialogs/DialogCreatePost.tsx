@@ -133,6 +133,7 @@ export const DialogCreatePost = () => {
           accept="image/*"
           style={{ display: 'none' }}
           onChange={handleWebFileChange}
+          data-testid="create-post-file-input"
         />
       )}
 
@@ -155,6 +156,7 @@ export const DialogCreatePost = () => {
               onChangeText={setCaption}
               autoFocus={isWeb}
               rounded="$6"
+              data-testid="create-post-caption"
             />
 
             {previewUrl && (
@@ -232,7 +234,13 @@ export const DialogCreatePost = () => {
             <ButtonSimple glass onPress={handleClose}>
               Cancel
             </ButtonSimple>
-            <ButtonSimple glass size="large" onPress={handlePost} disabled={!canPost}>
+            <ButtonSimple
+              glass
+              size="large"
+              onPress={handlePost}
+              disabled={!canPost}
+              data-testid="create-post-submit"
+            >
               {isPosting ? 'Posting...' : 'Post'}
             </ButtonSimple>
           </Dialog.Footer>

@@ -111,8 +111,8 @@ export const LoginPage = () => {
                 </ButtonSimple>
               )}
 
-              {/* DEMO mode - just for takeout demo site, you can remove! */}
-              {import.meta.env.VITE_DEMO_MODE === '1' && (
+              {/* DEMO mode - enabled in dev or when VITE_DEMO_MODE=1 */}
+              {(import.meta.env.DEV || import.meta.env.VITE_DEMO_MODE === '1') && (
                 <ButtonSimple
                   variant="outlined"
                   size="large"

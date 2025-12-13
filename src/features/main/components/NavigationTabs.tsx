@@ -1,5 +1,5 @@
 import { Link, usePathname } from 'one'
-import { AnimatePresence, View, XStack, YStack } from 'tamagui'
+import { AnimatePresence, useMedia, View, XStack, YStack } from 'tamagui'
 
 import { Pressable } from '~/interface/buttons/Pressable'
 import { HouseIcon } from '~/interface/icons/phosphor/HouseIcon'
@@ -24,6 +24,8 @@ const routes: TabRoute[] = [
 
 export function NavigationTabs() {
   const pathname = usePathname()
+  const media = useMedia()
+  const iconSize = media.sm ? 24 : 20
 
   return (
     <XStack gap="$4" maxW={590} position="relative">
@@ -35,7 +37,7 @@ export function NavigationTabs() {
           <Link key={route.name} href={route.href}>
             <YStack gap="$2" items="center" width={TAB_ITEM_WIDTH} cursor="pointer">
               <Pressable items="center">
-                <Icon size={20} $sm={{ size: 24 }} color="$color" />
+                <Icon size={iconSize} color="$color" />
               </Pressable>
               {isActive && (
                 <AnimatePresence>

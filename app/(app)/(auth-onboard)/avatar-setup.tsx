@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Circle, isWeb, SizableText, Spinner, YStack } from 'tamagui'
+import { Circle, isWeb, SizableText, Spinner, XStack, YStack } from 'tamagui'
 
 import { OnboardingStepPageLayout } from '~/features/user/ui/OnboardingStepPageLayout'
 import { useUser } from '~/features/user/useUser'
@@ -138,23 +138,40 @@ export const AvatarSetupPage = () => {
         Icon={CameraIcon}
         description="Finally, let's choose an avatar for your profile."
         bottom={
-          <ButtonSimple
-            glass
-            size="large"
-            pressStyle={{
-              scale: 0.97,
-              opacity: 0.9,
-            }}
-            onPress={async () => {
-              if (user) {
-                await zero.mutate.userPublic.finishOnboarding()
-              }
-              goBackToHome()
-            }}
-            disabled={!localImageUri || isUploading}
-          >
-            {isUploading ? 'Uploading...' : 'Next'}
-          </ButtonSimple>
+          <XStack gap="$3" justify="center">
+            {import.meta.env.DEV && (
+              <ButtonSimple
+                glass
+                size="large"
+                data-testid="skip-onboarding"
+                onPress={async () => {
+                  if (user) {
+                    await zero.mutate.userPublic.finishOnboarding()
+                  }
+                  goBackToHome()
+                }}
+              >
+                Skip
+              </ButtonSimple>
+            )}
+            <ButtonSimple
+              glass
+              size="large"
+              pressStyle={{
+                scale: 0.97,
+                opacity: 0.9,
+              }}
+              onPress={async () => {
+                if (user) {
+                  await zero.mutate.userPublic.finishOnboarding()
+                }
+                goBackToHome()
+              }}
+              disabled={!localImageUri || isUploading}
+            >
+              {isUploading ? 'Uploading...' : 'Next'}
+            </ButtonSimple>
+          </XStack>
         }
       >
         <YStack items="center" mt="$2">

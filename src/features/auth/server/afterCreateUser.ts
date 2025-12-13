@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm'
 
+import { DEMO_EMAIL } from '~/constants/app'
 import { getDb } from '~/database'
 import { user as userTable, whitelist } from '~/database/schema-private'
 import { userPublic, userState } from '~/database/schema-public'
@@ -85,14 +86,17 @@ export async function afterCreateUser(user: { id: string; email: string }) {
       //   .where(eq(userTable.id, userId))
     }
 
+    // Demo users are auto-onboarded for easier testing
+    const isDemoUser = email === DEMO_EMAIL
+
     const userRow = {
       id: userId,
       name: name || '',
       username: username || '',
       image: image || '',
       joinedAt: createdAt ? new Date(createdAt).toISOString() : new Date().toISOString(),
-      hasOnboarded: false,
-      whitelisted: isWhitelisted,
+      hasOnboarded: isDemoUser,
+      whitelisted: isWhitelisted || isDemoUser,
       migrationVersion: 0,
       postsCount: 0,
     }

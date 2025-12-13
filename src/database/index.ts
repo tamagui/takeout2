@@ -12,8 +12,13 @@ const schema = {
 }
 
 export const createPool = (connectionString?: string) => {
+  const connStr = connectionString || ZERO_UPSTREAM_DB
   return new Pool({
-    connectionString: connectionString || ZERO_UPSTREAM_DB,
+    connectionString: connStr,
+    // handle self-signed certificates in production
+    ssl: connStr?.includes('sslmode=require')
+      ? { rejectUnauthorized: false }
+      : undefined,
   })
 }
 

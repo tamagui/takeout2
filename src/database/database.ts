@@ -8,6 +8,10 @@ if (!ZERO_UPSTREAM_DB) {
 
 export const database = new Pool({
   connectionString: ZERO_UPSTREAM_DB,
+  // handle self-signed certificates in production
+  ssl: ZERO_UPSTREAM_DB.includes('sslmode=require')
+    ? { rejectUnauthorized: false }
+    : undefined,
 })
 
 database.on('error', (error) => {

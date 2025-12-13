@@ -53,6 +53,10 @@ export function createZeroServer<
     schema,
     new Pool({
       connectionString: dbString,
+      // handle self-signed certificates in production
+      ssl: dbString.includes('sslmode=require')
+        ? { rejectUnauthorized: false }
+        : undefined,
     })
   )
 

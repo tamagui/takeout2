@@ -97,3 +97,64 @@ how it works.
 in general run a `bun run ci release --dry-run` to test that everything still
 works and CI passes, it should work so long as .env.production exists and is
 filled out
+
+### Integration Tests
+
+integration tests use playwright and live in `src/test/integration/`. to run
+them quickly during development:
+
+```bash
+# ensure dev server is running on :8081
+bun dev
+
+# run integration tests
+bunx playwright test src/test/integration/
+```
+
+for CI or isolated testing:
+
+```bash
+# start backend + frontend dev together
+bun run ci start-all-dev
+
+# in another terminal, run tests
+bun test:integration
+```
+
+### Writing Quick Integration Tests
+
+test files go in `src/test/integration/`. use helpers from `./helpers.ts`:
+
+```ts
+import { expect, test, type Page } from '@playwright/test'
+import { loginAsDemo } from './helpers'
+
+const BASE_URL = 'http://localhost:8081'
+
+test.describe('My Feature', () => {
+  let page: Page
+
+  test.beforeAll(async ({ browser }) => {
+    page = await browser.newPage()
+  })
+
+  test.afterAll(async () => {
+    await page.close()
+  })
+
+  test('works as expected', async () => {
+    await loginAsDemo(page)
+    // test your feature...
+    expect(page.url()).toContain('/home')
+  })
+})
+```
+
+available helpers:
+
+- `loginAsDemo(page)` - logs in as demo user, navigates to /home
+- `loginAsAdmin(page)` - logs in as admin user
+- `waitForZeroSync(page)` - waits for zero to be connected
+
+the demo login button is automatically visible in dev mode
+(`import.meta.env.DEV`)

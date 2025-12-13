@@ -1,37 +1,110 @@
-import { router, type Href } from 'one'
-import { Linking } from 'react-native'
+import { Link, type Href } from 'one'
 import { ScrollView, SizableText, View, XStack, YStack } from 'tamagui'
 
-import { APP_NAME_LOWERCASE, HELP_ROADMAP_URL } from '~/constants/app'
+import { APP_NAME_LOWERCASE } from '~/constants/app'
 import { useLogout } from '~/features/auth/useLogout'
 import { useUser } from '~/features/user/useUser'
 import { Pressable } from '~/interface/buttons/Pressable'
-import { dialogConfirm, showError } from '~/interface/dialogs/actions'
+import { dialogConfirm } from '~/interface/dialogs/actions'
 import { Switch } from '~/interface/forms/Switch'
+import { BookmarkIcon } from '~/interface/icons/phosphor/BookmarkIcon'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { ChatCircleIcon } from '~/interface/icons/phosphor/ChatCircleIcon'
 import { DoorIcon } from '~/interface/icons/phosphor/DoorIcon'
 import { FileIcon } from '~/interface/icons/phosphor/FileIcon'
 import { InfoIcon } from '~/interface/icons/phosphor/InfoIcon'
 import { LockIcon } from '~/interface/icons/phosphor/LockIcon'
-import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
 import { UserIcon } from '~/interface/icons/phosphor/UserIcon'
-import { Image } from '~/interface/image/Image'
-import { H4 } from '~/interface/text/Headings'
+import { H4, SepHeading } from '~/interface/text/Headings'
 
 interface SettingItem {
   id: string
   title: string
   icon?: React.ComponentType<any>
   action?: () => void
-  route?: Href
-  url?: string
+  href?: Href
+  external?: boolean
   hasSwitch?: boolean
 }
 
 interface SettingSection {
   title: string
   items: SettingItem[]
+}
+
+const ItemContent = ({ item }: { item: SettingItem }) => {
+  const Icon = item.icon
+  return (
+    <XStack
+      cursor="pointer"
+      height={56}
+      px="$4"
+      items="center"
+      justify="space-between"
+      hoverStyle={{
+        bg: '$color1pt5',
+      }}
+    >
+      <XStack gap="$3" items="center" flex={1}>
+        {Icon && (
+          <View width={24} items="center" justify="center">
+            <Icon size={20} color="$color11" />
+          </View>
+        )}
+        <SizableText size="$5">{item.title}</SizableText>
+      </XStack>
+      <CaretRightIcon size={16} color="$color8" />
+    </XStack>
+  )
+}
+
+const renderItem = (item: SettingItem) => {
+  const Icon = item.icon
+
+  if (item.hasSwitch) {
+    return (
+      <XStack
+        key={item.id}
+        bg="$color1"
+        height={56}
+        px="$4"
+        items="center"
+        justify="space-between"
+        borderBottomWidth={1}
+        borderBottomColor="$color3"
+      >
+        <XStack gap="$3" items="center" flex={1}>
+          {Icon && (
+            <View width={24} items="center" justify="center">
+              <Icon size={20} color="$color11" />
+            </View>
+          )}
+          <SizableText size="$4" color="$color12" fontWeight="600">
+            {item.title}
+          </SizableText>
+        </XStack>
+        <Switch size="$3" checked={false} onCheckedChange={undefined} bg="$color4" />
+      </XStack>
+    )
+  }
+
+  if (item.action) {
+    return (
+      <Pressable key={item.id} onPress={item.action}>
+        <ItemContent item={item} />
+      </Pressable>
+    )
+  }
+
+  if (item.href) {
+    return (
+      <Link key={item.id} href={item.href} target={item.external ? '_blank' : undefined}>
+        <ItemContent item={item} />
+      </Link>
+    )
+  }
+
+  return null
 }
 
 export const ProfileSettingsPage = () => {
@@ -53,13 +126,13 @@ export const ProfileSettingsPage = () => {
           id: 'profile',
           title: 'Profile',
           icon: UserIcon,
-          route: '/settings/edit-profile',
+          href: '/settings/edit-profile',
         },
         {
           id: 'blocked-users',
           title: 'Blocked Users',
           icon: LockIcon,
-          route: '/settings/blocked-users',
+          href: '/settings/blocked-users',
         },
       ],
     },
@@ -70,25 +143,26 @@ export const ProfileSettingsPage = () => {
           id: 'help',
           title: 'Help & Support',
           icon: ChatCircleIcon,
-          route: '/help',
+          href: '/help',
         },
         {
-          id: 'request-feature',
-          title: 'Request Feature',
-          icon: SparkleIcon,
-          url: HELP_ROADMAP_URL,
+          id: 'documentation',
+          title: 'Documentation',
+          icon: BookmarkIcon,
+          href: '/docs',
+          external: true,
         },
         {
           id: 'terms',
           title: 'Terms of Service',
           icon: FileIcon,
-          route: '/terms-of-service',
+          href: '/terms-of-service',
         },
         {
           id: 'privacy',
           title: 'Privacy Policy',
           icon: LockIcon,
-          route: '/privacy-policy',
+          href: '/privacy-policy',
         },
         {
           id: 'delete',
@@ -139,75 +213,6 @@ export const ProfileSettingsPage = () => {
     },
   ]
 
-  const handleItemPress = (item: SettingItem) => {
-    if (item.action) {
-      item.action()
-    } else if (item.url) {
-      Linking.openURL(item.url).catch((error) => {
-        showError(error, 'Open Link')
-      })
-    } else if (item.route) {
-      router.push(item.route)
-    }
-  }
-
-  const renderItem = (item: SettingItem) => {
-    const Icon = item.icon
-
-    if (item.hasSwitch) {
-      return (
-        <XStack
-          key={item.id}
-          bg="$color1"
-          height={56}
-          px="$4"
-          items="center"
-          justify="space-between"
-          borderBottomWidth={1}
-          borderBottomColor="$color3"
-        >
-          <XStack gap="$3" items="center" flex={1}>
-            {Icon && (
-              <View width={24} items="center" justify="center">
-                <Icon size={20} color="$color11" />
-              </View>
-            )}
-            <SizableText size="$4" color="$color12" fontWeight="600">
-              {item.title}
-            </SizableText>
-          </XStack>
-          <Switch size="$3" checked={false} onCheckedChange={undefined} bg="$color4" />
-        </XStack>
-      )
-    }
-
-    return (
-      <Pressable key={item.id} onPress={() => handleItemPress(item)}>
-        <XStack
-          bg="$color1"
-          height={56}
-          px="$4"
-          items="center"
-          justify="space-between"
-          borderBottomWidth={1}
-          borderBottomColor="$color3"
-        >
-          <XStack gap="$3" items="center" flex={1}>
-            {Icon && (
-              <View width={24} items="center" justify="center">
-                <Icon size={20} color="$color11" />
-              </View>
-            )}
-            <SizableText size="$4" color="$color12">
-              {item.title}
-            </SizableText>
-          </XStack>
-          <CaretRightIcon size={20} color="$color8" />
-        </XStack>
-      </Pressable>
-    )
-  }
-
   return (
     <ScrollView
       flex={1}
@@ -217,19 +222,8 @@ export const ProfileSettingsPage = () => {
       <YStack flex={1} pb="$10">
         {allSections.map((section, sectionIndex) => (
           <YStack key={section.title} mb="$6">
-            <SizableText
-              size="$2"
-              color="$color10"
-              px="$4"
-              py="$2"
-              textTransform="uppercase"
-              fontWeight="600"
-            >
-              {section.title}
-            </SizableText>
-            <YStack bg="$color1" borderTopWidth={1} borderTopColor="$color3">
-              {section.items.map((item) => renderItem(item))}
-            </YStack>
+            <SepHeading>{section.title}</SepHeading>
+            <YStack>{section.items.map((item) => renderItem(item))}</YStack>
           </YStack>
         ))}
 

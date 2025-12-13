@@ -8,7 +8,7 @@ export const DOMAIN = 'takeout.tamagui.dev'
 // Paths
 export const HELP_REQUESTS_PATH = '/requests'
 export const HELP_ROADMAP_PATH = '/roadmap'
-export const TERMS_OF_SERVICE_PATH = '/terms-and-services'
+export const TERMS_OF_SERVICE_PATH = '/terms-of-service'
 export const PRIVACY_POLICY_PATH = '/privacy-policy'
 export const EULA_PATH = '/eula'
 

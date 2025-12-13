@@ -33,7 +33,11 @@ export const PostCard = memo(({ post }: PostCardProps) => {
   const isOwnProfile = authorId === user?.id
 
   return (
-    <View mt="$2" {...(isWeb && { bg: '$background', rounded: '$6', py: '$4' })}>
+    <View
+      mt="$2"
+      data-testid={`post-card-${post.id}`}
+      {...(isWeb && { bg: '$background', rounded: '$6', py: '$4' })}
+    >
       <View px="$4">
         <XStack items="center" justify="space-between" pb="$2">
           <XStack gap="$3" width="100%">

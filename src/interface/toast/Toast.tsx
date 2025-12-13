@@ -77,7 +77,6 @@ const ToastDisplay = () => {
       maxW={250}
       overflow="hidden"
       viewportName={currentToast?.viewportName}
-      themeInverse
       bg="$color2"
       py="$1.5"
       px="$3"

@@ -153,12 +153,12 @@ try {
       fn: async () => {
         try {
           if (values['dev']) {
-            void run(`bun tko ci frontend-dev`, {
+            void run(`bun run ci frontend-dev`, {
               detached: true,
             })
             await sleep(4000)
           } else if (!values['skip-web-build']) {
-            await run(`bun tko web build`, {
+            await run(`bun run web build`, {
               prefix: 'web-build',
               timeout: time.ms.minutes(5),
               timing: 'web:build',
@@ -210,7 +210,7 @@ async function setupBackend() {
     await run(`docker compose down`, {
       env: await getTestEnv(),
     })
-    void run(`bun tko ci backend`, {
+    void run(`bun run ci start-backend`, {
       detached: true,
     })
     await waitForBackend()
@@ -311,7 +311,7 @@ async function runIntegrationTests() {
   try {
     await waitForRun('playwright install')
 
-    void run(`bun tko ci frontend`, {
+    void run(`bun run ci start-frontend`, {
       detached: true,
     })
 

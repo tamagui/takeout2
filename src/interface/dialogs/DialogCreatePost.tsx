@@ -202,7 +202,11 @@ export const DialogCreatePost = () => {
             )}
 
             {!previewUrl && (
-              <Pressable onPress={handleSelectImage} disabled={isUploading}>
+              <Pressable
+                onPress={handleSelectImage}
+                disabled={isUploading}
+                data-testid="create-post-image-picker"
+              >
                 <YStack
                   borderWidth={2}
                   borderColor="$color5"

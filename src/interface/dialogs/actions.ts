@@ -55,3 +55,7 @@ export const showError = (error: unknown, title: string = 'Error') => {
     description,
   })
 }
+
+export const showCreatePostDialog = () => {
+  dialogEmit({ type: 'create-post' })
+}

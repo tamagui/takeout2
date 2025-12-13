@@ -15,6 +15,10 @@ export type DialogAdminPasswordType = {
   type: 'admin-password'
 }
 
+export type DialogCreatePostType = {
+  type: 'create-post'
+}
+
 export type DialogErrorType = {
   type: 'error'
   title: string
@@ -26,6 +30,7 @@ export type DialogType =
   | DialogConfirmType
   | DialogClosedType
   | DialogAdminPasswordType
+  | DialogCreatePostType
   | DialogErrorType
 
 export type DialogLayer2 = DialogConfirmType | DialogClosedType | DialogErrorType

@@ -19,8 +19,7 @@ export async function getTestEnv() {
     }),
     DO_NOT_TRACK: '1',
     ZERO_VERSION: zeroVersion,
-    ZERO_AUTH_JWKS_URL: `http://${dockerHost}:8081/api/auth/jwks`,
-    ZERO_PUSH_URL: `http://${dockerHost}:8081/api/zero/push`,
-    ZERO_GET_QUERIES_URL: `http://${dockerHost}:8081/api/zero/pull`,
+    ZERO_MUTATE_URL: `http://${dockerHost}:8081/api/zero/push`,
+    ZERO_QUERY_URL: `http://${dockerHost}:8081/api/zero/pull`,
   }
 }

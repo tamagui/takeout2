@@ -80,9 +80,10 @@ services:
     environment:
       - ZERO_ADMIN_PASSWORD=${ZERO_ADMIN_PASSWORD:-production-admin-change-me}
       - ZERO_LOG_LEVEL=${ZERO_LOG_LEVEL:-info}
-      - ZERO_AUTH_JWKS_URL=http://web:8081/api/auth/jwks
-      - ZERO_PUSH_URL=http://web:8081/api/zero/push
-      - ZERO_GET_QUERIES_URL=http://web:8081/api/zero/pull
+      - ZERO_MUTATE_URL=http://web:8081/api/zero/push
+      - ZERO_QUERY_URL=http://web:8081/api/zero/pull
+      - ZERO_MUTATE_FORWARD_COOKIES=true
+      - ZERO_QUERY_FORWARD_COOKIES=true
       - ZERO_UPSTREAM_DB=${ZERO_UPSTREAM_DB:-postgresql://user:password@pgdb:5432/postgres}
       - ZERO_CVR_DB=${ZERO_CVR_DB:-postgresql://user:password@pgdb:5432/zero_cvr}
       - ZERO_CHANGE_DB=${ZERO_CHANGE_DB:-postgresql://user:password@pgdb:5432/zero_cdb}
@@ -141,9 +142,8 @@ services:
       - ${WEB_DOMAIN:-takeout.uncld.dev}:8081/https
     environment:
       - NODE_ENV=production
-      - ZERO_AUTH_JWKS_URL=http://web:8081/api/auth/jwks
-      - ZERO_PUSH_URL=http://web:8081/api/zero/push
-      - ZERO_GET_QUERIES_URL=http://web:8081/api/zero/pull
+      - ZERO_MUTATE_URL=http://web:8081/api/zero/push
+      - ZERO_QUERY_URL=http://web:8081/api/zero/pull
       - ZERO_UPSTREAM_DB=${ZERO_UPSTREAM_DB:-postgresql://user:password@pgdb:5432/postgres}
       - ZERO_CVR_DB=${ZERO_CVR_DB:-postgresql://user:password@pgdb:5432/zero_cvr}
       - ZERO_CHANGE_DB=${ZERO_CHANGE_DB:-postgresql://user:password@pgdb:5432/zero_cdb}

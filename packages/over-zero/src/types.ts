@@ -101,7 +101,7 @@ export type Where<
   Table extends TableName = TableName,
   ReturnType extends Condition | boolean = Condition | boolean,
 > = (
-  expressionBuilder: ExpressionBuilder<Schema, Table>,
+  expressionBuilder: ExpressionBuilder<Table, Schema>,
   auth?: AuthData | null
 ) => ReturnType
 

@@ -1,4 +1,6 @@
-import { handleGetQueriesRequest, PushProcessor } from '@rocicorp/zero/pg'
+import { mustGetQuery } from '@rocicorp/zero'
+import { PushProcessor } from '@rocicorp/zero/pg'
+import { handleQueryRequest as zeroHandleQueryRequest } from '@rocicorp/zero/server'
 import { zeroNodePg } from '@rocicorp/zero/server/adapters/pg'
 import { assertString, randomId } from '@vxrn/helpers'
 import { Pool } from 'pg'
@@ -16,31 +18,23 @@ import type {
   Transaction,
 } from './types'
 import type {
+  AnyQueryRegistry,
   HumanReadable,
   Query,
-  ReadonlyJSONValue,
-  SyncedQuery,
   Schema as ZeroSchema,
 } from '@rocicorp/zero'
 import type { TransactionProviderInput } from '@rocicorp/zero/pg'
-
-// grouped synced queries: { namespace: { queryName: SyncedQuery } }
-export type SyncedQueries = Record<
-  string,
-  Record<string, SyncedQuery<any, any, any, any, any>>
->
 
 export function createZeroServer<
   Schema extends ZeroSchema,
   Models extends GenericModels,
   ServerActions extends Record<string, unknown>,
-  Queries extends SyncedQueries = Record<string, never>,
 >({
   createServerActions,
   database,
   schema,
   models,
-  syncedQueries,
+  queries,
 }: {
   /**
    * The DB connection string, same as ZERO_UPSTREAM_DB
@@ -49,7 +43,7 @@ export function createZeroServer<
   schema: Schema
   models: Models
   createServerActions: () => ServerActions
-  syncedQueries?: Queries
+  queries?: AnyQueryRegistry
 }) {
   setSchema(schema)
 
@@ -112,16 +106,6 @@ export function createZeroServer<
     }
   }
 
-  // build flat lookup map from grouped syncedQueries: "namespace.queryName" => SyncedQuery
-  const queryLookup = new Map<string, SyncedQuery<any, any, any, any, any>>()
-  if (syncedQueries) {
-    for (const [namespace, queries] of Object.entries(syncedQueries)) {
-      for (const [queryName, syncedQuery] of Object.entries(queries)) {
-        queryLookup.set(`${namespace}.${queryName}`, syncedQuery)
-      }
-    }
-  }
-
   const handleQueryRequest = async ({
     authData,
     request,
@@ -129,20 +113,18 @@ export function createZeroServer<
     authData: AuthData | null
     request: Request
   }) => {
-    function getQuery(name: string, args: readonly ReadonlyJSONValue[]) {
-      const q = queryLookup.get(name)
-      if (!q) {
-        throw new Error(`No such query: ${name}`)
-      }
-
-      return {
-        // @ts-expect-error zero bug atm
-        query: q(...args),
-      }
+    if (!queries) {
+      throw new Error('No queries registered with createZeroServer')
     }
 
+    // set authData globally for permission checks in query functions
     setAuthData(authData || {})
-    const response = await handleGetQueriesRequest(getQuery, schema, request)
+
+    const response = await zeroHandleQueryRequest(
+      (name, args) => (mustGetQuery as any)(queries, name).fn({ args, ctx: authData }),
+      schema,
+      request
+    )
 
     return {
       response,
@@ -195,7 +177,7 @@ export function createZeroServer<
   }
 
   function query<R>(
-    cb: (q: Transaction['query']) => Query<Schema, any, R>
+    cb: (q: Transaction['query']) => Query<any, Schema, R>
   ): Promise<HumanReadable<R>> {
     return transaction(async (tx) => {
       return cb(tx.query)

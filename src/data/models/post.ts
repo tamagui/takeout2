@@ -37,7 +37,7 @@ export const mutate = mutations(schema, permissions, {
     await tx.mutate.post.delete({ id: obj.id })
 
     if (environment === 'server' && server && authData) {
-      const post = await tx.query.post.where('id', obj.id).one().run()
+      const post = await (tx.query as any).post.where('id', obj.id).one().run()
 
       if (post) {
         server.asyncTasks.push(() =>

@@ -1,5 +1,5 @@
 import { Redirect, Slot, Stack, usePathname } from 'one'
-import { Configuration, isWeb, SizableText } from 'tamagui'
+import { Configuration, isWeb } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
 import { Dialogs } from '~/interface/dialogs/Dialogs'
@@ -15,7 +15,7 @@ export function AppLayout() {
   const pathname = usePathname()
 
   if (state === 'loading') {
-    return <SizableText>Loading...</SizableText>
+    return null
   }
 
   const isAuthRoute = pathname === '/login' || pathname.startsWith('/signup')

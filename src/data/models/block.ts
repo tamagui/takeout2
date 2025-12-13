@@ -38,7 +38,7 @@ export const mutate = mutations(schema, permissions, {
   delete: async ({ tx, authData, environment, server }, blockedUserId: string) => {
     if (!authData) throw new Error('Must be logged in')
 
-    const block = await tx.query.block
+    const block = await (tx.query as any).block
       .where('blockerId', authData.id)
       .where('blockedId', blockedUserId)
       .one()

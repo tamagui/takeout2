@@ -1,6 +1,19 @@
-import { useZero, ZeroProvider } from '@rocicorp/zero/react'
+import {
+  useConnectionState,
+  useQuery as zeroUseQuery,
+  useZero,
+  ZeroProvider,
+} from '@rocicorp/zero/react'
 import { createEmitter, mapObject } from '@vxrn/helpers'
-import { createContext, use, useMemo, type ReactNode } from 'react'
+import {
+  createContext,
+  memo,
+  use,
+  useEffect,
+  useMemo,
+  useRef,
+  type ReactNode,
+} from 'react'
 
 import { createPermissions } from './createPermissions'
 import { createUseQuery } from './createUseQuery'
@@ -9,7 +22,7 @@ import { prettyFormatZeroQuery } from './helpers/prettyFormatZeroQuery'
 import { registerQuery } from './queryRegistry'
 import { setAuthData, setSchema } from './state'
 
-import type { AuthData, GenericModels, GetZeroMutators, ZeroEvent } from './types'
+import type { AuthData, GenericModels, GetZeroMutators, Where, ZeroEvent } from './types'
 import type { Row, Zero, ZeroOptions, Schema as ZeroSchema } from '@rocicorp/zero'
 
 export type GroupedQueries = Record<string, Record<string, (...args: any[]) => any>>
@@ -17,17 +30,14 @@ export type GroupedQueries = Record<string, Record<string, (...args: any[]) => a
 export function createZeroClient<
   Schema extends ZeroSchema,
   Models extends GenericModels,
-  const DisableInlineQueries extends boolean = false,
 >({
   schema,
   models,
   groupedQueries,
-  disableInlineQueries = false as DisableInlineQueries,
 }: {
   schema: Schema
   models: Models
   groupedQueries: GroupedQueries
-  disableInlineQueries?: DisableInlineQueries
 }) {
   type ZeroMutators = GetZeroMutators<Models>
   type ZeroInstance = Zero<Schema, ZeroMutators>
@@ -44,9 +54,10 @@ export function createZeroClient<
 
   const DisabledContext = createContext(false)
 
-  const modelWritePermissions = mapObject(models, (val) => val.permissions) as {
-    [K in TableName]: K extends keyof Models ? Models[K]['permissions'] : never
-  }
+  const modelWritePermissions = mapObject(models, (val) => val.permissions) as Record<
+    TableName,
+    Where<any, any> | undefined
+  >
 
   let latestZeroInstance: ZeroInstance | null = null
 
@@ -72,9 +83,8 @@ export function createZeroClient<
   const AuthDataContext = createContext<AuthData>({} as AuthData)
   const useAuthData = () => use(AuthDataContext)
 
-  const useQuery = createUseQuery<Schema, DisableInlineQueries>({
+  const useQuery = createUseQuery<Schema>({
     DisabledContext,
-    disableInlineQueries,
   })
 
   // we don't want flickers as you move around and these queries are re-run
@@ -83,7 +93,7 @@ export function createZeroClient<
   // always update once the query resolves
   function usePermission<K extends TableName>(
     table: K,
-    objOrId: string | Partial<Row<Schema['tables'][K]>> | undefined,
+    objOrId: string | Partial<Row<any>> | undefined,
     enabled = typeof objOrId !== 'undefined',
     debug = false
   ): boolean | null {
@@ -93,7 +103,7 @@ export function createZeroClient<
     const permission = modelWritePermissions[table]
 
     const query = (() => {
-      let baseQuery = zero.query[table].one()
+      let baseQuery = (zero.query as any)[table].one()
 
       if (disabled || !enabled || !permission) {
         return baseQuery
@@ -109,9 +119,8 @@ export function createZeroClient<
       })
     })()
 
-    // note: usePermission is internal and uses inline queries intentionally
-    // if disableInlineQueries is enabled, this will error and need a cast
-    const [data, status] = useQuery(query as any, {
+    // usePermission is internal and uses inline queries directly via zeroUseQuery
+    const [data, status] = zeroUseQuery(query, {
       enabled: Boolean(enabled && permission && authData && objOrId),
     })
 
@@ -164,20 +173,9 @@ export function createZeroClient<
 
     return (
       <AuthDataContext.Provider value={authData}>
-        <ZeroProvider
-          schema={schema}
-          kvStore="mem"
-          onError={(error) => {
-            console.error(`Zero Error:`, error)
-            zeroEvents.emit({
-              type: 'error',
-              message: error,
-            })
-          }}
-          mutators={mutators}
-          {...props}
-        >
+        <ZeroProvider schema={schema} kvStore="mem" mutators={mutators as any} {...props}>
           <SetZeroInstance />
+          <ConnectionMonitor zeroEvents={zeroEvents} />
           {children}
         </ZeroProvider>
       </AuthDataContext.Provider>
@@ -199,6 +197,36 @@ export function createZeroClient<
 
     return null
   }
+
+  // monitors connection state and emits events (replaces onError callback removed in 0.25)
+  const ConnectionMonitor = memo(
+    ({
+      zeroEvents,
+    }: {
+      zeroEvents: ReturnType<typeof createEmitter<ZeroEvent | null>>
+    }) => {
+      const state = useConnectionState()
+      const prevState = useRef(state.name)
+
+      useEffect(() => {
+        if (state.name !== prevState.current) {
+          const reason = 'reason' in state ? state.reason : ''
+          console.info(`zero connection: ${state.name}`, reason || '')
+          prevState.current = state.name
+
+          if (state.name === 'error' || state.name === 'needs-auth') {
+            const message = typeof reason === 'string' ? reason : state.name
+            zeroEvents.emit({
+              type: 'error',
+              message,
+            })
+          }
+        }
+      }, [state, zeroEvents])
+
+      return null
+    }
+  )
 
   return {
     zeroEvents,

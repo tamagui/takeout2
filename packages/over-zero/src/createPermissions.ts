@@ -3,6 +3,7 @@ import { ensure, EnsureError } from '@vxrn/helpers'
 import { setDidRunPermissionCheck } from './helpers/didRunPermissionCheck'
 import { mutatorContext } from './helpers/mutatorContext'
 import { prettyFormatZeroQuery } from './helpers/prettyFormatZeroQuery'
+import { getZQL } from './state'
 import { getWhereTableName } from './where'
 
 import type { AuthData, Can, TableName, Transaction, Where } from './types'
@@ -96,7 +97,8 @@ export function createPermissions<Schema extends ZeroSchema>({
       return
     }
 
-    const queryBase = tx.query[tableName] as Query<any, any>
+    const zqlBuilder = getZQL() as any
+    const queryBase = zqlBuilder[tableName] as Query<any, any>
     let query: Query<any, any, any> | null = null
 
     try {
@@ -106,9 +108,9 @@ export function createPermissions<Schema extends ZeroSchema>({
         })
         .one()
 
-      ensure(await query)
+      ensure(await tx.run(query))
     } catch (err) {
-      const errorTitle = `${name} with auth id: ${authData?.id}`
+      const errorTitle = `${tableName} with auth id: ${authData?.id}`
 
       if (err instanceof EnsureError) {
         let msg = `[permission] 🚫 Not Allowed: ${errorTitle}`

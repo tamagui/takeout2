@@ -1,4 +1,4 @@
-import { syncedQuery } from '@rocicorp/zero'
+import { defineQuery } from '@rocicorp/zero'
 import { useQuery as zeroUseQuery } from '@rocicorp/zero/react'
 import { use, useMemo, type Context } from 'react'
 
@@ -6,10 +6,10 @@ import { useZeroDebug } from './helpers/useZeroDebug'
 import { getQueryName } from './queryRegistry'
 
 import type {
+  AnyCustomQuery,
   HumanReadable,
   Query,
   ReadonlyJSONValue,
-  SyncedQuery,
   Schema as ZeroSchema,
 } from '@rocicorp/zero'
 
@@ -26,77 +26,42 @@ export type PlainQueryFn<
   TReturn extends Query<any, any, any> = Query<any, any, any>,
 > = (args: TArg) => TReturn
 
-// inline query type - only available when DisableInline is false
-type InlineQuery<
-  Schema extends ZeroSchema,
-  TTable extends keyof Schema['tables'] & string,
-  TReturn,
-> =
-  | Query<Schema, TTable, TReturn>
-  | SyncedQuery<any, any, any, any, Query<Schema, TTable, TReturn>>
-
-// the useQuery hook type with conditional inline overload
-export type UseQueryHook<
-  Schema extends ZeroSchema,
-  DisableInline extends boolean = false,
-> = {
-  // overload 1: inline query (only when DisableInline is false)
-  <TTable extends keyof Schema['tables'] & string, TReturn>(
-    query: DisableInline extends true ? never : InlineQuery<Schema, TTable, TReturn>,
-    options?: UseQueryOptions | boolean
-  ): QueryResult<TReturn>;
-
-  // overload 2: plain function with params
+export type UseQueryHook<Schema extends ZeroSchema> = {
+  // overload 1: plain function with params
   <TArg, TTable extends keyof Schema['tables'] & string, TReturn>(
-    fn: PlainQueryFn<TArg, Query<Schema, TTable, TReturn>>,
+    fn: PlainQueryFn<TArg, Query<TTable, Schema, TReturn>>,
     params: TArg,
     options?: UseQueryOptions | boolean
   ): QueryResult<TReturn>;
 
-  // overload 3: plain function with no params
+  // overload 2: plain function with no params
   <TTable extends keyof Schema['tables'] & string, TReturn>(
-    fn: PlainQueryFn<void, Query<Schema, TTable, TReturn>>,
+    fn: PlainQueryFn<void, Query<TTable, Schema, TReturn>>,
     options?: UseQueryOptions | boolean
   ): QueryResult<TReturn>
 }
 
-export function createUseQuery<
-  Schema extends ZeroSchema,
-  const DisableInline extends boolean = false,
->({
+export function createUseQuery<Schema extends ZeroSchema>({
   DisabledContext,
-  disableInlineQueries = false as DisableInline,
 }: {
   DisabledContext: Context<boolean>
-  disableInlineQueries?: DisableInline
-}): UseQueryHook<Schema, DisableInline> {
-  const queryCache = new Map<string, SyncedQuery<any, any, any, any, any>>()
-  const parseAny = (x: unknown[]): [ReadonlyJSONValue] => [x[0] as ReadonlyJSONValue]
+}): UseQueryHook<Schema> {
+  const queryCache = new Map<string, AnyCustomQuery>()
 
   function useQuery(...args: any[]): any {
     const disabled = use(DisabledContext)
-    const [queryOrFn, paramsOrOptions, optionsArg] = args
-
-    // detect which calling pattern is being used
-    const isPlainFunction = typeof queryOrFn === 'function' && !('queryName' in queryOrFn)
+    const [fn, paramsOrOptions, optionsArg] = args
 
     const { actualQuery, options } = useMemo(() => {
-      if (!isPlainFunction) {
-        // pattern 1: original api - useQuery(query, options)
-        return {
-          actualQuery: queryOrFn,
-          options: paramsOrOptions,
-        }
-      }
-
-      const fn = queryOrFn
       const queryName = getQueryName(fn)
 
       if (!queryName) {
-        throw new Error(`No query name?`)
+        throw new Error(
+          `Query function not registered. Make sure to export it from a queries file.`
+        )
       }
 
-      // determine if this is pattern 2 (with params) or pattern 3 (no params)
+      // determine if this is with params or no params
       const hasParams =
         optionsArg !== undefined ||
         (paramsOrOptions &&
@@ -107,21 +72,31 @@ export function createUseQuery<
       const params = hasParams ? paramsOrOptions : undefined
       const opts = hasParams ? optionsArg : paramsOrOptions
 
-      let synced = queryCache.get(queryName)
-      if (!synced) {
-        synced = syncedQuery(queryName, parseAny, (arg: ReadonlyJSONValue) => {
-          return fn(arg)
+      let customQuery = queryCache.get(queryName)
+      if (!customQuery) {
+        // create a defineQuery wrapper for the plain function
+        const definition = defineQuery(({ args }: { args: ReadonlyJSONValue }) => {
+          return fn(args)
         })
-        queryCache.set(queryName, synced)
+        // manually create a callable CustomQuery structure
+        const callable = (inputArgs?: ReadonlyJSONValue) => ({
+          query: callable,
+          args: inputArgs,
+          '~': 'QueryRequest' as const,
+        })
+        callable.queryName = queryName
+        callable.fn = definition.fn
+        callable['~'] = definition['~']
+        customQuery = callable as unknown as AnyCustomQuery
+        queryCache.set(queryName, customQuery)
       }
 
-      // call the SyncedQuery with params if provided
-      const query = params !== undefined ? (synced as any)(params) : synced
+      // call the CustomQuery with params if provided to get a QueryRequest
+      const query =
+        params !== undefined ? (customQuery as any)(params) : (customQuery as any)()
 
       return { actualQuery: query, options: opts }
-    }, [queryOrFn, paramsOrOptions, optionsArg, isPlainFunction])
-
-    console.info('running', { actualQuery, options, queryOrFn })
+    }, [fn, paramsOrOptions, optionsArg])
 
     const out = zeroUseQuery(actualQuery, options)
 
@@ -137,5 +112,5 @@ export function createUseQuery<
     return out
   }
 
-  return useQuery as UseQueryHook<Schema, DisableInline>
+  return useQuery as UseQueryHook<Schema>
 }

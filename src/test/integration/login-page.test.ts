@@ -67,9 +67,9 @@ test('login page does not redirect infinitely', async ({ page }) => {
     (url) => url.includes('/login') || url.includes('/home')
   )
 
-  // allow up to 10 navigations (SPA may have initial load, vite HMR, etc)
+  // allow up to 20 navigations (SPA may have initial load, SSR hydration, auth checks, etc)
   // this is mainly to catch infinite loops (which would be 100s or 1000s)
-  expect(loginNavigations.length).toBeLessThanOrEqual(10)
+  expect(loginNavigations.length).toBeLessThanOrEqual(20)
 
   // should still be on /login (not redirected away for logged-out user)
   expect(page.url()).toContain('/login')

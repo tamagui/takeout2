@@ -118,9 +118,12 @@ bun tko db/migrate-drizzle    # run drizzle migrations
 CI/CD scripts:
 
 ```bash
-bun tko ci/release         # full CI pipeline
-bun tko ci/check           # CI checks only
-bun tko ci/backend         # start CI backend
+bun run ci release             # full CI pipeline
+bun run ci check               # CI checks only
+bun run ci start-backend       # start CI backend
+bun run ci start-frontend      # start frontend (production mode)
+bun run ci start-frontend-dev  # start frontend (dev mode)
+bun run ci start-all-dev       # start backend + frontend dev for testing
 ```
 
 ### uncloud/

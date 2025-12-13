@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Adapt, Button, Separator, Sheet, Spacer, XStack, YStack } from 'tamagui'
+import { Adapt, Separator, Sheet, Spacer, XStack, YStack } from 'tamagui'
 
 import { LoginButton } from '~/features/auth/ui/LoginButton'
 import { SocialLinksRow } from '~/features/site/ui/SocialLinksRow'
@@ -41,11 +41,11 @@ export const SiteHeader = () => {
               <ThemeSwitch />
             </XStack>
 
-            <Button
-              size="$3"
-              chromeless
+            <ButtonSimple
+              size="large"
+              variant="transparent"
               circular
-              icon={ListIcon}
+              icon={<ListIcon />}
               aria-label="Menu"
               onPress={() => setOpen(true)}
               $sm={{ display: 'none' }}

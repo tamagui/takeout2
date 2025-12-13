@@ -20,6 +20,7 @@ export type LinkProps = OneLinkProps<Href> &
   SizableTextProps & {
     delayNavigation?: number | boolean
     resetStack?: boolean | ResetStackConfig // reset navigation stack with custom routes (native only)
+    hideExternalIcon?: boolean // hide the external link icon for target="_blank" links
 
     // allows us to attach data to the last navigated link
     linkMeta?: LinkMeta
@@ -53,6 +54,7 @@ export const Link = ({
   passThrough,
   delayNavigation,
   resetStack,
+  hideExternalIcon,
   linkMeta,
   tooltip,
   tooltipDelayed,
@@ -131,7 +133,7 @@ export const Link = ({
   }
 
   const childrenElements =
-    target === '_blank' ? (
+    target === '_blank' && !hideExternalIcon ? (
       <>
         {children}
 

@@ -1,8 +1,8 @@
-import { styled, Input } from 'tamagui'
+import { Input as TamaguiInput, styled } from 'tamagui'
 
 import { ListItemContext } from './ListItemContext'
 
-export const ListItemInput = styled(Input, {
+export const ListItemInput = styled(TamaguiInput, {
   context: ListItemContext,
   borderWidth: 0,
   rounded: 0,

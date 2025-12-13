@@ -5,6 +5,7 @@ import { Slot, Stack } from 'one'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { isWeb } from 'tamagui'
 
+import { GlobalTooltipProvider } from '~/interface/tooltip/TooltipSimple'
 import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
 
 // NOTE: we need to set the splash options at root layout for it to work on native
@@ -17,16 +18,18 @@ SplashScreen.preventAutoHideAsync()
 export function Layout() {
   const contents = (
     <TamaguiRootProvider>
-      <SafeAreaProvider>
-        {isWeb ? (
-          <Slot />
-        ) : (
-          // We need specific Stack here to avoid (site) layout being used on native
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(app)" />
-          </Stack>
-        )}
-      </SafeAreaProvider>
+      <GlobalTooltipProvider>
+        <SafeAreaProvider>
+          {isWeb ? (
+            <Slot />
+          ) : (
+            // We need specific Stack here to avoid (site) layout being used on native
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(app)" />
+            </Stack>
+          )}
+        </SafeAreaProvider>
+      </GlobalTooltipProvider>
     </TamaguiRootProvider>
   )
 

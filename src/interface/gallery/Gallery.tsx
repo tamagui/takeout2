@@ -2,9 +2,10 @@ import { useEmitterValue } from '@take-out/helpers'
 import { AnimatePresence } from '@tamagui/animate-presence'
 import { useEffect, useState } from 'react'
 import { useWindowDimensions } from 'react-native'
-import { Button, type ButtonProps, Portal, styled, XStack, YStack } from 'tamagui'
+import { Portal, styled, XStack, YStack } from 'tamagui'
 
 import { animationClamped } from '~/interface/animations/animationClamped'
+import { ButtonSimple, type ButtonSimpleProps } from '~/interface/buttons/ButtonSimple'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { XIcon } from '~/interface/icons/phosphor/XIcon'
@@ -129,12 +130,12 @@ export const Gallery = () => {
       >
         {items && (
           <>
-            <Button
+            <ButtonSimple
               position="absolute"
               circular
-              icon={XIcon}
+              icon={<XIcon />}
               z={100}
-              size="$3"
+              size="large"
               t="$4"
               r="$4"
               onPress={closeGallery}
@@ -178,7 +179,7 @@ export const Gallery = () => {
             <GalleryButton
               aria-label="Carousel left"
               l="$4"
-              icon={CaretLeftIcon}
+              icon={<CaretLeftIcon />}
               onPress={(e: any) => {
                 e.stopPropagation()
                 paginate(-1)
@@ -189,7 +190,7 @@ export const Gallery = () => {
             <GalleryButton
               aria-label="Carousel right"
               r="$4"
-              icon={CaretRightIcon}
+              icon={<CaretRightIcon />}
               onPress={(e: any) => {
                 e.stopPropagation()
                 paginate(1)
@@ -203,13 +204,16 @@ export const Gallery = () => {
   )
 }
 
-const GalleryButton = ({ inactive, ...props }: ButtonProps & { inactive?: boolean }) => {
+const GalleryButton = ({
+  inactive,
+  ...props
+}: ButtonSimpleProps & { inactive?: boolean }) => {
   return (
-    <Button
-      size="$3"
+    <ButtonSimple
+      size="large"
       position="absolute"
       circular
-      elevate
+      variant="floating"
       z={100}
       {...(inactive && {
         opacity: 0,

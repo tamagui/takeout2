@@ -3,10 +3,11 @@ import { isNative } from '@take-out/helpers'
 import { useNavigation } from 'one'
 import { memo, useCallback, useLayoutEffect, useRef } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Input, SizableText, Spinner, View, YStack } from 'tamagui'
+import { SizableText, Spinner, View, YStack } from 'tamagui'
 
 import { PostCard } from '~/features/feed/PostCard'
 import { usePostsSearch } from '~/features/feed/usePosts'
+import { Input } from '~/interface/forms/Input'
 
 import type { NativeSyntheticEvent, TextInputChangeEventData } from 'react-native'
 import type { Post } from '~/data/types'

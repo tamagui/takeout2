@@ -1,6 +1,6 @@
 import { Link, router } from 'one'
 import { useState } from 'react'
-import { Adapt, Button, H3, Separator, Sheet, Spacer, XStack, YStack } from 'tamagui'
+import { Adapt, H3, Separator, Sheet, Spacer, XStack, YStack } from 'tamagui'
 
 import { useLogout } from '~/features/auth/useLogout'
 import { useUser } from '~/features/user/useUser'
@@ -71,11 +71,11 @@ export const MainHeader = () => {
             </XStack>
 
             {/* mobile hamburger */}
-            <Button
-              size="$3"
-              chromeless
+            <ButtonSimple
+              size="large"
+              variant="transparent"
               circular
-              icon={ListIcon}
+              icon={<ListIcon />}
               aria-label="Menu"
               onPress={() => setOpen(true)}
               $sm={{ display: 'none' }}

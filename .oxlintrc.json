@@ -1,6 +1,26 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "tamagui",
+            "importNames": [
+              "Button",
+              "Tooltip",
+              "Popover",
+              "Select",
+              "Input",
+              "Switch",
+              "TextArea"
+            ],
+            "message": "Use custom component from ~/interface instead"
+          }
+        ]
+      }
+    ],
     "no-unused-vars": "off",
     "no-empty-file": "off",
     "no-console": "off",
@@ -15,6 +35,18 @@
     "react-hooks/exhaustive-deps": "warn",
     "react-hooks/rules-of-hooks": "error"
   },
+  "overrides": [
+    {
+      "files": [
+        "src/interface/**/*.tsx",
+        "src/interface/**/*.ts",
+        "src/features/auth/ui/OtpInput.tsx"
+      ],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ],
   "ignorePatterns": [
     "**/.tamagui/**",
     "**/tmp-data/**",

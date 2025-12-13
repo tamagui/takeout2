@@ -1,30 +1,28 @@
 import { useUserScheme } from '@vxrn/color-scheme'
-import { AnimatePresence, Paragraph, styled, View, YStack, TooltipSimple } from 'tamagui'
+import { styled, View } from 'tamagui'
 
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { MoonStarsIcon } from '~/interface/icons/phosphor/MoonStarsIcon'
 import { SunIcon } from '~/interface/icons/phosphor/SunIcon'
 import { SunMoonIcon } from '~/interface/icons/phosphor/SunMoonIcon'
 
+import { TooltipSimple } from '../tooltip/TooltipSimple'
+
 import type { SizeTokens } from 'tamagui'
 
-const AnimatedIcon = styled(View, {
-  animation: 'medium',
-  opacity: 1,
-  scale: 1,
+const IconContainer = styled(View, {
+  animation: 'quick',
   position: 'absolute',
+  opacity: 0,
+  pointerEvents: 'none',
 
-  enterStyle: {
-    scale: 0.5,
-    opacity: 0,
-    rotate: '-180deg',
-  },
-
-  exitStyle: {
-    scale: 0.5,
-    opacity: 0,
-    rotate: '180deg',
-  },
+  variants: {
+    active: {
+      true: {
+        opacity: 1,
+      },
+    },
+  } as const,
 })
 
 const schemeSettings = ['light', 'dark', 'system'] as const
@@ -36,10 +34,7 @@ export function ThemeSwitch({ size = '$2' }: { size?: SizeTokens }) {
 
   return (
     <View items="center" gap="$1">
-      <TooltipSimple
-        groupId="header-theme-switch"
-        label={setting[0]?.toUpperCase() + setting.slice(1)}
-      >
+      <TooltipSimple label={setting[0]?.toUpperCase() + setting.slice(1)}>
         <ButtonSimple
           onPress={onPress}
           animation="medium"
@@ -49,23 +44,15 @@ export function ThemeSwitch({ size = '$2' }: { size?: SizeTokens }) {
           hoverStyle={{ scale: 1.05 }}
           aria-label="Toggle theme"
         >
-          <AnimatePresence>
-            {setting === 'light' && (
-              <AnimatedIcon key="sun">
-                <SunIcon size={iconSize} />
-              </AnimatedIcon>
-            )}
-            {setting === 'dark' && (
-              <AnimatedIcon key="moon">
-                <MoonStarsIcon size={iconSize} />
-              </AnimatedIcon>
-            )}
-            {setting === 'system' && (
-              <AnimatedIcon key="system">
-                <SunMoonIcon size={iconSize} />
-              </AnimatedIcon>
-            )}
-          </AnimatePresence>
+          <IconContainer active={setting === 'light'}>
+            <SunIcon size={iconSize} />
+          </IconContainer>
+          <IconContainer active={setting === 'dark'}>
+            <MoonStarsIcon size={iconSize} />
+          </IconContainer>
+          <IconContainer active={setting === 'system'}>
+            <SunMoonIcon size={iconSize} />
+          </IconContainer>
         </ButtonSimple>
       </TooltipSimple>
     </View>

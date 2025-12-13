@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useRef, useState } from 'react'
 import {
-  Input,
+  Input as TamaguiInput,
   type InputProps,
   SizableText,
   useTheme,
@@ -40,7 +40,7 @@ export const OtpInput = memo(function OtpInput({
   const { width: windowWidth } = useWindowDimensions()
   const width = Math.min(340, windowWidth)
 
-  const inputRef = useRef<Array<Input>>([])
+  const inputRef = useRef<Array<TamaguiInput>>([])
 
   const [focus, setFocus] = useState<number>(defaultValue?.length === otpCount ? -1 : 0)
 
@@ -139,7 +139,7 @@ export const OtpInput = memo(function OtpInput({
 
             return (
               <View key={i} position="relative">
-                <Input
+                <TamaguiInput
                   testID={testId ? `${testId}-${i}` : undefined}
                   width={inputWidth}
                   height={inputWidth}

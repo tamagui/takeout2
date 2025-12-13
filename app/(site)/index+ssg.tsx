@@ -2,6 +2,7 @@ import { Paragraph, Separator, YStack, styled } from 'tamagui'
 
 import { HeadInfo } from '~/interface/app/HeadInfo'
 import { Link } from '~/interface/app/Link'
+import { TechLogos } from '~/interface/home/TechLogos'
 import { H2, H3, H4, SepHeading } from '~/interface/text/Headings'
 
 const Hero = styled(H2, {
@@ -44,9 +45,13 @@ export function IndexPage() {
           Takeout is a better starting point for building cross-platform applications
           with&nbsp;React and React&nbsp;Native.
         </H3>
-      </YStack>
 
-      <Separator my="$6" mx={100} opacity={0.5} />
+        <Separator my="$6" self="stretch" mx={100} opacity={0.5} />
+
+        <TechLogos />
+
+        <Separator my="$6" self="stretch" mx={100} opacity={0.5} />
+      </YStack>
 
       <YStack gap="$5" maxW={550} self="center">
         <Paragraph size="$6">
@@ -54,25 +59,10 @@ export function IndexPage() {
           <Link href="https://www.youtube.com/watch?v=HHTYHm6qLFY" target="_blank">
             long-term effort
           </Link>{' '}
-          to bring more Rails-like elegance to cross-platform React and React Native,
-          aimed at creating a performant, cohesive, simple, and DRY stack that's been
-          enabled by recent exciting frontend technologies.
-        </Paragraph>
-
-        <Paragraph size="$6">
-          We think Takeout achieves something for the first time - the ability to ship
-          first-class web <em>and</em> native experiences, even with large amounts of
-          shared code.
-        </Paragraph>
-
-        <Paragraph size="$6">
-          But what do we mean "first-class"? Here's an example: this entire site is part a
-          a native and web app built with Takeout, and this homepage shares all code with
-          the rest of the app - routing, styling, UI, framework - yet achieves a 100
-          Lighthouse perfomrance score, server rendered to static content and utilizing
-          advanced media queries, dark and light mode, and spring animations, all without
-          a single layout shift or flicker as it hydrates and hands off to fully dynamic
-          client-side routing.
+          to bring more Rails-like elegance to cross-platform React and React Native. It
+          uses exciting developments in frontend tech, alongside a lot of elbow-shine, to
+          give you a performant and platform-native experience, with simple, DRY code -
+          unlike anything ever before.
         </Paragraph>
 
         <Paragraph size="$6">
@@ -81,14 +71,21 @@ export function IndexPage() {
         </Paragraph>
 
         <Paragraph size="$6">
-          React is great when you put in enough effort. Takeout is our take on baking that
-          effort into something cohesive. When we announced{' '}
+          React can be great - with enough effort. When we announced{' '}
           <Link href="https://onestack.dev" target="_blank">
             One
           </Link>{' '}
-          about a year ago we came out against RSC, instead claiming that sync engines and
-          simpler server rendering were the future of frontend. Today, Takeout realizes
-          this long-held and consistent vision.
+          about a year ago we did so because we had a vision - simpler code, better UX.
+          Today, Takeout realizes this vision.
+        </Paragraph>
+
+        <Paragraph size="$6">
+          <b>For the first time, for example,</b> you can have a single setup for web, iOS
+          and Android, with a single setup for routing, styling, UI, and framework - all
+          while getting 100 on Lighthouse (like this very page) for your SSG or SSR pages,
+          while also enjoying SPA-simplicity for logged in pages. All without a single
+          layout shift or flicker as it hydrates, with simple, typed inline styles, modern
+          media queries, dark and light mode, spring animations, and more.
         </Paragraph>
 
         <SepHeading>Goals</SepHeading>

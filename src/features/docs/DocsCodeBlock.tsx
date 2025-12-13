@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Button, SizableText, YStack } from 'tamagui'
+import { SizableText, YStack } from 'tamagui'
 
+import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { CopyIcon } from '~/interface/icons/phosphor/CopyIcon'
 
@@ -24,17 +25,16 @@ export function DocsCodeBlock({
 
   return (
     <YStack position="relative" my="$4" bg="$color2" rounded="$4" overflow="hidden">
-      <Button
+      <ButtonSimple
         position="absolute"
-        top="$2"
-        right="$2"
-        size="$2"
-        icon={copied ? CheckIcon : CopyIcon}
+        t="$2"
+        r="$2"
+        size="small"
+        icon={copied ? <CheckIcon /> : <CopyIcon />}
         onPress={handleCopy}
         bg="$color4"
         hoverStyle={{ bg: '$color5' }}
         pressStyle={{ bg: '$color3' }}
-        {...({} as any)}
       />
       <SizableText
         tag="pre"

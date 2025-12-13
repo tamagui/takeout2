@@ -1,0 +1,50 @@
+import { View, XStack } from 'tamagui'
+
+import { Link } from '~/interface/app/Link'
+import { OneLogo } from '~/interface/icons/logos/OneLogo'
+import { TamaguiLogo } from '~/interface/icons/logos/TamaguiLogo'
+import { ZeroLogo } from '~/interface/icons/logos/ZeroLogo'
+
+import { TooltipSimple } from '../tooltip/TooltipSimple'
+
+const LOGO_SIZE = 32
+
+const logos = [
+  {
+    name: 'Tamagui',
+    href: 'https://tamagui.dev',
+    Logo: TamaguiLogo,
+  },
+  {
+    name: 'One',
+    href: 'https://onestack.dev',
+    Logo: OneLogo,
+  },
+  {
+    name: 'Zero',
+    href: 'https://zero.rocicorp.dev',
+    Logo: ZeroLogo,
+  },
+] as const
+
+export function TechLogos() {
+  return (
+    <XStack gap="$8" items="center" justify="center">
+      {logos.map(({ name, href, Logo }) => (
+        <TooltipSimple key={name} groupId="tech-logos" label={name}>
+          <Link href={href} target="_blank" hideExternalIcon>
+            <View
+              animation="quick"
+              opacity={0.7}
+              hoverStyle={{ opacity: 1, scale: 1.1 }}
+              pressStyle={{ scale: 0.95 }}
+              cursor="pointer"
+            >
+              <Logo size={LOGO_SIZE} />
+            </View>
+          </Link>
+        </TooltipSimple>
+      ))}
+    </XStack>
+  )
+}

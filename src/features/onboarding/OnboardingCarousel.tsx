@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react'
 import {
   AnimatePresence,
-  Button,
   Circle,
   H3,
   SizableText,
+  styled,
   Theme,
   XStack,
   YStack,
-  styled,
 } from 'tamagui'
 
+import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { RocketIcon } from '~/interface/icons/phosphor/RocketIcon'
@@ -54,28 +54,24 @@ const DotIndicator = styled(Circle, {
   } as const,
 })
 
-const NavigationButton = styled(Button, {
-  position: 'absolute',
-  t: '50%',
-  transform: 'translateY(-50%)',
-  size: '$3',
-  circular: true,
-  bg: '$color2',
-  borderWidth: 1,
-  borderColor: '$color3',
-  z: 10,
-
-  variants: {
-    side: {
-      left: {
-        l: '$2',
-      },
-      right: {
-        r: '$2',
-      },
-    },
-  } as const,
-})
+const NavigationButton = ({
+  side,
+  ...props
+}: { side: 'left' | 'right' } & React.ComponentProps<typeof ButtonSimple>) => (
+  <ButtonSimple
+    position="absolute"
+    t="50%"
+    transform="translateY(-50%)"
+    size="large"
+    circular
+    bg="$color2"
+    borderWidth={1}
+    borderColor="$color3"
+    z={10}
+    {...(side === 'left' ? { l: '$2' } : { r: '$2' })}
+    {...props}
+  />
+)
 
 interface OnboardingStep {
   id: string
@@ -273,14 +269,13 @@ export function OnboardingCarousel({
 
       {/* skip button */}
       {currentStep < onboardingSteps.length - 1 && (
-        <Button
+        <ButtonSimple
           position="absolute"
           t="$3"
           r="$3"
-          size="$2"
+          size="small"
           variant="outlined"
           onPress={onComplete}
-          color="$color10"
           pressStyle={{
             opacity: 0.7,
           }}
@@ -289,14 +284,14 @@ export function OnboardingCarousel({
           }}
         >
           Skip
-        </Button>
+        </ButtonSimple>
       )}
 
       {/* get started button on last slide */}
       {currentStep === onboardingSteps.length - 1 && (
         <YStack position="absolute" b={60} l={0} r={0} items="center" px="$4">
-          <Button
-            size="$4"
+          <ButtonSimple
+            size="large"
             theme="accent"
             onPress={onComplete}
             width="100%"
@@ -308,7 +303,7 @@ export function OnboardingCarousel({
             }}
           >
             Get Started
-          </Button>
+          </ButtonSimple>
         </YStack>
       )}
     </CarouselContainer>

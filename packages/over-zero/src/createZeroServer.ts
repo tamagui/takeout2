@@ -114,14 +114,20 @@ export function createZeroServer<
     request: Request
   }) => {
     if (!queries) {
-      throw new Error('No queries registered with createZeroServer')
+      throw new Error(
+        'No queries registered with createZeroServer. ' +
+          'Pass the syncedQueries registry to createZeroServer via the queries option.'
+      )
     }
 
     // set authData globally for permission checks in query functions
     setAuthData(authData || {})
 
     const response = await zeroHandleQueryRequest(
-      (name, args) => (mustGetQuery as any)(queries, name).fn({ args, ctx: authData }),
+      (name, args) => {
+        const query = (mustGetQuery as any)(queries, name)
+        return query.fn({ args, ctx: authData })
+      },
       schema,
       request
     )

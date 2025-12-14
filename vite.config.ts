@@ -4,8 +4,16 @@ import { visualizer } from 'rollup-plugin-visualizer'
 
 import type { UserConfig } from 'vite'
 
+// debug: log VITE_DEMO_MODE during config load
+console.info('[vite.config] VITE_DEMO_MODE:', process.env.VITE_DEMO_MODE)
+
 export default {
   envPrefix: ['VITE_', 'TAMAGUI_'],
+
+  // explicitly define VITE_DEMO_MODE from process.env to ensure it's embedded
+  define: {
+    'import.meta.env.VITE_DEMO_MODE': JSON.stringify(process.env.VITE_DEMO_MODE || ''),
+  },
 
   resolve: {
     alias: {

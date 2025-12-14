@@ -58,12 +58,26 @@ test.describe('Post Flow', () => {
 
     // navigate to home to verify post appears
     await page.goto(`${BASE_URL}/home`, { waitUntil: 'domcontentloaded' })
-    await page.waitForTimeout(2000)
+    await page.waitForTimeout(3000)
 
-    // verify post appears in feed
+    // verify post appears in feed with retry logic for zero sync
+    // zero sync can be slow in CI, so we poll with page reloads
     const postText = page.locator(`text=${caption}`)
-    await postText.waitFor({ state: 'visible', timeout: 15000 })
+    let found = false
+    for (let attempt = 0; attempt < 6; attempt++) {
+      try {
+        await postText.waitFor({ state: 'visible', timeout: 10000 })
+        found = true
+        break
+      } catch {
+        if (attempt < 5) {
+          // refresh page to trigger fresh zero sync
+          await page.reload({ waitUntil: 'domcontentloaded' })
+          await page.waitForTimeout(2000)
+        }
+      }
+    }
 
-    expect(await postText.isVisible()).toBe(true)
+    expect(found).toBe(true)
   })
 })

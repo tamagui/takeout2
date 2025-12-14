@@ -83,7 +83,7 @@
     "@op-engineering/op-sqlite": "^15.0.7",
     "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-native-menu/menu": "^2.0.0",
-    "@rocicorp/zero": "0.25.1",
+    "@rocicorp/zero": "0.25.2",
     "@shopify/react-native-skia": "2.2.12",
     "@take-out/better-auth-utils": "workspace:*",
     "@take-out/helpers": "workspace:*",

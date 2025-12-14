@@ -10,6 +10,7 @@ import {
   TERMS_OF_SERVICE_URL,
 } from '~/constants/app'
 import { signInAsDemo } from '~/features/auth/client/signInAsDemo'
+import { isDemoMode } from '~/helpers/isDemoMode'
 import { Link } from '~/interface/app/Link'
 import { LogoIcon } from '~/interface/app/LogoIcon'
 import { ButtonAction } from '~/interface/buttons/ButtonAction'
@@ -112,7 +113,7 @@ export const LoginPage = () => {
               )}
 
               {/* DEMO mode - enabled in dev or when VITE_DEMO_MODE=1 */}
-              {(import.meta.env.DEV || !!import.meta.env.VITE_DEMO_MODE) && (
+              {isDemoMode && (
                 <ButtonSimple
                   variant="outlined"
                   size="large"

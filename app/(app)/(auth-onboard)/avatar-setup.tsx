@@ -3,6 +3,7 @@ import { Circle, isWeb, SizableText, Spinner, XStack, YStack } from 'tamagui'
 
 import { OnboardingStepPageLayout } from '~/features/user/ui/OnboardingStepPageLayout'
 import { useUser } from '~/features/user/useUser'
+import { isDemoMode } from '~/helpers/isDemoMode'
 import { pickImageFromLibrary, takePhotoWithCamera } from '~/helpers/media/imagePicker'
 import { useGoBackToHome } from '~/hooks/useGoBackToHome'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
@@ -139,7 +140,7 @@ export const AvatarSetupPage = () => {
         description="Finally, let's choose an avatar for your profile."
         bottom={
           <XStack gap="$3" justify="center">
-            {(import.meta.env.DEV || !!import.meta.env.VITE_DEMO_MODE) && (
+            {isDemoMode && (
               <ButtonSimple
                 glass
                 size="large"

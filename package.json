@@ -226,7 +226,8 @@
     "VITE_POSTHOG_HOST": "",
     "VITE_PUBLIC_ZERO_SERVER": "",
     "WEB_DOMAIN": "",
-    "ZERO_DOMAIN": ""
+    "ZERO_DOMAIN": "",
+    "ZERO_VERSION": ""
   },
   "publishConfig": {
     "access": "public"

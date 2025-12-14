@@ -111,7 +111,8 @@ export function deployStack(composeFile: string, profile?: string) {
   console.info('\n📦 deploying stack...\n')
 
   const profileFlag = profile ? `--profile ${profile}` : ''
-  exec(`uc deploy -f ${composeFile} ${profileFlag} --yes`)
+  // --recreate ensures containers are recreated even if config unchanged (pulls fresh images)
+  exec(`uc deploy -f ${composeFile} ${profileFlag} --recreate --yes`)
 
   console.info('\n✅ deployment complete!')
 }

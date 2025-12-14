@@ -137,8 +137,10 @@ async function findWorkspaceDirectories(): Promise<string[]> {
 
   const allPackageDirs = await findPackageJsonDirs('.')
 
-  const normalizePattern = (pattern: string): string => {
-    return pattern.startsWith('./') ? pattern.substring(2) : pattern
+  // normalize path separators to forward slashes for cross-platform support
+  const normalizePath = (path: string): string => {
+    let normalized = path.replace(/\\/g, '/')
+    return normalized.startsWith('./') ? normalized.substring(2) : normalized
   }
 
   const workspaceDirs = allPackageDirs.filter((dir) => {
@@ -146,8 +148,8 @@ async function findWorkspaceDirectories(): Promise<string[]> {
 
     const relativePath = relative('.', dir)
     return patterns.some((pattern) => {
-      const normalizedPattern = normalizePattern(pattern)
-      const normalizedPath = normalizePattern(relativePath)
+      const normalizedPattern = normalizePath(pattern)
+      const normalizedPath = normalizePath(relativePath)
 
       if (normalizedPattern.endsWith('/*')) {
         const prefix = normalizedPattern.slice(0, -1)

@@ -37,6 +37,7 @@ export default {
       '@legendapp/list',
       'zeego/dropdown-menu',
       'mdx-bundler/client',
+      'react-native',
     ],
   },
 

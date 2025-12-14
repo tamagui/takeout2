@@ -12,12 +12,14 @@ export const Avatar = memo(
     size: sizeIn = 28,
     active,
     isOnline,
+    disableBorder,
     ...rest
   }: CircleProps & {
     image: string | null | undefined
     size?: number | SimpleSize
     active?: boolean
     isOnline?: boolean | null
+    disableBorder?: boolean
   }) => {
     const size = getSimpleSize(sizeIn)
     const isBig = size > 40
@@ -29,11 +31,13 @@ export const Avatar = memo(
         width={size}
         height={size}
         position="relative"
-        outlineColor="$color01"
         rounded={100}
-        outlineOffset={1}
-        outlineWidth={0.5}
-        outlineStyle="solid"
+        {...(!disableBorder && {
+          outlineColor: '$color01',
+          outlineOffset: 1,
+          outlineWidth: 0.5,
+          outlineStyle: 'solid',
+        })}
       >
         <SelectableCircle
           active={active || false}

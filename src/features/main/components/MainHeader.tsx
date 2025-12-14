@@ -54,12 +54,12 @@ export const MainHeader = () => {
             </XStack>
 
             {/* desktop controls */}
-            <XStack gap="$3" items="center" display="none" $md={{ display: 'flex' }}>
+            <XStack gap="$2.5" items="center" display="none" $md={{ display: 'flex' }}>
               {user && (
                 <UserProfilePopover
                   trigger={
                     <ButtonSimple size="medium" circular cursor="pointer">
-                      <Avatar size={28} image={user.image} />
+                      <Avatar disableBorder size={28} image={user.image} />
                     </ButtonSimple>
                   }
                 />
@@ -70,11 +70,11 @@ export const MainHeader = () => {
                 size="medium"
                 circular
                 onPress={() => router.push('/settings')}
-                icon={GearIcon}
+                icon={<GearIcon size={18} />}
               />
             </XStack>
 
-            {/* mobile hamburger */}
+            {/* mobile controls */}
             <ButtonSimple
               size="large"
               variant="transparent"

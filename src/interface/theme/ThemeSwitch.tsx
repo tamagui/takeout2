@@ -40,6 +40,7 @@ export function ThemeSwitch({ size = '$2' }: { size?: SizeTokens }) {
           animation="medium"
           size="medium"
           circular
+          keepTooltipOpen
           pressStyle={{ scale: 0.9, opacity: 0.8 }}
           hoverStyle={{ scale: 1.05 }}
           aria-label="Toggle theme"

@@ -35,6 +35,7 @@ type ButtonSimpleAdditionalProps = {
   iconAfter?: boolean
   iconProps?: IconProps
   isInteractive?: boolean
+  keepTooltipOpen?: boolean
   scaleIcon?: number
 } & TooltipWrapperProps
 
@@ -333,6 +334,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
       iconAfter,
       iconProps,
       isInteractive,
+      keepTooltipOpen,
       popover,
       scaleIcon = 1,
       theme,
@@ -384,7 +386,9 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
           cursor: 'not-allowed',
         })}
         onPressOut={() => {
-          closeOpenTooltips()
+          if (!keepTooltipOpen) {
+            closeOpenTooltips()
+          }
         }}
         {...rest}
         {...(delayPress && {

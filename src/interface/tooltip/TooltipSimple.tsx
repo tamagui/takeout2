@@ -1,7 +1,19 @@
-import { createEmitter, useEmitterSelector, useEmitterValue } from '@take-out/helpers'
-import { isEqualIdentity } from '@take-out/helpers'
+import {
+  createEmitter,
+  isEqualIdentity,
+  useEmitterSelector,
+  useEmitterValue,
+} from '@take-out/helpers'
 import { Paragraph } from '@tamagui/text'
-import { Children, memo, useState, type ReactElement, type ReactNode } from 'react'
+import {
+  Children,
+  memo,
+  useEffect,
+  useRef,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from 'react'
 import { Tooltip, type TooltipProps } from 'tamagui'
 
 import { animationClamped } from '../animations/animationClamped'
@@ -67,6 +79,13 @@ const globalTooltip = createEmitter<TooltipSimpleProps>(
 export const TooltipSimple: React.FC<TooltipSimpleProps> = memo((props) => {
   const { children, label } = props
   const child = Children.only(children)
+  const isHoveredRef = useRef(false)
+
+  useEffect(() => {
+    if (isHoveredRef.current) {
+      globalTooltip.emit(props)
+    }
+  }, [label])
 
   return (
     <Tooltip.Trigger
@@ -76,7 +95,11 @@ export const TooltipSimple: React.FC<TooltipSimpleProps> = memo((props) => {
       })}
       asChild="except-style"
       onMouseEnter={() => {
+        isHoveredRef.current = true
         globalTooltip.emit(props)
+      }}
+      onMouseLeave={() => {
+        isHoveredRef.current = false
       }}
     >
       {child}
@@ -90,7 +113,7 @@ export const GlobalTooltipProvider = ({
   children: ReactNode
 }) => {
   const [open, setOpen] = useState(false)
-  // const openDelayed = useDebounceValue(open, 50)
+
   const props = useEmitterValue(globalTooltip)
   const {
     label,
@@ -100,6 +123,7 @@ export const GlobalTooltipProvider = ({
     disableOnPopover,
     ...tooltipProps
   } = props
+
   const disableFromPopover = useEmitterSelector(popoverEmitter, (popover) => {
     if (!disableOnPopover) return false
     return popover?.state === 'open' && popover?.name === disableOnPopover

@@ -6,8 +6,7 @@ import type { IconProps } from '../types'
 
 // zero sync logo - circular arrows forming a "0"
 export const ZeroLogo = memo(({ size = 24, ...svgProps }: IconProps) => {
-  const theme = useTheme()
-  const fill = theme.color12?.val || '#000'
+  const fill = useTheme().color.get()
 
   return (
     <Svg width={size} height={size} viewBox="0 0 112 112" fill="none" {...svgProps}>

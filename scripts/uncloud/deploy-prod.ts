@@ -4,11 +4,16 @@
  * @description Deploy to production droplet with managed database
  */
 
-import { existsSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 import { config } from 'dotenv'
 import pc from 'picocolors'
+
+function getZeroVersion(): string {
+  const packageJson = JSON.parse(readFileSync('package.json', 'utf-8'))
+  return packageJson.dependencies?.['@rocicorp/zero']?.replace(/^[\^~]/, '') || ''
+}
 
 import { buildMigrations, buildWeb, buildDockerImage } from './helpers/build'
 import { exec } from './helpers/exec'
@@ -142,12 +147,16 @@ async function main() {
   // spreads process.env so all vars are available, only derived db urls need explicit override
   console.info('\n📝 processing compose file with production env...\n')
   const processedCompose = 'src/uncloud/docker-compose.processed.yml'
+  const zeroVersion = getZeroVersion()
+  console.info(pc.gray(`   zero version: ${zeroVersion}`))
   processComposeEnv('src/uncloud/docker-compose.yml', processedCompose, {
     ...process.env,
     // derived zero database urls from DEPLOY_DB
     ZERO_UPSTREAM_DB,
     ZERO_CVR_DB,
     ZERO_CHANGE_DB,
+    // always use zero version from package.json
+    ZERO_VERSION: zeroVersion,
   })
 
   // deploy without pgdb profile since using external database

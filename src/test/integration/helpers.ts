@@ -29,42 +29,13 @@ export async function loginAsDemo(page: Page, pathname = '/') {
   const currentUrl = page.url()
   console.info(`✅ Logged in as demo user, redirected to: ${currentUrl}`)
 
-  // if redirected to onboarding, skip it
-  if (currentUrl.includes('/avatar-setup') || currentUrl.includes('/profile-setup')) {
-    console.info('Skipping onboarding...')
+  // always navigate directly to /home to bypass any onboarding redirects
+  // this is more reliable for CI testing than trying to click skip buttons
+  console.info('Navigating to /home...')
+  await page.goto(`${BASE_URL}/home`, { waitUntil: 'domcontentloaded' })
 
-    // wait for page to fully load and stabilize
-    await page.waitForLoadState('networkidle').catch(() => {})
-    await page.waitForTimeout(3000)
-
-    const skipButton = page.locator('[data-testid="skip-onboarding"]')
-    try {
-      await skipButton.waitFor({ state: 'visible', timeout: 10000 })
-      await skipButton.click()
-      // wait for navigation after clicking skip
-      await page
-        .waitForURL((url) => !url.toString().includes('/avatar-setup'), {
-          timeout: 10000,
-        })
-        .catch(() => {})
-    } catch (e) {
-      console.info('Skip button not available, continuing...')
-    }
-  }
-
-  // ensure we're on /home and reload for fresh state
-  const afterLoginUrl = page.url()
-  if (afterLoginUrl.includes('/home')) {
-    console.info('Already on /home, reloading...')
-    await page.reload({ waitUntil: 'domcontentloaded' })
-  } else {
-    console.info('Navigating to /home...')
-    await page.goto(`${BASE_URL}/home`, { waitUntil: 'domcontentloaded' })
-  }
-
-  // wait for page to fully stabilize after reload
-  // waitForZeroSync disabled as the element may not exist and causes timing issues
-  await page.waitForTimeout(5000)
+  // wait for page to stabilize
+  await page.waitForTimeout(2000)
 
   // navigate to desired pathname if different from home
   if (pathname !== '/' && pathname !== '/home') {

@@ -112,7 +112,7 @@ export const LoginPage = () => {
               )}
 
               {/* DEMO mode - enabled in dev or when VITE_DEMO_MODE=1 */}
-              {(import.meta.env.DEV || import.meta.env.VITE_DEMO_MODE === '1') && (
+              {(import.meta.env.DEV || !!import.meta.env.VITE_DEMO_MODE) && (
                 <ButtonSimple
                   variant="outlined"
                   size="large"

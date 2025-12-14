@@ -6,41 +6,29 @@ import { showError } from '~/interface/dialogs/actions'
 import { showToast } from '~/interface/toast/helpers'
 
 /**
- * Save a remote image to the local device
+ * Save a remote image to the local device (native implementation)
  */
 export async function saveRemoteImage(imageUrl: string): Promise<boolean> {
   try {
     console.info('saveRemoteImage called with:', imageUrl)
 
-    // Web implementation - download the image
-    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-      const link = document.createElement('a')
-      link.href = imageUrl
-      link.download = imageUrl.split('/').pop() || 'image.jpg'
-      link.target = '_blank'
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      return true
-    }
-
-    // Native implementation
     showToast('Saving image to gallery...', {
       type: 'info',
       duration: 5000,
     })
-    // Request permissions first
+
+    // request permissions first
     const hasPermission = await requestMediaLibraryPermissionsAsync()
     if (!hasPermission) {
       return false
     }
 
-    // Download the image using the new File API to the cache directory
+    // download the image using the new File API to the cache directory
     const file = await File.downloadFileAsync(imageUrl, new Directory(Paths.cache))
 
     console.info('downloadResult:', file.uri)
 
-    // Save the downloaded image to gallery
+    // save the downloaded image to gallery
     const asset = await saveImageToGallery(file.uri)
 
     if (asset) {

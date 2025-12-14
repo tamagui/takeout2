@@ -36,6 +36,7 @@ export default {
       '@vxrn/helpers',
       '@legendapp/list',
       'zeego/dropdown-menu',
+      'mdx-bundler/client',
     ],
   },
 

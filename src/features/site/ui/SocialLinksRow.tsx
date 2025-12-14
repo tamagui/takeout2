@@ -29,10 +29,7 @@ export const SocialLinksRow = ({ large }: { large?: boolean }) => {
         </Container>
       </HoverableLink>
 
-      <View
-        display={large ? 'flex' : 'none'}
-        $group-card-gtXs={{ display: 'inline-flex' }}
-      >
+      <View display={large ? 'flex' : 'none'}>
         <HoverableLink target="_blank" href="https://discord.gg" aria-label="Discord">
           <Container minW={large ? 60 : 45}>
             <DiscordLogo size={25 * scale} aria-hidden={true} />

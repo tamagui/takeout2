@@ -13,8 +13,8 @@ export const useIconProps = ({
   const theme = useTheme()
   const sizeValue = getIconSize(size)
 
-  // get the color value from theme
-  const colorValue = theme[color]?.val || (theme.color11 as any).val
+  // use .get() for css var() instead of hardcoded value for ssr
+  const colorValue = theme[color]?.get() || theme.color11.get()
 
   return {
     width: sizeValue,

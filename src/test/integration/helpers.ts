@@ -14,16 +14,19 @@ export async function loginAsDemo(page: Page, pathname = '/') {
   const demoButton = page.locator('[data-testid="login-as-demo"]')
   await demoButton.waitFor({ state: 'visible', timeout: 10000 })
   await demoButton.click()
-  await page.waitForTimeout(2000)
-  await page.waitForLoadState('domcontentloaded').catch(() => {})
 
-  // verify login by checking if we're redirected away from login page
-  const currentUrl = page.url()
-  if (currentUrl.includes('/login')) {
-    console.error(`❌ Still on login page after demo login`)
+  // wait for navigation away from login page (up to 30 seconds in CI)
+  try {
+    await page.waitForURL((url) => !url.toString().includes('/login'), {
+      timeout: 30000,
+    })
+  } catch {
+    console.error(`❌ Still on login page after demo login (timeout)`)
     throw new Error(`Demo login failed - still on login page`)
   }
+  await page.waitForLoadState('domcontentloaded').catch(() => {})
 
+  const currentUrl = page.url()
   console.info(`✅ Logged in as demo user, redirected to: ${currentUrl}`)
 
   // if redirected to onboarding, skip it

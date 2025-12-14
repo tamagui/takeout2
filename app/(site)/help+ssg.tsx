@@ -28,28 +28,28 @@ export const HelpPage = () => {
       <SubHeading>Got a question about {APP_NAME}? We're here to help.</SubHeading>
 
       <XStack flexWrap="wrap" columnGap="$5" rowGap="$1">
-        <Link asChild href={`mailto:${ADMIN_EMAIL}`} target="_blank">
+        <Link asChild hideExternalIcon href={`mailto:${ADMIN_EMAIL}`} target="_blank">
           <InfoCard maxColumns={2} title="Email Support" Icon={EnvelopeIcon}>
             Send us an email at {ADMIN_EMAIL} and we'll get back to you as soon as
             possible.
           </InfoCard>
         </Link>
 
-        <Link asChild href={HELP_REQUESTS_URL} target="_blank">
+        <Link asChild hideExternalIcon href={HELP_REQUESTS_URL} target="_blank">
           <InfoCard maxColumns={2} title="Submit a Request" Icon={ChatCircleIcon}>
             Have a specific issue or question? Submit a support request and our team will
             help you out.
           </InfoCard>
         </Link>
 
-        <Link asChild href={HELP_ROADMAP_URL} target="_blank">
+        <Link asChild hideExternalIcon href={HELP_ROADMAP_URL} target="_blank">
           <InfoCard maxColumns={2} title="Request a Feature" Icon={SparkleIcon}>
             Have an idea for a new feature? Let us know what you'd like to see in{' '}
             {APP_NAME}.
           </InfoCard>
         </Link>
 
-        <Link asChild href={DISCORD_INVITE_URL} target="_blank">
+        <Link asChild hideExternalIcon href={DISCORD_INVITE_URL} target="_blank">
           <InfoCard maxColumns={2} title="Join our Discord" Icon={UserIcon}>
             Connect with our community and get real-time support from other users and our
             team.

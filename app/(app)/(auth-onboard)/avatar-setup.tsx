@@ -139,7 +139,7 @@ export const AvatarSetupPage = () => {
         description="Finally, let's choose an avatar for your profile."
         bottom={
           <XStack gap="$3" justify="center">
-            {import.meta.env.DEV && (
+            {(import.meta.env.DEV || import.meta.env.VITE_DEMO_MODE === '1') && (
               <ButtonSimple
                 glass
                 size="large"

@@ -16,22 +16,30 @@ import { ThemeSwitch } from '~/interface/theme/ThemeSwitch'
 export const SiteHeader = () => {
   const [open, setOpen] = useState<boolean>(false)
 
+  console.warn('open', open)
+
   return (
     <ScrollHeader>
       <PageContainer>
-        <YStack width="100%" py="$2.5">
-          <XStack width="100%" items="center" $sm={{ px: '$6' }}>
-            <Link href="/">
-              <Logo />
-            </Link>
+        <YStack width="100%" py="$2">
+          <XStack width="100%" items="center" $md={{ px: '$4' }}>
+            <SocialLinksRow />
 
             <Spacer flex />
 
-            <XStack gap="$4" items="center" display="none" $sm={{ display: 'flex' }}>
-              <XStack containerType="normal" items="center">
-                <SocialLinksRow />
-              </XStack>
+            <XStack
+              position="absolute"
+              inset={0}
+              pointerEvents="none"
+              items="center"
+              justify="center"
+            >
+              <Link pointerEvents="auto" href="/">
+                <Logo height={20} />
+              </Link>
+            </XStack>
 
+            <XStack gap="$4" items="center" display="none" $md={{ display: 'flex' }}>
               <LoginButton />
 
               <Link href="/docs">
@@ -45,60 +53,64 @@ export const SiteHeader = () => {
               size="large"
               variant="transparent"
               circular
-              icon={<ListIcon />}
+              icon={<ListIcon size="$1" />}
               aria-label="Menu"
               onPress={() => setOpen(true)}
-              $sm={{ display: 'none' }}
+              $md={{ display: 'none' }}
             />
 
-            <Adapt when="maxSM" platform="touch">
-              <Sheet
-                open={open}
-                onOpenChange={setOpen}
-                animation="medium"
-                modal
-                dismissOnSnapToBottom
-                snapPoints={[60]}
-              >
-                <Sheet.Frame bg="$color2">
-                  <YStack flex={1} gap="$2">
-                    <XStack p="$4" pb="$3" justify="space-between">
-                      <Logo height={32} />
-                      <ThemeSwitch />
-                    </XStack>
+            <Sheet
+              open={open}
+              onOpenChange={setOpen}
+              animationConfig={{
+                type: 'spring',
+                damping: 95,
+                mass: 1.2,
+                stiffness: 10,
+              }}
+              modal
+              dismissOnSnapToBottom
+              snapPoints={[80]}
+            >
+              <Sheet.Overlay
+                animation="lazy"
+                opacity={0.8}
+                enterStyle={{ opacity: 0 }}
+                exitStyle={{ opacity: 0 }}
+              />
 
-                    <Separator />
+              <Sheet.Frame bg="$color2">
+                <YStack flex={1} gap="$2">
+                  <XStack p="$4" pb="$3" justify="space-between">
+                    <Logo height={32} />
+                    <ThemeSwitch />
+                  </XStack>
 
-                    <YStack flex={1}>
-                      <LoginButton listItem />
-                      <Link href="/docs" asChild>
-                        <ListItem>
-                          <ListItem.Icon>
-                            <FileIcon />
-                          </ListItem.Icon>
-                          <ListItem.Text>Docs</ListItem.Text>
-                        </ListItem>
-                      </Link>
-                    </YStack>
+                  <Separator />
 
-                    <YStack p="$4" pt="$2">
-                      <Separator mb="$3" />
-                      <XStack width="100%" items="center" justify="center">
-                        <Spacer />
-                        <SocialLinksRow />
-                        <Spacer />
-                      </XStack>
-                    </YStack>
+                  <YStack flex={1}>
+                    <LoginButton listItem />
+                    <Link href="/docs" asChild>
+                      <ListItem>
+                        <ListItem.Icon>
+                          <FileIcon />
+                        </ListItem.Icon>
+                        <ListItem.Text>Docs</ListItem.Text>
+                      </ListItem>
+                    </Link>
                   </YStack>
-                </Sheet.Frame>
-                <Sheet.Overlay
-                  animation="lazy"
-                  opacity={0.8}
-                  enterStyle={{ opacity: 0 }}
-                  exitStyle={{ opacity: 0 }}
-                />
-              </Sheet>
-            </Adapt>
+
+                  <YStack p="$4" pt="$2">
+                    <Separator mb="$3" />
+                    <XStack width="100%" items="center" justify="center">
+                      <Spacer />
+                      <SocialLinksRow />
+                      <Spacer />
+                    </XStack>
+                  </YStack>
+                </YStack>
+              </Sheet.Frame>
+            </Sheet>
           </XStack>
         </YStack>
       </PageContainer>

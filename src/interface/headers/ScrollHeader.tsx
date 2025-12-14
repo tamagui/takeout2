@@ -23,20 +23,18 @@ export const ScrollHeader = ({ children }: { children: ReactNode }) => {
       t={0}
       l={0}
       r={0}
+      z={50}
       items="center"
       justify="center"
-      z={50}
-      style={{ position: 'fixed' }}
+      $platform-web={{ position: 'fixed' }}
     >
       <XStack width="100%" position="relative" maxW={1200}>
         <XStack
           animation="medium"
-          mx="$3"
           flex={1}
           overflow="hidden"
           contain="paint"
-          $sm={{
-            px: '$1',
+          $md={{
             rounded: '$10',
             y: 0,
             shadowColor: 'transparent',
@@ -65,7 +63,7 @@ export const ScrollHeader = ({ children }: { children: ReactNode }) => {
             position="absolute"
             inset={0}
             bg="$color2"
-            $sm={{ rounded: '$10' }}
+            $md={{ rounded: '$10' }}
           />
 
           <XStack z={1} width="100%" items="center">

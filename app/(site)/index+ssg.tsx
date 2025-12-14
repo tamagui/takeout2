@@ -24,20 +24,19 @@ const Hero = styled(H2, {
 
 export function IndexPage() {
   return (
-    <YStack gap="$4" py="$12">
+    <YStack gap="$4" py="$8">
       <HeadInfo
         title="Takeout"
         description="A better starting point for building cross-platform applications with React and React Native."
       />
       <YStack items="center">
-        <Hero>Build better cross-platform apps</Hero>
+        <Hero>A new way to build apps</Hero>
 
         <H3
           color="$color11"
           maxW={620}
           mt="$5"
           size="$7"
-          fontWeight="400"
           $md={{
             text: 'center',
           }}
@@ -61,12 +60,12 @@ export function IndexPage() {
           </Link>{' '}
           to bring more Rails-like elegance to cross-platform React and React Native. It
           uses exciting developments in frontend tech, alongside a lot of elbow-shine, to
-          give you a performant and platform-native experience, with simple, DRY code -
-          unlike anything ever before.
+          give you a performant and platform-native experience, with simple, DRY
+          code—unlike anything before.
         </Paragraph>
 
         <Paragraph size="$6">
-          Takeout avoids NIH and pedantism by leveraging a few great third party
+          Takeout avoids reinventing the wheel by leveraging a few great third-party
           libraries. It also lets you unplug the pieces you don't want.
         </Paragraph>
 
@@ -80,12 +79,17 @@ export function IndexPage() {
         </Paragraph>
 
         <Paragraph size="$6">
-          <b>For the first time, for example,</b> you can have a single setup for web, iOS
-          and Android, with a single setup for routing, styling, UI, and framework - all
-          while getting 100 on Lighthouse (like this very page) for your SSG or SSR pages,
-          while also enjoying SPA-simplicity for logged in pages. All without a single
-          layout shift or flicker as it hydrates, with simple, typed inline styles, modern
-          media queries, dark and light mode, spring animations, and more.
+          <b>For the first time,</b> you can share this much code across web, iOS, and
+          Android—and still get great performance while fully leveraging platform-native
+          primitives. One set of routes, one styling system, one UI kit, one framework.
+          Same helpers, hooks, and data layer everywhere.
+        </Paragraph>
+
+        <Paragraph size="$6">
+          Hit Lighthouse 100 without breaking a sweat, just like this very page does.
+          Choose SSG or SSR for pages that need SEO, or just use SPA mode where it doesn't
+          matter. No layout shifts, no hydration flicker—just typed inline styles, media
+          queries, dark mode, spring animations, and more.
         </Paragraph>
 
         <SepHeading>Goals</SepHeading>
@@ -197,18 +201,17 @@ export function IndexPage() {
         </Paragraph>
 
         <Paragraph size="$6">
-          When One launched, it ambitously aimed to make Vite work standalone as a new
-          bundler for React Native. We then realized that was a bit ambitious - the React
-          Native ecosystem has incredibly (ahem) <em>diverse</em> package publishing
-          standards, our team is small, and the undertaking is large. We still liked Vite
-          as a clearly superior bundler, especially for web, but we wanted to both de-risk
-          One and improve it's native compatibility. So, <b>introducing Metro-mode</b>.
-          You get the configuration simplicity of Vite, unified configuration and FS
-          routes of One, but can optionally have Vite{' '}
-          <em>run Metro for you in the background</em> to serve your native app. It gives
-          you the assurance of a tried-and-true bundler, and lets us focus on both
-          shipping features, and more carefully implementing a proper native bundler with
-          Rolldown for a future version of One.
+          When One launched, it ambitiously aimed to make Vite work standalone as a new
+          bundler for React Native. We then realized that was a bit ambitious—the React
+          Native ecosystem has notoriously varied package publishing standards, our team
+          is small, and the undertaking is large. We still liked Vite as a clearly
+          superior bundler, especially for web, but we wanted to both de-risk One and
+          improve its native compatibility. So, <b>introducing Metro-mode</b>. You get the
+          configuration simplicity of Vite, unified configuration and FS routes of One,
+          but can optionally have Vite <em>run Metro for you in the background</em> to
+          serve your native app. It gives you the assurance of a tried-and-true bundler,
+          and lets us focus on both shipping features, and more carefully implementing a
+          proper native bundler with Rolldown for a future version of One.
         </Paragraph>
 
         <H4 mt="$2" size="$5" fontWeight="bold">
@@ -261,8 +264,8 @@ export function IndexPage() {
         </Paragraph>
 
         <Paragraph size="$6">
-          We've spent this year fixing what was most broken with Tamagui - stability,
-          docs, ease of setup, and LLM-friendliness, and are releasing
+          We've spent this year fixing what was most broken with Tamagui—stability, docs,
+          ease of setup, and AI-friendliness—and are releasing{' '}
           <Link href="https://tamagui.dev/blog/version-two">Version 2</Link> alongside
           Takeout 2.
         </Paragraph>
@@ -281,8 +284,8 @@ export function IndexPage() {
         </H4>
 
         <Paragraph size="$6">
-          Our goal was to be able to point a coding agent at a vanilla Takeout repo get an
-          entire custom app into production with just simple, natural prompts.
+          Our goal was to be able to point a coding agent at a vanilla Takeout repo and
+          get an entire custom app into production with just simple, natural prompts.
         </Paragraph>
 
         <Paragraph size="$6">

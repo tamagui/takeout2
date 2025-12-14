@@ -1,5 +1,5 @@
 import { useLinkTo, type LinkProps } from 'one'
-import { SizableText, styled, View, YStack, type SizableTextProps } from 'tamagui'
+import { SizableText, styled, View, XStack, YStack, type SizableTextProps } from 'tamagui'
 
 import { GithubLogoIcon } from '~/interface/icons/GithubLogoIcon'
 import { DiscordLogo } from '~/interface/social-media/DiscordLogo'
@@ -9,7 +9,7 @@ export const SocialLinksRow = ({ large }: { large?: boolean }) => {
   const scale = large ? 1.5 : 0.8
 
   return (
-    <>
+    <XStack pointerEvents="auto">
       <HoverableLink
         mr={-3}
         target="_blank"
@@ -40,7 +40,7 @@ export const SocialLinksRow = ({ large }: { large?: boolean }) => {
           </Container>
         </HoverableLink>
       </View>
-    </>
+    </XStack>
   )
 }
 

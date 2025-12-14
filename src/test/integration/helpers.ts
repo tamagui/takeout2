@@ -32,14 +32,27 @@ export async function loginAsDemo(page: Page, pathname = '/') {
   // if redirected to onboarding, skip it
   if (currentUrl.includes('/avatar-setup') || currentUrl.includes('/profile-setup')) {
     console.info('Skipping onboarding...')
-    await page.waitForTimeout(1000)
+
+    // wait for page to fully load and stabilize
+    await page.waitForLoadState('networkidle').catch(() => {})
+    await page.waitForTimeout(3000)
+
     const skipButton = page.locator('[data-testid="skip-onboarding"]')
     try {
-      await skipButton.waitFor({ state: 'visible', timeout: 5000 })
+      await skipButton.waitFor({ state: 'visible', timeout: 10000 })
       await skipButton.click()
-      await page.waitForTimeout(2000)
-    } catch {
+      // wait for navigation after clicking skip
+      await page
+        .waitForURL((url) => !url.toString().includes('/avatar-setup'), {
+          timeout: 10000,
+        })
+        .catch(() => {})
+    } catch (e) {
       console.info('Skip button not available, continuing...')
+      // log page state for debugging
+      const html = await page.content()
+      console.info(`Page HTML length: ${html.length}`)
+      console.info(`Contains skip-onboarding: ${html.includes('skip-onboarding')}`)
     }
   }
 

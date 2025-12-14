@@ -12,6 +12,7 @@ import {
 } from 'node:fs'
 import { homedir } from 'node:os'
 import { join, relative, dirname, basename, extname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import { defineCommand } from 'citty'
 import pc from 'picocolors'
@@ -42,7 +43,8 @@ interface ScriptCache {
 function findScriptsPackageRoot(): string | null {
   try {
     const resolved = import.meta.resolve('@take-out/scripts/package.json')
-    const packageJsonPath = new URL(resolved).pathname
+    // use fileURLToPath for proper cross-platform handling
+    const packageJsonPath = fileURLToPath(new URL(resolved))
     const packageRoot = join(packageJsonPath, '..')
     const srcPath = join(packageRoot, 'src')
 
@@ -168,8 +170,8 @@ export function discoverScripts(
           scripts.set(name, path)
         }
       } else if (entry.endsWith('.ts') || entry.endsWith('.js')) {
-        // create script name relative to base
-        const relativePath = relative(baseDir, fullPath)
+        // create script name relative to base, normalize to forward slashes
+        const relativePath = relative(baseDir, fullPath).split('\\').join('/')
         const scriptName = relativePath.replace(/\.(ts|js)$/, '')
         scripts.set(scriptName, fullPath)
       }
@@ -334,7 +336,8 @@ function getAllScriptFiles(dir: string, baseDir: string = dir): string[] {
         entry.endsWith('.js') ||
         entry.endsWith('.cjs')
       ) {
-        files.push(relative(baseDir, fullPath))
+        // normalize to forward slashes for consistent naming
+        files.push(relative(baseDir, fullPath).split('\\').join('/'))
       }
     }
   } catch (err) {

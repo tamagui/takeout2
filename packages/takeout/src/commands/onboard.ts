@@ -5,6 +5,7 @@
 import { execSync } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs'
+import { homedir } from 'node:os'
 import { resolve } from 'node:path'
 
 import { defineCommand } from 'citty'
@@ -743,8 +744,8 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
 
   const sshKeyPath = await promptText(
     'Path to SSH private key:',
-    `${process.env.HOME}/.ssh/id_rsa`,
-    `${process.env.HOME}/.ssh/id_rsa`
+    `${homedir()}/.ssh/id_rsa`,
+    `${homedir()}/.ssh/id_rsa`
   )
 
   if (sshKeyPath) {
@@ -1261,7 +1262,7 @@ async function startServices(cwd: string): Promise<void> {
 }
 
 /**
- * Replace port throughout project files using find/sed
+ * Replace port throughout project files (cross-platform)
  */
 async function replacePortInProject(
   cwd: string,
@@ -1272,26 +1273,66 @@ async function replacePortInProject(
     `Replacing port ${oldPort} with ${newPort} throughout project...`
   )
 
+  // directories to skip
+  const excludeDirs = new Set([
+    'node_modules',
+    '.git',
+    'dist',
+    'build',
+    '.next',
+    '.turbo',
+    'types',
+  ])
+
+  // file extensions to process
+  const includeExts = new Set([
+    '.ts',
+    '.tsx',
+    '.js',
+    '.jsx',
+    '.json',
+    '.md',
+    '.yml',
+    '.yaml',
+  ])
+
+  // recursively find and replace in files
+  async function processDir(dir: string): Promise<void> {
+    const { readdirSync, statSync } = await import('node:fs')
+    const { join, extname, basename } = await import('node:path')
+
+    const entries = readdirSync(dir)
+
+    for (const entry of entries) {
+      const fullPath = join(dir, entry)
+
+      try {
+        const stat = statSync(fullPath)
+
+        if (stat.isDirectory()) {
+          if (!excludeDirs.has(entry)) {
+            await processDir(fullPath)
+          }
+        } else if (stat.isFile()) {
+          const ext = extname(entry)
+          const name = basename(entry)
+          // check extension or .env* pattern
+          if (includeExts.has(ext) || name.startsWith('.env')) {
+            const content = readFileSync(fullPath, 'utf-8')
+            if (content.includes(oldPort)) {
+              const newContent = content.split(oldPort).join(newPort)
+              writeFileSync(fullPath, newContent, 'utf-8')
+            }
+          }
+        }
+      } catch {
+        // skip files we can't read
+      }
+    }
+  }
+
   try {
-    // Use find + sed to replace port references across the entire project
-    // Excludes node_modules, .git, and other build artifacts
-    // Simple wholesale replacement of the port number
-    const sedCommand = `
-      find . \
-        -type f \
-        -not -path "*/node_modules/*" \
-        -not -path "*/.git/*" \
-        -not -path "*/dist/*" \
-        -not -path "*/build/*" \
-        -not -path "*/.next/*" \
-        -not -path "*/.turbo/*" \
-        -not -path "*/types/*" \
-        \\( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name ".env*" -o -name "*.md" -o -name "*.yml" -o -name "*.yaml" \\) \
-        -exec sed -i '' 's/${oldPort}/${newPort}/g' {} +
-    `
-
-    execSync(sedCommand, { cwd, stdio: 'ignore' })
-
+    await processDir(cwd)
     spinner.stop(`Port updated from ${oldPort} to ${newPort}`)
   } catch (error) {
     spinner.stop('Port replacement failed')

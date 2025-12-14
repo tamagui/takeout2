@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process'
 import { existsSync, readFileSync, statSync } from 'node:fs'
-import { resolve, join } from 'node:path'
+import { resolve, join, parse } from 'node:path'
 
 import { defineCommand } from 'citty'
 
@@ -131,7 +131,7 @@ export const runCommand = defineCommand({
     let projectRoot = ''
     let hasWorkspaces = false
 
-    while (currentDir !== '/') {
+    while (currentDir !== parse(currentDir).root) {
       const packageJsonPath = resolve(currentDir, 'package.json')
       if (existsSync(packageJsonPath)) {
         try {

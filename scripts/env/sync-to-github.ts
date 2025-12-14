@@ -5,7 +5,8 @@
  */
 
 import { existsSync, readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { tmpdir } from 'node:os'
+import { join, resolve } from 'node:path'
 
 import * as clack from '@clack/prompts'
 import pc from 'picocolors'
@@ -292,10 +293,12 @@ async function main() {
   for (const { key, value } of varsToSync) {
     try {
       // write to temp file to preserve multiline values (esp SSH keys)
-      const tmpFile = `/tmp/gh-secret-${key}-${Date.now()}`
+      const tmpFile = join(tmpdir(), `gh-secret-${key}-${Date.now()}`)
       await Bun.write(tmpFile, value)
       await Bun.$`gh secret set ${key} < ${tmpFile}`.quiet()
-      await Bun.$`rm -f ${tmpFile}`.quiet()
+      // cross-platform file removal
+      const { unlink } = await import('node:fs/promises')
+      await unlink(tmpFile).catch(() => {})
       results.push({ key, success: true })
     } catch (error) {
       results.push({

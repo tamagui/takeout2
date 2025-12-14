@@ -5,7 +5,7 @@
 import { spawn, spawnSync } from 'node:child_process'
 import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { dirname, join } from 'node:path'
+import { dirname, join, parse } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { defineCommand } from 'citty'
@@ -27,7 +27,7 @@ function getSyncPrompt(): string {
     let packageRoot = currentDir
 
     // go up directories until we find package.json with name @take-out/takeout
-    while (packageRoot !== '/') {
+    while (packageRoot !== parse(packageRoot).root) {
       const pkgPath = join(packageRoot, 'package.json')
       if (existsSync(pkgPath)) {
         const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'))
@@ -49,7 +49,9 @@ function getSyncPrompt(): string {
 
 function checkToolAvailable(command: string): boolean {
   try {
-    const result = spawnSync('which', [command])
+    // use 'where' on windows, 'which' on unix
+    const checkCmd = process.platform === 'win32' ? 'where' : 'which'
+    const result = spawnSync(checkCmd, [command])
     return result.status === 0
   } catch {
     return false

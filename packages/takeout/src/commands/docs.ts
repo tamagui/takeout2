@@ -3,7 +3,7 @@
  */
 
 import { existsSync, readdirSync, readFileSync, mkdirSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, parse } from 'node:path'
 
 import { confirm } from '@clack/prompts'
 import { defineCommand } from 'citty'
@@ -19,7 +19,7 @@ import {
 // Find package root by looking for package.json
 function findPackageRoot(startDir: string): string {
   let dir = startDir
-  while (dir !== '/') {
+  while (dir !== parse(dir).root) {
     if (existsSync(join(dir, 'package.json'))) {
       const pkg = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf-8'))
       if (pkg.name === '@take-out/takeout') {

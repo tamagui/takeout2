@@ -4,6 +4,7 @@
 
 import { existsSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import pc from 'picocolors'
 
@@ -18,7 +19,8 @@ import {
 function findScriptsPackageRoot(): string | null {
   try {
     const resolved = import.meta.resolve('@take-out/scripts/package.json')
-    const packageJsonPath = new URL(resolved).pathname
+    // use fileURLToPath for proper cross-platform handling
+    const packageJsonPath = fileURLToPath(new URL(resolved))
     const packageRoot = join(packageJsonPath, '..')
     const srcPath = join(packageRoot, 'src')
 

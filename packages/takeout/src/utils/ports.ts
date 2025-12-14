@@ -8,17 +8,39 @@ import type { PortCheck } from '../types'
 
 function isPortInUse(port: number): { inUse: boolean; pid?: number } {
   try {
-    // Try to find what's using the port
-    const output = execSync(`lsof -i :${port} -t`, {
-      encoding: 'utf-8',
-      stdio: ['pipe', 'pipe', 'ignore'],
-    }).trim()
+    if (process.platform === 'win32') {
+      // windows: use netstat to find processes on the port
+      const output = execSync(`netstat -ano | findstr :${port}`, {
+        encoding: 'utf-8',
+        stdio: ['pipe', 'pipe', 'ignore'],
+      }).trim()
 
-    const pid = output ? Number.parseInt(output.split('\n')[0] || '8081', 10) : undefined
+      if (!output) return { inUse: false }
 
-    return { inUse: !!output, pid }
+      // extract pid from last column of netstat output
+      const lines = output.split('\n')
+      for (const line of lines) {
+        const parts = line.trim().split(/\s+/)
+        // check if this is a LISTENING state on the exact port
+        if (parts[1]?.includes(`:${port}`) && parts[3] === 'LISTENING') {
+          const pid = Number.parseInt(parts[4] || '', 10)
+          return { inUse: true, pid: Number.isNaN(pid) ? undefined : pid }
+        }
+      }
+      return { inUse: false }
+    } else {
+      // unix: use lsof
+      const output = execSync(`lsof -i :${port} -t`, {
+        encoding: 'utf-8',
+        stdio: ['pipe', 'pipe', 'ignore'],
+      }).trim()
+
+      const pid = output ? Number.parseInt(output.split('\n')[0] || '', 10) : undefined
+
+      return { inUse: !!output, pid: Number.isNaN(pid) ? undefined : pid }
+    }
   } catch {
-    // If lsof fails, port is likely free
+    // if command fails, port is likely free
     return { inUse: false }
   }
 }

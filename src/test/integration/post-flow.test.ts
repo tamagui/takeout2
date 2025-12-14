@@ -55,7 +55,8 @@ test.describe('Post Flow', () => {
     await submitButton.click()
 
     // verify success toast appears (post created successfully)
-    const successToast = page.locator('text=Post created successfully')
+    // use .first() since there may be a notification element too
+    const successToast = page.locator('text=Post created successfully').first()
     await successToast.waitFor({ state: 'visible', timeout: 15000 })
 
     // verify dialog closed (caption input no longer visible)

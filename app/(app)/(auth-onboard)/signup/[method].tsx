@@ -164,12 +164,14 @@ export const SignupPage = memo(() => {
           onSubmitEditing={handleContinue}
           {...(isPhone
             ? {
+                name: 'tel',
                 keyboardType: 'phone-pad',
                 autoComplete: 'tel',
                 inputMode: 'tel',
                 maxLength: 14, // (XXX) XXX-XXXX = 14 characters with formatting
               }
             : {
+                name: 'email',
                 keyboardType: 'email-address',
                 autoComplete: 'email',
                 inputMode: 'email',

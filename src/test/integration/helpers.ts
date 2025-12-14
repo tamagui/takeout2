@@ -49,10 +49,6 @@ export async function loginAsDemo(page: Page, pathname = '/') {
         .catch(() => {})
     } catch (e) {
       console.info('Skip button not available, continuing...')
-      // log page state for debugging
-      const html = await page.content()
-      console.info(`Page HTML length: ${html.length}`)
-      console.info(`Contains skip-onboarding: ${html.includes('skip-onboarding')}`)
     }
   }
 

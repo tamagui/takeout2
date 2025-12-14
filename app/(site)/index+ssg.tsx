@@ -59,7 +59,7 @@ export function IndexPage() {
             long-term effort
           </Link>{' '}
           to bring more Rails-like elegance to cross-platform React and React Native. It
-          uses exciting developments in frontend tech, alongside a lot of elbow-shine, to
+          uses exciting developments in frontend tech, alongside a lot of elbow grease, to
           give you a performant and platform-native experience, with simple, DRY
           code—unlike anything before.
         </Paragraph>
@@ -184,34 +184,16 @@ export function IndexPage() {
         </H4>
 
         <Paragraph size="$6">
-          A huge obstacle to building truly great cross-platform apps is the
-          bundler/framework. While Expo Router is well designed, its choice of Metro means
-          it struggles to ship great web experiences. One does something simple - it ports
-          Expo Router to Vite, then it adds a few features we think make for great
-          websites like loaders and render modes.
+          One ports Expo Router to Vite, adding loaders and render modes for great
+          websites. Server render or statically generate some pages, keep others
+          client-only—all from the same file-system routes, with API routes and a Hono
+          production server included.
         </Paragraph>
 
         <Paragraph size="$6">
-          One lets you server render or statically generate <em>some</em> pages, while
-          keeping others client-only. Add in loaders, routing, API routes, a Hono
-          production server, and lots of nice configuration to make React Native packages
-          behave well on Vite, and you have a universal stack that actually makes it easy
-          to both get amazing Lighthouse scores on some routes, while saving the server
-          rendering complexity on others.
-        </Paragraph>
-
-        <Paragraph size="$6">
-          When One launched, it ambitiously aimed to make Vite work standalone as a new
-          bundler for React Native. We then realized that was a bit ambitious—the React
-          Native ecosystem has notoriously varied package publishing standards, our team
-          is small, and the undertaking is large. We still liked Vite as a clearly
-          superior bundler, especially for web, but we wanted to both de-risk One and
-          improve its native compatibility. So, <b>introducing Metro-mode</b>. You get the
-          configuration simplicity of Vite, unified configuration and FS routes of One,
-          but can optionally have Vite <em>run Metro for you in the background</em> to
-          serve your native app. It gives you the assurance of a tried-and-true bundler,
-          and lets us focus on both shipping features, and more carefully implementing a
-          proper native bundler with Rolldown for a future version of One.
+          With the new <b>Metro-mode</b>, you get Vite's simplicity for web while
+          optionally running Metro in the background for native—best of both worlds, with
+          Rolldown-based native bundling on the roadmap.
         </Paragraph>
 
         <H4 mt="$2" size="$5" fontWeight="bold">
@@ -219,38 +201,19 @@ export function IndexPage() {
         </H4>
 
         <Paragraph size="$6">
-          When we{' '}
-          <Link target="_blank" href="https://rocicorp.com">
-            launched One just over a year ago
-          </Link>{' '}
-          we also announced we were working with the Zero team to make it a first class
-          integration. It's taken a bit longer than hoped to get something truly
-          production ready, but it's worth the wait.
+          Zero is the biggest step-change in frontend since React itself. It solves the
+          hardest part: getting data to the client, keeping it in sync, and mutating it
+          instantly. It's like Firebase if it was OSS, ran on Postgres and had relations,
+          nice types, schemas, and optimistic mutations.
         </Paragraph>
 
         <Paragraph size="$6">
-          Zero is revolutionary technology, in our opinion the biggest step-change in
-          frontend since React itself. The worst part of frontend, for a long time, has
-          been{' '}
-          <em>
-            how do you get data to the client, keep it up to date with the server, and
-            mutate it simply and instantly
-          </em>
-          . Zero does just that in a truly incredible way. You could think of Zero as
-          "Firebase but OSS, runs on Postgres, with types, relations, a schema, and
-          optimistic mutations".
-        </Paragraph>
-
-        <Paragraph size="$6">
-          We spent the last year deploying it to production across multiple apps,
-          re-writing everything a few times, and then finding some simple abstractions
-          between the apps. We then pulled what we could into a shared library. That
-          library is{' '}
+          Our{' '}
           <Link href="https://github.com/tamagui/takeout3/blob/main/packages/over-zero/readme.md">
             <b>over-zero</b>
-          </Link>
-          . It's small, but makes Zero setup and integration with auth a lot simpler,
-          including a little CLI that can generate code to keep things DRY.
+          </Link>{' '}
+          library makes it even easier to use and integrates auth, plus adds a CLI to
+          generate boilerplate code.
         </Paragraph>
 
         <H4 mt="$2" size="$5" fontWeight="bold">
@@ -258,72 +221,35 @@ export function IndexPage() {
         </H4>
 
         <Paragraph size="$6">
-          We still like Tamagui because of its deep investment in making both web and
-          native performant and platform-native, alongside the fact it's got the richest
-          amount of features while maintaining inline, typed styles.
+          Tamagui still offers the best balance of performance on web and native, with the
+          largest featureset of any style library, and most robust UI kit, theme system,
+          and ecosystem.
         </Paragraph>
 
         <Paragraph size="$6">
-          We've spent this year fixing what was most broken with Tamagui—stability, docs,
-          ease of setup, and AI-friendliness—and are releasing{' '}
-          <Link href="https://tamagui.dev/blog/version-two">Version 2</Link> alongside
-          Takeout 2.
-        </Paragraph>
-
-        <Paragraph size="$6">
-          Tamagui is a real secret weapon, especially in the Takeout repo where we've
-          included a ton of interface pieces we've designed over the last few years.
-          Because the style engine and component kit were designed to be great on both web
-          and native from the start, you get advanced features like container queries,
-          nesting themes, and swappable spring animation drivers that are super fast
-          everywhere.
+          <Link href="https://tamagui.dev/blog/version-two">Version 2</Link> ships
+          alongside Takeout with some new components, improved stability and docs, and a
+          lot of nice AI integration and simplifications.
         </Paragraph>
 
         <H4 mt="$2" size="$5" fontWeight="bold">
-          Agents / Harness
+          Agents
         </H4>
 
         <Paragraph size="$6">
-          Our goal was to be able to point a coding agent at a vanilla Takeout repo and
-          get an entire custom app into production with just simple, natural prompts.
-        </Paragraph>
-
-        <Paragraph size="$6">
-          Takeout does this a few ways, but mainly{' '}
-          <b>a lot of documentation provided at the right time and place</b>, an
-          incredibly <b>well-structured, DRY codebase</b>, plus a lot of nice{' '}
-          <b>glue and scripts</b> to link it all together.
-        </Paragraph>
-
-        <Paragraph size="$6">
-          We also are introducing the `takeout` CLI that acts as a central point of
-          interface for your agent - it list and prints both package and repo docs, and
-          lists and runs package and repo scripts. The scripting organization and
-          implementation alone accounts for a huge part of what makes Takeout great, as
-          it's robust and also easily usable by your agent.
+          Our goal was simple - you can point a coding agent at Takeout and get an entire
+          app into production just by prompting. Beyond extensive docs, we built a Takeout
+          CLI that organizes docs and scripts into a self-documenting structure.
         </Paragraph>
 
         <H4 mt="$2" size="$5" fontWeight="bold">
-          All the rest
+          And more
         </H4>
 
         <Paragraph size="$6">
-          Of course there's much more to making a complete app. Some notable highlights:
-        </Paragraph>
-
-        <Paragraph size="$6">
-          We abstracted packages `helpers`, `hooks`, `postgres` and `scripts` with a bunch
-          of things we found ourselves using across multiple projects.
-        </Paragraph>
-
-        <Paragraph size="$6">
-          We found <b>Better Auth</b> to be great, and we've built a better-auth-utils
-          package and harnessing to link it to Zero and One.
-        </Paragraph>
-
-        <Paragraph size="$6">
-          And of course we brought in some of our favorite <b>Expo dependencies</b> to
-          make native UI and functionality much better.
+          Shared packages for helpers, hooks, postgres, and scripts. <b>Better Auth</b>{' '}
+          integration with Zero and One. Our favorite <b>Expo dependencies</b> for better
+          native UI and functionality. <b>Uncloud</b> and <b>SST</b> for production.
         </Paragraph>
 
         <SepHeading>Fin</SepHeading>

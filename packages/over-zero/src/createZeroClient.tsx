@@ -1,9 +1,9 @@
 import { defineQueries, defineQuery } from '@rocicorp/zero'
 import {
   useConnectionState,
-  useQuery as zeroUseQuery,
   useZero,
   ZeroProvider,
+  useQuery as zeroUseQuery,
 } from '@rocicorp/zero/react'
 import { createEmitter, mapObject } from '@vxrn/helpers'
 import {
@@ -25,7 +25,6 @@ import { setAuthData, setSchema } from './state'
 
 import type { AuthData, GenericModels, GetZeroMutators, Where, ZeroEvent } from './types'
 import type { Row, Zero, ZeroOptions, Schema as ZeroSchema } from '@rocicorp/zero'
-import type { AnyQueryRegistry } from '@rocicorp/zero'
 
 export type GroupedQueries = Record<string, Record<string, (...args: any[]) => any>>
 
@@ -233,7 +232,6 @@ export function createZeroClient<
       useEffect(() => {
         if (state.name !== prevState.current) {
           const reason = 'reason' in state ? state.reason : ''
-          console.info(`zero connection: ${state.name}`, reason || '')
           prevState.current = state.name
 
           if (state.name === 'error' || state.name === 'needs-auth') {

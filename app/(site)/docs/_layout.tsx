@@ -5,6 +5,7 @@ import {
   ScrollView,
   SizableText,
   Spacer,
+  styled,
   View,
   XStack,
   YStack,
@@ -38,12 +39,12 @@ export function DocsLayout() {
           width="100%"
           bg="$background"
           borderRightWidth={1}
-          borderRightColor="$borderColor"
+          borderRightColor="$color1pt5"
           $md={{
             position: 'sticky' as any,
             t: 0,
             height: '100vh',
-            width: 225,
+            width: 220,
           }}
           $maxMD={{
             display: 'none',
@@ -58,7 +59,7 @@ export function DocsLayout() {
         </View>
 
         {/* Main Content */}
-        <YStack flex={1} maxW={840} mx="auto" px="$4" py="$6">
+        <YStack flex={1} maxW={800} mx="auto" px="$4" py="$6" $md={{ px: '$8' }}>
           <EnsureFlexed />
 
           <Spacer $md={{ display: 'none' }} />
@@ -70,25 +71,7 @@ export function DocsLayout() {
             <XStack mt="$14" mb="$10" justify="space-between" gap="$4" flexWrap="wrap">
               {previous && (
                 <Link href={previous.route as Href} asChild>
-                  <XStack
-                    tag="a"
-                    hoverStyle={{
-                      borderColor: '$color6',
-                    }}
-                    flex={1}
-                    minW={200}
-                    p="$5"
-                    borderRadius="$4"
-                    borderWidth={1}
-                    borderColor="$borderColor"
-                    pressStyle={{
-                      bg: '$backgroundPress',
-                    }}
-                    alignItems="center"
-                    gap="$4"
-                    cursor="pointer"
-                    {...({} as any)}
-                  >
+                  <PaginationLinkFrame>
                     <CaretLeftIcon size={20} color="$color11" />
                     <View>
                       <SizableText select="none" size="$5">
@@ -98,41 +81,23 @@ export function DocsLayout() {
                         {previous.title}
                       </SizableText>
                     </View>
-                  </XStack>
+                  </PaginationLinkFrame>
                 </Link>
               )}
 
               {next && (
                 <Link href={next.route as Href} asChild>
-                  <XStack
-                    tag="a"
-                    hoverStyle={{
-                      borderColor: '$color6',
-                    }}
-                    flex={1}
-                    minW={200}
-                    p="$5"
-                    rounded="$4"
-                    borderWidth={1}
-                    borderColor="$borderColor"
-                    pressStyle={{
-                      bg: '$backgroundPress',
-                    }}
-                    items="center"
-                    justify="flex-end"
-                    gap="$4"
-                    cursor="pointer"
-                  >
+                  <PaginationLinkFrame justify="flex-end">
                     <View>
-                      <Paragraph select="none" size="$5">
+                      <SizableText select="none" size="$5">
                         Next
-                      </Paragraph>
-                      <Paragraph select="none" size="$3" color="$color10">
+                      </SizableText>
+                      <SizableText select="none" size="$3" color="$color10">
                         {next.title}
-                      </Paragraph>
+                      </SizableText>
                     </View>
                     <CaretRightIcon size={20} color="$color11" />
-                  </XStack>
+                  </PaginationLinkFrame>
                 </Link>
               )}
             </XStack>
@@ -161,3 +126,24 @@ export function DocsLayout() {
     </>
   )
 }
+
+const PaginationLinkFrame = styled(XStack, {
+  tag: 'a',
+  flex: 1,
+  minW: 200,
+  p: '$5',
+  rounded: '$4',
+  borderWidth: 1.5,
+  borderColor: '$color1pt5',
+  items: 'center',
+  gap: '$4',
+  cursor: 'pointer',
+
+  hoverStyle: {
+    borderColor: '$color2',
+  },
+
+  pressStyle: {
+    bg: '$backgroundPress',
+  },
+})

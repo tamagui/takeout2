@@ -16,8 +16,6 @@ import { ThemeSwitch } from '~/interface/theme/ThemeSwitch'
 export const SiteHeader = () => {
   const [open, setOpen] = useState<boolean>(false)
 
-  console.warn('open', open)
-
   return (
     <ScrollHeader>
       <PageContainer>
@@ -64,9 +62,9 @@ export const SiteHeader = () => {
               onOpenChange={setOpen}
               animationConfig={{
                 type: 'spring',
-                damping: 95,
-                mass: 1.2,
-                stiffness: 10,
+                damping: 25,
+                mass: 1,
+                stiffness: 200,
               }}
               modal
               dismissOnSnapToBottom

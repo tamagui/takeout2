@@ -9,7 +9,8 @@ export default {
 
   resolve: {
     alias: {
-      // stub out bottom-tabs for web - one framework imports it but doesn't use it
+      // stub out bottom-tabs for web - one framework has it but we don't use it
+      // tree shaking should get rid of it, need to investigate why not
       '@react-navigation/bottom-tabs': './src/shims/react-navigation-bottom-tabs.ts',
       // use lightweight svg for web (~2KB vs ~50KB)
       'react-native-svg': '@tamagui/react-native-svg',

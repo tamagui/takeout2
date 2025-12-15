@@ -3,13 +3,12 @@ import { memo, useCallback, useMemo, useRef } from 'react'
 import { RefreshControl } from 'react-native'
 import { AnimatePresence, Spinner, useWindowDimensions, YStack } from 'tamagui'
 
-import { userById } from '~/data/queries/user'
 import { useHeaderHeightSafe } from '~/hooks/useHeaderHeightSafe'
+import { useUser } from '~/hooks/useUser'
 import { GalleryImage, GalleryWrapper } from '~/interface/gallery/Gallery'
 import { Image } from '~/interface/image/Image'
 import { ProfileShimmer } from '~/interface/shimmer/ProfileShimmer'
 import { H5 } from '~/interface/text/Headings'
-import { useQuery } from '~/zero/client'
 
 import { usePostsByUserId } from '../feed/usePosts'
 import { ProfileHeader } from './ProfileHeader'
@@ -25,7 +24,7 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
   const { width } = useWindowDimensions()
   const columnWidth = (width - 28 - COLUMN_GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS
 
-  const [user] = useQuery(userById, { userId })
+  const [user] = useUser(userId)
   const { posts, isLoading, isLoadingMore, loadMore, refresh } = usePostsByUserId(userId)
 
   const postsCount = posts?.length || 0

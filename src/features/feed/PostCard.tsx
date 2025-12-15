@@ -2,15 +2,14 @@ import { router } from 'one'
 import { memo, useState } from 'react'
 import { Accordion, isWeb, SizableText, View, XStack, YStack } from 'tamagui'
 
-import { userById } from '~/data/queries/user'
 import { useAuth } from '~/features/auth/client/authClient'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
+import { useUser } from '~/hooks/useUser'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
 import { Image } from '~/interface/image/Image'
 import { LinearGradientSeparator } from '~/interface/separators/LinearGradientSeparator'
 import { Text } from '~/interface/text/Text'
-import { useQuery } from '~/zero/client'
 
 import { AvatarWithMenu } from './AvatarWithMenu'
 import { PostActionsPopover } from './PostActionsPopover'
@@ -24,7 +23,7 @@ interface PostCardProps {
 export const PostCard = memo(({ post }: PostCardProps) => {
   const { user } = useAuth()
   const authorId = post.userId
-  const [author] = useQuery(userById, { userId: authorId }, { enabled: !!authorId })
+  const [author] = useUser(authorId)
   const avatarUrl = author?.image
   const username = author?.username
 

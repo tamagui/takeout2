@@ -1,15 +1,14 @@
 import { memo, useMemo } from 'react'
 import { AnimatePresence, ScrollView, Spinner, YStack } from 'tamagui'
 
-import { userById } from '~/data/queries/user'
 import { useHeaderHeightSafe } from '~/hooks/useHeaderHeightSafe'
+import { useUser } from '~/hooks/useUser'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
 import { Image } from '~/interface/image/Image'
 import { SimpleGrid, SimpleGridItem } from '~/interface/layout/SimpleGrid'
 import { ProfileShimmer } from '~/interface/shimmer/ProfileShimmer'
 import { H5 } from '~/interface/text/Headings'
-import { useQuery } from '~/zero/client'
 
 import { ProfileHeader } from './ProfileHeader'
 import { ProfilePagination } from './ProfilePagination'
@@ -20,7 +19,7 @@ import type { ProfilePageProps } from './types'
 export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => {
   const headerHeight = useHeaderHeightSafe()
 
-  const [user] = useQuery(userById, { userId })
+  const [user] = useUser(userId)
   const { posts, isLoading, currentPage, hasMore, nextPage, prevPage } = useProfilePosts({
     userId,
     pageSize: 12,

@@ -5,7 +5,9 @@
 import { createContext } from 'react'
 
 export const BottomTabBarHeightContext = createContext<number | undefined>(undefined)
-export const BottomTabBarHeightCallbackContext = createContext<((height: number) => void) | undefined>(undefined)
+export const BottomTabBarHeightCallbackContext = createContext<
+  ((height: number) => void) | undefined
+>(undefined)
 
 export function createBottomTabNavigator() {
   return {

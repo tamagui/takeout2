@@ -18,6 +18,7 @@ export const MenuItem = ({ icon, children, onPress }: MenuItemProps) => {
 
   return (
     <XStack
+      role="menuitem"
       gap="$2.5"
       px="$3"
       height={36}

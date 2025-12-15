@@ -19,3 +19,8 @@ export const PageContainer = styled(YStack, {
     maxW: 1140,
   },
 })
+
+export const PageMainContainer = styled(PageContainer, {
+  tag: 'main',
+  role: 'main',
+})

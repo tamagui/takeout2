@@ -36,7 +36,7 @@ export const AvatarWithMenu = memo(
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
           <Pressable cursor="pointer" position="relative">
-            <Avatar image={avatarUrl} size={32} />
+            <Avatar image={avatarUrl} name={username} size={32} />
           </Pressable>
         </DropdownMenu.Trigger>
 

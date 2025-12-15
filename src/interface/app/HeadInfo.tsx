@@ -6,10 +6,12 @@ import { APP_NAME } from '~/constants/app'
 export const HeadInfo = memo(function HeadInfo({
   title,
   description,
+  canonicalUrl,
   openGraph,
 }: {
   title?: string
   description?: string
+  canonicalUrl?: string
   openGraph?: {
     type?: string
     locale?: string
@@ -26,6 +28,8 @@ export const HeadInfo = memo(function HeadInfo({
 
   return (
     <>
+      {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+
       {title && (
         <>
           <title>{fullTitle}</title>

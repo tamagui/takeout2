@@ -43,7 +43,11 @@ export const ProfileHeader = memo(
         <YStack gap="$4">
           {/* Profile Info Section */}
           <XStack items="center" gap="$5">
-            <Avatar image={userInfo?.image || ''} size={64} />
+            <Avatar
+              image={userInfo?.image || ''}
+              name={userInfo?.name ?? userInfo?.username ?? 'User'}
+              size={64}
+            />
 
             <YStack gap="$1" flex={1} pr="$4">
               {/* Username */}

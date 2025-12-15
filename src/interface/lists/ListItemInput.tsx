@@ -12,8 +12,10 @@ export const ListItemInput = styled(TamaguiInput, {
   py: 0,
   px: 0,
   height: 'auto',
-  focusStyle: {
-    outlineWidth: 0,
+  focusVisibleStyle: {
+    outlineWidth: 2,
+    outlineColor: '$color8',
+    outlineStyle: 'solid',
   },
 
   variants: {

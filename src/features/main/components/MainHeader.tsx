@@ -34,7 +34,7 @@ export const MainHeader = () => {
         <YStack width="100%" py="$2.5">
           <XStack width="100%" px="$2" items="center">
             <XStack gap="$2" items="center">
-              <Link href="/">
+              <Link href="/" aria-label="Home">
                 <Logo height={20} />
               </Link>
             </XStack>
@@ -59,7 +59,12 @@ export const MainHeader = () => {
                 <UserProfilePopover
                   trigger={
                     <ButtonSimple size="medium" circular cursor="pointer">
-                      <Avatar disableBorder size={28} image={user.image} />
+                      <Avatar
+                        disableBorder
+                        size={28}
+                        image={user.image}
+                        name={user.name ?? user.username ?? 'User'}
+                      />
                     </ButtonSimple>
                   }
                 />
@@ -71,6 +76,7 @@ export const MainHeader = () => {
                 circular
                 onPress={() => router.push('/settings')}
                 icon={<GearIcon size={18} />}
+                aria-label="Settings"
               />
             </XStack>
 
@@ -124,7 +130,11 @@ export const MainHeader = () => {
 
                   {user && (
                     <XStack p="$4" pt="$2" gap="$3" items="center">
-                      <Avatar size={40} image={user.image} />
+                      <Avatar
+                        size={40}
+                        image={user.image}
+                        name={user.name ?? user.username ?? 'User'}
+                      />
                       <YStack flex={1}>
                         <H3 size="$3" fontWeight="600">
                           {user.name || user.username}

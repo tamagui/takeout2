@@ -32,7 +32,7 @@ export const SiteHeader = () => {
               items="center"
               justify="center"
             >
-              <Link pointerEvents="auto" href="/">
+              <Link pointerEvents="auto" href="/" aria-label="Home">
                 <Logo height={20} />
               </Link>
             </XStack>

@@ -9,6 +9,7 @@ import { getSimpleSize, type SimpleSize } from './sizes'
 export const Avatar = memo(
   ({
     image,
+    name,
     size: sizeIn = 28,
     active,
     isOnline,
@@ -16,6 +17,7 @@ export const Avatar = memo(
     ...rest
   }: CircleProps & {
     image: string | null | undefined
+    name?: string
     size?: number | SimpleSize
     active?: boolean
     isOnline?: boolean | null
@@ -54,7 +56,13 @@ export const Avatar = memo(
           {...rest}
         >
           {image ? (
-            <Image src={image} width={size} height={size} objectFit="cover" />
+            <Image
+              src={image}
+              alt={name ? `${name}'s avatar` : 'User avatar'}
+              width={size}
+              height={size}
+              objectFit="cover"
+            />
           ) : (
             <UserIcon size={size / 2} />
           )}

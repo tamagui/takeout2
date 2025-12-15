@@ -99,6 +99,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
           <View width="100%" position="relative" mt="$2">
             <Image
               src={post.image}
+              alt={post.caption || 'Post image'}
               width="100%"
               objectFit="cover"
               rounded="$6"

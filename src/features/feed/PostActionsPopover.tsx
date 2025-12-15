@@ -17,7 +17,7 @@ export function PostActionsPopover({ post, isOwnPost }: PostActionsPopoverProps)
       name="post-actions"
       shadow="medium"
       trigger={
-        <ButtonSimple size="small" circular glass>
+        <ButtonSimple size="small" circular glass aria-label="Post actions">
           <DotsThreeIcon size={16} color="$color12" />
         </ButtonSimple>
       }

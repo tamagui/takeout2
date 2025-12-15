@@ -11,6 +11,7 @@ scripts and script running.
 - 📦 Project identity customization
 - 🐳 Docker service orchestration
 - 🗄️ Database migration automation
+- 📚 Documentation management with Claude Code Skills support
 - 🎨 Beautiful CLI interface with @clack/prompts
 
 ## Installation
@@ -59,6 +60,64 @@ takeout check
 **Options:**
 
 - `--silent` - Run silently with no output
+
+#### `takeout docs`
+
+Manage and retrieve documentation files:
+
+```bash
+# list available docs
+takeout docs list
+
+# get doc content (for hooks)
+takeout docs get zero tamagui
+
+# get path to docs directory
+takeout docs path
+
+# eject docs to local ./docs folder
+takeout docs eject
+
+# generate Claude Code skills from docs
+takeout docs skills
+takeout docs skills --clean  # clean and regenerate
+```
+
+##### Claude Code Skills
+
+The `docs skills` command generates Claude Code skills from your documentation:
+
+1. scans docs from both `./docs/` (local) and package docs
+2. for docs with YAML frontmatter, creates symlinks to `.claude/skills/`
+3. for docs without frontmatter, generates skill files with auto-extracted metadata
+
+**adding frontmatter to docs (recommended):**
+
+```markdown
+---
+name: my-skill
+description: What this skill does. Keywords for when Claude should use it.
+---
+
+# my skill
+
+content here...
+```
+
+docs with frontmatter get symlinked directly - edit the source and the skill
+updates automatically. docs without frontmatter get generated copies.
+
+**regenerating skills:**
+
+```bash
+# regenerate after doc changes
+bun tko docs skills
+
+# clean and regenerate all
+bun tko docs skills --clean
+```
+
+skills are gitignored by default (`.claude/skills`).
 
 ### Programmatic Usage
 

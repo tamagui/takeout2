@@ -1,3 +1,8 @@
+---
+name: testing-integration
+description: Integration testing guide. Use when writing Playwright tests, running bun test:integration, testing with loginAsDemo, or debugging test failures.
+---
+
 # Integration Testing Guide
 
 This guide covers integration testing setup, best practices, and troubleshooting

@@ -24,62 +24,6 @@
           }
         ]
       }
-    ],
-    "UserPromptSubmit": [
-      {
-        "matcher": "package.json",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun tko docs get package-json scripts"
-          }
-        ]
-      },
-      {
-        "matcher": "scripts/**/*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun tko docs get scripts"
-          }
-        ]
-      },
-      {
-        "matcher": "src/**/*.tsx",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun tko docs get tamagui zero one-components"
-          }
-        ]
-      },
-      {
-        "matcher": "src/data/**/*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun tko docs get zero"
-          }
-        ]
-      },
-      {
-        "matcher": "app/**/*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun tko docs get one-routes one-components"
-          }
-        ]
-      },
-      {
-        "matcher": "src/features/**/use*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun tko docs get one-hooks"
-          }
-        ]
-      }
     ]
   }
 }

@@ -2,10 +2,19 @@
  * Docs command - list and retrieve documentation files from the package
  */
 
-import { existsSync, readdirSync, readFileSync, mkdirSync, writeFileSync } from 'node:fs'
-import { join, parse } from 'node:path'
+import {
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  symlinkSync,
+  unlinkSync,
+  writeFileSync,
+} from 'node:fs'
+import { join, parse, relative } from 'node:path'
 
-import { confirm } from '@clack/prompts'
 import { defineCommand } from 'citty'
 import pc from 'picocolors'
 
@@ -317,6 +326,247 @@ const ejectCommand = defineCommand({
   },
 })
 
+// check if content has yaml frontmatter with required skill fields
+function hasSkillFrontmatter(content: string): boolean {
+  if (!content.startsWith('---')) return false
+  const endIndex = content.indexOf('---', 3)
+  if (endIndex === -1) return false
+
+  const frontmatter = content.slice(3, endIndex)
+  return frontmatter.includes('name:') && frontmatter.includes('description:')
+}
+
+// extract title and description from markdown content (for docs without frontmatter)
+function extractDocMeta(content: string): { title: string; description: string } {
+  const lines = content.split('\n')
+  let title = ''
+  let description = ''
+
+  // skip frontmatter if present
+  let startLine = 0
+  if (lines[0]?.trim() === '---') {
+    for (let i = 1; i < lines.length; i++) {
+      if (lines[i]?.trim() === '---') {
+        startLine = i + 1
+        break
+      }
+    }
+  }
+
+  for (let i = startLine; i < lines.length; i++) {
+    const trimmed = lines[i]?.trim() || ''
+    // first h1 heading is the title
+    if (!title && trimmed.startsWith('# ')) {
+      title = trimmed.slice(2).trim()
+      continue
+    }
+    // first non-empty, non-heading line after title is description
+    if (title && trimmed && !trimmed.startsWith('#')) {
+      description = trimmed
+      break
+    }
+  }
+
+  return { title, description }
+}
+
+// convert doc name to skill-friendly name (lowercase, hyphens)
+function toSkillName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 64)
+}
+
+// collect all docs from both package and local directories
+function collectAllDocs(
+  cwd: string
+): Array<{ name: string; path: string; source: 'package' | 'local' }> {
+  const docs: Array<{ name: string; path: string; source: 'package' | 'local' }> = []
+  const seen = new Set<string>()
+
+  // local docs override package docs
+  const localDocsDir = join(cwd, 'docs')
+  if (existsSync(localDocsDir)) {
+    const files = readdirSync(localDocsDir).filter((f) => f.endsWith('.md'))
+    for (const file of files) {
+      const name = file.replace(/\.md$/, '')
+      docs.push({ name, path: join(localDocsDir, file), source: 'local' })
+      seen.add(name)
+    }
+  }
+
+  // package docs (only if not overridden by local)
+  if (existsSync(DOCS_DIR)) {
+    const files = readdirSync(DOCS_DIR).filter((f) => f.endsWith('.md'))
+    for (const file of files) {
+      const name = file.replace(/\.md$/, '')
+      if (!seen.has(name)) {
+        docs.push({ name, path: join(DOCS_DIR, file), source: 'package' })
+      }
+    }
+  }
+
+  return docs
+}
+
+const SKILL_PREFIX = 'takeout-'
+
+const skillsCommand = defineCommand({
+  meta: {
+    name: 'skills',
+    description: 'Generate Claude Code skills from documentation',
+  },
+  args: {
+    clean: {
+      type: 'boolean',
+      description: 'Remove existing skills before generating',
+      default: false,
+    },
+  },
+  async run({ args }) {
+    const cwd = process.cwd()
+    const skillsDir = join(cwd, '.claude', 'skills')
+
+    console.info()
+    console.info(pc.bold(pc.cyan('🧠 Generate Claude Code Skills')))
+    console.info()
+
+    // collect all docs
+    const docs = collectAllDocs(cwd)
+
+    if (docs.length === 0) {
+      console.info(pc.yellow('No documentation files found'))
+      return
+    }
+
+    console.info(pc.dim(`Found ${docs.length} documentation files`))
+    console.info()
+
+    // clean existing takeout skills if requested
+    if (args.clean && existsSync(skillsDir)) {
+      console.info(pc.yellow('Cleaning existing takeout skills...'))
+      const existing = readdirSync(skillsDir)
+      for (const dir of existing) {
+        if (dir.startsWith(SKILL_PREFIX)) {
+          rmSync(join(skillsDir, dir), { recursive: true })
+        }
+      }
+    }
+
+    // ensure skills directory exists
+    if (!existsSync(skillsDir)) {
+      mkdirSync(skillsDir, { recursive: true })
+    }
+
+    let symlinked = 0
+    let generated = 0
+    let unchanged = 0
+
+    for (const doc of docs) {
+      const baseName = toSkillName(doc.name)
+      const skillName = `${SKILL_PREFIX}${baseName}`
+      const skillDir = join(skillsDir, skillName)
+      const skillFile = join(skillDir, 'SKILL.md')
+
+      // read doc content
+      const content = readFileSync(doc.path, 'utf-8')
+      const hasFrontmatter = hasSkillFrontmatter(content)
+
+      // ensure skill directory exists
+      if (!existsSync(skillDir)) {
+        mkdirSync(skillDir, { recursive: true })
+      }
+
+      if (hasFrontmatter) {
+        // doc has frontmatter - symlink it directly
+        const relativePath = relative(skillDir, doc.path)
+
+        // check if symlink already exists and points to same target
+        if (existsSync(skillFile)) {
+          try {
+            const stat = lstatSync(skillFile)
+            if (stat.isSymbolicLink()) {
+              const existingTarget = readFileSync(skillFile, 'utf-8')
+              // symlink exists, check if content matches (via symlink)
+              if (existingTarget === content) {
+                unchanged++
+                continue
+              }
+            }
+            // remove existing file/symlink to recreate
+            unlinkSync(skillFile)
+          } catch {
+            // ignore errors, will recreate
+          }
+        }
+
+        symlinkSync(relativePath, skillFile)
+        symlinked++
+
+        const sourceLabel = doc.source === 'local' ? pc.blue('local') : pc.dim('package')
+        console.info(
+          `  ${pc.green('⟷')} ${skillName} ${sourceLabel} ${pc.dim('(symlink)')}`
+        )
+      } else {
+        // doc lacks frontmatter - generate skill file with frontmatter
+        const { title, description } = extractDocMeta(content)
+        const skillDescription = description
+          ? `${title}. ${description}`.slice(0, 1024)
+          : title.slice(0, 1024)
+
+        const skillContent = `---
+name: ${skillName}
+description: ${skillDescription}
+---
+
+${content}
+`
+
+        // check if skill already exists and is identical
+        if (existsSync(skillFile)) {
+          try {
+            const stat = lstatSync(skillFile)
+            if (stat.isSymbolicLink()) {
+              unlinkSync(skillFile)
+            } else {
+              const existing = readFileSync(skillFile, 'utf-8')
+              if (existing === skillContent) {
+                unchanged++
+                continue
+              }
+            }
+          } catch {
+            // ignore errors
+          }
+        }
+
+        writeFileSync(skillFile, skillContent)
+        generated++
+
+        const sourceLabel = doc.source === 'local' ? pc.blue('local') : pc.dim('package')
+        console.info(
+          `  ${pc.green('✓')} ${skillName} ${sourceLabel} ${pc.dim('(generated)')}`
+        )
+      }
+    }
+
+    console.info()
+    console.info(pc.bold('Summary:'))
+    if (symlinked > 0) console.info(`  ${pc.green(`${symlinked} symlinked`)}`)
+    if (generated > 0)
+      console.info(
+        `  ${pc.yellow(`${generated} generated`)} ${pc.dim('(add frontmatter to source to enable symlink)')}`
+      )
+    if (unchanged > 0) console.info(`  ${pc.dim(`${unchanged} unchanged`)}`)
+    console.info()
+    console.info(pc.dim(`Skills in ${skillsDir}`))
+    console.info()
+  },
+})
+
 export const docsCommand = defineCommand({
   meta: {
     name: 'docs',
@@ -327,5 +577,6 @@ export const docsCommand = defineCommand({
     get: getCommand,
     path: pathCommand,
     eject: ejectCommand,
+    skills: skillsCommand,
   },
 })

@@ -1,3 +1,8 @@
+---
+name: scripts
+description: Scripts guide. Use when creating scripts in ./scripts/, running tko commands, parallel execution with tko run, or managing CLI scripts.
+---
+
 # scripts
 
 the takeout cli (`tko`) provides a smart script runner that auto-discovers

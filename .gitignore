@@ -24,6 +24,9 @@ dist
 
 .sst
 
+# generated claude code skills (run `bun tko docs skills` to regenerate)
+.claude/skills/takeout-*
+
 .env
 .env.production
 

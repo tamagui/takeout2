@@ -1,3 +1,8 @@
+---
+name: one-components
+description: One framework components guide. Use when using Link, Redirect, Head, SafeAreaView, StatusBar, Stack, Tabs, Slot, or layout components from 'one'.
+---
+
 # one framework: components
 
 comprehensive guide to built-in components in one framework for navigation,

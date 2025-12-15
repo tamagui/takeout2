@@ -1,3 +1,8 @@
+---
+name: package-json
+description: Package.json structure guide. Use when modifying package.json, adding scripts, env vars, workspaces, or trustedDependencies.
+---
+
 # package.json
 
 this project uses a single root package.json with workspaces for internal

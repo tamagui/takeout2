@@ -1,3 +1,8 @@
+---
+name: deployment
+description: Deployment infrastructure overview. Use when deploying, setting up CI/CD, configuring DEPLOY_HOST, DEPLOY_USER, or asking about deployment platforms like uncloud or SST.
+---
+
 # deployment infrastructure summary
 
 complete overview of the e2e deployment system built for takeout.

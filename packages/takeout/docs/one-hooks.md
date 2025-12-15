@@ -1,3 +1,8 @@
+---
+name: one-hooks
+description: One framework hooks guide. Use when using useRouter, useParams, usePathname, useLoader, useFocusEffect, useNavigation, or navigation-related hooks.
+---
+
 # one framework: hooks
 
 comprehensive guide to hooks in one framework for routing, navigation, data

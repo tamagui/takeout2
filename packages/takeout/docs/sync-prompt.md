@@ -1,3 +1,8 @@
+---
+name: sync-prompt
+description: Takeout sync guide for upstream updates. Use when syncing fork with upstream Takeout, merging upstream changes, or updating from tamagui/takeout3.
+---
+
 # Takeout Repository Sync Prompt
 
 You are helping sync a fork of the Takeout starter kit with the latest upstream changes.

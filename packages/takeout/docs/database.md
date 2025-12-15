@@ -1,3 +1,8 @@
+---
+name: database
+description: Database guide. Use when working with PostgreSQL, Drizzle ORM, migrations, schema, pgvector, Aurora, or direct SQL queries.
+---
+
 # Database
 
 This guide covers the database architecture, tools, and patterns used in this

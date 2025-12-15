@@ -1,3 +1,8 @@
+---
+name: aggregates
+description: Database aggregates guide. Use when implementing counts, stats, reaction counts, reply counts, or triggers for computed values in Zero/PostgreSQL.
+---
+
 # Aggregates in your data
 
 Zero doesn't support aggregates, and running them on demand is often slow

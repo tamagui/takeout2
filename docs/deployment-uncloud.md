@@ -1,3 +1,8 @@
+---
+name: deployment-uncloud
+description: Uncloud deployment guide. Use when deploying to uncloud, setting up production, configuring docker-compose, SSL certs, zero-downtime deploys, or scaling across machines.
+---
+
 # uncloud deployment guide
 
 comprehensive guide to deploying takeout to production using uncloud.
@@ -24,7 +29,8 @@ breaking changes may occur.
 
 ### prerequisites
 
-1. uncloud cli installed: `curl -fsS https://get.uncloud.run/install.sh | sh -s -- --version 0.15.0`
+1. uncloud cli installed:
+   `curl -fsS https://get.uncloud.run/install.sh | sh -s -- --version 0.15.0`
 2. digital ocean account (or any VM/dedicated provider)
 3. domain name (optional - can use `yourapp.uncld.dev` subdomain)
 4. managed postgresql database with logical replication enabled
@@ -304,7 +310,8 @@ if using cloudflare for dns, origin ca certificates bypass rate limits entirely:
 
 **setup:**
 
-1. during onboarding, choose "use cloudflare origin ca" when configuring custom domains
+1. during onboarding, choose "use cloudflare origin ca" when configuring custom
+   domains
 2. or manually:
 
 ```bash

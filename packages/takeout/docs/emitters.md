@@ -1,3 +1,8 @@
+---
+name: emitters
+description: Emitters guide for ephemeral state. Use when handling UI events, temporary state, event coordination, or @take-out/helpers emitters. Not for persistent state.
+---
+
 # Emitters Guide - Event-Based State Management
 
 Emitters are a lightweight event-based state management pattern used throughout

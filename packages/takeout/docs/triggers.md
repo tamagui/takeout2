@@ -1,3 +1,8 @@
+---
+name: triggers
+description: Database triggers guide. Use when creating PostgreSQL triggers, maintaining derived data, syncing tables, or handling INSERT/UPDATE/DELETE events.
+---
+
 # Database Triggers Guide
 
 ## Overview

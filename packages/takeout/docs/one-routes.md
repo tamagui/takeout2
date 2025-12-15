@@ -1,3 +1,8 @@
+---
+name: one-routes
+description: One framework routing guide. Use when creating routes, pages, layouts, using SSG/SSR/SPA modes, loaders, Link, dynamic routes [id], or app/ directory structure.
+---
+
 # one framework: routes & routing
 
 comprehensive routing guide for one framework covering file-system routing,

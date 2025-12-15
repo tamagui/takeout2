@@ -1,3 +1,8 @@
+---
+name: react-native-navigation-flow
+description: React Native navigation guide. Use when implementing navigation, useRouter, useParams, Drawer layout, or understanding One framework routing on native.
+---
+
 # React Native Navigation Flow
 
 ## Overview

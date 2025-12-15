@@ -1,3 +1,8 @@
+---
+name: native-hot-update
+description: Native hot update system guide. Use when working with @take-out/native-hot-update, HotUpdaterSplash, deploy-hot-update scripts, or troubleshooting OTA updates.
+---
+
 # Native Hot Update System
 
 ## Overview

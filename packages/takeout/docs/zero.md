@@ -1,3 +1,8 @@
+---
+name: zero
+description: Zero sync guide. Use when working with queries, mutations, useQuery, zql, permissions, models, over-zero, offline-first sync, or real-time data.
+---
+
 # zero sync guide
 
 zero powers offline-first sync in this app via postgres replication. this guide

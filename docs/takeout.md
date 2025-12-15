@@ -1,3 +1,8 @@
+---
+name: takeout-overview
+description: Takeout starter overview. Use when asking about project structure, monorepo setup, build pipeline, CI/CD, infrastructure, native dependencies, or general architecture questions.
+---
+
 # Takeout Starter
 
 Takeout is a production-ready starter for building real-time, cross-platform
@@ -125,7 +130,8 @@ capabilities:
 **Data & Storage**
 
 - @op-engineering/op-sqlite for local SQLite database (used by Zero)
-- react-native-mmkv for fast key-value storage (localStorage abstraction + auth credentials)
+- react-native-mmkv for fast key-value storage (localStorage abstraction + auth
+  credentials)
 
 **System & Utilities**
 

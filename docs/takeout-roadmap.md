@@ -1,3 +1,8 @@
+---
+name: takeout-roadmap
+description: Takeout roadmap, known issues, and planned features. Use when asking about bugs, planned features, v1/v2 plans, or what's on the todo list.
+---
+
 # Takeout Roadmap
 
 - "Customize web server port"
@@ -9,8 +14,7 @@
   - see // Check whitelist status first (only if feature flag is enabled)
 
 - package.json resolutions remove
-  - "motion": "12.23.22, verify we can upgrade this again and remove
-  - same for fingerprint
+  - fingerprint
 
 v1:
 

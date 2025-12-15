@@ -7,11 +7,6 @@ import type { UserConfig } from 'vite'
 export default {
   envPrefix: ['VITE_', 'TAMAGUI_'],
 
-  // explicitly define VITE_DEMO_MODE from process.env to ensure it's embedded
-  define: {
-    'import.meta.env.VITE_DEMO_MODE': JSON.stringify(process.env.VITE_DEMO_MODE || ''),
-  },
-
   resolve: {
     alias: {
       // use lightweight svg for web (~2KB vs ~50KB)

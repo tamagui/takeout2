@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react'
-import { AnimatePresence, ScrollView, Spinner, YStack } from 'tamagui'
+import { AnimatePresence, Spinner, YStack } from 'tamagui'
 
 import { useHeaderHeightSafe } from '~/hooks/useHeaderHeightSafe'
 import { useUser } from '~/hooks/useUser'
@@ -27,10 +27,6 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
 
   const postsCount = posts?.length || 0
 
-  const allImageUrls = useMemo(() => {
-    return posts?.map((post) => post.image) || []
-  }, [posts])
-
   const handleImagePress = (postId: string) => {
     galleryEmitter.emit({
       items:
@@ -43,7 +39,7 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
   }
 
   return (
-    <YStack flex={1}>
+    <>
       <AnimatePresence>
         {isLoading && (
           <YStack
@@ -66,52 +62,50 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
         )}
       </AnimatePresence>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <YStack px="$4" pb="$10">
-          <ProfileHeader
-            userInfo={user}
-            isOwnProfile={isOwnProfile}
-            postsCount={postsCount}
-          />
+      <YStack px="$4" pb="$10">
+        <ProfileHeader
+          userInfo={user}
+          isOwnProfile={isOwnProfile}
+          postsCount={postsCount}
+        />
 
-          {!isLoading && posts && posts.length === 0 ? (
-            <YStack p="$4" items="center" justify="center" mt="$4">
-              <H5 mt="$3">No posts yet</H5>
-            </YStack>
-          ) : (
-            <>
-              <SimpleGrid gap="$2">
-                {posts?.map((post) => (
-                  <SimpleGridItem key={post.id} columns={3}>
-                    <Pressable onPress={() => handleImagePress(post.id.toString())}>
-                      <Image
-                        src={post.image}
-                        width="100%"
-                        aspectRatio={1}
-                        rounded="$3"
-                        objectFit="cover"
-                      />
-                    </Pressable>
-                  </SimpleGridItem>
-                ))}
-              </SimpleGrid>
+        {!isLoading && posts && posts.length === 0 ? (
+          <YStack p="$4" items="center" justify="center" mt="$4">
+            <H5 mt="$3">No posts yet</H5>
+          </YStack>
+        ) : (
+          <>
+            <SimpleGrid gap="$2">
+              {posts?.map((post) => (
+                <SimpleGridItem key={post.id} columns={3}>
+                  <Pressable onPress={() => handleImagePress(post.id.toString())}>
+                    <Image
+                      src={post.image}
+                      width="100%"
+                      aspectRatio={1}
+                      rounded="$3"
+                      objectFit="cover"
+                    />
+                  </Pressable>
+                </SimpleGridItem>
+              ))}
+            </SimpleGrid>
 
-              {isLoading && (
-                <YStack p="$4" items="center" justify="center">
-                  <Spinner size="small" />
-                </YStack>
-              )}
+            {isLoading && (
+              <YStack p="$4" items="center" justify="center">
+                <Spinner size="small" />
+              </YStack>
+            )}
 
-              <ProfilePagination
-                currentPage={currentPage}
-                hasMore={hasMore}
-                onPrevPage={prevPage}
-                onNextPage={nextPage}
-              />
-            </>
-          )}
-        </YStack>
-      </ScrollView>
-    </YStack>
+            <ProfilePagination
+              currentPage={currentPage}
+              hasMore={hasMore}
+              onPrevPage={prevPage}
+              onNextPage={nextPage}
+            />
+          </>
+        )}
+      </YStack>
+    </>
   )
 })

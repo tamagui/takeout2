@@ -8,8 +8,8 @@ export function TabsLayout() {
   return (
     <>
       <MainHeader />
-      <YStack>
-        <PageContainer pt="$10" $xl={{ maxW: 760 }}>
+      <YStack flex={1}>
+        <PageContainer flex={1} pt="$10" $xl={{ maxW: 760 }}>
           <Slot />
         </PageContainer>
       </YStack>

@@ -209,7 +209,12 @@ export const AvatarSetupPage = () => {
                 position="relative"
               >
                 {localImageUri ? (
-                  <Image src={localImageUri} width={IMAGE_SIZE} height={IMAGE_SIZE} />
+                  <Image
+                    src={localImageUri}
+                    width={IMAGE_SIZE}
+                    height={IMAGE_SIZE}
+                    objectFit="cover"
+                  />
                 ) : (
                   <CircleDashedIcon size={IMAGE_SIZE} color="$color5" />
                 )}

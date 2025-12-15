@@ -54,7 +54,7 @@ export const Avatar = memo(
           {...rest}
         >
           {image ? (
-            <Image src={image} width={size} height={size} />
+            <Image src={image} width={size} height={size} objectFit="cover" />
           ) : (
             <UserIcon size={size / 2} />
           )}

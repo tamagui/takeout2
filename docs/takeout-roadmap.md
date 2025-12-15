@@ -5,6 +5,8 @@ description: Takeout roadmap, known issues, and planned features. Use when askin
 
 # Takeout Roadmap
 
+- remove themes from js bundle
+
 - "Customize web server port"
   - i cant find a way to make the native app default to a differnet port
     shockingly so this is sort of bad, id love to keep it though else we should

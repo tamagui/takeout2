@@ -8,7 +8,7 @@ import { createTamagui, isWeb } from 'tamagui'
 
 import { animations } from './animations'
 import { breakpoints } from './breakpoints'
-import { themes } from './themes-out'
+import { themes as themesJS } from './themes-out'
 
 const baseFontSizes = {
   1: 11,
@@ -66,7 +66,10 @@ export const config = createTamagui({
   animations,
   shorthands,
   tokens,
-  themes,
+
+  // tamagui optimization - reduce bundle size by avoiding themes js on client
+  // tamagui will hydrate it from CSS which improves lighthouse scores
+  themes: process.env.VITE_ENVIRONMENT === 'client' ? {} : themesJS,
 
   media: {
     pointerTouch: { pointer: 'coarse' },
@@ -121,19 +124,6 @@ export const config = createTamagui({
     onlyAllowShorthands: true,
     maxDarkLightNesting: 1,
     allowedStyleValues: 'somewhat-strict-web',
-  },
-
-  defaultProps: {
-    Button: {
-      fontFamily: '$mono',
-      cursor: 'default',
-
-      focusVisibleStyle: {
-        outlineWidth: 3,
-        outlineStyle: 'solid',
-        outlineColor: '$background04',
-      },
-    },
   },
 })
 

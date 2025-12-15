@@ -9,8 +9,14 @@ export default {
 
   resolve: {
     alias: {
+      // stub out bottom-tabs for web - one framework imports it but doesn't use it
+      '@react-navigation/bottom-tabs': './src/shims/react-navigation-bottom-tabs.ts',
       // use lightweight svg for web (~2KB vs ~50KB)
       'react-native-svg': '@tamagui/react-native-svg',
+      // use lightweight react-native, trims Animated and other unused things (save ~30+KB)
+      // need both aliases because one framework imports react-native-web directly
+      'react-native': '@tamagui/react-native-web-lite/without-animated',
+      'react-native-web': '@tamagui/react-native-web-lite/without-animated',
     },
   },
 
@@ -54,10 +60,6 @@ export default {
       optimize: true,
       disableExtraction: process.env.NODE_ENV !== 'production',
       disableServerOptimization: true,
-      ...(process.env.DISABLE_CLIENT_OPTIMIZE && {
-        optimize: false,
-        disableExtraction: true,
-      }),
       components: ['tamagui'],
       config: './src/tamagui/tamagui.config.ts',
       outputCSS: './src/tamagui/tamagui.css',
@@ -67,9 +69,9 @@ export default {
       },
     }),
 
-    process.env.ANALYZE === '1' &&
+    !!process.env.ANALYZE &&
       visualizer({
-        filename: 'dist/stats-client.html',
+        filename: 'bundle_stats.html',
         open: false,
         gzipSize: true,
         brotliSize: true,

@@ -1,177 +1,118 @@
-import { LegendList, type LegendListRef } from '@legendapp/list'
-import { memo, useCallback, useMemo, useRef } from 'react'
-import { RefreshControl } from 'react-native'
-import { AnimatePresence, isWeb, Spinner, useWindowDimensions, YStack } from 'tamagui'
+import { memo, useMemo } from 'react'
+import { AnimatePresence, ScrollView, Spinner, YStack } from 'tamagui'
 
 import { userById } from '~/data/queries/user'
 import { useHeaderHeightSafe } from '~/hooks/useHeaderHeightSafe'
 import { Pressable } from '~/interface/buttons/Pressable'
-import { GalleryImage, GalleryWrapper } from '~/interface/gallery/Gallery'
 import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
 import { Image } from '~/interface/image/Image'
+import { SimpleGrid, SimpleGridItem } from '~/interface/layout/SimpleGrid'
 import { ProfileShimmer } from '~/interface/shimmer/ProfileShimmer'
 import { H5 } from '~/interface/text/Headings'
 import { useQuery } from '~/zero/client'
 
-import { usePostsByUserId } from '../feed/usePosts'
 import { ProfileHeader } from './ProfileHeader'
+import { ProfilePagination } from './ProfilePagination'
+import { useProfilePosts } from './useProfilePosts'
 
-const COLUMN_GAP = 8
-const NUM_COLUMNS = 2
+import type { ProfilePageProps } from './types'
 
-export const ProfilePage = memo(
-  ({ userId, isOwnProfile }: { userId: string; isOwnProfile: boolean }) => {
-    const listRef = useRef<LegendListRef>(null)
-    const headerHeight = useHeaderHeightSafe()
-    const { width } = useWindowDimensions()
-    const columnWidth = (width - 28 - COLUMN_GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS
+export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => {
+  const headerHeight = useHeaderHeightSafe()
 
-    const [user] = useQuery(userById, { userId })
-    const { posts, isLoading, isLoadingMore, loadMore, refresh } =
-      usePostsByUserId(userId)
+  const [user] = useQuery(userById, { userId })
+  const { posts, isLoading, currentPage, hasMore, nextPage, prevPage } = useProfilePosts({
+    userId,
+    pageSize: 12,
+  })
 
-    const postsCount = posts?.length || 0
+  const postsCount = posts?.length || 0
 
-    const columns = useMemo(() => {
-      return Array.from({ length: NUM_COLUMNS }, (_, colIndex) => {
-        return (posts || []).filter((_, index) => index % NUM_COLUMNS === colIndex)
-      })
-    }, [posts])
+  const allImageUrls = useMemo(() => {
+    return posts?.map((post) => post.image) || []
+  }, [posts])
 
-    const allImageUrls = useMemo(() => {
-      return posts?.map((post) => post.image) || []
-    }, [posts])
-
-    const renderColumn = useCallback(
-      ({ item: columnData, index: columnIndex }: { item: any[]; index: number }) => {
-        return (
-          <YStack
-            flex={1}
-            gap={COLUMN_GAP}
-            pl={columnIndex === 0 ? 0 : COLUMN_GAP / 2}
-            pr={columnIndex === NUM_COLUMNS - 1 ? 0 : COLUMN_GAP / 2}
-          >
-            {columnData.map((item) => {
-              const aspectRatio = 0.6 + Math.random() * 0.8
-              const height = columnWidth / aspectRatio
-              const fullIndex = posts?.findIndex((p) => p.id === item.id) || 0
-
-              if (isWeb) {
-                return (
-                  <Pressable
-                    key={item.id}
-                    onPress={() => {
-                      galleryEmitter.emit({
-                        items:
-                          posts?.map((post) => ({
-                            id: post.id.toString(),
-                            url: post.image,
-                          })) || [],
-                        firstItem: item.id.toString(),
-                      })
-                    }}
-                  >
-                    <Image src={item.image} width="100%" aspectRatio={1} />
-                  </Pressable>
-                )
-              }
-
-              return (
-                <GalleryImage key={item.id} index={fullIndex}>
-                  <Image
-                    src={item.image}
-                    width={columnWidth}
-                    height={height}
-                    rounded="$4"
-                  />
-                </GalleryImage>
-              )
-            })}
-          </YStack>
-        )
-      },
-      [columnWidth, posts]
-    )
-
-    const keyExtractor = useCallback((_item: any, index: number) => `column-${index}`, [])
-
-    const renderEmpty = useCallback(() => {
-      if (isLoading) return null
-      return (
-        <YStack p="$4" items="center" justify="center" mt="$4">
-          <H5 mt="$3">No posts yet</H5>
-        </YStack>
-      )
-    }, [isLoading])
-
-    const renderFooter = useCallback(() => {
-      if (isLoadingMore) {
-        return (
-          <YStack p="$4" items="center" justify="center">
-            <Spinner size="small" />
-          </YStack>
-        )
-      }
-      return null
-    }, [isLoadingMore])
-
-    const renderHeader = useCallback(() => {
-      return (
-        <ProfileHeader
-          userInfo={user}
-          isOwnProfile={isOwnProfile}
-          postsCount={postsCount}
-        />
-      )
-    }, [user, isOwnProfile, postsCount])
-
-    const listContent = (
-      <LegendList
-        ref={listRef}
-        data={columns}
-        renderItem={renderColumn}
-        keyExtractor={keyExtractor}
-        numColumns={2}
-        ListHeaderComponent={renderHeader}
-        ListEmptyComponent={renderEmpty}
-        ListFooterComponent={renderFooter}
-        onEndReached={loadMore}
-        onEndReachedThreshold={0.5}
-        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refresh} />}
-        showsVerticalScrollIndicator={false}
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={{
-          paddingHorizontal: 14,
-          paddingBottom: 100,
-        }}
-      />
-    )
-
-    return (
-      <YStack flex={1}>
-        <AnimatePresence>
-          {isLoading && (
-            <YStack
-              key="studio-shimmer"
-              animation="200ms"
-              pt={headerHeight}
-              exitStyle={{
-                opacity: 0,
-              }}
-              opacity={1}
-              z={999}
-              position="absolute"
-              t={10}
-              l={0}
-              r={0}
-              b={0}
-            >
-              <ProfileShimmer />
-            </YStack>
-          )}
-        </AnimatePresence>
-        <GalleryWrapper urls={allImageUrls}>{listContent}</GalleryWrapper>
-      </YStack>
-    )
+  const handleImagePress = (postId: string) => {
+    galleryEmitter.emit({
+      items:
+        posts?.map((post) => ({
+          id: post.id.toString(),
+          url: post.image,
+        })) || [],
+      firstItem: postId,
+    })
   }
-)
+
+  return (
+    <YStack flex={1}>
+      <AnimatePresence>
+        {isLoading && (
+          <YStack
+            key="studio-shimmer"
+            animation="200ms"
+            pt={headerHeight}
+            exitStyle={{
+              opacity: 0,
+            }}
+            opacity={1}
+            z={999}
+            position="absolute"
+            t={10}
+            l={0}
+            r={0}
+            b={0}
+          >
+            <ProfileShimmer />
+          </YStack>
+        )}
+      </AnimatePresence>
+
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <YStack px="$4" pb="$10">
+          <ProfileHeader
+            userInfo={user}
+            isOwnProfile={isOwnProfile}
+            postsCount={postsCount}
+          />
+
+          {!isLoading && posts && posts.length === 0 ? (
+            <YStack p="$4" items="center" justify="center" mt="$4">
+              <H5 mt="$3">No posts yet</H5>
+            </YStack>
+          ) : (
+            <>
+              <SimpleGrid gap="$2">
+                {posts?.map((post) => (
+                  <SimpleGridItem key={post.id} columns={3}>
+                    <Pressable onPress={() => handleImagePress(post.id.toString())}>
+                      <Image
+                        src={post.image}
+                        width="100%"
+                        aspectRatio={1}
+                        rounded="$3"
+                        objectFit="cover"
+                      />
+                    </Pressable>
+                  </SimpleGridItem>
+                ))}
+              </SimpleGrid>
+
+              {isLoading && (
+                <YStack p="$4" items="center" justify="center">
+                  <Spinner size="small" />
+                </YStack>
+              )}
+
+              <ProfilePagination
+                currentPage={currentPage}
+                hasMore={hasMore}
+                onPrevPage={prevPage}
+                onNextPage={nextPage}
+              />
+            </>
+          )}
+        </YStack>
+      </ScrollView>
+    </YStack>
+  )
+})

@@ -5,20 +5,12 @@ import {
   blue as blueIn,
   greenDark as greenDarkIn,
   green as greenIn,
-  orangeDark as orangeDarkIn,
-  orange as orangeIn,
-  pinkDark as pinkDarkIn,
-  pink as pinkIn,
-  purpleDark as purpleDarkIn,
-  purple as purpleIn,
   redDark as redDarkIn,
   red as redIn,
-  tealDark as tealDarkIn,
-  teal as tealIn,
   yellowDark as yellowDarkIn,
   yellow as yellowIn,
 } from '@tamagui/colors'
-import { createThemes, defaultComponentThemes } from '@tamagui/theme-builder'
+import { createThemes } from '@tamagui/theme-builder'
 
 import { opacify } from './opacify'
 
@@ -26,18 +18,10 @@ const blue = adjustPaletteLight('blue', blueIn)
 const blueDark = adjustPaletteDark('blueDark', blueDarkIn)
 const green = adjustPaletteLight('green', greenIn)
 const greenDark = adjustPaletteDark('greenDark', greenDarkIn)
-const purple = adjustPaletteLight('purple', purpleIn)
-const purpleDark = adjustPaletteDark('purpleDark', purpleDarkIn)
 const red = adjustPaletteLight('red', redIn)
 const redDark = adjustPaletteDark('redDark', redDarkIn)
 const yellow = adjustPaletteLight('yellow', yellowIn)
 const yellowDark = adjustPaletteDark('yellowDark', yellowDarkIn)
-const pink = adjustPaletteLight('pink', pinkIn)
-const pinkDark = adjustPaletteDark('pinkDark', pinkDarkIn)
-const orange = adjustPaletteLight('orange', orangeIn)
-const orangeDark = adjustPaletteDark('orangeDark', orangeDarkIn)
-const teal = adjustPaletteLight('teal', tealIn)
-const tealDark = adjustPaletteDark('tealDark', tealDarkIn)
 
 const darkPalette = [
   '#080808',
@@ -223,10 +207,6 @@ export const themes = createThemes({
         ...green,
         ...red,
         ...yellow,
-        ...teal,
-        ...purple,
-        ...orange,
-        ...pink,
         ...lightShadows,
         ...blackColors,
         ...whiteColors,
@@ -239,10 +219,6 @@ export const themes = createThemes({
         ...greenDark,
         ...redDark,
         ...yellowDark,
-        ...tealDark,
-        ...purpleDark,
-        ...orangeDark,
-        ...pinkDark,
         ...darkShadows,
         ...blackColors,
         ...whiteColors,
@@ -274,7 +250,6 @@ export const themes = createThemes({
         light: Object.values(whiteColors),
       },
     },
-
     blue: {
       palette: {
         dark: Object.values(blueDark),
@@ -297,30 +272,6 @@ export const themes = createThemes({
       palette: {
         dark: Object.values(greenDark),
         light: Object.values(green),
-      },
-    },
-    teal: {
-      palette: {
-        dark: Object.values(tealDark),
-        light: Object.values(teal),
-      },
-    },
-    orange: {
-      palette: {
-        dark: Object.values(orangeDark),
-        light: Object.values(orange),
-      },
-    },
-    pink: {
-      palette: {
-        dark: Object.values(pinkDark),
-        light: Object.values(pink),
-      },
-    },
-    purple: {
-      palette: {
-        dark: Object.values(purpleDark),
-        light: Object.values(purple),
       },
     },
   },

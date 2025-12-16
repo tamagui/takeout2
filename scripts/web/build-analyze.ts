@@ -146,19 +146,21 @@ type ModuleNode = { name: string; uid?: string; children?: ModuleNode[] }
 function extractModules(
   nodes: ModuleNode[],
   nodeParts: Record<string, { renderedLength: number; gzipLength: number }>,
-  packages: Map<string, { size: number; gzip: number }>
+  packages: Map<string, { size: number; gzip: number }>,
+  path = ''
 ) {
   for (const node of nodes) {
+    const fullPath = path ? `${path}/${node.name}` : node.name
     if (node.uid && nodeParts[node.uid]) {
       const { renderedLength, gzipLength } = nodeParts[node.uid]
-      const pkg = getPackageName(node.name)
+      const pkg = getPackageName(fullPath)
       const existing = packages.get(pkg) || { size: 0, gzip: 0 }
       existing.size += renderedLength
       existing.gzip += gzipLength
       packages.set(pkg, existing)
     }
     if (node.children) {
-      extractModules(node.children, nodeParts, packages)
+      extractModules(node.children, nodeParts, packages, fullPath)
     }
   }
 }
@@ -166,7 +168,8 @@ function extractModules(
 function getPackageName(path: string): string {
   const match = path.match(/node_modules\/(@[^/]+\/[^/]+|[^/]+)/)
   if (match) return match[1]
-  if (path.startsWith('src/') || path.startsWith('app/')) return '[app code]'
+  if (path.includes('src/') || path.includes('app/')) return '[app code]'
+  if (path.includes('packages/')) return '[packages]'
   return '[other]'
 }
 

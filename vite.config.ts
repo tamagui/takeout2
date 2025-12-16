@@ -2,7 +2,36 @@ import { tamaguiPlugin } from '@tamagui/vite-plugin'
 import { one } from 'one/vite'
 import { visualizer } from 'rollup-plugin-visualizer'
 
-import type { UserConfig } from 'vite'
+import type { Plugin, UserConfig } from 'vite'
+
+// client-only shim for react-dom-server - saves ~200KB
+// SSR/SSG builds use the real module, client bundle gets stubs
+function reactDomServerClientShim(): Plugin {
+  const shimId = '\0react-dom-server-client-shim'
+  return {
+    name: 'react-dom-server-client-shim',
+    enforce: 'pre',
+    resolveId(id, _importer, options) {
+      if (
+        (id === 'react-dom/server.browser' || id === 'react-dom/server') &&
+        !options.ssr
+      ) {
+        return shimId
+      }
+    },
+    load(id) {
+      if (id === shimId) {
+        return `
+export function renderToString() { throw new Error('react-dom-server not available in client bundle') }
+export function renderToStaticMarkup() { throw new Error('react-dom-server not available in client bundle') }
+export async function renderToReadableStream() { throw new Error('react-dom-server not available in client bundle') }
+export const version = '19.0.0'
+export default { renderToString, renderToStaticMarkup, renderToReadableStream, version }
+`
+      }
+    },
+  }
+}
 
 export default {
   envPrefix: ['VITE_', 'TAMAGUI_'],
@@ -19,6 +48,7 @@ export default {
       // need both aliases because tamagui/one import react-native-web directly
       'react-native': '@tamagui/react-native-web-lite/without-animated',
       'react-native-web': '@tamagui/react-native-web-lite/without-animated',
+
     },
   },
 
@@ -58,6 +88,8 @@ export default {
   },
 
   plugins: [
+    reactDomServerClientShim(),
+
     tamaguiPlugin({
       optimize: true,
       disableExtraction: process.env.NODE_ENV !== 'production',

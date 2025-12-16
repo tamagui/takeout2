@@ -1,18 +1,12 @@
-import { LinearGradient } from '@tamagui/linear-gradient'
 import { YStack } from 'tamagui'
 
 import type { ReactNode } from 'react'
 
-// web version - just a sticky footer without keyboard handling
+// web version - just a bit of padding
+
 export const KeyboardStickyFooter = ({ children }: { children: ReactNode }) => {
   return (
-    <YStack position="absolute" b={0} l={0} r={0} gap="$2" px="$3" py="$2">
-      <LinearGradient
-        fullscreen
-        colors={['$background0', '$background']}
-        start={[0, 0]}
-        end={[0, 1]}
-      />
+    <YStack maxW={500} self="center" pt="$8" pb="$4">
       {children}
     </YStack>
   )

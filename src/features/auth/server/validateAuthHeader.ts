@@ -1,3 +1,4 @@
+import { getJWTRequestCookie } from './getJWTRequestCookie'
 import { InvalidTokenError, validateToken } from './validateToken'
 
 import type { JWTPayload } from '../types'
@@ -14,10 +15,22 @@ export async function validateAuthHeader(req: Request) {
 export class NotAuthenticatedError extends Error {}
 
 export async function getAuthHeader(req: Request) {
-  const token = req.headers.get('authorization')?.replace('Bearer ', '')
+  // try authorization header first (token-based auth)
+  const authHeader = req.headers.get('authorization')
+  let token = authHeader?.replace('Bearer ', '')
+  let source = token ? 'header' : null
+
+  // fall back to cookie (zero forwards cookies when ZERO_MUTATE_FORWARD_COOKIES is set)
+  if (!token) {
+    token = getJWTRequestCookie(req) ?? undefined
+    source = token ? 'cookie' : null
+  }
+
   try {
-    return token ? ((await validateToken(token)) as unknown as JWTPayload) : null
+    const result = token ? ((await validateToken(token)) as unknown as JWTPayload) : null
+    return result
   } catch (err) {
+    console.error(`[auth] validateToken error:`, err)
     if (err instanceof InvalidTokenError) {
       return null
     }

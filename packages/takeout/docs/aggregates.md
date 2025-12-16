@@ -1,6 +1,6 @@
 ---
 name: aggregates
-description: Database aggregates guide. Use when implementing counts, stats, reaction counts, reply counts, or triggers for computed values in Zero/PostgreSQL.
+description: Database aggregates guide using PostgreSQL triggers and stats tables. INVOKE WHEN: commentCount, followerCount, likesCount, reactionCount, replyCount, derived columns, computed values, denormalized data, INSERT ON CONFLICT, UPSERT pattern, maintaining counts, syncing counts, aggregate tables, stats tables.
 ---
 
 # Aggregates in your data

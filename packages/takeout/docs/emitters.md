@@ -1,6 +1,6 @@
 ---
 name: emitters
-description: Emitters guide for ephemeral state. Use when handling UI events, temporary state, event coordination, or @take-out/helpers emitters. Not for persistent state.
+description: Event emitters and pub/sub pattern for ephemeral UI state management. INVOKE WHEN: event emitters, pub/sub, ephemeral state, temporary state, transient state, UI events, event coordination, subscribe, emit, listen, @take-out/helpers emitters.
 ---
 
 # Emitters Guide - Event-Based State Management

@@ -1,6 +1,6 @@
 ---
 name: triggers
-description: Database triggers guide. Use when creating PostgreSQL triggers, maintaining derived data, syncing tables, or handling INSERT/UPDATE/DELETE events.
+description: PostgreSQL database triggers guide for automation and data consistency. INVOKE WHEN: creating triggers, trigger functions, plpgsql, BEFORE/AFTER triggers, INSERT/UPDATE/DELETE events, maintaining derived data, syncing tables, audit trails, cascading updates, counter maintenance, reaction counts, reply counts.
 ---
 
 # Database Triggers Guide

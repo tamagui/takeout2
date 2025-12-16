@@ -1,6 +1,6 @@
 ---
 name: scripts
-description: Scripts guide. Use when creating scripts in ./scripts/, running tko commands, parallel execution with tko run, or managing CLI scripts.
+description: Scripts guide for tko CLI automation. INVOKE WHEN: scripts, CLI scripts, ./scripts/ directory, tko commands, tko run, parallel execution, script management, bun scripts, npm scripts, automation.
 ---
 
 # scripts

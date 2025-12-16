@@ -1,6 +1,6 @@
 ---
 name: deployment-uncloud
-description: Uncloud deployment guide. Use when deploying to uncloud, setting up production, configuring docker-compose, SSL certs, zero-downtime deploys, or scaling across machines.
+description: Uncloud deployment guide for self-hosted production setups. INVOKE WHEN: uncloud deployment, self-hosted, docker-compose, production setup, SSL certificates, HTTPS, zero-downtime deploys, rolling updates, scaling, multiple machines, Multipass VM, local deployment.
 ---
 
 # uncloud deployment guide

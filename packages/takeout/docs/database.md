@@ -1,6 +1,6 @@
 ---
 name: database
-description: Database guide. Use when working with PostgreSQL, Drizzle ORM, migrations, schema, pgvector, Aurora, or direct SQL queries.
+description: Database guide for PostgreSQL, Drizzle ORM, and Zero sync. INVOKE WHEN: Drizzle, migrations, schema changes, ALTER TABLE, SQL queries, getDb, getDBClient, queryDb, connection pooling, Aurora, pgvector, vector search.
 ---
 
 # Database

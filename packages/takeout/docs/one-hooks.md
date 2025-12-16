@@ -1,6 +1,6 @@
 ---
 name: one-hooks
-description: One framework hooks guide. Use when using useRouter, useParams, usePathname, useLoader, useFocusEffect, useNavigation, or navigation-related hooks.
+description: One framework hooks guide for routing, navigation, data loading, and focus management. INVOKE WHEN: hooks, useRouter, useParams, usePathname, useLoader, useFocusEffect, useNavigation, navigation hooks, data loading hooks, route params, query params, navigation state, screen focus management.
 ---
 
 # one framework: hooks

@@ -1,6 +1,6 @@
 ---
 name: hot-updater
-description: Hot updater guide for OTA updates. Use when implementing @hot-updater/react-native, HotUpdaterProvider, useHotUpdater hook, or deploying over-the-air updates.
+description: Guide for implementing OTA updates and hot updates in React Native apps. INVOKE WHEN: hot updater, OTA updates, over-the-air updates, app updates, code push, deploy updates, @hot-updater/react-native, HotUpdaterProvider, useHotUpdater, update deployment.
 ---
 
 # Hot Updater Guide

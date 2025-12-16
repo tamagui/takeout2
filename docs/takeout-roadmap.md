@@ -1,6 +1,6 @@
 ---
 name: takeout-roadmap
-description: Takeout roadmap, known issues, and planned features. Use when asking about bugs, planned features, v1/v2 plans, or what's on the todo list.
+description: Takeout roadmap with known issues, bugs, and planned features for v1/v2. INVOKE WHEN: roadmap, planned features, todo list, known issues, bugs, problems, future plans, what's planned, what's next, v1, v2 plans.
 ---
 
 # Takeout Roadmap

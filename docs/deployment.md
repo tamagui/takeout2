@@ -1,6 +1,6 @@
 ---
 name: deployment
-description: Deployment infrastructure overview. Use when deploying, setting up CI/CD, configuring DEPLOY_HOST, DEPLOY_USER, or asking about deployment platforms like uncloud or SST.
+description: Deployment infrastructure overview and platform setup. INVOKE WHEN: deploy, deployment, production, CI/CD, continuous integration, DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY, uncloud, SST, docker, containers, infrastructure, environment variables, GitHub Actions, or zero-downtime deploys.
 ---
 
 # deployment infrastructure summary

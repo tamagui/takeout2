@@ -5,6 +5,7 @@ core guidelines for working in this codebase.
 ## approach
 
 - ultrathink - explore, research, and plan before attempting fixes
+- **check skills first** - before planning any feature, scan available skills for keyword matches (counts, triggers, routes, styling, etc.) and invoke relevant skills to get proper patterns
 - use sub-tasks to parallelize work
 - prefer strong models for complex tasks
 - aggressively improve context using `bun tko docs list`

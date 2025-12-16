@@ -1,6 +1,6 @@
 ---
 name: icons
-description: Icons guide. Use when adding new icons, searching for icons, or working with Phosphor icons in the project.
+description: Icons guide for managing Phosphor icon components. INVOKE WHEN: adding icons, new icons, search icons, find icons, icon library, icon components, Phosphor icons.
 ---
 
 # Icons

@@ -1,6 +1,6 @@
 ---
 name: cloudflare-dev-tunnel
-description: Cloudflare dev tunnel guide. Use when setting up dev:tunnel, testing webhooks locally, or sharing local dev server via cfargotunnel.com.
+description: Cloudflare dev tunnel guide for exposing local development servers publicly. INVOKE WHEN: dev tunnel, cloudflare tunnel, cfargotunnel, dev:tunnel, local tunnel, testing webhooks, webhook testing, share local server, expose localhost, ngrok alternative.
 ---
 
 # Development Tunnel

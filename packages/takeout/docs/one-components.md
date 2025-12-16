@@ -1,6 +1,6 @@
 ---
 name: one-components
-description: One framework components guide. Use when using Link, Redirect, Head, SafeAreaView, StatusBar, Stack, Tabs, Slot, or layout components from 'one'.
+description: One framework components guide for navigation, layouts, and UI elements. INVOKE WHEN: Link, Redirect, navigation, Head, meta tags, SEO, SafeAreaView, StatusBar, device safe areas, Stack, Tabs, Slot, layout components, LoadProgressBar, ScrollBehavior.
 ---
 
 # one framework: components

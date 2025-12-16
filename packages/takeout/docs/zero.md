@@ -1,6 +1,6 @@
 ---
 name: zero
-description: Zero sync guide. Use when working with queries, mutations, useQuery, zql, permissions, models, over-zero, offline-first sync, or real-time data.
+description: Zero sync, offline-first queries, and mutations guide. INVOKE WHEN: useQuery, zql, queries, mutations, mutate, CRUD, permissions, where clauses, auth checks, relations, joins, related data, offline-first, sync, real-time, optimistic updates, convergent mutations.
 ---
 
 # zero sync guide

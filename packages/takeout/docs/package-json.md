@@ -1,6 +1,6 @@
 ---
 name: package-json
-description: Package.json structure guide. Use when modifying package.json, adding scripts, env vars, workspaces, or trustedDependencies.
+description: Package.json structure guide. INVOKE WHEN: package.json, package configuration, scripts section, npm scripts, env vars, environment variables, workspaces, monorepo, trustedDependencies, dependencies.
 ---
 
 # package.json

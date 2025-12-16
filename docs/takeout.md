@@ -1,6 +1,6 @@
 ---
 name: takeout-overview
-description: Takeout starter overview. Use when asking about project structure, monorepo setup, build pipeline, CI/CD, infrastructure, native dependencies, or general architecture questions.
+description: Takeout production-ready starter for real-time cross-platform apps. INVOKE WHEN: Takeout starter, project overview, monorepo setup, workspace structure, build pipeline, CI/CD, GitHub Actions, infrastructure, native dependencies, iOS/Android, architecture questions, how does X work, repository structure, development scripts, Zero integration, database operations.
 ---
 
 # Takeout Starter

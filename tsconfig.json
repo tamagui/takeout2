@@ -26,7 +26,7 @@
     "preserveConstEnums": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "types": ["node", "react", "vite/client", "bun"],
+    "types": ["node", "react", "vite/client", "bun", "one/env"],
     "lib": ["dom", "esnext"]
   },
   "include": ["./src", "./scripts", "./app", "./sst-env.d.ts"],

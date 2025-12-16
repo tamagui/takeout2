@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { Share, Platform } from 'react-native'
+import { Share } from 'react-native'
 
 import { showError } from '~/interface/dialogs/actions'
 import { showToast } from '~/interface/toast/helpers'
@@ -9,7 +9,7 @@ import type { User } from '~/data/types'
 export function useShareProfile() {
   const shareProfile = useCallback(async (user: User, publicProfileUrl: string) => {
     try {
-      if (Platform.OS === 'web') {
+      if (process.env.VITE_PLATFORM === 'web') {
         // Web: copy to clipboard
         await navigator.clipboard.writeText(publicProfileUrl)
         showToast('Profile link copied to clipboard!', { type: 'success' })

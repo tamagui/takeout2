@@ -1,4 +1,4 @@
-import { Alert, Platform } from 'react-native'
+import { Alert } from 'react-native'
 
 export interface AlertButton {
   text: string
@@ -16,7 +16,7 @@ export const alertController = {
   show: (options: AlertOptions) => {
     const { title, message, buttons = [{ text: 'OK' }] } = options
 
-    if (Platform.OS === 'web') {
+    if (process.env.VITE_PLATFORM === 'web') {
       // For web, use browser alert/confirm
       if (buttons.length === 1) {
         window.alert(message ? `${title}\n\n${message}` : title)

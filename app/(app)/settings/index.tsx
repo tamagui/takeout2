@@ -124,7 +124,7 @@ export const ProfileSettingsPage = () => {
       items: [
         {
           id: 'profile',
-          title: 'Profile',
+          title: 'Edit Profile',
           icon: UserIcon,
           href: '/settings/edit-profile',
         },

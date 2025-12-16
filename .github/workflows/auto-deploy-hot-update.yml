@@ -26,16 +26,8 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Get app version
-        id: version
-        run: echo "APP_VERSION=$(bun get:app-version)" >> $GITHUB_OUTPUT
-
       - name: Deploy iOS
-        run: |
-          bunx hot-updater deploy \
-            --platform ios \
-            --channel production-pre \
-            --target:app-version ${{ steps.version.outputs.APP_VERSION }}
+        run: bunx hot-updater deploy --platform ios --channel production-pre
         env:
           METRO_RESET_CACHE: 'true'
           HOT_UPDATER_SUPABASE_URL: ${{ secrets.HOT_UPDATER_SUPABASE_URL }}
@@ -43,11 +35,7 @@ jobs:
           HOT_UPDATER_SUPABASE_BUCKET_NAME: ${{ secrets.HOT_UPDATER_SUPABASE_BUCKET_NAME }}
 
       - name: Deploy Android
-        run: |
-          bunx hot-updater deploy \
-            --platform android \
-            --channel production-pre \
-            --target:app-version ${{ steps.version.outputs.APP_VERSION }}
+        run: bunx hot-updater deploy --platform android --channel production-pre
         env:
           METRO_RESET_CACHE: 'true'
           HOT_UPDATER_SUPABASE_URL: ${{ secrets.HOT_UPDATER_SUPABASE_URL }}
@@ -62,5 +50,4 @@ jobs:
           echo "Deployed after successful CI run" >> $GITHUB_STEP_SUMMARY
           echo "- Platform: both (iOS + Android)" >> $GITHUB_STEP_SUMMARY
           echo "- Channel: production-pre" >> $GITHUB_STEP_SUMMARY
-          echo "- Version: ${{ steps.version.outputs.APP_VERSION }}" >> $GITHUB_STEP_SUMMARY
           echo "- Triggered by: ${{ github.event.workflow_run.head_commit.message }}" >> $GITHUB_STEP_SUMMARY

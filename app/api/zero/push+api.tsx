@@ -14,13 +14,16 @@ export const POST: Endpoint = async (request) => {
   try {
     const auth = await getAuthHeader(request)
 
-    const authData: AuthData | null = auth
-      ? {
-          email: auth.email,
-          id: auth.id,
-          role: auth.role === 'admin' ? 'admin' : undefined,
-        }
-      : null
+    // use sub as fallback for id (standard JWT uses sub for subject/user id)
+    const userId = auth?.id || auth?.sub
+    const authData: AuthData | null =
+      auth && userId
+        ? {
+            email: auth.email,
+            id: userId as string,
+            role: auth.role === 'admin' ? 'admin' : undefined,
+          }
+        : null
 
     const { response } = await zeroServer.handleMutationRequest({
       authData,

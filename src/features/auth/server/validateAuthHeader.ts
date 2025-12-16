@@ -27,11 +27,13 @@ export async function getAuthHeader(req: Request) {
 
 export async function getAuthDataFromRequest(request: Request): Promise<AuthData | null> {
   const auth = await getAuthHeader(request)
+  // use sub as fallback for id (standard JWT uses sub for subject/user id)
+  const userId = auth?.id || auth?.sub
 
-  return auth
+  return auth && userId
     ? {
         email: auth.email,
-        id: auth.id,
+        id: userId,
         role: auth.role === 'admin' ? 'admin' : undefined,
       }
     : null

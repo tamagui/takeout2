@@ -10,6 +10,7 @@ export const schema = table('post')
     image: string(),
     caption: string().optional(),
     hiddenByAdmin: boolean(),
+    commentCount: number(),
     createdAt: number(),
     updatedAt: number().optional(),
   })

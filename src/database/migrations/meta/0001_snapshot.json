@@ -1,6 +1,6 @@
 {
-  "id": "af336d5c-8101-4a3f-b63f-4f839fd3bb7d",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "51f1fcdb-6846-43cc-84e8-a27c25cda797",
+  "prevId": "af336d5c-8101-4a3f-b63f-4f839fd3bb7d",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -505,6 +505,81 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.comment": {
+      "name": "comment",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "postId": {
+          "name": "postId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "comment_postId_idx": {
+          "name": "comment_postId_idx",
+          "columns": [
+            {
+              "expression": "postId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "comment_userId_idx": {
+          "name": "comment_userId_idx",
+          "columns": [
+            {
+              "expression": "userId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.device": {
       "name": "device",
       "schema": "",
@@ -758,6 +833,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": false
+        },
+        "commentCount": {
+          "name": "commentCount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
         },
         "createdAt": {
           "name": "createdAt",

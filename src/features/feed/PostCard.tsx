@@ -6,6 +6,7 @@ import { useAuth } from '~/features/auth/client/authClient'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
 import { useUser } from '~/hooks/useUser'
 import { Pressable } from '~/interface/buttons/Pressable'
+import { ChatCircleIcon } from '~/interface/icons/phosphor/ChatCircleIcon'
 import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
 import { Image } from '~/interface/image/Image'
 import { LinearGradientSeparator } from '~/interface/separators/LinearGradientSeparator'
@@ -112,6 +113,14 @@ export const PostCard = memo(({ post }: PostCardProps) => {
               }}
             />
           </View>
+          {typeof post.commentCount === 'number' && (
+            <XStack items="center" gap="$1" pt="$2">
+              <ChatCircleIcon size={18} color="$color10" />
+              <SizableText size="$3" color="$color10">
+                {post.commentCount}
+              </SizableText>
+            </XStack>
+          )}
         </Pressable>
       </View>
 

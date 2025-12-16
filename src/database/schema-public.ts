@@ -37,12 +37,28 @@ export const post = pgTable(
     image: text('image').notNull(),
     caption: text('caption'),
     hiddenByAdmin: boolean('hiddenByAdmin').notNull().default(false),
+    commentCount: integer('commentCount').notNull().default(0),
     createdAt: timestamp('createdAt', { mode: 'string' }).defaultNow().notNull(),
     updatedAt: timestamp('updatedAt', { mode: 'string' }),
   },
   (table) => [
     index('post_userId_idx').on(table.userId),
     index('post_createdAt_idx').on(table.createdAt),
+  ]
+)
+
+export const comment = pgTable(
+  'comment',
+  {
+    id: text('id').primaryKey(),
+    postId: text('postId').notNull(),
+    userId: text('userId').notNull(),
+    content: text('content').notNull(),
+    createdAt: timestamp('createdAt', { mode: 'string' }).defaultNow().notNull(),
+  },
+  (table) => [
+    index('comment_postId_idx').on(table.postId),
+    index('comment_userId_idx').on(table.userId),
   ]
 )
 

@@ -15,6 +15,16 @@ const block = {
   ),
 }
 
+const comment = {
+  commentsByPostId: defineQuery(
+    v.object({
+      postId: v.string(),
+      limit: v.optional(v.number()),
+    }),
+    ({ args }) => Queries.comment.commentsByPostId(args)
+  ),
+}
+
 const post = {
   postById: defineQuery(
     v.object({
@@ -102,6 +112,7 @@ const user = {
 
 export const queries = defineQueries({
   block,
+  comment,
   post,
   user,
 })

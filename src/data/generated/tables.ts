@@ -2,6 +2,7 @@
 // this is separate from models as otherwise you end up with circular types :/
 
 export { schema as block } from '../models/block'
+export { schema as comment } from '../models/comment'
 export { schema as device } from '../models/device'
 export { schema as post } from '../models/post'
 export { schema as report } from '../models/report'

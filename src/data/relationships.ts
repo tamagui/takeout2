@@ -46,6 +46,11 @@ export const postRelationships = relationships(tables.post, ({ one, many }) => (
     destSchema: tables.report,
     destField: ['reportedPostId'],
   }),
+  comments: many({
+    sourceField: ['id'],
+    destSchema: tables.comment,
+    destField: ['postId'],
+  }),
 }))
 
 export const blockRelationships = relationships(tables.block, ({ one }) => ({
@@ -95,6 +100,19 @@ export const userStateRelationships = relationships(tables.userState, ({ one }) 
   }),
 }))
 
+export const commentRelationships = relationships(tables.comment, ({ one }) => ({
+  post: one({
+    sourceField: ['postId'],
+    destSchema: tables.post,
+    destField: ['id'],
+  }),
+  user: one({
+    sourceField: ['userId'],
+    destSchema: tables.userPublic,
+    destField: ['id'],
+  }),
+}))
+
 export const allRelationships = [
   userRelationships,
   postRelationships,
@@ -102,4 +120,5 @@ export const allRelationships = [
   reportRelationships,
   deviceRelationships,
   userStateRelationships,
+  commentRelationships,
 ]

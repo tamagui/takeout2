@@ -31,7 +31,7 @@ export default {
   optimizeDeps: {
     include: [
       'async-retry',
-      // pre-bundle common web deps to avoid mid-navigation optimization
+      // pre-bundle common web deps to avoid mid-navigation optimization in dev mode
       'better-auth/client',
       'better-auth/client/plugins',
       '@tamagui/toast',

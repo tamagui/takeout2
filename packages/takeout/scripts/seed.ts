@@ -84,6 +84,57 @@ const seedPosts = [
   },
 ]
 
+const seedComments = [
+  {
+    id: 'seed-comment-1',
+    postId: 'seed-post-1',
+    userId: 'seed-user-2',
+    content: 'love this! ☕',
+  },
+  {
+    id: 'seed-comment-2',
+    postId: 'seed-post-1',
+    userId: 'seed-user-3',
+    content: 'perfect way to start the day',
+  },
+  {
+    id: 'seed-comment-3',
+    postId: 'seed-post-2',
+    userId: 'seed-user-1',
+    content: 'stunning view!',
+  },
+  {
+    id: 'seed-comment-4',
+    postId: 'seed-post-2',
+    userId: 'seed-user-4',
+    content: 'where is this?',
+  },
+  {
+    id: 'seed-comment-5',
+    postId: 'seed-post-2',
+    userId: 'seed-user-3',
+    content: 'need to visit',
+  },
+  {
+    id: 'seed-comment-6',
+    postId: 'seed-post-3',
+    userId: 'seed-user-1',
+    content: 'so cute!',
+  },
+  {
+    id: 'seed-comment-7',
+    postId: 'seed-post-3',
+    userId: 'seed-user-2',
+    content: 'adorable 🐕',
+  },
+  {
+    id: 'seed-comment-8',
+    postId: 'seed-post-4',
+    userId: 'seed-user-3',
+    content: 'great shot',
+  },
+]
+
 async function seed() {
   const now = new Date().toISOString()
 
@@ -125,13 +176,26 @@ async function seed() {
 
   for (const p of seedPosts) {
     await pool.query(
-      `INSERT INTO post (id, "userId", image, caption, "hiddenByAdmin", "createdAt")
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO post (id, "userId", image, caption, "hiddenByAdmin", "createdAt", "commentCount")
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        ON CONFLICT (id) DO NOTHING`,
-      [p.id, p.userId, p.image, p.caption, false, now]
+      [p.id, p.userId, p.image, p.caption, false, now, 0]
     )
 
     console.info(`  created post: ${p.id}`)
+  }
+
+  console.info('seeding comments...')
+
+  for (const c of seedComments) {
+    await pool.query(
+      `INSERT INTO comment (id, "postId", "userId", content, "createdAt")
+       VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT (id) DO NOTHING`,
+      [c.id, c.postId, c.userId, c.content, now]
+    )
+
+    console.info(`  created comment: ${c.id}`)
   }
 
   console.info('done!')

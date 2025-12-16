@@ -4,6 +4,9 @@ import type { TableInsertRow, TableUpdateRow } from 'over-zero'
 export type Block = TableInsertRow<typeof schema.block>
 export type BlockUpdate = TableUpdateRow<typeof schema.block>
 
+export type Comment = TableInsertRow<typeof schema.comment>
+export type CommentUpdate = TableUpdateRow<typeof schema.comment>
+
 export type Device = TableInsertRow<typeof schema.device>
 export type DeviceUpdate = TableUpdateRow<typeof schema.device>
 

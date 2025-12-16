@@ -102,6 +102,7 @@ export const DialogCreatePost = () => {
         caption: caption.trim() || undefined,
         image: uploadedUrl || '',
         hiddenByAdmin: false,
+        commentCount: 0,
         createdAt: Date.now(),
       })
 

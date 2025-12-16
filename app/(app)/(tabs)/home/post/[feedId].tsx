@@ -4,6 +4,7 @@ import { memo, useState } from 'react'
 import { ScrollView, SizableText, XStack, YStack, isWeb } from 'tamagui'
 
 import { postById } from '~/data/queries/post'
+import { CommentSection } from '~/features/feed/CommentSection'
 import { PostActionsPopover } from '~/features/feed/PostActionsPopover'
 import { useUser } from '~/features/user/useUser'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
@@ -112,6 +113,8 @@ export const FeedDetailPage = memo(() => {
         <YStack>
           <Text>{post.caption}</Text>
         </YStack>
+
+        <CommentSection postId={feedId} />
       </ScrollView>
     </>
   )

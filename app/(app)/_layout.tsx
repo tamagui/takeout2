@@ -21,8 +21,17 @@ export function AppLayout() {
 
   const isAuthRoute = pathname === '/login' || pathname.startsWith('/signup')
 
-  // redirect logged-out users away from protected routes
-  if (state === 'logged-out' && !isAuthRoute) {
+  // routes outside of (app) group - don't redirect for these
+  const isSiteRoute =
+    pathname === '/' ||
+    pathname === '/help' ||
+    pathname.startsWith('/docs') ||
+    pathname === '/terms-of-service' ||
+    pathname === '/privacy-policy' ||
+    pathname === '/eula'
+
+  // redirect logged-out users away from protected routes (but not site routes)
+  if (state === 'logged-out' && !isAuthRoute && !isSiteRoute) {
     return <Redirect href="/login" />
   }
 

@@ -2,9 +2,9 @@ import { useUserScheme } from '@vxrn/color-scheme'
 import { styled, View } from 'tamagui'
 
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { CircleHalfIcon } from '~/interface/icons/phosphor/CircleHalfIcon'
 import { MoonStarsIcon } from '~/interface/icons/phosphor/MoonStarsIcon'
 import { SunIcon } from '~/interface/icons/phosphor/SunIcon'
-import { SunMoonIcon } from '~/interface/icons/phosphor/SunMoonIcon'
 
 import { TooltipSimple } from '../tooltip/TooltipSimple'
 
@@ -52,7 +52,7 @@ export function ThemeSwitch({ size = '$2' }: { size?: SizeTokens }) {
             <MoonStarsIcon size={iconSize} />
           </IconContainer>
           <IconContainer active={setting === 'system'}>
-            <SunMoonIcon size={iconSize} />
+            <CircleHalfIcon size={iconSize} />
           </IconContainer>
         </ButtonSimple>
       </TooltipSimple>
@@ -64,7 +64,7 @@ export function useToggleTheme() {
   const userScheme = useUserScheme()
   const Icon =
     userScheme.setting === 'system'
-      ? SunMoonIcon
+      ? CircleHalfIcon
       : userScheme.setting === 'dark'
         ? MoonStarsIcon
         : SunIcon

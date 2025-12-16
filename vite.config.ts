@@ -15,10 +15,11 @@ export default {
       // use lightweight svg for web (~2KB vs ~50KB)
       'react-native-svg': '@tamagui/react-native-svg',
 
+      // temp disable - causing dev only issues
       // use lightweight react-native, trims Animated and other unused things (save ~30+KB)
       // need both aliases because one framework imports react-native-web directly
-      // 'react-native': '@tamagui/react-native-web-lite',
-      // 'react-native-web': '@tamagui/react-native-web-lite',
+      // 'react-native': '@tamagui/react-native-web-lite/without-animated',
+      // 'react-native-web': '@tamagui/react-native-web-lite/without-animated',
     },
   },
 

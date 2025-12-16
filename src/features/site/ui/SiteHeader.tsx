@@ -40,7 +40,7 @@ export const SiteHeader = () => {
             <XStack gap="$4" items="center" display="none" $md={{ display: 'flex' }}>
               <LoginButton />
 
-              <Link href="/docs">
+              <Link href="/docs/introduction">
                 <ButtonSimple>Docs</ButtonSimple>
               </Link>
 
@@ -88,7 +88,7 @@ export const SiteHeader = () => {
 
                   <YStack flex={1}>
                     <LoginButton listItem />
-                    <Link href="/docs" asChild>
+                    <Link href="/docs/introduction" asChild>
                       <ListItem>
                         <ListItem.Icon>
                           <FileIcon />

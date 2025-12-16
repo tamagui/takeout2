@@ -1,9 +1,44 @@
 ---
 title: Introduction
-description: Full-stack starter for real-time cross-platform apps
+description: A complete stack for a modern cross-platform app and website
 ---
 
-Takeout is a production-ready starter for building real-time, cross-platform apps with [One](https://onestack.dev), [Zero](https://zero.rocicorp.dev), and [Tamagui](https://tamagui.dev).
+Takeout is a modern and incredibly robust starting point for building apps and
+websites that run on every platform - iOS, Android, and web, with React and
+React Native.
+
+Unlike any other stack that exists, this one allows you to get a perfect 100
+Lighthouse score on your public-facing web pages while being able to share your
+entire design system, styling, UI kit, and even routing, data, and more with
+your native app.
+
+And like the best React Native apps, it also lets you use completely native UI
+elements specific to each platform as well, easily diverging per-platform as
+needed.
+
+This incredible ability to render truly high-quality web _and_ native at once is
+only possible through the combination of two of our in-house pieces of
+technology: [One](https://onestack.dev) and [Tamagui](https://tamagui.dev).
+
+Takeout goes further by integrating [Zero](https://zero.rocicorp.dev), an
+incredible next-generation way to handle data. It makes building truly
+native-feeling apps easier than ever before, all while sharing every piece of
+code between native and web.
+
+Takeout itself achieves some pretty hard feats of integration to achieve a high
+level of performance and quality. Beyond the deep work Tamagui made to enable
+high-level web features on native (without performance downside on web), and
+other hard-fought One features like enabling seamless routing between static,
+server-rendered, or client pages, Takeout has some impressive architecture.
+
+For example, to achieve a perfect 100 Lighthouse score on logged-out pages,
+Takeout:
+
+- avoids loading many heavy pieces of JS like the themes definitions, Zero, and
+  even react-native-web itself on the client.
+- avoids loading spring-based animations via Motion, but still lazily loads it
+  on logged-in pages.
+- sets many settings in One like inlined CSS for layouts.
 
 ## Stack
 
@@ -16,15 +51,22 @@ Takeout is a production-ready starter for building real-time, cross-platform app
 
 ## What's included
 
-**Fast CI/CD** - GitHub Actions pipeline gets from commit to deployed in ~5 minutes. Includes Playwright tests, health checks, and rollback monitoring.
+**Fast CI/CD** - GitHub Actions pipeline gets from commit to deployed in ~5
+minutes. Includes Playwright tests, health checks, and rollback monitoring.
 
-**over-zero** - Our Zero wrapper with query generation, permission helpers, and cleaner mutation patterns.
+**over-zero** - Our Zero wrapper with query generation, permission helpers, and
+cleaner mutation patterns.
 
-**Dev helpers** - Event emitter, keyboard shortcuts, URL unfurling, drag-and-drop, image upload with progress. Hooks like `useAsyncEffect`, `useLazyMount`, idle detection.
+**Dev helpers** - Event emitter, keyboard shortcuts, URL unfurling,
+drag-and-drop, image upload with progress. Hooks like `useAsyncEffect`,
+`useLazyMount`, idle detection.
 
-**Scripts** - `tko` CLI organizes ~50 scripts for builds, deploys, upgrades, database ops. Font subsetting, REPL with app context, env pulling from production.
+**Scripts** - `tko` CLI organizes ~50 scripts for builds, deploys, upgrades,
+database ops. Font subsetting, REPL with app context, env pulling from
+production.
 
-**Environment** - Code-driven env management with validation. Auto-generates env files and syncs to GitHub secrets.
+**Environment** - Code-driven env management with validation. Auto-generates env
+files and syncs to GitHub secrets.
 
 ## Structure
 

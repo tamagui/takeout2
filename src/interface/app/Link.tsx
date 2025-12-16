@@ -5,9 +5,9 @@ import {
   type Href,
   type LinkProps as OneLinkProps,
 } from 'one'
-import { isWeb, SizableText, useDebounce, type SizableTextProps } from 'tamagui'
+import { isWeb, SizableText, useDebounce, View, type SizableTextProps } from 'tamagui'
 
-import { ArrowSquareOutIcon } from '~/interface/icons/phosphor/ArrowSquareOutIcon'
+import { ArrowUpRightIcon } from '~/interface/icons/phosphor/ArrowUpRightIcon'
 
 import { wrapWithTooltip, type TooltipWrapperProps } from '../tooltip/TooltipSimple'
 
@@ -137,14 +137,15 @@ export const Link = ({
       <>
         {children}
 
-        <ArrowSquareOutIcon
-          size={12}
-          style={{
-            display: isWeb ? ('inline-flex' as any) : 'flex',
-            marginLeft: 4,
-            opacity: 0.5,
-          }}
-        />
+        <View
+          tag="span"
+          ml={4}
+          y={-3}
+          opacity={0.5}
+          $platform-web={{ display: 'inline-flex' }}
+        >
+          <ArrowUpRightIcon size={10} />
+        </View>
       </>
     ) : (
       children

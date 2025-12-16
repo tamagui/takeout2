@@ -1,66 +1,50 @@
-import { Link } from 'one'
-import { H1, H2, H3, H4, H5, Paragraph, YStack } from 'tamagui'
+import { H1, H2, H3, H4, H5, Paragraph, styled, YStack } from 'tamagui'
+
+import { Link } from '~/interface/app/Link'
 
 import { CodeInline } from './Code'
 import { DocsCodeBlock } from './DocsCodeBlock'
 
+const BaseParagraph = styled(Paragraph, {
+  size: '$6',
+  my: '$2',
+})
+
 const components = {
   h1: (props: any) => <H1 mb="$4" {...props} />,
-  h2: (props: any) => (
-    <H2
-      mt="$6"
-      mb="$3"
-      pt="$4"
-      borderBottomWidth={1}
-      borderBottomColor="$color4"
-      {...props}
-    />
-  ),
+  h2: (props: any) => <H2 mb="$3" pt="$5" {...props} />,
   h3: (props: any) => <H3 mt="$5" mb="$2" {...props} />,
   h4: (props: any) => <H4 mt="$4" mb="$2" {...props} />,
   h5: (props: any) => <H5 mt="$3" mb="$2" {...props} />,
 
-  p: (props: any) => <Paragraph size="$5" lineHeight="$6" my="$3" {...props} />,
+  p: (props: any) => <BaseParagraph {...props} />,
 
   strong: (props: any) => (
-    <Paragraph tag="strong" fontWeight="700" fontSize="inherit" {...props} />
+    <Paragraph
+      tag="strong"
+      fontWeight="700"
+      $platform-web={{
+        fontFamily: 'inherit',
+        fontSize: 'inherit',
+      }}
+      {...props}
+    />
   ),
 
-  ul: (props: any) => <YStack tag="ul" my="$3" ml="$5" {...props} />,
-  ol: (props: any) => <YStack tag="ol" my="$3" ml="$5" {...props} />,
-  li: (props: any) => (
-    <Paragraph tag="li" display="list-item" size="$5" mb="$1" {...props} />
-  ),
+  ul: (props: any) => <YStack tag="ul" mt="$0" mb="$3" ml="$5" {...props} />,
+  ol: (props: any) => <YStack tag="ol" mt="$0" mb="$3" ml="$5" {...props} />,
+  li: (props: any) => <BaseParagraph tag="li" display="list-item" mt={0} {...props} />,
 
   a: ({ href, children, ...props }: any) => {
-    if (href?.startsWith('http')) {
-      return (
-        <Paragraph
-          tag="a"
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          color="$blue10"
-          textDecorationLine="underline"
-          fontSize="inherit"
-          {...props}
-        >
-          {children}
-        </Paragraph>
-      )
-    }
+    const isExternal = href?.startsWith('http')
     return (
-      <Link href={href} asChild>
-        <Paragraph
-          tag="a"
-          color="$blue10"
-          textDecorationLine="underline"
-          fontSize="inherit"
-          cursor="pointer"
-          {...props}
-        >
-          {children}
-        </Paragraph>
+      <Link
+        href={href}
+        {...(isExternal && {
+          target: '_blank',
+        })}
+      >
+        {children}
       </Link>
     )
   },

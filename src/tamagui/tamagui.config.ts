@@ -18,11 +18,11 @@ const baseFontSizes = {
   true: 15,
   5: 16,
   6: 18,
-  7: 20,
-  8: 23,
-  9: 32,
-  10: 38,
-  11: 44,
+  7: 22,
+  8: 26,
+  9: 30,
+  10: 40,
+  11: 46,
   12: 52,
   13: 60,
   14: 70,
@@ -38,7 +38,7 @@ const body = createSystemFont({
     },
   },
   sizeSize: (x) => Math.round(x),
-  sizeLineHeight: (x) => Math.round(x * 1.25 + 5),
+  sizeLineHeight: (x) => Math.round(x * 1.35 + 6),
 })
 
 const heading = createSystemFont({
@@ -48,7 +48,7 @@ const heading = createSystemFont({
       0: '600',
     },
   },
-  sizeSize: (x) => Math.round(x * 1.1),
+  sizeSize: (x) => Math.round(x * 1),
   sizeLineHeight: (x) => Math.round(x * 1.12 + 5),
 })
 

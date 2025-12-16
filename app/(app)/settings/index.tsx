@@ -144,12 +144,13 @@ export const ProfileSettingsPage = () => {
           title: 'Help & Support',
           icon: ChatCircleIcon,
           href: '/help',
+          external: true,
         },
         {
           id: 'documentation',
           title: 'Documentation',
           icon: BookmarkIcon,
-          href: '/docs',
+          href: '/docs/introduction',
           external: true,
         },
         {
@@ -157,12 +158,14 @@ export const ProfileSettingsPage = () => {
           title: 'Terms of Service',
           icon: FileIcon,
           href: '/terms-of-service',
+          external: true,
         },
         {
           id: 'privacy',
           title: 'Privacy Policy',
           icon: LockIcon,
           href: '/privacy-policy',
+          external: true,
         },
         {
           id: 'delete',

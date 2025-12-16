@@ -40,21 +40,23 @@ export function DocsSlugPage() {
   return (
     <>
       <HeadInfo title={frontmatter.title} description={frontmatter.description} />
+
       <H1
-        mb="$4"
+        mb="$2"
         mt="$2"
-        size="$10"
         $platform-web={{
           textWrap: 'balance',
         }}
       >
         {nbspLastWord(frontmatter.title)}
       </H1>
+
       {!!frontmatter.description && (
-        <Paragraph size="$6" color="$color11" mb="$6" lineHeight="$7">
+        <Paragraph size="$7" color="$color11" mb="$3">
           {nbspLastWord(frontmatter.description || '')}
         </Paragraph>
       )}
+
       <Component components={components} />
     </>
   )

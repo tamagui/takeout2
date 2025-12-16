@@ -5,7 +5,7 @@ import { AnimatePresence, SizableText, Spinner, View, YStack } from 'tamagui'
 
 import { PostCard } from '~/features/feed/PostCard'
 import { usePostsPaginated } from '~/features/feed/usePosts'
-import { scrollToTopEmitter } from '~/features/main-tabs/scrollToTopEmitter'
+import { scrollToTopEmitter } from '~/features/main/scrollToTopEmitter'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { ArrowUpIcon } from '~/interface/icons/phosphor/ArrowUpIcon'
 import { HomeShimmer } from '~/interface/shimmer/HomeShimmer'

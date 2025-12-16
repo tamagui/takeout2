@@ -6,7 +6,7 @@ import {
 } from '@tamagui/config/v4'
 import { createTamagui, isWeb } from 'tamagui'
 
-import { animations } from './animations'
+import { animationsRoot } from './animationsRoot'
 import { breakpoints } from './breakpoints'
 import { themes as themesJS } from './themes-out'
 
@@ -63,13 +63,13 @@ const mono = createSystemFont({
 })
 
 export const config = createTamagui({
-  animations,
+  animations: animationsRoot,
   shorthands,
   tokens,
 
   // tamagui optimization - reduce bundle size by avoiding themes js on client
   // tamagui will hydrate it from CSS which improves lighthouse scores
-  themes: process.env.VITE_ENVIRONMENT === 'client' ? {} : themesJS,
+  themes: process.env.VITE_ENVIRONMENT === 'client' ? ({} as typeof themesJS) : themesJS,
 
   media: {
     pointerTouch: { pointer: 'coarse' },

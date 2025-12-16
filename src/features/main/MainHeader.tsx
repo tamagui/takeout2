@@ -15,7 +15,7 @@ import { PageContainer } from '~/interface/layout/PageContainer'
 import { ListItem } from '~/interface/lists/ListItem'
 import { ThemeSwitch } from '~/interface/theme/ThemeSwitch'
 
-import { UserProfilePopover } from '../../user/ui/UserProfilePopover'
+import { UserProfilePopover } from '../user/ui/UserProfilePopover'
 import { NavigationTabs } from './NavigationTabs'
 
 export const MainHeader = () => {

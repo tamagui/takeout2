@@ -90,6 +90,7 @@
     "@take-out/native-hot-update": "workspace:*",
     "@take-out/postgres": "workspace:*",
     "@take-out/takeout": "workspace:*",
+    "@tamagui/animations-css": "1.141.2",
     "@tamagui/animations-moti": "1.141.2",
     "@tamagui/animations-motion": "1.141.2",
     "@tamagui/build": "1.141.2",

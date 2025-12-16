@@ -1,0 +1,26 @@
+import { createAnimations } from '@tamagui/animations-css'
+
+export const animationsRoot = createAnimations({
+  '0ms': '0ms linear',
+  '30ms': '30ms linear',
+  '50ms': '50ms linear',
+  '75ms': '75ms linear',
+  '100ms': '100ms ease-out',
+  '200ms': '200ms ease-out',
+  '300ms': '300ms ease-out',
+  superBouncy: '300ms cubic-bezier(0.175, 0.885, 0.32, 1.5)',
+  bouncy: '350ms cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+  kindaBouncy: '400ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+  superLazy: '600ms cubic-bezier(0.25, 0.1, 0.25, 1)',
+  lazy: '500ms cubic-bezier(0.25, 0.1, 0.25, 1)',
+  medium: '300ms cubic-bezier(0.25, 0.1, 0.25, 1)',
+  slowest: '800ms cubic-bezier(0.25, 0.1, 0.25, 1)',
+  slow: '450ms cubic-bezier(0.25, 0.1, 0.25, 1)',
+  quick: '150ms cubic-bezier(0.25, 0.1, 0.25, 1)',
+  quickLessBouncy: '180ms cubic-bezier(0.25, 0.1, 0.25, 1)',
+  tooltip: '200ms cubic-bezier(0.175, 0.885, 0.32, 1.1)',
+  quicker: '120ms cubic-bezier(0.25, 0.1, 0.25, 1)',
+  quickerLessBouncy: '100ms cubic-bezier(0.25, 0.1, 0.25, 1)',
+  quickest: '80ms cubic-bezier(0.25, 0.1, 0.25, 1)',
+  quickestLessBouncy: '60ms cubic-bezier(0.25, 0.1, 0.25, 1)',
+})

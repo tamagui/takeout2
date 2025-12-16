@@ -1,6 +1,6 @@
 import { createAnimations } from '@tamagui/animations-moti'
 
-export const animations = createAnimations({
+export const animationsApp = createAnimations({
   '0ms': {
     type: 'timing',
     duration: 0,
@@ -67,8 +67,6 @@ export const animations = createAnimations({
     damping: 25,
     mass: 1,
     stiffness: 550,
-    // TODO tamagui - seems like velocity doesn't do anything? maybe reanimated bug?
-    // velocity: 10
   },
   tooltip: {
     type: 'spring',

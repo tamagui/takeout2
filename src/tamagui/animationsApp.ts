@@ -1,6 +1,6 @@
 import { createAnimations } from '@tamagui/animations-motion'
 
-export const animations = createAnimations({
+export const animationsApp = createAnimations({
   '0ms': {
     type: 'tween',
     duration: 0,
@@ -109,7 +109,6 @@ export const animations = createAnimations({
     damping: 10,
     mass: 0.5,
     stiffness: 520,
-    // velocity: 1000,
   },
   quickestLessBouncy: {
     damping: 14.4,

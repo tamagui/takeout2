@@ -8,6 +8,7 @@ import { NotificationProvider } from '~/interface/notification/Notification'
 import { PlatformSpecificRootProvider } from '~/interface/platform/PlatformSpecificRootProvider'
 import { ToastProvider } from '~/interface/toast/Toast'
 import { DragDropFile } from '~/interface/upload/DragDropFile'
+import { animationsApp } from '~/tamagui/animationsApp'
 import { ProvideZero } from '~/zero/client'
 
 export function AppLayout() {
@@ -32,7 +33,7 @@ export function AppLayout() {
 
   return (
     // our app is SPA from here on down, we avoid extra rendering by doing this
-    <Configuration disableSSR>
+    <Configuration disableSSR animationDriver={animationsApp}>
       <ProvideZero>
         <ToastProvider>
           <NotificationProvider>

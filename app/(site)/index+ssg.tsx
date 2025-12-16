@@ -5,6 +5,11 @@ import { Link } from '~/interface/app/Link'
 import { TechLogos } from '~/interface/home/TechLogos'
 import { H2, H3, H4, SepHeading } from '~/interface/text/Headings'
 
+export const sitemap = {
+  priority: 1.0,
+  changefreq: 'weekly',
+}
+
 const Hero = styled(H2, {
   size: '$8',
   fontWeight: '800',

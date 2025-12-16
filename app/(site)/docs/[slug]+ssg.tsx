@@ -6,6 +6,11 @@ import { H1, Paragraph } from 'tamagui'
 import { components } from '~/features/docs/MDXComponents'
 import { HeadInfo } from '~/interface/app/HeadInfo'
 
+export const sitemap = {
+  priority: 0.8,
+  changefreq: 'weekly',
+}
+
 const route = createRoute<'/(site)/docs/[slug]'>()
 
 export async function generateStaticParams() {

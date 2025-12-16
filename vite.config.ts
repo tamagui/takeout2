@@ -122,6 +122,18 @@ export default {
       web: {
         defaultRenderMode: 'spa',
         inlineLayoutCSS: true,
+        sitemap: {
+          priority: 0.5,
+          changefreq: 'weekly',
+          exclude: [
+            '/login/**',
+            '/signup/**',
+            '/profile-setup',
+            '/avatar-setup',
+            '/waiting-list',
+            '/settings/**',
+          ],
+        },
       },
 
       deps: {

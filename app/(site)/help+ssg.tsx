@@ -16,6 +16,11 @@ import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
 import { UserIcon } from '~/interface/icons/phosphor/UserIcon'
 import { H2, H3, H5, SubHeading } from '~/interface/text/Headings'
 
+export const sitemap = {
+  priority: 0.7,
+  changefreq: 'monthly',
+}
+
 export const HelpPage = () => {
   return (
     <YStack maxW={850} self="center" gap="$4">

@@ -1,11 +1,21 @@
 import { sql } from '~/database/helpers'
 import { handleError } from '~/features/errors/handleError'
+import { ZERO_UPSTREAM_DB } from '~/server/env-server'
 
 import { migrations } from './migrations'
 
 const ZERO_MIGRATION_PREFIX = `zero-migration-`
 
 export async function initializeZeroMigrations() {
+  // skip migrations if database URL is a placeholder (e.g. during SSG builds)
+  if (
+    !ZERO_UPSTREAM_DB ||
+    ZERO_UPSTREAM_DB.includes('@host:') ||
+    ZERO_UPSTREAM_DB.includes('your-')
+  ) {
+    console.info('[zero.migrate] skipping - database URL not configured')
+    return
+  }
   // validate migrations versions numbers are incrementing:
   let lastVersion = -1
   const existingVersions = new Set<number>()

@@ -10,7 +10,7 @@ export async function getTestEnv() {
   const dockerHost = getDockerHost()
   const serverEnvFallback = await import(join(process.cwd(), 'src/server/env-server'))
 
-  // docker database URLs - must be explicit since vxrn loadEnv doesn't override existing env vars
+  // explicit URLs required since vxrn loadEnv doesn't override existing env vars
   const dockerDbBase = `postgresql://user:password@127.0.0.1:5433`
 
   return {
@@ -27,5 +27,9 @@ export async function getTestEnv() {
     ZERO_UPSTREAM_DB: `${dockerDbBase}/postgres`,
     ZERO_CVR_DB: `${dockerDbBase}/zero_cvr`,
     ZERO_CHANGE_DB: `${dockerDbBase}/zero_cdb`,
+    CLOUDFLARE_R2_ENDPOINT: 'http://127.0.0.1:9200',
+    CLOUDFLARE_R2_PUBLIC_URL: 'http://127.0.0.1:9200',
+    CLOUDFLARE_R2_ACCESS_KEY: 'minio',
+    CLOUDFLARE_R2_SECRET_KEY: 'minio_password',
   }
 }

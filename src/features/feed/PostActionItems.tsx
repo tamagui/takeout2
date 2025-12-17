@@ -2,7 +2,6 @@ import { router } from 'one'
 import { useState } from 'react'
 import { YStack } from 'tamagui'
 
-import { isNative } from '~/constants/platform'
 import { saveRemoteImage } from '~/helpers/media/saveImage'
 import { dialogConfirm, showError } from '~/interface/dialogs/actions'
 import { DownloadSimpleIcon } from '~/interface/icons/phosphor/DownloadSimpleIcon'

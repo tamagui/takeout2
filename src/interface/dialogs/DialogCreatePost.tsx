@@ -104,13 +104,17 @@ export const DialogCreatePost = () => {
       return
     }
 
+    const trimmedCaption = caption.trim() || undefined
+    const imageUrl = uploadedUrl || ''
+    const postId = randomId()
+
     setIsPosting(true)
     try {
       await zero.mutate.post.insert({
-        id: randomId(),
+        id: postId,
         userId,
-        caption: caption.trim() || undefined,
-        image: uploadedUrl || '',
+        caption: trimmedCaption,
+        image: imageUrl,
         hiddenByAdmin: false,
         commentCount: 0,
         createdAt: Date.now(),

@@ -36,10 +36,10 @@ export function ReportPostDialog({ postId, open, onOpenChange }: ReportPostDialo
   const handleSubmit = async () => {
     if (isSubmitting) return
 
+    const finalDetails = reportDetails.trim()
+
     setIsSubmitting(true)
     try {
-      const finalDetails = reportDetails.trim()
-
       zero.mutate.report.reportPost({
         postId,
         reason: reportReason,
@@ -51,9 +51,9 @@ export function ReportPostDialog({ postId, open, onOpenChange }: ReportPostDialo
       setReportDetails('')
 
       showToast('Thanks for reporting', { type: 'success' })
+      setIsSubmitting(false)
     } catch (error) {
       showError(error, 'Submit Report')
-    } finally {
       setIsSubmitting(false)
     }
   }

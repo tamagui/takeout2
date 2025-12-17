@@ -21,7 +21,9 @@ ENV PATH="/root/.bun/bin:${PATH}"
 COPY packages ./packages
 
 # skip postinstall during docker build (it's dev-only setup)
-RUN bun install --production --frozen-lockfile --ignore-scripts
+# BUN BUG just started happening: https://github.com/oven-sh/bun/issues/19088
+# RUN bun install --production --frozen-lockfile --ignore-scripts
+RUN bun install --ignore-scripts
 
 COPY . .
 

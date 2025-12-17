@@ -1,5 +1,6 @@
 import { H1, Paragraph, Separator, YStack, styled } from 'tamagui'
 
+import { CodeInline } from '~/features/docs'
 import { HeadInfo } from '~/interface/app/HeadInfo'
 import { Link } from '~/interface/app/Link'
 import { TechLogos } from '~/interface/home/TechLogos'
@@ -8,7 +9,7 @@ import { H3, H4, SepHeading } from '~/interface/text/Headings'
 const Hero = styled(H1, {
   size: '$9',
   fontWeight: '800',
-  maxW: 800,
+  maxW: 550,
   text: 'center',
 
   $sm: {
@@ -30,66 +31,67 @@ export function IndexPage() {
         description="A better starting point for building cross-platform applications with React and React Native."
       />
       <YStack items="center">
-        <Hero>The fastest way to launch the best possible app on every platform</Hero>
+        <Hero>Ultra high quality apps, shipped faster than slop</Hero>
 
         <H3
           color="$color11"
           maxW={620}
           mt="$5"
           size="$7"
+          fontWeight="400"
           $md={{
             text: 'center',
           }}
         >
-          Incredibly fast, native-feeling apps from 0 to production in&nbsp;no&nbsp;time
-          with React and React&nbsp;Native.
+          Takeout makes the best possible all-in-one React&nbsp;and&nbsp;React&nbsp;Native
+          stack as easy to use as possible.
         </H3>
 
-        <Separator my="$6" self="stretch" mx={100} opacity={0.5} />
-
-        <TechLogos />
-
-        <Separator my="$6" self="stretch" mx={100} opacity={0.5} />
+        <YStack width="100%" my="$2">
+          <Separator my="$5" self="stretch" mx={100} opacity={0.5} />
+          <TechLogos />
+          <Separator my="$5" self="stretch" mx={100} opacity={0.5} />
+        </YStack>
       </YStack>
 
       <YStack gap="$5" maxW={550} self="center">
         <Paragraph size="$6">
-          Takeout is a{' '}
-          <Link href="https://www.youtube.com/watch?v=HHTYHm6qLFY" target="_blank">
-            long-term effort
+          <strong>TL;DR:</strong> Takeout is{' '}
+          <strong>
+            an extremely robust stack that builds on two brand new technologies in
+            frontend development
+          </strong>
+          , alongside a few years of effort, to achieve a truly world-class stack for
+          apps.
+        </Paragraph>
+
+        <Paragraph size="$6">
+          Today, we're releasing Takeout 2 RC 1. Takeout aims to bring more Rails-like
+          cohesion to cross-platform React and React Native, using exciting developments
+          in frontend tech, alongside a lot of elbow grease, to finally bring together
+          great DX and UX into a simple, fun to work with repo.
+        </Paragraph>
+
+        <Paragraph size="$6">
+          <b>
+            For the first time you can share as much UI, routing, and data code as you
+            want across web, iOS, and Android, and still get incredible performance and
+            native-feel everywhere.
+          </b>
+        </Paragraph>
+
+        <Paragraph size="$6">
+          That includes getting 100 performance scores on Lighthouse, just like this very
+          page, something only possible due to years of dogged persistance building out
+          our libraries{' '}
+          <Link href="https://tamagui.dev" target="_blank">
+            Tamagui
           </Link>{' '}
-          to bring more Rails-like elegance to cross-platform React and React Native. It
-          uses exciting developments in frontend tech, alongside a lot of elbow grease, to
-          give you a performant and platform-native experience, with simple, DRY
-          code—unlike anything before.
-        </Paragraph>
-
-        <Paragraph size="$6">
-          Takeout avoids reinventing the wheel by leveraging a few great third-party
-          libraries. It also lets you unplug the pieces you don't want.
-        </Paragraph>
-
-        <Paragraph size="$6">
-          React can be great - with enough effort. When we announced{' '}
+          and{' '}
           <Link href="https://onestack.dev" target="_blank">
             One
-          </Link>{' '}
-          about a year ago we did so because we had a vision - simpler code, better UX.
-          Today, Takeout realizes this vision.
-        </Paragraph>
-
-        <Paragraph size="$6">
-          <b>For the first time,</b> you can share this much code across web, iOS, and
-          Android—and still get great performance while fully leveraging platform-native
-          primitives. One set of routes, one styling system, one UI kit, one framework.
-          Same helpers, hooks, and data layer everywhere.
-        </Paragraph>
-
-        <Paragraph size="$6">
-          Hit Lighthouse 100 without breaking a sweat, just like this very page does.
-          Choose SSG or SSR for pages that need SEO, or just use SPA mode where it doesn't
-          matter. No layout shifts, no hydration flicker—just typed inline styles, media
-          queries, dark mode, spring animations, and more.
+          </Link>
+          , and it's just the start of what makes Takeout special.
         </Paragraph>
 
         <SepHeading>Goals</SepHeading>
@@ -98,9 +100,10 @@ export function IndexPage() {
           <li style={{ marginBottom: 20 }}>
             <div>
               <Paragraph size="$6">
-                <b>Universal</b> — Target iOS, Android, and Web using React and React
-                Native <em>with shared code</em>. You don't have to share it all, and you
-                don't have to target every platform - but you can, effectively, with ease.
+                <b>Universal</b> — Target iOS, Android, Web and Desktop using React and
+                React Native <em>with shared code that runs fast</em>. You don't have to
+                share it all, and you don't have to target every platform - but you can,
+                effectively, with ease.
               </Paragraph>
             </div>
           </li>
@@ -108,13 +111,12 @@ export function IndexPage() {
           <li style={{ marginBottom: 20 }}>
             <div>
               <Paragraph size="$6">
-                <b>DRY and simple</b> — A single repo, bundler, framework, router, and set
-                of routes. A single way to do styling, UI, data. All of your backend,
-                frontend, and infrastructure in code, in one place, without a monorepo. A
-                solid suite of hooks and helpers. And data that is simple to use,
-                typesafe, syncs in realtime and mutates optimistically, all without any
-                glue code - with rich querying, relations, permissions, schema and
-                migrations.
+                <b>DRY and simple</b> — A single repo, package.json, bundler, framework,
+                and router, a single set of routes, hooks, and helpers, and a single way
+                to do styling, UI, and data. All of your backend, frontend, and
+                infrastructure lives in code and deploys with a push. And data that is
+                incredible simple to work with, typesafe, realtime, and optimistically
+                mutated for free with without any glue code.
               </Paragraph>
             </div>
           </li>
@@ -170,7 +172,8 @@ export function IndexPage() {
           <li>
             <div>
               <Paragraph size="$6">
-                <b>Low risk</b> — Every library chosen aims to maximize for: OSS, popular,
+                <b>Low risk</b> — Self host or deploy to the cloud easily. Runs on
+                Postgres. Every library chosen to ensure it's OSS-first, popular,
                 type-safe, fast, single-purpose, well-maintained, and well-documented.
               </Paragraph>
             </div>
@@ -184,16 +187,17 @@ export function IndexPage() {
         </H4>
 
         <Paragraph size="$6">
-          One ports Expo Router to Vite, adding loaders and render modes for great
-          websites. Server render or statically generate some pages, keep others
-          client-only—all from the same file-system routes, with API routes and a Hono
-          production server included.
+          Vite simply mogs any other bundler for web, and we love how fast and flexible it
+          is. One ports Expo Router to Vite, adding tons of great stuff like loaders and
+          render modes (which are required for great web performance). Server render or
+          statically generate some pages, keep others client-only, all from the same
+          routing definitions. Plus API routes and a Hono production server for free.
         </Paragraph>
 
         <Paragraph size="$6">
           With the new <b>Metro-mode</b>, you get Vite's simplicity for web while
-          optionally running Metro in the background for native—best of both worlds, with
-          Rolldown-based native bundling on the roadmap.
+          optionally running Metro in the background for native — the best of both worlds.
+          One is now stable and we just release v1 RC1.
         </Paragraph>
 
         <H4 mt="$2" size="$5" fontWeight="bold">
@@ -202,9 +206,9 @@ export function IndexPage() {
 
         <Paragraph size="$6">
           Zero is the biggest step-change in frontend since React itself. It solves the
-          hardest part: getting data to the client, keeping it in sync, and mutating it
-          instantly. It's like Firebase if it was OSS, ran on Postgres and had relations,
-          nice types, schemas, and optimistic mutations.
+          worst area of frontend development today: getting data to the client, keeping it
+          in sync, and mutating it instantly. It's like Firebase if it was OSS, ran on
+          Postgres, and had relations, types, schemas, and optimistic mutations.
         </Paragraph>
 
         <Paragraph size="$6">
@@ -213,7 +217,7 @@ export function IndexPage() {
             <b>over-zero</b>
           </Link>{' '}
           library makes it even easier to use and integrates auth, plus adds a CLI to
-          generate boilerplate code.
+          generate some of the boilerplate glue code, if you like.
         </Paragraph>
 
         <H4 mt="$2" size="$5" fontWeight="bold">
@@ -221,15 +225,17 @@ export function IndexPage() {
         </H4>
 
         <Paragraph size="$6">
-          Tamagui still offers the best balance of performance on web and native, with the
-          largest featureset of any style library, and most robust UI kit, theme system,
-          and ecosystem.
+          Tamagui still offers the best balance of performance on web <em>and</em> native,
+          with the largest featureset of any style library, beautifully typed and mergable
+          inline styles, and the most robust UI kit, theme system, and ecosystem.
         </Paragraph>
 
         <Paragraph size="$6">
-          <Link href="https://tamagui.dev/blog/version-two">Version 2</Link> ships
-          alongside Takeout with some new components, improved stability and docs, and a
-          lot of nice AI integration and simplifications.
+          <Link href="https://tamagui.dev/blog/version-two">
+            Version 2 RC1 is out now
+          </Link>{' '}
+          and brings much needed test coverage, docs, and release guardrails, some new
+          components, and a lot of nice AI integration improvements.
         </Paragraph>
 
         <H4 mt="$2" size="$5" fontWeight="bold">
@@ -238,8 +244,10 @@ export function IndexPage() {
 
         <Paragraph size="$6">
           Our goal was simple - you can point a coding agent at Takeout and get an entire
-          app into production just by prompting. Beyond extensive docs, we built a Takeout
-          CLI that organizes docs and scripts into a self-documenting structure.
+          app into production just by prompting. We have a powerful new{' '}
+          <CodeInline>takeout</CodeInline> CLI that works with a new well-structured and
+          included scripts and docs system that makes one-shotting features and fixes the
+          expectation.
         </Paragraph>
 
         <H4 mt="$2" size="$5" fontWeight="bold">
@@ -247,9 +255,10 @@ export function IndexPage() {
         </H4>
 
         <Paragraph size="$6">
-          Shared packages for helpers, hooks, postgres, and scripts. <b>Better Auth</b>{' '}
-          integration with Zero and One. Our favorite <b>Expo dependencies</b> for better
-          native UI and functionality. <b>Uncloud</b> and <b>SST</b> for production.
+          So much more. Tons of scripts, helpers, hooks, and libraries. <b>Better Auth</b>{' '}
+          integration. Our favorite <b>native dependencies</b> for better native UI and
+          functionality. And the choice to deploy with either <b>Uncloud</b> or <b>SST</b>{' '}
+          out of the box.
         </Paragraph>
 
         <SepHeading>Fin</SepHeading>

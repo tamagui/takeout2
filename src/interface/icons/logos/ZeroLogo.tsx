@@ -9,7 +9,15 @@ export const ZeroLogo = memo(({ size = 24, ...svgProps }: IconProps) => {
   const fill = useTheme().color.get()
 
   return (
-    <Svg width={size} height={size} viewBox="0 0 112 112" fill="none" {...svgProps}>
+    <Svg
+      // its a bit bigger than other logos
+      style={{ transform: `scale(0.9)` }}
+      width={size}
+      height={size}
+      viewBox="0 0 112 112"
+      fill="none"
+      {...svgProps}
+    >
       <G>
         <Path
           d="M33.9384 89.3753C49.4693 99.665 70.6006 97.968 84.2843 84.2843C92.1965 76.372 96.1011 65.9698 95.998 55.6L110.099 41.4985C115.089 60.1811 110.255 80.9411 95.598 95.598C73.7286 117.467 38.2714 117.467 16.402 95.598C14.4814 93.6774 12.7295 91.6519 11.1462 89.5401L29.837 70.8492H52.4645L33.9384 89.3753Z"

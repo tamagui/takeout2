@@ -140,11 +140,10 @@ export const Link = ({
         <View
           tag="span"
           ml={4}
-          y={-3}
-          opacity={0.5}
-          $platform-web={{ display: 'inline-flex' }}
+          opacity={0.7}
+          $platform-web={{ display: 'inline-flex', marginRight: -5, y: -9, x: -2 }}
         >
-          <ArrowUpRightIcon size={10} />
+          <ArrowUpRightIcon size={8} />
         </View>
       </>
     ) : (

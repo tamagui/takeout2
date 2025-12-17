@@ -29,13 +29,14 @@ const logos = [
 
 export function TechLogos() {
   return (
-    <XStack gap="$8" items="center" justify="center">
+    <XStack items="center" justify="center">
       {logos.map(({ name, href, Logo }) => (
         <TooltipSimple key={name} groupId="tech-logos" label={name}>
           <Link href={href} target="_blank" hideExternalIcon>
             <View
               animation="quick"
               opacity={0.7}
+              px="$4"
               hoverStyle={{ opacity: 1, scale: 1.1 }}
               pressStyle={{ scale: 0.95 }}
               cursor="pointer"

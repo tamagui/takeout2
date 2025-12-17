@@ -10,13 +10,14 @@ const route =
   process.argv.find((a) => a.startsWith('/') && !a.includes('.') && a.length < 50) || '/'
 const port = 9000 + Math.floor(Math.random() * 1000)
 const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
-const dir = 'reports'
+const dir = 'dist/report'
 const lhBase = `${dir}/lighthouse-${ts}`
 const bundle = `${dir}/bundle-stats-${ts}.html`
 
 console.info(`\n🔨 building with ANALYZE...\n`)
-await $`rm -rf dist && mkdir -p ${dir}`
+await $`rm -rf dist`
 await $`ANALYZE=1 bun run web build`
+await $`mkdir -p ${dir}`
 await $`mv dist/client/bundle_stats.html ${bundle}`.nothrow()
 
 console.info(`\n🚀 starting server on port ${port}...\n`)

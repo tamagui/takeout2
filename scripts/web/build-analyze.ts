@@ -1,8 +1,7 @@
 #!/usr/bin/env bun
 // @description Build with analyzer, run Lighthouse, open reports and site
-// Usage: bun tko web/build-analyze [route] [--keep]
+// Usage: bun tko web/build-analyze [route]
 // Example: bun tko web/build-analyze /
-// Example: bun tko web/build-analyze /home --keep
 
 import { $ } from 'bun'
 
@@ -18,7 +17,7 @@ const bundle = `${dir}/bundle-stats-${ts}.html`
 console.info(`\n🔨 building with ANALYZE...\n`)
 await $`rm -rf dist && mkdir -p ${dir}`
 await $`ANALYZE=1 bun run web build`
-await $`mv bundle_stats.html ${bundle}`.nothrow()
+await $`mv dist/client/bundle_stats.html ${bundle}`.nothrow()
 
 console.info(`\n🚀 starting server on port ${port}...\n`)
 const server = Bun.spawn(['bun', 'one', 'serve', '--port', String(port)], {
@@ -42,15 +41,10 @@ console.info(`
    SEO:            ${s('seo')}
 
 📂 Reports: ${bundle}, ${lhBase}.report.html
-
-🌐 Opening browser tabs...
+🌐 Site: http://localhost:${port}
 `)
 
-await Promise.all([
-  $`open ${bundle}`.nothrow(),
-  $`open ${lhBase}.report.html`.nothrow(),
-  $`open http://localhost:${port}`.nothrow(),
-])
+await Promise.all([$`open ${bundle}`.nothrow(), $`open ${lhBase}.report.html`.nothrow()])
 
 // per-route JS analysis if route provided
 if (route) {
@@ -58,18 +52,9 @@ if (route) {
   await analyzeRoute(route, port)
 }
 
-console.info(`✅ Done! Server running at http://localhost:${port}\n`)
+console.info(`✅ Done! Server running at http://localhost:${port} (ctrl+c to stop)\n`)
 
-// kill server after 5s unless --keep flag
-if (!process.argv.includes('--keep')) {
-  setTimeout(() => {
-    console.info('🛑 Stopping server (use --keep to keep running)\n')
-    server.kill()
-    process.exit(0)
-  }, 5_000)
-} else {
-  await server.exited
-}
+await server.exited
 
 async function analyzeRoute(targetRoute: string, serverPort: number) {
   const { chromium } = await import('playwright')
@@ -151,8 +136,9 @@ function extractModules(
 ) {
   for (const node of nodes) {
     const fullPath = path ? `${path}/${node.name}` : node.name
-    if (node.uid && nodeParts[node.uid]) {
-      const { renderedLength, gzipLength } = nodeParts[node.uid]
+    const part = node.uid ? nodeParts[node.uid] : undefined
+    if (part) {
+      const { renderedLength, gzipLength } = part
       const pkg = getPackageName(fullPath)
       const existing = packages.get(pkg) || { size: 0, gzip: 0 }
       existing.size += renderedLength
@@ -167,7 +153,7 @@ function extractModules(
 
 function getPackageName(path: string): string {
   const match = path.match(/node_modules\/(@[^/]+\/[^/]+|[^/]+)/)
-  if (match) return match[1]
+  if (match?.[1]) return match[1]
   if (path.includes('src/') || path.includes('app/')) return '[app code]'
   if (path.includes('packages/')) return '[packages]'
   return '[other]'

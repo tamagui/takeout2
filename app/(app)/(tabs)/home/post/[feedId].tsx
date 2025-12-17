@@ -1,11 +1,14 @@
+import { randomId } from '@take-out/helpers'
 import { LinearGradient } from '@tamagui/linear-gradient'
 import { createRoute } from 'one'
-import { memo } from 'react'
+import { memo, useState } from 'react'
 import Animated, { SharedTransition } from 'react-native-reanimated'
 import { SizableText, XStack, YStack, isWeb } from 'tamagui'
 
 import { isNative } from '~/constants/platform'
 import { postById } from '~/data/queries/post'
+import { useAuth } from '~/features/auth/client/authClient'
+import { CommentInput } from '~/features/feed/CommentInput'
 import { CommentSection } from '~/features/feed/CommentSection'
 import { PostActionMenu } from '~/features/feed/PostActionMenu'
 import { PostActionsPopover } from '~/features/feed/PostActionsPopover'
@@ -16,8 +19,9 @@ import { Pressable } from '~/interface/buttons/Pressable'
 import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
 import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
 import { Image } from '~/interface/image/Image'
+import { KeyboardAwareScrollView } from '~/interface/keyboard/KeyboardAwareScrollView'
 import { Text } from '~/interface/text/Text'
-import { useQuery } from '~/zero/client'
+import { useQuery, zero } from '~/zero/client'
 
 const route = createRoute<'/(app)/(tabs)/home/post/[feedId]'>()
 
@@ -25,9 +29,34 @@ const transition = SharedTransition.springify().damping(15)
 
 export const FeedDetailPage = memo(() => {
   const { feedId = '' } = route.useParams()
+  const { user: currentUser } = useAuth()
   const { user } = useUser()
   const [post] = useQuery(postById, { postId: feedId })
   const isOwnProfile = post?.userId === user?.id
+
+  const [content, setContent] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = async () => {
+    if (!content.trim() || !currentUser?.id) return
+
+    setIsSubmitting(true)
+
+    try {
+      await zero.mutate.comment.insert({
+        id: randomId(),
+        postId: feedId,
+        userId: currentUser.id,
+        content: content.trim(),
+        createdAt: Date.now(),
+      })
+      setContent('')
+      setIsSubmitting(false)
+    } catch (error) {
+      console.error('Failed to post comment:', error)
+      setIsSubmitting(false)
+    }
+  }
 
   if (!post || !user) {
     return null
@@ -48,11 +77,13 @@ export const FeedDetailPage = memo(() => {
         />
       )}
 
-      <ScrollView
-        flex={1}
-        px="$3"
+      <KeyboardAwareScrollView
+        style={{ paddingHorizontal: 12 }}
+        contentContainerStyle={{ paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
       >
         <XStack items="center" justify="space-between" py="$4">
           <XStack justify="space-between" gap="$3" width="100%">
@@ -101,7 +132,7 @@ export const FeedDetailPage = memo(() => {
               source={{ uri: post.image }}
               style={{
                 width: '100%',
-                aspectRatio: 1 / 1.3,
+                aspectRatio: 1,
                 borderRadius: 12,
               }}
               sharedTransitionTag={`post-image-${post.id}`}
@@ -116,7 +147,15 @@ export const FeedDetailPage = memo(() => {
         </YStack>
 
         <CommentSection postId={feedId} />
-      </ScrollView>
+      </KeyboardAwareScrollView>
+
+      <CommentInput
+        user={currentUser}
+        content={content}
+        setContent={setContent}
+        handleSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+      />
     </>
   )
 })

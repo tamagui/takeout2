@@ -1,0 +1,114 @@
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { isWeb, Spinner, View, XStack, YStack } from 'tamagui'
+
+import { isNative } from '~/constants/platform'
+import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { GlassView } from '~/interface/effects/GlassView'
+import Glint from '~/interface/effects/Glint'
+import { Input } from '~/interface/forms/Input'
+import { TextArea } from '~/interface/forms/TextArea'
+import { PaperPlaneTiltIcon } from '~/interface/icons/phosphor/PaperPlaneTiltIcon'
+import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter.native'
+
+import type { User } from 'better-auth'
+
+type AppUser = User & { role?: 'admin' }
+
+interface CommentInputProps {
+  user: AppUser | null
+  content: string
+  setContent: (value: string) => void
+  handleSubmit: () => void
+  isSubmitting: boolean
+}
+
+export function CommentInput({
+  user,
+  content,
+  setContent,
+  handleSubmit,
+  isSubmitting,
+}: CommentInputProps) {
+  const { bottom } = useSafeAreaInsets()
+  const hasContent = content.trim().length > 0
+  const offset = -(bottom + 50)
+  if (!user) return null
+
+  return (
+    <>
+      {isWeb && (
+        <YStack gap="$2" pt="$2">
+          <TextArea
+            size="small"
+            placeholder="Add a comment..."
+            value={content}
+            onChangeText={setContent}
+            minH={60}
+          />
+          <XStack justify="flex-end">
+            <ButtonSimple
+              size="small"
+              theme="accent"
+              disabled={!content.trim() || isSubmitting}
+              onPress={handleSubmit}
+            >
+              {isSubmitting ? <Spinner size="small" /> : 'Post'}
+            </ButtonSimple>
+          </XStack>
+        </YStack>
+      )}
+
+      {isNative && (
+        <KeyboardStickyFooter offset={offset}>
+          <XStack
+            items="center"
+            gap="$2"
+            px="$3"
+            py="$2"
+            overflow="hidden"
+            rounded={24}
+            bg="$background"
+          >
+            <Glint rounded={24} />
+            <Input
+              unstyled
+              flex={1}
+              py="$2.5"
+              px="$2"
+              borderWidth={0}
+              color="$color"
+              placeholder="Add a comment..."
+              value={content}
+              onChangeText={setContent}
+              maxLength={500}
+              multiline
+              verticalAlign="top"
+              numberOfLines={3}
+            />
+
+            <YStack
+              key="send-button"
+              animation="200ms"
+              scale={hasContent ? 1 : 0.5}
+              opacity={hasContent ? 1 : 0}
+            >
+              <ButtonSimple
+                size="large"
+                circular
+                bg="$color6"
+                disabled={isSubmitting}
+                onPress={handleSubmit}
+              >
+                {isSubmitting ? (
+                  <Spinner size="small" color="$color" />
+                ) : (
+                  <PaperPlaneTiltIcon size={18} color="$color" />
+                )}
+              </ButtonSimple>
+            </YStack>
+          </XStack>
+        </KeyboardStickyFooter>
+      )}
+    </>
+  )
+}

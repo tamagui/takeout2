@@ -1,44 +1,17 @@
-import { randomId } from '@take-out/helpers'
-import { useState } from 'react'
 import { SizableText, Spinner, XStack, YStack } from 'tamagui'
 
 import { commentsByPostId } from '~/data/queries/comment'
-import { useAuth } from '~/features/auth/client/authClient'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
 import { Avatar } from '~/interface/avatars/Avatar'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
-import { TextArea } from '~/interface/forms/TextArea'
 import { Text } from '~/interface/text/Text'
-import { useQuery, zero } from '~/zero/client'
+import { useQuery } from '~/zero/client'
 
 interface CommentSectionProps {
   postId: string
 }
 
 export function CommentSection({ postId }: CommentSectionProps) {
-  const { user } = useAuth()
   const [comments, status] = useQuery(commentsByPostId, { postId })
-  const [content, setContent] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const handleSubmit = async () => {
-    if (!content.trim() || !user?.id) return
-
-    setIsSubmitting(true)
-    try {
-      await zero.mutate.comment.insert({
-        id: randomId(),
-        postId,
-        userId: user.id,
-        content: content.trim(),
-        createdAt: Date.now(),
-      })
-      setContent('')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
   const isLoading = status.type === 'unknown'
 
   return (
@@ -71,28 +44,6 @@ export function CommentSection({ postId }: CommentSectionProps) {
               </YStack>
             </XStack>
           ))}
-        </YStack>
-      )}
-
-      {user && (
-        <YStack gap="$2" pt="$2">
-          <TextArea
-            size="small"
-            placeholder="Add a comment..."
-            value={content}
-            onChangeText={setContent}
-            minH={60}
-          />
-          <XStack justify="flex-end">
-            <ButtonSimple
-              size="small"
-              theme="accent"
-              disabled={!content.trim() || isSubmitting}
-              onPress={handleSubmit}
-            >
-              {isSubmitting ? <Spinner size="small" /> : 'Post'}
-            </ButtonSimple>
-          </XStack>
         </YStack>
       )}
     </YStack>

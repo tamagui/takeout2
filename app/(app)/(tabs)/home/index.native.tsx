@@ -110,10 +110,10 @@ export const HomePage = memo(() => {
             animation="quick"
             position="absolute"
             b={88}
-            r={16}
+            r={32}
             z={1000}
-            enterStyle={{ opacity: 0, scale: 0.5, y: 20 }}
-            exitStyle={{ opacity: 0, scale: 0.5, y: 20 }}
+            enterStyle={{ opacity: 0, scale: 0.5, y: 30 }}
+            exitStyle={{ opacity: 0, scale: 0.5, y: 30 }}
           >
             <ButtonSimple
               size="large"

@@ -8,8 +8,9 @@ const Glint = styled(YStack, {
   borderColor: '$white',
   // Workaround for native
   ...(isNative && {
-    borderLeftWidth: 0.5,
-    borderRightWidth: 0.5,
+    borderTopWidth: 1,
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
   }),
   z: 100_000_000,
 

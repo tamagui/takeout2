@@ -1,7 +1,9 @@
 import { router } from 'one'
 import { memo, useState } from 'react'
+import Animated, { SharedTransition } from 'react-native-reanimated'
 import { Accordion, isWeb, SizableText, View, XStack, YStack } from 'tamagui'
 
+import { isNative } from '~/constants/platform'
 import { useAuth } from '~/features/auth/client/authClient'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
 import { useUser } from '~/hooks/useUser'
@@ -13,9 +15,12 @@ import { LinearGradientSeparator } from '~/interface/separators/LinearGradientSe
 import { Text } from '~/interface/text/Text'
 
 import { AvatarWithMenu } from './AvatarWithMenu'
+import { PostActionMenu } from './PostActionMenu'
 import { PostActionsPopover } from './PostActionsPopover'
 
 import type { Post } from '~/data/types'
+
+const transition = SharedTransition.springify().damping(15)
 
 interface PostCardProps {
   post: Post
@@ -58,14 +63,17 @@ export const PostCard = memo(({ post }: PostCardProps) => {
                     {formatDistanceToNow(post.createdAt)}
                   </SizableText>
                 </XStack>
-                <PostActionsPopover post={post} isOwnPost={isOwnProfile} />
+                {/* Todo: move to tamagui Menu (v2) */}
+                {isNative ? (
+                  <PostActionMenu post={post} isOwnPost={isOwnProfile} />
+                ) : (
+                  <PostActionsPopover post={post} isOwnPost={isOwnProfile} />
+                )}
               </XStack>
             </YStack>
           </XStack>
         </XStack>
-        <Pressable
-          onPress={() => router.push(`/home/post/${post.id}?username=${username}`)}
-        >
+        <View>
           <Accordion overflow="hidden" type="multiple">
             <Accordion.Item value="caption" bg="transparent" borderWidth={0} p={0}>
               <Accordion.Trigger
@@ -98,20 +106,38 @@ export const PostCard = memo(({ post }: PostCardProps) => {
             </Accordion.Item>
           </Accordion>
           <View width="100%" position="relative" mt="$2">
-            <Image
-              src={post.image}
-              alt={post.caption || 'Post image'}
-              width="100%"
-              objectFit="cover"
-              rounded="$6"
-              aspectRatio={aspectRatio}
-              onLoad={(e) => {
-                const { naturalWidth, naturalHeight } = e.target as HTMLImageElement
-                if (naturalWidth && naturalHeight) {
-                  setAspectRatio(naturalWidth / naturalHeight)
-                }
-              }}
-            />
+            <Pressable
+              onPress={() => router.push(`/home/post/${post.id}?username=${username}`)}
+            >
+              {isNative ? (
+                <Animated.Image
+                  source={{ uri: post.image }}
+                  style={{
+                    width: '100%',
+                    aspectRatio,
+                    borderRadius: 12,
+                  }}
+                  sharedTransitionTag={`post-image-${post.id}`}
+                  sharedTransitionStyle={transition}
+                  resizeMode="cover"
+                />
+              ) : (
+                <Image
+                  src={post.image}
+                  alt={post.caption || 'Post image'}
+                  width="100%"
+                  objectFit="cover"
+                  rounded="$6"
+                  aspectRatio={aspectRatio}
+                  onLoad={(e) => {
+                    const { naturalWidth, naturalHeight } = e.target as HTMLImageElement
+                    if (naturalWidth && naturalHeight) {
+                      setAspectRatio(naturalWidth / naturalHeight)
+                    }
+                  }}
+                />
+              )}
+            </Pressable>
           </View>
           {typeof post.commentCount === 'number' && (
             <XStack items="center" gap="$1" pt="$2">
@@ -121,7 +147,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
               </SizableText>
             </XStack>
           )}
-        </Pressable>
+        </View>
       </View>
 
       {!isWeb && (

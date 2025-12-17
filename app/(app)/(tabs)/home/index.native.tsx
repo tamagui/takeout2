@@ -1,6 +1,6 @@
-import { LegendList, type LegendListRef } from '@legendapp/list'
 import { useEmitter } from '@take-out/helpers'
 import { memo, useCallback, useRef, useState } from 'react'
+import { FlatList, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native'
 import { AnimatePresence, SizableText, Spinner, View, YStack } from 'tamagui'
 
 import { PostCard } from '~/features/feed/PostCard'
@@ -10,11 +10,10 @@ import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { ArrowUpIcon } from '~/interface/icons/phosphor/ArrowUpIcon'
 import { HomeShimmer } from '~/interface/shimmer/HomeShimmer'
 
-import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native'
 import type { Post } from '~/data/types'
 
 export const HomePage = memo(() => {
-  const listRef = useRef<LegendListRef>(null)
+  const listRef = useRef<FlatList>(null)
   const { posts, loadMore, isLoading, hasMore } = usePostsPaginated()
   const [showScrollToTop, setShowScrollToTop] = useState(false)
   const headerHeight = 60
@@ -85,7 +84,7 @@ export const HomePage = memo(() => {
         )}
       </AnimatePresence>
 
-      <LegendList
+      <FlatList
         ref={listRef}
         data={posts}
         renderItem={renderItem}
@@ -110,7 +109,7 @@ export const HomePage = memo(() => {
             key="scroll-to-top"
             animation="quick"
             position="absolute"
-            b={66}
+            b={88}
             r={16}
             z={1000}
             enterStyle={{ opacity: 0, scale: 0.5, y: 20 }}

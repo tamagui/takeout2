@@ -1,6 +1,7 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
 import { createRoute } from 'one'
-import { memo, useState } from 'react'
+import { memo } from 'react'
+import Animated, { SharedTransition } from 'react-native-reanimated'
 import { ScrollView, SizableText, XStack, YStack, isWeb } from 'tamagui'
 
 import { postById } from '~/data/queries/post'
@@ -10,7 +11,6 @@ import { useUser } from '~/features/user/useUser'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
 import { Avatar } from '~/interface/avatars/Avatar'
 import { Pressable } from '~/interface/buttons/Pressable'
-import { GalleryImage, GalleryWrapper } from '~/interface/gallery/Gallery'
 import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
 import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
 import { Image } from '~/interface/image/Image'
@@ -19,11 +19,12 @@ import { useQuery } from '~/zero/client'
 
 const route = createRoute<'/(app)/(tabs)/home/post/[feedId]'>()
 
+const transition = SharedTransition.springify().damping(15)
+
 export const FeedDetailPage = memo(() => {
   const { feedId = '' } = route.useParams()
   const { user } = useUser()
   const [post] = useQuery(postById, { postId: feedId })
-  const [aspectRatio, setAspectRatio] = useState<number>(1)
   const isOwnProfile = post?.userId === user?.id
 
   if (!post || !user) {
@@ -89,24 +90,17 @@ export const FeedDetailPage = memo(() => {
           </Pressable>
         ) : (
           <YStack mb="$4">
-            <GalleryWrapper urls={[post.image]}>
-              <GalleryImage>
-                <Image
-                  key={`${post.id.toString()}`}
-                  src={post.image}
-                  objectFit="cover"
-                  rounded="$6"
-                  width="100%"
-                  aspectRatio={aspectRatio}
-                  onLoad={(e) => {
-                    const { naturalWidth, naturalHeight } = e.target as HTMLImageElement
-                    if (naturalWidth && naturalHeight) {
-                      setAspectRatio(naturalWidth / naturalHeight)
-                    }
-                  }}
-                />
-              </GalleryImage>
-            </GalleryWrapper>
+            <Animated.Image
+              source={{ uri: post.image }}
+              style={{
+                width: '100%',
+                aspectRatio: 1 / 1.3,
+                borderRadius: 12,
+              }}
+              sharedTransitionTag={`post-image-${post.id}`}
+              sharedTransitionStyle={transition}
+              resizeMode="cover"
+            />
           </YStack>
         )}
 

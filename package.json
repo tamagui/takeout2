@@ -194,7 +194,12 @@
   },
   "reanimated": {
     "staticFeatureFlags": {
-      "ENABLE_SHARED_ELEMENT_TRANSITIONS": true
+      "ENABLE_SHARED_ELEMENT_TRANSITIONS": true,
+      "ANDROID_SYNCHRONOUSLY_UPDATE_UI_PROPS": true,
+      "IOS_SYNCHRONOUSLY_UPDATE_UI_PROPS": true,
+      "USE_COMMIT_HOOK_ONLY_FOR_REACT_COMMITS": true,
+      "DISABLE_COMMIT_PAUSING_MECHANISM": true,
+      "FORCE_REACT_RENDER_FOR_SETTLED_ANIMATIONS": true
     }
   },
   "trustedDependencies": [

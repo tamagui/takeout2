@@ -91,7 +91,7 @@ a {
   color: inherit;
 }
 
-[role="heading"] {
+:root [role="heading"] {
   text-wrap: pretty;
 }
 

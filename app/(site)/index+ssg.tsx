@@ -1,28 +1,28 @@
-import { Paragraph, Separator, YStack, styled } from 'tamagui'
+import { H1, Paragraph, Separator, YStack, styled } from 'tamagui'
 
 import { HeadInfo } from '~/interface/app/HeadInfo'
 import { Link } from '~/interface/app/Link'
 import { TechLogos } from '~/interface/home/TechLogos'
-import { H2, H3, H4, SepHeading } from '~/interface/text/Headings'
+import { H3, H4, SepHeading } from '~/interface/text/Headings'
 
 export const sitemap = {
   priority: 1.0,
   changefreq: 'weekly',
 }
 
-const Hero = styled(H2, {
-  size: '$8',
+const Hero = styled(H1, {
+  size: '$9',
   fontWeight: '800',
-  maxW: 650,
+  maxW: 800,
   text: 'center',
 
   $sm: {
-    size: '$9',
+    size: '$10',
     fontWeight: '800',
   },
 
   $md: {
-    size: '$10',
+    size: '$11',
     fontWeight: '800',
   },
 })
@@ -35,7 +35,7 @@ export function IndexPage() {
         description="A better starting point for building cross-platform applications with React and React Native."
       />
       <YStack items="center">
-        <Hero>A new way to build apps</Hero>
+        <Hero>The fastest way to launch the best possible app on every platform</Hero>
 
         <H3
           color="$color11"
@@ -46,8 +46,8 @@ export function IndexPage() {
             text: 'center',
           }}
         >
-          Takeout is a better starting point for building cross-platform applications
-          with&nbsp;React and React&nbsp;Native.
+          Incredibly fast, native-feeling apps from 0 to production in&nbsp;no&nbsp;time
+          with React and React&nbsp;Native.
         </H3>
 
         <Separator my="$6" self="stretch" mx={100} opacity={0.5} />

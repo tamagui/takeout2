@@ -17,7 +17,8 @@ export default {
       'react-native-svg': '@tamagui/react-native-svg',
 
       // use lightweight react-native, trims Animated and other unused things (~30+KB)
-      'react-native': '@tamagui/react-native-web-lite/without-animated',
+      // breaks in dev only, we can make a better plugin option for this
+      // 'react-native': '@tamagui/react-native-web-lite/without-animated',
       // 'react-native-web': '@tamagui/react-native-web-lite/without-animated',
     },
   },

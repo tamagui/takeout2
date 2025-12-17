@@ -100,6 +100,7 @@ export const HomePage = memo(() => {
           paddingBottom: 100,
         }}
         showsVerticalScrollIndicator={false}
+        contentInsetAdjustmentBehavior="automatic"
       />
 
       {/* scroll to top button */}

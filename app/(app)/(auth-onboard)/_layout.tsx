@@ -1,23 +1,33 @@
 import { isNative } from '@take-out/helpers'
-import { Slot } from 'one'
-import { Spacer } from 'tamagui'
+import { Slot, Stack } from 'one'
+import { isWeb, Spacer } from 'tamagui'
 
 import { SiteHeader } from '~/features/site/ui/SiteHeader'
 import { PageMainContainer } from '~/interface/layout/PageContainer'
 
 export function AuthAndOnboardingLayout() {
-  if (isNative) {
-    return <Slot />
-  }
-
   return (
     <>
-      <SiteHeader />
-      <PageMainContainer>
-        {/* header height push down */}
-        <Spacer size={70} />
-        <Slot />
-      </PageMainContainer>
+      {isWeb ? (
+        <>
+          <SiteHeader />
+          <PageMainContainer>
+            {/* header height push down */}
+            <Spacer size={70} />
+            <Slot />
+          </PageMainContainer>
+        </>
+      ) : (
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="login" />
+          <Stack.Screen name="login/password" />
+          <Stack.Screen name="signup/[method]" />
+          <Stack.Screen name="signup/otp" />
+          <Stack.Screen name="avatar-setup" />
+          <Stack.Screen name="profile-setup" />
+          <Stack.Screen name="waiting-list" />
+        </Stack>
+      )}
     </>
   )
 }

@@ -7,6 +7,7 @@ import { closeDialogLayer2, dialogLayer2Emitter } from './shared'
 
 export const DialogError = () => {
   const { width } = useWindowDimensions()
+  const minW = isWeb ? 450 : width * 0.9
   const state = useEmitterSelector(dialogLayer2Emitter, (next) => {
     return next.type === 'error' ? next : null
   })
@@ -22,7 +23,7 @@ export const DialogError = () => {
   return (
     <Dialog
       minH={minHeight}
-      minW={isWeb ? 450 : width * 0.9}
+      minW={minW}
       open={!!state}
       onOpenChange={(open) => {
         if (open) return

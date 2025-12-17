@@ -109,7 +109,7 @@ const DialogComponent = ({
               $theme-light={{
                 bg: '$shadow6',
               }}
-              opacity={0.4}
+              opacity={0.8}
             />
           </DialogOverlay>
 

@@ -1,6 +1,14 @@
 import { randomId, useEmitterSelector } from '@take-out/helpers'
 import { useRef, useState } from 'react'
-import { Circle, isWeb, ScrollView, SizableText, Spinner, YStack } from 'tamagui'
+import {
+  Circle,
+  isWeb,
+  ScrollView,
+  SizableText,
+  Spinner,
+  useWindowDimensions,
+  YStack,
+} from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
 import { pickImageFromLibrary } from '~/helpers/media/imagePicker'
@@ -24,6 +32,8 @@ const IMAGE_QUALITY = 0.9
 export const DialogCreatePost = () => {
   const auth = useAuth()
   const userId = auth.user?.id
+  const { width } = useWindowDimensions()
+  const minW = isWeb ? 500 : width * 0.9
   const [caption, setCaption] = useState('')
   const [isPosting, setIsPosting] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -108,10 +118,10 @@ export const DialogCreatePost = () => {
 
       showToast('Post created successfully!', { type: 'success' })
       handleClose()
+      setIsPosting(false)
     } catch (error) {
       console.info('Failed to create post:', error)
       showError(error, 'Failed to create post')
-    } finally {
       setIsPosting(false)
     }
   }
@@ -121,7 +131,7 @@ export const DialogCreatePost = () => {
   return (
     <Dialog
       minH={500}
-      minW={500}
+      minW={minW}
       open={!!state}
       onOpenChange={(open) => {
         if (!open) handleClose()
@@ -241,7 +251,6 @@ export const DialogCreatePost = () => {
             </ButtonSimple>
             <ButtonSimple
               glass
-              size="large"
               onPress={handlePost}
               disabled={!canPost}
               data-testid="create-post-submit"

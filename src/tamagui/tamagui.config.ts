@@ -117,7 +117,8 @@ export const config = createTamagui({
   settings: {
     mediaQueryDefaultActive,
     defaultFont: 'body',
-    fastSchemeChange: true,
+    // TODO: this causes issues with $theme-dark/light on native
+    fastSchemeChange: false,
     shouldAddPrefersColorThemes: true,
     disableRootThemeClass: true, // vxrn color scheme handles this
     themeClassNameOnRoot: true,

@@ -177,8 +177,7 @@ export const LoginPage = () => {
           </YStack>
           <YStack items="center" gap="$2" mt="$4">
             <SizableText size="$3" text="center" color="$color10">
-              By continuing, you agree to our
-              <br />
+              {` By continuing, you agree to our\n`}
               <Link href={TERMS_OF_SERVICE_URL}>Terms of Service</Link>,{' '}
               <Link href={PRIVACY_POLICY_URL}>Privacy Policy</Link> and{' '}
               <Link href={EULA_URL}>EULA.</Link>

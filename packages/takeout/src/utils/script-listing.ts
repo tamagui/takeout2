@@ -120,6 +120,8 @@ export function listAllScripts(includeCommands = true): void {
     console.info(`  ${pc.green('env:setup')} - Setup environment variables`)
     console.info(`  ${pc.green('run')} - Run scripts in parallel`)
     console.info(`  ${pc.green('script')} - Manage and run scripts`)
+    console.info(`  ${pc.green('sync')} - Sync fork with upstream Takeout`)
+    console.info(`  ${pc.green('changed')} - Show changes since last sync`)
     console.info(`  ${pc.green('completion')} - Shell completion setup`)
   }
 

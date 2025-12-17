@@ -2,7 +2,7 @@
  * Sync command - sync fork with upstream Takeout repository
  */
 
-import { spawn, spawnSync } from 'node:child_process'
+import { execSync, spawn, spawnSync } from 'node:child_process'
 import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, parse } from 'node:path'
@@ -19,6 +19,10 @@ import {
   showStep,
   showSuccess,
 } from '../utils/prompts'
+
+const UPSTREAM_REPO = 'tamagui/takeout3'
+const UPSTREAM_REMOTE = 'takeout-upstream'
+const TAKEOUT_FILE = '.takeout'
 
 function getSyncPrompt(): string {
   try {
@@ -56,6 +60,42 @@ function checkToolAvailable(command: string): boolean {
   } catch {
     return false
   }
+}
+
+function ensureUpstreamRemote(): boolean {
+  try {
+    // check if remote exists
+    const remotes = execSync('git remote', { encoding: 'utf-8' })
+    if (!remotes.includes(UPSTREAM_REMOTE)) {
+      execSync(`git remote add ${UPSTREAM_REMOTE} git@github.com:${UPSTREAM_REPO}.git`, {
+        stdio: 'pipe',
+      })
+    }
+    execSync(`git fetch ${UPSTREAM_REMOTE} --quiet`, { stdio: 'pipe' })
+    return true
+  } catch {
+    return false
+  }
+}
+
+function getUpstreamHeadSha(): string | null {
+  try {
+    const sha = execSync(`git rev-parse ${UPSTREAM_REMOTE}/main`, { encoding: 'utf-8' })
+    return sha.trim()
+  } catch {
+    return null
+  }
+}
+
+function writeTakeoutConfig(sha: string): void {
+  const configPath = join(process.cwd(), TAKEOUT_FILE)
+  const date = new Date().toISOString().split('T')[0]
+  const content = `# takeout sync tracking file
+# this file tracks the last synced commit from upstream takeout
+sha=${sha}
+date=${date}
+`
+  writeFileSync(configPath, content)
 }
 
 export const syncCommand = defineCommand({
@@ -128,6 +168,21 @@ export const syncCommand = defineCommand({
 
     console.info()
 
+    // fetch upstream to get the target SHA before syncing
+    console.info(pc.dim('Fetching upstream repository...'))
+    if (!ensureUpstreamRemote()) {
+      showError('Failed to fetch upstream repository')
+      return
+    }
+
+    const upstreamSha = getUpstreamHeadSha()
+    if (!upstreamSha) {
+      showError('Failed to get upstream HEAD SHA')
+      return
+    }
+    console.info(pc.dim(`Target SHA: ${upstreamSha.slice(0, 7)}`))
+    console.info()
+
     try {
       const prompt = getSyncPrompt()
 
@@ -177,7 +232,9 @@ export const syncCommand = defineCommand({
         claude.on('close', (code) => {
           console.info()
           if (code === 0) {
+            writeTakeoutConfig(upstreamSha)
             showSuccess('Sync completed successfully!')
+            console.info(pc.dim(`Updated .takeout to ${upstreamSha.slice(0, 7)}`))
           } else {
             showError(`Claude Code exited with code ${code}`)
           }
@@ -203,7 +260,9 @@ export const syncCommand = defineCommand({
         cursor.on('close', (code) => {
           console.info()
           if (code === 0) {
+            writeTakeoutConfig(upstreamSha)
             showSuccess('Sync completed successfully!')
+            console.info(pc.dim(`Updated .takeout to ${upstreamSha.slice(0, 7)}`))
           } else {
             showError(`Cursor Agent exited with code ${code}`)
           }
@@ -231,7 +290,9 @@ export const syncCommand = defineCommand({
         aider.on('close', (code) => {
           console.info()
           if (code === 0) {
+            writeTakeoutConfig(upstreamSha)
             showSuccess('Sync completed successfully!')
+            console.info(pc.dim(`Updated .takeout to ${upstreamSha.slice(0, 7)}`))
           } else {
             showError(`Aider exited with code ${code}`)
           }

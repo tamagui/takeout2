@@ -10,6 +10,7 @@ import { join } from 'node:path'
 
 import { defineCommand, runMain } from 'citty'
 
+import { changedCommand } from './commands/changed'
 import { docsCommand } from './commands/docs'
 import { envSetupCommand } from './commands/env-setup'
 import { onboardCommand } from './commands/onboard'
@@ -85,6 +86,7 @@ if (isShorthand) {
     'script',
     'env:setup',
     'sync',
+    'changed',
     '--help',
     '-h',
     '--version',
@@ -130,6 +132,7 @@ const main = defineCommand({
     run: runCommand,
     script: scriptCommand,
     sync: syncCommand,
+    changed: changedCommand,
   },
   run() {
     // only show available scripts when running tko with truly no arguments

@@ -32,9 +32,9 @@ Compare the current repository with the upstream to determine the last commit th
 
 - Checking git history for merge commits from upstream
 - Comparing file contents and commit messages
-- Looking for a `.takeout-sync` marker file (if it exists) that contains the last synced commit SHA
+- Looking for a `.takeout` marker file (if it exists) that contains the last synced commit SHA
 
-Create or update a `.takeout-sync` file in the project root with the current HEAD SHA after syncing.
+Create or update a `.takeout` file in the project root with the current HEAD SHA after syncing.
 
 ### 3. Analyze New Commits
 
@@ -141,7 +141,7 @@ After processing all commits:
    - New package versions (if ejected)
    - Any recommended follow-up actions
 
-2. Update the `.takeout-sync` marker file with the new HEAD SHA
+2. Update the `.takeout` marker file with the new HEAD SHA
 
 3. Run post-sync checks:
    ```bash

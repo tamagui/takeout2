@@ -78,7 +78,7 @@ interface OnboardingStep {
   title: string
   description: string
   icon: React.ElementType
-  theme: 'orange' | 'green' | 'blue'
+  theme: 'yellow' | 'green' | 'blue'
 }
 
 const onboardingSteps: OnboardingStep[] = [
@@ -88,7 +88,7 @@ const onboardingSteps: OnboardingStep[] = [
     description:
       'Build full-stack apps with the power of Tamagui, React Native, and modern web technologies',
     icon: SparkleIcon,
-    theme: 'orange',
+    theme: 'yellow',
   },
   {
     id: 'updates',

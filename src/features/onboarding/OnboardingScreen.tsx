@@ -9,7 +9,7 @@ import { StepContent } from './OnboardingStepContent'
 
 const steps: OnboardingStepInfo[] = [
   {
-    theme: 'orange',
+    theme: 'yellow',
     Content: () => (
       <StepContent
         title="Kickstart"

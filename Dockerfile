@@ -9,13 +9,15 @@ RUN apt-get update && apt-get install -y \
   unzip \
   && rm -rf /var/lib/apt/lists/*
 
-RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.2.23"
-ENV PATH="/root/.bun/bin:${PATH}"
-
 WORKDIR /app
 
-# copy package files
+# copy package.json first to extract bun version
 COPY package.json bun.lock vite.config.ts ./
+
+# install bun version from packageManager field in package.json
+RUN BUN_VERSION=$(grep -o '"packageManager": *"bun@[^"]*"' package.json | grep -o '[0-9][0-9.]*') \
+  && curl -fsSL https://bun.sh/install | bash -s "bun-v${BUN_VERSION}"
+ENV PATH="/root/.bun/bin:${PATH}"
 COPY packages ./packages
 
 # skip postinstall during docker build (it's dev-only setup)

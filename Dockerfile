@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
   unzip \
   && rm -rf /var/lib/apt/lists/*
 
-RUN curl -fsSL https://bun.sh/install | bash
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.2.23"
 ENV PATH="/root/.bun/bin:${PATH}"
 
 WORKDIR /app

@@ -18,7 +18,7 @@ export default {
 
       // use lightweight react-native, trims Animated and other unused things (~30+KB)
       'react-native': '@tamagui/react-native-web-lite/without-animated',
-      'react-native-web': '@tamagui/react-native-web-lite/without-animated',
+      // 'react-native-web': '@tamagui/react-native-web-lite/without-animated',
     },
   },
 

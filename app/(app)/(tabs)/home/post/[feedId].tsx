@@ -2,10 +2,12 @@ import { LinearGradient } from '@tamagui/linear-gradient'
 import { createRoute } from 'one'
 import { memo } from 'react'
 import Animated, { SharedTransition } from 'react-native-reanimated'
-import { ScrollView, SizableText, XStack, YStack, isWeb } from 'tamagui'
+import { SizableText, XStack, YStack, isWeb } from 'tamagui'
 
+import { isNative } from '~/constants/platform'
 import { postById } from '~/data/queries/post'
 import { CommentSection } from '~/features/feed/CommentSection'
+import { PostActionMenu } from '~/features/feed/PostActionMenu'
 import { PostActionsPopover } from '~/features/feed/PostActionsPopover'
 import { useUser } from '~/features/user/useUser'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
@@ -66,7 +68,12 @@ export const FeedDetailPage = memo(() => {
                 </SizableText>
               </XStack>
             </XStack>
-            <PostActionsPopover post={post} isOwnPost={isOwnProfile} />
+            {/* Todo: move to tamagui Menu (v2) */}
+            {isNative ? (
+              <PostActionMenu post={post} isOwnPost={isOwnProfile} />
+            ) : (
+              <PostActionsPopover post={post} isOwnPost={isOwnProfile} />
+            )}
           </XStack>
         </XStack>
         {isWeb ? (

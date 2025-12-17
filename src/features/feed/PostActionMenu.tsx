@@ -1,5 +1,4 @@
 import { router } from 'one'
-import { useState } from 'react'
 import * as DropdownMenu from 'zeego/dropdown-menu'
 
 import { saveRemoteImage } from '~/helpers/media/saveImage'
@@ -13,11 +12,16 @@ import { XCircleIcon } from '~/interface/icons/phosphor/XCircleIcon'
 import { showToast } from '~/interface/toast/helpers'
 import { zero } from '~/zero/client'
 
-import { ReportPostDialog } from './ReportPostDialog'
-
 import type { Post } from '~/data/types'
 
 // TODO: Tamagui v2 Menu!
+
+const REPORT_REASONS = [
+  { value: 'inappropriate', label: 'Inappropriate Content' },
+  { value: 'spam', label: 'Spam' },
+  { value: 'harassment', label: 'Harassment or Bullying' },
+  { value: 'other', label: 'Other' },
+] as const
 
 interface PostActionMenuProps {
   post: Post
@@ -26,14 +30,12 @@ interface PostActionMenuProps {
 
 export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
   const isAdmin = false
-  const [showReportDialog, setShowReportDialog] = useState<boolean>(false)
 
   const handleSaveImage = async () => {
     if (!post?.image) return
     try {
       await saveRemoteImage(post.image)
       showToast('Image saved to gallery', { type: 'success' })
-      setShowReportDialog(false)
     } catch (err) {
       showError(err, 'Save Image')
     }
@@ -43,9 +45,20 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
     if (!post) return
     router.push(`/home/profile/${post.userId}`)
   }
-  const handleReport = () => {
+
+  const handleReportPost = (reason: string) => {
     if (!post) return
-    setShowReportDialog(true)
+
+    try {
+      zero.mutate.report.reportPost({
+        postId: post.id,
+        reason,
+        details: '',
+      })
+      showToast('Thanks for reporting', { type: 'success' })
+    } catch (error) {
+      showError(error, 'Report Post')
+    }
   }
 
   const handleBlock = async () => {
@@ -84,37 +97,37 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
   }
 
   return (
-    <>
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger asChild>
-          <ButtonSimple size="small" circular glass aria-label="Post actions">
-            <DotsThreeIcon size={16} color="$color12" />
-          </ButtonSimple>
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Content>
-          <DropdownMenu.Item key="save-image" onSelect={handleSaveImage}>
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger asChild>
+        <ButtonSimple size="small" circular glass aria-label="Post actions">
+          <DotsThreeIcon size={16} color="$color12" />
+        </ButtonSimple>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content>
+        <DropdownMenu.Item key="save-image" onSelect={handleSaveImage}>
+          <DropdownMenu.ItemIcon
+            ios={{ name: 'arrow.down.circle' }}
+            androidIconName="ic_menu_save"
+          >
+            <DownloadSimpleIcon size={22} />
+          </DropdownMenu.ItemIcon>
+          <DropdownMenu.ItemTitle>Save Image</DropdownMenu.ItemTitle>
+        </DropdownMenu.Item>
+
+        {!isOwnPost && (
+          <DropdownMenu.Item key="view-profile" onSelect={handleViewProfile}>
             <DropdownMenu.ItemIcon
-              ios={{ name: 'arrow.down.circle' }}
-              androidIconName="ic_menu_save"
+              ios={{ name: 'person.circle' }}
+              androidIconName="ic_menu_myplaces"
             >
-              <DownloadSimpleIcon size={22} />
+              <UserCircleIcon />
             </DropdownMenu.ItemIcon>
-            <DropdownMenu.ItemTitle>Save Image</DropdownMenu.ItemTitle>
+            <DropdownMenu.ItemTitle>View Profile</DropdownMenu.ItemTitle>
           </DropdownMenu.Item>
+        )}
 
-          {!isOwnPost && (
-            <DropdownMenu.Item key="view-profile" onSelect={handleViewProfile}>
-              <DropdownMenu.ItemIcon
-                ios={{ name: 'person.circle' }}
-                androidIconName="ic_menu_myplaces"
-              >
-                <UserCircleIcon />
-              </DropdownMenu.ItemIcon>
-              <DropdownMenu.ItemTitle>View Profile</DropdownMenu.ItemTitle>
-            </DropdownMenu.Item>
-          )}
-
-          <DropdownMenu.Item key="report" onSelect={handleReport}>
+        <DropdownMenu.Sub>
+          <DropdownMenu.SubTrigger key="report">
             <DropdownMenu.ItemIcon
               ios={{ name: 'exclamationmark.triangle' }}
               androidIconName="ic_menu_report_image"
@@ -122,37 +135,41 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
               <WarningCircleIcon />
             </DropdownMenu.ItemIcon>
             <DropdownMenu.ItemTitle>Report</DropdownMenu.ItemTitle>
-          </DropdownMenu.Item>
-
-          <DropdownMenu.Item key="block" onSelect={handleBlock} destructive>
-            <DropdownMenu.ItemIcon
-              ios={{ name: 'xmark.circle' }}
-              androidIconName="ic_menu_close_clear_cancel"
-            >
-              <XCircleIcon />
-            </DropdownMenu.ItemIcon>
-            <DropdownMenu.ItemTitle>Block User</DropdownMenu.ItemTitle>
-          </DropdownMenu.Item>
-
-          {isAdmin && (
-            <DropdownMenu.Item key="admin-hide" onSelect={handleAdminHide} destructive>
-              <DropdownMenu.ItemIcon
-                ios={{ name: 'eye.slash' }}
-                androidIconName="ic_menu_view"
+          </DropdownMenu.SubTrigger>
+          <DropdownMenu.SubContent>
+            {REPORT_REASONS.map((reason) => (
+              <DropdownMenu.Item
+                key={reason.value}
+                onSelect={() => handleReportPost(reason.value)}
               >
-                <WarningCircleIcon />
-              </DropdownMenu.ItemIcon>
-              <DropdownMenu.ItemTitle>Hide Post (Admin)</DropdownMenu.ItemTitle>
-            </DropdownMenu.Item>
-          )}
-        </DropdownMenu.Content>
-      </DropdownMenu.Root>
+                <DropdownMenu.ItemTitle>{reason.label}</DropdownMenu.ItemTitle>
+              </DropdownMenu.Item>
+            ))}
+          </DropdownMenu.SubContent>
+        </DropdownMenu.Sub>
 
-      <ReportPostDialog
-        postId={post.id}
-        open={showReportDialog}
-        onOpenChange={setShowReportDialog}
-      />
-    </>
+        <DropdownMenu.Item key="block" onSelect={handleBlock} destructive>
+          <DropdownMenu.ItemIcon
+            ios={{ name: 'xmark.circle' }}
+            androidIconName="ic_menu_close_clear_cancel"
+          >
+            <XCircleIcon />
+          </DropdownMenu.ItemIcon>
+          <DropdownMenu.ItemTitle>Block User</DropdownMenu.ItemTitle>
+        </DropdownMenu.Item>
+
+        {isAdmin && (
+          <DropdownMenu.Item key="admin-hide" onSelect={handleAdminHide} destructive>
+            <DropdownMenu.ItemIcon
+              ios={{ name: 'eye.slash' }}
+              androidIconName="ic_menu_view"
+            >
+              <WarningCircleIcon />
+            </DropdownMenu.ItemIcon>
+            <DropdownMenu.ItemTitle>Hide Post (Admin)</DropdownMenu.ItemTitle>
+          </DropdownMenu.Item>
+        )}
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
   )
 }

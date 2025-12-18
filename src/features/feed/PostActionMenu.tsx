@@ -33,12 +33,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
 
   const handleSaveImage = async () => {
     if (!post?.image) return
-    try {
-      await saveRemoteImage(post.image)
-      showToast('Image saved to gallery', { type: 'success' })
-    } catch (err) {
-      showError(err, 'Save Image')
-    }
+    await saveRemoteImage(post.image)
   }
 
   const handleViewProfile = () => {

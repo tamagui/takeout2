@@ -92,6 +92,10 @@ a {
 }
 
 :root [role="heading"] {
+  text-wrap: balance;
+}
+
+:root p {
   text-wrap: pretty;
 }
 

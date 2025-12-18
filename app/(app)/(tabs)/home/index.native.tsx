@@ -112,13 +112,13 @@ export const HomePage = memo(() => {
             b={88}
             r={32}
             z={1000}
-            enterStyle={{ opacity: 0, scale: 0.5, y: 30 }}
-            exitStyle={{ opacity: 0, scale: 0.5, y: 30 }}
+            enterStyle={{ scale: 0.5, y: 30 }}
+            exitStyle={{ scale: 0.5, y: 30 }}
           >
             <ButtonSimple
+              glass
               size="large"
               circular
-              glass
               onPress={() =>
                 listRef.current?.scrollToOffset({ offset: 0, animated: true })
               }

@@ -1,10 +1,11 @@
 import { router } from 'one'
 import { memo, useState } from 'react'
-import Animated, { SharedTransition } from 'react-native-reanimated'
+import Animated from 'react-native-reanimated'
 import { Accordion, isWeb, SizableText, View, XStack, YStack } from 'tamagui'
 
 import { isNative } from '~/constants/platform'
 import { useAuth } from '~/features/auth/client/authClient'
+import { sharedTransition } from '~/helpers/animation/sharedTransition'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
 import { useUser } from '~/hooks/useUser'
 import { Pressable } from '~/interface/buttons/Pressable'
@@ -19,8 +20,6 @@ import { PostActionMenu } from './PostActionMenu'
 import { PostActionsPopover } from './PostActionsPopover'
 
 import type { Post } from '~/data/types'
-
-const transition = SharedTransition.springify().damping(15)
 
 interface PostCardProps {
   post: Post
@@ -106,9 +105,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
             </Accordion.Item>
           </Accordion>
           <View width="100%" position="relative" mt="$2">
-            <Pressable
-              onPress={() => router.push(`/home/post/${post.id}?username=${username}`)}
-            >
+            <Pressable onPress={() => router.push(`/home/post/${post.id}`)}>
               {isNative ? (
                 <Animated.Image
                   source={{ uri: post.image }}
@@ -118,7 +115,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
                     borderRadius: 12,
                   }}
                   sharedTransitionTag={`post-image-${post.id}`}
-                  sharedTransitionStyle={transition}
+                  sharedTransitionStyle={sharedTransition}
                   resizeMode="cover"
                 />
               ) : (

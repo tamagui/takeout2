@@ -35,18 +35,6 @@ export const LoginPage = () => {
 
   return (
     <XStack flex={1} position="relative">
-      {!isWeb && (
-        <LinearGradient
-          colors={['#313131', 'transparent']}
-          position="absolute"
-          t={0}
-          l={0}
-          r={0}
-          b={0}
-          height={200}
-        />
-      )}
-
       <YStack flex={1} justify="center" items="center">
         <Circle
           size={80}
@@ -82,7 +70,6 @@ export const LoginPage = () => {
             <YStack width="100%" gap="$3">
               <Link href="/signup/email" asChild>
                 <ButtonAction
-                  glass
                   size="large"
                   pressStyle={{
                     scale: 0.97,

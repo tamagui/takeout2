@@ -7,10 +7,6 @@ import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 
 import type { RouteProp } from '@react-navigation/native'
 
-type PostRouteParams = {
-  'post/[feedId]': { feedId: string; username?: string }
-}
-
 export function HomeLayout() {
   return (
     <Stack
@@ -36,8 +32,8 @@ export function HomeLayout() {
       <Stack.Screen name="profile/[userId]" />
       <Stack.Screen
         name="post/[feedId]"
-        options={({ route }: { route: RouteProp<PostRouteParams, 'post/[feedId]'> }) => ({
-          title: route.params?.username,
+        options={() => ({
+          title: 'Post',
           headerLeft: () => (
             <Pressable
               onPress={() => router.back()}

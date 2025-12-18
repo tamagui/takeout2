@@ -2,6 +2,7 @@ import { isLiquidGlassAvailable } from 'expo-glass-effect'
 import { router, Stack } from 'one'
 
 import { Pressable } from '~/interface/buttons/Pressable'
+import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { GearIcon } from '~/interface/icons/phosphor/GearIcon'
 
 export const ProfileLayout = () => {
@@ -31,6 +32,23 @@ export const ProfileLayout = () => {
             </Pressable>
           ),
         }}
+      />
+      <Stack.Screen
+        name="post/[feedId]"
+        options={() => ({
+          title: 'Post',
+          headerLeft: () => (
+            <Pressable
+              onPress={() => router.back()}
+              width={36}
+              height={36}
+              items="center"
+              justify="center"
+            >
+              <CaretLeftIcon size={24} />
+            </Pressable>
+          ),
+        })}
       />
     </Stack>
   )

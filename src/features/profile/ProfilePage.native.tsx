@@ -1,12 +1,14 @@
 import { LegendList, type LegendListRef } from '@legendapp/list'
+import { router } from 'one'
 import { memo, useCallback, useMemo, useRef } from 'react'
 import { RefreshControl } from 'react-native'
+import Animated from 'react-native-reanimated'
 import { AnimatePresence, Spinner, useWindowDimensions, YStack } from 'tamagui'
 
+import { sharedTransition } from '~/helpers/animation/sharedTransition'
 import { useHeaderHeightSafe } from '~/hooks/useHeaderHeightSafe'
 import { useUser } from '~/hooks/useUser'
-import { GalleryImage, GalleryWrapper } from '~/interface/gallery/Gallery'
-import { Image } from '~/interface/image/Image'
+import { Pressable } from '~/interface/buttons/Pressable'
 import { ProfileShimmer } from '~/interface/shimmer/ProfileShimmer'
 import { H5 } from '~/interface/text/Headings'
 
@@ -35,10 +37,6 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
     })
   }, [posts])
 
-  const allImageUrls = useMemo(() => {
-    return posts?.map((post) => post.image) || []
-  }, [posts])
-
   const renderColumn = useCallback(
     ({ item: columnData, index: columnIndex }: { item: any[]; index: number }) => {
       return (
@@ -51,23 +49,30 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
           {columnData.map((item) => {
             const aspectRatio = 0.6 + Math.random() * 0.8
             const height = columnWidth / aspectRatio
-            const fullIndex = posts?.findIndex((p) => p.id === item.id) || 0
 
             return (
-              <GalleryImage key={item.id} index={fullIndex}>
-                <Image
-                  src={item.image}
-                  width={columnWidth}
-                  height={height}
-                  rounded="$4"
+              <Pressable
+                key={item.id}
+                onPress={() => router.push(`/profile/post/${item.id}`)}
+              >
+                <Animated.Image
+                  source={{ uri: item.image }}
+                  style={{
+                    width: columnWidth,
+                    height,
+                    borderRadius: 8,
+                  }}
+                  sharedTransitionTag={`profile-post-image-${item.id}`}
+                  sharedTransitionStyle={sharedTransition}
+                  resizeMode="cover"
                 />
-              </GalleryImage>
+              </Pressable>
             )
           })}
         </YStack>
       )
     },
-    [columnWidth, posts]
+    [columnWidth]
   )
 
   const keyExtractor = useCallback((_item: any, index: number) => `column-${index}`, [])
@@ -147,7 +152,7 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
           </YStack>
         )}
       </AnimatePresence>
-      <GalleryWrapper urls={allImageUrls}>{listContent}</GalleryWrapper>
+      {listContent}
     </YStack>
   )
 })

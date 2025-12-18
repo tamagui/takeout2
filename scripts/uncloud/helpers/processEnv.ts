@@ -7,7 +7,7 @@ export function processComposeEnv(
   composeFile: string,
   outputFile: string,
   envVars: Record<string, string | undefined>
-) {
+): void {
   let content = readFileSync(composeFile, 'utf-8')
 
   // replace all ${VAR:-default} patterns with actual env values

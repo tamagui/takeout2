@@ -4,21 +4,15 @@
  * @description Manage encrypted cluster config for team sharing
  */
 
-import { execSync } from 'node:child_process'
-import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
+
+import { run } from '@take-out/scripts/helpers/run'
 
 const UNCLOUD_CONFIG_DIR = join(homedir(), '.config', 'uncloud')
 const ENCRYPTED_CONFIG_PATH = join(process.cwd(), '.uncloud-cluster.enc')
 const CONFIG_ARCHIVE = join(process.cwd(), '.uncloud-cluster.tar.gz')
-
-function exec(command: string, silent = false): string {
-  return execSync(command, {
-    stdio: silent ? 'pipe' : 'inherit',
-    encoding: 'utf-8',
-  })
-}
 
 function getPassword(): string {
   const envPassword = process.env.UNCLOUD_CLUSTER_PASSWORD
@@ -32,7 +26,7 @@ function getPassword(): string {
   process.exit(1)
 }
 
-async function save() {
+async function save(): Promise<void> {
   console.info('💾 saving cluster config...\n')
 
   if (!existsSync(UNCLOUD_CONFIG_DIR)) {
@@ -45,17 +39,19 @@ async function save() {
 
   // create tarball
   console.info('creating archive...')
-  exec(`tar -czf ${CONFIG_ARCHIVE} -C ${homedir()}/.config uncloud`, true)
+  await run(`tar -czf ${CONFIG_ARCHIVE} -C ${homedir()}/.config uncloud`, {
+    silent: true,
+  })
 
   // encrypt with openssl
   console.info('encrypting...')
-  exec(
+  await run(
     `openssl enc -aes-256-cbc -salt -pbkdf2 -in ${CONFIG_ARCHIVE} -out ${ENCRYPTED_CONFIG_PATH} -pass pass:${password}`,
-    true
+    { silent: true }
   )
 
   // cleanup
-  exec(`rm ${CONFIG_ARCHIVE}`, true)
+  await run(`rm ${CONFIG_ARCHIVE}`, { silent: true })
 
   console.info(`✅ encrypted cluster config saved to ${ENCRYPTED_CONFIG_PATH}`)
   console.info('\nadd to .gitignore if needed, or commit for team sharing')
@@ -64,7 +60,7 @@ async function save() {
   console.info('  bun scripts/cluster-config.ts load')
 }
 
-async function load() {
+async function load(): Promise<void> {
   console.info('📂 loading cluster config...\n')
 
   if (!existsSync(ENCRYPTED_CONFIG_PATH)) {
@@ -78,9 +74,9 @@ async function load() {
   // decrypt
   console.info('decrypting...')
   try {
-    exec(
+    await run(
       `openssl enc -aes-256-cbc -d -pbkdf2 -in ${ENCRYPTED_CONFIG_PATH} -out ${CONFIG_ARCHIVE} -pass pass:${password}`,
-      true
+      { silent: true }
     )
   } catch {
     console.error('❌ decryption failed - wrong password?')
@@ -89,10 +85,10 @@ async function load() {
 
   // extract
   console.info('extracting...')
-  exec(`tar -xzf ${CONFIG_ARCHIVE} -C ${homedir()}/.config`, true)
+  await run(`tar -xzf ${CONFIG_ARCHIVE} -C ${homedir()}/.config`, { silent: true })
 
   // cleanup
-  exec(`rm ${CONFIG_ARCHIVE}`, true)
+  await run(`rm ${CONFIG_ARCHIVE}`, { silent: true })
 
   console.info(`✅ cluster config loaded to ${UNCLOUD_CONFIG_DIR}`)
   console.info('\nyou can now use uncloud cli:')
@@ -101,7 +97,7 @@ async function load() {
   console.info('  bun run deploy')
 }
 
-async function main() {
+async function main(): Promise<void> {
   const command = process.argv[2]
 
   if (!command || !['save', 'load'].includes(command)) {

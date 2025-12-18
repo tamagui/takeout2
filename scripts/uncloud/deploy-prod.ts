@@ -7,16 +7,11 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
+import { run } from '@take-out/scripts/helpers/run'
 import { config } from 'dotenv'
 import pc from 'picocolors'
 
-function getZeroVersion(): string {
-  const packageJson = JSON.parse(readFileSync('package.json', 'utf-8'))
-  return packageJson.dependencies?.['@rocicorp/zero']?.replace(/^[\^~]/, '') || ''
-}
-
 import { buildMigrations, buildWeb, buildDockerImage } from './helpers/build'
-import { exec } from './helpers/exec'
 import { processComposeEnv } from './helpers/processEnv'
 import { checkSSHKey, testSSHConnection } from './helpers/ssh'
 import {
@@ -26,6 +21,11 @@ import {
   deployStack,
   showStatus,
 } from './helpers/uncloud'
+
+function getZeroVersion(): string {
+  const packageJson = JSON.parse(readFileSync('package.json', 'utf-8'))
+  return packageJson.dependencies?.['@rocicorp/zero']?.replace(/^[\^~]/, '') || ''
+}
 
 // parse args
 const args = process.argv.slice(2)
@@ -44,24 +44,25 @@ const DEPLOY_USER = process.env.DEPLOY_USER || 'root'
 const DEPLOY_SSH_KEY =
   process.env.DEPLOY_SSH_KEY || `${process.env.HOME}/.ssh/uncloud_deploy`
 
-function checkPrerequisites() {
+async function checkPrerequisites(): Promise<{
+  ZERO_UPSTREAM_DB: string
+  ZERO_CVR_DB: string
+  ZERO_CHANGE_DB: string
+}> {
   console.info('📋 checking prerequisites...\n')
 
   if (!DEPLOY_HOST) {
-    console.error('❌ DEPLOY_HOST not set')
-    console.error('\nFor local use, run: bun tko onboard')
-    console.error('For CI, ensure DEPLOY_HOST is in GitHub secrets')
-    process.exit(1)
+    throw new Error(
+      'DEPLOY_HOST not set\n\nFor local use, run: bun tko onboard\nFor CI, ensure DEPLOY_HOST is in GitHub secrets'
+    )
   }
 
   // derive zero database URLs from DEPLOY_DB (like sst.config.ts does)
   const deployDb = process.env.DEPLOY_DB
   if (!deployDb) {
-    console.error('❌ DEPLOY_DB not set')
-    console.error('\nFor uncloud deployment, set DEPLOY_DB in .env.production')
-    console.error('Example: postgresql://user:pass@host:port/dbname?sslmode=require')
-    console.error('\nRun: bun tko onboard to configure')
-    process.exit(1)
+    throw new Error(
+      'DEPLOY_DB not set\n\nFor uncloud deployment, set DEPLOY_DB in .env.production\nExample: postgresql://user:pass@host:port/dbname?sslmode=require\n\nRun: bun tko onboard to configure'
+    )
   }
 
   // extract base connection string (everything before the database name)
@@ -106,42 +107,42 @@ function checkPrerequisites() {
   console.info(`✅ deploy user: ${DEPLOY_USER}`)
   console.info(`✅ using external managed database`)
 
-  checkUncloudCLI()
-  checkSSHKey(DEPLOY_SSH_KEY)
+  await checkUncloudCLI()
+  await checkSSHKey(DEPLOY_SSH_KEY)
 
   return { ZERO_UPSTREAM_DB, ZERO_CVR_DB, ZERO_CHANGE_DB }
 }
 
-async function main() {
+async function main(): Promise<void> {
   console.info('🎯 deploying takeout to production\n')
 
   // derive database URLs from DEPLOY_DB
-  const { ZERO_UPSTREAM_DB, ZERO_CVR_DB, ZERO_CHANGE_DB } = checkPrerequisites()
+  const { ZERO_UPSTREAM_DB, ZERO_CVR_DB, ZERO_CHANGE_DB } = await checkPrerequisites()
 
   // build steps
   if (!skipBuild) {
-    buildMigrations()
-    buildWeb()
+    await buildMigrations()
+    await buildWeb()
   } else {
     console.info('⏭️  skipping web build (--skip-build)')
   }
 
   if (!skipDocker) {
-    buildDockerImage()
+    await buildDockerImage()
   } else {
     console.info('⏭️  skipping docker build (--skip-docker)')
   }
 
   const host = `${DEPLOY_USER}@${DEPLOY_HOST}`
 
-  testSSHConnection(host, DEPLOY_SSH_KEY)
+  await testSSHConnection(host, DEPLOY_SSH_KEY)
 
-  initUncloud(host, DEPLOY_SSH_KEY)
+  await initUncloud(host, DEPLOY_SSH_KEY)
 
   // upload origin ca certs AFTER init (cluster reset creates fresh caddy volume)
   await uploadOriginCACerts(host, DEPLOY_SSH_KEY)
 
-  pushImage()
+  await pushImage()
 
   // process environment variables in compose file
   // spreads process.env so all vars are available, only derived db urls need explicit override
@@ -160,12 +161,12 @@ async function main() {
   })
 
   // deploy without pgdb profile since using external database
-  deployStack(processedCompose)
+  await deployStack(processedCompose)
 
   // deploy caddy with custom tls config if origin ca certs are configured
   await deployCaddyWithTLS(host, DEPLOY_SSH_KEY)
 
-  showStatus()
+  await showStatus()
 
   console.info('\n🎉 deployment ready!')
   console.info('\naccess your app:')
@@ -181,7 +182,7 @@ async function main() {
   console.info('  bun scripts/uncloud/deploy-prod.ts --skip-build --skip-docker')
 }
 
-async function uploadOriginCACerts(host: string, sshKey: string) {
+async function uploadOriginCACerts(host: string, sshKey: string): Promise<void> {
   const certPath = process.env.ORIGIN_CA_CERT
   const keyPath = process.env.ORIGIN_CA_KEY
 
@@ -194,14 +195,14 @@ async function uploadOriginCACerts(host: string, sshKey: string) {
   const resolvedKey = resolve(process.cwd(), keyPath)
 
   if (!existsSync(resolvedCert)) {
-    console.warn(pc.yellow(`⚠️  Origin CA cert not found: ${resolvedCert}`))
-    console.warn(pc.gray("   Falling back to Let's Encrypt"))
+    console.warn(pc.yellow(`⚠️  origin ca cert not found: ${resolvedCert}`))
+    console.warn(pc.gray("   falling back to let's encrypt"))
     return
   }
 
   if (!existsSync(resolvedKey)) {
-    console.warn(pc.yellow(`⚠️  Origin CA key not found: ${resolvedKey}`))
-    console.warn(pc.gray("   Falling back to Let's Encrypt"))
+    console.warn(pc.yellow(`⚠️  origin ca key not found: ${resolvedKey}`))
+    console.warn(pc.gray("   falling back to let's encrypt"))
     return
   }
 
@@ -211,26 +212,28 @@ async function uploadOriginCACerts(host: string, sshKey: string) {
 
   try {
     // create certs directories on server
-    // /etc/uncloud/certs for backup, /var/lib/uncloud/caddy/certs for caddy container access
-    exec(`${sshCmd} "mkdir -p /etc/uncloud/certs /var/lib/uncloud/caddy/certs"`, {
+    await run(`${sshCmd} "mkdir -p /etc/uncloud/certs /var/lib/uncloud/caddy/certs"`, {
       silent: true,
     })
 
     // upload certificates to /etc/uncloud/certs
-    exec(
+    await run(
       `scp -i ${sshKey} -o StrictHostKeyChecking=no ${resolvedCert} ${host}:/etc/uncloud/certs/origin.pem`
     )
-    exec(
+    await run(
       `scp -i ${sshKey} -o StrictHostKeyChecking=no ${resolvedKey} ${host}:/etc/uncloud/certs/origin.key`
     )
 
     // copy to caddy volume mount path (accessible at /config/certs inside container)
-    exec(`${sshCmd} "cp /etc/uncloud/certs/origin.* /var/lib/uncloud/caddy/certs/"`, {
-      silent: true,
-    })
+    await run(
+      `${sshCmd} "cp /etc/uncloud/certs/origin.* /var/lib/uncloud/caddy/certs/"`,
+      {
+        silent: true,
+      }
+    )
 
     // set permissions
-    exec(
+    await run(
       `${sshCmd} "chmod 600 /etc/uncloud/certs/origin.key /var/lib/uncloud/caddy/certs/origin.key"`,
       { silent: true }
     )
@@ -238,13 +241,13 @@ async function uploadOriginCACerts(host: string, sshKey: string) {
     console.info(pc.green('✓ origin ca certificates uploaded'))
     console.info(pc.gray('  certs available at /config/certs inside caddy container'))
   } catch (err) {
-    console.warn(pc.yellow('⚠️  Failed to upload origin ca certs'))
+    console.warn(pc.yellow('⚠️  failed to upload origin ca certs'))
     console.warn(pc.gray(`   ${err instanceof Error ? err.message : err}`))
-    console.warn(pc.gray("   Falling back to Let's Encrypt"))
+    console.warn(pc.gray("   falling back to let's encrypt"))
   }
 }
 
-async function deployCaddyWithTLS(host: string, sshKey: string) {
+async function deployCaddyWithTLS(host: string, sshKey: string): Promise<void> {
   const certPath = process.env.ORIGIN_CA_CERT
   const keyPath = process.env.ORIGIN_CA_KEY
 
@@ -258,8 +261,8 @@ async function deployCaddyWithTLS(host: string, sshKey: string) {
   const domains = [webDomain, zeroDomain].filter(Boolean)
 
   if (domains.length === 0) {
-    console.warn(pc.yellow('⚠️  No custom domains configured (WEB_DOMAIN, ZERO_DOMAIN)'))
-    console.warn(pc.gray("   Caddy will use Let's Encrypt for TLS"))
+    console.warn(pc.yellow('⚠️  no custom domains configured (WEB_DOMAIN, ZERO_DOMAIN)'))
+    console.warn(pc.gray("   caddy will use let's encrypt for tls"))
     return
   }
 
@@ -277,23 +280,25 @@ async function deployCaddyWithTLS(host: string, sshKey: string) {
   ].join('\n')
 
   writeFileSync(caddyfilePath, caddyConfig)
-  console.info(pc.gray(`   generated Caddyfile for: ${domains.join(', ')}`))
+  console.info(pc.gray(`   generated caddyfile for: ${domains.join(', ')}`))
 
   console.info('\n🔄 deploying caddy with custom tls config...')
 
   const sshCmd = `ssh -i ${sshKey} -o StrictHostKeyChecking=no ${host}`
 
   try {
-    exec(`echo "y" | uc caddy deploy --caddyfile ${caddyfilePath}`, { silent: false })
+    await run(`echo "y" | uc caddy deploy --caddyfile ${caddyfilePath}`)
 
     // restart caddy to ensure tls certs are loaded from volume
-    exec(`${sshCmd} "docker restart \\$(docker ps -qf name=caddy)"`, { silent: true })
+    await run(`${sshCmd} "docker restart \\$(docker ps -qf name=caddy)"`, {
+      silent: true,
+    })
     console.info(pc.green('✓ caddy deployed with origin ca certificates'))
   } catch (err) {
-    console.warn(pc.yellow('⚠️  Failed to deploy caddy with custom config'))
+    console.warn(pc.yellow('⚠️  failed to deploy caddy with custom config'))
     console.warn(pc.gray(`   ${err instanceof Error ? err.message : err}`))
     console.warn(
-      pc.gray('   You may need to run: uc caddy deploy --caddyfile src/uncloud/Caddyfile')
+      pc.gray('   you may need to run: uc caddy deploy --caddyfile src/uncloud/Caddyfile')
     )
   }
 }

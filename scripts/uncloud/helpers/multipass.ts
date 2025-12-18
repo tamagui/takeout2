@@ -1,52 +1,54 @@
 import { writeFileSync } from 'node:fs'
 
-import { exec } from './exec'
+import { sleep } from '@take-out/helpers'
+import { run } from '@take-out/scripts/helpers/run'
 
 const VM_NAME = 'takeout-deploy'
 const VM_SSH_KEY_PATH = `${process.env.HOME}/.ssh/takeout_deploy`
 
-export function getVMName() {
+export function getVMName(): string {
   return VM_NAME
 }
 
-export function getVMSSHKey() {
+export function getVMSSHKey(): string {
   return VM_SSH_KEY_PATH
 }
 
-export function checkMultipass() {
+export async function checkMultipass(): Promise<void> {
   try {
-    exec('multipass --version', { silent: true })
+    await run('multipass --version', { silent: true })
     console.info('✅ multipass installed')
   } catch {
-    console.error('❌ multipass not found')
-    console.error('\ninstall: brew install multipass')
-    process.exit(1)
+    throw new Error('multipass not found - install: brew install multipass')
   }
 }
 
-export function getVMIP(): string | null {
+export async function getVMIP(): Promise<string | null> {
   try {
-    const info = exec(`multipass info ${VM_NAME} --format json`, { silent: true })
-    const data = JSON.parse(info)
+    const { stdout } = await run(`multipass info ${VM_NAME} --format json`, {
+      silent: true,
+      captureOutput: true,
+    })
+    const data = JSON.parse(stdout)
     return data.info[VM_NAME]?.ipv4?.[0] || null
   } catch {
     return null
   }
 }
 
-export function vmExists(): boolean {
+export async function vmExists(): Promise<boolean> {
   try {
-    const list = exec('multipass list', { silent: true })
-    return list.includes(VM_NAME)
+    const { stdout } = await run('multipass list', { silent: true, captureOutput: true })
+    return stdout.includes(VM_NAME)
   } catch {
     return false
   }
 }
 
-export function createVM() {
+export async function createVM(): Promise<void> {
   console.info('\n🖥️  creating multipass vm...\n')
 
-  if (vmExists()) {
+  if (await vmExists()) {
     console.info(`✅ vm '${VM_NAME}' already exists`)
     return
   }
@@ -63,11 +65,11 @@ packages:
   writeFileSync(cloudInitPath, cloudInit)
 
   try {
-    exec(
+    await run(
       `multipass launch --name ${VM_NAME} --cpus 4 --memory 4G --disk 20G --cloud-init ${cloudInitPath}`
     )
   } finally {
-    exec(`rm -f ${cloudInitPath}`, { silent: true })
+    await run(`rm -f ${cloudInitPath}`, { silent: true })
   }
 
   console.info('\n⏳ waiting for vm to be ready...')
@@ -76,24 +78,27 @@ packages:
   let attempts = 0
   while (attempts < 30) {
     try {
-      const status = exec(`multipass info ${VM_NAME} --format json`, { silent: true })
-      const data = JSON.parse(status)
+      const { stdout } = await run(`multipass info ${VM_NAME} --format json`, {
+        silent: true,
+        captureOutput: true,
+      })
+      const data = JSON.parse(stdout)
       if (data.info[VM_NAME]?.state === 'Running') {
         break
       }
     } catch {
       // vm not ready yet
     }
-    exec('sleep 2', { silent: true })
+    await sleep(2000)
     attempts++
   }
 
   // wait for cloud-init
   console.info('waiting for cloud-init to complete...')
-  exec('sleep 10', { silent: true })
+  await sleep(10000)
 
   try {
-    exec(`multipass exec ${VM_NAME} -- timeout 300 cloud-init status --wait`)
+    await run(`multipass exec ${VM_NAME} -- timeout 300 cloud-init status --wait`)
     console.info('✅ cloud-init complete')
   } catch {
     console.info('⚠️  cloud-init status check timed out, continuing...')
@@ -102,31 +107,34 @@ packages:
   console.info('✅ vm ready')
 }
 
-export function setupVMSSH() {
+export async function setupVMSSH(): Promise<void> {
   console.info('\n🔑 setting up ssh...\n')
 
   // generate ssh key if needed
   try {
-    exec(`test -f ${VM_SSH_KEY_PATH}`, { silent: true })
+    await run(`test -f ${VM_SSH_KEY_PATH}`, { silent: true })
     console.info('✅ ssh key exists')
   } catch {
     console.info('generating ssh key...')
-    exec(`ssh-keygen -t rsa -b 4096 -f ${VM_SSH_KEY_PATH} -N ""`, { silent: true })
+    await run(`ssh-keygen -t rsa -b 4096 -f ${VM_SSH_KEY_PATH} -N ""`, { silent: true })
     console.info('✅ ssh key generated')
   }
 
   // add key to vm
-  const pubKey = exec(`cat ${VM_SSH_KEY_PATH}.pub`, { silent: true }).trim()
-  exec(
-    `multipass exec ${VM_NAME} -- sh -c 'mkdir -p ~/.ssh && echo "${pubKey}" >> ~/.ssh/authorized_keys'`
+  const { stdout: pubKey } = await run(`cat ${VM_SSH_KEY_PATH}.pub`, {
+    silent: true,
+    captureOutput: true,
+  })
+  await run(
+    `multipass exec ${VM_NAME} -- sh -c 'mkdir -p ~/.ssh && echo "${pubKey.trim()}" >> ~/.ssh/authorized_keys'`
   )
   console.info('✅ ssh key configured')
 }
 
-export function setupPortForward() {
+export async function setupPortForward(): Promise<void> {
   console.info('\n🌐 setting up port forwarding...\n')
 
-  const ip = getVMIP()
+  const ip = await getVMIP()
   if (!ip) {
     console.error('❌ could not get vm ip')
     return
@@ -134,22 +142,22 @@ export function setupPortForward() {
 
   // get container IPs from uncloud network
   console.info('getting container IPs...')
-  const webIP = exec(
+  const { stdout: webIP } = await run(
     `multipass exec ${VM_NAME} -- sudo docker inspect $(multipass exec ${VM_NAME} -- sudo docker ps -q -f name=web) -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'`,
-    { silent: true }
-  ).trim()
+    { silent: true, captureOutput: true }
+  )
 
-  const zeroIP = exec(
+  const { stdout: zeroIP } = await run(
     `multipass exec ${VM_NAME} -- sudo docker inspect $(multipass exec ${VM_NAME} -- sudo docker ps -q -f name=zero) -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'`,
-    { silent: true }
-  ).trim()
+    { silent: true, captureOutput: true }
+  )
 
-  console.info(`web container: ${webIP}:8081`)
-  console.info(`zero container: ${zeroIP}:4848`)
+  console.info(`web container: ${webIP.trim()}:8081`)
+  console.info(`zero container: ${zeroIP.trim()}:4848`)
 
   // kill any existing port forwards
   try {
-    exec(`pkill -f "ssh.*${VM_NAME}"`, { silent: true })
+    await run(`pkill -f "ssh.*${VM_NAME}"`, { silent: true })
   } catch {
     // ignore if none found
   }
@@ -158,16 +166,16 @@ export function setupPortForward() {
   console.info('\nforwarding localhost:8081 -> web container')
   console.info('forwarding localhost:4848 -> zero container')
 
-  exec(
-    `ssh -i ${VM_SSH_KEY_PATH} -o StrictHostKeyChecking=no -f -N -L 8081:${webIP}:8081 -L 4848:${zeroIP}:4848 ubuntu@${ip}`,
+  await run(
+    `ssh -i ${VM_SSH_KEY_PATH} -o StrictHostKeyChecking=no -f -N -L 8081:${webIP.trim()}:8081 -L 4848:${zeroIP.trim()}:4848 ubuntu@${ip}`,
     { silent: true }
   )
 
   console.info('✅ port forwarding active')
 }
 
-export function showLocalStatus() {
-  const ip = getVMIP()
+export async function showLocalStatus(): Promise<void> {
+  const ip = await getVMIP()
 
   console.info('\n🎉 deployment ready!')
   console.info('\naccess your app:')

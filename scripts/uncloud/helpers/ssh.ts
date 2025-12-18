@@ -1,28 +1,23 @@
-import { exec } from './exec'
+import { run } from '@take-out/scripts/helpers/run'
 
-export function checkSSHKey(sshKeyPath: string) {
+export async function checkSSHKey(sshKeyPath: string): Promise<void> {
   try {
-    exec(`test -f ${sshKeyPath}`, { silent: true })
+    await run(`test -f ${sshKeyPath}`, { silent: true })
     console.info('✅ ssh key exists')
   } catch {
-    console.error(`❌ ssh key not found: ${sshKeyPath}`)
-    process.exit(1)
+    throw new Error(`ssh key not found: ${sshKeyPath}`)
   }
 }
 
-export function testSSHConnection(host: string, sshKey: string) {
+export async function testSSHConnection(host: string, sshKey: string): Promise<void> {
   console.info('\n🔑 testing ssh connection...\n')
 
   try {
-    exec(
+    await run(
       `ssh -i ${sshKey} -o StrictHostKeyChecking=no -o ConnectTimeout=5 ${host} "echo 'SSH connection successful'"`
     )
     console.info('✅ ssh connection verified')
   } catch {
-    console.error(`❌ cannot connect to ${host}`)
-    console.error('\ncheck:')
-    console.error(`  - ssh key: ${sshKey}`)
-    console.error(`  - host: ${host}`)
-    process.exit(1)
+    throw new Error(`cannot connect to ${host} - check ssh key: ${sshKey}`)
   }
 }

@@ -12,6 +12,7 @@ import { $ } from 'bun'
 const TIMEOUT = 5 * 60 * 1000 // 5 minutes
 const CHECK_INTERVAL = 10000 // 10 seconds
 const PROGRESS_UPDATE_INTERVAL = 30000 // 30 seconds for progress updates
+const HEALTH_CHECK_GRACE_PERIOD = 45000 // docker health check startup allowance
 
 // State tracking
 interface ServiceState {
@@ -320,8 +321,10 @@ async function monitor() {
 
   // only wait for grace period if services aren't already healthy
   if (!allInitiallyHealthy) {
-    console.info('waiting 45s for docker health check grace period...')
-    await new Promise((resolve) => setTimeout(resolve, 45000))
+    console.info(
+      `waiting ${HEALTH_CHECK_GRACE_PERIOD / 1000}s for docker health check grace period...`
+    )
+    await new Promise((resolve) => setTimeout(resolve, HEALTH_CHECK_GRACE_PERIOD))
   } else {
     console.info('✅ all services already healthy, skipping grace period')
   }

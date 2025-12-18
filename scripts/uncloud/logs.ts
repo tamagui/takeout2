@@ -4,7 +4,7 @@
  * @description View logs from production deployment
  */
 
-import { exec } from './helpers/exec'
+import { run } from '@take-out/scripts/helpers/run'
 
 const args = process.argv.slice(2)
 const services: string[] = []
@@ -24,9 +24,9 @@ for (let i = 0; i < args.length; i++) {
   }
 }
 
-const serviceStr = services.join(' ')
-const followFlag = follow ? ' -f' : ''
-const machineFlag = machine ? ` -m ${machine}` : ''
+const cmdArgs = ['uc', 'logs', ...services]
+if (follow) cmdArgs.push('-f')
+if (machine) cmdArgs.push('-m', machine)
 
 const target = services.length > 0 ? services.join(', ') : 'all services'
 console.info(
@@ -34,7 +34,7 @@ console.info(
 )
 
 try {
-  exec(`uc logs${serviceStr ? ` ${serviceStr}` : ''}${followFlag}${machineFlag}`)
+  await run(cmdArgs.join(' '))
 } catch (error) {
   console.error('\n💥 failed to get logs')
   console.error('\nusage: bun tko uncloud logs [services...] [-f] [-m machine]')

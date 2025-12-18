@@ -1,30 +1,30 @@
-import { exec } from './exec'
+import { run } from '@take-out/scripts/helpers/run'
 
-export function buildMigrations() {
+export async function buildMigrations(): Promise<void> {
   console.info('\n🔧 building migrations...\n')
-  exec('bun tko migrate build')
+  await run('bun tko migrate build')
   console.info('✅ migrations built')
 }
 
-export function buildWeb() {
+export async function buildWeb(): Promise<void> {
   console.info('\n📦 building web app...\n')
-  exec('bun run web build')
+  await run('bun run web build')
   console.info('✅ web build complete')
 }
 
-export function buildDockerImage(
+export async function buildDockerImage(
   imageName = 'takeout-web:latest',
   platform = process.env.DEPLOYMENT_ARCH || 'linux/amd64'
-) {
+): Promise<void> {
   console.info('\n🐳 building docker image...\n')
   console.info(`platform: ${platform}`)
-  exec(`docker build --platform ${platform} -t ${imageName} .`)
+  await run(`docker build --platform ${platform} -t ${imageName} .`)
   console.info('✅ docker image built')
 }
 
-export function checkDist() {
+export async function checkDist(): Promise<boolean> {
   try {
-    exec('test -d dist', { silent: true })
+    await run('test -d dist', { silent: true })
     console.info('✅ dist/ directory exists')
     return true
   } catch {

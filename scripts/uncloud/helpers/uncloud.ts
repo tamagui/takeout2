@@ -2,29 +2,22 @@ import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 
-import { exec } from './exec'
+import { run } from '@take-out/scripts/helpers/run'
 
 const UNCLOUD_VERSION = '0.15.0'
 
-export function checkUncloudCLI() {
+export async function checkUncloudCLI(): Promise<void> {
   try {
-    const version = exec('uc --version', { silent: true }).trim()
-    console.info(`✅ uncloud cli installed (${version})`)
+    const { stdout } = await run('uc --version', { silent: true, captureOutput: true })
+    console.info(`✅ uncloud cli installed (${stdout.trim()})`)
   } catch {
-    console.error('❌ uncloud cli not found')
-    console.error(
-      `\ninstall: curl -fsS https://get.uncloud.run/install.sh | sh -s -- --version ${UNCLOUD_VERSION}`
+    throw new Error(
+      `uncloud cli not found - install: curl -fsS https://get.uncloud.run/install.sh | sh -s -- --version ${UNCLOUD_VERSION}`
     )
-    process.exit(1)
   }
 }
 
-export function getConnectionFlag(): string {
-  // no longer using --connect flag, we create config directly
-  return ''
-}
-
-function createUncloudConfig(host: string, sshKey: string) {
+function createUncloudConfig(host: string, sshKey: string): void {
   const configDir = join(homedir(), '.config', 'uncloud')
   const configPath = join(configDir, 'config.yaml')
 
@@ -32,7 +25,6 @@ function createUncloudConfig(host: string, sshKey: string) {
     mkdirSync(configDir, { recursive: true })
   }
 
-  // simple yaml config that points to the existing cluster
   const config = `current_context: default
 contexts:
   default:
@@ -45,16 +37,16 @@ contexts:
   console.info(`✅ created uncloud config at ${configPath}`)
 }
 
-export function initUncloud(
+export async function initUncloud(
   host: string,
   sshKey: string,
   options: { noDNS?: boolean; noCaddy?: boolean } = {}
-) {
+): Promise<void> {
   console.info('\n🚀 initializing uncloud...\n')
 
-  // first check if we already have local context that works
+  // check if we already have local context that works
   try {
-    exec('uc ls', { silent: true })
+    await run('uc ls', { silent: true })
     console.info('✅ local cluster context exists and connected')
     return
   } catch {
@@ -66,13 +58,13 @@ export function initUncloud(
   // check if server already has uncloud daemon running
   let serverHasUncloud = false
   try {
-    exec(`${sshCmd} "systemctl is-active uncloud.service"`, { silent: true })
+    await run(`${sshCmd} "systemctl is-active uncloud.service"`, { silent: true })
     serverHasUncloud = true
     console.info('✅ server has uncloud daemon running')
   } catch {
     // check if uncloudd binary exists as fallback
     try {
-      exec(`${sshCmd} "test -f /usr/local/bin/uncloudd"`, { silent: true })
+      await run(`${sshCmd} "test -f /usr/local/bin/uncloudd"`, { silent: true })
       serverHasUncloud = true
       console.info('✅ server has uncloud installed')
     } catch {
@@ -95,70 +87,68 @@ export function initUncloud(
   if (options.noCaddy) flags.push('--no-caddy')
   const flagStr = flags.join(' ')
 
-  exec(`echo "y" | uc machine init ${host} -i ${sshKey} ${flagStr}`)
+  await run(`echo "y" | uc machine init ${host} -i ${sshKey} ${flagStr}`)
 
   console.info('✅ uncloud initialized')
 }
 
-export function pushImage(imageName = 'takeout-web:latest') {
+export async function pushImage(imageName = 'takeout-web:latest'): Promise<void> {
   console.info('\n📤 pushing image to cluster...\n')
 
-  exec(`uc image push ${imageName}`)
+  await run(`uc image push ${imageName}`)
   console.info('✅ image pushed')
 }
 
-export function deployStack(composeFile: string, profile?: string) {
+export async function deployStack(composeFile: string, profile?: string): Promise<void> {
   console.info('\n📦 deploying stack...\n')
 
   const profileFlag = profile ? `--profile ${profile}` : ''
   // --recreate ensures containers are recreated even if config unchanged (pulls fresh images)
-  exec(`uc deploy -f ${composeFile} ${profileFlag} --recreate --yes`)
+  await run(`uc deploy -f ${composeFile} ${profileFlag} --recreate --yes`)
 
   console.info('\n✅ deployment complete!')
 }
 
-export function showStatus() {
+export async function showStatus(): Promise<void> {
   console.info('\n📊 deployment status:\n')
 
   try {
-    exec('uc ls')
+    await run('uc ls')
   } catch {
     console.error('could not fetch status')
   }
 }
 
-export function showContainers() {
+export async function showContainers(): Promise<void> {
   console.info('\n📦 container status:\n')
 
   try {
-    exec('uc ps')
+    await run('uc ps')
   } catch {
     console.error('could not fetch container status')
   }
 }
 
-export function startService(service?: string) {
+export async function startService(service?: string): Promise<void> {
   const target = service || 'all services'
   console.info(`\n▶️  starting ${target}...\n`)
 
   try {
-    exec(`uc start${service ? ` ${service}` : ''}`)
+    await run(`uc start${service ? ` ${service}` : ''}`)
     console.info(`✅ ${target} started`)
   } catch {
-    console.error(`❌ failed to start ${target}`)
     throw new Error(`failed to start ${target}`)
   }
 }
 
-export function stopService(service?: string) {
+export async function stopService(service?: string): Promise<void> {
   const target = service || 'all services'
   console.info(`\n⏹️  stopping ${target}...\n`)
 
   try {
-    exec(`uc stop${service ? ` ${service}` : ''}`)
+    await run(`uc stop${service ? ` ${service}` : ''}`)
     console.info(`✅ ${target} stopped`)
   } catch {
-    console.error(`❌ failed to stop ${target}`)
     throw new Error(`failed to stop ${target}`)
   }
 }

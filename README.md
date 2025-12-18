@@ -29,7 +29,7 @@ separate terminals:
 
 ```bash
 bun backend      # start docker services (postgres, zero, minio)
-bun dev          # start web dev server
+bun dev          # start web dev server at http://localhost:8081
 ```
 
 ## Getting Familiar

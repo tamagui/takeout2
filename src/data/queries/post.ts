@@ -21,7 +21,7 @@ export const postsByUserId = (props: { userId: string; limit?: number }) => {
 export const postsPaginated = (props: {
   userId?: string
   pageSize: number
-  cursor?: { id: string } | null
+  cursor?: { id: string; createdAt: number } | null
 }) => {
   let query = zql.post
     .where(permission)
@@ -44,7 +44,7 @@ export const postsWithBlocks = (props: {
   userId?: string
   blockedUserIds: string[]
   pageSize: number
-  cursor?: { id: string } | null
+  cursor?: { id: string; createdAt: number } | null
 }) => {
   let query = zql.post
     .where(permission)
@@ -75,7 +75,7 @@ export const searchPosts = (props: {
   userId?: string
   blockedUserIds: string[]
   pageSize: number
-  cursor?: { id: string } | null
+  cursor?: { id: string; createdAt: number } | null
 }) => {
   let query = zql.post.where(permission).where((eb) => {
     if (!props.searchText) {

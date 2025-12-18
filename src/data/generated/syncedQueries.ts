@@ -47,6 +47,7 @@ const post = {
         v.union([
           v.object({
             id: v.string(),
+            createdAt: v.number(),
           }),
           v.null(),
         ])
@@ -63,6 +64,7 @@ const post = {
         v.union([
           v.object({
             id: v.string(),
+            createdAt: v.number(),
           }),
           v.null(),
         ])
@@ -80,6 +82,7 @@ const post = {
         v.union([
           v.object({
             id: v.string(),
+            createdAt: v.number(),
           }),
           v.null(),
         ])

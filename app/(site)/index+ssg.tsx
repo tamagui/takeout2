@@ -4,7 +4,7 @@ import { CodeInline } from '~/features/docs'
 import { HeadInfo } from '~/interface/app/HeadInfo'
 import { Link } from '~/interface/app/Link'
 import { TechLogos } from '~/interface/home/TechLogos'
-import { H3, H4, SepHeading } from '~/interface/text/Headings'
+import { H2, H3, H4, SepHeading } from '~/interface/text/Headings'
 
 const Hero = styled(H1, {
   size: '$9',
@@ -31,11 +31,9 @@ export function IndexPage() {
         description="A better starting point for building cross-platform applications with React and React Native."
       />
       <YStack items="center">
-        <Hero>
-          Ultra high quality apps, native on every platform, shipped faster than slop.
-        </Hero>
+        <Hero>Ultra high quality apps on every platform shipped faster than slop</Hero>
 
-        <H3
+        <H2
           color="$color11"
           maxW={620}
           mt="$5"
@@ -45,9 +43,8 @@ export function IndexPage() {
             text: 'center',
           }}
         >
-          Takeout makes the best possible React and React&nbsp;Native stack as easy to use
-          as possible.
-        </H3>
+          Takeout makes React and React&nbsp;Native as easy and performant as possible.
+        </H2>
 
         <YStack width="100%" my="$2">
           <Separator my="$5" self="stretch" mx={100} opacity={0.5} />
@@ -58,26 +55,27 @@ export function IndexPage() {
 
       <YStack gap="$5" maxW={550} self="center">
         <Paragraph size="$6">
-          <strong>TL;DR:</strong> Takeout is a multi-year effort to create{' '}
+          <strong>TL;DR:</strong> Takeout is the result of a many-year effort to create{' '}
           <strong>
-            a new stack built around some new frontend technologies, aimed at dramatically
-            simplifying cross-platform development
+            a new stack, with some new frontend tech, that dramatically simplifies
+            cross-platform development
           </strong>
-          . It makes three things much simpler and faster than before: framework, data,
-          and UI.
+          . It specifically makes three things simpler and faster than before: framework,
+          data, and UI.
         </Paragraph>
 
         <Paragraph size="$6">
           Today,{' '}
-          <Link href="https://tamagui.dev/takeout">we're releasing Takeout 2 RC 1</Link>.
-          Takeout aims to bring more Rails-like cohesion to cross-platform React and React
-          Native, using exciting developments in frontend tech (and a lot of elbow grease)
-          to finally deliver both great DX and UX into a cohesive setup.
+          <Link href="https://tamagui.dev/takeout">
+            <strong>we're releasing Takeout 2 RC 1</strong>
+          </Link>
+          . Takeout aims to bring more Rails-like cohesion to cross-platform React and
+          React Native while also improving the native-feel it can achieve.
         </Paragraph>
 
         <Paragraph size="$6">
-          Achieve perfect Lighthouse performance scores with ease, just like this page
-          does, thanks to our libraries{' '}
+          Even when sharing a lot of code you can get perfect Lighthouse performance
+          scores with ease, like this very page does, thanks to our libraries{' '}
           <Link href="https://tamagui.dev" target="_blank">
             Tamagui
           </Link>{' '}
@@ -85,7 +83,7 @@ export function IndexPage() {
           <Link href="https://onestack.dev" target="_blank">
             One
           </Link>
-          , and then make your app come alive far easier than ever before with{' '}
+          . Then, make your app come alive better and easier than ever before with{' '}
           <Link href="https://zero.rocicorp.dev">Zero</Link>.
         </Paragraph>
 

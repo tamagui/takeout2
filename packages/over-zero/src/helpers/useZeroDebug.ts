@@ -1,4 +1,4 @@
-import { getCurrentComponentStack } from '@vxrn/helpers'
+import { getCurrentComponentStack } from '@take-out/helpers'
 import { useEffect, useId } from 'react'
 
 import { prettyFormatZeroQuery } from './prettyFormatZeroQuery'

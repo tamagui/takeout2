@@ -1,4 +1,4 @@
-import { globalValue, isClient } from '@vxrn/helpers'
+import { globalValue, isClient } from '@take-out/helpers'
 
 import { getQueryOrMutatorAuthData } from './helpers/getQueryOrMutatorAuthData'
 

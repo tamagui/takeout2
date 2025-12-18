@@ -5,7 +5,7 @@ import {
   ZeroProvider,
   useQuery as zeroUseQuery,
 } from '@rocicorp/zero/react'
-import { createEmitter, mapObject } from '@vxrn/helpers'
+import { createEmitter, mapObject } from '@take-out/helpers'
 import {
   createContext,
   memo,

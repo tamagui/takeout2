@@ -1,4 +1,4 @@
-import { sleep } from '@vxrn/helpers'
+import { sleep } from '@take-out/helpers'
 
 import type { Query, Row } from '@rocicorp/zero'
 

@@ -1,4 +1,4 @@
-import { ellipsis } from '@vxrn/helpers'
+import { ellipsis } from '@take-out/helpers'
 
 import type { Query } from '@rocicorp/zero'
 

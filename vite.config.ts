@@ -42,7 +42,7 @@ export default {
       '@rocicorp/zero',
       '@rocicorp/zero/react',
       'react-dom',
-      '@vxrn/helpers',
+      '@take-out/helpers',
       '@legendapp/list',
       'zeego/dropdown-menu',
       'mdx-bundler/client',
@@ -130,6 +130,7 @@ export default {
       },
 
       web: {
+        experimental_scriptLoading: 'after-lcp',
         defaultRenderMode: 'spa',
         inlineLayoutCSS: true,
         sitemap: {

@@ -2,7 +2,7 @@ import { mustGetQuery } from '@rocicorp/zero'
 import { PushProcessor } from '@rocicorp/zero/pg'
 import { handleQueryRequest as zeroHandleQueryRequest } from '@rocicorp/zero/server'
 import { zeroNodePg } from '@rocicorp/zero/server/adapters/pg'
-import { assertString, randomId } from '@vxrn/helpers'
+import { assertString, randomId } from '@take-out/helpers'
 import { Pool } from 'pg'
 
 import { createPermissions } from './createPermissions'

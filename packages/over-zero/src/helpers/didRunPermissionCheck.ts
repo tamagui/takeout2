@@ -1,4 +1,4 @@
-import { globalValue } from '@vxrn/helpers'
+import { globalValue } from '@take-out/helpers'
 
 import type { MutatorContext } from '../types'
 

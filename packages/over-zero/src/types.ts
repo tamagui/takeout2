@@ -7,7 +7,7 @@ import type {
   Schema as ZeroSchema,
   Transaction as ZeroTransaction,
 } from '@rocicorp/zero'
-import type { NullToOptional, TupleToUnion } from '@vxrn/helpers'
+import type { NullToOptional, TupleToUnion } from '@take-out/helpers'
 
 /**
  * ➗0️⃣ START OVERRIDDEN TYPES

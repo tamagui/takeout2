@@ -1,9 +1,9 @@
+import { Keyboard } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { isWeb, Spinner, View, XStack, YStack } from 'tamagui'
+import { isWeb, Spinner, XStack, YStack } from 'tamagui'
 
 import { isNative } from '~/constants/platform'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
-import { GlassView } from '~/interface/effects/GlassView'
 import Glint from '~/interface/effects/Glint'
 import { Input } from '~/interface/forms/Input'
 import { TextArea } from '~/interface/forms/TextArea'
@@ -32,6 +32,12 @@ export function CommentInput({
   const { bottom } = useSafeAreaInsets()
   const hasContent = content.trim().length > 0
   const offset = -(bottom + 50)
+
+  const onSubmit = () => {
+    handleSubmit()
+    Keyboard.dismiss()
+  }
+
   if (!user) return null
 
   return (
@@ -97,7 +103,7 @@ export function CommentInput({
                 circular
                 bg="$color6"
                 disabled={isSubmitting}
-                onPress={handleSubmit}
+                onPress={onSubmit}
               >
                 {isSubmitting ? (
                   <Spinner size="small" color="$color" />

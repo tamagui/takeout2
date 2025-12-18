@@ -56,34 +56,26 @@ export function IndexPage() {
 
       <YStack gap="$5" maxW={550} self="center">
         <Paragraph size="$6">
-          <strong>TL;DR:</strong> Takeout is{' '}
+          <strong>TL;DR:</strong> Takeout is a multi-year effort to create{' '}
           <strong>
-            an extremely robust stack that builds on two brand new technologies in
-            frontend development
+            a new stack, leveraging some new tech in frontend, to dramatically simplify
+            cross-platform development
           </strong>
-          , alongside a few years of effort, to achieve a truly world-class stack for
-          apps.
+          . It makes three things as simple and fast as possible: the framework, the
+          data-layer, and the UI.
         </Paragraph>
 
         <Paragraph size="$6">
-          Today, we're releasing Takeout 2 RC 1. Takeout aims to bring more Rails-like
-          cohesion to cross-platform React and React Native, using exciting developments
-          in frontend tech, alongside a lot of elbow grease, to finally bring together
-          great DX and UX into a simple, fun to work with repo.
+          Today,{' '}
+          <Link href="https://tamagui.dev/takeout">we're releasing Takeout 2 RC 1</Link>.
+          Takeout aims to bring more Rails-like cohesion to cross-platform React and React
+          Native, using exciting developments in frontend tech (and a lot of elbow grease)
+          to finally deliver both great DX and UX in a simple, unified, fun to use repo.
         </Paragraph>
 
         <Paragraph size="$6">
-          <b>
-            For the first time you can share as much UI, routing, and data code as you
-            want across web, iOS, and Android, and still get incredible performance and
-            native-feel everywhere.
-          </b>
-        </Paragraph>
-
-        <Paragraph size="$6">
-          That includes getting 100 performance scores on Lighthouse, just like this very
-          page, something only possible due to years of dogged persistance building out
-          our libraries{' '}
+          Achieve perfect Lighthouse performance scores with ease, just like this page
+          does, thanks to our libraries{' '}
           <Link href="https://tamagui.dev" target="_blank">
             Tamagui
           </Link>{' '}
@@ -91,7 +83,8 @@ export function IndexPage() {
           <Link href="https://onestack.dev" target="_blank">
             One
           </Link>
-          , and it's just the start of what makes Takeout special.
+          , and then make your app come alive far easier than ever before with{' '}
+          <Link href="https://zero.rocicorp.dev">Zero</Link>.
         </Paragraph>
 
         <SepHeading>Goals</SepHeading>
@@ -101,9 +94,9 @@ export function IndexPage() {
             <div>
               <Paragraph size="$6">
                 <b>Universal</b> — Target iOS, Android, Web and Desktop using React and
-                React Native <em>with shared code that runs fast</em>. You don't have to
-                share it all, and you don't have to target every platform - but you can,
-                effectively, with ease.
+                React Native <em>with shared code that feels native and runs fast</em>.
+                You don't have to share everything, you don't have to target every
+                platform - but you can, effectively, with ease.
               </Paragraph>
             </div>
           </li>
@@ -111,12 +104,11 @@ export function IndexPage() {
           <li style={{ marginBottom: 20 }}>
             <div>
               <Paragraph size="$6">
-                <b>DRY and simple</b> — A single repo, package.json, bundler, framework,
-                and router, a single set of routes, hooks, and helpers, and a single way
-                to do styling, UI, and data. All of your backend, frontend, and
-                infrastructure lives in code and deploys with a push. And data that is
-                incredible simple to work with, typesafe, realtime, and optimistically
-                mutated for free with without any glue code.
+                <b>DRY, simple</b> — A single repo, package.json, bundler, framework, and
+                router, a single set of routes, hooks, and helpers, and a single way to do
+                styling, UI, and data. All of your backend, frontend, and infrastructure
+                lives in code and deploys with a push. Query and mutate data quickly,
+                safely, simply, and optimistically, with no glue.
               </Paragraph>
             </div>
           </li>
@@ -133,9 +125,10 @@ export function IndexPage() {
               <li style={{ marginTop: 15 }}>
                 <div>
                   <Paragraph size="$6">
-                    A <b>website</b> with great Lighthouse scores using all the latest CSS
-                    features and perfectly hydrated static or server rendered pages even
-                    when using animations, media queries, and light/dark mode.
+                    A <b>website</b> with great Lighthouse scores, all the latest CSS
+                    features, and perfectly hydrated static or server rendered pages (even
+                    when using spring animations, media queries, and light/dark mode,
+                    etc).
                   </Paragraph>
                 </div>
               </li>
@@ -143,8 +136,8 @@ export function IndexPage() {
               <li style={{ marginTop: 15 }}>
                 <div>
                   <Paragraph size="$6">
-                    A <b>web app</b> that can be client-only, no server fuss, great
-                    performance and fully shared code.
+                    A <b>web app</b> that can be client-only and look and feel great
+                    despite having fully shared code with a performant site.
                   </Paragraph>
                 </div>
               </li>
@@ -153,7 +146,7 @@ export function IndexPage() {
                 <div>
                   <Paragraph size="$6">
                     And of course, <b>native iOS and Android apps</b> with native UI and
-                    navigation, leveraging Liquid Glass and Material UI.
+                    navigation, Liquid Glass, Material UI, etc.
                   </Paragraph>
                 </div>
               </li>
@@ -164,7 +157,7 @@ export function IndexPage() {
             <div>
               <Paragraph size="$6">
                 <b>Fast, both ways</b> — Fast in both development speed and runtime
-                performance (highly relevant below).
+                performance.
               </Paragraph>
             </div>
           </li>
@@ -172,9 +165,9 @@ export function IndexPage() {
           <li>
             <div>
               <Paragraph size="$6">
-                <b>Low risk</b> — Self host or deploy to the cloud easily. Runs on
-                Postgres. Every library chosen to ensure it's OSS-first, popular,
-                type-safe, fast, single-purpose, well-maintained, and well-documented.
+                <b>Low risk</b> — Self host or deploy to the cloud. Runs on Postgres.
+                Unplug parts you don't like. Libraries chosen for being OSS, popular,
+                type-safe, single-purpose, and well maintained and documented.
               </Paragraph>
             </div>
           </li>
@@ -187,17 +180,18 @@ export function IndexPage() {
         </H4>
 
         <Paragraph size="$6">
-          Vite simply mogs any other bundler for web, and we love how fast and flexible it
-          is. One ports Expo Router to Vite, adding tons of great stuff like loaders and
-          render modes (which are required for great web performance). Server render or
+          Vite simply mogs any other bundler for web, we love how fast and flexible it is.
+          So, One ported Expo Router to Vite, and then added a ton of stuff needed for
+          high performance web - especially loaders, and render modes. Server render or
           statically generate some pages, keep others client-only, all from the same
-          routing definitions. Plus API routes and a Hono production server for free.
+          routing definitions, route between them with perfect preloading. Plus, easy API
+          routes and a Hono production server included.
         </Paragraph>
 
         <Paragraph size="$6">
           With the new <b>Metro-mode</b>, you get Vite's simplicity for web while
-          optionally running Metro in the background for native — the best of both worlds.
-          One is now stable and we just release v1 RC1.
+          optionally running Metro for native. One is now stable for production use, and
+          <Link href="https://onestack.dev">just released v1 RC1</Link>.
         </Paragraph>
 
         <H4 mt="$2" size="$5" fontWeight="bold">
@@ -206,9 +200,10 @@ export function IndexPage() {
 
         <Paragraph size="$6">
           Zero is the biggest step-change in frontend since React itself. It solves the
-          worst area of frontend development today: getting data to the client, keeping it
-          in sync, and mutating it instantly. It's like Firebase if it was OSS, ran on
-          Postgres, and had relations, types, schemas, and optimistic mutations.
+          worst area of frontend development today: data. Getting it to the client,
+          keeping it in sync, and mutating it instantly. It's like Firebase if it was OSS
+          and ran on Postgres, and had relations, types, schemas, and optimistic mutations
+          out of the box.
         </Paragraph>
 
         <Paragraph size="$6">
@@ -216,8 +211,8 @@ export function IndexPage() {
           <Link href="https://github.com/tamagui/takeout3/blob/main/packages/over-zero/readme.md">
             <b>over-zero</b>
           </Link>{' '}
-          library makes it even easier to use and integrates auth, plus adds a CLI to
-          generate some of the boilerplate glue code, if you like.
+          library makes it even easier to use, and can generate some of the boilerplatey
+          parts for you, if you like.
         </Paragraph>
 
         <H4 mt="$2" size="$5" fontWeight="bold">
@@ -226,16 +221,17 @@ export function IndexPage() {
 
         <Paragraph size="$6">
           Tamagui still offers the best balance of performance on web <em>and</em> native,
-          with the largest featureset of any style library, beautifully typed and mergable
-          inline styles, and the most robust UI kit, theme system, and ecosystem.
+          with the largest featureset of any universal style library. It's typed and
+          mergable inline styles, robust UI kit, theme system, and ecosystem make us
+          incredible productive.
         </Paragraph>
 
         <Paragraph size="$6">
           <Link href="https://tamagui.dev/blog/version-two">
             Version 2 RC1 is out now
           </Link>{' '}
-          and brings much needed test coverage, docs, and release guardrails, some new
-          components, and a lot of nice AI integration improvements.
+          with a lot of stability improvements, test coverage, docs, and release
+          guardrails, plus some new components and other goodies.
         </Paragraph>
 
         <H4 mt="$2" size="$5" fontWeight="bold">
@@ -243,11 +239,11 @@ export function IndexPage() {
         </H4>
 
         <Paragraph size="$6">
-          Our goal was simple - you can point a coding agent at Takeout and get an entire
-          app into production just by prompting. We have a powerful new{' '}
-          <CodeInline>takeout</CodeInline> CLI that works with a new well-structured and
-          included scripts and docs system that makes one-shotting features and fixes the
-          expectation.
+          Our goal was simple - point a coding agent at Takeout and prompt an entire app
+          into production in hours. We have a powerful new{' '}
+          <CodeInline>takeout</CodeInline> CLI that work alongside some seriously
+          well-structured scripts and docs that all together makes one-shotting features
+          and fixes an expectation.
         </Paragraph>
 
         <H4 mt="$2" size="$5" fontWeight="bold">
@@ -276,41 +272,6 @@ export function IndexPage() {
           </Link>
         </Paragraph>
       </YStack>
-
-      {/* <Separator my="$6" mx={100} opacity={0.5} /> */}
-
-      {/* <YStack gap="$4" mt="$4" $md={{ mt: '$8' }}>
-        <XStack flexWrap="wrap" columnGap="$5" rowGap="$1" mb="$8">
-          <InfoCard title="Typed FS Routing" Icon={FolderOpenIcon}>
-            Typed file-system routing with nested layouts and groups for organized
-            navigation.
-          </InfoCard>
-          <InfoCard title="Routing Modes" Icon={StackIcon}>
-            Flexible rendering with SPA, SSR, or SSG modes for any page.
-          </InfoCard>
-          <InfoCard title="Loaders" Icon={CircleNotchIcon}>
-            Type-safe data loaders make it simple to fetch and manage your data.
-          </InfoCard>
-          <InfoCard title="Web + Native" Icon={DeviceTabletIcon}>
-            Build for web with React, or native with React Native, or target both
-            platforms at once.
-          </InfoCard>
-          <InfoCard title="Modern Build System" Icon={TriangleIcon}>
-            Powered by modern tooling for fast development and optimized production
-            builds.
-          </InfoCard>
-          <InfoCard title="Real-time Sync" Icon={DatabaseIcon}>
-            Built-in support for real-time data synchronization and offline-first
-            capabilities.
-          </InfoCard>
-        </XStack>
-      </YStack> */}
-
-      {/* <YStack gap="$3" items="center" mt="$6">
-        <Paragraph text="center" size="$5" color="$color11">
-          Get started in minutes with our comprehensive documentation and examples.
-        </Paragraph>
-      </YStack> */}
     </YStack>
   )
 }

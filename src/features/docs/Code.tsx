@@ -6,10 +6,15 @@ export function CodeInline({ children }: { children: any }) {
       tag="code"
       fontFamily="$mono"
       fontSize="$3"
-      bg="$color3"
-      px="$2"
-      py="$1"
-      rounded="$2"
+      bg="$color0075"
+      px="$1.5"
+      py="$1.5"
+      rounded="$3"
+      $platform-web={{
+        mx: '$-1.5',
+        fontSize: '90%',
+        lineHeight: 'inherit',
+      }}
     >
       {children}
     </SizableText>

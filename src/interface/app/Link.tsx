@@ -162,6 +162,7 @@ export const Link = ({
       $platform-web={{
         color: 'inherit',
         fontSize: 'inherit',
+        fontWeight: 'inherit',
         lineHeight: 'inherit',
       }}
       focusVisibleStyle={{

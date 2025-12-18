@@ -31,7 +31,9 @@ export function IndexPage() {
         description="A better starting point for building cross-platform applications with React and React Native."
       />
       <YStack items="center">
-        <Hero>Ultra high quality apps, shipped faster than slop</Hero>
+        <Hero>
+          Ultra high quality apps, native on every platform, shipped faster than slop.
+        </Hero>
 
         <H3
           color="$color11"
@@ -43,8 +45,8 @@ export function IndexPage() {
             text: 'center',
           }}
         >
-          Takeout makes the best possible all-in-one React&nbsp;and&nbsp;React&nbsp;Native
-          stack as easy to use as possible.
+          Takeout makes the best possible React and React&nbsp;Native stack as easy to use
+          as possible.
         </H3>
 
         <YStack width="100%" my="$2">
@@ -58,11 +60,11 @@ export function IndexPage() {
         <Paragraph size="$6">
           <strong>TL;DR:</strong> Takeout is a multi-year effort to create{' '}
           <strong>
-            a new stack, leveraging some new tech in frontend, to dramatically simplify
-            cross-platform development
+            a new stack built around some new frontend technologies, aimed at dramatically
+            simplifying cross-platform development
           </strong>
-          . It makes three things as simple and fast as possible: the framework, the
-          data-layer, and the UI.
+          . It makes three things much simpler and faster than before: framework, data,
+          and UI.
         </Paragraph>
 
         <Paragraph size="$6">
@@ -70,7 +72,7 @@ export function IndexPage() {
           <Link href="https://tamagui.dev/takeout">we're releasing Takeout 2 RC 1</Link>.
           Takeout aims to bring more Rails-like cohesion to cross-platform React and React
           Native, using exciting developments in frontend tech (and a lot of elbow grease)
-          to finally deliver both great DX and UX in a simple, unified, fun to use repo.
+          to finally deliver both great DX and UX into a cohesive setup.
         </Paragraph>
 
         <Paragraph size="$6">
@@ -94,9 +96,10 @@ export function IndexPage() {
             <div>
               <Paragraph size="$6">
                 <b>Universal</b> — Target iOS, Android, Web and Desktop using React and
-                React Native <em>with shared code that feels native and runs fast</em>.
-                You don't have to share everything, you don't have to target every
-                platform - but you can, effectively, with ease.
+                React Native with fully shared code{' '}
+                <em>that feels native and runs fast</em>. You don't have to share
+                everything, you don't have to target every platform - but you can, with
+                ease.
               </Paragraph>
             </div>
           </li>
@@ -104,11 +107,12 @@ export function IndexPage() {
           <li style={{ marginBottom: 20 }}>
             <div>
               <Paragraph size="$6">
-                <b>DRY, simple</b> — A single repo, package.json, bundler, framework, and
-                router, a single set of routes, hooks, and helpers, and a single way to do
-                styling, UI, and data. All of your backend, frontend, and infrastructure
-                lives in code and deploys with a push. Query and mutate data quickly,
-                safely, simply, and optimistically, with no glue.
+                <b>DRY and simple</b> — A single repo,{' '}
+                <CodeInline>package.json</CodeInline>, bundler, framework, and router. A
+                single set of routes, hooks, and helpers. A single way to do styling, UI,
+                and data. All of your backend, frontend, and infrastructure, defined in
+                code, deployed with a push. Data queried and mutated quickly, safely,
+                simply, and optimistically, with no glue.
               </Paragraph>
             </div>
           </li>
@@ -167,7 +171,7 @@ export function IndexPage() {
               <Paragraph size="$6">
                 <b>Low risk</b> — Self host or deploy to the cloud. Runs on Postgres.
                 Unplug parts you don't like. Libraries chosen for being OSS, popular,
-                type-safe, single-purpose, and well maintained and documented.
+                single-purpose, and well maintained and documented.
               </Paragraph>
             </div>
           </li>
@@ -175,8 +179,10 @@ export function IndexPage() {
 
         <SepHeading>In the box</SepHeading>
 
-        <H4 mt="$2" size="$5" fontWeight="bold">
-          One
+        <H4 mt="$2">
+          <Link href="https://onestack.dev" target="_blank">
+            One
+          </Link>
         </H4>
 
         <Paragraph size="$6">
@@ -190,20 +196,28 @@ export function IndexPage() {
 
         <Paragraph size="$6">
           With the new <b>Metro-mode</b>, you get Vite's simplicity for web while
-          optionally running Metro for native. One is now stable for production use, and
-          <Link href="https://onestack.dev">just released v1 RC1</Link>.
+          optionally running Metro for native. One is now stable for production use, and{' '}
+          <Link href="https://onestack.dev">
+            <strong>we just released v1 RC1</strong>
+          </Link>
+          .
         </Paragraph>
 
-        <H4 mt="$2" size="$5" fontWeight="bold">
-          Zero
+        <H4 mt="$2">
+          <Link href="https://zero.rocicorp.dev" target="_blank">
+            Zero
+          </Link>
         </H4>
 
         <Paragraph size="$6">
           Zero is the biggest step-change in frontend since React itself. It solves the
           worst area of frontend development today: data. Getting it to the client,
-          keeping it in sync, and mutating it instantly. It's like Firebase if it was OSS
-          and ran on Postgres, and had relations, types, schemas, and optimistic mutations
-          out of the box.
+          keeping it in sync, and mutating it instantly. It's{' '}
+          <strong>
+            like Firebase if it was OSS and ran on Postgres, and had relations, types,
+            schemas, and optimistic mutations out of the box
+          </strong>
+          .
         </Paragraph>
 
         <Paragraph size="$6">
@@ -215,8 +229,10 @@ export function IndexPage() {
           parts for you, if you like.
         </Paragraph>
 
-        <H4 mt="$2" size="$5" fontWeight="bold">
-          Tamagui
+        <H4 mt="$2">
+          <Link href="https://tamagui.dev" target="_blank">
+            Tamagui
+          </Link>
         </H4>
 
         <Paragraph size="$6">
@@ -228,10 +244,10 @@ export function IndexPage() {
 
         <Paragraph size="$6">
           <Link href="https://tamagui.dev/blog/version-two">
-            Version 2 RC1 is out now
+            <strong>Version 2 RC1 is out now</strong>
           </Link>{' '}
-          with a lot of stability improvements, test coverage, docs, and release
-          guardrails, plus some new components and other goodies.
+          with stability improvements, more tests, docs, and release guardrails, plus a
+          few new components and features.
         </Paragraph>
 
         <H4 mt="$2" size="$5" fontWeight="bold">

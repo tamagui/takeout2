@@ -1,23 +1,20 @@
 import { router } from 'one'
 import { memo, useState } from 'react'
-import Animated from 'react-native-reanimated'
 import { Accordion, isWeb, SizableText, View, XStack, YStack } from 'tamagui'
 
-import { isNative } from '~/constants/platform'
 import { useAuth } from '~/features/auth/client/authClient'
-import { sharedTransition } from '~/helpers/animation/sharedTransition'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
 import { useUser } from '~/hooks/useUser'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { ChatCircleIcon } from '~/interface/icons/phosphor/ChatCircleIcon'
 import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
-import { Image } from '~/interface/image/Image'
 import { LinearGradientSeparator } from '~/interface/separators/LinearGradientSeparator'
 import { Text } from '~/interface/text/Text'
 
 import { AvatarWithMenu } from './AvatarWithMenu'
 import { PostActionMenu } from './PostActionMenu'
 import { PostActionsPopover } from './PostActionsPopover'
+import { PostImage } from './PostImage'
 
 import type { Post } from '~/data/types'
 
@@ -105,35 +102,16 @@ export const PostCard = memo(({ post }: PostCardProps) => {
             </Accordion.Item>
           </Accordion>
           <View width="100%" position="relative" mt="$2">
-            <Pressable onPress={() => router.push(`/home/post/${post.id}`)}>
-              {isNative ? (
-                <Animated.Image
-                  source={{ uri: post.image }}
-                  style={{
-                    width: '100%',
-                    aspectRatio,
-                    borderRadius: 12,
-                  }}
-                  sharedTransitionTag={`post-image-${post.id}`}
-                  sharedTransitionStyle={sharedTransition}
-                  resizeMode="cover"
-                />
-              ) : (
-                <Image
-                  src={post.image}
-                  alt={post.caption || 'Post image'}
-                  width="100%"
-                  objectFit="cover"
-                  rounded="$6"
-                  aspectRatio={aspectRatio}
-                  onLoad={(e) => {
-                    const { naturalWidth, naturalHeight } = e.target as HTMLImageElement
-                    if (naturalWidth && naturalHeight) {
-                      setAspectRatio(naturalWidth / naturalHeight)
-                    }
-                  }}
-                />
-              )}
+            <Pressable
+              onPress={() => router.push(`/home/post/${post.id}?username=${username}`)}
+            >
+              <PostImage
+                postId={post.id}
+                image={post.image}
+                caption={post.caption}
+                aspectRatio={aspectRatio}
+                onAspectRatioChange={setAspectRatio}
+              />
             </Pressable>
           </View>
           {typeof post.commentCount === 'number' && (

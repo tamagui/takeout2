@@ -1,4 +1,3 @@
-import { cloneElement, isValidElement, useState } from 'react'
 import { Adapt, Sheet, YStack } from 'tamagui'
 
 import { Popover } from '~/interface/popover/Popover'

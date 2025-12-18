@@ -58,6 +58,19 @@ export default {
     external: ['over-zero', '@vxrn/mdx', '@rocicorp/zero'],
   },
 
+  environments: {
+    client: {
+      build: {
+        rollupOptions: {
+          output: {
+            // reduce parallel modulepreloads, helps web LCP
+            experimentalMinChunkSize: 30_000,
+          },
+        },
+      },
+    },
+  },
+
   plugins: [
     tamaguiPlugin({
       optimize: true,
@@ -130,7 +143,7 @@ export default {
       },
 
       web: {
-        experimental_scriptLoading: 'after-lcp',
+        experimental_scriptLoading: 'after-lcp-aggressive',
         defaultRenderMode: 'spa',
         inlineLayoutCSS: true,
         sitemap: {

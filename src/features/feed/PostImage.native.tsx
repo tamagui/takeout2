@@ -6,11 +6,17 @@ interface PostImageProps {
   postId: string
   image: string
   caption?: string | null
-  aspectRatio: number
-  onAspectRatioChange: (ratio: number) => void
+  aspectRatio?: number
+  onAspectRatioChange?: (ratio: number) => void
+  sharedTransitionTag?: string
 }
 
-export function PostImage({ postId, image, aspectRatio }: PostImageProps) {
+export function PostImage({
+  postId,
+  image,
+  aspectRatio = 1,
+  sharedTransitionTag,
+}: PostImageProps) {
   return (
     <Animated.Image
       source={{ uri: image }}
@@ -19,7 +25,7 @@ export function PostImage({ postId, image, aspectRatio }: PostImageProps) {
         aspectRatio,
         borderRadius: 12,
       }}
-      sharedTransitionTag={`post-image-${postId}`}
+      sharedTransitionTag={sharedTransitionTag ?? `post-image-${postId}`}
       sharedTransitionStyle={transition}
       resizeMode="cover"
     />

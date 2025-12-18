@@ -1,7 +1,6 @@
 import { randomId } from '@take-out/helpers'
 import { useParams, usePathname } from 'one'
 import { memo, useMemo, useState } from 'react'
-import Animated from 'react-native-reanimated'
 import { SizableText, XStack, YStack, isWeb } from 'tamagui'
 
 import { postById } from '~/data/queries/post'
@@ -10,14 +9,13 @@ import { CommentInput } from '~/features/feed/CommentInput'
 import { CommentSection } from '~/features/feed/CommentSection'
 import { PostActionMenu } from '~/features/feed/PostActionMenu'
 import { PostActionsPopover } from '~/features/feed/PostActionsPopover'
+import { PostImage } from '~/features/feed/PostImage'
 import { useUser } from '~/features/user/useUser'
-import { sharedTransition } from '~/helpers/animation/sharedTransition'
 import { formatDistanceToNow } from '~/helpers/date/formatDate'
 import { Avatar } from '~/interface/avatars/Avatar'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
 import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
-import { Image } from '~/interface/image/Image'
 import { KeyboardAwareScrollView } from '~/interface/keyboard/KeyboardAwareScrollView'
 import { Text } from '~/interface/text/Text'
 import { useQuery, zero } from '~/zero/client'
@@ -116,27 +114,15 @@ export const FeedDetailPage = memo(() => {
             }}
             mb="$4"
           >
-            <Image
-              key={`${post.id.toString()}`}
-              src={post.image}
-              width="100%"
-              aspectRatio={1}
-              objectFit="cover"
-              rounded="$6"
-            />
+            <PostImage postId={post.id} image={post.image} caption={post.caption} />
           </Pressable>
         ) : (
           <YStack mb="$4">
-            <Animated.Image
-              source={{ uri: post.image }}
-              style={{
-                width: '100%',
-                aspectRatio: 1,
-                borderRadius: 12,
-              }}
+            <PostImage
+              postId={post.id}
+              image={post.image}
+              caption={post.caption}
               sharedTransitionTag={sharedTag}
-              sharedTransitionStyle={sharedTransition}
-              resizeMode="cover"
             />
           </YStack>
         )}

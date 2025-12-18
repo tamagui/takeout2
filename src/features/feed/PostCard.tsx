@@ -63,10 +63,10 @@ export const PostCard = memo(({ post }: PostCardProps) => {
                   </SizableText>
                 </XStack>
                 {/* Todo: move to tamagui Menu (v2) */}
-                {isNative ? (
-                  <PostActionMenu post={post} isOwnPost={isOwnProfile} />
-                ) : (
+                {isWeb ? (
                   <PostActionsPopover post={post} isOwnPost={isOwnProfile} />
+                ) : (
+                  <PostActionMenu post={post} isOwnPost={isOwnProfile} />
                 )}
               </XStack>
             </YStack>

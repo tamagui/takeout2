@@ -4,7 +4,6 @@ import { memo, useMemo, useState } from 'react'
 import Animated from 'react-native-reanimated'
 import { SizableText, XStack, YStack, isWeb } from 'tamagui'
 
-import { isNative } from '~/constants/platform'
 import { postById } from '~/data/queries/post'
 import { useAuth } from '~/features/auth/client/authClient'
 import { CommentInput } from '~/features/feed/CommentInput'
@@ -65,6 +64,16 @@ export const FeedDetailPage = memo(() => {
     return null
   }
 
+  const commentInput = (
+    <CommentInput
+      user={currentUser}
+      content={content}
+      setContent={setContent}
+      handleSubmit={handleSubmit}
+      isSubmitting={isSubmitting}
+    />
+  )
+
   return (
     <>
       <KeyboardAwareScrollView
@@ -90,10 +99,10 @@ export const FeedDetailPage = memo(() => {
               </XStack>
             </XStack>
             {/* Todo: move to tamagui Menu (v2) */}
-            {isNative ? (
-              <PostActionMenu post={post} isOwnPost={isOwnProfile} />
-            ) : (
+            {isWeb ? (
               <PostActionsPopover post={post} isOwnPost={isOwnProfile} />
+            ) : (
+              <PostActionMenu post={post} isOwnPost={isOwnProfile} />
             )}
           </XStack>
         </XStack>
@@ -137,15 +146,11 @@ export const FeedDetailPage = memo(() => {
         </YStack>
 
         <CommentSection postId={feedId} />
+
+        {isWeb && commentInput}
       </KeyboardAwareScrollView>
 
-      <CommentInput
-        user={currentUser}
-        content={content}
-        setContent={setContent}
-        handleSubmit={handleSubmit}
-        isSubmitting={isSubmitting}
-      />
+      {!isWeb && commentInput}
     </>
   )
 })

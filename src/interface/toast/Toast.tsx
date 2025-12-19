@@ -17,7 +17,7 @@ export { showToast } from './helpers'
 
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
   return (
-    <TamaguiToastProvider native={!isWeb} swipeDirection="horizontal">
+    <TamaguiToastProvider swipeDirection="horizontal">
       <ToastDisplay />
 
       <ToastViewport

@@ -1,3 +1,4 @@
+import { isAndroid } from '@take-out/helpers'
 import { BlurView } from 'expo-blur'
 import { GlassView as ExpoGlassView, isLiquidGlassAvailable } from 'expo-glass-effect'
 import { memo } from 'react'
@@ -39,7 +40,19 @@ export const GlassView = memo(
       )
     }
 
-    // fallback to expo-blur for older iOS versions and other platforms
+    // android fallback - just use simple View (blur doesn't work on android)
+    if (isAndroid) {
+      return (
+        <View
+          bg="$background"
+          style={[{ borderRadius, overflow: 'hidden' }, containerStyle as any]}
+        >
+          {children}
+        </View>
+      )
+    }
+
+    // fallback to expo-blur for older iOS versions
     return (
       <BlurView
         intensity={intensity}

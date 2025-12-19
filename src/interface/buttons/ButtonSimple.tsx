@@ -1,4 +1,4 @@
-import { IS_SAFARI, isWeb, sleep } from '@take-out/helpers'
+import { IS_SAFARI, isAndroid, isWeb, sleep } from '@take-out/helpers'
 import { createElement, forwardRef, isValidElement } from 'react'
 import {
   createStyledContext,
@@ -366,7 +366,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
       if (variant === 'transparent' || variant === 'subtle') return false
 
       // on web, show glint even with glass
-      if (isWeb && glass) return true
+      if ((isWeb || isAndroid) && glass) return true
 
       // on native, don't show glint with glass
       return !glass
@@ -421,21 +421,23 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
         glassEffectStyle="clear"
         isInteractive={isInteractive}
         borderRadius={rest.circular ? 100 : undefined}
-        containerStyle={{
-          ...(rest.circular
-            ? {
-                width: buttonWidths[rest.size || 'medium'],
-                height: buttonWidths[rest.size || 'medium'],
-              }
-            : {
-                flex: rest.flex,
-                flexGrow: rest.grow,
-                flexShrink: rest.shrink,
-                alignSelf: rest.self,
-              }),
-          items: 'center',
-          justify: 'center',
-        }}
+        containerStyle={
+          {
+            ...(rest.circular
+              ? {
+                  width: buttonWidths[rest.size || 'medium'],
+                  height: buttonWidths[rest.size || 'medium'],
+                }
+              : {
+                  flex: rest.flex,
+                  flexGrow: rest.grow,
+                  flexShrink: rest.shrink,
+                  alignSelf: rest.self,
+                }),
+            alignItems: 'center',
+            justifyContent: 'center',
+          } as any
+        }
       >
         {buttonElement}
       </GlassView>

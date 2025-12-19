@@ -1,14 +1,14 @@
 import type { BlurViewProps } from 'expo-blur'
-import type { ViewStyle } from 'tamagui'
+import type { ViewProps } from 'react-native'
 
 export interface GlassViewProps {
   borderRadius?: number
   intensity?: number
   tint?: BlurViewProps['tint']
-  containerStyle?: ViewStyle
+  containerStyle?: ViewProps['style']
   children?: React.ReactNode
   glassEffectStyle?: 'clear' | 'regular'
-  style?: ViewStyle
+  style?: ViewProps['style']
   isFallback?: boolean
   backgroundColor?: string
   tintColor?: string

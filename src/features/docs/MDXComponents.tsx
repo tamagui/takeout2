@@ -1,4 +1,4 @@
-import { H1, H2, H3, H4, H5, Paragraph, styled, YStack } from 'tamagui'
+import { H1, H2, H3, H4, H5, Paragraph, styled, XStack, YStack } from 'tamagui'
 
 import { Link } from '~/interface/app/Link'
 
@@ -8,6 +8,34 @@ import { DocsCodeBlock } from './DocsCodeBlock'
 const BaseParagraph = styled(Paragraph, {
   size: '$6',
   my: '$2',
+})
+
+const TableFrame = styled(YStack, {
+  my: '$4',
+  borderWidth: 1,
+  borderColor: '$borderColor',
+  rounded: '$4',
+  overflow: 'hidden',
+})
+
+const TableRow = styled(XStack, {
+  borderBottomWidth: 1,
+  borderBottomColor: '$borderColor',
+})
+
+const TableCell = styled(Paragraph, {
+  flex: 1,
+  p: '$3',
+  size: '$5',
+  borderRightWidth: 1,
+  borderRightColor: '$borderColor',
+  variants: {
+    head: {
+      true: {
+        fontWeight: '600',
+      },
+    },
+  } as const,
 })
 
 const components = {
@@ -86,6 +114,13 @@ const components = {
       {...props}
     />
   ),
+
+  table: (props: any) => <TableFrame {...props} />,
+  thead: (props: any) => <YStack bg="$color2" {...props} />,
+  tbody: (props: any) => <YStack {...props} />,
+  tr: (props: any) => <TableRow {...props} />,
+  th: (props: any) => <TableCell head {...props} />,
+  td: (props: any) => <TableCell {...props} />,
 }
 
 export { components }

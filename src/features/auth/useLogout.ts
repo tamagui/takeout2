@@ -1,5 +1,3 @@
-import { router } from 'one'
-
 import { authClient, clearAuthClientToken } from '~/features/auth/client/authClient'
 import { dialogConfirm, showError } from '~/interface/dialogs/actions'
 
@@ -17,8 +15,8 @@ export const useLogout = () => {
     try {
       await authClient.signOut()
       clearAuthClientToken()
-      router.dismissAll()
-      router.replace('/login')
+      // don't manually navigate - let AppLayout handle redirect when state changes to 'logged-out'
+      // manual navigation causes double navigation on native
       return true
     } catch (error) {
       console.error('logout error:', error)

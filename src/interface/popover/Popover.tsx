@@ -84,7 +84,7 @@ const PopoverContent = ({
         exitStyle: { y: 6, opacity: 0 },
         shadowColor:
           props.shadow === 'strong'
-            ? '$shadow6'
+            ? '$shadow5'
             : props.shadow === 'medium'
               ? '$shadow4'
               : '$shadow3',

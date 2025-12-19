@@ -10,7 +10,7 @@ interface UserProfilePopoverProps {
 
 export function UserProfilePopover({ trigger }: UserProfilePopoverProps) {
   return (
-    <PopoverMenu name="user-profile" shadow="strong" trigger={trigger}>
+    <PopoverMenu name="user-profile" shadow="medium" snapPoints={[55]} trigger={trigger}>
       <UserProfilePopoverContent />
     </PopoverMenu>
   )

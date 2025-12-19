@@ -7,13 +7,16 @@ Takeout supports two deployment options: Uncloud for self-hosting and SST for AW
 
 ## Deployment options
 
-| Feature | Uncloud | SST (AWS) |
-|---------|---------|-----------|
-| Setup time | ~10 minutes | ~30-60 minutes |
-| Cost | VPS cost only | Pay-as-you-go AWS |
-| Scaling | Manual | Auto-scaling |
-| Complexity | Simple | More complex |
-| Database | Self-hosted or managed | Aurora (managed) |
+<SimpleTable
+  headers={['Feature', 'Uncloud', 'SST (AWS)']}
+  rows={[
+    ['Setup time', '~10 minutes', '~30-60 minutes'],
+    ['Cost', 'VPS cost only', 'Pay-as-you-go AWS'],
+    ['Scaling', 'Manual', 'Auto-scaling'],
+    ['Complexity', 'Simple', 'More complex'],
+    ['Database', 'Self-hosted or managed', 'Aurora (managed)'],
+  ]}
+/>
 
 ## Quick comparison
 

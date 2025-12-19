@@ -44,8 +44,8 @@ export function DocsLayout() {
           borderRightColor="$color1pt5"
           $md={{
             position: 'sticky' as any,
-            t: 0,
-            height: '100vh',
+            t: 50,
+            height: 'calc(100vh - 50px)',
             width: 220,
           }}
           $maxMD={{
@@ -53,7 +53,7 @@ export function DocsLayout() {
           }}
         >
           <ScrollView showsVerticalScrollIndicator={false}>
-            <View pt="$6" pb="$10">
+            <View pt="$4" pb="$10">
               <DocsMenuContents />
               <YStack height={200} />
             </View>

@@ -185,12 +185,14 @@ const NotificationToastItem = ({
         scale={1}
         bg="$background06"
         backdropFilter="blur(30px)"
-        py="$3"
-        px="$3"
+        py="$4"
+        px="$4"
         theme={display === 'error' ? 'red' : display === 'warn' ? 'yellow' : undefined}
-        shadowColor="$shadow3"
-        shadowRadius={10}
-        shadowOffset={{ height: 10, width: 0 }}
+        shadowColor="$shadow2"
+        shadowRadius={8}
+        shadowOffset={{ height: 4, width: 0 }}
+        // @ts-ignore web-only
+        boxShadow="0 4px 8px var(--shadow2), 0 16px 40px var(--shadow4)"
         flex={1}
         gap="$3"
         rounded="$5"

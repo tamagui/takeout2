@@ -1,6 +1,9 @@
 export const docsRoutes = [
   {
-    pages: [{ title: 'Introduction', route: '/docs/introduction' }],
+    pages: [
+      { title: 'Introduction', route: '/docs/introduction' },
+      { title: 'Highlights', route: '/docs/highlights' },
+    ],
   },
 
   {

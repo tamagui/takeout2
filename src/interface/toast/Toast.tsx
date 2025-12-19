@@ -78,8 +78,8 @@ const ToastDisplay = () => {
       overflow="hidden"
       viewportName={currentToast?.viewportName}
       bg="$color2"
-      py="$1.5"
-      px="$3"
+      py="$2.5"
+      px="$4"
       theme={
         toastType === 'error'
           ? 'red'
@@ -89,9 +89,11 @@ const ToastDisplay = () => {
               ? 'green'
               : null
       }
-      shadowColor="$shadow1"
-      shadowRadius={20}
-      shadowOffset={{ height: 10, width: 0 }}
+      shadowColor="$shadow2"
+      shadowRadius={8}
+      shadowOffset={{ height: 4, width: 0 }}
+      // @ts-ignore web-only
+      boxShadow="0 4px 8px var(--shadow2), 0 16px 40px var(--shadow4)"
       rounded="$8"
     >
       <YStack>

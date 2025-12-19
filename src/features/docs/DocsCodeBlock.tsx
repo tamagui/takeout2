@@ -27,14 +27,14 @@ export function DocsCodeBlock({
     <YStack position="relative" my="$4" bg="$color2" rounded="$4" overflow="hidden">
       <ButtonSimple
         position="absolute"
+        aria-label="Copy code"
         t="$2"
         r="$2"
         size="small"
-        icon={copied ? <CheckIcon /> : <CopyIcon />}
+        circular
+        tooltip={copied ? 'Copied!' : 'Copy'}
+        icon={copied ? <CheckIcon size={12} /> : <CopyIcon size={12} />}
         onPress={handleCopy}
-        bg="$color4"
-        hoverStyle={{ bg: '$color5' }}
-        pressStyle={{ bg: '$color3' }}
       />
       <SizableText
         tag="pre"
@@ -44,7 +44,7 @@ export function DocsCodeBlock({
         fontSize="$3"
         lineHeight="$4"
       >
-        <SizableText tag="code" className={className}>
+        <SizableText tag="code" fontFamily="$mono" className={className}>
           {children}
         </SizableText>
       </SizableText>

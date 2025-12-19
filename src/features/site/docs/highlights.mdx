@@ -1,0 +1,68 @@
+---
+title: Highlights
+description: What makes Takeout unique
+---
+
+> NOTE: this is a placeholder
+
+## One
+
+1. **Platform divergence** - `.native.tsx`, `.ios.tsx`, `.android.tsx`, `.web.tsx` suffixes let you share routes but completely diverge UI per platform
+2. **Mixed render modes** - static (`+ssg.tsx`), server-rendered, or client-only pages from the same router
+3. **Typed routes** - `createRoute()` with auto-generated `routes.d.ts` for full type safety on params and links
+4. **Native navigation** - `withLayoutContext()` wraps react-navigation for native tab bars, headers, and gestures
+5. **API routes** - `+api.ts` suffix with typed endpoints, catch-all patterns
+6. **LCP optimization** - `experimental_scriptLoading: 'after-lcp-aggressive'` defers JS until after paint
+
+## Zero
+
+1. **Optimistic mutations** - data syncs to client, queries run locally, mutations apply instantly
+2. **Server-only permissions** - `serverWhere()` returns true on client but enforces rules on server
+3. **Environment-aware mutations** - same mutation code runs optimistically on client, fully on server
+4. **Deferred side effects** - `server.asyncTasks.push()` runs analytics/notifications after transaction commits
+5. **Platform storage** - IndexedDB on web, SQLite on native, memory for anonymous users
+6. **Global query builder** - `zql.post.where(...)` without prop-drilling the Zero instance
+
+## Tamagui
+
+1. **Dual animation drivers** - CSS animations for static pages (lighter), spring physics for app pages (smoother)
+2. **Theme-conditional styles** - `$theme-dark` and `$theme-light` props directly in `styled()`
+3. **Group selectors** - `$group-button-hover` for parent-scoped state without prop drilling
+4. **Client-side theme hydration** - themes load from CSS variables, not JS bundle
+
+## Better Auth
+
+1. **EdDSA JWT** - Ed25519 keys for Zero sync compatibility
+2. **Phone-first signup** - generates temp email for phone-only users
+3. **Database hooks** - auto-creates public profile and user state on signup
+4. **Invite system** - whitelist + invite codes with use limits and expiration
+
+## Drizzle
+
+1. **Public/private schema split** - public tables sync via Zero, private stay server-only
+2. **PostgreSQL triggers** - denormalized counters maintained at database level
+3. **Custom migration runner** - creates Zero's three databases automatically
+
+## SST / Uncloud
+
+1. **Dual deployment** - AWS via SST or any VPS via Uncloud with same codebase
+2. **Zero replication config** - Aurora with logical replication, WAL retention tuned for sync
+3. **Rolling deploys** - new instances spin up before old ones terminate
+4. **Encrypted config sharing** - team can share deployment credentials securely
+
+## CI/CD
+
+1. **Commit-gated native builds** - `native:` prefix in commit triggers expensive iOS/Android builds
+2. **Expo fingerprint caching** - JS-only changes skip native rebuild entirely
+3. **Auto OTA deploys** - hot updates deploy automatically after CI succeeds on main
+
+## Scripts
+
+1. **Local overrides** - your `./scripts/` shadows built-in scripts
+2. **Parallel runner** - color-coded output with CPU-aware concurrency
+3. **AI-assisted sync** - `tko sync` loads prompt and spawns claude/cursor/aider
+
+## Environment
+
+1. **Single source of truth** - `package.json` env section generates server exports, CI config, and docker-compose
+2. **SST state integration** - pull production env vars from deployed AWS resources

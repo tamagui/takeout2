@@ -20,6 +20,10 @@ export const PRIVACY_POLICY_URL = `https://${DOMAIN}${PRIVACY_POLICY_PATH}`
 export const EULA_URL = `https://${DOMAIN}${EULA_PATH}`
 export const DISCORD_INVITE_URL = 'https://discord.com/invite/your-server'
 
+// Social
+export const TWITTER_URL = 'https://x.com/tamagui__js'
+export const GITHUB_URL = 'https://github.com/tamagui'
+
 // Email
 export const ADMIN_EMAIL = `admin@${DOMAIN}`
 

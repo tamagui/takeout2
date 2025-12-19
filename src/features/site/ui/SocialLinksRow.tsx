@@ -1,6 +1,7 @@
 import { useLinkTo, type LinkProps } from 'one'
 import { SizableText, styled, View, XStack, YStack, type SizableTextProps } from 'tamagui'
 
+import { GITHUB_URL, TWITTER_URL } from '~/constants/app'
 import { GithubLogoIcon } from '~/interface/icons/GithubLogoIcon'
 import { DiscordLogo } from '~/interface/social-media/DiscordLogo'
 import { TwitterLogo } from '~/interface/social-media/TwitterLogo'
@@ -13,7 +14,7 @@ export const SocialLinksRow = ({ large }: { large?: boolean }) => {
       <HoverableLink
         mr={-3}
         target="_blank"
-        href="https://x.com"
+        href={TWITTER_URL}
         aria-label="X (formerly Twitter)"
       >
         <Container minW={large ? 60 : 45}>
@@ -22,7 +23,7 @@ export const SocialLinksRow = ({ large }: { large?: boolean }) => {
         </Container>
       </HoverableLink>
 
-      <HoverableLink target="_blank" href="https://github.com" aria-label="GitHub">
+      <HoverableLink target="_blank" href={GITHUB_URL} aria-label="GitHub">
         <Container minW={large ? 60 : 45} y={-1}>
           <GithubLogoIcon size={28 * scale} aria-hidden={true} />
           <SubTitle display={large ? 'flex' : 'none'}>Github</SubTitle>

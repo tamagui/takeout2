@@ -4,7 +4,7 @@ import { GlassView as ExpoGlassView, isLiquidGlassAvailable } from 'expo-glass-e
 import { memo } from 'react'
 import { View } from 'tamagui'
 
-import type { GlassViewProps } from './GlassViewProps'
+import type { GlassViewProps } from './types'
 
 export const GlassView = memo(
   ({
@@ -32,7 +32,7 @@ export const GlassView = memo(
               borderRadius,
               overflow: 'hidden',
             },
-            containerStyle as any,
+            containerStyle,
           ]}
         >
           {children}
@@ -45,7 +45,7 @@ export const GlassView = memo(
       return (
         <View
           bg="$background"
-          style={[{ borderRadius, overflow: 'hidden' }, containerStyle as any]}
+          style={[{ borderRadius, overflow: 'hidden' }, containerStyle]}
         >
           {children}
         </View>
@@ -68,7 +68,7 @@ export const GlassView = memo(
             shadowRadius: 2,
             elevation: 2,
           },
-          containerStyle as any,
+          containerStyle,
         ]}
       >
         {/* content container - must be first so overlays can block it */}

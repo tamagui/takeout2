@@ -422,21 +422,17 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
         isInteractive={isInteractive}
         borderRadius={rest.circular ? 100 : undefined}
         containerStyle={
-          {
-            ...(rest.circular
-              ? {
-                  width: buttonWidths[rest.size || 'medium'],
-                  height: buttonWidths[rest.size || 'medium'],
-                }
-              : {
-                  flex: rest.flex,
-                  flexGrow: rest.grow,
-                  flexShrink: rest.shrink,
-                  alignSelf: rest.self,
-                }),
-            alignItems: 'center',
-            justifyContent: 'center',
-          } as any
+          rest.circular
+            ? {
+                width: buttonWidths[rest.size || 'medium'],
+                height: buttonWidths[rest.size || 'medium'],
+              }
+            : ({
+                flex: rest.flex,
+                flexGrow: rest.grow,
+                flexShrink: rest.shrink,
+                alignSelf: rest.self,
+              } as any)
         }
       >
         {buttonElement}

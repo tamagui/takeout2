@@ -1,5 +1,5 @@
 import type { BlurViewProps } from 'expo-blur'
-import type { ViewProps } from 'react-native'
+import type { ViewProps } from 'tamagui'
 
 export interface GlassViewProps {
   borderRadius?: number

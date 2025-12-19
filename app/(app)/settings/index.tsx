@@ -224,7 +224,7 @@ export const ProfileSettingsPage = () => {
     >
       <YStack flex={1} pb="$10">
         {allSections.map((section, sectionIndex) => (
-          <YStack key={section.title} mb="$6">
+          <YStack key={section.title} mb="$6" ml="$4">
             <SepHeading>{section.title}</SepHeading>
             <YStack>{section.items.map((item) => renderItem(item))}</YStack>
           </YStack>

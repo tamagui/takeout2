@@ -1,7 +1,4 @@
 export { Onboarding } from './Onboarding'
-export type { OnboardingProps, OnboardingStepInfo } from './Onboarding'
-export { OnboardingControls } from './OnboardingControls'
-export type { OnboardingControlsProps } from './OnboardingControls'
-export { StepContent } from './OnboardingStepContent'
-export { OnboardingScreen } from './OnboardingScreen'
-export { OnboardingCarousel } from './OnboardingCarousel'
+
+export { onboardingSlides } from './onboardingSlides'
+export type { OnboardingSlideData, SlideFeature, SlideLayout } from './types'

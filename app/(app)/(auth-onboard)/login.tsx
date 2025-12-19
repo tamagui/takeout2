@@ -1,7 +1,15 @@
-import { LinearGradient } from '@tamagui/linear-gradient'
 import { router } from 'one'
-import { useState } from 'react'
-import { Circle, isWeb, SizableText, Spinner, XStack, YStack } from 'tamagui'
+import { useCallback, useState } from 'react'
+import {
+  AnimatePresence,
+  Circle,
+  isWeb,
+  SizableText,
+  Spinner,
+  View,
+  XStack,
+  YStack,
+} from 'tamagui'
 
 import {
   APP_NAME,
@@ -10,6 +18,8 @@ import {
   TERMS_OF_SERVICE_URL,
 } from '~/constants/app'
 import { signInAsDemo } from '~/features/auth/client/signInAsDemo'
+import { onboardingSlides } from '~/features/onboarding'
+import { Onboarding } from '~/features/onboarding/Onboarding'
 import { isDemoMode } from '~/helpers/isDemoMode'
 import { Link } from '~/interface/app/Link'
 import { LogoIcon } from '~/interface/app/LogoIcon'
@@ -22,7 +32,12 @@ import { H2 } from '~/interface/text/Headings'
 import { showToast } from '~/interface/toast/helpers'
 
 export const LoginPage = () => {
-  const [demoLoading, setDemoLoading] = useState(false)
+  const [demoLoading, setDemoLoading] = useState<boolean>(false)
+  const [showOnboarding, setShowOnboarding] = useState<boolean>(!isWeb)
+
+  const handleOnboardingComplete = useCallback(() => {
+    setShowOnboarding(false)
+  }, [])
 
   const handleSignInAdmin = () => {
     dialogEmit({ type: 'admin-password' })
@@ -172,6 +187,24 @@ export const LoginPage = () => {
           </YStack>
         </YStack>
       </YStack>
+
+      <AnimatePresence>
+        {showOnboarding && !isWeb && (
+          <View
+            animation="200ms"
+            position="absolute"
+            t={0}
+            l={0}
+            r={0}
+            b={0}
+            z={1000}
+            enterStyle={{ scale: 0.95 }}
+            exitStyle={{ scale: 0 }}
+          >
+            <Onboarding slides={onboardingSlides} onComplete={handleOnboardingComplete} />
+          </View>
+        )}
+      </AnimatePresence>
     </XStack>
   )
 }

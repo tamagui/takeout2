@@ -183,7 +183,7 @@
     "oxfmt": "^0.16.0",
     "oxlint": "^1.31.0",
     "p-map": "^7.0.3",
-    "react-native-pager-view": "^6.9.1",
+    "react-native-pager-view": "^8.0.0",
     "rollup-plugin-visualizer": "^6.0.5",
     "sst": "3.17.10",
     "subset-font": "^2.4.0",

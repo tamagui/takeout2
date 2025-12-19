@@ -1,4 +1,3 @@
-import { isNative } from '@take-out/helpers'
 import { Slot, Stack } from 'one'
 import { isWeb, Spacer } from 'tamagui'
 
@@ -18,13 +17,11 @@ export function AuthAndOnboardingLayout() {
           </PageMainContainer>
         </>
       ) : (
-        <Stack screenOptions={{ headerShown: false }}>
+        <Stack screenOptions={{ headerShown: false }} initialRouteName="login">
           <Stack.Screen name="login" />
           <Stack.Screen name="login/password" />
           <Stack.Screen name="signup/[method]" />
           <Stack.Screen name="signup/otp" />
-          <Stack.Screen name="avatar-setup" />
-          <Stack.Screen name="profile-setup" />
           <Stack.Screen name="waiting-list" />
         </Stack>
       )}

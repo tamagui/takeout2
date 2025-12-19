@@ -296,10 +296,14 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
   const proxiedAuthClient = new Proxy(authClient, {
     get(_target, key) {
       if (key === 'signOut') {
-        return async () => {
+        return () => {
           clearState()
+
+          // don't await - better-auth has fetch issues on react native
+          // attempting to await causes "method uppercase not a func" error
           // @ts-expect-error better-auth type issue, signOut does exist
-          await authClient.signOut?.()
+          authClient.signOut?.()
+
           // force refresh to clear any remaining state
           if (typeof window !== 'undefined') {
             window.location?.reload?.()

@@ -75,8 +75,13 @@
 }
 
 .token.module,
-.token.property {
+.token.property,
+.token.variable {
   color: var(--token-blue);
+}
+
+.token.builtin {
+  color: var(--token-green);
 }
 
 .token.comment {

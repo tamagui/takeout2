@@ -1,3 +1,5 @@
+import './syntax-highlight.css'
+
 import { type Href, Link, Slot } from 'one'
 import {
   EnsureFlexed,

@@ -1,5 +1,4 @@
 import './root.css'
-import './syntax-highlight.css'
 
 import { Slot, Stack } from 'one'
 import { SafeAreaProvider } from 'react-native-safe-area-context'

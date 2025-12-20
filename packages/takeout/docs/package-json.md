@@ -86,8 +86,7 @@ allow postinstall scripts for specific packages:
 
 ```json
 "trustedDependencies": [
-  "@rocicorp/zero-sqlite3",
-  "@shopify/react-native-skia"
+  "@rocicorp/zero-sqlite3"
 ]
 ```
 

@@ -110,7 +110,7 @@ export const SearchPage = memo(() => {
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
         contentContainerStyle={{
-          paddingTop: top,
+          paddingTop: isNative ? 0 : top,
           paddingBottom: bottom + 100,
         }}
         showsVerticalScrollIndicator={false}

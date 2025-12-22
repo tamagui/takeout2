@@ -1,5 +1,5 @@
-import { randomId, useEmitterSelector } from '@take-out/helpers'
-import { useRef, useState } from 'react'
+import { randomId, useEmitterSelector } from "@take-out/helpers";
+import { useRef, useState } from "react";
 import {
   Circle,
   isWeb,
@@ -8,39 +8,39 @@ import {
   Spinner,
   useWindowDimensions,
   YStack,
-} from 'tamagui'
+} from "tamagui";
 
-import { useAuth } from '~/features/auth/client/authClient'
-import { pickImageFromLibrary } from '~/helpers/media/imagePicker'
-import { zero } from '~/zero/client'
+import { useAuth } from "~/features/auth/client/authClient";
+import { pickImageFromLibrary } from "~/helpers/media/imagePicker";
+import { zero } from "~/zero/client";
 
-import { ButtonSimple } from '../buttons/ButtonSimple'
-import { Pressable } from '../buttons/Pressable'
-import { TextArea } from '../forms/TextArea'
-import { ImageIcon } from '../icons/phosphor/ImageIcon'
-import { XIcon } from '../icons/phosphor/XIcon'
-import { Image } from '../image/Image'
-import { showToast } from '../toast/helpers'
-import { useUploadFiles } from '../upload/uploadFile'
-import { showError } from './actions'
-import { Dialog } from './Dialog'
-import { closeDialog, dialogEmitter } from './shared'
+import { ButtonSimple } from "../buttons/ButtonSimple";
+import { Pressable } from "../buttons/Pressable";
+import { TextArea } from "../forms/TextArea";
+import { ImageIcon } from "../icons/phosphor/ImageIcon";
+import { XIcon } from "../icons/phosphor/XIcon";
+import { Image } from "../image/Image";
+import { showToast } from "../toast/helpers";
+import { useUploadFiles } from "../upload/uploadFile";
+import { showError } from "./actions";
+import { Dialog } from "./Dialog";
+import { closeDialog, dialogEmitter } from "./shared";
 
-const MAX_IMAGE_SIZE = 1200
-const IMAGE_QUALITY = 0.9
+const MAX_IMAGE_SIZE = 1200;
+const IMAGE_QUALITY = 0.9;
 
 export const DialogCreatePost = () => {
-  const auth = useAuth()
-  const userId = auth.user?.id
-  const { width } = useWindowDimensions()
-  const minW = isWeb ? 500 : width * 0.9
-  const [caption, setCaption] = useState('')
-  const [isPosting, setIsPosting] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const auth = useAuth();
+  const userId = auth.user?.id;
+  const { width } = useWindowDimensions();
+  const minW = isWeb ? 500 : width * 0.9;
+  const [caption, setCaption] = useState("");
+  const [isPosting, setIsPosting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const state = useEmitterSelector(dialogEmitter, (next) => {
-    return next.type === 'create-post' ? next : null
-  })
+    return next.type === "create-post" ? next : null;
+  });
 
   const { uploads, handleUpload, clear } = useUploadFiles({
     resize: {
@@ -49,68 +49,68 @@ export const DialogCreatePost = () => {
       quality: IMAGE_QUALITY,
       maxSizeInBytes: 5000 * 1024,
     },
-  })
+  });
 
-  const latestUpload = uploads[uploads.length - 1]
-  const isUploading = latestUpload?.status === 'uploading'
-  const uploadedUrl = latestUpload?.url
-  const previewUrl = latestUpload?.preview
+  const latestUpload = uploads[uploads.length - 1];
+  const isUploading = latestUpload?.status === "uploading";
+  const uploadedUrl = latestUpload?.url;
+  const previewUrl = latestUpload?.preview;
 
   const handleSelectImage = () => {
     if (isWeb) {
-      fileInputRef.current?.click()
+      fileInputRef.current?.click();
     } else {
       pickImageFromLibrary(false).then((result) => {
         if (result && !result.canceled && result.assets?.[0]) {
-          const asset = result.assets[0]
+          const asset = result.assets[0];
           const pseudoFile = {
             uri: asset.uri,
             name: asset.fileName || `image-${Date.now()}.jpg`,
-            type: asset.mimeType || asset.type || 'image/jpeg',
+            type: asset.mimeType || asset.type || "image/jpeg",
             size: asset.fileSize || 0,
             lastModified: Date.now(),
-          } as unknown as File
-          handleUpload([pseudoFile])
+          } as unknown as File;
+          handleUpload([pseudoFile]);
         }
-      })
+      });
     }
-  }
+  };
 
   const handleWebFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
-      handleUpload([file])
+      handleUpload([file]);
     }
-  }
+  };
 
   const handleRemoveImage = () => {
-    clear()
-  }
+    clear();
+  };
 
   const handleClose = () => {
-    setCaption('')
-    clear()
-    closeDialog()
-  }
+    setCaption("");
+    clear();
+    closeDialog();
+  };
 
   const handlePost = async () => {
     if (!userId) {
-      showError('You must be logged in to post')
-      return
+      showError("You must be logged in to post");
+      return;
     }
 
     if (!caption.trim() && !uploadedUrl) {
-      showError('Please add a caption or image')
-      return
+      showError("Please add a caption or image");
+      return;
     }
 
-    const trimmedCaption = caption.trim() || undefined
-    const imageUrl = uploadedUrl || ''
-    const postId = randomId()
+    const trimmedCaption = caption.trim() || undefined;
+    const imageUrl = uploadedUrl || "";
+    const postId = randomId();
 
-    setIsPosting(true)
+    setIsPosting(true);
     try {
-      await zero.mutate.post.insert({
+      zero.mutate.post.insert({
         id: postId,
         userId,
         caption: trimmedCaption,
@@ -118,19 +118,19 @@ export const DialogCreatePost = () => {
         hiddenByAdmin: false,
         commentCount: 0,
         createdAt: Date.now(),
-      })
+      });
 
-      showToast('Post created successfully!', { type: 'success' })
-      handleClose()
-      setIsPosting(false)
+      showToast("Post created successfully!", { type: "success" });
+      handleClose();
+      setIsPosting(false);
     } catch (error) {
-      console.info('Failed to create post:', error)
-      showError(error, 'Failed to create post')
-      setIsPosting(false)
+      console.info("Failed to create post:", error);
+      showError(error, "Failed to create post");
+      setIsPosting(false);
     }
-  }
+  };
 
-  const canPost = caption.trim() && uploadedUrl && !isUploading && !isPosting
+  const canPost = caption.trim() && uploadedUrl && !isUploading && !isPosting;
 
   return (
     <Dialog
@@ -138,7 +138,7 @@ export const DialogCreatePost = () => {
       minW={minW}
       open={!!state}
       onOpenChange={(open) => {
-        if (!open) handleClose()
+        if (!open) handleClose();
       }}
     >
       {isWeb && (
@@ -146,7 +146,7 @@ export const DialogCreatePost = () => {
           ref={fileInputRef}
           type="file"
           accept="image/*"
-          style={{ display: 'none' }}
+          style={{ display: "none" }}
           onChange={handleWebFileChange}
           data-testid="create-post-file-input"
         />
@@ -208,7 +208,12 @@ export const DialogCreatePost = () => {
                     r="$3"
                     onPress={handleRemoveImage}
                   >
-                    <Circle size={36} bg="$background" items="center" justify="center">
+                    <Circle
+                      size={36}
+                      bg="$background"
+                      items="center"
+                      justify="center"
+                    >
                       <XIcon size={20} color="$color11" />
                     </Circle>
                   </Pressable>
@@ -233,7 +238,12 @@ export const DialogCreatePost = () => {
                   gap="$3"
                   bg="$color2"
                 >
-                  <Circle size={56} bg="$color4" items="center" justify="center">
+                  <Circle
+                    size={56}
+                    bg="$color4"
+                    items="center"
+                    justify="center"
+                  >
                     <ImageIcon size={28} color="$color11" />
                   </Circle>
                   <YStack items="center" gap="$1">
@@ -241,7 +251,7 @@ export const DialogCreatePost = () => {
                       Add Image
                     </SizableText>
                     <SizableText size="$3" color="$color10">
-                      {isWeb ? 'Click to select' : 'Tap to select from library'}
+                      {isWeb ? "Click to select" : "Tap to select from library"}
                     </SizableText>
                   </YStack>
                 </YStack>
@@ -259,11 +269,11 @@ export const DialogCreatePost = () => {
               disabled={!canPost}
               data-testid="create-post-submit"
             >
-              {isPosting ? 'Posting...' : 'Post'}
+              {isPosting ? "Posting..." : "Post"}
             </ButtonSimple>
           </Dialog.Footer>
         </YStack>
       </ScrollView>
     </Dialog>
-  )
-}
+  );
+};

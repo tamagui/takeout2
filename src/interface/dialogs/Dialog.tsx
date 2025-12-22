@@ -1,5 +1,7 @@
 import { createGlobalContext, useAsyncEffect } from '@take-out/helpers'
 import { use, useRef } from 'react'
+import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller'
+import Animated, { useAnimatedStyle } from 'react-native-reanimated'
 import {
   DialogDescription,
   ScrollView,
@@ -32,6 +34,11 @@ const DialogComponent = ({
   ...props
 }: DialogProps & { minH?: number; minW?: number }) => {
   const dialogContentRef = useRef<TamaguiElement>(null)
+  const { height: keyboardHeight } = useReanimatedKeyboardAnimation()
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: keyboardHeight.value * 0.3 }], // adjust multiplier as needed
+  }))
 
   useHandleEscapeIf(!!open, () => {
     // TODO allow a throw AbortError that works with handleKeyboardEscape closeAllEscapables
@@ -118,8 +125,8 @@ const DialogComponent = ({
               opacity={0.8}
             />
           </DialogOverlay>
-
-          <DialogContent
+          <AnimatedDialogContent
+            style={animatedStyle}
             ref={dialogContentRef}
             minH={minH}
             minW={minW}
@@ -128,7 +135,7 @@ const DialogComponent = ({
             overflow="hidden"
           >
             {children}
-          </DialogContent>
+          </AnimatedDialogContent>
         </TamaguiDialog.Portal>
       </TamaguiDialog>
     </DialogOpenContext.Provider>
@@ -172,6 +179,8 @@ const DialogContent = styled(TamaguiDialog.Content, {
     outlineStyle: 'solid',
   },
 })
+
+const AnimatedDialogContent = Animated.createAnimatedComponent(DialogContent)
 
 const DialogTitle = styled(TamaguiDialog.Title, {
   fontFamily: '$mono',

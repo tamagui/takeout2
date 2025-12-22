@@ -227,6 +227,6 @@
     "access": "public"
   },
   "takeout": {
-    "onboarded": false
+    "onboarded": true
   }
 }

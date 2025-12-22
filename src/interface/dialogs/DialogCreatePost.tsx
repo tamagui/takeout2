@@ -151,7 +151,6 @@ export const DialogCreatePost = () => {
           data-testid="create-post-file-input"
         />
       )}
-
       <ScrollView showsVerticalScrollIndicator={false}>
         <YStack gap="$4">
           <Dialog.Header title="Create Post" hidden />

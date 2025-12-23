@@ -32,7 +32,7 @@ export const GlassView = memo(
               borderRadius,
               overflow: 'hidden',
             },
-            containerStyle,
+            containerStyle as any,
           ]}
         >
           {children}
@@ -68,13 +68,10 @@ export const GlassView = memo(
             shadowRadius: 2,
             elevation: 2,
           },
-          containerStyle,
+          containerStyle as any,
         ]}
       >
-        {/* content container - must be first so overlays can block it */}
-        <View items="center" justify="center" style={style as any}>
-          {children}
-        </View>
+        {children}
 
         {/* glass overlay layer with gradient-like effect */}
         <View

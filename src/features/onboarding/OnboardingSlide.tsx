@@ -10,7 +10,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { SizableText, View, YStack } from 'tamagui'
 
-import { GlassView } from '~/interface/effects/GlassView'
+import Glint from '~/interface/effects/Glint'
 
 import type {
   AnimatedCardWrapperProps,
@@ -290,14 +290,8 @@ function FeatureCard({ feature, size, width, height, horizontal }: FeatureCardPr
 
   if (horizontal) {
     return (
-      <GlassView
-        borderRadius={24}
-        intensity={40}
-        tint="light"
-        glassEffectStyle="regular"
-        backgroundColor="rgba(255, 255, 255, 0.12)"
-        containerStyle={{ width: cardWidth, height: cardHeight }}
-      >
+      <View style={{ width: cardWidth, height: cardHeight }} rounded={24}>
+        <Glint rounded={24} />
         <YStack flex={1} flexDirection="row" items="center" gap="$4" px="$5">
           <YStack
             width={48}
@@ -313,19 +307,13 @@ function FeatureCard({ feature, size, width, height, horizontal }: FeatureCardPr
             {title}
           </SizableText>
         </YStack>
-      </GlassView>
+      </View>
     )
   }
 
   return (
-    <GlassView
-      borderRadius={24}
-      intensity={40}
-      tint="light"
-      glassEffectStyle="regular"
-      backgroundColor="rgba(255, 255, 255, 0.12)"
-      containerStyle={{ width: cardWidth, height: cardHeight }}
-    >
+    <View style={{ width: cardWidth, height: cardHeight }} rounded={24}>
+      <Glint rounded={24} />
       <YStack flex={1} items="center" justify="center" gap="$3" p="$5">
         <YStack
           width={64}
@@ -347,6 +335,6 @@ function FeatureCard({ feature, size, width, height, horizontal }: FeatureCardPr
           {title}
         </SizableText>
       </YStack>
-    </GlassView>
+    </View>
   )
 }

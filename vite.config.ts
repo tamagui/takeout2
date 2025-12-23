@@ -121,6 +121,18 @@ export default {
             bundler: 'metro',
             bundlerOptions: {
               watchman: false, // had some slowness using this
+              // TODO: This is a temporary fix for the Metro 0.82/0.83 compatibility issue.
+              // Exclude server-only packages from native bundle
+              excludeModules: ['@vxrn/mdx', '@vxrn/mdx/**'],
+              // Fix Metro 0.82/0.83 compatibility - workerPath was removed in 0.83 but vxrn still uses 0.82
+              defaultConfigOverrides: (config) => ({
+                ...config,
+                transformer: {
+                  ...config?.transformer,
+                  workerPath:
+                    config?.transformer?.workerPath || 'metro/src/DeltaBundler/Worker',
+                },
+              }),
               babelConfigOverrides: (config) => {
                 return {
                   ...config,

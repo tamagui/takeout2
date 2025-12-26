@@ -70,20 +70,18 @@ export const Gallery = () => {
   const [lastMediaUrls, setLastMediaUrls] = useState(mediaUrls)
   const hidden = !items.length
   const currentUrl = mediaUrls[page] || lastMediaUrls[page]
-  const currentItem = items[page]
   const isVideo = currentUrl ? isVideoFile(currentUrl) : false
   const paginate = (going: number) => {
     setPage([page + going, going])
   }
 
-  if (mediaUrls.length && lastMediaUrls !== mediaUrls) {
-    setLastMediaUrls(mediaUrls)
-  }
+  useEffect(() => {
+    if (mediaUrls.length) {
+      setLastMediaUrls(mediaUrls)
+    }
+  }, [galleryItems])
 
   const [fullyHidden, setFullyHidden] = useState(true)
-  if (!hidden && fullyHidden) {
-    setFullyHidden(false)
-  }
 
   useEffect(() => {
     if (hidden) {
@@ -93,17 +91,21 @@ export const Gallery = () => {
       return () => {
         clearTimeout(tm)
       }
+    } else {
+      setFullyHidden(false)
     }
   }, [hidden])
 
   const firstItem = galleryItems?.firstItem
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (firstItem) {
-      setPage([items.findIndex((x) => x.id === firstItem), 0])
+    if (firstItem && galleryItems?.items) {
+      const index = galleryItems.items.findIndex((x) => x.id === firstItem)
+      if (index >= 0) {
+        setPage([index, 0])
+      }
     }
-  }, [firstItem])
+  }, [firstItem, galleryItems])
 
   return (
     <Portal stackZIndex={1_000_000}>
@@ -213,7 +215,6 @@ const GalleryButton = ({
       size="large"
       position="absolute"
       circular
-      variant="floating"
       z={100}
       {...(inactive && {
         opacity: 0,

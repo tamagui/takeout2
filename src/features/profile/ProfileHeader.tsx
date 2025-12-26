@@ -9,7 +9,6 @@ import { Avatar } from '~/interface/avatars/Avatar'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { PencilSimpleIcon } from '~/interface/icons/phosphor/PencilSimpleIcon'
 import { ShareFatIcon } from '~/interface/icons/phosphor/ShareFatIcon'
-import { SocialLinks } from '~/interface/social-media/platforms'
 import { Text } from '~/interface/text/Text'
 
 import type { User } from '~/data/types'
@@ -20,90 +19,73 @@ interface ProfileHeaderProps {
   postsCount?: number
 }
 
+const StatItem = ({ value, label }: { value: string; label: string }) => (
+  <YStack items="center" gap="$1">
+    <SizableText size="$6" fontWeight="700">
+      {value}
+    </SizableText>
+    <SizableText size="$2" color="$color11">
+      {label}
+    </SizableText>
+  </YStack>
+)
+
 export const ProfileHeader = memo(
   ({ userInfo, isOwnProfile, postsCount }: ProfileHeaderProps) => {
     const { shareProfile } = useShareProfile()
-    const socialLinks = {
-      twitter: `@${userInfo?.username}`,
-      facebook: `@${userInfo?.username}`,
-      instagram: `@${userInfo?.username}`,
-      tiktok: `@${userInfo?.username}`,
-    }
 
-    // Handle share functionality
     const handleShare = async () => {
       if (!userInfo) return
-
       const publicProfileUrl = `${SERVER_URL}/u/${userInfo.username}`
       await shareProfile(userInfo, publicProfileUrl)
     }
 
     return (
-      <View py="$3">
-        <YStack gap="$4">
-          {/* Profile Info Section */}
-          <XStack items="center" gap="$5">
-            <Avatar
-              image={userInfo?.image || ''}
-              name={userInfo?.name ?? userInfo?.username ?? 'User'}
-              size={64}
-            />
+      <View py="$6">
+        <YStack gap="$5" items="center">
+          <Avatar
+            image={userInfo?.image || ''}
+            name={userInfo?.name ?? userInfo?.username ?? 'User'}
+            size={120}
+          />
 
-            <YStack gap="$1" flex={1} pr="$4">
-              {/* Username */}
-              <Text>{userInfo?.username}</Text>
-              {/* Stats */}
-              <XStack justify="space-between">
-                <YStack items="flex-start">
-                  <SizableText size="$6" fontWeight="700">
-                    {formatCount(postsCount || 0)}
-                  </SizableText>
-                  <SizableText size="$2" color="$color11">
-                    Posts
-                  </SizableText>
-                </YStack>
-                <YStack items="flex-start">
-                  <SizableText size="$6" fontWeight="700">
-                    {formatReactionCount(1200)}
-                  </SizableText>
-                  <SizableText size="$2" color="$color11">
-                    Followers
-                  </SizableText>
-                </YStack>
-                <YStack items="flex-start">
-                  <SizableText size="$6" fontWeight="700">
-                    {formatReactionCount(14555)}
-                  </SizableText>
-                  <SizableText size="$2" color="$color11">
-                    Following
-                  </SizableText>
-                </YStack>
-              </XStack>
-            </YStack>
+          <YStack gap="$2" items="center">
+            <Text size="$7" fontWeight="600">
+              {userInfo?.name || userInfo?.username}
+            </Text>
+            {userInfo?.name && (
+              <SizableText size="$4" color="$color11">
+                @{userInfo?.username}
+              </SizableText>
+            )}
+          </YStack>
+
+          <XStack gap="$8" py="$2">
+            <StatItem value={formatCount(postsCount || 0)} label="Posts" />
+            <StatItem value={formatReactionCount(1200)} label="Followers" />
+            <StatItem value={formatReactionCount(14555)} label="Following" />
           </XStack>
-          {/* Social Links - Stacked Avatar Style */}
-          <SocialLinks links={socialLinks} />
-          <XStack gap="$2" flex={1}>
+
+          <XStack gap="$3" pt="$2">
             <ButtonSimple
               size="medium"
-              flex={1}
-              glass
+              variant="outlined"
               onPress={handleShare}
               icon={<ShareFatIcon size={16} color="$color12" />}
             >
               Share
             </ButtonSimple>
-            <ButtonSimple
-              size="medium"
-              flex={1}
-              glass
-              onPress={() => router.push('/settings/edit-profile')}
-              icon={<PencilSimpleIcon size={16} color="$color12" />}
-            >
-              Edit Profile
-            </ButtonSimple>
+            {isOwnProfile && (
+              <ButtonSimple
+                size="medium"
+                variant="outlined"
+                onPress={() => router.push('/settings/edit-profile')}
+                icon={<PencilSimpleIcon size={16} color="$color12" />}
+              >
+                Edit Profile
+              </ButtonSimple>
+            )}
           </XStack>
-          <XStack></XStack>
         </YStack>
       </View>
     )

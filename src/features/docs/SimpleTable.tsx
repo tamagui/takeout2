@@ -20,17 +20,6 @@ const TableRow = styled(XStack, {
   } as const,
 })
 
-const TableCellContainer = styled(YStack, {
-  p: '$3',
-  variants: {
-    head: {
-      true: {
-        bg: '$color2',
-      },
-    },
-  } as const,
-})
-
 const TableCellText = styled(Paragraph, {
   size: '$4',
   variants: {
@@ -42,25 +31,35 @@ const TableCellText = styled(Paragraph, {
   } as const,
 })
 
-export function SimpleTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
-  const colCount = headers.length
-  const colWidth = `${100 / colCount}%` as `${number}%`
+const TableCellFrame = styled(XStack, {
+  p: '$3',
+  flex: 1,
+  flexBasis: 0,
+  variants: {
+    head: {
+      true: {
+        bg: '$color2',
+      },
+    },
+  } as const,
+})
 
+export function SimpleTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
   return (
     <TableFrame>
       <TableRow>
         {headers.map((header, i) => (
-          <TableCellContainer key={i} head width={colWidth}>
+          <TableCellFrame key={i} head>
             <TableCellText head>{header}</TableCellText>
-          </TableCellContainer>
+          </TableCellFrame>
         ))}
       </TableRow>
       {rows.map((row, i) => (
         <TableRow key={i} last={i === rows.length - 1}>
           {row.map((cell, j) => (
-            <TableCellContainer key={j} width={colWidth}>
+            <TableCellFrame key={j}>
               <TableCellText>{cell}</TableCellText>
-            </TableCellContainer>
+            </TableCellFrame>
           ))}
         </TableRow>
       ))}

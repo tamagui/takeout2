@@ -1,7 +1,8 @@
 import { Link, type Href } from 'one'
-import { ScrollView, SizableText, View, XStack, YStack } from 'tamagui'
+import { Linking } from 'react-native'
+import { isWeb, ScrollView, SizableText, View, XStack, YStack } from 'tamagui'
 
-import { APP_NAME_LOWERCASE } from '~/constants/app'
+import { APP_NAME_LOWERCASE, DOMAIN } from '~/constants/app'
 import { useLogout } from '~/features/auth/useLogout'
 import { useUser } from '~/features/user/useUser'
 import { Pressable } from '~/interface/buttons/Pressable'
@@ -97,9 +98,26 @@ const renderItem = (item: SettingItem) => {
   }
 
   if (item.href) {
+    if (item.external && !isWeb) {
+      return (
+        <Pressable
+          key={item.id}
+          onPress={() => Linking.openURL(`https://${DOMAIN}${item.href}`)}
+        >
+          <ItemContent item={item} />
+        </Pressable>
+      )
+    }
     return (
-      <Link key={item.id} href={item.href} target={item.external ? '_blank' : undefined}>
-        <ItemContent item={item} />
+      <Link
+        key={item.id}
+        href={item.href}
+        target={item.external ? '_blank' : undefined}
+        asChild
+      >
+        <Pressable>
+          <ItemContent item={item} />
+        </Pressable>
       </Link>
     )
   }

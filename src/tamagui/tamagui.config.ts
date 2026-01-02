@@ -55,7 +55,7 @@ const heading = createSystemFont({
 const mono = createSystemFont({
   sizeLineHeight: (size) => (size >= 16 ? size * 1.2 + 8 : size * 1.15 + 5),
   font: {
-    family: isWeb ? '"JetBrains Mono", monospace' : 'JetBrains Mono',
+    family: isWeb ? '"JetBrains Mono", monospace' : 'Nunito',
     weight: {
       0: '400',
     },
@@ -117,7 +117,7 @@ export const config = createTamagui({
   settings: {
     mediaQueryDefaultActive,
     defaultFont: 'body',
-    // TODO: this causes issues with $theme-dark/light on native
+    // TODO: this causes issues with $theme-dark/light on native (fixed on v2)
     fastSchemeChange: false,
     shouldAddPrefersColorThemes: true,
     disableRootThemeClass: true, // vxrn color scheme handles this

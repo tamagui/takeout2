@@ -8,7 +8,7 @@ export function setStorageDriver(d: StorageDriver): void {
 
 export function getStorageDriver(): StorageDriver | null {
   if (driver) return driver
-  if (typeof localStorage !== 'undefined' && typeof localStorage.getItem === 'function') {
+  if (typeof localStorage !== 'undefined') {
     return {
       getItem: (key) => localStorage.getItem(key),
       setItem: (key, value) => localStorage.setItem(key, value),

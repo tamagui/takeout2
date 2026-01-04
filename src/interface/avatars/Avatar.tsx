@@ -6,6 +6,17 @@ import { Image } from '~/interface/image/Image'
 import { UserIcon } from '../icons/phosphor/UserIcon'
 import { getSimpleSize, type SimpleSize } from './sizes'
 
+export type AvatarProps = Omit<CircleProps, 'size'> & {
+  image: string | null | undefined
+  name?: string
+  size?: number | SimpleSize
+  active?: boolean
+  isOnline?: boolean | null
+  disableBorder?: boolean
+  gradient?: boolean
+  gradientColors?: string[]
+}
+
 export const Avatar = memo(
   ({
     image,
@@ -14,15 +25,10 @@ export const Avatar = memo(
     active,
     isOnline,
     disableBorder,
+    gradient,
+    gradientColors,
     ...rest
-  }: CircleProps & {
-    image: string | null | undefined
-    name?: string
-    size?: number | SimpleSize
-    active?: boolean
-    isOnline?: boolean | null
-    disableBorder?: boolean
-  }) => {
+  }: AvatarProps) => {
     const size = getSimpleSize(sizeIn)
     const isBig = size > 40
     const scale = isBig ? size / 42 : size / 21

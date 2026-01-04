@@ -1,6 +1,7 @@
 import { useEmitter } from '@take-out/helpers'
 import { memo, useCallback, useRef, useState } from 'react'
 import { FlatList, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { AnimatePresence, SizableText, Spinner, View, YStack } from 'tamagui'
 
 import { PostCard } from '~/features/feed/PostCard'
@@ -18,6 +19,7 @@ export const HomePage = memo(() => {
   const { posts, loadMore, isLoading, hasMore } = usePostsPaginated()
   const [showScrollToTop, setShowScrollToTop] = useState(false)
   const headerHeight = 60
+  const insets = useSafeAreaInsets()
 
   const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const scrollY = event.nativeEvent.contentOffset.y
@@ -64,19 +66,17 @@ export const HomePage = memo(() => {
 
   return (
     <PageLayout>
-      <View flex={1}>
+      <View flex={1} px="$3">
         <AnimatePresence>
           {isLoading && (
             <YStack
               key="studio-shimmer"
               animation="200ms"
-              exitStyle={{
-                opacity: 0,
-              }}
+              exitStyle={{ opacity: 0 }}
               opacity={1}
               z={999}
               position="absolute"
-              t={headerHeight}
+              t={headerHeight + insets.top}
               l={0}
               r={0}
               b={0}
@@ -97,9 +97,7 @@ export const HomePage = memo(() => {
           onScroll={handleScroll}
           scrollEventThrottle={16}
           onEndReachedThreshold={0.5}
-          contentContainerStyle={{
-            paddingBottom: 100,
-          }}
+          contentContainerStyle={{ paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
           contentInsetAdjustmentBehavior="automatic"
         />

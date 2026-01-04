@@ -25,21 +25,22 @@ export const GradientBackground = ({
 
   if (useImage) {
     return (
-      <ImageBackground
-        source={require('../../../assets/background.png')}
-        style={StyleSheet.absoluteFillObject}
-        resizeMode="cover"
-      >
+      <>
         <View flex={1} pb={useInsets ? inset.bottom : 0}>
           {/* Content */}
           {children}
         </View>
+        <ImageBackground
+          source={require('../../../assets/background.png')}
+          style={[StyleSheet.absoluteFillObject, { zIndex: -2 }]}
+          resizeMode="cover"
+        />
         <GradientBlurView
           tint={isDark ? 'dark' : 'light'}
           width={width}
           height={height / 1.5}
         />
-      </ImageBackground>
+      </>
     )
   }
 
@@ -52,7 +53,7 @@ export const GradientBackground = ({
         locations={[0, 0.3, 0.6, 1]}
         start={[0, 0]}
         end={[1, 1]}
-        style={StyleSheet.absoluteFill}
+        style={[StyleSheet.absoluteFill, { zIndex: -2 }]}
       />
 
       {/* Accent gradient overlay - purple/pink highlights */}
@@ -61,7 +62,7 @@ export const GradientBackground = ({
         locations={[0, 0.5, 1]}
         start={[0, 0]}
         end={[1, 1]}
-        style={StyleSheet.absoluteFill}
+        style={[StyleSheet.absoluteFill, { zIndex: -2 }]}
       />
 
       {/* Content */}

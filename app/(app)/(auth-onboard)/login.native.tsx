@@ -79,7 +79,6 @@ export const LoginPage = () => {
         px="$4"
         pb="$4"
         justify="flex-end"
-        z={999}
       >
         <H2 text="center" fontFamily="$heading">
           Login to {APP_NAME}

@@ -28,7 +28,7 @@ export const GradientBlurView = ({
     <View
       position="absolute"
       b={0}
-      z={2}
+      z={-1}
       overflow="hidden"
       {...viewProps}
       pointerEvents="none"

@@ -10,6 +10,7 @@ import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { showError } from '~/interface/dialogs/actions'
 import { isSmallScreen } from '~/interface/dimensions'
 import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
+import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter.native'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 
 export const OtpPage = () => {
@@ -21,6 +22,8 @@ export const OtpPage = () => {
   const [otpKey, setOtpKey] = useState(0)
 
   const isPhone = params.method === 'phone'
+
+  const isDisabled = otpCode.length !== 6 || loading
 
   const displayValue =
     params.value || (isPhone ? '1 (203) 555-2415' : 'email@example.com')
@@ -108,17 +111,20 @@ export const OtpPage = () => {
       }
       descriptionSecondLine={displayValue}
       bottom={
-        <ButtonSimple
-          glass
-          width="100%"
-          data-testid="verify-otp-button"
-          size="large"
-          // No need func here because we have onCodeFilled in OtpInput
-          disabled={otpCode.length !== 6 || loading}
-          onPress={handleContinue}
-        >
-          {loading ? 'Verifying...' : 'Next'}
-        </ButtonSimple>
+        <KeyboardStickyFooter>
+          <ButtonSimple
+            glass
+            glassTint={isDisabled ? 'transparent' : 'darkslateblue'}
+            width="100%"
+            data-testid="verify-otp-button"
+            size="large"
+            // No need func here because we have onCodeFilled in OtpInput
+            disabled={isDisabled}
+            onPress={handleContinue}
+          >
+            {loading ? 'Verifying...' : 'Next'}
+          </ButtonSimple>
+        </KeyboardStickyFooter>
       }
     >
       <YStack items="center" gap="$6">
@@ -132,7 +138,7 @@ export const OtpPage = () => {
           isError={isError}
         />
         {timer.count > 0 ? (
-          <SizableText size="$4" color="$color9">
+          <SizableText size="$4" color="$color11">
             Resend Code in ({timer.count})
           </SizableText>
         ) : (

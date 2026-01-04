@@ -30,6 +30,7 @@ type ButtonSimpleAdditionalProps = {
   fixedWidth?: boolean
   fontFamily?: string
   glass?: boolean
+  glassTint?: string
   glow?: boolean
   icon?: any
   iconAfter?: boolean
@@ -53,7 +54,7 @@ const context = createStyledContext({
   active: false,
   cursor: 'default',
   size: 'medium' as ButtonSizes,
-  fontFamily: '$mono' as FontFamilyTokens,
+  fontFamily: '$nunito' as FontFamilyTokens,
   circular: false,
   variant: 'default' as ButtonVariants,
 })
@@ -152,7 +153,7 @@ const ButtonFrame = styled(XStack, {
         px: '$2.5',
       },
       large: {
-        minH: 42,
+        minH: 50,
         minW: buttonWidths.large,
         rounded: buttonBorderRadius.large,
         gap: '$3',
@@ -219,9 +220,9 @@ const ButtonFrame = styled(XStack, {
 
 const ButtonText = styled(Text, {
   context,
-  color: '$color11',
+  color: '$color',
   cursor: 'default',
-  fontFamily: '$mono',
+  fontFamily: '$nunito',
   fontWeight: '500',
   select: 'none',
   y: IS_SAFARI ? 1 : 0,
@@ -327,8 +328,9 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
       disabled,
       disableGlint,
       disableBackground,
-      fontFamily = '$mono',
+      fontFamily = '$nunito',
       glass,
+      glassTint,
       glow,
       icon,
       iconAfter,
@@ -403,7 +405,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
       >
         {shouldShowGlint() && <ButtonGlint bottomShadow />}
 
-        {variant !== 'outlined' && !disableBackground && <ButtonBackground />}
+        {variant !== 'outlined' && !disableBackground && !glass && <ButtonBackground />}
         {variant === 'outlined' && <ButtonOutline />}
 
         {!iconAfter && iconElement}
@@ -421,6 +423,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
         glassEffectStyle="clear"
         isInteractive={isInteractive}
         borderRadius={rest.circular ? 100 : undefined}
+        tintColor={glassTint}
         containerStyle={
           rest.circular
             ? {
@@ -502,10 +505,10 @@ const ButtonBackground = styled(View, {
     opacity: 0.05,
   },
 
-  // '$theme-light': {
-  //   borderWidth: 1,
-  //   borderColor: '$color5',
-  // },
+  '$theme-light': {
+    borderWidth: 1,
+    borderColor: '$color5',
+  },
 
   variants: {
     ...buttonFrameVariants,
@@ -520,11 +523,10 @@ const ButtonBackground = styled(View, {
           bg: '$color4',
           opacity: 1,
 
-          // TODO tamagui bug: applying on dark mode!
-          // '$theme-light': {
-          //   bg: '$color11',
-          //   opacity: 1,
-          // },
+          '$theme-light': {
+            bg: '$color11',
+            opacity: 1,
+          },
         },
 
         '$group-button-press': {

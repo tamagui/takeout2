@@ -1,19 +1,22 @@
-import React, { memo, useEffect, useRef, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import {
-  Input as TamaguiInput,
-  type InputProps,
+  AnimatePresence,
+  isWeb,
   SizableText,
+  Input as TamaguiInput,
   useTheme,
   useWindowDimensions,
   View,
   XStack,
   YStack,
+  type InputProps,
 } from 'tamagui'
 
+import { useIsDark } from '~/features/theme/useIsDark'
 import { getClipboardText } from '~/helpers/clipboard'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { GlassView } from '~/interface/effects/GlassView'
 import { ClipboardIcon } from '~/interface/icons/phosphor/ClipboardIcon'
-import { InfoIcon } from '~/interface/icons/phosphor/InfoIcon'
 
 export interface IOtpInput {
   otpCount?: number
@@ -38,6 +41,7 @@ export const OtpInput = memo(function OtpInput({
 }: IOtpInput) {
   const { color, color2, color3, color02, red10 } = useTheme()
   const { width: windowWidth } = useWindowDimensions()
+  const isDark = useIsDark()
   const width = Math.min(340, windowWidth)
 
   const inputRef = useRef<Array<TamaguiInput>>([])
@@ -52,7 +56,7 @@ export const OtpInput = memo(function OtpInput({
     return Array(otpCount).fill('')
   })
 
-  const inputWidth = (width - 58) / otpCount
+  const inputWidth = (width - 48) / otpCount
 
   const handlePasteValue = (value: string) => {
     const digits = value.replace(/\D/g, '').slice(0, otpCount)
@@ -139,46 +143,82 @@ export const OtpInput = memo(function OtpInput({
 
             return (
               <View key={i} position="relative">
-                <TamaguiInput
-                  testID={testId ? `${testId}-${i}` : undefined}
-                  width={inputWidth}
-                  height={inputWidth}
-                  rounded={12}
-                  keyboardType="number-pad"
-                  ref={(ref) => {
-                    if (ref) inputRef.current[i] = ref
-                  }}
-                  value={otpValue[i]}
-                  onChangeText={(v: string) => onFocusNext(v, i)}
-                  onKeyPress={(e: any) => onFocusPrevious(e.nativeEvent.key, i)}
-                  textContentType="oneTimeCode"
-                  autoFocus={autoFocus && i === 0}
-                  {...inputProps}
-                />
-                <View
-                  position="absolute"
-                  inset={0}
-                  items="center"
-                  justify="center"
-                  width={inputWidth}
-                  height={inputWidth}
-                  bg={color2}
-                  rounded={12}
-                  borderColor={color3 as any}
-                  borderWidth={1}
-                  pointerEvents="none"
-                >
-                  {otpValue[i] !== '' && (
-                    <SizableText
-                      fontWeight="500"
-                      fontSize={18}
-                      color={color as any}
+                {isWeb ? (
+                  <>
+                    <TamaguiInput
+                      testID={testId ? `${testId}-${i}` : undefined}
+                      width={inputWidth}
+                      height={inputWidth}
+                      rounded={12}
+                      keyboardType="number-pad"
+                      ref={(ref) => {
+                        if (ref) inputRef.current[i] = ref
+                      }}
+                      value={otpValue[i]}
+                      onChangeText={(v: string) => onFocusNext(v, i)}
+                      onKeyPress={(e: any) => onFocusPrevious(e.nativeEvent.key, i)}
+                      textContentType="oneTimeCode"
+                      autoFocus={autoFocus && i === 0}
+                      {...inputProps}
+                    />
+                    <View
                       position="absolute"
+                      inset={0}
+                      items="center"
+                      justify="center"
+                      width={inputWidth}
+                      height={inputWidth}
+                      bg={color2}
+                      rounded={12}
+                      borderColor={color3 as any}
+                      borderWidth={1}
+                      pointerEvents="none"
                     >
-                      {otpValue[i]}
-                    </SizableText>
-                  )}
-                </View>
+                      {otpValue[i] !== '' && (
+                        <SizableText
+                          fontWeight="500"
+                          fontSize={18}
+                          color={color as any}
+                          position="absolute"
+                        >
+                          {otpValue[i]}
+                        </SizableText>
+                      )}
+                    </View>
+                  </>
+                ) : (
+                  <GlassView
+                    borderRadius={12}
+                    intensity={40}
+                    tint={isDark ? 'light' : 'light'}
+                    tintColor={isFocused ? 'darkslateblue' : 'transparent'}
+                    style={{
+                      flex: 1,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <TamaguiInput
+                      unstyled
+                      testID={testId ? `${testId}-${i}` : undefined}
+                      height={inputWidth}
+                      width={inputWidth}
+                      color={color}
+                      keyboardType="number-pad"
+                      ref={(ref) => {
+                        if (ref) inputRef.current[i] = ref
+                      }}
+                      value={otpValue[i]}
+                      onChangeText={(v: string) => onFocusNext(v, i)}
+                      onKeyPress={(e: any) => onFocusPrevious(e.nativeEvent.key, i)}
+                      textContentType="oneTimeCode"
+                      autoFocus={autoFocus && i === 0}
+                      fontWeight="bold"
+                      text="center"
+                      {...inputProps}
+                    />
+                  </GlassView>
+                )}
               </View>
             )
           })}
@@ -194,7 +234,7 @@ export const OtpInput = memo(function OtpInput({
           disabled: true,
         })}
       >
-        <ButtonSimple.Text color="$color9">Paste code</ButtonSimple.Text>
+        <ButtonSimple.Text color="$color11">Paste code</ButtonSimple.Text>
       </ButtonSimple>
     </YStack>
   )

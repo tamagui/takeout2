@@ -1,8 +1,8 @@
-import { useParams, useRouter, createRoute } from 'one'
+import { createRoute, useParams, useRouter } from 'one'
 import { memo, useLayoutEffect, useRef, useState } from 'react'
 import { Keyboard } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Checkbox, SizableText, useEvent, XStack, YStack } from 'tamagui'
+import { Checkbox, SizableText, useEvent, useTheme, XStack, YStack } from 'tamagui'
 
 import { APP_NAME, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '~/constants/app'
 import { validateLoginOtpCode } from '~/features/auth/client/otpLogin'
@@ -18,6 +18,7 @@ import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { DeviceMobileSpeakerIcon } from '~/interface/icons/phosphor/DeviceMobileSpeakerIcon'
 import { EnvelopeSimpleIcon } from '~/interface/icons/phosphor/EnvelopeSimpleIcon'
+import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter.native'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 
 import type React from 'react'
@@ -32,11 +33,13 @@ export const SignupPage = memo(() => {
   const { top } = useSafeAreaInsets()
   const router = useRouter()
   const inputRef = useRef<Input>(null)
-  const [inputValue, setInputValue] = useState('')
+  const [inputValue, setInputValue] = useState<string>('')
   const isPhone = method === 'phone'
   const Icon = isPhone ? DeviceMobileSpeakerIcon : EnvelopeSimpleIcon
   const [loading, setLoading] = useState<boolean>(false)
-  const [smsConsent, setSmsConsent] = useState(false)
+  const [smsConsent, setSmsConsent] = useState<boolean>(false)
+
+  const isDisabled = !inputValue.trim() || (isPhone && !smsConsent)
 
   useLayoutEffect(() => {
     const timer = setTimeout(() => {
@@ -138,24 +141,28 @@ export const SignupPage = memo(() => {
       description={getMethodDescription()}
       disableScroll={!isSmallScreen}
       bottom={
-        <ButtonSimple
-          glass
-          data-testid="next-button"
-          size="large"
-          pressStyle={{
-            scale: 0.97,
-            opacity: 0.9,
-          }}
-          onPress={handleContinue}
-          disabled={!inputValue.trim() || (isPhone && !smsConsent)}
-        >
-          {loading ? 'Processing...' : 'Next'}
-        </ButtonSimple>
+        <KeyboardStickyFooter>
+          <ButtonSimple
+            glass
+            glassTint={isDisabled ? 'transparent' : 'darkslateblue'}
+            data-testid="next-button"
+            size="large"
+            pressStyle={{
+              scale: 0.97,
+              opacity: 0.9,
+            }}
+            onPress={handleContinue}
+            disabled={isDisabled}
+          >
+            {loading ? 'Processing...' : 'Next'}
+          </ButtonSimple>
+        </KeyboardStickyFooter>
       }
     >
       <YStack gap="$4">
         <Input
           data-testid={isPhone ? 'phone-input' : 'email-input'}
+          glass
           ref={inputRef}
           placeholder={placeholder}
           value={isPhone ? formatPhoneNumber(inputValue) : inputValue}

@@ -40,7 +40,6 @@ export const StepPageLayout = ({
   disableBackButton = false,
   hideBackButton = false,
   disableScroll = false,
-  linearGradientFooter = false,
   disableKeyboardAvoidingView = false,
   keyboardOffset = 0,
 }: StepPageProps) => {
@@ -48,7 +47,6 @@ export const StepPageLayout = ({
     <BaseStepPageLayout
       bottom={bottom}
       disableScroll={disableScroll}
-      linearGradientFooter={linearGradientFooter}
       disableKeyboardAvoidingView={disableKeyboardAvoidingView}
       hideBackButton={hideBackButton}
       keyboardOffset={keyboardOffset}

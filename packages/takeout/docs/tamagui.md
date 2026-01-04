@@ -444,7 +444,7 @@ The Button component has custom default props:
 
 ```tsx
 {
-  fontFamily: '$mono',
+  fontFamily: '$nunito',
   cursor: 'default',
   focusVisibleStyle: {
     outlineWidth: 3,

@@ -125,7 +125,7 @@ export function Onboarding({ slides, onComplete }: OnboardingProps) {
           </YStack>
         </YStack>
 
-        <Animated.View
+        {/* <Animated.View
           style={[{ ...StyleSheet.absoluteFillObject, zIndex: 100 }, blurOverlayStyle]}
           pointerEvents="none"
         >
@@ -134,7 +134,7 @@ export function Onboarding({ slides, onComplete }: OnboardingProps) {
             tint="dark"
             style={StyleSheet.absoluteFill}
           />
-        </Animated.View>
+        </Animated.View> */}
       </View>
     </Theme>
   )

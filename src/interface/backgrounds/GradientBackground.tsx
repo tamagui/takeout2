@@ -2,7 +2,9 @@ import { LinearGradient } from '@tamagui/linear-gradient'
 import { BlurView } from 'expo-blur'
 import { ImageBackground, StyleSheet } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useTheme, useWindowDimensions, View } from 'tamagui'
+import { useWindowDimensions, View } from 'tamagui'
+
+import { useIsDark } from '~/features/theme/useIsDark'
 
 import { GradientBlurView } from '../effects/GradientBlurView'
 
@@ -17,8 +19,8 @@ export const GradientBackground = ({
   useInsets = true,
   children,
 }: GradientBackgroundProps) => {
-  const theme = useTheme()
   const inset = useSafeAreaInsets()
+  const isDark = useIsDark()
   const { width, height } = useWindowDimensions()
 
   if (useImage) {
@@ -32,35 +34,43 @@ export const GradientBackground = ({
           {/* Content */}
           {children}
         </View>
-        <GradientBlurView tint="light" intensity={60} width={width} height={height / 2} />
+        <GradientBlurView
+          tint={isDark ? 'dark' : 'light'}
+          width={width}
+          height={height / 1.5}
+        />
       </ImageBackground>
     )
   }
 
-  // Generated gradient background
+  // Generated gradient background - dark purple/blue theme
   return (
-    <View flex={1}>
+    <View flex={1} pb={useInsets ? inset.bottom : 0}>
+      {/* Base gradient - deep navy to dark purple */}
       <LinearGradient
-        colors={[
-          theme.blue1.get(),
-          theme.accent2.get(),
-          theme.green1.get(),
-          theme.yellow1.get(),
-        ]}
+        colors={['#1a1a3e', '#252555', '#2d2a5a', '#1e1e45']}
         locations={[0, 0.3, 0.6, 1]}
         start={[0, 0]}
         end={[1, 1]}
         style={StyleSheet.absoluteFill}
       />
 
-      {/* Subtle overlay gradient */}
+      {/* Accent gradient overlay - purple/pink highlights */}
       <LinearGradient
-        colors={[theme.background.get() + '40', 'transparent', theme.color2.get() + '30']}
+        colors={['transparent', 'rgba(90, 70, 180, 0.3)', 'rgba(160, 100, 180, 0.2)']}
+        locations={[0, 0.5, 1]}
+        start={[0, 0]}
+        end={[1, 1]}
         style={StyleSheet.absoluteFill}
       />
 
       {/* Content */}
       {children}
+      <GradientBlurView
+        tint={isDark ? 'dark' : 'light'}
+        width={width}
+        height={height / 1.5}
+      />
     </View>
   )
 }

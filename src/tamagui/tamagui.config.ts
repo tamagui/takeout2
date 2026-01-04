@@ -32,6 +32,7 @@ const baseFontSizes = {
 
 const body = createSystemFont({
   font: {
+    family: isWeb ? '"Nunito, system-ui, sans-serif"' : 'Nunito-Regular',
     size: baseFontSizes,
     weight: {
       0: '400',
@@ -43,19 +44,20 @@ const body = createSystemFont({
 
 const heading = createSystemFont({
   font: {
+    family: isWeb ? '"Nunito, system-ui, sans-serif"' : 'Nunito-SemiBold',
     size: baseFontSizes,
     weight: {
-      0: '600',
+      0: '700',
     },
   },
   sizeSize: (x) => Math.round(x * 1),
   sizeLineHeight: (x) => Math.round(x * 1.12 + 5),
 })
 
-const mono = createSystemFont({
+const nunito = createSystemFont({
   sizeLineHeight: (size) => (size >= 16 ? size * 1.2 + 8 : size * 1.15 + 5),
   font: {
-    family: isWeb ? '"JetBrains Mono", monospace' : 'Nunito',
+    family: isWeb ? '"Nunito, system-ui, sans-serif"' : 'Nunito-Regular',
     weight: {
       0: '400',
     },
@@ -103,7 +105,7 @@ export const config = createTamagui({
   fonts: {
     body,
     heading,
-    mono,
+    nunito,
   },
 
   selectionStyles: (theme) =>

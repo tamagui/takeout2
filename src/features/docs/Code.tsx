@@ -4,7 +4,7 @@ export function CodeInline({ children }: { children: any }) {
   return (
     <SizableText
       tag="code"
-      fontFamily="$mono"
+      fontFamily="$nunito"
       fontSize="$3"
       bg="$color0075"
       px="$1.5"

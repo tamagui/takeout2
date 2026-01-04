@@ -8,7 +8,7 @@ export const Logo = ({ height = 24 }: { height?: number }) => {
       <LogoIcon size={height} />
       <SizableText
         select="none"
-        fontFamily="$mono"
+        fontFamily="$nunito"
         fontSize={height * 0.65}
         lineHeight={height * 0.65}
         $maxMD={{ display: 'none' }}

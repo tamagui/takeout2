@@ -6,7 +6,7 @@ import { ListItemIcon } from './ListItemIcon'
 
 const ListTitleText = styled(Text, {
   context: ListItemContext,
-  fontFamily: '$mono',
+  fontFamily: '$nunito',
   textTransform: 'uppercase',
   opacity: 0.225,
   select: 'none',

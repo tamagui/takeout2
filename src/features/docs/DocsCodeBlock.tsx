@@ -40,11 +40,11 @@ export function DocsCodeBlock({
         tag="pre"
         p="$4"
         overflow="scroll"
-        fontFamily="$mono"
+        fontFamily="$nunito"
         fontSize="$3"
         lineHeight="$4"
       >
-        <SizableText tag="code" fontFamily="$mono" className={className}>
+        <SizableText tag="code" fontFamily="$nunito" className={className}>
           {children}
         </SizableText>
       </SizableText>

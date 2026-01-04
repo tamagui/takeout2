@@ -212,7 +212,7 @@ export const GlobalTooltipProvider = ({
           shadowRadius={1}
           shadowOffset={{ height: 2, width: 2 }}
         />
-        <Paragraph pointerEvents="none" fontFamily="$mono" size="$2">
+        <Paragraph pointerEvents="none" fontFamily="$nunito" size="$2">
           {label}
         </Paragraph>
       </Tooltip.Content>

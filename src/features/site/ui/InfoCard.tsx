@@ -17,7 +17,7 @@ export const InfoCard = ({ title, Icon, children, maxColumns }: InfoCardProps) =
         <Icon size={26} />
       </View>
 
-      <H5 fontFamily="$mono" size="$5" mt={-10}>
+      <H5 fontFamily="$nunito" size="$5" mt={-10}>
         {title}
       </H5>
 

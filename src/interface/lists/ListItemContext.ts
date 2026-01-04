@@ -7,7 +7,7 @@ export type ListItemVariant = 'default' | 'sidebar' | 'compact'
 const defaults = {
   active: false as boolean | 'strong',
   size: 'medium' as SimpleSize,
-  fontFamily: '$mono' as FontTokens,
+  fontFamily: '$nunito' as FontTokens,
   variant: 'default' as ListItemVariant,
   editing: false,
   editable: false,

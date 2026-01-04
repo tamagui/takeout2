@@ -199,7 +199,7 @@ const DialogContent = styled(TamaguiDialog.Content, {
 })
 
 const DialogTitle = styled(TamaguiDialog.Title, {
-  fontFamily: '$mono',
+  fontFamily: '$nunito',
   size: '$5',
   text: 'center',
 })

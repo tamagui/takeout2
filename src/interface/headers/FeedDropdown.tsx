@@ -20,7 +20,7 @@ import { scheduleOnRN } from 'react-native-worklets'
 import { SizableText, View, XStack, YStack } from 'tamagui'
 
 import { useIsDark } from '~/features/theme/useIsDark'
-import { triggerHaptics } from '~/helpers/haptics/triggerHaptics'
+import { lightImpact, mediumImpact } from '~/interface/haptics/haptics'
 import { BellIcon } from '~/interface/icons/phosphor/BellIcon'
 import { BookmarkIcon } from '~/interface/icons/phosphor/BookmarkIcon'
 import { GearIcon } from '~/interface/icons/phosphor/GearIcon'
@@ -105,7 +105,7 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
   })
 
   const handleItemPress = useCallback(() => {
-    triggerHaptics('light')
+    lightImpact()
     // mock - do nothing for now
   }, [])
 
@@ -131,7 +131,7 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
     onEndDrag: () => {
       if (expansion.value > 0.8 && fullscreenProgress.value > 0.5) {
         expansion.value = withSpring(2, SPRING_CONFIG)
-        scheduleOnRN(triggerHaptics, 'medium')
+        scheduleOnRN(mediumImpact)
       } else {
         fullscreenProgress.value = withTiming(0, { duration: 200 })
       }
@@ -154,10 +154,10 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
       if (velocity < -threshold || (expansion.value < 0.2 && event.translationY < -30)) {
         expansion.value = withSpring(0, SPRING_CONFIG)
         scheduleOnRN(onClose)
-        scheduleOnRN(triggerHaptics, 'light')
+        scheduleOnRN(lightImpact)
       } else if (velocity > threshold || expansion.value > 0.5) {
         expansion.value = withSpring(1, SPRING_CONFIG)
-        scheduleOnRN(triggerHaptics, 'medium')
+        scheduleOnRN(mediumImpact)
       } else {
         expansion.value = withSpring(expansion.value > 0.5 ? 1 : 0, SPRING_CONFIG)
       }
@@ -486,7 +486,7 @@ const QuickMenuRow = ({ item, onPress, onRemove }: QuickMenuRowProps) => {
   const Icon = item.icon
 
   const handleRemove = useCallback(() => {
-    triggerHaptics('medium')
+    mediumImpact()
     onRemove(item.id)
   }, [item.id, onRemove])
 

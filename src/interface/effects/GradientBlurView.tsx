@@ -30,8 +30,8 @@ export const GradientBlurView = ({
       b={0}
       z={-1}
       overflow="hidden"
-      {...viewProps}
       pointerEvents="none"
+      {...viewProps}
     >
       <MaskedView
         maskElement={

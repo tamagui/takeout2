@@ -15,7 +15,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { scheduleOnRN } from 'react-native-worklets'
 import { View } from 'tamagui'
 
-import { triggerHaptics } from '~/helpers/haptics/triggerHaptics'
+import {
+  lightImpact,
+  mediumImpact,
+  rigidImpact,
+  softImpact,
+} from '~/interface/haptics/haptics'
 import { GearIcon } from '~/interface/icons/phosphor/GearIcon'
 import { HouseIcon } from '~/interface/icons/phosphor/HouseIcon'
 import { MagnifyingGlassIcon } from '~/interface/icons/phosphor/MagnifyingGlassIcon'
@@ -62,12 +67,7 @@ interface TabBarProps extends BottomTabBarProps {
   onExpandedMenuPress?: (index: number) => void
 }
 
-export function TabBar({
-  state,
-  descriptors,
-  navigation,
-  onExpandedMenuPress,
-}: TabBarProps) {
+export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) {
   const insets = useSafeAreaInsets()
   const animationProgress = useSharedValue(0)
   const [selectedMenuIndex, setSelectedMenuIndex] = useState(0)
@@ -75,7 +75,7 @@ export function TabBar({
 
   useEffect(() => {
     if (isExpanded) {
-      triggerHaptics()
+      lightImpact()
     }
   }, [selectedMenuIndex, isExpanded])
 
@@ -88,7 +88,7 @@ export function TabBar({
   }, [])
 
   const collapseMenu = useCallback(() => {
-    triggerHaptics('soft')
+    softImpact()
     animationProgress.value = withTiming(0, {
       duration: ANIMATION_DURATION,
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
@@ -108,7 +108,7 @@ export function TabBar({
   )
 
   const expandMenu = useCallback(() => {
-    triggerHaptics('medium')
+    mediumImpact()
     animationProgress.value = withTiming(1, {
       duration: ANIMATION_DURATION,
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
@@ -124,7 +124,7 @@ export function TabBar({
 
   const panGesture = Gesture.Pan()
     .onStart(() => {
-      scheduleOnRN(triggerHaptics, 'rigid')
+      scheduleOnRN(rigidImpact)
     })
     .onUpdate((event) => {
       if (animationProgress.value > 0.8) {
@@ -164,7 +164,7 @@ export function TabBar({
         })
         scheduleOnRN(setExpandedState, false)
       }
-      scheduleOnRN(triggerHaptics, 'light')
+      scheduleOnRN(lightImpact)
     })
 
   const composedGesture = Gesture.Simultaneous(longPressGesture, panGesture)

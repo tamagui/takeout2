@@ -1,20 +1,37 @@
-import { LegendList, type LegendListRef } from '@legendapp/list'
+import {
+  LegendList,
+  type LegendListRef,
+  type LegendListRenderItemProps,
+} from '@legendapp/list'
 import { isNative } from '@take-out/helpers'
 import { useNavigation } from 'one'
 import { memo, useCallback, useLayoutEffect, useRef } from 'react'
+import Animated, {
+  useAnimatedScrollHandler,
+  useSharedValue,
+} from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { SizableText, Spinner, View, YStack } from 'tamagui'
 
 import { PostCard } from '~/features/feed/PostCard'
 import { usePostsSearch } from '~/features/feed/usePosts'
 import { Input } from '~/interface/forms/Input'
+import { AnimatedBlurHeader } from '~/interface/headers/AnimatedBlurHeader'
 
 import type { NativeSyntheticEvent, TextInputChangeEventData } from 'react-native'
 import type { Post } from '~/data/types'
 
+const AnimatedLegendList = Animated.createAnimatedComponent(LegendList<Post>)
+
 export const SearchPage = memo(() => {
   const navigation = useNavigation()
   const { top, bottom } = useSafeAreaInsets()
+  const scrollY = useSharedValue(0)
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollY.value = event.contentOffset.y
+    },
+  })
   const listRef = useRef<LegendListRef>(null)
   const { posts, searchText, setSearchText, isSearching, loadMore, hasMore } =
     usePostsSearch()
@@ -39,7 +56,7 @@ export const SearchPage = memo(() => {
     }
   }, [navigation, handleSearchTextChange])
 
-  const renderItem = useCallback(({ item }: { item: Post }) => {
+  const renderItem = useCallback(({ item }: LegendListRenderItemProps<Post>) => {
     return <PostCard post={item} />
   }, [])
 
@@ -90,6 +107,7 @@ export const SearchPage = memo(() => {
 
   return (
     <View flex={1}>
+      <AnimatedBlurHeader scrollY={scrollY} title="Search" />
       {!isNative && (
         <YStack p="$3" borderBottomWidth={1} borderBottomColor="$borderColor">
           <Input
@@ -100,9 +118,11 @@ export const SearchPage = memo(() => {
           />
         </YStack>
       )}
-      <LegendList
+      <AnimatedLegendList
         ref={listRef}
         data={posts}
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         ListEmptyComponent={renderEmpty}

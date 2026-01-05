@@ -36,6 +36,8 @@ export function TabsLayout() {
         }}
       >
         <Tabs.Screen name="home" />
+        <Tabs.Screen name="ai" />
+        <Tabs.Screen name="search" />
         <Tabs.Screen name="profile" />
       </Tabs>
 

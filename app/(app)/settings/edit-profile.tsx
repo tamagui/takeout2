@@ -150,7 +150,7 @@ export const ProfileEditPage = () => {
           </YStack>
         </KeyboardAwareScrollView>
 
-        <KeyboardStickyFooter>
+        <KeyboardStickyFooter openedOffset={-10}>
           <ButtonSimple
             glass
             glassTint={!canSave ? 'transparent' : 'darkslateblue'}

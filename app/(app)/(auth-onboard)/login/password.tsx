@@ -8,6 +8,7 @@ import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { showError } from '~/interface/dialogs/actions'
 import { Input } from '~/interface/forms/Input'
 import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
+import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 
 export const PasswordPage = () => {
@@ -52,15 +53,17 @@ export const PasswordPage = () => {
       description="Please enter the password for"
       descriptionSecondLine={displayValue}
       bottom={
-        <ButtonSimple
-          data-testid="submit-password-button"
-          size="large"
-          onPress={handleContinue}
-          disabled={!password || loading}
-          variant="default"
-        >
-          <ButtonSimple.Text>{loading ? 'Verifying...' : 'Next'}</ButtonSimple.Text>
-        </ButtonSimple>
+        <KeyboardStickyFooter openedOffset={-10}>
+          <ButtonSimple
+            data-testid="submit-password-button"
+            size="large"
+            onPress={handleContinue}
+            disabled={!password || loading}
+            variant="default"
+          >
+            <ButtonSimple.Text>{loading ? 'Verifying...' : 'Next'}</ButtonSimple.Text>
+          </ButtonSimple>
+        </KeyboardStickyFooter>
       }
     >
       <YStack>

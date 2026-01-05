@@ -65,7 +65,7 @@ export function CommentInput({
       )}
 
       {isNative && (
-        <KeyboardStickyFooter offset={offset}>
+        <KeyboardStickyFooter offset={offset} openedOffset={-10}>
           <XStack
             items="center"
             gap="$2"

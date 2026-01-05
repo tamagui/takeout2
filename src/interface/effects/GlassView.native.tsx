@@ -4,22 +4,25 @@ import { GlassView as ExpoGlassView, isLiquidGlassAvailable } from 'expo-glass-e
 import { memo } from 'react'
 import { View } from 'tamagui'
 
+import { useIsDark } from '~/features/theme/useIsDark'
+
 import type { GlassViewProps } from './types'
 
 export const GlassView = memo(
   ({
     borderRadius = 16,
     intensity = 40,
-    tint = 'regular',
+    tint: tintProp,
     containerStyle,
     children,
     glassEffectStyle = 'clear',
-    style,
     isFallback,
     backgroundColor = 'rgba(255, 255, 255, 0.05)',
     tintColor,
     isInteractive = true,
   }: GlassViewProps) => {
+    const isDark = useIsDark()
+    const tint = tintProp || (isDark ? 'dark' : 'light')
     // use expo-glass-effect for iOS 26+
     if (isLiquidGlassAvailable() && !isFallback) {
       return (
@@ -86,19 +89,6 @@ export const GlassView = memo(
           pointerEvents={isInteractive ? 'none' : 'auto'}
         />
 
-        {/* subtle inner light edge - minimal and clean */}
-        <View
-          position="absolute"
-          t={0}
-          l={0}
-          r={0}
-          b={0}
-          z={2}
-          pointerEvents="none"
-          rounded={borderRadius}
-          borderWidth={0.5}
-          borderColor="rgba(255, 255, 255, 0.15)"
-        />
       </BlurView>
     )
   }

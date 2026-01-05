@@ -1,63 +1,21 @@
-import { createNativeBottomTabNavigator } from '@bottom-tabs/react-navigation'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { withLayoutContext } from 'one'
-import { Platform } from 'react-native'
 
-const NativeTabsNavigator = createNativeBottomTabNavigator().Navigator
-const NativeTabs = withLayoutContext(NativeTabsNavigator)
+import { TabBar } from '~/interface/navigation/TabBar'
+
+const Tab = createBottomTabNavigator()
+const Tabs = withLayoutContext(Tab.Navigator)
 
 export function TabsLayout() {
   return (
-    <NativeTabs
-      hapticFeedbackEnabled
-      labeled={false}
-      scrollEdgeAppearance="opaque"
-      minimizeBehavior="onScrollDown"
+    <Tabs
+      tabBar={(props) => <TabBar {...props} />}
       screenOptions={{
-        tabBarActiveTintColor: '#FFFFFF',
+        headerShown: false,
       }}
     >
-      <NativeTabs.Screen
-        name="home"
-        options={{
-          tabBarIcon: ({ color }: { color: string }) =>
-            Platform.select({
-              ios: { sfSymbol: 'house' } as any,
-              android: require('../../../public/icons/house.png'),
-            }),
-        }}
-      />
-
-      <NativeTabs.Screen
-        name="plus"
-        options={{
-          tabBarIcon: () =>
-            Platform.select({
-              ios: { sfSymbol: 'plus' } as any,
-              android: require('../../../public/icons/plus.png'),
-            }),
-        }}
-      />
-      <NativeTabs.Screen
-        name="profile"
-        options={{
-          tabBarIcon: () =>
-            Platform.select({
-              ios: { sfSymbol: 'person' } as any,
-              android: require('../../../public/icons/user-round.png'),
-            }),
-        }}
-      />
-      <NativeTabs.Screen
-        name="search"
-        options={{
-          role: 'search',
-          tabBarIcon: () =>
-            Platform.select({
-              ios: { sfSymbol: 'magnifyingglass' } as any,
-              android: require('../../../public/icons/search.png'),
-            }),
-        }}
-      />
-    </NativeTabs>
+      <Tabs.Screen name="home" />
+      <Tabs.Screen name="profile" />
+    </Tabs>
   )
 }

@@ -1,0 +1,372 @@
+import { BlurView } from 'expo-blur'
+import { router } from 'one'
+import { useCallback, useEffect, useState } from 'react'
+import { Dimensions, StyleSheet } from 'react-native'
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import Animated, {
+  Easing,
+  Extrapolation,
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { scheduleOnRN } from 'react-native-worklets'
+import { View } from 'tamagui'
+
+import { triggerHaptics } from '~/helpers/haptics/triggerHaptics'
+import { GearIcon } from '~/interface/icons/phosphor/GearIcon'
+import { HouseIcon } from '~/interface/icons/phosphor/HouseIcon'
+import { MagnifyingGlassIcon } from '~/interface/icons/phosphor/MagnifyingGlassIcon'
+import { PencilSimpleIcon } from '~/interface/icons/phosphor/PencilSimpleIcon'
+import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
+import { UserIcon } from '~/interface/icons/phosphor/UserIcon'
+
+import { Pressable } from '../buttons/Pressable'
+import { dialogEmit } from '../dialogs/shared'
+import { GlassView } from '../effects/GlassView'
+import { AnimatedTab } from './tabs/AnimatedTab'
+import { ExpandedMenuItem } from './tabs/ExpandedMenuItem'
+
+import type { BottomTabBarProps } from '@react-navigation/bottom-tabs'
+import type { IconComponent } from '~/interface/icons/types'
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window')
+const ANIMATION_DURATION = 400
+
+export interface ExpandedMenuItemType {
+  icon: IconComponent
+  label: string
+  route: string
+}
+
+const EXPANDED_MENU_ITEMS: ExpandedMenuItemType[] = [
+  { icon: PencilSimpleIcon, label: 'Create Post', route: 'create-post' },
+  { icon: MagnifyingGlassIcon, label: 'Search', route: 'search' },
+  { icon: GearIcon, label: 'Settings', route: 'settings' },
+]
+
+// tabs that are outside the tab navigator (no tab bar shown)
+const EXTERNAL_ROUTES = ['ai', 'search']
+
+// define all 4 tabs we want to show
+const ALL_TABS = [
+  { name: 'home', icon: HouseIcon },
+  { name: 'ai', icon: SparkleIcon },
+  { name: 'search', icon: MagnifyingGlassIcon },
+  { name: 'profile', icon: UserIcon },
+]
+
+interface TabBarProps extends BottomTabBarProps {
+  onExpandedMenuPress?: (index: number) => void
+}
+
+export function TabBar({
+  state,
+  descriptors,
+  navigation,
+  onExpandedMenuPress,
+}: TabBarProps) {
+  const insets = useSafeAreaInsets()
+  const animationProgress = useSharedValue(0)
+  const [selectedMenuIndex, setSelectedMenuIndex] = useState(0)
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  useEffect(() => {
+    if (isExpanded) {
+      triggerHaptics()
+    }
+  }, [selectedMenuIndex, isExpanded])
+
+  const updateSelectedIndex = useCallback((index: number) => {
+    setSelectedMenuIndex(index)
+  }, [])
+
+  const setExpandedState = useCallback((expanded: boolean) => {
+    setIsExpanded(expanded)
+  }, [])
+
+  const collapseMenu = useCallback(() => {
+    triggerHaptics('soft')
+    animationProgress.value = withTiming(0, {
+      duration: ANIMATION_DURATION,
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+    })
+    setIsExpanded(false)
+  }, [animationProgress])
+
+  const navigateToRoute = useCallback(
+    (route: string) => {
+      if (route === 'create-post') {
+        dialogEmit({ type: 'create-post' })
+      } else {
+        navigation.navigate(route)
+      }
+    },
+    [navigation]
+  )
+
+  const expandMenu = useCallback(() => {
+    triggerHaptics('medium')
+    animationProgress.value = withTiming(1, {
+      duration: ANIMATION_DURATION,
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+    })
+    setIsExpanded(true)
+  }, [animationProgress])
+
+  const longPressGesture = Gesture.LongPress()
+    .minDuration(300)
+    .onStart(() => {
+      scheduleOnRN(expandMenu)
+    })
+
+  const panGesture = Gesture.Pan()
+    .onStart(() => {
+      scheduleOnRN(triggerHaptics, 'rigid')
+    })
+    .onUpdate((event) => {
+      if (animationProgress.value > 0.8) {
+        const menuHeight = 200
+        const itemHeight = menuHeight / EXPANDED_MENU_ITEMS.length
+        const relativeY = event.y
+
+        let newIndex = Math.floor(relativeY / itemHeight)
+        newIndex = Math.max(0, Math.min(EXPANDED_MENU_ITEMS.length - 1, newIndex))
+        scheduleOnRN(updateSelectedIndex, newIndex)
+      }
+    })
+    .onEnd((event) => {
+      const velocity = event.velocityY
+      const threshold = 500
+
+      if (animationProgress.value > 0.7) {
+        const menuItem = EXPANDED_MENU_ITEMS[selectedMenuIndex]
+        if (menuItem) {
+          scheduleOnRN(navigateToRoute, menuItem.route)
+        }
+        animationProgress.value = withTiming(0, {
+          duration: ANIMATION_DURATION,
+          easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+        })
+        scheduleOnRN(setExpandedState, false)
+      } else if (velocity < -threshold && animationProgress.value === 0) {
+        animationProgress.value = withTiming(1, {
+          duration: ANIMATION_DURATION,
+          easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+        })
+        scheduleOnRN(setExpandedState, true)
+      } else if (velocity > threshold && animationProgress.value === 1) {
+        animationProgress.value = withTiming(0, {
+          duration: ANIMATION_DURATION,
+          easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+        })
+        scheduleOnRN(setExpandedState, false)
+      }
+      scheduleOnRN(triggerHaptics, 'light')
+    })
+
+  const composedGesture = Gesture.Simultaneous(longPressGesture, panGesture)
+
+  const animatedTabBarStyle = useAnimatedStyle(() => {
+    const scale = interpolate(
+      animationProgress.value,
+      [0, 0.5, 1],
+      [1, 0.5, 1],
+      Extrapolation.CLAMP
+    )
+    const translateY = interpolate(
+      animationProgress.value,
+      [0, 0.5, 1],
+      [0, -10, -20],
+      Extrapolation.CLAMP
+    )
+    return {
+      transform: [{ scale }, { translateY }],
+    }
+  })
+
+  const animatedFloatingBarStyle = useAnimatedStyle(() => {
+    const height = interpolate(
+      animationProgress.value,
+      [0, 0.4, 0.7, 1],
+      [50, 50, 150, 200],
+      Extrapolation.CLAMP
+    )
+    const borderRadius = interpolate(
+      animationProgress.value,
+      [0, 0.2, 1],
+      [25, 50, 32],
+      Extrapolation.CLAMP
+    )
+    return {
+      height,
+      borderRadius,
+      width: SCREEN_WIDTH - 150,
+    }
+  })
+
+  const animatedOriginalTabBarStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(
+      animationProgress.value,
+      [0, 0.25, 0.4],
+      [1, 0.2, 0],
+      Extrapolation.CLAMP
+    )
+    return {
+      opacity,
+      pointerEvents: animationProgress.value > 0.25 ? 'none' : 'auto',
+    }
+  })
+
+  const animatedBackdropBlurStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(
+      animationProgress.value,
+      [0, 0.4, 1],
+      [0, 0.5, 1],
+      Extrapolation.CLAMP
+    )
+    return {
+      opacity,
+      pointerEvents: animationProgress.value > 0.3 ? 'auto' : 'none',
+    }
+  })
+
+  const handleMenuItemPress = (index: number) => {
+    onExpandedMenuPress?.(index)
+    const selectedItem = EXPANDED_MENU_ITEMS[index]
+    if (!selectedItem) return
+    setSelectedMenuIndex(index)
+
+    // handle create-post specially - open modal instead of navigating
+    if (selectedItem.route === 'create-post') {
+      dialogEmit({ type: 'create-post' })
+    } else {
+      navigation.navigate(selectedItem.route)
+    }
+
+    animationProgress.value = withTiming(0, {
+      duration: ANIMATION_DURATION,
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+    })
+    setIsExpanded(false)
+  }
+
+  // get current focused tab name from tab state
+  const currentTabName = state.routes[state.index]?.name
+
+  return (
+    <>
+      <Animated.View
+        style={[
+          { ...StyleSheet.absoluteFillObject, zIndex: 5 },
+          animatedBackdropBlurStyle,
+        ]}
+      >
+        <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFill} />
+        <Pressable style={StyleSheet.absoluteFill} onPress={collapseMenu} />
+      </Animated.View>
+
+      <View
+        position="absolute"
+        l={0}
+        r={0}
+        items="center"
+        b={insets.bottom - 8 || 10}
+        z={10}
+      >
+        <GestureDetector gesture={composedGesture}>
+          <Animated.View>
+            <Animated.View
+              style={[
+                { overflow: 'hidden', backgroundColor: 'transparent' },
+                animatedFloatingBarStyle,
+                animatedTabBarStyle,
+              ]}
+            >
+              <GlassView
+                isFallback
+                intensity={60}
+                tint="dark"
+                containerStyle={{
+                  flex: 1,
+                  width: '100%',
+                  height: '100%',
+                  justifyContent: 'flex-end',
+                }}
+              >
+                <View flex={1} p="$2" pb="$1" justify="flex-start" gap="$2">
+                  {EXPANDED_MENU_ITEMS.map((item, index) => (
+                    <ExpandedMenuItem
+                      key={item.route}
+                      item={item}
+                      index={index}
+                      animationProgress={animationProgress}
+                      totalItems={EXPANDED_MENU_ITEMS.length}
+                      isSelected={selectedMenuIndex === index}
+                      onPress={() => handleMenuItemPress(index)}
+                    />
+                  ))}
+                </View>
+
+                <Animated.View
+                  style={[
+                    { flexDirection: 'row', height: 50 },
+                    animatedOriginalTabBarStyle,
+                  ]}
+                >
+                  {ALL_TABS.map((tab) => {
+                    const isExternalRoute = EXTERNAL_ROUTES.includes(tab.name)
+                    const isFocused = !isExternalRoute && currentTabName === tab.name
+
+                    const onPress = () => {
+                      if (isExternalRoute) {
+                        // navigate to stack screen outside tabs (same as settings in expanded menu)
+                        navigateToRoute(tab.name)
+                      } else {
+                        // use tab navigation for home/profile
+                        const route = state.routes.find((r) => r.name === tab.name)
+                        if (route) {
+                          const event = navigation.emit({
+                            type: 'tabPress',
+                            target: route.key,
+                            canPreventDefault: true,
+                          })
+                          if (!isFocused && !event.defaultPrevented) {
+                            navigation.navigate(tab.name)
+                          }
+                        }
+                      }
+                    }
+
+                    const onLongPress = () => {
+                      const route = state.routes.find((r) => r.name === tab.name)
+                      if (route) {
+                        navigation.emit({
+                          type: 'tabLongPress',
+                          target: route.key,
+                        })
+                      }
+                    }
+
+                    return (
+                      <AnimatedTab
+                        key={tab.name}
+                        isFocused={isFocused}
+                        icon={tab.icon}
+                        onPress={onPress}
+                        onLongPress={onLongPress}
+                        animationProgress={animationProgress}
+                      />
+                    )
+                  })}
+                </Animated.View>
+              </GlassView>
+            </Animated.View>
+          </Animated.View>
+        </GestureDetector>
+      </View>
+    </>
+  )
+}

@@ -13,7 +13,6 @@ import { Link } from '~/interface/app/Link'
 import { Avatar } from '~/interface/avatars/Avatar'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { ChatCircleDotsIcon } from '~/interface/icons/phosphor/ChatCircleDotsIcon'
-import { ChatCircleIcon } from '~/interface/icons/phosphor/ChatCircleIcon'
 import { HeartIcon } from '~/interface/icons/phosphor/HeartIcon'
 
 import { useIsDark } from '../theme/useIsDark'

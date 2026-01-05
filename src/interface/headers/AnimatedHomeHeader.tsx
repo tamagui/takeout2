@@ -1,7 +1,9 @@
+import { useEmitter } from '@take-out/helpers'
 import { BlurView } from 'expo-blur'
-import { useCallback } from 'react'
-import { StyleSheet, Text } from 'react-native'
+import { memo, useCallback } from 'react'
+import { StyleSheet } from 'react-native'
 import Animated, {
+  Easing,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -9,7 +11,7 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { SizableText, useTheme, View, XStack } from 'tamagui'
+import { SizableText, useTheme, XStack } from 'tamagui'
 
 import { useIsDark } from '~/features/theme/useIsDark'
 import { dialogEmit } from '~/interface/dialogs/shared'
@@ -20,7 +22,9 @@ import { PlusIcon } from '~/interface/icons/phosphor/PlusIcon'
 import { Pressable } from '../buttons/Pressable'
 import { isSmallScreen } from '../dimensions'
 import { GradientBlurView } from '../effects/GradientBlurView'
-import { FastSquircleView } from '../view/FastSquircleView'
+import { feedDropdownEmitter } from './feedDropdownEmitter'
+
+const ANIMATION_DURATION = 300
 
 const HEADER_HEIGHT = 44
 
@@ -28,13 +32,21 @@ interface AnimatedHomeHeaderProps {
   scrollY: SharedValue<number>
 }
 
-export function AnimatedHomeHeader({ scrollY }: AnimatedHomeHeaderProps) {
+export const AnimatedHomeHeader = memo(({ scrollY }: AnimatedHomeHeaderProps) => {
   const insets = useSafeAreaInsets()
   const isDark = useIsDark()
   const totalHeaderHeight = HEADER_HEIGHT + insets.top
   const prevScrollY = useSharedValue(0)
   const headerOffset = useSharedValue(0)
+  const dropdownOpen = useSharedValue(0)
   const theme = useTheme()
+
+  useEmitter(feedDropdownEmitter, (open) => {
+    dropdownOpen.value = withTiming(open ? 1 : 0, {
+      duration: ANIMATION_DURATION,
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+    })
+  })
 
   // track scroll direction and update header offset
   useDerivedValue(() => {
@@ -72,8 +84,18 @@ export function AnimatedHomeHeader({ scrollY }: AnimatedHomeHeaderProps) {
   }, [])
 
   const handleFeedPress = useCallback(() => {
-    // todo: show feed dropdown
-  }, [])
+    feedDropdownEmitter.emit(true)
+    dropdownOpen.value = withTiming(1, {
+      duration: ANIMATION_DURATION,
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+    })
+  }, [dropdownOpen])
+
+  const animatedCaretStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ rotate: `${dropdownOpen.value * 180}deg` }],
+    }
+  })
 
   return (
     <>
@@ -100,7 +122,6 @@ export function AnimatedHomeHeader({ scrollY }: AnimatedHomeHeaderProps) {
           style={StyleSheet.absoluteFill}
         />
         <XStack flex={1} items="center" justify="space-between" px="$3" pb="$2">
-          {/* left - plus button */}
           <Pressable
             onPress={handlePlusPress}
             width={40}
@@ -111,7 +132,6 @@ export function AnimatedHomeHeader({ scrollY }: AnimatedHomeHeaderProps) {
             <PlusIcon size={24} color="white" />
           </Pressable>
 
-          {/* center - feed with dropdown */}
           <Pressable
             onPress={handleFeedPress}
             flexDirection="row"
@@ -121,42 +141,22 @@ export function AnimatedHomeHeader({ scrollY }: AnimatedHomeHeaderProps) {
             <SizableText fontSize="$6" fontWeight="700" color="$color">
               Takeout
             </SizableText>
-            <CaretDownIcon size={16} color="white" />
+            <Animated.View style={animatedCaretStyle}>
+              <CaretDownIcon size={16} color="white" />
+            </Animated.View>
           </Pressable>
 
-          {/* right - notification bell */}
-          <FastSquircleView width={40} height={40} rounded={16} bg="$color01">
-            <Pressable
-              onPress={handleBellPress}
-              width={40}
-              height={40}
-              items="center"
-              justify="center"
-            >
-              <BellIcon size={24} color="white" />
-            </Pressable>
-          </FastSquircleView>
+          <Pressable
+            onPress={handleBellPress}
+            width={40}
+            height={40}
+            items="center"
+            justify="center"
+          >
+            <BellIcon size={22} color="white" />
+          </Pressable>
         </XStack>
       </Animated.View>
     </>
   )
-}
-
-const styles = StyleSheet.create({
-  iconButton: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  centerButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: 'white',
-  },
 })

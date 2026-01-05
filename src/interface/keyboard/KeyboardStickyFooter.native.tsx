@@ -7,14 +7,16 @@ import type { ReactNode } from 'react'
 export const KeyboardStickyFooter = ({
   children,
   offset,
+  openedOffset = 0,
 }: {
   children: ReactNode
   offset?: number
+  openedOffset?: number
 }) => {
   const { bottom } = useSafeAreaInsets()
 
   return (
-    <KeyboardStickyView offset={{ closed: offset || -bottom, opened: 0 }}>
+    <KeyboardStickyView offset={{ closed: offset || -bottom, opened: openedOffset || 0 }}>
       {children}
     </KeyboardStickyView>
   )

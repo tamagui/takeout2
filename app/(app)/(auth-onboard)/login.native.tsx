@@ -59,6 +59,7 @@ export const LoginPage = () => {
         r={0}
         b={0}
         z={999}
+        pointerEvents="none"
       >
         <View
           // @ts-ignore

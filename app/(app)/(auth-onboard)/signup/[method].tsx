@@ -141,7 +141,7 @@ export const SignupPage = memo(() => {
       description={getMethodDescription()}
       disableScroll={!isSmallScreen}
       bottom={
-        <KeyboardStickyFooter>
+        <KeyboardStickyFooter openedOffset={-10}>
           <ButtonSimple
             glass
             glassTint={isDisabled ? 'transparent' : 'darkslateblue'}

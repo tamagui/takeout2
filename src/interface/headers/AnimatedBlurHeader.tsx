@@ -1,5 +1,3 @@
-import { BlurView } from 'expo-blur'
-import { isLiquidGlassAvailable } from 'expo-glass-effect'
 import { useRouter } from 'one'
 import { memo, useCallback } from 'react'
 import { StyleSheet } from 'react-native'
@@ -15,12 +13,12 @@ import { SizableText, XStack, useTheme } from 'tamagui'
 import { useIsDark } from '~/features/theme/useIsDark'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 
-import { Pressable } from '../buttons/Pressable'
+import { ButtonSimple } from '../buttons/ButtonSimple'
 import { GlassView } from '../effects/GlassView'
 
 import type { ReactNode } from 'react'
 
-const HEADER_HEIGHT = 44
+export const HEADER_HEIGHT = 44
 const BLUR_START_SCROLL = 10
 const BLUR_END_SCROLL = 60
 
@@ -84,30 +82,18 @@ export const AnimatedBlurHeader = memo(
 
       if (showBackButton) {
         return (
-          <Pressable
-            onPress={handleBackPress}
-            width={36}
-            height={36}
-            items="center"
-            justify="center"
-            rounded="$10"
-            overflow="hidden"
-          >
-            <GlassView
-              borderRadius={18}
-              intensity={40}
-              containerStyle={{ width: 36, height: 36, alignItems: 'center', justifyContent: 'center' }}
-            >
-              <CaretLeftIcon size={20} color="$color" />
-            </GlassView>
-          </Pressable>
+          <ButtonSimple
+            size="medium"
+            glass
+            circular
+            onPress={() => router.back()}
+            icon={<CaretLeftIcon size={22} color="$color12" />}
+          />
         )
       }
 
       return <XStack width={36} />
     }
-
-    const useLiquidGlass = isLiquidGlassAvailable()
 
     return (
       <Animated.View
@@ -125,19 +111,12 @@ export const AnimatedBlurHeader = memo(
         ]}
       >
         <Animated.View style={[StyleSheet.absoluteFill, animatedBlurStyle]}>
-          {useLiquidGlass ? (
-            <GlassView
-              borderRadius={0}
-              containerStyle={StyleSheet.absoluteFill}
-              glassEffectStyle="clear"
-            />
-          ) : (
-            <BlurView
-              intensity={60}
-              tint={isDark ? 'dark' : 'light'}
-              style={StyleSheet.absoluteFill}
-            />
-          )}
+          <GlassView
+            isFallback
+            borderRadius={0}
+            containerStyle={StyleSheet.absoluteFill}
+            glassEffectStyle="clear"
+          />
         </Animated.View>
 
         <XStack flex={1} items="center" justify="space-between" px="$3">

@@ -1,5 +1,6 @@
 import {
   LegendList,
+  type LegendListProps,
   type LegendListRef,
   type LegendListRenderItemProps,
 } from '@legendapp/list'
@@ -15,13 +16,19 @@ import { SizableText, Spinner, View, YStack } from 'tamagui'
 
 import { PostCard } from '~/features/feed/PostCard'
 import { usePostsSearch } from '~/features/feed/usePosts'
+import { GradientBackground } from '~/interface/backgrounds/GradientBackground'
 import { Input } from '~/interface/forms/Input'
-import { AnimatedBlurHeader } from '~/interface/headers/AnimatedBlurHeader'
+import { AnimatedBlurHeader, HEADER_HEIGHT } from '~/interface/headers/AnimatedBlurHeader'
+import { PageLayout } from '~/interface/pages/PageLayout'
 
 import type { NativeSyntheticEvent, TextInputChangeEventData } from 'react-native'
 import type { Post } from '~/data/types'
 
-const AnimatedLegendList = Animated.createAnimatedComponent(LegendList<Post>)
+const AnimatedLegendList = Animated.createAnimatedComponent(
+  LegendList
+) as React.ComponentType<
+  LegendListProps<Post> & { onScroll?: any } & React.RefAttributes<LegendListRef>
+>
 
 export const SearchPage = memo(() => {
   const navigation = useNavigation()
@@ -105,37 +112,38 @@ export const SearchPage = memo(() => {
     )
   }, [hasMore, posts.length])
 
+  const headerHeight = HEADER_HEIGHT + top
+
   return (
-    <View flex={1}>
+    <PageLayout>
       <AnimatedBlurHeader scrollY={scrollY} title="Search" />
-      {!isNative && (
-        <YStack p="$3" borderBottomWidth={1} borderBottomColor="$borderColor">
-          <Input
-            placeholder="Search posts..."
-            value={searchText}
-            onChange={(e) => setSearchText((e.target as HTMLInputElement).value)}
-            size="$4"
-          />
-        </YStack>
-      )}
-      <AnimatedLegendList
-        ref={listRef}
-        data={posts}
-        onScroll={scrollHandler}
-        scrollEventThrottle={16}
-        renderItem={renderItem}
-        keyExtractor={keyExtractor}
-        ListEmptyComponent={renderEmpty}
-        ListFooterComponent={renderFooter}
-        onEndReached={loadMore}
-        onEndReachedThreshold={0.5}
-        contentContainerStyle={{
-          paddingTop: isNative ? 0 : top,
-          paddingBottom: bottom + 100,
-        }}
-        showsVerticalScrollIndicator={false}
-        contentInsetAdjustmentBehavior="automatic"
-      />
-    </View>
+      <YStack position="absolute" t={headerHeight} l={0} r={0} p="$3" z={99}>
+        <Input
+          glass
+          placeholder="Search posts..."
+          value={searchText}
+          onChangeText={setSearchText}
+          size="$4"
+        />
+      </YStack>
+      <View flex={1} px="$3">
+        <AnimatedLegendList
+          ref={listRef}
+          data={posts}
+          onScroll={scrollHandler}
+          scrollEventThrottle={16}
+          renderItem={renderItem}
+          keyExtractor={keyExtractor}
+          ListEmptyComponent={renderEmpty}
+          ListFooterComponent={renderFooter}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
+          contentContainerStyle={{
+            paddingBottom: bottom + 100,
+          }}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
+    </PageLayout>
   )
 })

@@ -36,7 +36,7 @@ export const StepPageLayout = ({
         {!hideBackButton && (
           <XStack justify="space-between" items="center">
             <ButtonSimple
-              size="large"
+              size="medium"
               glass
               circular
               onPress={() => router.back()}

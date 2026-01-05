@@ -2,10 +2,7 @@ import { isLiquidGlassAvailable } from 'expo-glass-effect'
 import { router, Stack } from 'one'
 
 import { Pressable } from '~/interface/buttons/Pressable'
-import { BellIcon } from '~/interface/icons/phosphor/BellIcon'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
-
-import type { RouteProp } from '@react-navigation/native'
 
 export function HomeLayout() {
   return (
@@ -20,13 +17,7 @@ export function HomeLayout() {
       <Stack.Screen
         name="index"
         options={{
-          title: 'Feed',
-          headerLargeTitle: true,
-          headerRight: () => (
-            <Pressable width={36} height={36} items="center" justify="center">
-              <BellIcon size={24} />
-            </Pressable>
-          ),
+          headerShown: false,
         }}
       />
       <Stack.Screen name="profile/[userId]" />

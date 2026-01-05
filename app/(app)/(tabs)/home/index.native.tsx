@@ -1,13 +1,19 @@
 import { useEmitter } from '@take-out/helpers'
 import { memo, useCallback, useRef, useState } from 'react'
-import { FlatList, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native'
+import { FlatList } from 'react-native'
+import Animated, {
+  useAnimatedScrollHandler,
+  useSharedValue,
+} from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { scheduleOnRN } from 'react-native-worklets'
 import { AnimatePresence, SizableText, Spinner, View, YStack } from 'tamagui'
 
 import { PostCard } from '~/features/feed/PostCard'
 import { usePostsPaginated } from '~/features/feed/usePosts'
 import { scrollToTopEmitter } from '~/features/main/scrollToTopEmitter'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { AnimatedHomeHeader } from '~/interface/headers/AnimatedHomeHeader'
 import { ArrowUpIcon } from '~/interface/icons/phosphor/ArrowUpIcon'
 import { PageLayout } from '~/interface/pages/PageLayout'
 import { HomeShimmer } from '~/interface/shimmer/HomeShimmer'
@@ -20,11 +26,19 @@ export const HomePage = memo(() => {
   const [showScrollToTop, setShowScrollToTop] = useState(false)
   const headerHeight = 60
   const insets = useSafeAreaInsets()
+  const scrollY = useSharedValue(0)
 
-  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const scrollY = event.nativeEvent.contentOffset.y
-    setShowScrollToTop(scrollY > 300)
+  const updateScrollToTop = useCallback((show: boolean) => {
+    setShowScrollToTop(show)
   }, [])
+
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollY.value = event.contentOffset.y
+      const shouldShow = event.contentOffset.y > 300
+      scheduleOnRN(updateScrollToTop, shouldShow)
+    },
+  })
 
   useEmitter(scrollToTopEmitter, (tab) => {
     if (tab === 'home') {
@@ -66,6 +80,8 @@ export const HomePage = memo(() => {
 
   return (
     <PageLayout>
+      <AnimatedHomeHeader scrollY={scrollY} />
+
       <View flex={1} px="$3">
         <AnimatePresence>
           {isLoading && (
@@ -86,7 +102,7 @@ export const HomePage = memo(() => {
           )}
         </AnimatePresence>
 
-        <FlatList
+        <Animated.FlatList
           ref={listRef}
           data={posts}
           renderItem={renderItem}
@@ -94,12 +110,11 @@ export const HomePage = memo(() => {
           ListEmptyComponent={renderEmpty}
           ListFooterComponent={renderFooter}
           onEndReached={loadMore}
-          onScroll={handleScroll}
+          onScroll={scrollHandler}
           scrollEventThrottle={16}
           onEndReachedThreshold={0.5}
-          contentContainerStyle={{ paddingBottom: 100 }}
+          contentContainerStyle={{ paddingTop: 44 + insets.top, paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
-          contentInsetAdjustmentBehavior="automatic"
         />
 
         {/* scroll to top button */}

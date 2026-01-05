@@ -2,7 +2,6 @@ import { BlurView } from 'expo-blur'
 import { router } from 'one'
 import { memo, useState } from 'react'
 import { StyleSheet } from 'react-native'
-import SquircleView from 'react-native-fast-squircle'
 import Animated, { SharedTransition } from 'react-native-reanimated'
 import { SizableText, styled, XStack, YStack } from 'tamagui'
 
@@ -14,13 +13,12 @@ import { Avatar } from '~/interface/avatars/Avatar'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { ChatCircleDotsIcon } from '~/interface/icons/phosphor/ChatCircleDotsIcon'
 import { HeartIcon } from '~/interface/icons/phosphor/HeartIcon'
+import { FastSquircleView } from '~/interface/view/FastSquircleView'
 
 import { useIsDark } from '../theme/useIsDark'
 import { PostActionMenu } from './PostActionMenu'
 
 import type { Post } from '~/data/types'
-
-const FastSquircleView = styled(SquircleView)
 
 const transition = SharedTransition.springify().damping(15)
 

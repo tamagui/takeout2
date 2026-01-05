@@ -88,7 +88,6 @@ export const GlassView = memo(
           bg={backgroundColor as any}
           pointerEvents={isInteractive ? 'none' : 'auto'}
         />
-
       </BlurView>
     )
   }

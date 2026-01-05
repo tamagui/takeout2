@@ -1,18 +1,13 @@
 import { KeyboardStickyView } from 'react-native-keyboard-controller'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { YStack } from 'tamagui'
 
-import type { ReactNode } from 'react'
+import type { KeyboardStickyFooterProps } from './KeyboardStickyFooter'
 
 export const KeyboardStickyFooter = ({
   children,
   offset,
   openedOffset = 0,
-}: {
-  children: ReactNode
-  offset?: number
-  openedOffset?: number
-}) => {
+}: KeyboardStickyFooterProps) => {
   const { bottom } = useSafeAreaInsets()
 
   return (

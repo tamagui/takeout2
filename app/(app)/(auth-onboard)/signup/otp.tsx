@@ -10,7 +10,7 @@ import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { showError } from '~/interface/dialogs/actions'
 import { isSmallScreen } from '~/interface/dimensions'
 import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
-import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter.native'
+import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 
 export const OtpPage = () => {

@@ -111,7 +111,7 @@ export const OtpPage = () => {
       }
       descriptionSecondLine={displayValue}
       bottom={
-        <KeyboardStickyFooter>
+        <KeyboardStickyFooter openedOffset={-10}>
           <ButtonSimple
             glass
             glassTint={isDisabled ? 'transparent' : 'darkslateblue'}

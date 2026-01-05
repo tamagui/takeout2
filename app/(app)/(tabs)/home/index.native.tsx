@@ -1,6 +1,7 @@
+import { LegendList, type LegendListRef } from '@legendapp/list'
 import { useEmitter } from '@take-out/helpers'
-import { memo, useCallback, useRef, useState } from 'react'
-import { FlatList } from 'react-native'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
+import { RefreshControl } from 'react-native'
 import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
@@ -18,19 +19,39 @@ import { ArrowUpIcon } from '~/interface/icons/phosphor/ArrowUpIcon'
 import { PageLayout } from '~/interface/pages/PageLayout'
 import { HomeShimmer } from '~/interface/shimmer/HomeShimmer'
 
+import type { LegendListProps } from '@legendapp/list'
 import type { Post } from '~/data/types'
 
+const AnimatedLegendList = Animated.createAnimatedComponent(
+  LegendList
+) as React.ComponentType<
+  LegendListProps<Post> & { onScroll?: any } & React.RefAttributes<LegendListRef>
+>
+
 export const HomePage = memo(() => {
-  const listRef = useRef<FlatList>(null)
-  const { posts, loadMore, isLoading, hasMore } = usePostsPaginated()
+  const listRef = useRef<LegendListRef>(null)
+  const { posts, loadMore, isLoading, hasMore, refresh } = usePostsPaginated()
   const [showScrollToTop, setShowScrollToTop] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const headerHeight = 60
   const insets = useSafeAreaInsets()
   const scrollY = useSharedValue(0)
 
+  // stop refreshing when data loads
+  useEffect(() => {
+    if (isRefreshing && posts.length > 0) {
+      setIsRefreshing(false)
+    }
+  }, [isRefreshing, posts.length])
+
   const updateScrollToTop = useCallback((show: boolean) => {
     setShowScrollToTop(show)
   }, [])
+
+  const handleRefresh = useCallback(() => {
+    setIsRefreshing(true)
+    refresh()
+  }, [refresh])
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
@@ -90,7 +111,7 @@ export const HomePage = memo(() => {
               animation="200ms"
               exitStyle={{ opacity: 0 }}
               opacity={1}
-              z={999}
+              z={1000}
               position="absolute"
               t={headerHeight + insets.top}
               l={0}
@@ -102,7 +123,7 @@ export const HomePage = memo(() => {
           )}
         </AnimatePresence>
 
-        <Animated.FlatList
+        <AnimatedLegendList
           ref={listRef}
           data={posts}
           renderItem={renderItem}
@@ -115,6 +136,15 @@ export const HomePage = memo(() => {
           onEndReachedThreshold={0.5}
           contentContainerStyle={{ paddingTop: 44 + insets.top, paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              tintColor="white"
+              colors={['white']}
+              progressViewOffset={44 + insets.top}
+            />
+          }
         />
 
         {/* scroll to top button */}
@@ -122,7 +152,7 @@ export const HomePage = memo(() => {
           {showScrollToTop && (
             <YStack
               key="scroll-to-top"
-              animation="quick"
+              animation="200ms"
               position="absolute"
               b={88}
               r={32}

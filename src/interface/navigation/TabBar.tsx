@@ -53,15 +53,11 @@ const EXPANDED_MENU_ITEMS: ExpandedMenuItemType[] = [
   { icon: GearIcon, label: 'Settings', route: 'settings' },
 ]
 
-// tabs that are outside the tab navigator (no tab bar shown)
-const EXTERNAL_ROUTES = ['ai', 'search']
-
-// define all 4 tabs we want to show
 const ALL_TABS = [
-  { name: 'home', icon: HouseIcon },
-  { name: 'ai', icon: SparkleIcon },
-  { name: 'search', icon: MagnifyingGlassIcon },
-  { name: 'profile', icon: UserIcon },
+  { name: 'home', icon: HouseIcon, hideTabBar: false },
+  { name: 'ai', icon: SparkleIcon, hideTabBar: true },
+  { name: 'search', icon: MagnifyingGlassIcon, hideTabBar: false },
+  { name: 'profile', icon: UserIcon, hideTabBar: false },
 ]
 
 interface TabBarProps extends BottomTabBarProps {
@@ -77,9 +73,12 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
   const [isExpanded, setIsExpanded] = useState(false)
 
   const activeTabIndex = useSharedValue(0)
+  const tabBarVisibility = useSharedValue(1)
 
   const currentTabName = state.routes[state.index]?.name
   const currentTabIndex = ALL_TABS.findIndex((tab) => tab.name === currentTabName)
+  const currentTab = ALL_TABS[currentTabIndex]
+  const shouldHideTabBar = currentTab?.hideTabBar ?? false
 
   useEffect(() => {
     if (currentTabIndex >= 0) {
@@ -88,8 +87,29 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
         stiffness: 180,
         mass: 0.8,
       })
+
+      // for tabs that hide the bar, wait for indicator animation then hide
+      if (shouldHideTabBar) {
+        const timeout = setTimeout(() => {
+          tabBarVisibility.value = withTiming(0, {
+            duration: 300,
+            easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+          })
+        }, 350)
+        return () => clearTimeout(timeout)
+      }
     }
-  }, [currentTabIndex, activeTabIndex])
+  }, [currentTabIndex, activeTabIndex, shouldHideTabBar, tabBarVisibility])
+
+  useEffect(() => {
+    // show tab bar immediately when switching to visible tabs
+    if (!shouldHideTabBar) {
+      tabBarVisibility.value = withTiming(1, {
+        duration: 300,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+      })
+    }
+  }, [shouldHideTabBar, tabBarVisibility])
 
   useEffect(() => {
     if (isExpanded) {
@@ -262,6 +282,26 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
     }
   })
 
+  const animatedTabBarVisibilityStyle = useAnimatedStyle(() => {
+    const translateY = interpolate(
+      tabBarVisibility.value,
+      [0, 1],
+      [100, 0],
+      Extrapolation.CLAMP
+    )
+    const opacity = interpolate(
+      tabBarVisibility.value,
+      [0, 0.5, 1],
+      [0, 0.5, 1],
+      Extrapolation.CLAMP
+    )
+    return {
+      transform: [{ translateY }],
+      opacity,
+      pointerEvents: tabBarVisibility.value > 0.5 ? 'auto' : 'none',
+    }
+  })
+
   const handleMenuItemPress = (index: number) => {
     onExpandedMenuPress?.(index)
     const selectedItem = EXPANDED_MENU_ITEMS[index]
@@ -294,13 +334,18 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
         <Pressable style={StyleSheet.absoluteFill} onPress={collapseMenu} />
       </Animated.View>
 
-      <View
-        position="absolute"
-        l={0}
-        r={0}
-        items="center"
-        b={insets.bottom - 8 || 10}
-        z={10}
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            alignItems: 'center',
+            bottom: insets.bottom - 8 || 10,
+            zIndex: 10,
+          },
+          animatedTabBarVisibilityStyle,
+        ]}
       >
         <GestureDetector gesture={composedGesture}>
           <Animated.View>
@@ -356,25 +401,18 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
                     ]}
                   />
                   {ALL_TABS.map((tab) => {
-                    const isExternalRoute = EXTERNAL_ROUTES.includes(tab.name)
-                    const isFocused = !isExternalRoute && currentTabName === tab.name
+                    const isFocused = currentTabName === tab.name
 
                     const onPress = () => {
-                      if (isExternalRoute) {
-                        // navigate to stack screen outside tabs (same as settings in expanded menu)
-                        navigateToRoute(tab.name)
-                      } else {
-                        // use tab navigation for home/profile
-                        const route = state.routes.find((r) => r.name === tab.name)
-                        if (route) {
-                          const event = navigation.emit({
-                            type: 'tabPress',
-                            target: route.key,
-                            canPreventDefault: true,
-                          })
-                          if (!isFocused && !event.defaultPrevented) {
-                            navigation.navigate(tab.name)
-                          }
+                      const route = state.routes.find((r) => r.name === tab.name)
+                      if (route) {
+                        const event = navigation.emit({
+                          type: 'tabPress',
+                          target: route.key,
+                          canPreventDefault: true,
+                        })
+                        if (!isFocused && !event.defaultPrevented) {
+                          navigation.navigate(tab.name)
                         }
                       }
                     }
@@ -405,7 +443,7 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
             </Animated.View>
           </Animated.View>
         </GestureDetector>
-      </View>
+      </Animated.View>
     </>
   )
 }

@@ -9,6 +9,7 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
   useSharedValue,
+  withSpring,
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -67,11 +68,28 @@ interface TabBarProps extends BottomTabBarProps {
   onExpandedMenuPress?: (index: number) => void
 }
 
+const TAB_COUNT = ALL_TABS.length
+
 export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) {
   const insets = useSafeAreaInsets()
   const animationProgress = useSharedValue(0)
   const [selectedMenuIndex, setSelectedMenuIndex] = useState(0)
   const [isExpanded, setIsExpanded] = useState(false)
+
+  const activeTabIndex = useSharedValue(0)
+
+  const currentTabName = state.routes[state.index]?.name
+  const currentTabIndex = ALL_TABS.findIndex((tab) => tab.name === currentTabName)
+
+  useEffect(() => {
+    if (currentTabIndex >= 0) {
+      activeTabIndex.value = withSpring(currentTabIndex, {
+        damping: 18,
+        stiffness: 180,
+        mass: 0.8,
+      })
+    }
+  }, [currentTabIndex, activeTabIndex])
 
   useEffect(() => {
     if (isExpanded) {
@@ -233,6 +251,17 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
     }
   })
 
+  const animatedIndicatorStyle = useAnimatedStyle(() => {
+    const containerWidth = SCREEN_WIDTH - 150
+    const tabWidth = containerWidth / TAB_COUNT
+    const indicatorWidth = tabWidth - 10
+    const offset = (tabWidth - indicatorWidth) / 2
+    return {
+      transform: [{ translateX: activeTabIndex.value * tabWidth + offset }],
+      width: indicatorWidth,
+    }
+  })
+
   const handleMenuItemPress = (index: number) => {
     onExpandedMenuPress?.(index)
     const selectedItem = EXPANDED_MENU_ITEMS[index]
@@ -252,9 +281,6 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
     })
     setIsExpanded(false)
   }
-
-  // get current focused tab name from tab state
-  const currentTabName = state.routes[state.index]?.name
 
   return (
     <>
@@ -312,10 +338,23 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
 
                 <Animated.View
                   style={[
-                    { flexDirection: 'row', height: 50 },
+                    { flexDirection: 'row', height: 50, position: 'relative' },
                     animatedOriginalTabBarStyle,
                   ]}
                 >
+                  <Animated.View
+                    style={[
+                      {
+                        position: 'absolute',
+                        top: 5,
+                        left: 0,
+                        bottom: 5,
+                        borderRadius: 100,
+                        backgroundColor: 'rgba(126, 126, 126, 0.2)',
+                      },
+                      animatedIndicatorStyle,
+                    ]}
+                  />
                   {ALL_TABS.map((tab) => {
                     const isExternalRoute = EXTERNAL_ROUTES.includes(tab.name)
                     const isFocused = !isExternalRoute && currentTabName === tab.name

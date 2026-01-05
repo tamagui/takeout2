@@ -1,5 +1,5 @@
 import { Slot } from 'one'
 
-export const SearchLayout = () => {
+export function AILayout() {
   return <Slot />
 }

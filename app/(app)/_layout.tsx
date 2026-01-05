@@ -57,6 +57,8 @@ export function AppLayout() {
                 <Stack screenOptions={{ headerShown: false }}>
                   <Stack.Screen name="(auth-onboard)" />
                   <Stack.Screen name="(tabs)" />
+                  <Stack.Screen name="ai" />
+                  <Stack.Screen name="search" />
                   <Stack.Screen name="settings" />
                 </Stack>
               )}

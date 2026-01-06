@@ -9,6 +9,7 @@ import {
   View,
   XStack,
   YStack,
+  type ColorTokens,
 } from 'tamagui'
 
 import {
@@ -20,6 +21,7 @@ import {
 import { signInAsDemo } from '~/features/auth/client/signInAsDemo'
 import { onboardingSlides } from '~/features/onboarding'
 import { Onboarding } from '~/features/onboarding/Onboarding'
+import { useIsDark } from '~/features/theme/useIsDark'
 import { isDemoMode } from '~/helpers/isDemoMode'
 import { Link } from '~/interface/app/Link'
 import { GradientBackground } from '~/interface/backgrounds/GradientBackground'
@@ -32,6 +34,8 @@ import { H2 } from '~/interface/text/Headings'
 import { showToast } from '~/interface/toast/helpers'
 
 export const LoginPage = () => {
+  const theme = useTheme()
+  const isDark = useIsDark()
   const [demoLoading, setDemoLoading] = useState<boolean>(false)
   const [showOnboarding, setShowOnboarding] = useState<boolean>(!isWeb)
 
@@ -68,7 +72,7 @@ export const LoginPage = () => {
           y={-80}
           enterStyle={{ scale: 1, y: 0 }}
         >
-          <TamaguiDotLogo size={80} color="white" />
+          <TamaguiDotLogo size={80} color={theme.color.val as ColorTokens} />
         </View>
       </View>
       <View

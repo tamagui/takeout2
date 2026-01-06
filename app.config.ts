@@ -77,7 +77,7 @@ export default {
       icon: getAppIcon(),
       adaptiveIcon: {
         foregroundImage: './assets/adaptive-icon.png',
-        backgroundColor: '#252555',
+        backgroundColor: '#191919',
       },
       permissions: ['android.permission.RECORD_AUDIO'],
     },
@@ -154,10 +154,14 @@ export default {
       [
         'expo-splash-screen',
         {
-          backgroundColor: '#252555',
+          backgroundColor: '#f8f8f8',
           image: './assets/logo.png',
           imageWidth: 80,
           imageHeight: 80,
+          dark: {
+            image: './assets/logo_dark.png',
+            backgroundColor: '#191919',
+          },
         },
       ],
       // temporarily disabled due to module compatibility issue with mime package

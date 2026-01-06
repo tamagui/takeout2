@@ -20,6 +20,11 @@ export const docsRoutes = [
     title: 'Deployment',
     pages: [{ title: 'Overview', route: '/docs/deployment-overview' }],
   },
+
+  {
+    title: 'Use Cases',
+    pages: [{ title: 'Static Websites', route: '/docs/static-websites' }],
+  },
 ]
 
 export const allDocsRoutes = docsRoutes.flatMap((x) => x.pages || [])

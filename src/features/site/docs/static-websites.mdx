@@ -1,0 +1,266 @@
+---
+title: Static Websites
+description: Strip down Takeout for static sites, portfolios, and blogs
+---
+
+Takeout is designed as a full-stack cross-platform framework, but it can be
+stripped down to create lightweight static websites. This is ideal for personal
+sites, portfolios, blogs, and landing pages where you don't need authentication,
+databases, or real-time sync.
+
+The result is a fast, statically-generated site that deploys to Vercel (or any
+static host) with a perfect Lighthouse score, while keeping the powerful Tamagui
+design system and One's file-system routing.
+
+## When to use this approach
+
+A static Takeout site is best for:
+
+- Personal portfolios and resumes
+- Blogs with MDX content
+- Marketing and landing pages
+- Documentation sites
+- Any site without user accounts or dynamic data
+
+If you need authentication, real-time data, or user-generated content, use the
+full Takeout stack instead.
+
+## What gets removed
+
+When stripping down for static sites, you remove:
+
+1. **Zero** - Real-time sync, optimistic updates, local-first data
+2. **Better Auth** - Authentication, sessions, OAuth providers
+3. **Drizzle** - Database ORM and migrations
+4. **API routes** - Server endpoints (`+api.ts` files)
+5. **SST / Uncloud** - Infrastructure-as-code deployment
+6. **Native platforms** - iOS and Android builds (unless needed)
+7. **Heavy libraries** - react-native-reanimated, gesture handler, etc.
+
+## What remains
+
+The stripped-down stack keeps:
+
+1. **One** - File-system routing with SSG (`+ssg.tsx`) for static generation
+2. **Tamagui** - Design system, theming, and responsive styles
+3. **MDX** - Blog and content authoring with `@vxrn/mdx`
+4. **Theme switching** - Light/dark/system themes via `@vxrn/color-scheme`
+5. **TypeScript** - Full type safety
+6. **Vite** - Fast builds with aggressive optimizations
+
+## Vercel deployment
+
+### Configuration
+
+Configure `vite.config.ts` for Vercel:
+
+```ts
+import { one } from 'one/vite'
+import { tamaguiPlugin } from '@tamagui/vite-plugin'
+
+export default {
+  plugins: [
+    one({
+      web: {
+        deploy: 'vercel',
+        defaultRenderMode: 'ssg',
+      },
+    }),
+    tamaguiPlugin({
+      optimize: true,
+      components: ['tamagui'],
+      config: './src/tamagui/tamagui.config.ts',
+    }),
+  ],
+}
+```
+
+Add `vercel.json` to your project root:
+
+```json
+{
+  "framework": null,
+  "buildCommand": "bun run build",
+  "installCommand": "bun install"
+}
+```
+
+Setting `framework: null` is important - it tells Vercel to use the pre-built
+output from One's Build Output API instead of auto-detecting a framework.
+
+### Setting up your Vercel project
+
+**Option 1: Git integration (recommended)**
+
+1. Push your repo to GitHub, GitLab, or Bitbucket
+2. Go to [vercel.com/new](https://vercel.com/new)
+3. Import your repository
+4. Vercel auto-detects settings from `vercel.json`
+5. Click **Deploy**
+
+Once connected, every push to main triggers a production deploy. Pull requests
+automatically get preview deployments.
+
+**Option 2: CLI deploy**
+
+```bash
+# Install Vercel CLI
+npm install -g vercel
+
+# Link to a new or existing project
+vercel link
+
+# Deploy
+vercel deploy --prebuilt
+
+# Deploy to production
+vercel deploy --prebuilt --prod
+```
+
+### Testing production build locally
+
+You can do a basic sanity check of your production build:
+
+```bash
+# Build the static site
+bun run build
+
+# Serve the production build locally
+bun run serve
+```
+
+Note: This runs the Hono server from `dist/`, not the actual Vercel output. It's
+useful for catching build errors and checking pages render, but not a perfect
+simulation of Vercel.
+
+For true Vercel testing, use a preview deploy:
+
+```bash
+vercel deploy --prebuilt
+```
+
+Or push to a non-main branch - Git integration automatically creates preview
+deployments you can test before merging.
+
+### Custom domain setup
+
+After your first deploy:
+
+1. Go to your project in the Vercel dashboard
+2. Navigate to **Settings > Domains**
+3. Add your custom domain
+4. Update your DNS:
+   - **A record**: Point `@` to `76.76.21.21`
+   - **CNAME**: Point `www` to `cname.vercel-dns.com`
+
+If your domain is on another Vercel account, you'll need to add a TXT record for
+verification. Vercel will show you the exact record to add.
+
+## Route structure
+
+A typical static site has minimal routes:
+
+```
+app/
+├── _layout.tsx           # Root layout with header/footer
+├── (site)/
+│   ├── _layout.tsx       # Site wrapper
+│   ├── index+ssg.tsx     # Home page (static)
+│   └── blog/
+│       ├── index+ssg.tsx      # Blog index
+│       └── [slug]+ssg.tsx     # Blog posts (dynamic static)
+```
+
+Use `+ssg.tsx` suffix for all pages to generate static HTML at build time or
+alternatively set your `defaultRenderMode` setting in One to `"ssg"`.
+
+## How to prompt for this
+
+When using Claude Code or similar AI tools to strip down Takeout, use prompts
+like this, or even just reference this very page contents.
+
+> Strip this Takeout repo down to a static website. Remove Zero, Better Auth,
+> Drizzle, API routes, and native platforms. Keep One with SSG mode, Tamagui,
+> MDX for blog content, and theme switching. Configure for Vercel deployment.
+
+Or more specifically:
+
+> Remove these from the Takeout repo:
+>
+> - All `@rocicorp/zero` and `over-zero` dependencies and code
+> - Better Auth and all auth-related files
+> - Drizzle, database schemas, and migrations
+> - API routes (app/api/ directory)
+> - SST and Uncloud config
+> - Native-only dependencies (reanimated, gesture handler, bottom-tabs)
+> - iOS and Android directories
+>
+> Keep Tamagui, One with SSG, MDX, and theme switching. Update vite.config.ts
+> for Vercel deploy.
+
+## Key files to modify
+
+When stripping down manually, focus on these files:
+
+1. **package.json** - Remove unused dependencies, update scripts
+2. **vite.config.ts** - Set `deploy: 'vercel'` and `defaultRenderMode: 'ssg'`
+3. **app/** - Remove auth routes, API routes, and app-specific pages
+4. **src/** - Remove Zero queries, auth hooks, and server utilities
+5. **tsconfig.json** - Remove paths for deleted packages
+
+## Example: natewienert.com
+
+See
+[github.com/natewienert/natewienert](https://github.com/natewienert/natewienert)
+for a complete example of a stripped-down Takeout site.
+
+The result is ~33 source files with:
+
+- Home page with projects and timeline
+- Blog with MDX posts
+- Theme switching (light/dark/system)
+- Minimal Tamagui components
+- Vercel deployment
+
+Final `package.json` has only 6 main dependencies:
+
+```json
+{
+  "dependencies": {
+    "one": "^1.2.43",
+    "tamagui": "^1.141.4",
+    "@tamagui/config": "^1.141.4",
+    "@tamagui/vite-plugin": "^1.141.4",
+    "@vxrn/mdx": "^1.2.43",
+    "@vxrn/color-scheme": "^1.2.43",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  }
+}
+```
+
+## Build and deploy
+
+```bash
+# Development server
+bun run dev
+
+# Build static site
+bun run build
+
+# Test production build locally
+bun run serve
+
+# Deploy to Vercel (after vercel link)
+vercel deploy --prebuilt --prod
+```
+
+The build generates static HTML in `.vercel/output/static` - no serverless
+functions needed for pure SSG sites.
+
+## Next steps
+
+- [Deployment Overview](/docs/deployment-overview) - Full deployment options
+- [Highlights](/docs/highlights) - What makes Takeout unique
+- [One Documentation](https://onestack.dev/docs/routing) - File-system routing
+  details

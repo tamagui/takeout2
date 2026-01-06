@@ -100,11 +100,11 @@ export const AnimatedHomeHeader = memo(({ scrollY }: AnimatedHomeHeaderProps) =>
   return (
     <>
       <GradientBlurView
-        intensity={60}
+        intensity={20}
         tint={isDark ? 'dark' : 'light'}
         width="100%"
         height={isSmallScreen ? 30 : 60}
-        transform="rotate(180deg)"
+        inverted
         t={0}
         z={999}
       />

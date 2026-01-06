@@ -48,6 +48,9 @@ export default {
       'mdx-bundler/client',
       'react-native',
     ],
+    // @hot-updater/cli-tools contains native .node binaries (oxc-transform)
+    // that esbuild can't handle - exclude from optimization
+    exclude: ['@hot-updater/cli-tools'],
   },
 
   ssr: {

@@ -40,7 +40,7 @@
     "check": "tsc --noEmit"
   },
   "dependencies": {
-    "@hot-updater/react-native": "^0.20.11"
+    "@hot-updater/react-native": "0.25.6"
   },
   "peerDependencies": {
     "expo-application": "*",

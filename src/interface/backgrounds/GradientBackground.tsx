@@ -1,8 +1,9 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
-import { BlurView } from 'expo-blur'
-import { ImageBackground, StyleSheet } from 'react-native'
+import { useUserScheme } from '@vxrn/color-scheme'
+import { ImageBackground, StyleSheet, useColorScheme } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useWindowDimensions, View } from 'tamagui'
+import { useTheme, useWindowDimensions, View } from 'tamagui'
+import { useThemeName } from 'tamagui'
 
 import { useIsDark } from '~/features/theme/useIsDark'
 
@@ -21,7 +22,11 @@ export const GradientBackground = ({
 }: GradientBackgroundProps) => {
   const inset = useSafeAreaInsets()
   const isDark = useIsDark()
+  const theme = useTheme()
   const { width, height } = useWindowDimensions()
+  const themeName = useThemeName()
+  const userScheme = useUserScheme()
+  const colorScheme = useColorScheme()
 
   if (useImage) {
     return (
@@ -31,7 +36,11 @@ export const GradientBackground = ({
           {children}
         </View>
         <ImageBackground
-          source={require('../../../assets/background.png')}
+          source={
+            isDark
+              ? require('../../../assets/background-dark.png')
+              : require('../../../assets/background-light.png')
+          }
           style={[StyleSheet.absoluteFillObject, { zIndex: -2 }]}
           resizeMode="cover"
         />
@@ -44,22 +53,17 @@ export const GradientBackground = ({
     )
   }
 
-  // Generated gradient background - dark purple/blue theme
+  // Generated gradient background - dark grey to black using theme colors
+  const color1 = theme.color1.val
+  const color2 = theme.color2.val
+  const color3 = theme.color3.val
+
   return (
     <View flex={1} pb={useInsets ? inset.bottom : 0}>
-      {/* Base gradient - deep navy to dark purple */}
+      {/* Base gradient - using theme colors */}
       <LinearGradient
-        colors={['#1a1a3e', '#252555', '#2d2a5a', '#1e1e45']}
+        colors={[color1, color2, color3, color1]}
         locations={[0, 0.3, 0.6, 1]}
-        start={[0, 0]}
-        end={[1, 1]}
-        style={[StyleSheet.absoluteFill, { zIndex: -2 }]}
-      />
-
-      {/* Accent gradient overlay - purple/pink highlights */}
-      <LinearGradient
-        colors={['transparent', 'rgba(90, 70, 180, 0.3)', 'rgba(160, 100, 180, 0.2)']}
-        locations={[0, 0.5, 1]}
         start={[0, 0]}
         end={[1, 1]}
         style={[StyleSheet.absoluteFill, { zIndex: -2 }]}
@@ -67,11 +71,6 @@ export const GradientBackground = ({
 
       {/* Content */}
       {children}
-      <GradientBlurView
-        tint={isDark ? 'dark' : 'light'}
-        width={width}
-        height={height / 1.5}
-      />
     </View>
   )
 }

@@ -1,8 +1,10 @@
 import { BlurView } from 'expo-blur'
-import { memo, useCallback, useState } from 'react'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { Dimensions, StyleSheet } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable'
+import ReanimatedSwipeable, {
+  type SwipeableMethods,
+} from 'react-native-gesture-handler/ReanimatedSwipeable'
 import Animated, {
   Extrapolation,
   interpolate,
@@ -86,27 +88,32 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
   const prevScrollY = useSharedValue(0)
   const fullscreenProgress = useSharedValue(0)
   const [menuItems, setMenuItems] = useState(QUICK_MENU_ITEMS)
+  const swipeableRefs = useRef<Map<string, SwipeableMethods>>(new Map())
 
-  // reset values when dropdown opens or closes
+  const resetSwipeables = useCallback(() => {
+    swipeableRefs.current.forEach((ref) => {
+      ref.close()
+    })
+  }, [])
+
   useDerivedValue(() => {
-    // when closing
     if (isOpen.value < 0.5 && prevIsOpen.value >= 0.5) {
       expansion.value = 0
       fullscreenProgress.value = 0
       prevScrollY.value = 0
+      scheduleOnRN(resetSwipeables)
     }
-    // when opening
     if (isOpen.value > 0.5 && prevIsOpen.value <= 0.5) {
       expansion.value = 0
       fullscreenProgress.value = 0
       prevScrollY.value = 0
+      scheduleOnRN(resetSwipeables)
     }
     prevIsOpen.value = isOpen.value
   })
 
   const handleItemPress = useCallback(() => {
     lightImpact()
-    // mock - do nothing for now
   }, [])
 
   const handleRemoveItem = useCallback((id: string) => {
@@ -144,22 +151,52 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
     })
     .onUpdate((event) => {
       const dragDelta = event.translationY / 150
-      const newExpansion = startExpansion.value + dragDelta
-      expansion.value = Math.max(0, Math.min(1, newExpansion))
+
+      if (startExpansion.value < 0.1) {
+        if (event.translationY > 0) {
+          expansion.value = Math.min(1, dragDelta)
+        } else {
+          const closeProgress = Math.min(1, Math.abs(event.translationY) / 100)
+          isOpen.value = 1 - closeProgress * 0.5
+        }
+      } else {
+        const newExpansion = startExpansion.value + dragDelta
+        expansion.value = Math.max(0, Math.min(1, newExpansion))
+      }
     })
     .onEnd((event) => {
       const velocity = event.velocityY
       const threshold = 300
 
-      if (velocity < -threshold || (expansion.value < 0.2 && event.translationY < -30)) {
-        expansion.value = withSpring(0, SPRING_CONFIG)
-        scheduleOnRN(onClose)
-        scheduleOnRN(lightImpact)
-      } else if (velocity > threshold || expansion.value > 0.5) {
-        expansion.value = withSpring(1, SPRING_CONFIG)
-        scheduleOnRN(mediumImpact)
+      if (isOpen.value < 1 && isOpen.value > 0.5) {
+        isOpen.value = withSpring(1, SPRING_CONFIG)
+      }
+
+      if (startExpansion.value < 0.1) {
+        if (event.translationY < -50 || velocity < -threshold) {
+          expansion.value = withSpring(0, SPRING_CONFIG)
+          isOpen.value = withTiming(0, { duration: 200 })
+          scheduleOnRN(onClose)
+          scheduleOnRN(lightImpact)
+        } else if (event.translationY > 30 || velocity > threshold) {
+          expansion.value = withSpring(1, SPRING_CONFIG)
+          scheduleOnRN(mediumImpact)
+        } else {
+          expansion.value = withSpring(0, SPRING_CONFIG)
+        }
       } else {
-        expansion.value = withSpring(expansion.value > 0.5 ? 1 : 0, SPRING_CONFIG)
+        if (
+          velocity < -threshold ||
+          (expansion.value < 0.2 && event.translationY < -30)
+        ) {
+          expansion.value = withSpring(0, SPRING_CONFIG)
+          scheduleOnRN(lightImpact)
+        } else if (velocity > threshold || expansion.value > 0.5) {
+          expansion.value = withSpring(1, SPRING_CONFIG)
+          scheduleOnRN(mediumImpact)
+        } else {
+          expansion.value = withSpring(expansion.value > 0.5 ? 1 : 0, SPRING_CONFIG)
+        }
       }
     })
 
@@ -205,24 +242,47 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
     }
   })
 
+  const animatedHandleContainerStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(expansion.value, [1.5, 2], [1, 0], Extrapolation.CLAMP)
+    return {
+      opacity,
+      pointerEvents: expansion.value < 1.8 ? 'auto' : 'none',
+    }
+  })
+
+  const animatedFloatingHandleStyle = useAnimatedStyle(() => {
+    const containerHeight = interpolate(
+      expansion.value,
+      [0, 1, 2],
+      [COLLAPSED_HEIGHT, EXPANDED_HEIGHT, FULLSCREEN_HEIGHT],
+      Extrapolation.CLAMP
+    )
+    const opacity = interpolate(isOpen.value, [0, 0.5, 1], [0, 0, 1], Extrapolation.CLAMP)
+    return {
+      top: containerHeight + 8,
+      opacity,
+      pointerEvents: isOpen.value > 0.5 ? 'auto' : 'none',
+    }
+  })
+
   const animatedHandleStyle = useAnimatedStyle(() => {
-    const baseWidth = interpolate(expansion.value, [0, 1], [40, 50], Extrapolation.CLAMP)
+    const baseWidth = interpolate(expansion.value, [0, 1], [36, 44], Extrapolation.CLAMP)
     const width = interpolate(
       fullscreenProgress.value,
       [0, 1],
-      [baseWidth, 32],
+      [baseWidth, 28],
       Extrapolation.CLAMP
     )
     const height = interpolate(
       fullscreenProgress.value,
       [0, 1],
-      [5, 32],
+      [4, 28],
       Extrapolation.CLAMP
     )
     const borderRadius = interpolate(
       fullscreenProgress.value,
       [0, 1],
-      [3, 16],
+      [2, 14],
       Extrapolation.CLAMP
     )
     return { width, height, borderRadius }
@@ -244,7 +304,6 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
     return { opacity, transform: [{ scale }] }
   })
 
-  // horizontal icons - visible when collapsed
   const animatedHorizontalStyle = useAnimatedStyle(() => {
     const opacity = interpolate(expansion.value, [0, 0.3], [1, 0], Extrapolation.CLAMP)
     return {
@@ -253,7 +312,6 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
     }
   })
 
-  // vertical list - visible when expanded
   const animatedVerticalStyle = useAnimatedStyle(() => {
     const opacity = interpolate(expansion.value, [0.3, 0.6], [0, 1], Extrapolation.CLAMP)
     return {
@@ -264,7 +322,6 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
 
   return (
     <>
-      {/* backdrop blur */}
       <Animated.View
         style={[StyleSheet.absoluteFill, { zIndex: 998 }, animatedBackdropStyle]}
       >
@@ -276,7 +333,6 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
       </Animated.View>
 
-      {/* dropdown container */}
       <Animated.View
         style={[
           {
@@ -299,7 +355,6 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
           containerStyle={{ flex: 1, width: '100%', height: '100%' }}
         >
           <YStack flex={1} pt={insets.top} px="$4" pb="$3">
-            {/* header row */}
             <XStack items="center" justify="space-between" mb="$4" pt="$2">
               <SizableText fontSize="$6" fontWeight="700" color="$color">
                 Quick Menu
@@ -318,7 +373,6 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
             </XStack>
 
             <View flex={1} position="relative">
-              {/* horizontal icons - collapsed state */}
               <Animated.View
                 style={[
                   { position: 'absolute', left: 0, right: 0, top: 0 },
@@ -338,7 +392,6 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
                 </XStack>
               </Animated.View>
 
-              {/* vertical list - expanded state */}
               <Animated.View
                 style={[
                   { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 },
@@ -359,35 +412,62 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
                         item={item}
                         onPress={handleItemPress}
                         onRemove={handleRemoveItem}
+                        onSwipeableRef={(id, ref) => {
+                          if (ref) {
+                            swipeableRefs.current.set(id, ref)
+                          } else {
+                            swipeableRefs.current.delete(id)
+                          }
+                        }}
                       />
                     ))}
                   </View>
                 </Animated.ScrollView>
               </Animated.View>
             </View>
-
-            {/* drag handle */}
-            <GestureDetector gesture={panGesture}>
-              <View items="center" pt="$3" pb="$1">
-                <Animated.View
-                  style={[
-                    {
-                      backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    },
-                    animatedHandleStyle,
-                  ]}
-                >
-                  <Animated.View style={animatedChevronStyle}>
-                    <CaretDownIcon size={18} color="white" />
-                  </Animated.View>
-                </Animated.View>
-              </View>
-            </GestureDetector>
           </YStack>
         </GlassView>
       </Animated.View>
+
+      <GestureDetector gesture={panGesture}>
+        <Animated.View
+          style={[
+            {
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              alignItems: 'center',
+              zIndex: 1001,
+            },
+            animatedFloatingHandleStyle,
+          ]}
+        >
+          <Animated.View style={animatedHandleContainerStyle}>
+            <View
+              width={60}
+              height={32}
+              items="center"
+              justify="flex-start"
+              hitSlop={{ top: 15, bottom: 15, left: 30, right: 30 }}
+            >
+              <Animated.View
+                style={[
+                  {
+                    backgroundColor: 'rgba(126, 126, 126, 0.9)',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  },
+                  animatedHandleStyle,
+                ]}
+              >
+                <Animated.View style={animatedChevronStyle}>
+                  <CaretDownIcon size={14} color="white" />
+                </Animated.View>
+              </Animated.View>
+            </View>
+          </Animated.View>
+        </Animated.View>
+      </GestureDetector>
     </>
   )
 })
@@ -480,10 +560,23 @@ interface QuickMenuRowProps {
   item: QuickMenuItem
   onPress: () => void
   onRemove: (id: string) => void
+  onSwipeableRef?: (id: string, ref: SwipeableMethods | null) => void
 }
 
-const QuickMenuRow = ({ item, onPress, onRemove }: QuickMenuRowProps) => {
+const QuickMenuRow = ({ item, onPress, onRemove, onSwipeableRef }: QuickMenuRowProps) => {
   const Icon = item.icon
+  const swipeableRef = useRef<SwipeableMethods>(null)
+
+  useEffect(() => {
+    if (onSwipeableRef && swipeableRef.current) {
+      onSwipeableRef(item.id, swipeableRef.current)
+    }
+    return () => {
+      if (onSwipeableRef) {
+        onSwipeableRef(item.id, null)
+      }
+    }
+  }, [item.id, onSwipeableRef])
 
   const handleRemove = useCallback(() => {
     mediumImpact()
@@ -501,6 +594,7 @@ const QuickMenuRow = ({ item, onPress, onRemove }: QuickMenuRowProps) => {
     <Animated.View style={{ width: '100%' }} layout={LinearTransition.springify()}>
       <FastSquircleView rounded={16} overflow="hidden">
         <ReanimatedSwipeable
+          ref={swipeableRef}
           friction={2}
           rightThreshold={40}
           renderRightActions={renderRightActions}

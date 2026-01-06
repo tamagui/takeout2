@@ -100,7 +100,7 @@ export const AnimatedHomeHeader = memo(({ scrollY }: AnimatedHomeHeaderProps) =>
   return (
     <>
       <GradientBlurView
-        intensity={30}
+        intensity={60}
         tint={isDark ? 'dark' : 'light'}
         width="100%"
         height={isSmallScreen ? 30 : 60}
@@ -117,7 +117,7 @@ export const AnimatedHomeHeader = memo(({ scrollY }: AnimatedHomeHeaderProps) =>
         ]}
       >
         <BlurView
-          intensity={30}
+          intensity={60}
           tint={isDark ? 'dark' : 'light'}
           style={StyleSheet.absoluteFill}
         />

@@ -44,7 +44,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
   return (
     <FastSquircleView
       mt="$3"
-      rounded={30}
+      rounded={20}
       cornerSmoothing={1}
       overflow="hidden"
       data-testid={`post-card-${post.id}`}
@@ -85,7 +85,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
       <Pressable onPress={handleImagePress}>
         <FastSquircleView
           width="100%"
-          rounded={30}
+          rounded={16}
           overflow="hidden"
           style={[{ aspectRatio: Math.max(aspectRatio, 0.8) }]}
           cornerSmoothing={1}

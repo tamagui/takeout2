@@ -9,20 +9,27 @@ import { easeGradient } from '~/helpers/gradient'
 interface GradientBlurViewProps extends ViewProps {
   intensity?: number
   tint?: BlurViewProps['tint']
+  inverted?: boolean
 }
 
 export const GradientBlurView = ({
   intensity = 80,
   tint = 'default',
+  inverted = false,
   ...viewProps
 }: GradientBlurViewProps) => {
-  // gradient for masking blur effect - transparent to black
   const { colors, locations } = easeGradient({
-    colorStops: {
-      0: { color: 'transparent' },
-      0.5: { color: 'rgba(255,255,255,0.99)' },
-      1: { color: 'black' },
-    },
+    colorStops: inverted
+      ? {
+          0: { color: 'black' },
+          0.5: { color: 'rgba(255,255,255,0.99)' },
+          1: { color: 'transparent' },
+        }
+      : {
+          0: { color: 'transparent' },
+          0.5: { color: 'rgba(255,255,255,0.99)' },
+          1: { color: 'black' },
+        },
   })
   return (
     <View

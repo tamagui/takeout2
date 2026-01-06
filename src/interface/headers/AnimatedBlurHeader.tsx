@@ -15,6 +15,7 @@ import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 
 import { ButtonSimple } from '../buttons/ButtonSimple'
 import { GlassView } from '../effects/GlassView'
+import { GradientBlurView } from '../effects/GradientBlurView'
 
 import type { ReactNode } from 'react'
 
@@ -64,19 +65,6 @@ export const AnimatedBlurHeader = memo(
       return { opacity }
     })
 
-    const animatedBorderStyle = useAnimatedStyle(() => {
-      const opacity = interpolate(
-        scrollY.value,
-        [BLUR_START_SCROLL, BLUR_END_SCROLL],
-        [0, 0.1],
-        Extrapolation.CLAMP
-      )
-      return {
-        borderBottomWidth: 1,
-        borderBottomColor: `rgba(255, 255, 255, ${opacity})`,
-      }
-    })
-
     const renderLeftContent = () => {
       if (leftContent) return leftContent
 
@@ -107,15 +95,16 @@ export const AnimatedBlurHeader = memo(
             zIndex: 100,
             paddingTop: insets.top,
           },
-          animatedBorderStyle,
+          // animatedBorderStyle,
         ]}
       >
         <Animated.View style={[StyleSheet.absoluteFill, animatedBlurStyle]}>
-          <GlassView
-            isFallback
-            borderRadius={0}
-            containerStyle={StyleSheet.absoluteFill}
-            glassEffectStyle="clear"
+          <GradientBlurView
+            intensity={20}
+            tint={isDark ? 'dark' : 'light'}
+            width="100%"
+            height="100%"
+            inverted
           />
         </Animated.View>
 

@@ -50,7 +50,7 @@ export default {
     runtimeVersion: version, // must be set to use hot-updater "appVersion" update strategy
     newArchEnabled: true,
     platforms: ['ios', 'android', 'web'],
-    userInterfaceStyle: 'dark',
+    userInterfaceStyle: 'automatic',
     icon: getAppIcon(),
     ios: {
       supportsTablet: false,

@@ -44,7 +44,7 @@ export const AnimatedBlurHeader = memo(
     const insets = useSafeAreaInsets()
     const router = useRouter()
     const isDark = useIsDark()
-    const theme = useTheme()
+
     const totalHeaderHeight = HEADER_HEIGHT + insets.top
 
     const handleBackPress = useCallback(() => {
@@ -71,7 +71,7 @@ export const AnimatedBlurHeader = memo(
       if (showBackButton) {
         return (
           <ButtonSimple
-            size="medium"
+            size="large"
             glass
             circular
             onPress={() => router.back()}
@@ -95,7 +95,6 @@ export const AnimatedBlurHeader = memo(
             zIndex: 100,
             paddingTop: insets.top,
           },
-          // animatedBorderStyle,
         ]}
       >
         <Animated.View style={[StyleSheet.absoluteFill, animatedBlurStyle]}>

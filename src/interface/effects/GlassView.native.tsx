@@ -33,7 +33,6 @@ export const GlassView = memo(
           style={[
             {
               borderRadius,
-              overflow: 'hidden',
             },
             containerStyle as any,
           ]}

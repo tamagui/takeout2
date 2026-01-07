@@ -268,7 +268,7 @@
         "@take-out/helpers": "workspace:*",
       },
       "devDependencies": {
-        "vxrn": "1.2.46",
+        "vxrn": "*",
       },
     },
     "packages/takeout": {

@@ -134,6 +134,6 @@ declare module 'tamagui' {
   interface TamaguiCustomConfig extends Conf {}
 
   interface TypeOverride {
-    groupNames(): 'button' | 'message' | 'icon' | 'item' | 'frame'
+    groupNames(): 'button' | 'message' | 'icon' | 'item' | 'frame' | 'card'
   }
 }

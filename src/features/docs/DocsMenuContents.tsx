@@ -127,7 +127,7 @@ const SubSection = ({
                 {section.title}
               </Paragraph>
 
-              <Square animation="quickLessBouncy" rotate={open ? '180deg' : '0deg'}>
+              <Square animation="bouncy" rotate={open ? '180deg' : '0deg'}>
                 <CaretDownIcon color="$color7" size="$1" />
               </Square>
             </XStack>
@@ -135,10 +135,10 @@ const SubSection = ({
         }}
       </Accordion.Trigger>
 
-      <Accordion.HeightAnimator overflow="hidden" animation="quickLessBouncy">
+      <Accordion.HeightAnimator overflow="hidden" animation="medium">
         <Accordion.Content
           unstyled
-          animation="quickLessBouncy"
+          animation="medium"
           bg="transparent"
           exitStyle={{ opacity: 0 }}
         >

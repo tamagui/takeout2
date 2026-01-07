@@ -62,7 +62,15 @@ export function DocsLayout() {
         </View>
 
         {/* Main Content */}
-        <YStack flex={1} flexBasis="auto" maxW={800} mx="auto" px="$4" py="$6" $md={{ px: '$8' }}>
+        <YStack
+          flex={1}
+          flexBasis="auto"
+          maxW={800}
+          mx="auto"
+          px="$4"
+          py="$6"
+          $md={{ px: '$8' }}
+        >
           <EnsureFlexed />
 
           <Spacer $md={{ display: 'none' }} />
@@ -74,32 +82,36 @@ export function DocsLayout() {
             <XStack mt="$14" mb="$10" justify="space-between" gap="$4" flexWrap="wrap">
               {previous && (
                 <Link href={previous.route as Href} asChild>
-                  <PaginationLinkFrame>
-                    <CaretLeftIcon size={20} color="$color11" />
-                    <View>
+                  <PaginationLinkFrame group="card">
+                    <PaginationIcon side="previous">
+                      <CaretLeftIcon size={20} color="$color11" />
+                    </PaginationIcon>
+                    <PaginationTitle side="previous">
                       <SizableText select="none" size="$5">
                         Previous
                       </SizableText>
                       <SizableText select="none" size="$3" color="$color10">
                         {previous.title}
                       </SizableText>
-                    </View>
+                    </PaginationTitle>
                   </PaginationLinkFrame>
                 </Link>
               )}
 
               {next && (
                 <Link href={next.route as Href} asChild>
-                  <PaginationLinkFrame justify="flex-end">
-                    <View>
+                  <PaginationLinkFrame justify="flex-end" group="card">
+                    <PaginationTitle side="next">
                       <SizableText select="none" size="$5">
                         Next
                       </SizableText>
                       <SizableText select="none" size="$3" color="$color10">
                         {next.title}
                       </SizableText>
-                    </View>
-                    <CaretRightIcon size={20} color="$color11" />
+                    </PaginationTitle>
+                    <PaginationIcon side="next">
+                      <CaretRightIcon size={20} color="$color11" />
+                    </PaginationIcon>
                   </PaginationLinkFrame>
                 </Link>
               )}
@@ -150,3 +162,32 @@ const PaginationLinkFrame = styled(XStack, {
     bg: '$backgroundPress',
   },
 })
+
+const PaginationTitle = styled(YStack, {
+  animation: 'bouncy',
+  variants: {
+    side: {
+      previous: {
+        '$group-card-hover': { x: '$4' },
+      },
+      next: {
+        '$group-card-hover': { x: '$-4' },
+      },
+    },
+  },
+} as const)
+
+const PaginationIcon = styled(View, {
+  opacity: 0,
+  animation: 'quick',
+  variants: {
+    side: {
+      previous: {
+        '$group-card-hover': { opacity: 1, x: '$2' },
+      },
+      next: {
+        '$group-card-hover': { opacity: 1, x: '$-2' },
+      },
+    },
+  },
+} as const)

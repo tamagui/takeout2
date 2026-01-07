@@ -51,7 +51,6 @@ export const ListItemText = forwardRef<TamaguiElement, ListItemTextProps>(
           ref={ref as any}
           defaultValue={editingValue || (children as string)}
           autoFocus
-          selectTextOnFocus
           onSubmitEditing={(e) => {
             setEditing(false)
             onEditComplete?.(e.nativeEvent.text || '')

@@ -39,7 +39,6 @@ const MenuTrigger = ({ children, ...props }: any) => {
     // prevent parent items getting press event
     <YStack onPressIn={prevent} onPressOut={prevent}>
       <Popover.Trigger
-        // @ts-expect-error
         onDoubleClick={(e) => {
           e.preventDefault()
           e.stopPropagation()

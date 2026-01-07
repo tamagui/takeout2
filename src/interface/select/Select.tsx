@@ -105,7 +105,9 @@ export function Select({
                   <TamaguiSelect.Item index={i} key={item.id} value={item.id}>
                     <XStack flex={1} overflow="hidden" gap="$2" items="center">
                       {item.icon}
-                      <TamaguiSelect.ItemText ellipse>{item.name}</TamaguiSelect.ItemText>
+                      <TamaguiSelect.ItemText numberOfLines={1}>
+                        {item.name}
+                      </TamaguiSelect.ItemText>
                     </XStack>
                     <TamaguiSelect.ItemIndicator marginLeft="auto">
                       <CheckIcon size={12} color="$color9" />

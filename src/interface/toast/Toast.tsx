@@ -97,7 +97,7 @@ const ToastDisplay = () => {
       rounded="$8"
     >
       <YStack>
-        <Toast.Title ellipse size="$3" color="$color12">
+        <Toast.Title numberOfLines={1} size="$3" color="$color12">
           {currentToast?.title ?? ''}
         </Toast.Title>
         {!!currentToast?.message && (

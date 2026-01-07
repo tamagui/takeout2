@@ -205,7 +205,7 @@ const NotificationToastItem = ({
           </Toast.Title>
 
           {!!description && (
-            <Toast.Description size="$2" color="$color11" ellipse numberOfLines={5}>
+            <Toast.Description size="$2" color="$color11" numberOfLines={5}>
               {description}
             </Toast.Description>
           )}

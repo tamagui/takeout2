@@ -102,6 +102,7 @@ const ButtonFrame = styled(XStack, {
   px: '$2.5',
   rounded: '$5',
   cursor: 'default',
+  position: 'relative',
 
   pressStyle: {
     opacity: 0.5,

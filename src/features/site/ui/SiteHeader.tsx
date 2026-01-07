@@ -20,10 +20,10 @@ export const SiteHeader = () => {
     <ScrollHeader>
       <PageContainer>
         <YStack width="100%" py="$2">
-          <XStack width="100%" items="center" $md={{ px: '$4' }}>
+          <XStack position="relative" width="100%" items="center" $md={{ px: '$4' }}>
             <SocialLinksRow />
 
-            <Spacer flex />
+            <Spacer flex={1} />
 
             <XStack
               position="absolute"

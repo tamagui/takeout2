@@ -33,7 +33,7 @@ export const AvatarUpload = ({
   const image = uploadUrl || currentImage || ''
 
   return (
-    <XStack gap="$3" items="center" {...viewProps}>
+    <XStack gap="$3" items="center" position="relative" {...viewProps}>
       <Avatar key={image} size={100} image={image} />
 
       {dropOverlay}

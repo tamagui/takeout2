@@ -193,7 +193,7 @@ export const ProfileSettingsPage = () => {
         },
       ],
     },
-    // TODO
+    // TODO: handle admin panel
     // ...(isAdmin
     //   ? [
     //       {
@@ -240,7 +240,7 @@ export const ProfileSettingsPage = () => {
       showsVerticalScrollIndicator={false}
       contentInsetAdjustmentBehavior="automatic"
     >
-      <YStack flex={1} pb="$10">
+      <YStack flex={1} flexBasis="auto" pb="$10">
         {allSections.map((section, sectionIndex) => (
           <YStack key={section.title} mb="$6" ml="$4">
             <SepHeading>{section.title}</SepHeading>

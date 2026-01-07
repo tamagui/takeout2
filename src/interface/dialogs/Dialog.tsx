@@ -234,7 +234,7 @@ const DialogHeader = ({
 const DialogFooter = (props: { children: any }) => {
   return (
     <>
-      <Spacer flex />
+      <Spacer flex={1} />
       <YStack gap="$3">
         <Separator opacity={0.5} />
         <XStack justify="flex-end" gap="$2">

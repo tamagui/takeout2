@@ -34,7 +34,7 @@ export const HomePage = memo(() => {
         )}
       </AnimatePresence>
 
-      <YStack pb="$10" gap="$4">
+      <YStack position="relative" flexBasis="auto" pb="$10" gap="$4">
         {!isLoading && posts.length === 0 ? (
           <YStack p="$4" items="center" justify="center" mt="$4">
             <H5>No posts yet</H5>

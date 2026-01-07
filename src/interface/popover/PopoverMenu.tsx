@@ -41,7 +41,14 @@ export const PopoverMenu = ({
       </Adapt>
 
       <Popover.Content shadow={shadow} p={0}>
-        <YStack width="100%" rounded="$5" overflow="hidden" height="100%" flex={1}>
+        <YStack
+          width="100%"
+          rounded="$5"
+          overflow="hidden"
+          height="100%"
+          flex={1}
+          flexBasis="auto"
+        >
           {children}
         </YStack>
       </Popover.Content>

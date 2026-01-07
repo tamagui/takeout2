@@ -30,6 +30,7 @@ export function DocsLayout() {
     <>
       <XStack
         flex={1}
+        flexBasis="auto"
         mx="auto"
         width="100%"
         $md={{
@@ -61,7 +62,7 @@ export function DocsLayout() {
         </View>
 
         {/* Main Content */}
-        <YStack flex={1} maxW={800} mx="auto" px="$4" py="$6" $md={{ px: '$8' }}>
+        <YStack flex={1} flexBasis="auto" maxW={800} mx="auto" px="$4" py="$6" $md={{ px: '$8' }}>
           <EnsureFlexed />
 
           <Spacer $md={{ display: 'none' }} />

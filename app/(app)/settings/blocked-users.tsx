@@ -39,7 +39,13 @@ export const ProfileBlockedUsersPage = () => {
 
   const renderItem = useCallback(
     ({ item }: { item: User }) => (
-      <ListItem bg="$background" hoverTheme pressTheme px="$4" py="$3">
+      <ListItem
+        bg="$background"
+        hoverStyle={{ bg: '$color1' }}
+        pressStyle={{ bg: '$color3' }}
+        px="$4"
+        py="$3"
+      >
         <Avatar image={item.image} size={44} mr="$3" />
 
         <YStack gap="$1" flex={1}>
@@ -91,7 +97,7 @@ export const ProfileBlockedUsersPage = () => {
   }, [hasMore, blockedUsers.length])
 
   return (
-    <YStack flex={1}>
+    <YStack flex={1} flexBasis="auto">
       {isLoading ? (
         <YStack flex={1} items="center" justify="center">
           <Spinner size="large" color="$color10" />

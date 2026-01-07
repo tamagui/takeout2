@@ -68,7 +68,7 @@ export const ProfileEditPage = () => {
   }, [navigation, hasUnsavedChanges, isSaving])
 
   return (
-    <View flex={1}>
+    <View flex={1} flexBasis="auto">
       <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
         bottomOffset={100}
@@ -100,7 +100,7 @@ export const ProfileEditPage = () => {
               value={name}
               onChangeText={handleNameChange}
               autoCapitalize="words"
-              autoCorrect={false}
+              autoCorrect="off"
             />
           </YStack>
           <YStack>
@@ -119,7 +119,7 @@ export const ProfileEditPage = () => {
                 value={username}
                 onChangeText={handleUsernameChange}
                 autoCapitalize="none"
-                autoCorrect={false}
+                autoCorrect="off"
                 pr="$10"
               />
               <XStack position="absolute" r="$4">

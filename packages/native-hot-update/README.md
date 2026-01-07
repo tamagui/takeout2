@@ -26,6 +26,7 @@ bun add @take-out/native-hot-update react-native-mmkv
 import { MMKV } from 'react-native-mmkv'
 import { createHotUpdater } from '@take-out/native-hot-update'
 import { createMMKVStorage } from '@take-out/native-hot-update/mmkv'
+import { HotUpdater } from '@hot-updater/react-native'
 
 const mmkv = new MMKV({ id: 'hot-updater' })
 
@@ -35,12 +36,32 @@ const hotUpdaterInstance = createHotUpdater({
   updateStrategy: 'appVersion',
 })
 
-// Export the hook directly for convenience
+// Export the hook and resolver
 export const useOtaUpdater = hotUpdaterInstance.useOtaUpdater
+export const hotUpdaterResolver = hotUpdaterInstance.createResolver()
 export const hotUpdater = hotUpdaterInstance
 ```
 
-### 2. Use in Your App
+### 2. Wrap Your App
+
+```tsx
+// app/index.tsx or App.tsx
+import { HotUpdater } from '@hot-updater/react-native'
+import { hotUpdaterResolver } from './hotUpdater'
+
+function App() {
+  // Your app component
+  return <YourApp />
+}
+
+// IMPORTANT: You must wrap your app with HotUpdater.wrap
+export default HotUpdater.wrap({
+  resolver: hotUpdaterResolver,
+  updateMode: 'manual', // Use manual mode with custom hooks
+})(App)
+```
+
+### 3. Use in Your App
 
 ```tsx
 // app/_layout.tsx

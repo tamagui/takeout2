@@ -1,10 +1,10 @@
 import {
-  getUpdateSource,
   HotUpdater,
   useHotUpdaterStore,
+  type HotUpdaterResolver,
 } from '@hot-updater/react-native'
 import * as Application from 'expo-application'
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Alert } from 'react-native'
 
 import type { HotUpdaterConfig, HotUpdaterInstance, UpdateInfo } from './types'
@@ -15,6 +15,33 @@ const PRE_RELEASE_BUNDLE_ID_KEY = 'hotUpdater.preReleaseBundleId'
 
 export function createHotUpdater(config: HotUpdaterConfig): HotUpdaterInstance {
   const { serverUrl, storage, updateStrategy = 'appVersion' } = config
+
+  // Create a resolver that uses the configured serverUrl
+  const createResolver = (): HotUpdaterResolver => ({
+    checkUpdate: async (params) => {
+      // Use POST request with all params in body (more flexible than URL path)
+      const response = await fetch(`${serverUrl}/check`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...params.requestHeaders,
+        },
+        body: JSON.stringify({
+          platform: params.platform,
+          appVersion: params.appVersion,
+          bundleId: params.bundleId,
+          minBundleId: params.minBundleId,
+          channel: params.channel,
+          updateStrategy: params.updateStrategy || updateStrategy,
+          fingerprintHash: params.fingerprintHash,
+        }),
+        signal: params.requestTimeout ? AbortSignal.timeout(params.requestTimeout) : undefined,
+      })
+      
+      if (!response.ok) return null
+      return response.json()
+    },
+  })
 
   let isUpdatePending = false
 
@@ -111,8 +138,9 @@ export function createHotUpdater(config: HotUpdaterConfig): HotUpdaterInstance {
 
           if (!shouldContinue) return
 
+          // Check for update using the configured strategy
           const updateInfo = await HotUpdater.checkForUpdate({
-            source: getUpdateSource(serverUrl, { updateStrategy }),
+            updateStrategy,
           })
 
           if (!updateInfo) {
@@ -201,14 +229,15 @@ export function createHotUpdater(config: HotUpdaterConfig): HotUpdaterInstance {
   ) => {
     const { channel, isPreRelease = false } = options
 
-    const updateSource = getUpdateSource(serverUrl, { updateStrategy })
-
-    const finalSource = channel
-      ? (params: any) => updateSource({ ...params, channel })
-      : updateSource
+    // Check for update with optional request headers for channel
+    const requestHeaders: Record<string, string> = {}
+    if (channel) {
+      requestHeaders['X-Channel'] = channel
+    }
 
     const updateInfo = await HotUpdater.checkForUpdate({
-      source: finalSource,
+      updateStrategy,
+      ...(Object.keys(requestHeaders).length > 0 && { requestHeaders }),
     })
 
     if (updateInfo) {
@@ -227,6 +256,7 @@ export function createHotUpdater(config: HotUpdaterConfig): HotUpdaterInstance {
   }
 
   return {
+    createResolver, // Export resolver for use with HotUpdater.wrap()
     useOtaUpdater,
     checkForUpdate,
     getAppliedOta,

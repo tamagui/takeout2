@@ -71,9 +71,9 @@ export const UserProfilePopoverContent = () => {
           size="$3"
           placeholder="John Doe"
           value={name}
-          onChangeText={handleNameChange}
+          onChange={(e) => handleNameChange((e.target as HTMLInputElement).value)}
           autoCapitalize="words"
-          autoCorrect={false}
+          autoCorrect="off"
         />
       </YStack>
 
@@ -93,9 +93,9 @@ export const UserProfilePopoverContent = () => {
             flex={1}
             placeholder="johndoe"
             value={username}
-            onChangeText={handleUsernameChange}
+            onChange={(e) => handleUsernameChange((e.target as HTMLInputElement).value)}
             autoCapitalize="none"
-            autoCorrect={false}
+            autoCorrect="off"
             pr="$8"
           />
           <XStack position="absolute" r="$2">

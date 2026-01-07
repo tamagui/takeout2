@@ -28,7 +28,7 @@ export const DialogAdminPassword = () => {
     >
       <YStack pointerEvents="box-none" gap="$2" flex={1}>
         <Dialog.Header title="Admin Login" description="Enter password" />
-        <Input onChangeText={setPassword} placeholder="Password" />
+        <Input type="password" onChange={(e) => setPassword((e.target as HTMLInputElement).value)} placeholder="Password" />
       </YStack>
 
       <XStack pointerEvents="box-none" justify="flex-end" gap="$2">

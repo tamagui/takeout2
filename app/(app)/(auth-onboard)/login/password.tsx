@@ -66,10 +66,10 @@ export const PasswordPage = () => {
       <YStack>
         <Input
           data-testid="password-input"
-          secureTextEntry
+          type="password"
           autoFocus
           value={password}
-          onChangeText={setPassword}
+          onChange={(e) => setPassword((e.target as HTMLInputElement).value)}
           onSubmitEditing={handleContinue}
         />
       </YStack>

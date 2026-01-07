@@ -42,7 +42,7 @@ export const DialogConfirm = () => {
         {state?.extraConfirm && (
           <Input
             mt="$2"
-            onChangeText={setExtraConfirm}
+            onChange={(e) => setExtraConfirm((e.target as HTMLInputElement).value)}
             placeholder='Type "Confirm" to confirm'
           />
         )}

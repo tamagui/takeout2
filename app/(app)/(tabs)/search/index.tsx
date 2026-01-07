@@ -95,7 +95,7 @@ export const SearchPage = memo(() => {
           <Input
             placeholder="Search posts..."
             value={searchText}
-            onChangeText={setSearchText}
+            onChange={(e) => setSearchText((e.target as HTMLInputElement).value)}
             size="$4"
           />
         </YStack>

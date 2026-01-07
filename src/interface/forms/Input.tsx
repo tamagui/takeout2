@@ -2,11 +2,13 @@ import { memo } from 'react'
 import { Input as TamaguiInput } from 'tamagui'
 
 import type { RefObject } from 'react'
-import type { InputProps as TamaguiInputProps, ViewProps } from 'tamagui'
+import type { GetProps, TamaguiElement, ViewProps } from 'tamagui'
 
-export type InputProps = TamaguiInputProps & { ref?: RefObject<TamaguiInput | null> }
+export type InputProps = GetProps<typeof TamaguiInput> & {
+  ref?: RefObject<TamaguiElement | null>
+}
 
-export type Input = TamaguiInput
+export type Input = TamaguiElement
 
 export const Input = memo(({ ref, ...props }: InputProps) => {
   return (
@@ -14,7 +16,6 @@ export const Input = memo(({ ref, ...props }: InputProps) => {
       borderWidth={0.5}
       ref={ref}
       focusVisibleStyle={inputFocusStyle}
-      // TODO rnwlite
       placeholderTextColor="$color8"
       {...props}
     />

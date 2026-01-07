@@ -98,7 +98,7 @@ export const ProfileEditPage = () => {
               width="100%"
               placeholder="John Doe"
               value={name}
-              onChangeText={handleNameChange}
+              onChange={(e) => handleNameChange((e.target as HTMLInputElement).value)}
               autoCapitalize="words"
               autoCorrect="off"
             />
@@ -117,7 +117,7 @@ export const ProfileEditPage = () => {
                 width="100%"
                 placeholder="johndoe"
                 value={username}
-                onChangeText={handleUsernameChange}
+                onChange={(e) => handleUsernameChange((e.target as HTMLInputElement).value)}
                 autoCapitalize="none"
                 autoCorrect="off"
                 pr="$10"

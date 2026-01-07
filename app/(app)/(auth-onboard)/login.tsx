@@ -49,7 +49,7 @@ export const LoginPage = () => {
   }
 
   return (
-    <XStack flex={1} position="relative">
+    <XStack flex={1} flexBasis="auto" position="relative">
       <YStack flex={1} justify="center" items="center">
         <Circle
           size={80}

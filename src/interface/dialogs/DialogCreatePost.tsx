@@ -168,7 +168,7 @@ export const DialogCreatePost = () => {
               size="$4"
               placeholder="What's on your mind?"
               value={caption}
-              onChangeText={setCaption}
+              onChange={(e) => setCaption((e.target as HTMLInputElement).value)}
               autoFocus={isWeb}
               rounded="$6"
               data-testid="create-post-caption"

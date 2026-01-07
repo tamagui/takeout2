@@ -159,20 +159,19 @@ export const SignupPage = memo(() => {
           ref={inputRef}
           placeholder={placeholder}
           value={isPhone ? formatPhoneNumber(inputValue) : inputValue}
-          onChangeText={setInputValue}
+          onChange={(e) => setInputValue((e.target as HTMLInputElement).value)}
           autoCapitalize="none"
           onSubmitEditing={handleContinue}
+          type={isPhone ? 'tel' : 'email'}
           {...(isPhone
             ? {
                 name: 'tel',
-                keyboardType: 'phone-pad',
                 autoComplete: 'tel',
                 inputMode: 'tel',
                 maxLength: 14, // (XXX) XXX-XXXX = 14 characters with formatting
               }
             : {
                 name: 'email',
-                keyboardType: 'email-address',
                 autoComplete: 'email',
                 inputMode: 'email',
               })}

@@ -1,19 +1,20 @@
-import React, { memo, useEffect, useRef, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import {
-  Input as TamaguiInput,
-  type InputProps,
   SizableText,
+  Input as TamaguiInput,
   useTheme,
   useWindowDimensions,
   View,
   XStack,
   YStack,
+  type InputProps,
 } from 'tamagui'
 
 import { getClipboardText } from '~/helpers/clipboard'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { ClipboardIcon } from '~/interface/icons/phosphor/ClipboardIcon'
-import { InfoIcon } from '~/interface/icons/phosphor/InfoIcon'
+
+import type { Input } from '~/interface/forms/Input'
 
 export interface IOtpInput {
   otpCount?: number
@@ -40,7 +41,7 @@ export const OtpInput = memo(function OtpInput({
   const { width: windowWidth } = useWindowDimensions()
   const width = Math.min(340, windowWidth)
 
-  const inputRef = useRef<Array<TamaguiInput>>([])
+  const inputRef = useRef<Array<Input>>([])
 
   const [focus, setFocus] = useState<number>(defaultValue?.length === otpCount ? -1 : 0)
 
@@ -144,14 +145,16 @@ export const OtpInput = memo(function OtpInput({
                   width={inputWidth}
                   height={inputWidth}
                   rounded={12}
-                  keyboardType="number-pad"
+                  inputMode="numeric"
                   ref={(ref) => {
                     if (ref) inputRef.current[i] = ref
                   }}
                   value={otpValue[i]}
-                  onChangeText={(v: string) => onFocusNext(v, i)}
-                  onKeyPress={(e: any) => onFocusPrevious(e.nativeEvent.key, i)}
-                  textContentType="oneTimeCode"
+                  onChange={(e) =>
+                    onFocusNext((e.target as HTMLInputElement).value, i)
+                  }
+                  onKeyDown={(e) => onFocusPrevious(e.nativeEvent.key, i)}
+                  autoComplete="one-time-code"
                   autoFocus={autoFocus && i === 0}
                   {...inputProps}
                 />

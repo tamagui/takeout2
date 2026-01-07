@@ -48,7 +48,7 @@ export function CommentInput({
             size="small"
             placeholder="Add a comment..."
             value={content}
-            onChangeText={setContent}
+            onChange={(e) => setContent((e.target as HTMLInputElement).value)}
             minH={60}
           />
           <XStack justify="flex-end">
@@ -85,11 +85,11 @@ export function CommentInput({
               color="$color"
               placeholder="Add a comment..."
               value={content}
-              onChangeText={setContent}
+              onChange={(e) => setContent((e.target as HTMLInputElement).value)}
               maxLength={500}
-              multiline
+              rows={3}
+              multiple
               verticalAlign="top"
-              numberOfLines={3}
             />
 
             <YStack

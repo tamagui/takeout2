@@ -27,6 +27,6 @@ runs:
         touch .env
         bun install
 
-    - name: Bootstrap
+    - name: Postinstall
       shell: bash
       run: bun run postinstall

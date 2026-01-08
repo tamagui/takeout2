@@ -9,5 +9,5 @@ import { $ } from 'bun'
 const args = process.argv.slice(2)
 await $`bun tko update-deps ${args} @rocicorp/zero`
 
-// run bootstrap to update ZERO_VERSION in .env
-await $`bun run bootstrap`
+// update ZERO_VERSION in .env
+await $`bun tko run update-local-env`

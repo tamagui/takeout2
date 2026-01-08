@@ -98,7 +98,7 @@ export const DocsQuickNav = () => {
       setActiveIndex(0)
       setItemPositions([])
       intersectingHeadings.current.clear()
-    }, 100)
+    }, 300)
     return () => clearTimeout(timeout)
   }, [pathname])
 

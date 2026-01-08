@@ -150,9 +150,7 @@ export const OtpInput = memo(function OtpInput({
                     if (ref) inputRef.current[i] = ref
                   }}
                   value={otpValue[i]}
-                  onChange={(e) =>
-                    onFocusNext((e.target as HTMLInputElement).value, i)
-                  }
+                  onChange={(e) => onFocusNext((e.target as HTMLInputElement).value, i)}
                   onKeyDown={(e) => onFocusPrevious(e.nativeEvent.key, i)}
                   autoComplete="one-time-code"
                   autoFocus={autoFocus && i === 0}

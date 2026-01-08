@@ -35,9 +35,11 @@ export function createHotUpdater(config: HotUpdaterConfig): HotUpdaterInstance {
           updateStrategy: params.updateStrategy || updateStrategy,
           fingerprintHash: params.fingerprintHash,
         }),
-        signal: params.requestTimeout ? AbortSignal.timeout(params.requestTimeout) : undefined,
+        signal: params.requestTimeout
+          ? AbortSignal.timeout(params.requestTimeout)
+          : undefined,
       })
-      
+
       if (!response.ok) return null
       return response.json()
     },

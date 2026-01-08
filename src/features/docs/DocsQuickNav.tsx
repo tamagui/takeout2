@@ -159,7 +159,7 @@ export const DocsQuickNav = () => {
         }
       },
       {
-        rootMargin: '100% 0px -30% 0px',
+        rootMargin: '-80px 0px -70% 0px',
         threshold: 0,
       }
     )
@@ -208,11 +208,16 @@ export const DocsQuickNav = () => {
                       ml={isSubItem ? '$3' : 0}
                     >
                       <a
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setActiveIndex(index)
-                        }}
                         href={`#${id}`}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          const element = document.getElementById(id)
+                          if (element) {
+                            setActiveIndex(index)
+                            element.scrollIntoView({ block: 'start' })
+                            history.pushState(null, '', `#${id}`)
+                          }
+                        }}
                         style={{ textDecoration: 'none' }}
                       >
                         <Paragraph

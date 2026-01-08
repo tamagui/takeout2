@@ -19,11 +19,13 @@ type Item = NonNullable<(typeof allItems)[0]>
 const ActiveIndicator = ({
   items,
   activeIndex,
+  visible,
 }: {
   items: Array<{ top: number; height: number }>
   activeIndex: number
+  visible: boolean
 }) => {
-  if (items.length === 0 || activeIndex < 0) return null
+  if (items.length === 0 || activeIndex < 0 || !visible) return null
 
   const activeItem = items[activeIndex]
   if (!activeItem) return null
@@ -65,11 +67,34 @@ export const DocsMenuContents = () => {
     return items.some((item) => currentPath === item.page.route)
   }
 
-  const defaultOpenSections = Object.entries(itemsGrouped)
-    .filter(([_, items]) => sectionHasActiveItem(items))
-    .map(([title]) => title || 'base')
+  const getDefaultOpenSections = () =>
+    Object.entries(itemsGrouped)
+      .filter(([_, items]) => sectionHasActiveItem(items))
+      .map(([title]) => title || 'base')
+
+  const [openSections, setOpenSections] = useState<string[]>(getDefaultOpenSections)
+
+  // sync open sections when currentPath changes to ensure active section is open
+  useEffect(() => {
+    const activeSections = getDefaultOpenSections()
+    setOpenSections((prev) => {
+      const newSections = [...new Set([...prev, ...activeSections])]
+      return newSections
+    })
+  }, [currentPath])
 
   const activeIndex = activeItems.findIndex((item) => item.page.route === currentPath)
+
+  // find the section containing the active item
+  const activeSectionTitle = activeIndex >= 0 ? activeItems[activeIndex]?.section.title ?? '' : ''
+
+  // indicator is visible if:
+  // - active item has no section title (always visible items), or
+  // - the section containing active item is open
+  const indicatorVisible =
+    activeSectionTitle === ''
+      ? activeIndex >= 0
+      : openSections.includes(activeSectionTitle)
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -100,14 +125,15 @@ export const DocsMenuContents = () => {
       clearTimeout(timeout)
       window.removeEventListener('resize', measurePositions)
     }
-  }, [currentPath])
+  }, [currentPath, openSections])
 
   return (
     <YStack width="100%" ref={containerRef as any} position="relative">
-      <ActiveIndicator items={itemPositions} activeIndex={activeIndex} />
+      <ActiveIndicator items={itemPositions} activeIndex={activeIndex} visible={indicatorVisible} />
       <Accordion
-        defaultValue={defaultOpenSections.length > 0 ? defaultOpenSections : ['base']}
+        value={openSections.length > 0 ? openSections : ['base']}
         type="multiple"
+        onValueChange={(value) => setOpenSections(value as string[])}
       >
         {Object.keys(itemsGrouped).map((sectionTitle) => {
           const items = itemsGrouped[sectionTitle]

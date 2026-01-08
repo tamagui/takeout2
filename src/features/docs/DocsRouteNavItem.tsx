@@ -39,7 +39,7 @@ export const DocsRouteNavItem = function DocsRouteNavItem({
           size="$4"
           cursor="pointer"
           select="none"
-          color={active ? '$color10' : '$color11'}
+          color={active ? '$color11' : '$color10'}
           hoverStyle={{
             color: '$color12',
           }}

@@ -1,4 +1,3 @@
-import * as React from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { Accordion, Paragraph, Square, View, XStack, YStack } from 'tamagui'
 
@@ -83,18 +82,17 @@ export const DocsMenuContents = () => {
     })
   }, [currentPath])
 
-  const activeIndex = activeItems.findIndex((item) => item.page.route === currentPath)
+  // get only visible items (items in sections that are open or have no title)
+  const visibleItems = activeItems.filter((item) => {
+    const sectionTitle = item.section.title || ''
+    return sectionTitle === '' || openSections.includes(sectionTitle)
+  })
 
-  // find the section containing the active item
-  const activeSectionTitle = activeIndex >= 0 ? activeItems[activeIndex]?.section.title ?? '' : ''
+  // find active index among visible items only
+  const activeIndex = visibleItems.findIndex((item) => item.page.route === currentPath)
 
-  // indicator is visible if:
-  // - active item has no section title (always visible items), or
-  // - the section containing active item is open
-  const indicatorVisible =
-    activeSectionTitle === ''
-      ? activeIndex >= 0
-      : openSections.includes(activeSectionTitle)
+  // indicator is visible if active item is in visible items
+  const indicatorVisible = activeIndex >= 0
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -118,7 +116,10 @@ export const DocsMenuContents = () => {
       setItemPositions(positions)
     }
 
-    const timeout = setTimeout(measurePositions, 150)
+    // measure immediately for quick feedback
+    measurePositions()
+    // measure again after accordion animation completes (~300ms)
+    const timeout = setTimeout(measurePositions, 350)
 
     window.addEventListener('resize', measurePositions)
     return () => {
@@ -129,7 +130,11 @@ export const DocsMenuContents = () => {
 
   return (
     <YStack width="100%" ref={containerRef as any} position="relative">
-      <ActiveIndicator items={itemPositions} activeIndex={activeIndex} visible={indicatorVisible} />
+      <ActiveIndicator
+        items={itemPositions}
+        activeIndex={activeIndex}
+        visible={indicatorVisible}
+      />
       <Accordion
         value={openSections.length > 0 ? openSections : ['base']}
         type="multiple"

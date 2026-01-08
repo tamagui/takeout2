@@ -51,6 +51,7 @@ export default {
   },
 
   ssr: {
+    // we set this as it generally improves compatability by optimizing all deps for node
     noExternal: true,
     // @rocicorp/zero must be external to prevent Symbol mismatch between
     // @rocicorp/zero and @rocicorp/zero/server - they share queryInternalsTag
@@ -84,25 +85,6 @@ export default {
         output: './src/tamagui/themes-out.ts',
       },
     }),
-
-    ...(process.env.ANALYZE
-      ? [
-          visualizer({
-            filename: 'bundle_stats.html',
-            open: false,
-            gzipSize: true,
-            brotliSize: true,
-            emitFile: true,
-          }),
-          visualizer({
-            filename: 'bundle_stats.json',
-            template: 'raw-data',
-            gzipSize: true,
-            brotliSize: true,
-            emitFile: true,
-          }),
-        ]
-      : []),
 
     one({
       setupFile: {
@@ -181,5 +163,24 @@ export default {
         },
       },
     }),
+
+    ...(process.env.ANALYZE
+      ? [
+          visualizer({
+            filename: 'bundle_stats.html',
+            open: false,
+            gzipSize: true,
+            brotliSize: true,
+            emitFile: true,
+          }),
+          visualizer({
+            filename: 'bundle_stats.json',
+            template: 'raw-data',
+            gzipSize: true,
+            brotliSize: true,
+            emitFile: true,
+          }),
+        ]
+      : []),
   ],
 } satisfies UserConfig

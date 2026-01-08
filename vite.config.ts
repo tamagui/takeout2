@@ -1,5 +1,5 @@
 import { tamaguiPlugin } from '@tamagui/vite-plugin'
-import { one } from 'one/vite'
+import { one, resolvePath } from 'one/vite'
 import { visualizer } from 'rollup-plugin-visualizer'
 
 import type { UserConfig } from 'vite'
@@ -11,8 +11,9 @@ export default {
     alias: {
       // stub out bottom-tabs for web - one framework has it but we don't use it
       // tree shaking should get rid of it, need to investigate why not
-      '@react-navigation/bottom-tabs':
-        './src/interface/shims/react-navigation-bottom-tabs.ts',
+      '@react-navigation/bottom-tabs': resolvePath(
+        './src/interface/shims/react-navigation-bottom-tabs.ts'
+      ),
 
       // use lightweight svg for web (~2KB vs ~50KB)
       'react-native-svg': '@tamagui/react-native-svg',

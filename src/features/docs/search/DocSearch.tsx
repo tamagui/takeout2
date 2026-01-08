@@ -19,7 +19,7 @@ const docSearchCSS = `
 :root{
 font-family: sans-serif;
 .DocSearch {
-  --docsearch-primary-color: var(--colorPress);
+  --docsearch-primary-color: var(--color11);
   --docsearch-highlight-color: var(--color);
   --docsearch-text-color: var(--color);
   --docsearch-modal-background: var(--background);
@@ -50,7 +50,7 @@ font-family: sans-serif;
 }
 
 .DocSearch-Hit[aria-selected=true] a {
-  background: var(--color10);
+  background: var(--color4);
 }
 
 .DocSearch-Modal {

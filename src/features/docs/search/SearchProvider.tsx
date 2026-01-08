@@ -12,6 +12,17 @@ const API_KEY = 'b2d5c50d03e630b4714f66af36c610f6'
 const APP_ID = 'X3QSMF4DLC'
 const INDEX = 'takeout_docs'
 
+const VALID_DOC_SLUGS = [
+  'agents',
+  'deployment-overview',
+  'highlights',
+  'introduction',
+  'one',
+  'static-websites',
+  'tamagui',
+  'zero',
+]
+
 export type LinkProps = ViewProps & OneLinkProps
 
 export const Link = ({ href, replace, asChild, ...props }: LinkProps) => {
@@ -102,19 +113,25 @@ export const SearchProvider = memo(({ children }: { children: React.ReactNode })
               },
             }}
             transformItems={(items: any[]) => {
-              return items.map((item) => {
-                const url = new URL(item.url)
-                return {
-                  ...item,
-                  url: `${url.pathname}${url.hash}`,
-                  content: item.content,
-                  highlightedContent:
-                    item._highlightResult?.content?.value || item.content,
-                  snippet: item._snippetResult?.content?.value || '',
-                  objectID: item.objectID,
-                  type: item.type || 'content',
-                }
-              })
+              return items
+                .filter((item) => {
+                  const url = new URL(item.url)
+                  const slug = url.pathname.replace('/docs/', '').split('#')[0] || ''
+                  return VALID_DOC_SLUGS.includes(slug)
+                })
+                .map((item) => {
+                  const url = new URL(item.url)
+                  return {
+                    ...item,
+                    url: `${url.pathname}${url.hash}`,
+                    content: item.content,
+                    highlightedContent:
+                      item._highlightResult?.content?.value || item.content,
+                    snippet: item._snippetResult?.content?.value || '',
+                    objectID: item.objectID,
+                    type: item.type || 'content',
+                  }
+                })
             }}
           />,
           document.body

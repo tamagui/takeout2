@@ -1,9 +1,10 @@
 import {
+  defaultConfig,
   createSystemFont,
   mediaQueryDefaultActive,
   shorthands,
   tokens,
-} from '@tamagui/config/v4'
+} from '@tamagui/config/v5'
 import { createTamagui, isWeb } from 'tamagui'
 
 import { animationsRoot } from './animationsRoot'
@@ -115,13 +116,12 @@ export const config = createTamagui({
       : null,
 
   settings: {
+    ...defaultConfig.settings,
     mediaQueryDefaultActive,
     defaultFont: 'body',
-    // TODO: this causes issues with $theme-dark/light on native
-    fastSchemeChange: false,
+    fastSchemeChange: true,
     shouldAddPrefersColorThemes: true,
-    disableRootThemeClass: true, // vxrn color scheme handles this
-    themeClassNameOnRoot: true,
+    addThemeClassName: 'html',
     onlyAllowShorthands: true,
     maxDarkLightNesting: 1,
     allowedStyleValues: 'somewhat-strict-web',

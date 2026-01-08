@@ -1,5 +1,4 @@
-import { createElement, useRef } from 'react'
-import { SizableText, Spacer, XStack, YStack } from 'tamagui'
+import { SizableText, Spacer, XStack } from 'tamagui'
 
 import { Link } from '~/interface/app/Link'
 import { ArrowSquareOutIcon } from '~/interface/icons/phosphor/ArrowSquareOutIcon'
@@ -10,18 +9,10 @@ export const DocsRouteNavItem = function DocsRouteNavItem({
   children,
   active,
   href,
-  icon,
   pending,
-  inMenu,
-  index,
   external,
-}: NavItemProps & {
-  icon?: any
-  inMenu?: boolean
-  index: number
-}) {
+}: NavItemProps) {
   const isExternal = external || href.startsWith('http')
-  const ref = useRef<any>(null)
 
   return (
     <Link
@@ -29,81 +20,47 @@ export const DocsRouteNavItem = function DocsRouteNavItem({
       href={href as any}
     >
       <XStack
-        ref={ref}
+        data-nav-item
         className="docs-nav-item"
-        alignItems="center"
-        justifyContent="flex-end"
-        px="$4"
+        items="center"
         py="$1"
-        opacity={pending ? 0.25 : 1}
-        pressStyle={{
-          bg: '$background04',
-        }}
+        px="$2"
+        rounded="$3"
+        opacity={pending ? 0.35 : 1}
         pointerEvents={pending ? 'none' : ('inherit' as any)}
-        position="relative"
-        $sm={{
-          py: '$1.5',
+        hoverStyle={{
+          bg: '$color3',
         }}
-        {...(inMenu &&
-          ({
-            justifyContent: 'flex-start',
-          } as any))}
-        {...({} as any)}
+        pressStyle={{
+          bg: '$color4',
+        }}
       >
-        {!inMenu && (
-          <YStack
-            className="sidebar-indicator"
-            opacity={active ? 1 : 0}
-            position="absolute"
-            t={0}
-            b={0}
-            l={0}
-            borderRadius="$2"
-            width={2}
-            bg={active ? '$color10' : '$backgroundHover'}
-            {...({} as any)}
-          />
-        )}
         <SizableText
-          size="$5"
-          lineHeight="$5"
+          size="$4"
           cursor="pointer"
           select="none"
-          color="$color12"
-          opacity={active ? 1 : 0.65}
-          width="100%"
+          color={active ? '$color10' : '$color11'}
           hoverStyle={{
-            opacity: 0.85,
+            color: '$color12',
           }}
-          {...(active && {
-            fontWeight: '700',
-            opacity: 1,
-          })}
         >
           {children}
-          {!!icon && (
-            <>
-              &nbsp;
-              {createElement(icon, {
-                size: 12,
-              })}
-            </>
-          )}
         </SizableText>
+
         {isExternal && (
-          <XStack opacity={0.5}>
-            <Spacer size="$2" />
+          <XStack opacity={0.5} ml="$2">
             <ArrowSquareOutIcon size={10} />
           </XStack>
         )}
-        {pending ? (
+
+        {pending && (
           <>
-            <XStack flex={1} />
-            <SizableText size="$1" px="$2" py="$1" bg="$background" rounded="$3">
+            <Spacer flex={1} />
+            <SizableText size="$1" color="$color9">
               WIP
             </SizableText>
           </>
-        ) : null}
+        )}
       </XStack>
     </Link>
   )

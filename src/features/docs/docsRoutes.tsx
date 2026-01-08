@@ -1,4 +1,15 @@
-export const docsRoutes = [
+export type DocsPage = {
+  title: string
+  route: string
+  pending?: boolean
+}
+
+export type DocsSection = {
+  title?: string
+  pages?: DocsPage[]
+}
+
+export const docsRoutes: DocsSection[] = [
   {
     pages: [
       { title: 'Introduction', route: '/docs/introduction' },
@@ -9,10 +20,10 @@ export const docsRoutes = [
   {
     title: 'Overview',
     pages: [
-      { title: 'One', route: '/docs/one', pending: true },
-      { title: 'Zero', route: '/docs/zero', pending: true },
-      { title: 'Tamagui', route: '/docs/tamagui', pending: true },
-      { title: 'Agents', route: '/docs/agents', pending: true },
+      { title: 'One', route: '/docs/one' },
+      { title: 'Zero', route: '/docs/zero' },
+      { title: 'Tamagui', route: '/docs/tamagui' },
+      { title: 'Agents', route: '/docs/agents' },
     ],
   },
 

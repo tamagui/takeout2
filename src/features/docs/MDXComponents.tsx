@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { H1, H2, H3, H4, H5, Paragraph, styled, YStack } from 'tamagui'
 
 import { Link } from '~/interface/app/Link'
@@ -6,17 +7,48 @@ import { CodeInline } from './Code'
 import { DocsCodeBlock } from './DocsCodeBlock'
 import { SimpleTable } from './SimpleTable'
 
+const slugify = (text: string): string => {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+}
+
+const getTextContent = (children: ReactNode): string => {
+  if (typeof children === 'string') return children
+  if (Array.isArray(children)) return children.map(getTextContent).join('')
+  if (children && typeof children === 'object' && 'props' in children) {
+    return getTextContent((children as any).props.children)
+  }
+  return ''
+}
+
 const BaseParagraph = styled(Paragraph, {
   size: '$6',
   my: '$2',
 })
 
 const components = {
-  h1: (props: any) => <H1 mb="$4" {...props} />,
-  h2: (props: any) => <H2 mb="$3" pt="$5" {...props} />,
-  h3: (props: any) => <H3 mt="$5" mb="$2" {...props} />,
-  h4: (props: any) => <H4 mt="$4" mb="$2" {...props} />,
-  h5: (props: any) => <H5 mt="$3" mb="$2" {...props} />,
+  h1: (props: any) => {
+    const id = props.id || slugify(getTextContent(props.children))
+    return <H1 mb="$4" id={id} data-heading {...props} />
+  },
+  h2: (props: any) => {
+    const id = props.id || slugify(getTextContent(props.children))
+    return <H2 mb="$3" pt="$5" id={id} data-heading {...props} />
+  },
+  h3: (props: any) => {
+    const id = props.id || slugify(getTextContent(props.children))
+    return <H3 mt="$5" mb="$2" id={id} data-heading {...props} />
+  },
+  h4: (props: any) => {
+    const id = props.id || slugify(getTextContent(props.children))
+    return <H4 mt="$4" mb="$2" id={id} data-heading {...props} />
+  },
+  h5: (props: any) => {
+    const id = props.id || slugify(getTextContent(props.children))
+    return <H5 mt="$3" mb="$2" id={id} data-heading {...props} />
+  },
 
   p: (props: any) => <BaseParagraph {...props} />,
 

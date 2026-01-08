@@ -26,7 +26,7 @@ export interface UpdateInfo {
 export interface HotUpdaterInstance {
   /** Creates a resolver for use with HotUpdater.wrap() */
   createResolver: () => HotUpdaterResolver
-  
+
   /** React hook for automatic update checking */
   useOtaUpdater: (options?: {
     enabled?: boolean

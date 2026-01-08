@@ -14,6 +14,8 @@ import {
 } from 'tamagui'
 
 import { DocsMenuContents } from '~/features/docs/DocsMenuContents'
+import { DocsQuickNav } from '~/features/docs/DocsQuickNav'
+import { SearchButton, SearchProvider } from '~/features/docs/search'
 import { useDocsMenu } from '~/features/docs/useDocsMenu'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
@@ -27,7 +29,7 @@ export function DocsLayout() {
   const editUrl = `${GITHUB_URL}/${REPO_NAME}/edit/${BRANCH}/src/features/site/docs${currentPath}.mdx`
 
   return (
-    <>
+    <SearchProvider>
       <XStack
         flex={1}
         flexBasis="auto"
@@ -47,7 +49,7 @@ export function DocsLayout() {
             position: 'sticky' as any,
             t: 50,
             height: 'calc(100vh - 50px)',
-            width: 220,
+            width: 225,
           }}
           $maxMD={{
             display: 'none',
@@ -55,6 +57,7 @@ export function DocsLayout() {
         >
           <ScrollView showsVerticalScrollIndicator={false}>
             <View pt="$4" pb="$10">
+              <SearchButton />
               <DocsMenuContents />
               <YStack height={200} />
             </View>
@@ -65,7 +68,7 @@ export function DocsLayout() {
         <YStack
           flex={1}
           flexBasis="auto"
-          maxW={800}
+          maxW={840}
           mx="auto"
           px="$4"
           py="$6"
@@ -137,8 +140,11 @@ export function DocsLayout() {
             </Paragraph>
           </Link>
         </YStack>
+
+        {/* Quick Nav (Table of Contents) */}
+        <DocsQuickNav />
       </XStack>
-    </>
+    </SearchProvider>
   )
 }
 

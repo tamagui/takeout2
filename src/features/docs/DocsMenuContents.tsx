@@ -1,80 +1,138 @@
 import * as React from 'react'
-import { Accordion, Paragraph, Square, XStack, YStack } from 'tamagui'
+import { useEffect, useRef, useState } from 'react'
+import { Accordion, Paragraph, Square, View, XStack, YStack } from 'tamagui'
 
-import { CaretDownIcon } from '~/interface/icons/phosphor/CaretDownIcon'
+import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 
 import { DocsRouteNavItem } from './DocsRouteNavItem'
 import { docsRoutes } from './docsRoutes'
 import { useDocsMenu } from './useDocsMenu'
 
+import type { DocsSection } from './docsRoutes'
+
 const allItems = docsRoutes.flatMap((section, sectionIndex) =>
   section.pages?.map((page, index) => ({ page, section, sectionIndex, index }))
 )
 
-type Item = (typeof allItems)[0]
-type Section = Item['section']
+type Item = NonNullable<(typeof allItems)[0]>
 
-export const DocsMenuContents = React.memo(function DocsMenuContents({
-  inMenu,
+const ActiveIndicator = ({
+  items,
+  activeIndex,
 }: {
-  inMenu?: boolean
-}) {
-  const activeItems = allItems
-  const [items, setItems] = React.useState(activeItems)
+  items: Array<{ top: number; height: number }>
+  activeIndex: number
+}) => {
+  if (items.length === 0 || activeIndex < 0) return null
+
+  const activeItem = items[activeIndex]
+  if (!activeItem) return null
+
+  const indicatorHeight = 20
+  const topPosition = activeItem.top + (activeItem.height - indicatorHeight) / 2
+
+  return (
+    <View
+      position="absolute"
+      l={0}
+      t={topPosition}
+      height={indicatorHeight}
+      width={3}
+      bg="$color12"
+      rounded="$2"
+      animation="quick"
+      z={999}
+    />
+  )
+}
+
+export const DocsMenuContents = () => {
+  const activeItems = allItems.filter(Boolean) as Item[]
+  const { currentPath } = useDocsMenu()
+  const [itemPositions, setItemPositions] = useState<
+    Array<{ top: number; height: number }>
+  >([])
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const itemsGrouped: Record<string, Item[]> = {}
-  for (const item of items) {
+  for (const item of activeItems) {
     const key = item.section.title || ''
     itemsGrouped[key] ||= []
     itemsGrouped[key].push(item)
   }
 
-  return (
-    <>
-      <div style={{ width: '100%' }}>
-        <Accordion defaultValue="base" type="single" collapsible>
-          {Object.keys(itemsGrouped).map((sectionTitle) => {
-            const items = itemsGrouped[sectionTitle]
-            const section = items?.[0]?.section
-            if (!section) return null
-            return (
-              <SubSection
-                key={sectionTitle}
-                inMenu={inMenu}
-                section={section}
-                items={items || []}
-              />
-            )
-          })}
-        </Accordion>
-      </div>
-    </>
-  )
-})
+  const sectionHasActiveItem = (items: Item[]) => {
+    return items.some((item) => currentPath === item.page.route)
+  }
 
-const SubSection = ({
-  section,
-  items,
-  inMenu,
-}: {
-  section: Section
-  items: Item[]
-  inMenu?: boolean
-}) => {
+  const defaultOpenSections = Object.entries(itemsGrouped)
+    .filter(([_, items]) => sectionHasActiveItem(items))
+    .map(([title]) => title || 'base')
+
+  const activeIndex = activeItems.findIndex((item) => item.page.route === currentPath)
+
+  useEffect(() => {
+    if (!containerRef.current) return
+
+    const measurePositions = () => {
+      const container = containerRef.current
+      if (!container) return
+
+      const items = container.querySelectorAll('[data-nav-item]')
+      const positions: Array<{ top: number; height: number }> = []
+
+      items.forEach((item) => {
+        const rect = item.getBoundingClientRect()
+        const containerRect = container.getBoundingClientRect()
+        positions.push({
+          top: rect.top - containerRect.top,
+          height: rect.height,
+        })
+      })
+
+      setItemPositions(positions)
+    }
+
+    const timeout = setTimeout(measurePositions, 150)
+
+    window.addEventListener('resize', measurePositions)
+    return () => {
+      clearTimeout(timeout)
+      window.removeEventListener('resize', measurePositions)
+    }
+  }, [currentPath])
+
+  return (
+    <YStack width="100%" ref={containerRef as any} position="relative">
+      <ActiveIndicator items={itemPositions} activeIndex={activeIndex} />
+      <Accordion
+        defaultValue={defaultOpenSections.length > 0 ? defaultOpenSections : ['base']}
+        type="multiple"
+      >
+        {Object.keys(itemsGrouped).map((sectionTitle) => {
+          const items = itemsGrouped[sectionTitle]
+          const section = items?.[0]?.section
+          if (!section) return null
+          return <SubSection key={sectionTitle} section={section} items={items || []} />
+        })}
+      </Accordion>
+    </YStack>
+  )
+}
+
+const SubSection = ({ section, items }: { section: DocsSection; items: Item[] }) => {
   const { currentPath } = useDocsMenu()
-  const [visible, setVisible] = React.useState(!section.title)
 
   const content = (
-    <YStack px="$2" py="$3" mb="$3">
+    <YStack px="$2">
       {items.map(({ page }, index) => {
+        const isActive = currentPath === page.route
         return (
           <DocsRouteNavItem
-            inMenu={inMenu}
             href={page.route}
-            active={currentPath === page.route}
-            pending={(page as any)['pending']}
+            active={isActive}
+            pending={page.pending}
             key={`${page.route}${index}`}
-            index={index}
           >
             {page.title}
           </DocsRouteNavItem>
@@ -83,52 +141,32 @@ const SubSection = ({
     </YStack>
   )
 
-  const wrapper = (children: React.ReactNode) => {
-    return (
-      <YStack
-        borderBottomWidth={0}
-        borderColor={inMenu ? 'transparent' : '$background02'}
-      >
-        {children}
-      </YStack>
-    )
-  }
-
   if (!section.title) {
-    return wrapper(<YStack mb="$1">{content}</YStack>)
+    return <YStack mb="$2">{content}</YStack>
   }
 
-  return wrapper(
+  return (
     <Accordion.Item borderWidth={0} value={section.title || 'base'}>
-      <Accordion.Trigger
-        unstyled
-        bg="transparent"
-        borderWidth={0}
-        hoverStyle={{
-          bg: '$background02',
-        }}
-      >
+      <Accordion.Trigger unstyled bg="transparent" borderWidth={0}>
         {({ open }: { open: boolean }) => {
           return (
             <XStack
-              onPress={() => {
-                setVisible(!visible)
+              p="$2"
+              rounded="$3"
+              items="center"
+              width="100%"
+              hoverStyle={{
+                bg: '$color3',
               }}
-              flexDirection={inMenu ? 'row-reverse' : 'row'}
-              py="$2"
-              px="$4"
-              justifyContent="space-between"
-              tag="span"
-              alignItems="center"
-              gap="$3"
-              {...({} as any)}
             >
-              <Paragraph size="$5" fontWeight="600" color="$color12" {...({} as any)}>
+              <Paragraph size="$5" fontWeight="600" color="$color12">
                 {section.title}
               </Paragraph>
 
-              <Square animation="bouncy" rotate={open ? '180deg' : '0deg'}>
-                <CaretDownIcon color="$color7" size="$1" />
+              <XStack flex={1} />
+
+              <Square animation="quick" rotate={open ? '90deg' : '0deg'}>
+                <CaretRightIcon color="$color9" size={14} />
               </Square>
             </XStack>
           )

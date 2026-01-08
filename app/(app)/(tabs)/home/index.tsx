@@ -34,31 +34,40 @@ export const HomePage = memo(() => {
         )}
       </AnimatePresence>
 
-      <YStack position="relative" flexBasis="auto" pb="$10" gap="$4">
-        {!isLoading && posts.length === 0 ? (
-          <YStack p="$4" items="center" justify="center" mt="$4">
-            <H5>No posts yet</H5>
-          </YStack>
-        ) : (
-          <>
-            {posts.map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))}
+      <YStack
+        position="relative"
+        flexBasis="auto"
+        bg="$background"
+        width="100vw"
+        ml="50%"
+        transform="translateX(-50%)"
+      >
+        <YStack pb="$10" gap="$4" mx="auto" px="$4" width="100%" $xl={{ maxW: 760 }}>
+          {!isLoading && posts.length === 0 ? (
+            <YStack p="$4" items="center" justify="center" mt="$4">
+              <H5>No posts yet</H5>
+            </YStack>
+          ) : (
+            <>
+              {posts.map((post) => (
+                <PostCard key={post.id} post={post} />
+              ))}
 
-            {isLoading && (
-              <YStack p="$4" items="center" justify="center">
-                <Spinner size="small" />
-              </YStack>
-            )}
+              {isLoading && (
+                <YStack p="$4" items="center" justify="center">
+                  <Spinner size="small" />
+                </YStack>
+              )}
 
-            <HomePagination
-              currentPage={currentPage}
-              hasMore={hasMore}
-              onPrevPage={prevPage}
-              onNextPage={nextPage}
-            />
-          </>
-        )}
+              <HomePagination
+                currentPage={currentPage}
+                hasMore={hasMore}
+                onPrevPage={prevPage}
+                onNextPage={nextPage}
+              />
+            </>
+          )}
+        </YStack>
       </YStack>
     </>
   )

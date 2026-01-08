@@ -1,0 +1,114 @@
+---
+title: One
+description: React framework for web and native
+---
+
+One is a cross-platform React framework that runs entirely as a single Vite plugin. It lets you build web and React Native apps from a single codebase while achieving 100 Lighthouse performance scores on the web.
+
+## Why One
+
+Most cross-platform solutions sacrifice web performance for native compatibility. One takes a different approach: it optimizes for both platforms without compromise.
+
+- **Web-first performance** - SSG, SSR, and SPA modes with aggressive bundle optimization
+- **True native feel** - Full React Navigation integration for native gestures and transitions
+- **Single codebase** - Share routes, data, and UI between platforms
+
+## Key Features
+
+### File-system Routing
+
+Routes are defined by your file structure with full TypeScript support:
+
+```
+app/
+  index.tsx          # /
+  about.tsx          # /about
+  blog/
+    [slug].tsx       # /blog/:slug
+    index.tsx        # /blog
+```
+
+### Platform Divergence
+
+Use file suffixes to diverge per platform while sharing the same route:
+
+```
+app/
+  settings.tsx       # shared code
+  settings.native.tsx  # native-only
+  settings.web.tsx     # web-only
+  settings.ios.tsx     # iOS-only
+```
+
+### Render Modes
+
+Choose how each page renders:
+
+- **Static (SSG)** - `+ssg.tsx` suffix for pre-rendered pages
+- **Server (SSR)** - Server-rendered on each request
+- **Client (SPA)** - Client-only rendering
+
+Mix modes freely within the same app.
+
+### Typed Loaders
+
+Data loading with full type inference:
+
+```tsx
+export async function loader({ params }) {
+  const post = await getPost(params.slug)
+  return { post }
+}
+
+export function BlogPost() {
+  const { post } = useLoader(loader)
+  return <Article post={post} />
+}
+```
+
+### Native Navigation
+
+Wrap React Navigation for native tab bars, headers, and gestures:
+
+```tsx
+import { withLayoutContext } from 'one'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+
+const { Navigator } = createNativeStackNavigator()
+export const Stack = withLayoutContext(Navigator)
+```
+
+## Performance
+
+One achieves web performance through:
+
+- **LCP optimization** - Defer JS until after first paint
+- **Aggressive code splitting** - Per-route and per-platform bundles
+- **Partial hydration** - Only hydrate interactive components
+- **CSS extraction** - Zero runtime CSS-in-JS overhead on static pages
+
+## Getting Started
+
+```bash
+npx one 
+```
+
+Or add to an existing Vite project:
+
+```bash
+npm install one
+```
+
+```ts
+// vite.config.ts
+import { one } from 'one/vite'
+
+export default {
+  plugins: [one()]
+}
+```
+
+## Learn More
+
+- [One Documentation](https://onestack.dev/docs)
+- [GitHub](https://github.com/onejs/one)

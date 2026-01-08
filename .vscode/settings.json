@@ -2,8 +2,13 @@
   // cursor not working with tsgo yet:
   // and a bit slow in vscode i think
   // "typescript.experimental.useTsgo": true,
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "config": ".gitignore, .dockerignore, .oxlintrc.json, .oxfmtrc.jsonc, .xcode-version, app.config.ts, hot-updater.config.ts, react-native.config.cjs, sst.config.ts, sst-env.d.ts, tsconfig.json, eas.json",
+    ".env": ".env, .env.*"
+  },
   "biome.enabled": false,
-  "oxc.fmt.experimental": true,
   "editor.defaultFormatter": "oxc.oxc-vscode",
   "typescript.preferences.importModuleSpecifier": "shortest",
   "typescript.tsdk": "node_modules/typescript/lib",

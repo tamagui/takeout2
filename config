@@ -1,0 +1,2 @@
+This file exists to nest root-level config files in VS Code's explorer.
+See .vscode/settings.json for the nesting pattern.

@@ -42,7 +42,7 @@ export const HomePage = memo(() => {
         ml="50%"
         transform="translateX(-50%)"
       >
-        <YStack pb="$10" gap="$4" mx="auto" px="$4" width="100%" $xl={{ maxWidth: 760 }}>
+        <YStack pb="$10" gap="$4" mx="auto" px="$4" width="100%" $xl={{ maxW: 760 }}>
           {!isLoading && posts.length === 0 ? (
             <YStack p="$4" items="center" justify="center" mt="$4">
               <H5>No posts yet</H5>

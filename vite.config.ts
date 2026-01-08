@@ -11,15 +11,11 @@ export default {
     alias: {
       // stub out bottom-tabs for web - one framework has it but we don't use it
       // tree shaking should get rid of it, need to investigate why not
-      '@react-navigation/bottom-tabs': './src/shims/react-navigation-bottom-tabs.ts',
+      '@react-navigation/bottom-tabs':
+        './src/interface/shims/react-navigation-bottom-tabs.ts',
 
       // use lightweight svg for web (~2KB vs ~50KB)
       'react-native-svg': '@tamagui/react-native-svg',
-
-      // use lightweight react-native, trims Animated and other unused things (~30+KB)
-      // breaks in dev only, we can make a better plugin option for this
-      // 'react-native': '@tamagui/react-native-web-lite/without-animated',
-      // 'react-native-web': '@tamagui/react-native-web-lite/without-animated',
     },
   },
 

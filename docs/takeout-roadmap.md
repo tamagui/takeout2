@@ -1,35 +1,8 @@
----
-name: takeout-roadmap
-description: Takeout roadmap with known issues, bugs, and planned features for v1/v2. INVOKE WHEN: roadmap, planned features, todo list, known issues, bugs, problems, future plans, what's planned, what's next, v1, v2 plans.
----
-
 # Takeout Roadmap
 
-- remove themes from js bundle
-
-- "Customize web server port"
-  - i cant find a way to make the native app default to a differnet port
-    shockingly so this is sort of bad, id love to keep it though else we should
-    dsiable before release
-
-- getNextOnboardingStep / whitelist is messy need to plan/fix
-  - see // Check whitelist status first (only if feature flag is enabled)
-
-- package.json resolutions remove
-  - fingerprint
+This is for the maintainers of this Takeout starter kit repo to track upcoming tasks, you may remove or keep if you want to track our tasks.
 
 v1:
-
-- screens:
-  - auth, onboard, feed, profile, settings
-
-- site:
-  - improve home design and wording
-  - /docs with real docs
-
-- native:
-  - generally improved/native ui
-  - hot-updates
 
 - ci/cd:
   - sst working and tested for aws setup
@@ -38,13 +11,7 @@ v1:
     - can have eas and self-hosted options
 
 - cleanup:
-  - fix test.skip tests
   - zero migrations cleanup and move into package
-  - move to new setupFile in one for client/server
-  - remove dead files and generally reduce size
-  - test thoroughly production builds / optimize
-  - remove reanimated dependency on web entirely
-  - publish tamagui config v5 and use that directly
 
 - docs:
   - document asyncTasks/zero tips
@@ -57,7 +24,22 @@ v2:
 
 ---
 
-# detailed
+# backlog
+
+- "Customize web server port"
+  - i cant find a way to make the native app default to a differnet port
+    shockingly so this is sort of bad, id love to keep it though else we should
+    dsiable before release
+
+
+- improve tree shaking out animated package:
+
+vite config :
+
+// use lightweight react-native, trims Animated and other unused things (~30+KB)
+      // breaks in dev only, we can make a better plugin option for this
+      // 'react-native': '@tamagui/react-native-web-lite/without-animated',
+      // 'react-native-web': '@tamagui/react-native-web-lite/without-animated',
 
 - dev server navigates us to `/help` on first load of `/` for some reason?
 

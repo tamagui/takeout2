@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
 
 /**
- * @description Bootstrap project workspace and build initial packages
+ * @description Bootstrap project workspace and build initial packages. This is
+ * mostly important for Takeout starter kit itself.
  */
 
 import { existsSync, mkdirSync, readFileSync, symlinkSync } from 'node:fs'

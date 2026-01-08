@@ -16,6 +16,43 @@ body {
   background: var(--background);
 }
 
+/* dark/light mode CSS variables when class is on root element (not descendant) */
+html.t_dark {
+  --background: hsla(0, 0%, 3%, 1);
+  --color: hsla(0, 0%, 100%, 1);
+  --color1: hsla(0, 0%, 3%, 1);
+  --color2: hsla(0, 0%, 10%, 1);
+  --color3: hsla(0, 0%, 16%, 1);
+  --color4: hsla(0, 0%, 21%, 1);
+  --color5: hsla(0, 0%, 27%, 1);
+  --color6: hsla(0, 0%, 28%, 1);
+  --color7: hsla(0, 0%, 32%, 1);
+  --color8: hsla(0, 0%, 41%, 1);
+  --color9: hsla(0, 0%, 46%, 1);
+  --color10: hsla(0, 0%, 60%, 1);
+  --color11: hsla(0, 0%, 80%, 1);
+  --color12: hsla(0, 0%, 100%, 1);
+  --borderColor: hsla(0, 0%, 21%, 1);
+}
+
+html.t_light {
+  --background: hsla(0, 0%, 100%, 1);
+  --color: hsla(0, 0%, 2%, 1);
+  --color1: hsla(0, 0%, 100%, 1);
+  --color2: hsla(0, 0%, 97%, 1);
+  --color3: hsla(0, 0%, 93%, 1);
+  --color4: hsla(0, 0%, 87%, 1);
+  --color5: hsla(0, 0%, 80%, 1);
+  --color6: hsla(0, 0%, 74%, 1);
+  --color7: hsla(0, 0%, 68%, 1);
+  --color8: hsla(0, 0%, 60%, 1);
+  --color9: hsla(0, 0%, 48%, 1);
+  --color10: hsla(0, 0%, 38%, 1);
+  --color11: hsla(0, 0%, 20%, 1);
+  --color12: hsla(0, 0%, 2%, 1);
+  --borderColor: hsla(0, 0%, 87%, 1);
+}
+
 html:has(.body-scrollable),
 body:has(.body-scrollable) {
   overflow: auto;

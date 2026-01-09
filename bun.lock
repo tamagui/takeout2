@@ -132,7 +132,7 @@
     },
     "packages/better-auth-utils": {
       "name": "@take-out/better-auth-utils",
-      "version": "0.0.38",
+      "version": "0.0.39",
       "dependencies": {
         "@take-out/helpers": "workspace:*",
         "better-auth": "^1.3.28",
@@ -149,9 +149,36 @@
         "react": "*",
       },
     },
+    "packages/cli": {
+      "name": "@take-out/cli",
+      "version": "0.0.39",
+      "bin": {
+        "takeout": "./cli.mjs",
+        "tko": "./cli.mjs",
+      },
+      "dependencies": {
+        "@clack/prompts": "^0.8.2",
+        "@take-out/scripts": "workspace:*",
+        "citty": "^0.1.6",
+        "picocolors": "^1.1.1",
+      },
+      "devDependencies": {
+        "@tamagui/build": "1.135.2",
+        "@types/node": "24.0.3",
+        "bun-types": "latest",
+        "oxfmt": "^0.16.0",
+        "oxlint": "^1.31.0",
+      },
+      "peerDependencies": {
+        "@expo/config-plugins": "*",
+      },
+      "optionalPeers": [
+        "@expo/config-plugins",
+      ],
+    },
     "packages/helpers": {
       "name": "@take-out/helpers",
-      "version": "0.0.38",
+      "version": "0.0.39",
       "dependencies": {
         "@tamagui/constants": "*",
         "dequal": "^2.0.3",
@@ -173,7 +200,7 @@
     },
     "packages/hooks": {
       "name": "@take-out/hooks",
-      "version": "0.0.38",
+      "version": "0.0.39",
       "dependencies": {
         "@take-out/helpers": "workspace:*",
         "react": "*",
@@ -192,7 +219,7 @@
     },
     "packages/native-hot-update": {
       "name": "@take-out/native-hot-update",
-      "version": "0.0.38",
+      "version": "0.0.39",
       "dependencies": {
         "@hot-updater/react-native": "0.25.6",
       },
@@ -212,7 +239,7 @@
     },
     "packages/over-zero": {
       "name": "over-zero",
-      "version": "0.0.38",
+      "version": "0.0.39",
       "bin": {
         "over-zero": "./cli.cjs",
       },
@@ -240,7 +267,7 @@
     },
     "packages/postgres": {
       "name": "@take-out/postgres",
-      "version": "0.0.38",
+      "version": "0.0.39",
       "bin": {
         "postgres": "./cli.cjs",
       },
@@ -265,40 +292,13 @@
     },
     "packages/scripts": {
       "name": "@take-out/scripts",
-      "version": "0.0.38",
+      "version": "0.0.39",
       "dependencies": {
         "@take-out/helpers": "workspace:*",
       },
       "devDependencies": {
         "vxrn": "*",
       },
-    },
-    "packages/takeout": {
-      "name": "@take-out/cli",
-      "version": "0.0.38",
-      "bin": {
-        "takeout": "./cli.mjs",
-        "tko": "./cli.mjs",
-      },
-      "dependencies": {
-        "@clack/prompts": "^0.8.2",
-        "@take-out/scripts": "workspace:*",
-        "citty": "^0.1.6",
-        "picocolors": "^1.1.1",
-      },
-      "devDependencies": {
-        "@tamagui/build": "1.135.2",
-        "@types/node": "24.0.3",
-        "bun-types": "latest",
-        "oxfmt": "^0.16.0",
-        "oxlint": "^1.31.0",
-      },
-      "peerDependencies": {
-        "@expo/config-plugins": "*",
-      },
-      "optionalPeers": [
-        "@expo/config-plugins",
-      ],
     },
   },
   "trustedDependencies": [
@@ -1633,7 +1633,7 @@
 
     "@take-out/better-auth-utils": ["@take-out/better-auth-utils@workspace:packages/better-auth-utils"],
 
-    "@take-out/cli": ["@take-out/cli@workspace:packages/takeout"],
+    "@take-out/cli": ["@take-out/cli@workspace:packages/cli"],
 
     "@take-out/helpers": ["@take-out/helpers@workspace:packages/helpers"],
 

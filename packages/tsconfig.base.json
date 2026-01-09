@@ -8,7 +8,7 @@
     //   "@take-out/hooks": ["./hooks/src/index.ts"],
     //   "@take-out/postgres": ["./postgres/src/index.ts"],
     //   "@take-out/scripts": ["./scripts/src/index.ts"],
-    //   "@take-out/takeout": ["./takeout/src/index.ts"]
+    //   "@take-out/cli": ["./takeout/src/index.ts"]
     // },
     "outDir": "dist",
     "importHelpers": true,

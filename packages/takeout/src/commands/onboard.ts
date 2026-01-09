@@ -143,7 +143,7 @@ export const onboardCommand = defineCommand({
           "We've included a variety of packages we found useful building apps with this stack:"
         )
       )
-      console.info(pc.gray('  • @take-out/takeout - CLI tools and onboarding'))
+      console.info(pc.gray('  • @take-out/cli - CLI tools and onboarding'))
       console.info(pc.gray('  • @take-out/helpers - Utility functions'))
       console.info(pc.gray('  • @take-out/hooks - React hooks'))
       console.info(pc.gray('  • @take-out/postgres - Database utilities'))
@@ -382,7 +382,7 @@ export const onboardCommand = defineCommand({
           "We've included a variety of packages we found useful building apps with this stack:"
         )
       )
-      console.info(pc.gray('  • @take-out/takeout - CLI tools and onboarding'))
+      console.info(pc.gray('  • @take-out/cli - CLI tools and onboarding'))
       console.info(pc.gray('  • @take-out/helpers - Utility functions'))
       console.info(pc.gray('  • @take-out/hooks - React hooks'))
       console.info(pc.gray('  • @take-out/postgres - Database utilities'))

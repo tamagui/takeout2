@@ -30,12 +30,12 @@ function getSyncPrompt(): string {
     const currentDir = dirname(fileURLToPath(import.meta.url))
     let packageRoot = currentDir
 
-    // go up directories until we find package.json with name @take-out/takeout
+    // go up directories until we find package.json with name @take-out/cli
     while (packageRoot !== parse(packageRoot).root) {
       const pkgPath = join(packageRoot, 'package.json')
       if (existsSync(pkgPath)) {
         const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'))
-        if (pkg.name === '@take-out/takeout') {
+        if (pkg.name === '@take-out/cli') {
           break
         }
       }

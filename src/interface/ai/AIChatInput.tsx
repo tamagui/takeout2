@@ -57,7 +57,6 @@ export const AIChatInput = memo(
               value={message}
               onChangeText={setMessage}
               placeholder="Ask Takeout..."
-              placeholderTextColor={theme.color10.val}
               minH={44}
               maxH={100}
               p="$3"
@@ -66,7 +65,7 @@ export const AIChatInput = memo(
               onSubmitEditing={handleSend}
               verticalAlign="top"
               rows={4}
-              multiline
+              multiple
             />
           </GlassView>
 

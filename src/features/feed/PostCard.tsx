@@ -8,7 +8,6 @@ import { useUser } from '~/hooks/useUser'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { ChatCircleIcon } from '~/interface/icons/phosphor/ChatCircleIcon'
 import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
-import { LinearGradientSeparator } from '~/interface/separators/LinearGradientSeparator'
 import { Text } from '~/interface/text/Text'
 
 import { AvatarWithMenu } from './AvatarWithMenu'
@@ -36,6 +35,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
   return (
     <View
       mt="$2"
+      pb="$4"
       data-testid={`post-card-${post.id}`}
       {...(isWeb && { bg: '$background', rounded: '$6', py: '$4' })}
     >
@@ -116,20 +116,14 @@ export const PostCard = memo(({ post }: PostCardProps) => {
           </View>
           {typeof post.commentCount === 'number' && (
             <XStack items="center" gap="$1" pt="$2">
-              <ChatCircleIcon size={18} color="$color10" />
-              <SizableText size="$3" color="$color10">
+              <ChatCircleIcon size={18} color="$color11" />
+              <SizableText size="$3" color="$color11" fontWeight="bold">
                 {post.commentCount}
               </SizableText>
             </XStack>
           )}
         </View>
       </View>
-
-      {!isWeb && (
-        <YStack py="$4">
-          <LinearGradientSeparator />
-        </YStack>
-      )}
     </View>
   )
 })

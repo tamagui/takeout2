@@ -97,6 +97,13 @@ export default {
         compiler: true,
       },
 
+      ssr: {
+        autoDepsOptimization: {
+          // TODO: add in ONE
+          exclude: ['*/react-native-fast-squircle/*'],
+        },
+      },
+
       native: process.env.DISABLE_METRO
         ? {}
         : {

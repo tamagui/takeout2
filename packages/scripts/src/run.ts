@@ -46,10 +46,18 @@ const noRoot = args.includes('--no-root')
 const runBun = args.includes('--bun')
 const watch = args.includes('--watch') // just attempts to restart a failed process up to MAX_RESTARTS times
 
+// parse --stdin=<script-name> to specify which script receives keyboard input
+const stdinArg = args.find((arg) => arg.startsWith('--stdin='))
+const stdinScript = stdinArg ? stdinArg.replace('--stdin=', '') : null
+
 // Collect additional flags and arguments to forward to sub-commands
 const forwardArgs = args.filter(
   (arg) =>
-    arg.startsWith('--') && arg !== '--no-root' && arg !== '--bun' && arg !== '--watch'
+    arg.startsWith('--') &&
+    arg !== '--no-root' &&
+    arg !== '--bun' &&
+    arg !== '--watch' &&
+    !arg.startsWith('--stdin=')
 )
 
 // Get the list of scripts already being run by a parent process
@@ -227,8 +235,9 @@ const runScript = async (
   // Combine parent running scripts with current scripts to prevent recursion
   const allRunningScripts = [...parentRunningScripts, ...runCommands].join(',')
 
+  const shouldInheritStdin = name === stdinScript
   const proc = spawn('bun', runArgs, {
-    stdio: ['pipe', 'pipe', 'pipe'],
+    stdio: [shouldInheritStdin ? 'inherit' : 'pipe', 'pipe', 'pipe'],
     shell: false,
     env: {
       ...process.env,

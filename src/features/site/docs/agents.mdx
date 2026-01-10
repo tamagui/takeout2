@@ -154,31 +154,25 @@ Takeout includes opinionated guidelines in `docs/agent.md`:
 
 ### Add a New Page
 
-```
 Add a settings page at /settings with:
-- File: app/(app)/settings/index.tsx
-- Layout: Use PageContainer
-- Auth: Require authentication
-- Nav: Add link in MainHeader
-```
+
+- **File:** `app/(app)/settings/index.tsx`
+- **Layout:** Use PageContainer
+- **Auth:** Require authentication
+- **Nav:** Add link in MainHeader
 
 ### Add a Database Table
 
-```
 Add a "notification" table:
-1. Define in schema-public.ts
-2. Generate migration with bun migrate
-3. Create queries in src/data/queries/
+
+1. Define in `schema-public.ts`
+2. Generate migration with `bun migrate`
+3. Create queries in `src/data/queries/`
 4. Add to Zero permissions
-```
 
 ### Fix a Type Error
 
-```
-Fix the TypeScript error in PostCard.tsx:43
-where the post.author type doesn't match
-the expected User type
-```
+Fix the TypeScript error in `PostCard.tsx:43` where the `post.author` type doesn't match the expected `User` type.
 
 ## Learn More
 

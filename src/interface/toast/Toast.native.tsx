@@ -28,6 +28,7 @@ import {
   type ThemeName,
 } from 'tamagui'
 
+import { useIsDark } from '~/features/theme/useIsDark'
 import { GlassView } from '~/interface/effects/GlassView'
 
 import { toastEmitter } from './emitter'
@@ -96,6 +97,7 @@ interface ToastBannerProps {
 
 const ToastBanner = memo(({ toast, onHide }: ToastBannerProps) => {
   const { top } = useSafeAreaInsets()
+  const isDark = useIsDark()
   const { height: windowHeight } = useWindowDimensions()
   const { color01 } = useTheme()
 
@@ -284,7 +286,7 @@ const ToastBanner = memo(({ toast, onHide }: ToastBannerProps) => {
               <GlassView
                 borderRadius={24}
                 intensity={50}
-                tint="dark"
+                tint={isDark ? 'dark' : 'light'}
                 containerStyle={{ flex: 1 }}
               >
                 {/* peek view (collapsed state) */}

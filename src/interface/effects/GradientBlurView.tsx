@@ -3,6 +3,7 @@ import { BlurView, type BlurViewProps } from 'expo-blur'
 import { LinearGradient } from 'expo-linear-gradient'
 import { StyleSheet } from 'react-native'
 import { View, type ViewProps } from 'tamagui'
+
 import { easeGradient } from '~/helpers/gradient'
 
 interface GradientBlurViewProps extends ViewProps {
@@ -27,7 +28,7 @@ export const GradientBlurView = ({
     <View
       position="absolute"
       b={0}
-      z={2}
+      z={-1}
       overflow="hidden"
       {...viewProps}
       pointerEvents="none"

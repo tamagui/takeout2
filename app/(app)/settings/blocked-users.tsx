@@ -7,6 +7,7 @@ import { ListItem, SizableText, Spinner, View, YStack } from 'tamagui'
 import { useBlockedUsers } from '~/features/profile/useBlockedUsers'
 import { Avatar } from '~/interface/avatars/Avatar'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { PageLayout } from '~/interface/pages/PageLayout'
 import { Text } from '~/interface/text/Text'
 
 import type { User } from '~/data/types'
@@ -79,7 +80,7 @@ export const ProfileBlockedUsersPage = () => {
         </SizableText>
 
         {isNative && (
-          <SizableText size="$3" color="$color8" mt="$2">
+          <SizableText size="$3" color="$color10" mt="$2">
             Pull to refresh
           </SizableText>
         )}
@@ -97,27 +98,29 @@ export const ProfileBlockedUsersPage = () => {
   }, [hasMore, blockedUsers.length])
 
   return (
-    <YStack flex={1} flexBasis="auto">
-      {isLoading ? (
-        <YStack flex={1} items="center" justify="center">
-          <Spinner size="large" color="$color10" />
-        </YStack>
-      ) : (
-        <LegendList
-          data={blockedUsers}
-          renderItem={renderItem}
-          keyExtractor={keyExtractor}
-          ListEmptyComponent={renderEmpty}
-          ListFooterComponent={renderFooter}
-          refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refresh} />}
-          onEndReached={loadMore}
-          onEndReachedThreshold={0.5}
-          contentInsetAdjustmentBehavior="automatic"
-          contentContainerStyle={{
-            paddingHorizontal: 14,
-          }}
-        />
-      )}
-    </YStack>
+    <PageLayout>
+      <View flex={1}>
+        {isLoading ? (
+          <YStack flex={1} items="center" justify="center">
+            <Spinner size="large" color="$color10" />
+          </YStack>
+        ) : (
+          <LegendList
+            data={blockedUsers}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            ListEmptyComponent={renderEmpty}
+            ListFooterComponent={renderFooter}
+            refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refresh} />}
+            onEndReached={loadMore}
+            onEndReachedThreshold={0.5}
+            contentInsetAdjustmentBehavior="automatic"
+            contentContainerStyle={{
+              paddingHorizontal: 14,
+            }}
+          />
+        )}
+      </View>
+    </PageLayout>
   )
 }

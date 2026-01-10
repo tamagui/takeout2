@@ -1,6 +1,6 @@
-import { YStack } from 'tamagui'
+import { H2, YStack } from 'tamagui'
 
-import { H5, SubHeading } from './Headings'
+import { H3, H4, H5, SubHeading } from './Headings'
 
 export const PageHeading = ({
   title,
@@ -13,9 +13,9 @@ export const PageHeading = ({
 }) => {
   return (
     <YStack gap="$2">
-      <H5 size="$7" color="$color12" fontWeight="600">
+      <H3 color="$color12" fontWeight="700">
         {title}
-      </H5>
+      </H3>
 
       <YStack gap="$0.5">
         {!!subTitle && <SubHeading size="$4">{subTitle}</SubHeading>}

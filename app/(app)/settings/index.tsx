@@ -16,6 +16,7 @@ import { FileIcon } from '~/interface/icons/phosphor/FileIcon'
 import { InfoIcon } from '~/interface/icons/phosphor/InfoIcon'
 import { LockIcon } from '~/interface/icons/phosphor/LockIcon'
 import { UserIcon } from '~/interface/icons/phosphor/UserIcon'
+import { PageLayout } from '~/interface/pages/PageLayout'
 import { H4, SepHeading } from '~/interface/text/Headings'
 
 interface SettingItem {
@@ -235,22 +236,24 @@ export const ProfileSettingsPage = () => {
   ]
 
   return (
-    <ScrollView
-      flex={1}
-      showsVerticalScrollIndicator={false}
-      contentInsetAdjustmentBehavior="automatic"
-    >
-      <YStack flex={1} flexBasis="auto" pb="$10">
-        {allSections.map((section, sectionIndex) => (
-          <YStack key={section.title} mb="$6" ml="$4">
-            <SepHeading>{section.title}</SepHeading>
-            <YStack>{section.items.map((item) => renderItem(item))}</YStack>
-          </YStack>
-        ))}
+    <PageLayout useImage={true}>
+      <ScrollView
+        flex={1}
+        showsVerticalScrollIndicator={false}
+        contentInsetAdjustmentBehavior="automatic"
+      >
+        <YStack flex={1} pb="$10">
+          {allSections.map((section, sectionIndex) => (
+            <YStack key={section.title} mb="$6" ml="$4">
+              <SepHeading>{section.title}</SepHeading>
+              <YStack>{section.items.map((item) => renderItem(item))}</YStack>
+            </YStack>
+          ))}
 
-        <LogoAndVersion />
-      </YStack>
-    </ScrollView>
+          <LogoAndVersion />
+        </YStack>
+      </ScrollView>
+    </PageLayout>
   )
 }
 
@@ -258,11 +261,11 @@ function LogoAndVersion() {
   return (
     <YStack items="center" pb={100} pt="$4">
       <XStack items="center" gap="$2">
-        <H4 color="$color8" fontWeight="600">
+        <SizableText color="$color10" fontWeight="bold">
           {APP_NAME_LOWERCASE}
-        </H4>
+        </SizableText>
       </XStack>
-      <SizableText size="$1" color="$color8" mt="$2">
+      <SizableText size="$1" color="$color10" mt="$2">
         v1.0.0
       </SizableText>
     </YStack>

@@ -8,6 +8,7 @@ import { usePostsPaginated } from '~/features/feed/usePosts'
 import { scrollToTopEmitter } from '~/features/main/scrollToTopEmitter'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { ArrowUpIcon } from '~/interface/icons/phosphor/ArrowUpIcon'
+import { PageLayout } from '~/interface/pages/PageLayout'
 import { HomeShimmer } from '~/interface/shimmer/HomeShimmer'
 
 import type { Post } from '~/data/types'
@@ -62,72 +63,74 @@ export const HomePage = memo(() => {
   }, [hasMore, posts.length])
 
   return (
-    <View flex={1}>
-      <AnimatePresence>
-        {isLoading && (
-          <YStack
-            key="studio-shimmer"
-            animation="200ms"
-            exitStyle={{
-              opacity: 0,
-            }}
-            opacity={1}
-            z={999}
-            position="absolute"
-            t={headerHeight}
-            l={0}
-            r={0}
-            b={0}
-          >
-            <HomeShimmer />
-          </YStack>
-        )}
-      </AnimatePresence>
-
-      <FlatList
-        ref={listRef}
-        data={posts}
-        renderItem={renderItem}
-        keyExtractor={keyExtractor}
-        ListEmptyComponent={renderEmpty}
-        ListFooterComponent={renderFooter}
-        onEndReached={loadMore}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        onEndReachedThreshold={0.5}
-        contentContainerStyle={{
-          paddingBottom: 100,
-        }}
-        showsVerticalScrollIndicator={false}
-        contentInsetAdjustmentBehavior="automatic"
-      />
-
-      {/* scroll to top button */}
-      <AnimatePresence>
-        {showScrollToTop && (
-          <YStack
-            key="scroll-to-top"
-            animation="quick"
-            position="absolute"
-            b={88}
-            r={32}
-            z={1000}
-            enterStyle={{ scale: 0.5, y: 30 }}
-            exitStyle={{ scale: 0.5, y: 30 }}
-          >
-            <ButtonSimple
-              glass
-              size="large"
-              circular
-              onPress={() =>
-                listRef.current?.scrollToOffset({ offset: 0, animated: true })
-              }
+    <PageLayout>
+      <View flex={1}>
+        <AnimatePresence>
+          {isLoading && (
+            <YStack
+              key="studio-shimmer"
+              animation="200ms"
+              exitStyle={{
+                opacity: 0,
+              }}
+              opacity={1}
+              z={999}
+              position="absolute"
+              t={headerHeight}
+              l={0}
+              r={0}
+              b={0}
             >
-              <ArrowUpIcon size={20} color="white" />
-            </ButtonSimple>
-          </YStack>
-        )}
-      </AnimatePresence>
-    </View>
+              <HomeShimmer />
+            </YStack>
+          )}
+        </AnimatePresence>
+
+        <FlatList
+          ref={listRef}
+          data={posts}
+          renderItem={renderItem}
+          keyExtractor={keyExtractor}
+          ListEmptyComponent={renderEmpty}
+          ListFooterComponent={renderFooter}
+          onEndReached={loadMore}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+          onEndReachedThreshold={0.5}
+          contentContainerStyle={{
+            paddingBottom: 100,
+          }}
+          showsVerticalScrollIndicator={false}
+          contentInsetAdjustmentBehavior="automatic"
+        />
+
+        {/* scroll to top button */}
+        <AnimatePresence>
+          {showScrollToTop && (
+            <YStack
+              key="scroll-to-top"
+              animation="quick"
+              position="absolute"
+              b={88}
+              r={32}
+              z={1000}
+              enterStyle={{ scale: 0.5, y: 30 }}
+              exitStyle={{ scale: 0.5, y: 30 }}
+            >
+              <ButtonSimple
+                glass
+                size="large"
+                circular
+                onPress={() =>
+                  listRef.current?.scrollToOffset({ offset: 0, animated: true })
+                }
+              >
+                <ArrowUpIcon size={20} color="white" />
+              </ButtonSimple>
+            </YStack>
+          )}
+        </AnimatePresence>
+      </View>
+    </PageLayout>
   )
 })

@@ -254,7 +254,7 @@ const runScript = async (
   processes.push(proc)
   addChildProcess(proc)
 
-  proc.stdout.on('data', (data) => {
+  proc.stdout!.on('data', (data) => {
     if (getIsExiting()) return // prevent output during cleanup
     const lines = data.toString().split('\n')
     for (const line of lines) {
@@ -262,7 +262,7 @@ const runScript = async (
     }
   })
 
-  proc.stderr.on('data', (data) => {
+  proc.stderr!.on('data', (data) => {
     const dataStr = data.toString()
     stderrBuffer += dataStr
 

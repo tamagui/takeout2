@@ -77,11 +77,11 @@ export default {
       icon: getAppIcon(),
       adaptiveIcon: {
         foregroundImage: './assets/adaptive-icon.png',
-        backgroundColor: '#ecd20d',
+        backgroundColor: '#e6dac1',
       },
       permissions: ['android.permission.RECORD_AUDIO'],
     },
-    primaryColor: '#FFFFFF',
+    primaryColor: '#e6dac1',
     plugins: [
       'vxrn/expo-plugin',
       'expo-web-browser',
@@ -153,7 +153,7 @@ export default {
       [
         'expo-splash-screen',
         {
-          backgroundColor: '#ecd20d',
+          backgroundColor: '#e6dac1',
           image: './assets/logo.png',
           imageWidth: 80,
           imageHeight: 80,

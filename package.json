@@ -84,6 +84,7 @@
     "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-native-menu/menu": "^2.0.0",
     "@rocicorp/zero": "0.25.6",
+    "@shopify/react-native-skia": "^2.4.14",
     "@take-out/better-auth-utils": "workspace:*",
     "@take-out/helpers": "workspace:*",
     "@take-out/hooks": "workspace:*",
@@ -202,7 +203,8 @@
     }
   },
   "trustedDependencies": [
-    "@rocicorp/zero-sqlite3"
+    "@rocicorp/zero-sqlite3",
+    "@shopify/react-native-skia"
   ],
   "env": {
     "AWS_ACCESS_KEY_ID": "",

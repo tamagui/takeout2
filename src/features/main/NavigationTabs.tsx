@@ -2,6 +2,7 @@ import { Link, usePathname } from 'one'
 import { useMedia, View } from 'tamagui'
 
 import { Pressable } from '~/interface/buttons/Pressable'
+import { dialogEmit } from '~/interface/dialogs/shared'
 import { HouseIcon } from '~/interface/icons/phosphor/HouseIcon'
 import { PlusIcon } from '~/interface/icons/phosphor/PlusIcon'
 import { UserCircleIcon } from '~/interface/icons/phosphor/UserCircleIcon'
@@ -12,13 +13,14 @@ import type { TabsTabProps } from 'tamagui'
 
 type TabRoute = {
   name: string
-  href: Href
+  href?: Href
   icon: any
+  action?: () => void
 }
 
 const routes: TabRoute[] = [
   { name: 'home', href: '/home' as Href, icon: HouseIcon },
-  { name: 'plus', href: '/plus' as Href, icon: PlusIcon },
+  { name: 'plus', icon: PlusIcon, action: () => dialogEmit({ type: 'create-post' }) },
   { name: 'profile', href: '/profile' as Href, icon: UserCircleIcon },
 ]
 
@@ -28,7 +30,7 @@ export function NavigationTabs() {
   const iconSize = media.sm ? 24 : 20
 
   const currentTab =
-    routes.find((r) => pathname.startsWith(r.href as string))?.name ?? 'home'
+    routes.find((r) => r.href && pathname.startsWith(r.href as string))?.name ?? 'home'
 
   return (
     <RovingTabs value={currentTab} indicatorStyle="underline">
@@ -39,6 +41,13 @@ export function NavigationTabs() {
       }) =>
         routes.map((route) => {
           const Icon = route.icon
+          const content = (
+            <View items="center" cursor="pointer">
+              <Pressable items="center">
+                <Icon size={iconSize} color="$color" />
+              </Pressable>
+            </View>
+          )
 
           return (
             <RovingTabs.Tab
@@ -48,13 +57,13 @@ export function NavigationTabs() {
               px="$4"
               py="$2"
             >
-              <Link href={route.href}>
-                <View items="center" cursor="pointer">
-                  <Pressable items="center">
-                    <Icon size={iconSize} color="$color" />
-                  </Pressable>
-                </View>
-              </Link>
+              {route.href ? (
+                <Link href={route.href}>{content}</Link>
+              ) : (
+                <Pressable onPress={route.action} data-testid="create-post-button">
+                  {content}
+                </Pressable>
+              )}
             </RovingTabs.Tab>
           )
         })

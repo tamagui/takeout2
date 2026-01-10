@@ -16,9 +16,14 @@ test.describe('Post Flow', () => {
 
     await loginAsDemo(page)
 
-    // navigate to /plus to open create post dialog
-    await page.goto(`${BASE_URL}/plus`, { waitUntil: 'domcontentloaded' })
-    await page.waitForTimeout(3000)
+    // go to home and click the plus button to open create post dialog
+    await page.goto(`${BASE_URL}/home`, { waitUntil: 'domcontentloaded' })
+    await page.waitForTimeout(2000)
+
+    // click the plus button in the header to open the create post dialog
+    const plusButton = page.locator('[data-testid="create-post-button"]')
+    await plusButton.waitFor({ state: 'visible', timeout: 10000 })
+    await plusButton.click()
 
     // wait for create post dialog to appear
     // use placeholder selector since tamagui doesn't pass data-testid through

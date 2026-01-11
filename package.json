@@ -28,7 +28,7 @@
     "db": "tko db",
     "dev-tunnel-if-exist": "bun tko dev-tunnel-if-exist",
     "dev-tunnel": "bun tko dev-tunnel",
-    "dev": "tko run run one:dev watch dev-tunnel-if-exist",
+    "dev": "tko run run watch dev-tunnel-if-exist one:dev",
     "eas": "tko eas",
     "env:dev": "NODE_ENV=development dotenvx run -f .env .env.development --",
     "env:pull": "tko run env-pull",

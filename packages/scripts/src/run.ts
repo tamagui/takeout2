@@ -47,8 +47,11 @@ const runBun = args.includes('--bun')
 const watch = args.includes('--watch') // just attempts to restart a failed process up to MAX_RESTARTS times
 
 // parse --stdin=<script-name> to specify which script receives keyboard input
+// if not specified, defaults to the last script in the list
 const stdinArg = args.find((arg) => arg.startsWith('--stdin='))
-const stdinScript = stdinArg ? stdinArg.replace('--stdin=', '') : null
+const stdinScript = stdinArg
+  ? stdinArg.replace('--stdin=', '')
+  : (runCommands[runCommands.length - 1] ?? null)
 
 // Collect additional flags and arguments to forward to sub-commands
 const forwardArgs = args.filter(

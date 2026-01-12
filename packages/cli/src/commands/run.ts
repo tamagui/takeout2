@@ -16,7 +16,7 @@ export const runCommand = defineCommand({
       required: false,
     },
   },
-  run: async ({ args, rawArgs }) => {
+  run: async () => {
     // Get all arguments after 'run'
     const scriptArgs = process.argv.slice(3)
     const firstArg = scriptArgs[0]
@@ -129,17 +129,14 @@ export const runCommand = defineCommand({
     // Find the project root by looking for package.json with workspaces or takeout field
     let currentDir = process.cwd()
     let projectRoot = ''
-    let hasWorkspaces = false
 
     while (currentDir !== parse(currentDir).root) {
       const packageJsonPath = resolve(currentDir, 'package.json')
       if (existsSync(packageJsonPath)) {
         try {
           const pkg = JSON.parse(readFileSync(packageJsonPath, 'utf8'))
-          // check for workspaces (monorepo) or takeout field (ejected)
           if (pkg.workspaces || pkg.takeout) {
             projectRoot = currentDir
-            hasWorkspaces = Boolean(pkg.workspaces)
             break
           }
         } catch {}
@@ -152,14 +149,11 @@ export const runCommand = defineCommand({
       process.exit(1)
     }
 
-    // in monorepo mode, use local packages/scripts, otherwise use installed package
-    let scriptPath: string
-    if (hasWorkspaces) {
-      scriptPath = resolve(projectRoot, 'packages/scripts/src/run.ts')
-    } else {
-      // ejected mode - use the installed @take-out/scripts package
-      scriptPath = resolve(projectRoot, 'node_modules/@take-out/scripts/src/run.ts')
-    }
+    // check if local packages/scripts exists (takeout monorepo), otherwise use installed package
+    const localScriptsPath = resolve(projectRoot, 'packages/scripts/src/run.ts')
+    const scriptPath = existsSync(localScriptsPath)
+      ? localScriptsPath
+      : resolve(projectRoot, 'node_modules/@take-out/scripts/src/run.ts')
 
     const child = spawn('bun', [scriptPath, ...scriptArgs], {
       stdio: 'inherit',

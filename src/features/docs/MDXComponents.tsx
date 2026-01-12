@@ -4,6 +4,7 @@ import { Link } from '~/interface/app/Link'
 
 import { CodeInline } from './Code'
 import { DocsCodeBlock } from './DocsCodeBlock'
+import { RouteTree } from './RouteTree'
 import { SimpleTable } from './SimpleTable'
 
 const BaseParagraph = styled(Paragraph, {
@@ -90,6 +91,7 @@ const components = {
     />
   ),
 
+  RouteTree,
   SimpleTable,
 }
 

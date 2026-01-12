@@ -14,7 +14,6 @@ import {
 } from 'tamagui'
 
 import { DocsMenuContents } from '~/features/docs/DocsMenuContents'
-import { DocsQuickNav } from '~/features/docs/DocsQuickNav'
 import { SearchButton, SearchProvider } from '~/features/docs/search'
 import { useDocsMenu } from '~/features/docs/useDocsMenu'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
@@ -141,8 +140,7 @@ export function DocsLayout() {
           </Link>
         </YStack>
 
-        {/* Quick Nav (Table of Contents) */}
-        <DocsQuickNav />
+        {/* Quick Nav (Table of Contents) rendered per-page with frontmatter.headings */}
       </XStack>
     </SearchProvider>
   )

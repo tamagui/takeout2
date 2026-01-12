@@ -54,7 +54,7 @@ const context = createStyledContext({
   active: false,
   cursor: 'default',
   size: 'medium' as ButtonSizes,
-  fontFamily: '$nunito' as FontFamilyTokens,
+  fontFamily: '$mono' as FontFamilyTokens,
   circular: false,
   variant: 'default' as ButtonVariants,
 })
@@ -329,7 +329,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
       disabled,
       disableGlint,
       disableBackground,
-      fontFamily = '$nunito',
+      fontFamily = '$mono',
       glass,
       glassTint,
       glow,

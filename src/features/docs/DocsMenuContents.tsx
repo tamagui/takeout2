@@ -62,20 +62,16 @@ export const DocsMenuContents = () => {
     itemsGrouped[key].push(item)
   }
 
-  const sectionHasActiveItem = (items: Item[]) => {
-    return items.some((item) => currentPath === item.page.route)
-  }
+  const getAllSections = () =>
+    Object.entries(itemsGrouped).map(([title]) => title || 'base')
 
-  const getDefaultOpenSections = () =>
-    Object.entries(itemsGrouped)
-      .filter(([_, items]) => sectionHasActiveItem(items))
-      .map(([title]) => title || 'base')
-
-  const [openSections, setOpenSections] = useState<string[]>(getDefaultOpenSections)
+  const [openSections, setOpenSections] = useState<string[]>(getAllSections)
 
   // sync open sections when currentPath changes to ensure active section is open
   useEffect(() => {
-    const activeSections = getDefaultOpenSections()
+    const activeSections = Object.entries(itemsGrouped)
+      .filter(([_, items]) => items.some((item) => currentPath === item.page.route))
+      .map(([title]) => title || 'base')
     setOpenSections((prev) => {
       const newSections = [...new Set([...prev, ...activeSections])]
       return newSections
@@ -197,7 +193,7 @@ const SubSection = ({ section, items }: { section: DocsSection; items: Item[] })
               <XStack flex={1} />
 
               <Square animation="quick" rotate={open ? '90deg' : '0deg'}>
-                <CaretRightIcon color="$color9" size={14} />
+                <CaretRightIcon color="$color9" size={10} />
               </Square>
             </XStack>
           )

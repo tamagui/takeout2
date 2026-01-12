@@ -23,7 +23,7 @@ export const DocsRouteNavItem = function DocsRouteNavItem({
         data-nav-item
         className="docs-nav-item"
         items="center"
-        py="$1"
+        py="$1.5"
         px="$2"
         rounded="$3"
         opacity={pending ? 0.35 : 1}

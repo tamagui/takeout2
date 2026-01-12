@@ -1,10 +1,14 @@
 import { getMDXComponent } from 'mdx-bundler/client'
 import { createRoute, useLoader } from 'one'
 import { useMemo } from 'react'
+import remarkSmartypants from 'remark-smartypants'
 import { H1, Paragraph } from 'tamagui'
 
+import { DocsQuickNav } from '~/features/docs/DocsQuickNav'
 import { components } from '~/features/docs/MDXComponents'
 import { HeadInfo } from '~/interface/app/HeadInfo'
+
+import type { UnifiedPlugin } from '@vxrn/mdx'
 
 export const sitemap = {
   priority: 0.8,
@@ -24,7 +28,11 @@ export async function generateStaticParams() {
 
 export async function loader({ params }: { params: { slug: string } }) {
   const { getMDXBySlug } = await import('@vxrn/mdx')
-  const { frontmatter, code } = await getMDXBySlug('src/features/site/docs', params.slug)
+  const { frontmatter, code } = await getMDXBySlug(
+    'src/features/site/docs',
+    params.slug,
+    [remarkSmartypants] as UnifiedPlugin
+  )
   return {
     frontmatter,
     code,
@@ -63,6 +71,8 @@ export function DocsSlugPage() {
       )}
 
       <Component components={components} />
+
+      <DocsQuickNav headings={frontmatter.headings} />
     </>
   )
 }

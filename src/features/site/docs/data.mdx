@@ -136,18 +136,164 @@ Use `ctx.server?.asyncTasks` for work that should run after the transaction comm
 
 ### Convergent Mutations
 
-Mutations run on both client and server. Both runs must produce the same database state. Pass IDs and timestamps from the client rather than generating them inside the mutation:
+Mutations run on both client and server. Both must produce identical database state. This is the trickiest part of Zero—get it wrong and your data diverges.
+
+**The rule: never generate non-deterministic values inside mutations.**
+
+#### Pattern 1: Pass IDs and timestamps from the caller
 
 ```ts
-// client generates the values
+// caller generates these values
 await zero.mutate.post.insert({
-  id: randomId(),
-  createdAt: Date.now(),
-  // ...
+  id: randomId(),           // generated before mutation
+  createdAt: Date.now(),    // captured before mutation
+  userId: currentUser.id,
+  content: 'Hello',
 })
 ```
 
-Server-only side effects (like analytics) don't affect convergence since they don't modify the database.
+The mutation receives pre-generated values. Both client and server use the same `id` and `createdAt`.
+
+#### Pattern 2: Derive child IDs from parent IDs
+
+When a mutation creates related entities, derive their IDs deterministically from the parent:
+
+```ts
+// from chat app: insertServer.ts
+async function insertServer(tx, server) {
+  await tx.mutate.server.insert(server)
+
+  // derive role IDs from server ID - same on client and server
+  const adminRoleId = `${server.id}-role-admin`
+  const teamRoleId = `${server.id}-role-team`
+
+  await tx.mutate.role.insert({
+    id: adminRoleId,
+    serverId: server.id,
+    name: 'Admin',
+    createdAt: server.createdAt,  // reuse parent timestamp
+  })
+
+  await tx.mutate.role.insert({
+    id: teamRoleId,
+    serverId: server.id,
+    name: 'Team',
+    createdAt: server.createdAt,  // reuse parent timestamp
+  })
+
+  // derive channel IDs from server ID
+  await tx.mutate.channel.insert({
+    id: `${server.id}-tasks`,
+    serverId: server.id,
+    createdAt: server.createdAt,
+  })
+}
+```
+
+This pattern scales—channels get `${server.id}-tasks`, permissions get `${channel.id}-permission`, notifications get `${message.id}-notification`.
+
+#### Pattern 3: Pass "next" IDs for follow-up entities
+
+When a mutation needs to create a follow-up entity (like a draft after sending a message), pass its ID from the caller:
+
+```ts
+// message model receives nextDraftId from caller
+async send(ctx, props: SendMessage) {
+  const { nextDraftId, ...message } = props
+
+  await ctx.tx.mutate.message.update(message)
+
+  // create next draft with the pre-generated ID
+  await ctx.tx.mutate.message.insert(
+    createDraftMessage({
+      id: nextDraftId,  // passed in, not generated here
+      channelId: message.channelId,
+      creatorId: message.creatorId,
+    })
+  )
+}
+
+// caller generates both IDs
+await zero.mutate.message.send({
+  id: randomId(),
+  nextDraftId: randomId(),  // pre-generate the follow-up ID
+  content: 'Hello',
+  createdAt: Date.now(),
+})
+```
+
+#### Pattern 4: Reuse timestamps from parent objects
+
+Never call `Date.now()` inside a mutation. Reuse timestamps from the data you're given:
+
+```ts
+// notification derives its createdAt from the message
+async function insertMentionNotification(message) {
+  await tx.mutate.notification.insert({
+    id: `${message.id}-notification`,
+    messageId: message.id,
+    createdAt: message.createdAt,  // reuse, don't generate
+  })
+}
+
+// permission derives createdAt from the channel
+await tx.mutate.channelPermission.insert({
+  id: `${channel.id}-permission`,
+  channelId: channel.id,
+  createdAt: channel.createdAt,  // reuse parent timestamp
+})
+```
+
+#### What's safe inside mutations
+
+Server-only code doesn't need to converge—it only runs on the server:
+
+```ts
+async insert(ctx, post) {
+  await ctx.tx.mutate.post.insert(post)
+
+  // safe: only runs server-side
+  if (ctx.server) {
+    ctx.server.asyncTasks.push(async () => {
+      // these can use Date.now(), randomId(), etc.
+      await ctx.server.actions.analytics.logEvent({
+        id: randomId(),
+        timestamp: Date.now(),
+        event: 'post_created',
+      })
+    })
+  }
+}
+```
+
+#### Common mistakes
+
+```ts
+// BAD: generates different IDs on client vs server
+async insert(ctx, data) {
+  await ctx.tx.mutate.post.insert({
+    ...data,
+    id: randomId(),  // diverges!
+  })
+}
+
+// BAD: different timestamps on client vs server
+async insert(ctx, data) {
+  await ctx.tx.mutate.post.insert({
+    ...data,
+    createdAt: Date.now(),  // diverges!
+  })
+}
+
+// BAD: query results may differ between client and server
+async insert(ctx, data) {
+  const count = await ctx.tx.query.post.run()
+  await ctx.tx.mutate.post.insert({
+    ...data,
+    position: count.length,  // may diverge!
+  })
+}
+```
 
 ## Queries
 

@@ -36,6 +36,14 @@ export const docsRoutes: DocsSection[] = [
     title: 'Use Cases',
     pages: [{ title: 'Static Websites', route: '/docs/static-websites' }],
   },
+
+  {
+    title: 'Reference',
+    pages: [
+      { title: 'Conventions', route: '/docs/conventions' },
+      { title: 'FAQ', route: '/docs/faq' },
+    ],
+  },
 ]
 
 export const allDocsRoutes = docsRoutes.flatMap((x) => x.pages || [])

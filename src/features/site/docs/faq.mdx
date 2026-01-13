@@ -1,0 +1,91 @@
+---
+title: FAQ
+description: Frequently asked questions about Takeout architecture and design decisions
+---
+
+Common questions about architecture and design decisions.
+
+## Why not use drizzle-zero to auto-generate Zero schema?
+
+[drizzle-zero](https://github.com/rocicorp/drizzle-zero) is a package that auto-generates Zero schemas from Drizzle ORM definitions. Takeout intentionally doesn't use it.
+
+### Co-location with model logic
+
+Zero schemas live in `src/data/models/` alongside mutations, permissions, and related logic. This keeps all model concerns together:
+
+```
+src/data/models/post.ts
+├── schema (Zero table definition)
+├── permissions (who can access)
+└── mutations (create, update, delete)
+```
+
+When you open a model file, you see everything about that entity in one place.
+
+### Explicit control
+
+Manually defining Zero schema gives precise control over what syncs to clients:
+
+- Exclude columns from sync (sensitive data, server-only fields)
+- Use different types than Drizzle (Zero has its own type system)
+- Evolve schemas independently
+
+### Fewer dependencies
+
+No need to wait for drizzle-zero updates when Zero or Drizzle release breaking changes. One less package to maintain compatibility with.
+
+### Easier to swap Drizzle
+
+If you ever want to switch ORMs (Kysely, Prisma, raw SQL), the Zero schema remains untouched. Drizzle is only used for migrations and server-side queries.
+
+### Clarity
+
+Two explicit schema files make it obvious what's in the database vs what syncs to clients. Useful when onboarding new developers.
+
+### Keeping schemas in sync
+
+The schemas rarely drift. When adding a new table:
+
+1. Add to Drizzle schema (`src/database/schema-public.ts`)
+2. Add to Zero model (`src/data/models/`)
+3. Add relationships (`src/data/relationships.ts`)
+4. Run migrations
+
+Changes to existing tables follow the same pattern. `over-zero generate` catches type mismatches at build time.
+
+### When drizzle-zero makes sense
+
+drizzle-zero is a good choice if you:
+
+- Want zero configuration
+- Sync all columns to clients
+- Prefer single source of truth over co-location
+- Don't mind the dependency
+
+For Takeout, the co-location benefits outweigh the duplication cost.
+
+## Why separate Drizzle and Zero relationships?
+
+Drizzle relationships use `relations()` from drizzle-orm. Zero relationships use a different format. Takeout defines Zero relationships separately in `src/data/relationships.ts`.
+
+This separation allows:
+
+- Different relationship names (Drizzle might use `author`, Zero uses `user`)
+- Subset of relationships for sync (not everything needs to sync)
+- Cleaner model files (relationships are infrastructure, not domain logic)
+
+## Why over-zero instead of raw @rocicorp/zero?
+
+[over-zero](https://github.com/tamagui/over-zero) adds three things:
+
+- **Queries as functions** - Write plain functions, they become synced queries. No manual `SyncedQuery` wrappers or validator boilerplate.
+- **Mutations with CRUD** - Pass schema + permissions to `mutations()` and get auto-generated insert/update/delete/upsert that check permissions server-side.
+- **Permission helpers** - `where()` creates composable conditions that only run server-side. `can()` checks them in mutations. `usePermission()` checks them in React.
+
+The CLI generates glue code (types, synced queries with valibot validators, model aggregation) and enforces a clean `src/data/` structure with `models/`, `queries/`, and `generated/` directories.
+
+## Resources
+
+- [drizzle-zero](https://github.com/rocicorp/drizzle-zero)
+- [Zero Documentation](https://zero.rocicorp.dev)
+- [over-zero](/packages/over-zero)

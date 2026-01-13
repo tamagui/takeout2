@@ -104,26 +104,39 @@ await migrate({
 
 ## CLI
 
-The package includes a CLI with several database utilities:
+The package includes a CLI with several database utilities. Run with `bunx postgres` or `bun env:dev bunx postgres` (to load env vars):
 
 ```bash
 # show help
-db --help
+bunx postgres --help
 
 # connect to database with psql
-db psql
+bun env:dev bunx postgres psql
+
+# run a query directly
+bun env:dev bunx postgres psql --query "SELECT * FROM users LIMIT 5"
 
 # create a new migration
-db migrate:add my-migration-name
-
-# run migrations
-db migrate
+bunx postgres migrate:add my-migration-name
 
 # dump database
-db pg_dump > backup.sql
+bun env:dev bunx postgres pg_dump > backup.sql
 
-# sync drizzle migrations to TypeScript
-db sync
+# sync drizzle migrations to TypeScript wrappers
+bunx postgres sync-drizzle
+```
+
+For migrations, use the project scripts:
+
+```bash
+# local dev - generates and runs migrations
+bun migrate run
+
+# production - generates and builds
+bun migrate build
+
+# add a custom typescript migration
+bun db:migrate-add my-migration-name
 ```
 
 ### CLI Configuration
@@ -136,19 +149,20 @@ The CLI uses environment variables for configuration:
 
 ## Migration System
 
-### SQL Migrations (Drizzle Kit)
+The migration system combines Drizzle schema migrations with custom TypeScript
+migrations. You don't need to run Drizzle commands directly.
 
-1. Update your schema files
-2. Generate migration: `drizzle-kit generate`
-3. Sync to TypeScript: `db sync`
-4. Run migrations: `db migrate`
+### Schema Migrations
 
-### TypeScript Migrations
+1. Update `src/database/schema-public.ts` or `schema-private.ts`
+2. Run `bun migrate run` (generates + runs migrations)
 
-For custom data migrations:
+### Custom TypeScript Migrations
+
+For data migrations or changes that can't be expressed in schema:
 
 ```bash
-db migrate:add fix-user-data
+bun db:migrate-add fix-user-data
 ```
 
 This creates a new TypeScript file:
@@ -157,17 +171,18 @@ This creates a new TypeScript file:
 import type { PoolClient } from 'pg'
 
 export async function up(client: PoolClient) {
-  // your migration code here
   await client.query(`
     UPDATE users SET email = lower(email)
   `)
 }
 ```
 
-### Migration Sync
+### How It Works
 
-The `db sync` command automatically wraps Drizzle-generated SQL migrations in
-TypeScript:
+The `bun migrate build` command:
+1. Runs `drizzle-kit generate` to create SQL migrations from schema changes
+2. Wraps SQL migrations in TypeScript (using `?raw` imports)
+3. Bundles all migrations into a single deployable file
 
 ```typescript
 // migrations/0001_example.sql → migrations/0001_example.ts

@@ -36,15 +36,11 @@ string from `ZERO_UPSTREAM_DB` environment variable. Default local connection:
 ### Command Line Access
 
 ```bash
-bun db:psql:dev
-QUERY="SELECT * FROM users LIMIT 5" bun db:psql:dev
-bun db:psql:dev -c "SELECT COUNT(*) FROM messages"
-```
+# connect to local database
+bun env:dev bunx postgres psql
 
-### Database Migrations
-
-```bash
-bun db:migrate:add my-migration-name
+# run a query
+bun env:dev bunx postgres psql --query "SELECT * FROM users LIMIT 5"
 ```
 
 ## Query Patterns
@@ -116,42 +112,72 @@ configurable timeouts and retry strategies.
 
 ## Migrations
 
-We use Drizzle only for schema migrations, but we often go outside of it for our
-own migration system which is designed to be very simple and builds so it runs
-locally and on AWS Lambda, when deploying to production.
+We have a unified migration system that combines Drizzle schema migrations with
+custom TypeScript migrations. You don't need to touch Drizzle directly.
 
 ### Migration Workflow
 
-For Drizzle schame changes in schema-public or schema-private, you just change
-the file and run `bun migrate:build`.
-
-If you're developing locally you can skip this and build and run migrations at
-the same time using `bun migrate`.
-
-### Custom migrations
+1. Edit `src/database/schema-public.ts` or `src/database/schema-private.ts`
+2. Run migrations:
 
 ```bash
-bun db:migrate:add update-user-stats
-bun migrate
-bun migrate:production
+# local development - generates and runs migrations
+bun migrate run
+
+# production - just generates and builds (CI deploys)
+bun migrate build
 ```
 
-### Custom Migration Example
+### Custom Migrations
 
-Location: src/database/scripts/migration-add.ts:37
+For data migrations or complex changes that can't be expressed in schema:
+
+```bash
+bun db:migrate-add update-user-stats
+```
+
+This creates a TypeScript migration file:
 
 ```typescript
 import type { PoolClient } from 'pg'
 
 export async function up(client: PoolClient) {
   await client.query(`
-    ALTER TABLE users
-    ADD COLUMN last_seen TIMESTAMP
+    UPDATE users SET email = lower(email)
   `)
 }
 ```
 
 We don't do down migrations.
+
+### Troubleshooting
+
+**Migration file is blank/empty:**
+Drizzle found no schema changes. Either your changes aren't saved, or the schema
+already matches the database. Check your schema file and compare with what's in
+the database.
+
+**Check which migrations have run:**
+```bash
+bun env:dev bunx postgres psql --query "SELECT * FROM migrations ORDER BY id"
+```
+
+**Migration failed and left database in bad state:**
+Migrations run in a transaction, so failed migrations should rollback
+automatically. If you need to manually fix:
+
+1. Check what migrations have run (query above)
+2. If a bad migration was applied, write a new migration to fix it
+3. If the migration is stuck in a partial state, you may need to manually delete
+   from the migrations table and fix the schema:
+   ```sql
+   DELETE FROM migrations WHERE name = '0003_bad_migration';
+   ```
+
+**Schema changes not being detected:**
+- Make sure you're editing the right file (`schema-public.ts` vs `schema-private.ts`)
+- Both schemas go to Drizzle - "private" just means auth tables, not "excluded from migrations"
+- Run `bun migrate run` which regenerates migrations fresh
 
 ### Generated Columns in PostgreSQL
 

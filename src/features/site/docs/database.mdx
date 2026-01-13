@@ -1,0 +1,318 @@
+---
+title: Database
+description:
+  PostgreSQL schema, Drizzle ORM, and migrations - the foundation for Zero sync
+---
+
+Takeout uses PostgreSQL as the source of truth, with Drizzle ORM for schema
+management. Zero replicates from Postgres to provide real-time sync to clients.
+This page covers the database layer—for client-side queries and mutations, see
+the [Zero](/docs/zero) page.
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      PostgreSQL                              │
+│  ┌─────────────────┐    ┌──────────────────────────────┐   │
+│  │  schema-private │    │        schema-public          │   │
+│  │  (auth tables)  │    │  (synced to Zero clients)    │   │
+│  └─────────────────┘    └──────────────────────────────┘   │
+│           │                          │                      │
+│           │                          ▼                      │
+│           │              ┌──────────────────────┐          │
+│           │              │   Zero Replication   │          │
+│           │              └──────────────────────┘          │
+└───────────│─────────────────────────│───────────────────────┘
+            │                         │
+            ▼                         ▼
+    Server-side only          Client devices
+    (auth, sessions)          (offline-first sync)
+```
+
+## Schema Files
+
+The database schema is split into two files in `src/database/`:
+
+### schema-public.ts
+
+Tables that sync to Zero clients. This is your application data:
+
+```ts
+// src/database/schema-public.ts
+import {
+  boolean,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+  varchar,
+} from 'drizzle-orm/pg-core'
+
+export const userPublic = pgTable('userPublic', {
+  id: varchar('id').primaryKey(),
+  name: text('name'),
+  username: varchar('username').unique(),
+  image: text('image'),
+  joinedAt: timestamp('joinedAt').defaultNow(),
+  postsCount: integer('postsCount').default(0),
+})
+
+export const post = pgTable('post', {
+  id: varchar('id').primaryKey(),
+  userId: varchar('userId').references(() => userPublic.id),
+  image: text('image').notNull(),
+  caption: text('caption'),
+  commentCount: integer('commentCount').default(0),
+  createdAt: timestamp('createdAt').defaultNow(),
+})
+```
+
+### schema-private.ts
+
+Authentication and sensitive data that stays server-side only:
+
+```ts
+// src/database/schema-private.ts
+export const user = pgTable('user', {
+  id: varchar('id').primaryKey(),
+  email: varchar('email').unique().notNull(),
+  emailVerified: boolean('emailVerified').default(false),
+  role: varchar('role').default('user'),
+  banned: boolean('banned').default(false),
+})
+
+export const session = pgTable('session', {
+  id: varchar('id').primaryKey(),
+  userId: varchar('userId').references(() => user.id),
+  token: text('token').unique().notNull(),
+  expiresAt: timestamp('expiresAt').notNull(),
+  ipAddress: text('ipAddress'),
+})
+```
+
+Both schemas feed into Drizzle migrations—"private" means the data doesn't sync
+to clients, not that it's excluded from migrations.
+
+## Migrations
+
+Takeout has a unified migration system that combines Drizzle schema migrations
+with custom TypeScript migrations.
+
+### Workflow
+
+1. Edit `src/database/schema-public.ts` or `schema-private.ts`
+2. Run migrations:
+
+```bash
+# local development - generates and runs migrations
+bun migrate run
+
+# production - generates and builds (CI deploys)
+bun migrate build
+```
+
+That's it. You don't need to run Drizzle commands directly.
+
+### Custom Migrations
+
+For data migrations or changes that can't be expressed in schema:
+
+```bash
+bun db:migrate-add backfill-user-counts
+```
+
+This creates a TypeScript migration file:
+
+```ts
+// src/database/migrations/0003_backfill_user_counts.ts
+import type { PoolClient } from 'pg'
+
+export async function up(client: PoolClient) {
+  await client.query(`
+    UPDATE "userPublic" u
+    SET "postsCount" = (
+      SELECT COUNT(*) FROM "post" WHERE "userId" = u.id
+    )
+  `)
+}
+```
+
+We don't do down migrations—only forward.
+
+### How It Works
+
+`bun migrate build` does three things:
+
+1. Runs `drizzle-kit generate` to create SQL from schema changes
+2. Wraps SQL migrations in TypeScript (using `?raw` imports)
+3. Bundles everything into a single deployable file
+
+The migration runner tracks applied migrations in a `migrations` table and runs
+them in a transaction.
+
+## Server-Side Queries
+
+For server-side code (API routes, server actions), use Drizzle ORM:
+
+```ts
+import { getDb } from '~/database'
+import { userPublic } from '~/database/schema-public'
+import { eq } from 'drizzle-orm'
+
+const db = getDb()
+const user = await db.select().from(userPublic).where(eq(userPublic.id, userId))
+```
+
+See the [Drizzle ORM docs](https://orm.drizzle.team/docs/select) for the full query API.
+
+For client-side queries that sync in real-time, use Zero's ZQL—see the [Zero page](/docs/zero) and [Zero's Reading Data docs](https://zero.rocicorp.dev/docs/reading-data).
+
+## Aggregates and Triggers
+
+Zero doesn't support aggregates, so we use PostgreSQL triggers to maintain
+denormalized counts. For example, `post.commentCount` is updated automatically
+when comments are added or removed.
+
+### Simple Counter Pattern
+
+```sql
+-- in a migration file
+CREATE OR REPLACE FUNCTION update_post_comment_count()
+RETURNS TRIGGER AS $$
+DECLARE
+  target_post_id varchar;
+  new_count integer;
+BEGIN
+  IF TG_OP = 'DELETE' THEN
+    target_post_id := OLD."postId";
+  ELSE
+    target_post_id := NEW."postId";
+  END IF;
+
+  -- check post still exists (cascade delete safety)
+  IF NOT EXISTS (SELECT 1 FROM "post" WHERE "id" = target_post_id) THEN
+    RETURN NULL;
+  END IF;
+
+  SELECT COUNT(*) INTO new_count
+  FROM "comment"
+  WHERE "postId" = target_post_id;
+
+  UPDATE "post"
+  SET "commentCount" = new_count
+  WHERE "id" = target_post_id;
+
+  RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER post_comment_count_trigger
+AFTER INSERT OR DELETE ON "comment"
+FOR EACH ROW
+EXECUTE FUNCTION update_post_comment_count();
+```
+
+Key patterns:
+
+- Recalculate the count from scratch (safer than incrementing)
+- Check parent exists before updating (prevents cascade delete errors)
+- Use AFTER triggers to ensure the source data is committed
+
+For complex aggregates like time-windowed stats or multi-table relationships,
+create dedicated stats tables with their own triggers.
+
+## Local Development
+
+### Starting the Database
+
+```bash
+# start postgres via docker
+bun backend
+
+# or just the database without other services
+docker compose up postgres
+```
+
+### Connecting
+
+```bash
+# interactive psql
+bun env:dev bunx postgres psql
+
+# run a query
+bun env:dev bunx postgres psql --query "SELECT * FROM \"userPublic\" LIMIT 5"
+```
+
+Or use a GUI like TablePlus with the connection string from `ZERO_UPSTREAM_DB`
+(default: `postgresql://user:password@127.0.0.1:5433/postgres`).
+
+## Troubleshooting
+
+### Migration file is blank/empty
+
+Drizzle found no schema changes. Check that:
+
+- Your changes are saved
+- You're editing the right file (`schema-public.ts` vs `schema-private.ts`)
+- The schema doesn't already match the database
+
+### Check which migrations have run
+
+```bash
+bun env:dev bunx postgres psql --query "SELECT * FROM migrations ORDER BY id"
+```
+
+### Migration failed
+
+Migrations run in a transaction, so failures should rollback automatically. If
+you need to manually fix:
+
+1. Check what migrations have run (query above)
+2. If a bad migration was applied, write a new migration to fix it
+3. If stuck in a partial state, you may need to manually delete from the
+   migrations table:
+
+```sql
+DELETE FROM migrations WHERE name = '0003_bad_migration';
+```
+
+Then fix your schema and run migrations again.
+
+### Schema changes not detected
+
+- Both `schema-public.ts` and `schema-private.ts` go to Drizzle
+- "Private" means it doesn't sync to Zero clients, not "excluded from
+  migrations"
+- Run `bun migrate run` which regenerates migrations fresh
+
+### Zero not seeing changes
+
+After schema changes:
+
+1. Run `bun migrate run` to update Postgres
+2. Run `bun tko zero/generate` to regenerate Zero types
+3. Restart the Zero server
+
+Zero replicates from Postgres, so the database must be updated first.
+
+## Production
+
+Production uses AWS Aurora Serverless v2 with PostgreSQL 16. The connection
+pooling handles Aurora's connection limits with:
+
+- Retry logic with exponential backoff
+- Automatic pool recycling when approaching limits
+- Configurable timeouts for serverless environments
+
+Environment variables:
+
+- `ZERO_UPSTREAM_DB` - Main database connection string
+- `ZERO_CVR_DB` - Zero client view records database
+- `ZERO_CHANGE_DB` - Zero change tracking database
+
+## Learn More
+
+- [Zero page](/docs/zero) - Client-side queries and mutations
+- [Drizzle ORM docs](https://orm.drizzle.team) - Schema and query reference
+- [PostgreSQL docs](https://www.postgresql.org/docs/) - SQL and triggers

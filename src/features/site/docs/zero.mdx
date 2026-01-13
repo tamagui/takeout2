@@ -1,33 +1,25 @@
 ---
-title: Data
-description: Client-first sync with Zero and over-zero - instant UI, offline support, real-time updates
+title: Zero
+description:
+  Client-first sync with Zero and over-zero - instant UI, offline support,
+  real-time updates
 ---
 
-Takeout uses [Zero](https://zero.rocicorp.dev) for data sync, wrapped with [over-zero](https://github.com/tamagui/over-zero) for a streamlined developer experience. Zero is a sync engine that keeps a client-side replica of your data, enabling instant queries and optimistic mutations. The [Zero documentation](https://zero.rocicorp.dev) covers the core concepts in depth—this page focuses on how Takeout structures its data layer.
+Takeout uses [Zero](https://zero.rocicorp.dev) for data sync, wrapped with
+[over-zero](https://github.com/tamagui/over-zero) for a streamlined developer
+experience. Zero is a sync engine that keeps a client-side replica of your data,
+enabling instant queries and optimistic mutations. The
+[Zero documentation](https://zero.rocicorp.dev) covers the core concepts in
+depth—this page focuses on how Takeout structures its data layer.
+
+For database schema management and migrations, see the
+[Database](/docs/database) page.
 
 ## How It Works
 
-Zero maintains a synchronized database on the client:
-
-```
-┌──────────────────────────────────────────────────────────┐
-│                        Client                            │
-│  ┌──────────┐    ┌────────────┐    ┌────────────────┐   │
-│  │   React  │◄──►│   Zero +   │◄──►│  IndexedDB /   │   │
-│  │    UI    │    │ over-zero  │    │    SQLite      │   │
-│  └──────────┘    └─────┬──────┘    └────────────────┘   │
-└────────────────────────│─────────────────────────────────┘
-                         │ sync
-                         ▼
-┌──────────────────────────────────────────────────────────┐
-│                        Server                            │
-│  ┌──────────────────────────────────────────────────┐   │
-│  │                    Postgres                       │   │
-│  └──────────────────────────────────────────────────┘   │
-└──────────────────────────────────────────────────────────┘
-```
-
-Queries run against the local replica—no network latency. Mutations apply optimistically, then sync to Postgres. Changes from other clients stream in automatically.
+Zero maintains a partial slice of data on the client. Queries run against the
+local replica for 0 network latency. Mutations apply optimistically, then sync
+to Postgres. Changes from other clients stream in automatically.
 
 ## Directory Structure
 
@@ -64,7 +56,8 @@ src/zero/
 
 ## Models
 
-Models define table schemas, write permissions, and mutations. Each table gets its own file in `src/data/models/`:
+Models define table schemas, write permissions, and mutations. Each table gets
+its own file in `src/data/models/`:
 
 ```ts
 // src/data/models/post.ts
@@ -95,16 +88,20 @@ export const mutate = mutations(schema, permissions, {
 
     if (environment === 'server' && server && authData) {
       server.asyncTasks.push(() =>
-        server.actions.analyticsActions().logEvent(authData.id, 'post_created', {
-          postId: post.id,
-        })
+        server.actions
+          .analyticsActions()
+          .logEvent(authData.id, 'post_created', {
+            postId: post.id,
+          }),
       )
     }
   },
 })
 ```
 
-The `mutations()` function takes the schema and permissions, then auto-generates CRUD operations:
+The `mutations()` function takes the schema and permissions, then auto-generates
+CRUD operations, this is an optional but helpful feature that `over-zero`
+provides:
 
 ```tsx
 await zero.mutate.post.insert(post)
@@ -113,7 +110,8 @@ await zero.mutate.post.delete({ id })
 await zero.mutate.post.upsert(post)
 ```
 
-Custom mutations go in the third argument. They receive a context with the transaction, auth data, and server actions.
+Custom mutations go in the third argument. They receive a context with the
+transaction, auth data, and server actions.
 
 ### Mutation Context
 
@@ -121,8 +119,8 @@ Every mutation receives `MutatorContext`:
 
 ```ts
 type MutatorContext = {
-  tx: Transaction              // database transaction
-  authData: AuthData | null    // current user
+  tx: Transaction // database transaction
+  authData: AuthData | null // current user
   environment: 'server' | 'client'
   can: (where, obj) => Promise<void>
   server?: {
@@ -132,31 +130,35 @@ type MutatorContext = {
 }
 ```
 
-Use `ctx.server?.asyncTasks` for work that should run after the transaction commits—analytics, notifications, search indexing.
+Use `ctx.server?.asyncTasks` for work that should run after the transaction
+commits—analytics, notifications, search indexing.
 
 ### Convergent Mutations
 
-Mutations run on both client and server. Both must produce identical database state. This is the trickiest part of Zero—get it wrong and your data diverges.
+Mutations run on both client and server. Both must produce identical database
+state. To avoid lots of "rebasing" back and forth, you want to follow some
+patterns.
 
 **The rule: never generate non-deterministic values inside mutations.**
+
+For example, never call `Date.now()` inside a mutation. Reuse timestamps from
+the data you're given.
 
 #### Pattern 1: Pass IDs and timestamps from the caller
 
 ```ts
 // caller generates these values
 await zero.mutate.post.insert({
-  id: randomId(),           // generated before mutation
-  createdAt: Date.now(),    // captured before mutation
+  id: randomId(), // generated before mutation
+  createdAt: Date.now(), // captured before mutation
   userId: currentUser.id,
   content: 'Hello',
 })
 ```
 
-The mutation receives pre-generated values. Both client and server use the same `id` and `createdAt`.
-
-#### Pattern 2: Derive child IDs from parent IDs
-
-When a mutation creates related entities, derive their IDs deterministically from the parent:
+The mutation receives pre-generated values. Both client and server use the same
+`id` and `createdAt`. When a mutation creates related entities, derive their IDs
+deterministically from the parent:
 
 ```ts
 // from chat app: insertServer.ts
@@ -171,14 +173,14 @@ async function insertServer(tx, server) {
     id: adminRoleId,
     serverId: server.id,
     name: 'Admin',
-    createdAt: server.createdAt,  // reuse parent timestamp
+    createdAt: server.createdAt, // reuse parent timestamp
   })
 
   await tx.mutate.role.insert({
     id: teamRoleId,
     serverId: server.id,
     name: 'Team',
-    createdAt: server.createdAt,  // reuse parent timestamp
+    createdAt: server.createdAt, // reuse parent timestamp
   })
 
   // derive channel IDs from server ID
@@ -190,11 +192,13 @@ async function insertServer(tx, server) {
 }
 ```
 
-This pattern scales—channels get `${server.id}-tasks`, permissions get `${channel.id}-permission`, notifications get `${message.id}-notification`.
+This pattern scales—channels get `${server.id}-tasks`, permissions get
+`${channel.id}-permission`, notifications get `${message.id}-notification`.
 
-#### Pattern 3: Pass "next" IDs for follow-up entities
+#### Pattern 2: Pass "next" IDs for follow-up entities
 
-When a mutation needs to create a follow-up entity (like a draft after sending a message), pass its ID from the caller:
+When a mutation needs to create a follow-up entity (like a draft after sending a
+message), pass its ID from the caller:
 
 ```ts
 // message model receives nextDraftId from caller
@@ -222,31 +226,9 @@ await zero.mutate.message.send({
 })
 ```
 
-#### Pattern 4: Reuse timestamps from parent objects
-
-Never call `Date.now()` inside a mutation. Reuse timestamps from the data you're given:
-
-```ts
-// notification derives its createdAt from the message
-async function insertMentionNotification(message) {
-  await tx.mutate.notification.insert({
-    id: `${message.id}-notification`,
-    messageId: message.id,
-    createdAt: message.createdAt,  // reuse, don't generate
-  })
-}
-
-// permission derives createdAt from the channel
-await tx.mutate.channelPermission.insert({
-  id: `${channel.id}-permission`,
-  channelId: channel.id,
-  createdAt: channel.createdAt,  // reuse parent timestamp
-})
-```
-
 #### What's safe inside mutations
 
-Server-only code doesn't need to converge—it only runs on the server:
+Server-only code doesn't need to converge:
 
 ```ts
 async insert(ctx, post) {
@@ -266,38 +248,10 @@ async insert(ctx, post) {
 }
 ```
 
-#### Common mistakes
-
-```ts
-// BAD: generates different IDs on client vs server
-async insert(ctx, data) {
-  await ctx.tx.mutate.post.insert({
-    ...data,
-    id: randomId(),  // diverges!
-  })
-}
-
-// BAD: different timestamps on client vs server
-async insert(ctx, data) {
-  await ctx.tx.mutate.post.insert({
-    ...data,
-    createdAt: Date.now(),  // diverges!
-  })
-}
-
-// BAD: query results may differ between client and server
-async insert(ctx, data) {
-  const count = await ctx.tx.query.post.run()
-  await ctx.tx.mutate.post.insert({
-    ...data,
-    position: count.length,  // may diverge!
-  })
-}
-```
-
 ## Queries
 
-Queries are plain functions in `src/data/queries/` that use the global `zql` builder:
+Queries are plain functions in `src/data/queries/` that use the global `zql`
+builder:
 
 ```ts
 // src/data/queries/post.ts
@@ -335,7 +289,7 @@ function UserPosts({ userId }) {
 
   if (status.type === 'loading') return <Loading />
 
-  return posts.map(post => <PostCard key={post.id} post={post} />)
+  return posts.map((post) => <PostCard key={post.id} post={post} />)
 }
 ```
 
@@ -375,7 +329,10 @@ export const postsWithBlocks = (props: {
     .limit(props.pageSize)
 }
 
-export const searchPosts = (props: { searchText: string; pageSize: number }) => {
+export const searchPosts = (props: {
+  searchText: string
+  pageSize: number
+}) => {
   return zql.post
     .where(permission)
     .where((eb) => eb.cmp('caption', 'LIKE', `%${props.searchText}%`))
@@ -384,7 +341,8 @@ export const searchPosts = (props: { searchText: string; pageSize: number }) => 
 }
 ```
 
-Available operators: `=`, `!=`, `<`, `>`, `<=`, `>=`, `IN`, `NOT IN`, `LIKE`, `ILIKE`, `IS`, `IS NOT`.
+Available operators: `=`, `!=`, `<`, `>`, `<=`, `>=`, `IN`, `NOT IN`, `LIKE`,
+`ILIKE`, `IS`, `IS NOT`.
 
 ### Pagination
 
@@ -409,7 +367,8 @@ export const postsPaginated = (props: {
 }
 ```
 
-The cursor is an object with values for each `orderBy` field. Pass the last item's values to fetch the next page.
+The cursor is an object with values for each `orderBy` field. Pass the last
+item's values to fetch the next page.
 
 ## Relationships
 
@@ -419,31 +378,37 @@ Define how tables connect in `src/data/relationships.ts`:
 import { relationships } from '@rocicorp/zero'
 import * as tables from './generated/tables'
 
-export const postRelationships = relationships(tables.post, ({ one, many }) => ({
-  user: one({
-    sourceField: ['userId'],
-    destSchema: tables.userPublic,
-    destField: ['id'],
+export const postRelationships = relationships(
+  tables.post,
+  ({ one, many }) => ({
+    user: one({
+      sourceField: ['userId'],
+      destSchema: tables.userPublic,
+      destField: ['id'],
+    }),
+    comments: many({
+      sourceField: ['id'],
+      destSchema: tables.comment,
+      destField: ['postId'],
+    }),
   }),
-  comments: many({
-    sourceField: ['id'],
-    destSchema: tables.comment,
-    destField: ['postId'],
-  }),
-}))
+)
 
-export const commentRelationships = relationships(tables.comment, ({ one }) => ({
-  post: one({
-    sourceField: ['postId'],
-    destSchema: tables.post,
-    destField: ['id'],
+export const commentRelationships = relationships(
+  tables.comment,
+  ({ one }) => ({
+    post: one({
+      sourceField: ['postId'],
+      destSchema: tables.post,
+      destField: ['id'],
+    }),
+    user: one({
+      sourceField: ['userId'],
+      destSchema: tables.userPublic,
+      destField: ['id'],
+    }),
   }),
-  user: one({
-    sourceField: ['userId'],
-    destSchema: tables.userPublic,
-    destField: ['id'],
-  }),
-}))
+)
 
 export const allRelationships = [postRelationships, commentRelationships]
 ```
@@ -457,16 +422,17 @@ export const postWithComments = (props: { postId: string }) => {
     .one()
     .related('user')
     .related('comments', (q) =>
-      q.orderBy('createdAt', 'desc')
-        .limit(50)
-        .related('user')
+      q.orderBy('createdAt', 'desc').limit(50).related('user'),
     )
 }
 ```
 
 ## Permissions
 
-Permissions use `serverWhere()` to create conditions that only execute server-side. On the client, they pass automatically.
+Zero permissions are flexible, you can use plain functions or whatever technique
+you choose. `over-zero` has a `serverWhere()` helper which makes it easy to do
+"query-based" permissions. Basically on the server-side they will run, but on
+the client they always pass.
 
 **Read permissions** go in query files:
 
@@ -475,7 +441,7 @@ Permissions use `serverWhere()` to create conditions that only execute server-si
 const permission = serverWhere('post', (q, auth) => {
   return q.or(
     q.cmp('published', '=', true),
-    q.cmp('userId', '=', auth?.id || '')
+    q.cmp('userId', '=', auth?.id || ''),
   )
 })
 
@@ -491,7 +457,9 @@ const permissions = serverWhere('post', (q, auth) => {
   return q.cmp('userId', auth?.id || '')
 })
 
-export const mutate = mutations(schema, permissions, { /* ... */ })
+export const mutate = mutations(schema, permissions, {
+  /* ... */
+})
 ```
 
 Check permissions in mutations with `ctx.can()`:
@@ -511,7 +479,8 @@ const canEdit = usePermission('post', postId)
 
 ## Server Actions
 
-Server actions run only server-side—for emails, webhooks, analytics, external APIs. Define them in `src/data/server/createServerActions.ts`:
+Server actions run only server-side—for emails, webhooks, analytics, external
+APIs. Define them in `src/data/server/createServerActions.ts`:
 
 ```ts
 export const createServerActions = () => ({
@@ -539,12 +508,19 @@ if (ctx.server) {
 
 Async tasks run after the transaction commits.
 
+In general you _always want to do any long-running (non zero-mutation related)
+thing inside an asyncTask_. Zero keeps the transaction open so long as your
+mutator is not resolved on the server, which will slow your database down.
+
 ## Code Generation
 
-After modifying schemas or queries, regenerate types:
+Your `bun dev` automatially watches and re-generates `over-zero` glue code for
+you.
+
+To run manually:
 
 ```bash
-bun tko zero/generate
+bun zero:generate
 ```
 
 This creates files in `src/data/generated/`:
@@ -553,8 +529,6 @@ This creates files in `src/data/generated/`:
 - **`tables.ts`** - Table schema exports
 - **`models.ts`** - Aggregated model exports
 - **`syncedQueries.ts`** - Query functions wrapped with valibot validators
-
-In development, `bun dev` watches and regenerates automatically.
 
 Import types from `~/data/types`:
 
@@ -599,6 +573,7 @@ Wrap your app with the provider:
 ```
 
 Storage backends:
+
 - `'idb'` - IndexedDB for web (persistent)
 - `'sqlite'` - SQLite for native (persistent, faster)
 - `'mem'` - In-memory for anonymous users or SSR
@@ -643,51 +618,16 @@ declare module 'over-zero' {
 }
 ```
 
-## Drizzle & Migrations
-
-Zero replicates from Postgres, and Takeout uses Drizzle for schema management. The Drizzle schema lives in `src/server/db/schema/` and generates migrations that Zero then syncs from.
-
-Run migrations:
-
-```bash
-bun tko migrate/run
-```
-
-This executes Drizzle migrations and updates Zero's CVR database.
-
-For complex data transformations, write explicit migrations in `src/data/server/migrations.ts`:
-
-```ts
-export const migrations = [
-  {
-    version: 0,
-    name: 'backfill-comment-counts',
-    async run() {
-      await zeroServer.transaction(async (tx) => {
-        const posts = await tx.query.post.run()
-        for (const post of posts) {
-          const count = await tx.query.comment
-            .where('postId', post.id)
-            .run()
-          await tx.mutate.post.update({
-            id: post.id,
-            commentCount: count.length,
-          })
-        }
-      })
-    },
-  },
-]
-```
-
 ## Debugging
 
 Add `?debug=2` to your URL for detailed Zero logs.
 
 Common issues:
 
-- **Queries not updating** - Ensure you're using `useQuery`, not a one-time fetch
-- **Mutations not syncing** - Check network tab for push errors; verify permissions
+- **Queries not updating** - Ensure you're using `useQuery`, not a one-time
+  fetch
+- **Mutations not syncing** - Check network tab for push errors; verify
+  permissions
 - **Type errors after schema change** - Run `bun tko zero/generate`
 
 ## Learn More

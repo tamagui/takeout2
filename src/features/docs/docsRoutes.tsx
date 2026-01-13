@@ -21,9 +21,16 @@ export const docsRoutes: DocsSection[] = [
     title: 'Overview',
     pages: [
       { title: 'One', route: '/docs/one' },
-      { title: 'Data', route: '/docs/data' },
       { title: 'Tamagui', route: '/docs/tamagui' },
       { title: 'Agents', route: '/docs/agents' },
+    ],
+  },
+
+  {
+    title: 'Data',
+    pages: [
+      { title: 'Database', route: '/docs/database' },
+      { title: 'Zero', route: '/docs/zero' },
     ],
   },
 

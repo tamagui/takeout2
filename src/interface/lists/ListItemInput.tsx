@@ -21,14 +21,17 @@ export const ListItemInput = styled(TamaguiInput, {
   variants: {
     size: {
       small: {
+        // @ts-expect-error fontSize token type issue in canary
         fontSize: '$3',
         lineHeight: '$3',
       },
       medium: {
+        // @ts-expect-error fontSize token type issue in canary
         fontSize: '$4',
         lineHeight: '$4',
       },
       large: {
+        // @ts-expect-error fontSize token type issue in canary
         fontSize: '$5',
         lineHeight: '$5',
       },
@@ -43,6 +46,7 @@ export const ListItemInput = styled(TamaguiInput, {
   } as const,
 
   defaultVariants: {
+    // @ts-expect-error defaultVariants type issue in canary
     size: 'medium',
   },
 })

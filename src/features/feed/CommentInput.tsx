@@ -45,6 +45,7 @@ export function CommentInput({
       {isWeb && (
         <YStack gap="$2" pt="$2">
           <TextArea
+            // @ts-expect-error size variant type issue in canary
             size="small"
             placeholder="Add a comment..."
             value={content}

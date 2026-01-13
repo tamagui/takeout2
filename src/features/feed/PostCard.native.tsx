@@ -1,3 +1,4 @@
+import { formatDistanceToNow } from '@take-out/helpers'
 import { BlurView } from 'expo-blur'
 import { router } from 'one'
 import { memo, useState } from 'react'
@@ -6,7 +7,6 @@ import Animated, { SharedTransition } from 'react-native-reanimated'
 import { SizableText, styled, XStack, YStack } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
-import { formatDistanceToNow } from '@take-out/helpers'
 import { useUser } from '~/hooks/useUser'
 import { Link } from '~/interface/app/Link'
 import { Avatar } from '~/interface/avatars/Avatar'

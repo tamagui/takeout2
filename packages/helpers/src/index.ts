@@ -25,10 +25,13 @@ export * from './async/useLazyValue'
 export * from './browser/clearIndexedDB'
 
 // clipboard
-export * from './clipboard'
+export * from './clipboard/clipboard'
 
 // color
-export * from './color'
+export * from './color/toHex'
+export * from './color/generateColors'
+export * from './color/lum'
+export * from './color/extractOpacityFromColor'
 export * from './browser/isActiveElementFormField'
 export * from './browser/openPopup'
 

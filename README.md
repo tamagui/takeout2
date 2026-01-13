@@ -7,14 +7,15 @@ applications with React Native.
 
 Before you begin, ensure you have:
 
-- **Bun** 1.2+ - [Install Bun](https://bun.sh)
-- **Docker** - [Install Docker](https://docs.docker.com/get-docker/) (must be
-  running)
+- **Bun** - [Install Bun](https://bun.sh) (we recommend using a version manager
+  like [bunv](https://github.com/ianh/bunv))
+- **Docker** - [Install Docker](https://docs.docker.com/get-docker/) (on macOS,
+  we recommend [OrbStack](https://orbstack.dev) as a faster alternative)
 - **Git** - For version control
 
 For mobile development:
 
-- **iOS**: macOS with Xcode 15+
+- **iOS**: macOS with Xcode 26+
 - **Android**: Android Studio with JDK 17+
 
 ## Quick Start
@@ -45,7 +46,7 @@ At a high level, the primary technologies used are:
 - [Tamagui](https://tamagui.dev) - Universal UI
 - [Better Auth](https://www.better-auth.com) - Authentication
 - [Drizzle ORM](https://orm.drizzle.team) - Database schema
-- [SST](https://sst.dev) / Uncloud - Deployment
+- [SST](https://sst.dev) / [Uncloud](https://uncloud.run) - Deployment
 
 And high level structure that is good to start learning:
 

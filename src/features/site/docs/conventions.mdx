@@ -1,0 +1,128 @@
+---
+title: Conventions
+description: Code conventions and patterns used in this codebase
+---
+
+This guide covers the conventions and patterns used in this codebase to keep things consistent and maintainable.
+
+## Feature Directory Structure
+
+Features live in `src/features/` and follow a flat-first approach. Only add subfolders when navigating becomes painful.
+
+### Guidelines
+
+| File Count | Structure |
+|------------|-----------|
+| ≤ 8 files | Keep flat |
+| 9-15 files | Consider subfolders if natural groupings exist |
+| > 15 files | Likely needs `ui/`, `hooks/`, `server/`, etc. |
+
+### When to Add Subfolders
+
+Add structure only when you have clear logical groupings:
+
+```
+features/auth/
+├── client/           # client-side utilities
+├── server/           # server-side logic
+├── ui/               # React components
+├── constants.ts
+├── types.ts
+└── useLogout.ts
+```
+
+Small features stay flat:
+
+```
+features/theme/
+└── useIsDark.ts
+
+features/upload/
+├── upload.ts
+├── uploadDataUrl.ts
+├── s3client.ts
+└── types.ts
+```
+
+## Code Style
+
+### Imports
+
+- Prefer the `~` alias for imports from the root
+- In `./packages/*`, use relative imports instead
+
+```tsx
+// good
+import { Button } from '~/interface/Button'
+
+// avoid in src/
+import { Button } from '../../../interface/Button'
+```
+
+### Console Output
+
+Use `console.info()` instead of `console.log()`:
+
+```tsx
+// good
+console.info('server started')
+
+// avoid
+console.log('server started')
+```
+
+### Node Built-ins
+
+Use the `node:` prefix for built-in modules:
+
+```tsx
+// good
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
+
+// avoid
+import { readFile } from 'fs/promises'
+```
+
+### Comments
+
+Write few, lowercase comments. Code should be self-documenting:
+
+```tsx
+// good - explains why, not what
+// zero doesn't support this query yet
+const users = await db.query.users.findMany()
+
+// avoid - obvious from the code
+// Get all users from database
+const users = await db.query.users.findMany()
+```
+
+### Exports
+
+Prefer named exports over default exports, especially in routes:
+
+```tsx
+// good
+export function HomePage() { ... }
+
+// avoid
+export default function HomePage() { ... }
+```
+
+## Environment Variables
+
+Never modify `/src/server/env-server.ts` directly - it's auto-generated.
+
+To add new environment variables:
+
+1. Add to the `env` section in `package.json`
+2. Run `bun env:update`
+3. Optionally add an example value to `.env.development`
+
+## Verification
+
+After making changes, verify your work:
+
+- **Small changes:** `bun check:all`
+- **Larger changes:** `bun run ci --dry-run`

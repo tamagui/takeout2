@@ -1,9 +1,9 @@
+import { formatCount, formatReactionCount } from '@take-out/helpers'
 import { router } from 'one'
 import { memo } from 'react'
 import { SizableText, View, XStack, YStack } from 'tamagui'
 
 import { SERVER_URL } from '~/constants/urls'
-import { formatCount, formatReactionCount } from '~/helpers/number/formatNumber'
 import { useShareProfile } from '~/helpers/share/useShareProfile'
 import { Avatar } from '~/interface/avatars/Avatar'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'

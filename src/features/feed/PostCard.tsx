@@ -3,7 +3,7 @@ import { memo, useState } from 'react'
 import { Accordion, isWeb, SizableText, View, XStack, YStack } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
-import { formatDistanceToNow } from '~/helpers/date/formatDate'
+import { formatDistanceToNow } from '@take-out/helpers'
 import { useUser } from '~/hooks/useUser'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { ChatCircleIcon } from '~/interface/icons/phosphor/ChatCircleIcon'

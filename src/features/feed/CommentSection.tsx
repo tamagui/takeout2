@@ -1,7 +1,7 @@
 import { SizableText, Spinner, XStack, YStack } from 'tamagui'
 
 import { commentsByPostId } from '~/data/queries/comment'
-import { formatDistanceToNow } from '~/helpers/date/formatDate'
+import { formatDistanceToNow } from '@take-out/helpers'
 import { Avatar } from '~/interface/avatars/Avatar'
 import { Text } from '~/interface/text/Text'
 import { useQuery } from '~/zero/client'

@@ -1,6 +1,4 @@
-import { generateColors } from '~/helpers/color/generateColors'
-import { lum } from '~/helpers/color/lum'
-import { toHex } from '~/helpers/color/toHex'
+import { generateColors, lum } from '@take-out/helpers'
 
 // normalize all colors to 6-digit hex
 export const colors = [

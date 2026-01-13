@@ -1,8 +1,16 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 
-export const useTimer = () => {
+type UseTimerReturn = {
+  count: number
+  start: (time: number, start: boolean) => void
+  pause: () => void
+  resume: () => void
+  clear: () => void
+}
+
+export const useTimer = (): UseTimerReturn => {
   const [timerCount, setTimer] = useState<number>(30)
-  const intervalRef = useRef<any>(null)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const clearTimer = useCallback(() => {
     if (intervalRef.current) {
@@ -19,7 +27,7 @@ export const useTimer = () => {
         intervalRef.current = setInterval(() => {
           setTimer((lastTimerCount) => {
             if (lastTimerCount <= 1) {
-              clearInterval(intervalRef.current)
+              clearInterval(intervalRef.current!)
               intervalRef.current = null
               return 0
             }
@@ -40,7 +48,7 @@ export const useTimer = () => {
       intervalRef.current = setInterval(() => {
         setTimer((lastTimerCount) => {
           if (lastTimerCount <= 1) {
-            clearInterval(intervalRef.current)
+            clearInterval(intervalRef.current!)
             intervalRef.current = null
             return 0
           }

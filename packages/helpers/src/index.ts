@@ -23,6 +23,12 @@ export * from './async/useLazyValue'
 
 // browser
 export * from './browser/clearIndexedDB'
+
+// clipboard
+export * from './clipboard'
+
+// color
+export * from './color'
 export * from './browser/isActiveElementFormField'
 export * from './browser/openPopup'
 
@@ -92,7 +98,9 @@ export * from './string/truncateList'
 // time
 export * from './time/formatDate'
 export * from './time/formatDateRelative'
+export * from './time/formatDistanceToNow'
 export * from './time/time'
+export * from './time/useTimer'
 
 // types
 export type * from './types/NullToOptional'

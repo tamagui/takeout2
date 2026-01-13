@@ -1,3 +1,4 @@
+import { getClipboardText } from '@take-out/helpers'
 import { memo, useEffect, useRef, useState } from 'react'
 import {
   SizableText,
@@ -10,7 +11,6 @@ import {
   type InputProps,
 } from 'tamagui'
 
-import { getClipboardText } from '~/helpers/clipboard'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { ClipboardIcon } from '~/interface/icons/phosphor/ClipboardIcon'
 

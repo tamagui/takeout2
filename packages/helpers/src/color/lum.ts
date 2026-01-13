@@ -1,7 +1,7 @@
 // Helper to ensure color string is valid (simple fallback implementation)
 const validColor = (color: string) => color
 
-export function lum(color: string, luminance = 0.5) {
+export function lum(color: string, luminance = 0.5): string {
   // handle hsl/hsla
   if (color.startsWith('hsl')) {
     const match = color.match(/hsla?\((\d+),\s*(\d+)%,\s*(\d+)%(?:,\s*([\d.]+))?\)/)
@@ -46,7 +46,7 @@ export function lum(color: string, luminance = 0.5) {
     const d = max - min
     const s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
 
-    let h
+    let h: number
     switch (max) {
       case r:
         h = ((g - b) / d + (g < b ? 6 : 0)) / 6

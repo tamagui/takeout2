@@ -277,11 +277,56 @@ export const themes = createThemes({
   },
 })
 
-function parseHSL(hslString: string): { h: number; s: number; l: number } {
-  const match = hslString.match(
+function hexToHSL(hex: string): { h: number; s: number; l: number } {
+  // Remove # if present
+  hex = hex.replace(/^#/, '')
+
+  // Parse hex values
+  const r = parseInt(hex.slice(0, 2), 16) / 255
+  const g = parseInt(hex.slice(2, 4), 16) / 255
+  const b = parseInt(hex.slice(4, 6), 16) / 255
+
+  const max = Math.max(r, g, b)
+  const min = Math.min(r, g, b)
+  let h = 0
+  let s = 0
+  const l = (max + min) / 2
+
+  if (max !== min) {
+    const d = max - min
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
+
+    switch (max) {
+      case r:
+        h = ((g - b) / d + (g < b ? 6 : 0)) / 6
+        break
+      case g:
+        h = ((b - r) / d + 2) / 6
+        break
+      case b:
+        h = ((r - g) / d + 4) / 6
+        break
+    }
+  }
+
+  return {
+    h: Math.round(h * 360),
+    s: Math.round(s * 100),
+    l: Math.round(l * 100),
+  }
+}
+
+function parseHSL(colorString: string): { h: number; s: number; l: number } {
+  // Handle hex colors
+  if (colorString.startsWith('#')) {
+    return hexToHSL(colorString)
+  }
+
+  // Handle HSL colors
+  const match = colorString.match(
     /hsl\((\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?)%,\s*(\d+(?:\.\d+)?)%\)/
   )
-  if (!match) throw new Error(`Invalid HSL string: ${hslString}`)
+  if (!match) throw new Error(`Invalid color string: ${colorString}`)
   return {
     h: parseFloat(match[1]!),
     s: parseFloat(match[2]!),
@@ -297,6 +342,10 @@ function buildHSL(h: number, s: number, l: number): string {
  * I found the 11th color far too different, we smooth it out here
  */
 
+function isColorString(value: string): boolean {
+  return value.startsWith('hsl(') || value.startsWith('#')
+}
+
 function adjustPaletteLight(
   name: string,
   palette: Record<string, string>
@@ -304,17 +353,17 @@ function adjustPaletteLight(
   const adjusted: Record<string, string> = { ...palette }
 
   const color11Key = Object.keys(palette).find((key) => key.endsWith('11'))
-  if (color11Key && palette[color11Key]?.startsWith('hsl(')) {
-    const { h, s, l } = parseHSL(palette[color11Key]!)
+  if (color11Key && palette[color11Key] && isColorString(palette[color11Key]!)) {
+    const { h, l } = parseHSL(palette[color11Key]!)
     const newL = Math.min(100, l * 0.9)
-    const newS = 65
-    adjusted[color11Key] = buildHSL(h, newS, newL)
+    adjusted[color11Key] = buildHSL(h, 65, newL)
   }
 
   const isYellow = name === 'yellow'
   // de-saturate
   for (const key in adjusted) {
     const color = adjusted[key]!
+    if (!isColorString(color)) continue
     const { h, s, l } = parseHSL(color)
     const newS = s * (isYellow ? 0.65 : 0.9)
     const newL = Math.round(l * 0.982) // matches dark a bit better
@@ -334,7 +383,7 @@ function adjustPaletteDark(
   for (const [index, key] of Object.keys(palette).entries()) {
     const number = index + 1
     const value = palette[key]
-    if (value?.startsWith('hsl(')) {
+    if (value && isColorString(value)) {
       const { h, s, l } = parseHSL(value)
 
       // we need to strongly de-saturate 11

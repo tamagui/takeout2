@@ -4,6 +4,7 @@ import {
   DialogDescription,
   ScrollView,
   Separator,
+  Sheet,
   Spacer,
   styled,
   Dialog as TamaguiDialog,
@@ -73,22 +74,17 @@ const DialogComponent = ({
     <DialogOpenContext.Provider value={!!open}>
       <TamaguiDialog modal open={open} {...props}>
         <TamaguiDialog.Adapt platform="touch" when="sm">
-          <TamaguiDialog.Sheet
-            animation="medium"
-            zIndex={250_000}
-            modal
-            dismissOnSnapToBottom
-          >
-            <TamaguiDialog.Sheet.Overlay
-              animation="quick"
+          <Sheet transition="medium" zIndex={250_000} modal dismissOnSnapToBottom>
+            <Sheet.Overlay
+              transition="quick"
               enterStyle={{ opacity: 0 }}
               exitStyle={{ opacity: 0 }}
             />
-            <TamaguiDialog.Sheet.Handle />
-            <TamaguiDialog.Sheet.Frame p="$4" gap="$4">
+            <Sheet.Handle />
+            <Sheet.Frame p="$4" gap="$4">
               <TamaguiDialog.Adapt.Contents />
-            </TamaguiDialog.Sheet.Frame>
-          </TamaguiDialog.Sheet>
+            </Sheet.Frame>
+          </Sheet>
         </TamaguiDialog.Adapt>
 
         <TamaguiDialog.Portal zIndex={500_000}>
@@ -161,7 +157,7 @@ const DialogComponent = ({
 }
 
 const DialogOverlay = styled(TamaguiDialog.Overlay, {
-  animation: animationClamped('quickerLessBouncy'),
+  transition: animationClamped('quickerLessBouncy'),
   opacity: 1,
   backdropFilter: 'blur(3px)',
   enterStyle: { opacity: 0 },
@@ -171,7 +167,7 @@ const DialogOverlay = styled(TamaguiDialog.Overlay, {
 const DialogContent = styled(TamaguiDialog.Content, {
   unstyled: true,
   z: 1000000,
-  animation: animationClamped('quickerLessBouncy'),
+  transition: animationClamped('quickerLessBouncy'),
   bg: 'transparent',
   borderWidth: 0.5,
   rounded: CONTENT_RADIUS,

@@ -1,11 +1,9 @@
-import type { AnimationKeys, ViewProps } from 'tamagui'
+import type { TransitionKeys, TransitionProp } from 'tamagui'
 
 // you almost never want opacity or background color to "bounce past" the ends
 // when doing spring animations, so this is a nice helper
 
-const springToTime: {
-  [key in AnimationKeys]?: AnimationKeys
-} = {
+const springToTime: Partial<Record<TransitionKeys, TransitionKeys>> = {
   quickLessBouncy: '300ms',
   quick: '200ms',
   quicker: '100ms',
@@ -15,14 +13,14 @@ const springToTime: {
 }
 
 export const animationClamped = (
-  animation: AnimationKeys,
-  opacitySpeed: AnimationKeys = springToTime[animation] || '75ms'
-) => {
+  animation: TransitionKeys,
+  opacitySpeed: TransitionKeys = springToTime[animation] || '75ms'
+): TransitionProp => {
   return [
     animation,
     {
       opacity: opacitySpeed,
       backgroundColor: opacitySpeed,
     },
-  ] satisfies ViewProps['animation']
+  ]
 }

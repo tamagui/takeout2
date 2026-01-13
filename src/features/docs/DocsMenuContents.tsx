@@ -41,7 +41,7 @@ const ActiveIndicator = ({
       width={3}
       bg="$color12"
       rounded="$2"
-      animation="quick"
+      transition="quick"
       z={999}
     />
   )
@@ -192,7 +192,7 @@ const SubSection = ({ section, items }: { section: DocsSection; items: Item[] })
 
               <XStack flex={1} />
 
-              <Square animation="quick" rotate={open ? '90deg' : '0deg'}>
+              <Square transition="quick" rotate={open ? '90deg' : '0deg'}>
                 <CaretRightIcon color="$color9" size={10} />
               </Square>
             </XStack>
@@ -200,10 +200,10 @@ const SubSection = ({ section, items }: { section: DocsSection; items: Item[] })
         }}
       </Accordion.Trigger>
 
-      <Accordion.HeightAnimator overflow="hidden" animation="medium">
+      <Accordion.HeightAnimator overflow="hidden" transition="medium">
         <Accordion.Content
           unstyled
-          animation="medium"
+          transition="medium"
           bg="transparent"
           exitStyle={{ opacity: 0 }}
         >

@@ -10,7 +10,7 @@ export const ListItemBackground = memo(() => {
   return (
     <YStack
       fullscreen
-      animation={variant === 'sidebar' ? animationClamped('quickerLessBouncy') : null}
+      transition={variant === 'sidebar' ? animationClamped('quickerLessBouncy') : null}
       rounded="$4"
       z={-1}
       pointerEvents="none"

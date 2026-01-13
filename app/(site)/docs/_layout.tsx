@@ -168,7 +168,7 @@ const PaginationLinkFrame = styled(XStack, {
 })
 
 const PaginationTitle = styled(YStack, {
-  animation: 'bouncy',
+  transition: 'bouncy',
   variants: {
     side: {
       previous: {
@@ -183,7 +183,7 @@ const PaginationTitle = styled(YStack, {
 
 const PaginationIcon = styled(View, {
   opacity: 0,
-  animation: 'quick',
+  transition: 'quick',
   variants: {
     side: {
       previous: {

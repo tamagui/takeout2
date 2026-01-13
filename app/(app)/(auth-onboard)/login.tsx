@@ -54,7 +54,7 @@ export const LoginPage = () => {
         <Circle
           size={80}
           my="$4"
-          animation="medium"
+          transition="medium"
           enterStyle={{ scale: 0.95, opacity: 0 }}
         >
           <LogoIcon size={42} />
@@ -76,7 +76,7 @@ export const LoginPage = () => {
             gap="$4"
             items="center"
             width="100%"
-            animation="medium"
+            transition="medium"
             enterStyle={{ opacity: 0, y: 10 }}
             exitStyle={{ opacity: 0, y: -10 }}
             position="relative"
@@ -90,7 +90,7 @@ export const LoginPage = () => {
                     scale: 0.97,
                     opacity: 0.9,
                   }}
-                  animation="200ms"
+                  transition="200ms"
                   enterStyle={{ opacity: 0, scale: 0.95 }}
                 >
                   Continue with Email
@@ -107,7 +107,7 @@ export const LoginPage = () => {
                   pressStyle={{
                     scale: 0.97,
                   }}
-                  animation="200ms"
+                  transition="200ms"
                   enterStyle={{ opacity: 0, scale: 0.95 }}
                 >
                   Continue as admin (dev)
@@ -135,7 +135,7 @@ export const LoginPage = () => {
                   pressStyle={{
                     scale: 0.97,
                   }}
-                  animation="200ms"
+                  transition="200ms"
                   enterStyle={{ opacity: 0, scale: 0.95 }}
                 >
                   {demoLoading ? <Spinner size="small" /> : 'Login as Demo User'}
@@ -155,7 +155,7 @@ export const LoginPage = () => {
                 hoverStyle={{
                   bg: '$color2',
                 }}
-                animation="200ms"
+                transition="200ms"
                 enterStyle={{ opacity: 0, scale: 0.95 }}
                 icon={<GoogleIcon size={18} />}
               />
@@ -171,7 +171,7 @@ export const LoginPage = () => {
                 hoverStyle={{
                   bg: '$color2',
                 }}
-                animation="200ms"
+                transition="200ms"
                 enterStyle={{ opacity: 0, scale: 0.95 }}
                 icon={<AppleIcon size={20} />}
               />
@@ -191,7 +191,7 @@ export const LoginPage = () => {
       <AnimatePresence>
         {showOnboarding && !isWeb && (
           <View
-            animation="200ms"
+            transition="200ms"
             position="absolute"
             t={0}
             l={0}

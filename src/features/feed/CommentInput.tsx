@@ -94,7 +94,7 @@ export function CommentInput({
 
             <YStack
               key="send-button"
-              animation="200ms"
+              transition="200ms"
               scale={hasContent ? 1 : 0.5}
               opacity={hasContent ? 1 : 0}
             >

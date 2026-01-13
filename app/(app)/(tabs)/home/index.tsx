@@ -17,7 +17,7 @@ export const HomePage = memo(() => {
         {isLoading && (
           <YStack
             key="home-shimmer"
-            animation="200ms"
+            transition="200ms"
             exitStyle={{
               opacity: 0,
             }}

@@ -96,8 +96,8 @@ export const PostCard = memo(({ post }: PostCardProps) => {
                   </Text>
                 )}
               </Accordion.Trigger>
-              <Accordion.HeightAnimator animation="200ms">
-                <Accordion.Content animation="200ms" exitStyle={{ opacity: 0 }} />
+              <Accordion.HeightAnimator transition="200ms">
+                <Accordion.Content transition="200ms" exitStyle={{ opacity: 0 }} />
               </Accordion.HeightAnimator>
             </Accordion.Item>
           </Accordion>

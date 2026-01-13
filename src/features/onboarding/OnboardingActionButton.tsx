@@ -46,7 +46,7 @@ const ActionButton = styled(Stack, {
 
 const AnimatedContent = styled(YStack, {
   position: 'absolute',
-  animation: 'quick',
+  transition: 'quick',
 
   variants: {
     visible: {
@@ -65,7 +65,7 @@ const AnimatedContent = styled(YStack, {
 })
 
 const SkipButton = styled(Stack, {
-  animation: 'quick',
+  transition: 'quick',
 
   variants: {
     visible: {
@@ -107,7 +107,7 @@ export const OnboardingActionButton = memo(function OnboardingActionButton({
 
       <ActionButton
         isExpanded={isLastPage}
-        animation="medium"
+        transition="medium"
         onPress={onPress}
         cursor="pointer"
       >

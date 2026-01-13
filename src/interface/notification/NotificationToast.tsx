@@ -172,7 +172,7 @@ const NotificationToastItem = ({
       z={position}
     >
       <YStack
-        animation="quick"
+        transition="quick"
         enterStyle={{ opacity: 0, scale: 1, y: -10 }}
         exitStyle={{ opacity: 0, scale: 1, y: -10 }}
         width={280}

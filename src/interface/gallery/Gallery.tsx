@@ -110,7 +110,7 @@ export const Gallery = () => {
   return (
     <Portal stackZIndex={1_000_000}>
       <XStack
-        animation={animationClamped('quickest')}
+        transition={animationClamped('quickest')}
         overflow="hidden"
         bg="$black02"
         backdropFilter="blur(20px)"
@@ -146,12 +146,12 @@ export const Gallery = () => {
             <AnimatePresence initial={false} custom={{ going }}>
               <GalleryItem
                 key={page}
-                animation={animationClamped('quickerLessBouncy')}
+                transition={animationClamped('quickerLessBouncy')}
                 going={going}
               >
                 {!!currentUrl && !fullyHidden && (
                   <YStack
-                    animation="quick"
+                    transition="quick"
                     {...(hidden ? { o: 0, y: 10 } : { o: 1, y: 0 })}
                   >
                     {isVideo ? (

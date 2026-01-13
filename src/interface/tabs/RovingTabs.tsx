@@ -184,7 +184,7 @@ function RovingTabsIndicator({
       bg={active ? '$color10' : '$color6'}
       opacity={active ? 1 : 0.5}
       rounded={isUnderline ? '$2' : '$4'}
-      animation={animationClamped('quickerLessBouncy')}
+      transition={animationClamped('quickerLessBouncy')}
       enterStyle={{
         opacity: 0,
       }}

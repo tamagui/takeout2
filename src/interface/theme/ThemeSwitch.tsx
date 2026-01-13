@@ -11,7 +11,7 @@ import { TooltipSimple } from '../tooltip/TooltipSimple'
 import type { SizeTokens } from 'tamagui'
 
 const IconContainer = styled(View, {
-  animation: 'quick',
+  transition: 'quick',
   position: 'absolute',
   opacity: 0,
   pointerEvents: 'none',
@@ -37,7 +37,7 @@ export function ThemeSwitch({ size = '$2' }: { size?: SizeTokens }) {
       <TooltipSimple label={setting[0]?.toUpperCase() + setting.slice(1)}>
         <ButtonSimple
           onPress={onPress}
-          animation="medium"
+          transition="medium"
           size="medium"
           circular
           keepTooltipOpen

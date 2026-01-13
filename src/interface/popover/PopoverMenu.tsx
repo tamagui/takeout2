@@ -27,12 +27,12 @@ export const PopoverMenu = ({
       <Popover.Trigger asChild>{trigger}</Popover.Trigger>
 
       <Adapt when="maxMD" platform="touch">
-        <Sheet animation="medium" modal dismissOnSnapToBottom snapPoints={snapPoints}>
+        <Sheet transition="medium" modal dismissOnSnapToBottom snapPoints={snapPoints}>
           <Sheet.Frame p="$4">
             <Adapt.Contents />
           </Sheet.Frame>
           <Sheet.Overlay
-            animation="lazy"
+            transition="lazy"
             enterStyle={{ opacity: 0 }}
             exitStyle={{ opacity: 0 }}
             opacity={0.5}

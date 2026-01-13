@@ -49,10 +49,10 @@ export const Sheet = forwardRef<SheetRef, SheetProps>(
         onOpenChange={handleOpenChange}
         snapPoints={snapPoints as number[] | undefined}
         dismissOnSnapToBottom
-        animation="quick"
+        transition="quick"
       >
         <TamaguiSheet.Overlay
-          animation="quick"
+          transition="quick"
           enterStyle={{ opacity: 0 }}
           exitStyle={{ opacity: 0 }}
           bg="$background08"

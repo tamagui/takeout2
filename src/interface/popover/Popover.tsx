@@ -72,7 +72,7 @@ const PopoverContent = ({
       contain="layout"
       unstyled={unstyled}
       {...(!unstyled && {
-        animation: animationClamped('quickest'),
+        transition: animationClamped('quickest'),
         bg: '$color2',
         p: 0,
         items: 'flex-start',

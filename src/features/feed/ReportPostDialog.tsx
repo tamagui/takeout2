@@ -61,12 +61,12 @@ export function ReportPostDialog({ postId, open, onOpenChange }: ReportPostDialo
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <Adapt when="maxMD" platform="touch">
-        <Sheet animation="medium" modal dismissOnSnapToBottom snapPoints={[60]}>
+        <Sheet transition="medium" modal dismissOnSnapToBottom snapPoints={[60]}>
           <Sheet.Frame p="$4">
             <Adapt.Contents />
           </Sheet.Frame>
           <Sheet.Overlay
-            animation="lazy"
+            transition="lazy"
             opacity={0.5}
             enterStyle={{ opacity: 0 }}
             exitStyle={{ opacity: 0 }}
@@ -77,7 +77,7 @@ export function ReportPostDialog({ postId, open, onOpenChange }: ReportPostDialo
       <Dialog.Portal>
         <Dialog.Overlay
           key="overlay"
-          animation="quick"
+          transition="quick"
           opacity={0.5}
           enterStyle={{ opacity: 0 }}
           exitStyle={{ opacity: 0 }}
@@ -86,7 +86,7 @@ export function ReportPostDialog({ postId, open, onOpenChange }: ReportPostDialo
         <Dialog.Content
           key="content"
           animateOnly={['transform', 'opacity']}
-          animation={[
+          transition={[
             'quick',
             {
               opacity: {

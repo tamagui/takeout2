@@ -135,7 +135,7 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
         {isLoading && (
           <YStack
             key="studio-shimmer"
-            animation="200ms"
+            transition="200ms"
             pt={headerHeight}
             exitStyle={{
               opacity: 0,

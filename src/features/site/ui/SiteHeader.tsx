@@ -71,7 +71,7 @@ export const SiteHeader = () => {
               snapPoints={[80]}
             >
               <Sheet.Overlay
-                animation="lazy"
+                transition="lazy"
                 opacity={0.8}
                 enterStyle={{ opacity: 0 }}
                 exitStyle={{ opacity: 0 }}

@@ -60,12 +60,9 @@ export const AIChatInput = memo(
               minH={44}
               maxH={100}
               p="$3"
-              fontSize="$4"
               color="$color12"
               onSubmitEditing={handleSend}
-              verticalAlign="top"
               rows={4}
-              multiple
             />
           </GlassView>
 
@@ -82,7 +79,7 @@ export const AIChatInput = memo(
             >
               <View
                 position="absolute"
-                animation="quick"
+                transition="quick"
                 opacity={hasText ? 1 : 0}
                 scale={hasText ? 1 : 0.8}
               >
@@ -90,7 +87,7 @@ export const AIChatInput = memo(
               </View>
               <View
                 position="absolute"
-                animation="200ms"
+                transition="200ms"
                 opacity={hasText ? 0 : 1}
                 scale={hasText ? 0.8 : 1}
               >

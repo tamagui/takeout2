@@ -55,7 +55,7 @@ export const AvatarUpload = ({
       <YStack>
         {!!(progress && progress !== 100) && (
           <Progress mt="$2" value={progress} bg="$color2">
-            <Progress.Indicator borderColor="$color7" animation="bouncy" />
+            <Progress.Indicator borderColor="$color7" transition="bouncy" />
           </Progress>
         )}
 

@@ -7,9 +7,8 @@ export const TextArea = styled(TamaguiTextArea, {
   rounded: '$2',
   px: '$3',
   py: '$2',
-  fontSize: '$4',
   minH: 100,
-  verticalAlign: 'top',
+  fontSize: '$4',
 
   focusStyle: {
     borderColor: '$color8',

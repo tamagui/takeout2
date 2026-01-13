@@ -62,7 +62,7 @@ export function Select({
       </TamaguiSelect.Trigger>
 
       <Adapt when="maxMD" platform="touch">
-        <Sheet native={!!props.native} modal dismissOnSnapToBottom animation="medium">
+        <Sheet native={!!props.native} modal dismissOnSnapToBottom transition="medium">
           <Sheet.Frame>
             <Sheet.ScrollView>
               <Adapt.Contents />
@@ -70,7 +70,7 @@ export function Select({
           </Sheet.Frame>
           <Sheet.Overlay
             bg="$shadowColor"
-            animation="lazy"
+            transition="lazy"
             enterStyle={{ opacity: 0 }}
             exitStyle={{ opacity: 0 }}
           />

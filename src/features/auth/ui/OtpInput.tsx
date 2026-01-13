@@ -154,7 +154,7 @@ export const OtpInput = memo(function OtpInput({
                   onKeyDown={(e) => onFocusPrevious(e.nativeEvent.key, i)}
                   autoComplete="one-time-code"
                   autoFocus={autoFocus && i === 0}
-                  {...inputProps}
+                  {...(inputProps as any)}
                 />
                 <View
                   position="absolute"

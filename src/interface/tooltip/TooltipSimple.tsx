@@ -193,7 +193,7 @@ export const GlobalTooltipProvider = ({
         animateOnly={['transform', 'opacity', 'width', 'height']}
         // TODO this would make them really nice but it needs to avoid animation when re-targeting
         enableAnimationForPositionChange
-        animation={disabled ? null : animationClamped('quickerLessBouncy')}
+        transition={disabled ? null : animationClamped('quickerLessBouncy')}
         $theme-dark={{
           shadowColor: '$shadow4',
           shadowRadius: 3,

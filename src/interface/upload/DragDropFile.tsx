@@ -244,7 +244,7 @@ export const DropOverlay: Component<{ hidden: boolean }> = memo(({ hidden }) => 
       z={Number.MAX_SAFE_INTEGER}
       items="center"
       justify="center"
-      animation="medium"
+      transition="medium"
       bg="$shadow4"
       opacity={hidden ? 0 : 1}
       backdropFilter="blur(10px)"

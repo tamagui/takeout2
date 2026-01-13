@@ -55,7 +55,7 @@ const MenuTrigger = ({ children, ...props }: any) => {
 const MenuContent = ({ children, ...props }: any) => {
   return (
     <Popover.Content
-      animation={animationClamped('quickestLessBouncy')}
+      transition={animationClamped('quickestLessBouncy')}
       onCloseAutoFocus={(e) => e.preventDefault()}
       minW={200}
       {...props}

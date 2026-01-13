@@ -66,8 +66,7 @@ export const LoginPage = () => {
         pointerEvents="none"
       >
         <View
-          // @ts-ignore
-          animation={['medium', { delay: 500 }]}
+          transition={['medium', { delay: 500 }]}
           scale={1.2}
           y={-80}
           enterStyle={{ scale: 1, y: 0 }}
@@ -76,8 +75,7 @@ export const LoginPage = () => {
         </View>
       </View>
       <View
-        // @ts-ignore
-        animation={['medium', { delay: 1200 }]}
+        transition={['medium', { delay: 1200 }]}
         enterStyle={{ opacity: 0 }}
         exitStyle={{ opacity: 0 }}
         flex={1}
@@ -99,7 +97,7 @@ export const LoginPage = () => {
                 opacity: 0.9,
               }}
               width="100%"
-              animation="200ms"
+              transition="200ms"
               enterStyle={{ opacity: 0, scale: 0.95 }}
             >
               Continue with Email
@@ -115,7 +113,7 @@ export const LoginPage = () => {
               pressStyle={{
                 scale: 0.97,
               }}
-              animation="200ms"
+              transition="200ms"
               enterStyle={{ opacity: 0, scale: 0.95 }}
             >
               Continue as admin (dev)
@@ -144,7 +142,7 @@ export const LoginPage = () => {
               pressStyle={{
                 scale: 0.97,
               }}
-              animation="200ms"
+              transition="200ms"
               enterStyle={{ opacity: 0, scale: 0.95 }}
             >
               {demoLoading ? <Spinner size="small" /> : 'Login as Demo User'}
@@ -162,7 +160,7 @@ export const LoginPage = () => {
               hoverStyle={{
                 bg: '$color2',
               }}
-              animation="200ms"
+              transition="200ms"
               enterStyle={{ opacity: 0, scale: 0.95 }}
               icon={<GoogleIcon size={18} />}
             />
@@ -178,7 +176,7 @@ export const LoginPage = () => {
               hoverStyle={{
                 bg: '$color2',
               }}
-              animation="200ms"
+              transition="200ms"
               enterStyle={{ opacity: 0, scale: 0.95 }}
               icon={<AppleIcon size={20} />}
             />
@@ -198,7 +196,7 @@ export const LoginPage = () => {
       {/* <AnimatePresence>
         {showOnboarding && !isWeb && (
           <View
-            animation="200ms"
+            transition="200ms"
             position="absolute"
             t={0}
             l={0}

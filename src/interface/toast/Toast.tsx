@@ -73,7 +73,7 @@ const ToastDisplay = () => {
       y={20}
       opacity={1}
       scale={1}
-      animation="quick"
+      transition="quick"
       maxW={250}
       overflow="hidden"
       viewportName={currentToast?.viewportName}

@@ -39,7 +39,7 @@ export const Shimmer = memo(() => {
       justify="center"
       items="center"
       contain="paint layout"
-      animation={animationClamped('medium')}
+      transition={animationClamped('medium')}
       {...(!isMounted && {
         opacity: 0,
       })}
@@ -48,7 +48,7 @@ export const Shimmer = memo(() => {
         {!disableShimmer && (
           <YStack
             key="shimmer"
-            animation={animationClamped('medium')}
+            transition={animationClamped('medium')}
             data-is-shimmer
             opacity={1}
             enterStyle={{ opacity: 0 }}
@@ -62,7 +62,7 @@ export const Shimmer = memo(() => {
           <YStack
             key="fallback"
             fullscreen
-            animation={animationClamped('medium')}
+            transition={animationClamped('medium')}
             bg="$color3"
             opacity={0.8}
             enterStyle={{ opacity: 0 }}

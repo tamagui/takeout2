@@ -48,7 +48,7 @@ export const ListItemMenu = ({ items }: ListItemMenuProps) => {
             opacity={0.6}
             // sidebar hides by default
             {...(context.variant === 'sidebar' && {
-              animation: animationClamped('quickLessBouncy'),
+              transition: animationClamped('quickLessBouncy'),
               opacity: 0,
               y: 5,
               '$group-item-hover': { opacity: 0.4, y: 0 },

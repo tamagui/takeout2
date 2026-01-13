@@ -94,7 +94,7 @@ export const MainHeader = () => {
             <Sheet
               open={open}
               onOpenChange={setOpen}
-              animation="medium"
+              transition="medium"
               modal
               dismissOnSnapToBottom
               snapPoints={[50]}
@@ -145,7 +145,7 @@ export const MainHeader = () => {
                 </YStack>
               </Sheet.Frame>
               <Sheet.Overlay
-                animation="quick"
+                transition="quick"
                 opacity={0.8}
                 enterStyle={{ opacity: 0 }}
                 exitStyle={{ opacity: 0 }}

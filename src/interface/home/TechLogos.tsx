@@ -34,7 +34,7 @@ export function TechLogos() {
         <TooltipSimple key={name} groupId="tech-logos" label={name}>
           <Link href={href} target="_blank" hideExternalIcon>
             <View
-              animation="quick"
+              transition="quick"
               opacity={0.7}
               px="$4"
               hoverStyle={{ opacity: 1, scale: 1.1 }}

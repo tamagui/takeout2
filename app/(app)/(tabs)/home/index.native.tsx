@@ -108,7 +108,7 @@ export const HomePage = memo(() => {
           {isLoading && (
             <YStack
               key="studio-shimmer"
-              animation="200ms"
+              transition="200ms"
               exitStyle={{ opacity: 0 }}
               opacity={1}
               z={1000}
@@ -152,7 +152,7 @@ export const HomePage = memo(() => {
           {showScrollToTop && (
             <YStack
               key="scroll-to-top"
-              animation="200ms"
+              transition="200ms"
               position="absolute"
               b={88}
               r={32}

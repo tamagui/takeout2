@@ -1,4 +1,5 @@
 import './root.css'
+import '~/interface/fonts/landing-fonts.css'
 
 import { Slot, Stack } from 'one'
 import { SafeAreaProvider } from 'react-native-safe-area-context'

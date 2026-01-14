@@ -21,28 +21,33 @@ Features live in `src/features/` and follow a flat-first approach. Only add subf
 
 Add structure only when you have clear logical groupings:
 
-```
-features/auth/
-├── client/           # client-side utilities
-├── server/           # server-side logic
-├── ui/               # React components
-├── constants.ts
-├── types.ts
-└── useLogout.ts
-```
+<RouteTree routes={[
+  { name: 'features/auth/', children: [
+    { name: 'client/', description: 'client-side utilities' },
+    { name: 'server/', description: 'server-side logic' },
+    { name: 'ui/', description: 'React components' },
+    { name: 'constants.ts' },
+    { name: 'types.ts' },
+    { name: 'useLogout.ts' },
+  ]},
+]} />
 
 Small features stay flat:
 
-```
-features/theme/
-└── useIsDark.ts
+<RouteTree routes={[
+  { name: 'features/theme/', children: [
+    { name: 'useIsDark.ts' },
+  ]},
+]} />
 
-features/upload/
-├── upload.ts
-├── uploadDataUrl.ts
-├── s3client.ts
-└── types.ts
-```
+<RouteTree routes={[
+  { name: 'features/upload/', children: [
+    { name: 'upload.ts' },
+    { name: 'uploadDataUrl.ts' },
+    { name: 's3client.ts' },
+    { name: 'types.ts' },
+  ]},
+]} />
 
 ## Code Style
 

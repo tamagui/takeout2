@@ -25,34 +25,42 @@ to Postgres. Changes from other clients stream in automatically.
 
 The data layer lives in `src/data/`:
 
-```
-src/data/
-├── models/              # table schemas + write permissions + mutations
-│   ├── post.ts
-│   ├── user.ts
-│   └── comment.ts
-├── queries/             # query functions + read permissions
-│   ├── post.ts
-│   ├── user.ts
-│   └── comment.ts
-├── server/              # server-only code
-│   ├── createServerActions.ts
-│   └── actions/
-├── generated/           # auto-generated (don't edit)
-│   ├── types.ts
-│   ├── tables.ts
-│   ├── models.ts
-│   ├── groupedQueries.ts
-│   └── syncedQueries.ts
-├── relationships.ts     # table relationships
-├── schema.ts            # schema assembly
-└── types.ts             # type exports
+<RouteTree routes={[
+  { name: 'src/data/', children: [
+    { name: 'models/', description: 'table schemas + write permissions + mutations', children: [
+      { name: 'post.ts' },
+      { name: 'user.ts' },
+      { name: 'comment.ts' },
+    ]},
+    { name: 'queries/', description: 'query functions + read permissions', children: [
+      { name: 'post.ts' },
+      { name: 'user.ts' },
+      { name: 'comment.ts' },
+    ]},
+    { name: 'server/', description: 'server-only code', children: [
+      { name: 'createServerActions.ts' },
+      { name: 'actions/' },
+    ]},
+    { name: 'generated/', description: 'auto-generated (don\'t edit)', children: [
+      { name: 'types.ts' },
+      { name: 'tables.ts' },
+      { name: 'models.ts' },
+      { name: 'groupedQueries.ts' },
+      { name: 'syncedQueries.ts' },
+    ]},
+    { name: 'relationships.ts', description: 'table relationships' },
+    { name: 'schema.ts', description: 'schema assembly' },
+    { name: 'types.ts', description: 'type exports' },
+  ]},
+]} />
 
-src/zero/
-├── client.tsx           # client setup
-├── server.ts            # server setup
-└── types.ts             # type augmentation
-```
+<RouteTree routes={[
+  { name: 'src/zero/', children: [
+    { name: 'client.tsx', description: 'client setup' },
+    { name: 'server.ts', description: 'server setup' },
+    { name: 'types.ts', description: 'type augmentation' },
+  ]},
+]} />
 
 ## Models
 

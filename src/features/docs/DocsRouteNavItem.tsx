@@ -32,7 +32,7 @@ export const DocsRouteNavItem = function DocsRouteNavItem({
           bg: '$color3',
         }}
         pressStyle={{
-          bg: '$color4',
+          bg: '$color2',
         }}
       >
         <SizableText

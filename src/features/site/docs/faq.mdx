@@ -68,7 +68,7 @@ For Takeout, the co-location benefits outweigh the duplication cost.
 
 Drizzle relationships use `relations()` from drizzle-orm. Zero relationships use a different format. Takeout defines Zero relationships separately in `src/data/relationships.ts`.
 
-This separation allows:
+This separation lets you:
 
 - Different relationship names (Drizzle might use `author`, Zero uses `user`)
 - Subset of relationships for sync (not everything needs to sync)

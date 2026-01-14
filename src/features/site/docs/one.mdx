@@ -19,26 +19,29 @@ Most cross-platform solutions sacrifice web performance for native compatibility
 
 Routes are defined by your file structure with full TypeScript support:
 
-```
-app/
-  index.tsx          # /
-  about.tsx          # /about
-  blog/
-    [slug].tsx       # /blog/:slug
-    index.tsx        # /blog
-```
+<RouteTree routes={[
+  { name: 'app/', children: [
+    { name: 'index.tsx', description: '/' },
+    { name: 'about.tsx', description: '/about' },
+    { name: 'blog/', children: [
+      { name: '[slug].tsx', description: '/blog/:slug' },
+      { name: 'index.tsx', description: '/blog' },
+    ]},
+  ]},
+]} />
 
 ### Platform Divergence
 
 Use file suffixes to diverge per platform while sharing the same route:
 
-```
-app/
-  settings.tsx       # shared code
-  settings.native.tsx  # native-only
-  settings.web.tsx     # web-only
-  settings.ios.tsx     # iOS-only
-```
+<RouteTree routes={[
+  { name: 'app/', children: [
+    { name: 'settings.tsx', description: 'shared code' },
+    { name: 'settings.native.tsx', description: 'native-only' },
+    { name: 'settings.web.tsx', description: 'web-only' },
+    { name: 'settings.ios.tsx', description: 'iOS-only' },
+  ]},
+]} />
 
 ### Render Modes
 

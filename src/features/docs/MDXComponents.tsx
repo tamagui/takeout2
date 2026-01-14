@@ -1,4 +1,4 @@
-import { H1, H2, H3, H4, H5, Paragraph, styled, YStack } from 'tamagui'
+import { H1, H2, H3, H4, H5, Paragraph, styled, XStack, YStack } from 'tamagui'
 
 import { Link } from '~/interface/app/Link'
 
@@ -8,18 +8,54 @@ import { RouteTree } from './RouteTree'
 import { SimpleTable } from './SimpleTable'
 
 const BaseParagraph = styled(Paragraph, {
-  size: '$6',
+  size: '$5',
   my: '$2',
 })
 
 const scrollMargin = { scrollMarginTop: 100 }
 
+const TableFrame = styled(YStack, {
+  my: '$4',
+  borderWidth: 1,
+  borderColor: '$color4',
+  rounded: '$4',
+  overflow: 'hidden',
+})
+
+const TableRow = styled(XStack, {
+  borderBottomWidth: 1,
+  borderBottomColor: '$color4',
+})
+
+const TableCell = styled(YStack, {
+  px: '$3',
+  py: '$2',
+  flex: 1,
+})
+
+const TableHeaderCell = styled(YStack, {
+  px: '$3',
+  py: '$2',
+  flex: 1,
+  bg: '$color2',
+})
+
 const components = {
-  h1: (props: any) => <H1 mb="$4" data-heading style={scrollMargin} {...props} />,
-  h2: (props: any) => <H2 mb="$3" pt="$5" data-heading style={scrollMargin} {...props} />,
-  h3: (props: any) => <H3 mt="$5" mb="$2" data-heading style={scrollMargin} {...props} />,
-  h4: (props: any) => <H4 mt="$4" mb="$2" data-heading style={scrollMargin} {...props} />,
-  h5: (props: any) => <H5 mt="$3" mb="$2" data-heading style={scrollMargin} {...props} />,
+  h1: (props: any) => (
+    <H1 size="$9" mb="$4" data-heading style={scrollMargin} {...props} />
+  ),
+  h2: (props: any) => (
+    <H2 size="$8" mb="$2" pt="$4" data-heading style={scrollMargin} {...props} />
+  ),
+  h3: (props: any) => (
+    <H3 size="$6" mt="$3" mb="$2" data-heading style={scrollMargin} {...props} />
+  ),
+  h4: (props: any) => (
+    <H4 size="$6" mt="$4" mb="$2" data-heading style={scrollMargin} {...props} />
+  ),
+  h5: (props: any) => (
+    <H5 size="$5" mt="$3" mb="$2" data-heading style={scrollMargin} {...props} />
+  ),
 
   p: (props: any) => <BaseParagraph {...props} />,
 
@@ -88,6 +124,25 @@ const components = {
       borderRadius="$3"
       {...props}
     />
+  ),
+
+  table: (props: any) => <TableFrame {...props} />,
+  thead: (props: any) => <YStack {...props} />,
+  tbody: (props: any) => <YStack {...props} />,
+  tr: ({ children, ...props }: any) => (
+    <TableRow {...props} style={{ borderBottomWidth: 1 }}>
+      {children}
+    </TableRow>
+  ),
+  th: (props: any) => (
+    <TableHeaderCell>
+      <Paragraph size="$4" fontWeight="600" {...props} />
+    </TableHeaderCell>
+  ),
+  td: (props: any) => (
+    <TableCell>
+      <Paragraph size="$4" {...props} />
+    </TableCell>
   ),
 
   RouteTree,

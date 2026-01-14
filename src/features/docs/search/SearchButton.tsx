@@ -14,7 +14,8 @@ export const SearchButton = () => {
     <XStack
       tag="button"
       onPress={searchContext.onOpen}
-      mx="$1"
+      ml="$1"
+      mr="$3"
       px="$2"
       py="$1.5"
       mb="$4"

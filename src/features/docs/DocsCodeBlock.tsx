@@ -19,14 +19,14 @@ const CodeBlockHeader = styled(XStack, {
   items: 'center',
   gap: '$2',
   pl: '$4',
-  py: '$3',
+  py: '$2',
   borderBottomWidth: 1,
   borderBottomColor: '$color4',
 })
 
 const Pre = styled(YStack, {
   tag: 'pre',
-  bg: '$color3',
+  bg: '$color2',
   m: 0,
 })
 
@@ -65,7 +65,7 @@ export function DocsCodeBlock({
   const [copied, setCopied] = useState(false)
 
   const isTerminal = className === 'language-bash' || className === 'language-sh'
-  const showHeader = fileName || isTerminal
+  const showHeader = fileName
 
   const handleCopy = () => {
     const code = typeof children === 'string' ? children : children?.props?.children
@@ -93,7 +93,9 @@ export function DocsCodeBlock({
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ minWidth: '100%' } as any}
         >
-          <Code className={className}>{children}</Code>
+          <Code className={className} style={{ minWidth: '100%' }}>
+            {children}
+          </Code>
         </ScrollView>
       </Pre>
 

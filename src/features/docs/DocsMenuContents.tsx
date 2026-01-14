@@ -173,19 +173,11 @@ const SubSection = ({ section, items }: { section: DocsSection; items: Item[] })
   }
 
   return (
-    <Accordion.Item borderWidth={0} value={section.title || 'base'}>
+    <Accordion.Item borderWidth={0} value={section.title || 'base'} mb="$4">
       <Accordion.Trigger unstyled bg="transparent" borderWidth={0}>
         {({ open }: { open: boolean }) => {
           return (
-            <XStack
-              p="$2"
-              rounded="$3"
-              items="center"
-              width="100%"
-              hoverStyle={{
-                bg: '$color3',
-              }}
-            >
+            <XStack p="$2" rounded="$3" items="center" width="100%">
               <Paragraph size="$5" fontWeight="600" color="$color12">
                 {section.title}
               </Paragraph>

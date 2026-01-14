@@ -1,0 +1,470 @@
+import { H1, H2, H3, Paragraph, styled, XStack, YStack } from 'tamagui'
+
+import { Link } from '~/interface/app/Link'
+import { OneLogo } from '~/interface/icons/logos/OneLogo'
+import { TamaguiLogo } from '~/interface/icons/logos/TamaguiLogo'
+import { ZeroLogo } from '~/interface/icons/logos/ZeroLogo'
+
+const SectionContainer = styled(YStack, {
+  maxW: 680,
+  self: 'center',
+  width: '100%',
+  px: '$4',
+})
+
+const SectionHeading = styled(H2, {
+  fontSize: 13,
+  fontWeight: '600',
+  letterSpacing: 2,
+  color: '$color10',
+  textTransform: 'uppercase',
+  style: {
+    fontFamily: 'var(--font-body)',
+  },
+})
+
+const ContentParagraph = styled(Paragraph, {
+  fontSize: 17,
+  color: '$color12',
+  style: {
+    fontFamily: 'var(--font-body)',
+    lineHeight: '1.75',
+  },
+
+  $sm: {
+    fontSize: 18,
+  },
+})
+
+const GoalTitle = styled(Paragraph, {
+  fontSize: 17,
+  fontWeight: '700',
+  color: '$color12',
+  style: {
+    fontFamily: 'var(--font-heading)',
+  },
+
+  $sm: {
+    fontSize: 18,
+  },
+})
+
+const TechTitle = styled(H3, {
+  fontSize: 20,
+  fontWeight: '700',
+  color: '$color12',
+  style: {
+    fontFamily: 'var(--font-heading)',
+    lineHeight: '1.3',
+  },
+
+  $sm: {
+    fontSize: 22,
+  },
+})
+
+const CodeInline = styled(Paragraph, {
+  fontFamily: '$mono',
+  fontSize: 15,
+  bg: '$color3',
+  px: '$2',
+  py: '$1',
+  rounded: '$3',
+  color: '$color11',
+  tag: 'code',
+})
+
+const SectionDivider = styled(XStack, {
+  items: 'center',
+  gap: '$4',
+  my: '$8',
+})
+
+const DividerLine = styled(YStack, {
+  flex: 1,
+  height: 1,
+  bg: '$color4',
+})
+
+const GoalItem = styled(YStack, {
+  gap: '$2',
+  pl: '$4',
+  borderLeftWidth: 2,
+  borderLeftColor: '$color5',
+})
+
+const SubGoalItem = styled(YStack, {
+  gap: '$1',
+  pl: '$4',
+  mt: '$3',
+})
+
+const TechCard = styled(YStack, {
+  gap: '$3',
+  p: '$5',
+  bg: '$color2',
+  rounded: '$6',
+  borderWidth: 1,
+  borderColor: '$color4',
+})
+
+const LogoWrapper = styled(YStack, {
+  width: 40,
+  height: 40,
+  rounded: '$4',
+  items: 'center',
+  justify: 'center',
+})
+
+const ContentTitle = styled(H1, {
+  fontSize: 28,
+  fontWeight: '800',
+  color: '$color12',
+  text: 'center',
+  style: {
+    fontFamily: 'var(--font-heading)',
+    lineHeight: '1.2',
+  },
+
+  $sm: {
+    fontSize: 36,
+  },
+
+  $md: {
+    fontSize: 42,
+  },
+})
+
+const GradientText = styled(Paragraph, {
+  fontSize: 28,
+  fontWeight: '800',
+  tag: 'span',
+  style: {
+    fontFamily: 'var(--font-heading)',
+    lineHeight: '1.2',
+    background: 'linear-gradient(135deg, #F97316 0%, #FB923C 50%, #FDBA74 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    backgroundClip: 'text',
+  },
+
+  $sm: {
+    fontSize: 36,
+  },
+
+  $md: {
+    fontSize: 42,
+  },
+})
+
+export function ContentSection() {
+  return (
+    <SectionContainer gap="$6">
+      {/* title */}
+      <ContentTitle>
+        <GradientText>Ultra high quality</GradientText> apps on every platform shipped{' '}
+        <GradientText>faster than slop</GradientText>
+      </ContentTitle>
+
+      {/* tldr */}
+      <ContentParagraph>
+        <Paragraph fontWeight="700" tag="strong">
+          TL;DR:
+        </Paragraph>{' '}
+        Takeout is the result of a many-year effort to create{' '}
+        <Paragraph fontWeight="600" tag="strong">
+          a new stack, with some new frontend tech, that dramatically simplifies
+          cross-platform development
+        </Paragraph>
+        . It specifically makes three things simpler and faster than before: framework,
+        data, and UI.
+      </ContentParagraph>
+
+      <ContentParagraph>
+        Today,{' '}
+        <Link href="https://tamagui.dev/takeout" hideExternalIcon>
+          <Paragraph fontWeight="600" color="$blue11" tag="strong">
+            we're releasing Takeout 2 RC 1
+          </Paragraph>
+        </Link>
+        . Takeout aims to bring more Rails-like cohesion to cross-platform React and React
+        Native while also improving the native-feel it can achieve.
+      </ContentParagraph>
+
+      <ContentParagraph>
+        Even when sharing a lot of code you can get perfect Lighthouse performance scores
+        with ease, like this very page does, thanks to our libraries{' '}
+        <Link href="https://tamagui.dev" target="_blank" hideExternalIcon>
+          <Paragraph color="$blue11">Tamagui</Paragraph>
+        </Link>{' '}
+        and{' '}
+        <Link href="https://onestack.dev" target="_blank" hideExternalIcon>
+          <Paragraph color="$blue11">One</Paragraph>
+        </Link>
+        . Then, make your app come alive better and easier than ever before with{' '}
+        <Link href="https://zero.rocicorp.dev" target="_blank" hideExternalIcon>
+          <Paragraph color="$blue11">Zero</Paragraph>
+        </Link>
+        .
+      </ContentParagraph>
+
+      {/* goals section */}
+      <SectionDivider>
+        <DividerLine />
+        <SectionHeading>Goals</SectionHeading>
+        <DividerLine />
+      </SectionDivider>
+
+      <YStack gap="$6">
+        <GoalItem>
+          <GoalTitle>Universal</GoalTitle>
+          <ContentParagraph>
+            Target iOS, Android, Web and Desktop using React and React Native with fully
+            shared code{' '}
+            <Paragraph fontStyle="italic">that feels native and runs fast</Paragraph>. You
+            don't have to share everything, you don't have to target every platform - but
+            you can, with ease.
+          </ContentParagraph>
+        </GoalItem>
+
+        <GoalItem>
+          <GoalTitle>DRY and simple</GoalTitle>
+          <ContentParagraph>
+            A single repo, <CodeInline>package.json</CodeInline>, bundler, framework, and
+            router. A single set of routes, hooks, and helpers. A single way to do
+            styling, UI, and data. All of your backend, frontend, and infrastructure,
+            defined in code, deployed with a push. Data queried and mutated quickly,
+            safely, simply, and optimistically, with no glue.
+          </ContentParagraph>
+        </GoalItem>
+
+        <GoalItem>
+          <GoalTitle>Platform-native</GoalTitle>
+          <ContentParagraph>
+            A top-tier experience on every platform, served from a single Vite app and
+            file system route setup:
+          </ContentParagraph>
+
+          <SubGoalItem>
+            <ContentParagraph>
+              A{' '}
+              <Paragraph fontWeight="600" tag="strong">
+                website
+              </Paragraph>{' '}
+              with great Lighthouse scores, all the latest CSS features, and perfectly
+              hydrated static or server rendered pages (even when using spring animations,
+              media queries, and light/dark mode, etc).
+            </ContentParagraph>
+          </SubGoalItem>
+
+          <SubGoalItem>
+            <ContentParagraph>
+              A{' '}
+              <Paragraph fontWeight="600" tag="strong">
+                web app
+              </Paragraph>{' '}
+              that can be client-only and look and feel great despite having fully shared
+              code with a performant site.
+            </ContentParagraph>
+          </SubGoalItem>
+
+          <SubGoalItem>
+            <ContentParagraph>
+              And of course,{' '}
+              <Paragraph fontWeight="600" tag="strong">
+                native iOS and Android apps
+              </Paragraph>{' '}
+              with native UI and navigation, Liquid Glass, Material UI, etc.
+            </ContentParagraph>
+          </SubGoalItem>
+        </GoalItem>
+
+        <GoalItem>
+          <GoalTitle>Fast, both ways</GoalTitle>
+          <ContentParagraph>
+            Fast in both development speed and runtime performance.
+          </ContentParagraph>
+        </GoalItem>
+
+        <GoalItem>
+          <GoalTitle>Low risk</GoalTitle>
+          <ContentParagraph>
+            Self host or deploy to the cloud. Runs on Postgres. Unplug parts you don't
+            like. Libraries chosen for being OSS, popular, single-purpose, and well
+            maintained and documented.
+          </ContentParagraph>
+        </GoalItem>
+      </YStack>
+
+      {/* in the box section */}
+      <SectionDivider>
+        <DividerLine />
+        <SectionHeading>In the box</SectionHeading>
+        <DividerLine />
+      </SectionDivider>
+
+      <YStack gap="$5">
+        <TechCard>
+          <XStack items="center" gap="$3">
+            <LogoWrapper bg="rgba(245, 202, 5, 0.15)">
+              <OneLogo size={24} />
+            </LogoWrapper>
+            <Link href="https://onestack.dev" target="_blank" hideExternalIcon>
+              <TechTitle color="$color12">One</TechTitle>
+            </Link>
+          </XStack>
+
+          <ContentParagraph>
+            Vite simply mogs any other bundler for web, we love how fast and flexible it
+            is. So, One ported Expo Router to Vite, and then added a ton of stuff needed
+            for high performance web - especially loaders, and render modes. Server render
+            or statically generate some pages, keep others client-only, all from the same
+            routing definitions, route between them with perfect preloading. Plus, easy
+            API routes and a Hono production server included.
+          </ContentParagraph>
+
+          <ContentParagraph>
+            With the new{' '}
+            <Paragraph fontWeight="600" tag="strong">
+              Metro-mode
+            </Paragraph>
+            , you get Vite's simplicity for web while optionally running Metro for native.
+            One is now stable for production use, and{' '}
+            <Link href="https://onestack.dev" hideExternalIcon>
+              <Paragraph fontWeight="600" color="$blue11" tag="strong">
+                we just released v1 RC1
+              </Paragraph>
+            </Link>
+            .
+          </ContentParagraph>
+        </TechCard>
+
+        <TechCard>
+          <XStack items="center" gap="$3">
+            <LogoWrapper bg="rgba(59, 130, 246, 0.15)">
+              <ZeroLogo size={24} />
+            </LogoWrapper>
+            <Link href="https://zero.rocicorp.dev" target="_blank" hideExternalIcon>
+              <TechTitle color="$blue11">Zero</TechTitle>
+            </Link>
+          </XStack>
+
+          <ContentParagraph>
+            Zero is the biggest step-change in frontend since React itself. It solves the
+            worst area of frontend development today: data. Getting it to the client,
+            keeping it in sync, and mutating it instantly. It's{' '}
+            <Paragraph fontWeight="600" tag="strong">
+              like Firebase if it was OSS and ran on Postgres, and had relations, types,
+              schemas, and optimistic mutations out of the box
+            </Paragraph>
+            .
+          </ContentParagraph>
+
+          <ContentParagraph>
+            Our{' '}
+            <Link
+              href="https://github.com/tamagui/takeout3/blob/main/packages/over-zero/readme.md"
+              target="_blank"
+              hideExternalIcon
+            >
+              <Paragraph fontWeight="600" color="$blue11" tag="strong">
+                over-zero
+              </Paragraph>
+            </Link>{' '}
+            library makes it even easier to use, and can generate some of the boilerplatey
+            parts for you, if you like.
+          </ContentParagraph>
+        </TechCard>
+
+        <TechCard>
+          <XStack items="center" gap="$3">
+            <LogoWrapper bg="rgba(236, 210, 10, 0.15)">
+              <TamaguiLogo size={24} />
+            </LogoWrapper>
+            <Link href="https://tamagui.dev" target="_blank" hideExternalIcon>
+              <TechTitle color="$color12">Tamagui</TechTitle>
+            </Link>
+          </XStack>
+
+          <ContentParagraph>
+            Tamagui still offers the best balance of performance on web{' '}
+            <Paragraph fontStyle="italic">and</Paragraph> native, with the largest
+            featureset of any universal style library. It's typed and mergable inline
+            styles, robust UI kit, theme system, and ecosystem make us incredible
+            productive.
+          </ContentParagraph>
+
+          <ContentParagraph>
+            <Link
+              href="https://tamagui.dev/blog/version-two"
+              target="_blank"
+              hideExternalIcon
+            >
+              <Paragraph fontWeight="600" color="$blue11" tag="strong">
+                Version 2 RC1 is out now
+              </Paragraph>
+            </Link>{' '}
+            with stability improvements, more tests, docs, and release guardrails, plus a
+            few new components and features.
+          </ContentParagraph>
+        </TechCard>
+
+        <TechCard>
+          <TechTitle>Agents</TechTitle>
+          <ContentParagraph>
+            Our goal was simple - point a coding agent at Takeout and prompt an entire app
+            into production in hours. We have a powerful new{' '}
+            <CodeInline>takeout</CodeInline> CLI that work alongside some seriously
+            well-structured scripts and docs that all together makes one-shotting features
+            and fixes an expectation.
+          </ContentParagraph>
+        </TechCard>
+
+        <TechCard>
+          <TechTitle>And more</TechTitle>
+          <ContentParagraph>
+            So much more. Tons of scripts, helpers, hooks, and libraries.{' '}
+            <Paragraph fontWeight="600" tag="strong">
+              Better Auth
+            </Paragraph>{' '}
+            integration. Our favorite{' '}
+            <Paragraph fontWeight="600" tag="strong">
+              native dependencies
+            </Paragraph>{' '}
+            for better native UI and functionality. And the choice to deploy with either{' '}
+            <Paragraph fontWeight="600" tag="strong">
+              Uncloud
+            </Paragraph>{' '}
+            or{' '}
+            <Paragraph fontWeight="600" tag="strong">
+              SST
+            </Paragraph>{' '}
+            out of the box.
+          </ContentParagraph>
+        </TechCard>
+      </YStack>
+
+      {/* fin section */}
+      <SectionDivider>
+        <DividerLine />
+        <SectionHeading>Fin</SectionHeading>
+        <DividerLine />
+      </SectionDivider>
+
+      <YStack gap="$4">
+        <ContentParagraph>
+          We built Takeout for ourselves, much like Tamagui and One - passion projects
+          born out of stubbornly wanting better things. We hope you enjoy this somewhat
+          early version of our new stack.
+        </ContentParagraph>
+
+        <ContentParagraph>
+          -{' '}
+          <Link href="https://x.com/natebirdman" target="_blank" hideExternalIcon>
+            <Paragraph color="$blue11">Nate</Paragraph>
+          </Link>
+        </ContentParagraph>
+      </YStack>
+    </SectionContainer>
+  )
+}

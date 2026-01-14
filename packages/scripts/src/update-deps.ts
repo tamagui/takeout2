@@ -193,17 +193,18 @@ async function updatePackages(packagesToUpdate: string[], cwd: string) {
   if (globalTag) {
     // check which packages actually have the tag
     console.info(`🔍 Checking which packages have tag '${globalTag}'...\n`)
-    const packagesWithTag: string[] = []
-
-    for (const pkg of packagesToUpdate) {
-      try {
-        await $`npm view ${pkg}@${globalTag} version --json`.quiet()
-        packagesWithTag.push(pkg)
-        console.info(`  ✓ ${pkg}@${globalTag} exists`)
-      } catch {
-        console.info(`  ⊘ ${pkg}@${globalTag} not found, skipping`)
-      }
-    }
+    const packagesWithTag = await Promise.all(
+      packagesToUpdate.flatMap(async (pkg) => {
+        try {
+          await $`npm view ${pkg}@${globalTag} version --json`.quiet()
+          console.info(`  ✓ ${pkg}@${globalTag} exists`)
+          return [pkg]
+        } catch {
+          console.info(`  ⊘ ${pkg}@${globalTag} not found, skipping`)
+          return []
+        }
+      })
+    )
 
     if (packagesWithTag.length === 0) {
       console.info(`\n⚠️ No packages found with tag '${globalTag}'`)

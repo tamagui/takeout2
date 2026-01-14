@@ -5,8 +5,13 @@ description: Database aggregates guide using PostgreSQL triggers and stats table
 
 # Aggregates in your data
 
-Zero doesn't support aggregates, and running them on demand is often slow
-anyway. We use Postgres triggers and tables to handle things like counting
+Zero doesn't support aggregates, but computing aggregates on read is slow for
+any database. Queries like `SELECT COUNT(*)` seem innocent but become
+problematic at scale—they lock rows, block writes, and get slower as data grows.
+Denormalizing aggregates (storing pre-computed counts/sums) via triggers is a
+well-established pattern used by most high-traffic applications.
+
+We use Postgres triggers and stats tables to handle things like counting
 replies or reactions. Note that we don't use materialized views since Zero
 doesn't support them.
 

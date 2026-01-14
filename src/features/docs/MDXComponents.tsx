@@ -39,7 +39,7 @@ const components = {
   ol: (props: any) => <YStack tag="ol" mt="$0" mb="$3" ml="$5" {...props} />,
   li: (props: any) => <BaseParagraph tag="li" display="list-item" mt={0} {...props} />,
 
-  a: ({ href, children, ...props }: any) => {
+  a: ({ href, children }: any) => {
     const isExternal = href?.startsWith('http')
     return (
       <Link
@@ -53,15 +53,14 @@ const components = {
     )
   },
 
-  code: (props: any) => {
-    const { className, children } = props
-    if (!className) {
-      return <CodeInline>{children}</CodeInline>
-    }
-    return <DocsCodeBlock className={className}>{children}</DocsCodeBlock>
-  },
+  code: ({ children }: any) => <CodeInline>{children}</CodeInline>,
 
-  pre: ({ children }: any) => <>{children}</>,
+  pre: ({ children }: any) => {
+    // children is the <code> element for fenced blocks
+    const className = children?.props?.className
+    const content = children?.props?.children
+    return <DocsCodeBlock className={className}>{content}</DocsCodeBlock>
+  },
 
   blockquote: (props: any) => (
     <YStack

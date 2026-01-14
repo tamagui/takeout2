@@ -170,9 +170,19 @@ For client-side queries that sync in real-time, use Zero's ZQL—see the [Zero p
 
 ## Aggregates and Triggers
 
-Zero doesn't support aggregates, so we use PostgreSQL triggers to maintain
-denormalized counts. For example, `post.commentCount` is updated automatically
-when comments are added or removed.
+Zero doesn't support aggregates, but even if it did, computing aggregates on
+read is slow for any database. Queries like `SELECT COUNT(*) FROM comments WHERE
+postId = ?` seem innocent but become problematic at scale—they lock rows, block
+writes, and get slower as data grows.
+
+The solution is **denormalization**: pre-computing and storing derived values
+alongside your source data. Instead of counting comments on every read, we store
+`post.commentCount` and update it via triggers whenever comments change. This
+trades a bit of write complexity for dramatically faster reads.
+
+This is a well-established pattern used by most high-traffic applications. For
+example, `post.commentCount` is updated automatically when comments are added or
+removed.
 
 ### Simple Counter Pattern
 

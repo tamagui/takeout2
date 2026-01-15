@@ -287,7 +287,7 @@ const ToastBanner = memo(({ toast, onHide }: ToastBannerProps) => {
                 borderRadius={24}
                 intensity={50}
                 tint={isDark ? 'dark' : 'light'}
-                containerStyle={{ flex: 1 }}
+                containerStyle={{ flex: 1, overflow: 'hidden' }}
               >
                 {/* peek view (collapsed state) */}
                 <Animated.View

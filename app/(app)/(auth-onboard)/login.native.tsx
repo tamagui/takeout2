@@ -29,7 +29,7 @@ import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { dialogEmit } from '~/interface/dialogs/shared'
 import { AppleIcon } from '~/interface/icons/AppleIcon'
 import { GoogleIcon } from '~/interface/icons/GoogleIcon'
-import { TamaguiDotLogo } from '~/interface/icons/logos/TamaguiDotLogo'
+import { Image } from '~/interface/image/Image'
 import { H2 } from '~/interface/text/Headings'
 import { showToast } from '~/interface/toast/helpers'
 
@@ -54,35 +54,10 @@ export const LoginPage = () => {
 
   return (
     <GradientBackground useImage>
-      <View
-        position="absolute"
-        justify="center"
-        items="center"
-        t={0}
-        l={0}
-        r={0}
-        b={0}
-        z={999}
-        pointerEvents="none"
-      >
-        <View
-          transition={['medium', { delay: 500 }]}
-          scale={1.2}
-          y={-80}
-          enterStyle={{ scale: 1, y: 0 }}
-        >
-          <TamaguiDotLogo size={80} color={theme.color.val as ColorTokens} />
+      <View flex={1} px="$4" pb="$4" justify="flex-end" gap="$4">
+        <View items="center">
+          <Image src={require('../../../assets/logo.png')} width={80} height={80} />
         </View>
-      </View>
-      <View
-        transition={['medium', { delay: 1200 }]}
-        enterStyle={{ opacity: 0 }}
-        exitStyle={{ opacity: 0 }}
-        flex={1}
-        px="$4"
-        pb="$4"
-        justify="flex-end"
-      >
         <H2 text="center" fontFamily="$heading">
           Login to {APP_NAME}
         </H2>

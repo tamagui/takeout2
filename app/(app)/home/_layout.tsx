@@ -1,14 +1,17 @@
-import { Slot } from 'one'
-import { Spacer } from 'tamagui'
+import { Slot, Stack } from 'one'
 
-import { MainHeader } from '~/features/main/MainHeader'
-
-export function TabsLayout() {
+export function AppLayout() {
   return (
     <>
-      <MainHeader />
-      <Spacer height={50} />
-      <Slot />
+      {process.env.VITE_PLATFORM === 'web' ? (
+        <Slot />
+      ) : (
+        // We need Stack here for transition animation to work on native
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="settings" />
+        </Stack>
+      )}
     </>
   )
 }

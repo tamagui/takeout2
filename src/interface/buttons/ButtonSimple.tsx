@@ -1,18 +1,16 @@
 import { IS_SAFARI, isAndroid, isWeb, sleep } from '@take-out/helpers'
 import { createElement, forwardRef, isValidElement } from 'react'
+import { Platform } from 'react-native'
 import {
   createStyledContext,
   type GetProps,
   styled,
   type TamaguiElement,
   Text,
-  Theme,
   View,
   withStaticProperties,
   XStack,
 } from 'tamagui'
-
-import { useIsDark } from '~/features/theme/useIsDark'
 
 import { GlassView } from '../effects/GlassView'
 import Glint from '../effects/Glint'
@@ -301,9 +299,6 @@ const ButtonIcon = ({
   const context = useContext()
   const iconSize = iconSizeProp ?? iconSizes[context.size || 'medium']
 
-  // TEMP tamagui doesnt support nice conditional theme-light + group styles so..
-  const isDark = useIsDark()
-
   if (!icon) {
     return null
   }
@@ -316,7 +311,7 @@ const ButtonIcon = ({
         ...iconProps,
       })
 
-  return <Theme name={isDark || !context.active ? null : 'accent'}>{iconElement}</Theme>
+  return iconElement
 }
 
 export type ButtonSimpleProps = GetProps<typeof ButtonFrame> & ButtonSimpleAdditionalProps
@@ -364,6 +359,8 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
 
     // determine if glint should be shown
     const shouldShowGlint = () => {
+      // TODO(nate) getting an error "Exception in HostFunction: TypeError: expected dynamic type 'int/double...' but had type object"
+      if (Platform.OS === 'ios') return false
       if (disableGlint) return false
       if (rest.size === 'square') return false
       if (variant === 'transparent' || variant === 'subtle') return false

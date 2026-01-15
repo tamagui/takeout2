@@ -28,7 +28,7 @@ export function AppLayout() {
   // redirect logged-in users away from auth routes
   const isAuthRoute = pathname.startsWith('/auth')
   if (state === 'logged-in' && isAuthRoute) {
-    return <Redirect href="/home" />
+    return <Redirect href="/home/feed" />
   }
 
   return (
@@ -46,11 +46,8 @@ export function AppLayout() {
               ) : (
                 // We need Stack here for transition animation to work on native
                 <Stack screenOptions={{ headerShown: false }}>
-                  <Stack.Screen name="auth" />
                   <Stack.Screen name="home" />
-                  <Stack.Screen name="ai" />
-                  <Stack.Screen name="search" />
-                  <Stack.Screen name="settings" />
+                  <Stack.Screen name="auth" />
                 </Stack>
               )}
               <Dialogs />

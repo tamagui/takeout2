@@ -7,7 +7,7 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated'
 
-import type { ExpandedMenuItemType } from '../TabBar'
+import type { ExpandedMenuItemType } from '../../features/app/TabBar'
 
 const SPRING_CONFIG = {
   damping: 15,

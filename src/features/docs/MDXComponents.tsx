@@ -71,8 +71,8 @@ const components = {
     />
   ),
 
-  ul: (props: any) => <YStack tag="ul" mt="$0" mb="$3" ml="$5" {...props} />,
-  ol: (props: any) => <YStack tag="ol" mt="$0" mb="$3" ml="$5" {...props} />,
+  ul: (props: any) => <YStack tag="ul" mt="$3" mb="$3" ml="$2" {...props} />,
+  ol: (props: any) => <YStack tag="ol" mt="$3" mb="$3" ml="$2" {...props} />,
   li: (props: any) => <BaseParagraph tag="li" display="list-item" mt={0} {...props} />,
 
   a: ({ href, children }: any) => {

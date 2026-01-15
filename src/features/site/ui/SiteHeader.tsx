@@ -3,6 +3,7 @@ import { Separator, Sheet, Spacer, XStack, YStack } from 'tamagui'
 
 import { LoginButton } from '~/features/auth/ui/LoginButton'
 import { SocialLinksRow } from '~/features/site/ui/SocialLinksRow'
+import { animationClamped } from '~/interface/animations/animationClamped'
 import { Link } from '~/interface/app/Link'
 import { Logo } from '~/interface/app/Logo'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
@@ -60,7 +61,8 @@ export const SiteHeader = () => {
             <Sheet
               open={open}
               onOpenChange={setOpen}
-              animationConfig={{
+              transition="quick"
+              transitionConfig={{
                 type: 'spring',
                 damping: 25,
                 mass: 1,
@@ -71,13 +73,22 @@ export const SiteHeader = () => {
               snapPoints={[80]}
             >
               <Sheet.Overlay
-                transition="lazy"
+                transition={animationClamped('quick')}
                 opacity={0.8}
+                bg="$shadow6"
                 enterStyle={{ opacity: 0 }}
                 exitStyle={{ opacity: 0 }}
               />
 
-              <Sheet.Frame bg="$color2">
+              <Sheet.Frame
+                bg="$color2"
+                boxShadow="0 0 10px $shadow6"
+                onPressOut={() => {
+                  setTimeout(() => {
+                    setOpen(false)
+                  })
+                }}
+              >
                 <YStack flex={1} gap="$2">
                   <XStack p="$4" pb="$3" justify="space-between">
                     <Logo height={32} />

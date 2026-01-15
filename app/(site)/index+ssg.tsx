@@ -33,16 +33,7 @@ export function IndexPage() {
       <YStack items="center">
         <Hero>Ultra high quality apps on every platform shipped faster than slop</Hero>
 
-        <H2
-          color="$color11"
-          maxW={620}
-          mt="$5"
-          size="$7"
-          fontWeight="400"
-          $md={{
-            text: 'center',
-          }}
-        >
+        <H2 color="$color11" maxW={620} mt="$5" size="$7" fontWeight="400" text="center">
           Takeout makes React and React&nbsp;Native as easy and performant as possible.
         </H2>
 

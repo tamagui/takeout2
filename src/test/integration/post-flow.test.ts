@@ -16,8 +16,8 @@ test.describe('Post Flow', () => {
 
     await loginAsDemo(page)
 
-    // go to home and click the plus button to open create post dialog
-    await page.goto(`${BASE_URL}/home`, { waitUntil: 'domcontentloaded' })
+    // go to home feed and click the plus button to open create post dialog
+    await page.goto(`${BASE_URL}/home/feed`, { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(2000)
 
     // click the plus button in the header to open the create post dialog

@@ -4,7 +4,7 @@ const BASE_URL = 'http://localhost:8081'
 
 export async function loginAsDemo(page: Page, pathname = '/') {
   console.info('Navigating to login page...')
-  await page.goto(`${BASE_URL}/login`, {
+  await page.goto(`${BASE_URL}/auth/login`, {
     waitUntil: 'domcontentloaded',
   })
 
@@ -17,7 +17,7 @@ export async function loginAsDemo(page: Page, pathname = '/') {
 
   // wait for navigation away from login page (up to 30 seconds in CI)
   try {
-    await page.waitForURL((url) => !url.toString().includes('/login'), {
+    await page.waitForURL((url) => !url.toString().includes('/auth/login'), {
       timeout: 30000,
     })
   } catch {
@@ -29,16 +29,16 @@ export async function loginAsDemo(page: Page, pathname = '/') {
   const currentUrl = page.url()
   console.info(`✅ Logged in as demo user, redirected to: ${currentUrl}`)
 
-  // always navigate directly to /home to bypass any onboarding redirects
+  // always navigate directly to /home/feed to bypass any onboarding redirects
   // this is more reliable for CI testing than trying to click skip buttons
-  console.info('Navigating to /home...')
-  await page.goto(`${BASE_URL}/home`, { waitUntil: 'domcontentloaded' })
+  console.info('Navigating to /home/feed...')
+  await page.goto(`${BASE_URL}/home/feed`, { waitUntil: 'domcontentloaded' })
 
   // wait for page to stabilize
   await page.waitForTimeout(2000)
 
-  // navigate to desired pathname if different from home
-  if (pathname !== '/' && pathname !== '/home') {
+  // navigate to desired pathname if different from home/feed
+  if (pathname !== '/' && pathname !== '/home' && pathname !== '/home/feed') {
     await page.goto(`${BASE_URL}${pathname}`, {
       waitUntil: 'domcontentloaded',
       timeout: 15000,
@@ -48,7 +48,7 @@ export async function loginAsDemo(page: Page, pathname = '/') {
 
 export async function loginAsAdmin(page: Page, pathname = '/') {
   console.info('Navigating to login page...')
-  await page.goto(`${BASE_URL}/login?showAdmin`, {
+  await page.goto(`${BASE_URL}/auth/login?showAdmin`, {
     waitUntil: 'domcontentloaded',
   })
 
@@ -61,7 +61,7 @@ export async function loginAsAdmin(page: Page, pathname = '/') {
 
   // verify login by checking if we're redirected away from login page
   const currentUrl = page.url()
-  if (currentUrl.includes('/login')) {
+  if (currentUrl.includes('/auth/login')) {
     console.error(`❌ Still on login page after admin login`)
     throw new Error(`Admin login failed - still on login page`)
   }

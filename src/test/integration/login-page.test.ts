@@ -15,7 +15,7 @@ test('login page should load without freezing', async ({ page }) => {
   test.setTimeout(10000)
 
   // navigate to login page
-  const response = await page.goto('http://localhost:8081/login', {
+  const response = await page.goto('http://localhost:8081/auth/login', {
     waitUntil: 'domcontentloaded',
     timeout: 8000,
   })
@@ -34,7 +34,7 @@ test('login page should load without freezing', async ({ page }) => {
 test('login page shows login form elements', async ({ page }) => {
   test.setTimeout(15000)
 
-  await page.goto('http://localhost:8081/login', {
+  await page.goto('http://localhost:8081/auth/login', {
     waitUntil: 'networkidle',
     timeout: 10000,
   })
@@ -55,7 +55,7 @@ test('login page does not redirect infinitely', async ({ page }) => {
     }
   })
 
-  await page.goto('http://localhost:8081/login', {
+  await page.goto('http://localhost:8081/auth/login', {
     waitUntil: 'domcontentloaded',
   })
 
@@ -64,13 +64,13 @@ test('login page does not redirect infinitely', async ({ page }) => {
 
   // filter to only login-related navigations
   const loginNavigations = navigations.filter(
-    (url) => url.includes('/login') || url.includes('/home')
+    (url) => url.includes('/auth/login') || url.includes('/home')
   )
 
   // allow up to 20 navigations (SPA may have initial load, SSR hydration, auth checks, etc)
   // this is mainly to catch infinite loops (which would be 100s or 1000s)
   expect(loginNavigations.length).toBeLessThanOrEqual(20)
 
-  // should still be on /login (not redirected away for logged-out user)
-  expect(page.url()).toContain('/login')
+  // should still be on /auth/login (not redirected away for logged-out user)
+  expect(page.url()).toContain('/auth/login')
 })

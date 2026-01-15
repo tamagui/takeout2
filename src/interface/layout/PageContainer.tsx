@@ -1,10 +1,10 @@
 import { styled, YStack } from 'tamagui'
 
 export const PageContainer = styled(YStack, {
+  position: 'relative',
   mx: 'auto',
   px: '$4',
   width: '100%',
-  position: 'relative',
   minW: 380,
 
   $md: {

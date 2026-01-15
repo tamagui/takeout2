@@ -1,21 +1,10 @@
 import { Slot, Stack } from 'one'
-import { isWeb, Spacer } from 'tamagui'
-
-import { SiteHeader } from '~/features/site/ui/SiteHeader'
-import { PageMainContainer } from '~/interface/layout/PageContainer'
 
 export function AuthAndOnboardingLayout() {
   return (
     <>
-      {isWeb ? (
-        <>
-          <SiteHeader />
-          <PageMainContainer>
-            {/* header height push down */}
-            <Spacer size={70} />
-            <Slot />
-          </PageMainContainer>
-        </>
+      {process.env.VITE_PLATFORM === 'web' ? (
+        <Slot />
       ) : (
         <Stack screenOptions={{ headerShown: false }} initialRouteName="login">
           <Stack.Screen name="login" />

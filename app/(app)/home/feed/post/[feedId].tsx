@@ -1,5 +1,5 @@
 import { createRoute } from 'one'
 
-const route = createRoute<'/(app)/(tabs)/home/post/[feedId]'>()
+const route = createRoute<'/(app)/home/home/post/[feedId]'>()
 
 export { FeedDetailPage } from '~/features/feed/FeedDetailPage'

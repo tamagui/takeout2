@@ -24,7 +24,7 @@ import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 import type React from 'react'
 import type { GestureResponderEvent } from 'react-native'
 
-const route = createRoute<'/(app)/(auth-onboard)/signup/[method]'>()
+const route = createRoute<'/(app)/auth/signup/[method]'>()
 
 export const SignupPage = memo(() => {
   const { method } = useParams<{
@@ -93,7 +93,7 @@ export const SignupPage = memo(() => {
     try {
       if (shouldUsePasswordOnlyAuth) {
         router.push(
-          `/login/password?method=${method}&value=${encodeURIComponent(inputValue)}`
+          `/auth/login/password?method=${method}&value=${encodeURIComponent(inputValue)}`
         )
         return
       }
@@ -102,7 +102,7 @@ export const SignupPage = memo(() => {
 
       if (success) {
         router.push(
-          `/signup/otp?method=${method}&value=${encodeURIComponent(inputValue)}`
+          `/auth/signup/otp?method=${method}&value=${encodeURIComponent(inputValue)}`
         )
         return
       }

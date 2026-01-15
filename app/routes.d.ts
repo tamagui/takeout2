@@ -6,29 +6,21 @@ import type { OneRouter } from 'one'
 declare module 'one' {
   export namespace OneRouter {
     export interface __routes<T extends string = string> extends Record<string, unknown> {
-      StaticRoutes: `/` | `/(app)` | `/(app)/(auth-onboard)` | `/(app)/(auth-onboard)/login` | `/(app)/(auth-onboard)/login/password` | `/(app)/(auth-onboard)/signup/otp` | `/(app)/(auth-onboard)/waiting-list` | `/(app)/(tabs)` | `/(app)/(tabs)/ai` | `/(app)/(tabs)/ai/` | `/(app)/(tabs)/home` | `/(app)/(tabs)/home/` | `/(app)/(tabs)/profile` | `/(app)/(tabs)/profile/` | `/(app)/(tabs)/search` | `/(app)/(tabs)/search/` | `/(app)/ai` | `/(app)/ai/` | `/(app)/home` | `/(app)/home/` | `/(app)/login` | `/(app)/login/password` | `/(app)/profile` | `/(app)/profile/` | `/(app)/search` | `/(app)/search/` | `/(app)/settings` | `/(app)/settings/` | `/(app)/settings/blocked-users` | `/(app)/settings/edit-profile` | `/(app)/signup/otp` | `/(app)/waiting-list` | `/(auth-onboard)` | `/(auth-onboard)/login` | `/(auth-onboard)/login/password` | `/(auth-onboard)/signup/otp` | `/(auth-onboard)/waiting-list` | `/(legal)/eula` | `/(legal)/privacy-policy` | `/(legal)/terms-of-service` | `/(site)` | `/(site)/` | `/(site)/(legal)/eula` | `/(site)/(legal)/privacy-policy` | `/(site)/(legal)/terms-of-service` | `/(site)/docs` | `/(site)/eula` | `/(site)/help` | `/(site)/privacy-policy` | `/(site)/terms-of-service` | `/(tabs)` | `/(tabs)/ai` | `/(tabs)/ai/` | `/(tabs)/home` | `/(tabs)/home/` | `/(tabs)/profile` | `/(tabs)/profile/` | `/(tabs)/search` | `/(tabs)/search/` | `/_sitemap` | `/ai` | `/ai/` | `/docs` | `/eula` | `/help` | `/home` | `/home/` | `/login` | `/login/password` | `/privacy-policy` | `/profile` | `/profile/` | `/search` | `/search/` | `/settings` | `/settings/` | `/settings/blocked-users` | `/settings/edit-profile` | `/signup/otp` | `/terms-of-service` | `/waiting-list`
-      DynamicRoutes: `/(app)/(auth-onboard)/signup/${OneRouter.SingleRoutePart<T>}` | `/(app)/(tabs)/home/post/${OneRouter.SingleRoutePart<T>}` | `/(app)/(tabs)/home/profile/${OneRouter.SingleRoutePart<T>}` | `/(app)/(tabs)/profile/post/${OneRouter.SingleRoutePart<T>}` | `/(app)/home/post/${OneRouter.SingleRoutePart<T>}` | `/(app)/home/profile/${OneRouter.SingleRoutePart<T>}` | `/(app)/profile/post/${OneRouter.SingleRoutePart<T>}` | `/(app)/signup/${OneRouter.SingleRoutePart<T>}` | `/(auth-onboard)/signup/${OneRouter.SingleRoutePart<T>}` | `/(site)/docs/${OneRouter.SingleRoutePart<T>}` | `/(tabs)/home/post/${OneRouter.SingleRoutePart<T>}` | `/(tabs)/home/profile/${OneRouter.SingleRoutePart<T>}` | `/(tabs)/profile/post/${OneRouter.SingleRoutePart<T>}` | `/docs/${OneRouter.SingleRoutePart<T>}` | `/home/post/${OneRouter.SingleRoutePart<T>}` | `/home/profile/${OneRouter.SingleRoutePart<T>}` | `/profile/post/${OneRouter.SingleRoutePart<T>}` | `/signup/${OneRouter.SingleRoutePart<T>}`
-      DynamicRouteTemplate: `/(app)/(auth-onboard)/signup/[method]` | `/(app)/(tabs)/home/post/[feedId]` | `/(app)/(tabs)/home/profile/[userId]` | `/(app)/(tabs)/profile/post/[feedId]` | `/(app)/home/post/[feedId]` | `/(app)/home/profile/[userId]` | `/(app)/profile/post/[feedId]` | `/(app)/signup/[method]` | `/(auth-onboard)/signup/[method]` | `/(site)/docs/[slug]` | `/(tabs)/home/post/[feedId]` | `/(tabs)/home/profile/[userId]` | `/(tabs)/profile/post/[feedId]` | `/docs/[slug]` | `/home/post/[feedId]` | `/home/profile/[userId]` | `/profile/post/[feedId]` | `/signup/[method]`
+      StaticRoutes: `/` | `/(app)` | `/(app)/auth` | `/(app)/auth/login` | `/(app)/auth/login/password` | `/(app)/auth/signup/otp` | `/(app)/auth/waiting-list` | `/(app)/home` | `/(app)/home/ai` | `/(app)/home/ai/` | `/(app)/home/feed` | `/(app)/home/feed/` | `/(app)/home/profile` | `/(app)/home/profile/` | `/(app)/home/search` | `/(app)/home/search/` | `/(app)/settings` | `/(app)/settings/` | `/(app)/settings/blocked-users` | `/(app)/settings/edit-profile` | `/(legal)/eula` | `/(legal)/privacy-policy` | `/(legal)/terms-of-service` | `/(site)` | `/(site)/` | `/(site)/(legal)/eula` | `/(site)/(legal)/privacy-policy` | `/(site)/(legal)/terms-of-service` | `/(site)/docs` | `/(site)/eula` | `/(site)/help` | `/(site)/privacy-policy` | `/(site)/terms-of-service` | `/_sitemap` | `/auth` | `/auth/login` | `/auth/login/password` | `/auth/signup/otp` | `/auth/waiting-list` | `/docs` | `/eula` | `/help` | `/home` | `/home/ai` | `/home/ai/` | `/home/feed` | `/home/feed/` | `/home/profile` | `/home/profile/` | `/home/search` | `/home/search/` | `/privacy-policy` | `/settings` | `/settings/` | `/settings/blocked-users` | `/settings/edit-profile` | `/terms-of-service`
+      DynamicRoutes: `/(app)/auth/signup/${OneRouter.SingleRoutePart<T>}` | `/(app)/home/feed/post/${OneRouter.SingleRoutePart<T>}` | `/(app)/home/feed/profile/${OneRouter.SingleRoutePart<T>}` | `/(app)/home/profile/post/${OneRouter.SingleRoutePart<T>}` | `/(site)/docs/${OneRouter.SingleRoutePart<T>}` | `/auth/signup/${OneRouter.SingleRoutePart<T>}` | `/docs/${OneRouter.SingleRoutePart<T>}` | `/home/feed/post/${OneRouter.SingleRoutePart<T>}` | `/home/feed/profile/${OneRouter.SingleRoutePart<T>}` | `/home/profile/post/${OneRouter.SingleRoutePart<T>}`
+      DynamicRouteTemplate: `/(app)/auth/signup/[method]` | `/(app)/home/feed/post/[feedId]` | `/(app)/home/feed/profile/[userId]` | `/(app)/home/profile/post/[feedId]` | `/(site)/docs/[slug]` | `/auth/signup/[method]` | `/docs/[slug]` | `/home/feed/post/[feedId]` | `/home/feed/profile/[userId]` | `/home/profile/post/[feedId]`
       IsTyped: true
       RouteTypes: {
-        '/(app)/(auth-onboard)/signup/[method]': RouteInfo<{ method: string }>
-        '/(app)/(tabs)/home/post/[feedId]': RouteInfo<{ feedId: string }>
-        '/(app)/(tabs)/home/profile/[userId]': RouteInfo<{ userId: string }>
-        '/(app)/(tabs)/profile/post/[feedId]': RouteInfo<{ feedId: string }>
-        '/(app)/home/post/[feedId]': RouteInfo<{ feedId: string }>
-        '/(app)/home/profile/[userId]': RouteInfo<{ userId: string }>
-        '/(app)/profile/post/[feedId]': RouteInfo<{ feedId: string }>
-        '/(app)/signup/[method]': RouteInfo<{ method: string }>
-        '/(auth-onboard)/signup/[method]': RouteInfo<{ method: string }>
+        '/(app)/auth/signup/[method]': RouteInfo<{ method: string }>
+        '/(app)/home/feed/post/[feedId]': RouteInfo<{ feedId: string }>
+        '/(app)/home/feed/profile/[userId]': RouteInfo<{ userId: string }>
+        '/(app)/home/profile/post/[feedId]': RouteInfo<{ feedId: string }>
         '/(site)/docs/[slug]': RouteInfo<{ slug: string }>
-        '/(tabs)/home/post/[feedId]': RouteInfo<{ feedId: string }>
-        '/(tabs)/home/profile/[userId]': RouteInfo<{ userId: string }>
-        '/(tabs)/profile/post/[feedId]': RouteInfo<{ feedId: string }>
+        '/auth/signup/[method]': RouteInfo<{ method: string }>
         '/docs/[slug]': RouteInfo<{ slug: string }>
-        '/home/post/[feedId]': RouteInfo<{ feedId: string }>
-        '/home/profile/[userId]': RouteInfo<{ userId: string }>
-        '/profile/post/[feedId]': RouteInfo<{ feedId: string }>
-        '/signup/[method]': RouteInfo<{ method: string }>
+        '/home/feed/post/[feedId]': RouteInfo<{ feedId: string }>
+        '/home/feed/profile/[userId]': RouteInfo<{ userId: string }>
+        '/home/profile/post/[feedId]': RouteInfo<{ feedId: string }>
       }
     }
   }

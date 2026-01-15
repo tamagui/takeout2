@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Separator, Sheet, Spacer, XStack, YStack } from 'tamagui'
 
 import { LoginButton } from '~/features/auth/ui/LoginButton'
+import { LoginListItem } from '~/features/auth/ui/LoginListItem'
 import { SocialLinksRow } from '~/features/site/ui/SocialLinksRow'
 import { animationClamped } from '~/interface/animations/animationClamped'
 import { Link } from '~/interface/app/Link'
@@ -80,15 +81,7 @@ export const SiteHeader = () => {
                 exitStyle={{ opacity: 0 }}
               />
 
-              <Sheet.Frame
-                bg="$color2"
-                boxShadow="0 0 10px $shadow6"
-                onPressOut={() => {
-                  setTimeout(() => {
-                    setOpen(false)
-                  })
-                }}
-              >
+              <Sheet.Frame bg="$color2" boxShadow="0 0 10px $shadow6">
                 <YStack flex={1} gap="$2">
                   <XStack p="$4" pb="$3" justify="space-between">
                     <Logo height={32} />
@@ -98,9 +91,20 @@ export const SiteHeader = () => {
                   <Separator />
 
                   <YStack flex={1}>
-                    <LoginButton listItem />
-                    <Link href="/docs/introduction" asChild>
-                      <ListItem>
+                    <LoginListItem
+                      onPressOut={() => {
+                        setTimeout(() => {
+                          setOpen(false)
+                        })
+                      }}
+                    />
+
+                    <Link href="/docs/introduction">
+                      <ListItem
+                        onPressOut={() => {
+                          setOpen(false)
+                        }}
+                      >
                         <ListItem.Icon>
                           <FileIcon />
                         </ListItem.Icon>

@@ -19,9 +19,9 @@ type TabRoute = {
 }
 
 const routes: TabRoute[] = [
-  { name: 'home', href: '/home' as Href, icon: HouseIcon },
+  { name: 'home', href: '/home/feed', icon: HouseIcon },
   { name: 'plus', icon: PlusIcon, action: () => dialogEmit({ type: 'create-post' }) },
-  { name: 'profile', href: '/profile' as Href, icon: UserCircleIcon },
+  { name: 'profile', href: '/home/profile', icon: UserCircleIcon },
 ]
 
 export function NavigationTabs() {

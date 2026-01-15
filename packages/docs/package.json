@@ -1,0 +1,12 @@
+{
+  "name": "@take-out/docs",
+  "version": "0.0.41",
+  "description": "Documentation files for Takeout starter kit",
+  "type": "module",
+  "files": [
+    "*.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

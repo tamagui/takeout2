@@ -1,5 +1,5 @@
 import { Redirect, Slot, Stack, usePathname } from 'one'
-import { Configuration, isWeb } from 'tamagui'
+import { Configuration } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
 import { Dialogs } from '~/interface/dialogs/Dialogs'
@@ -22,6 +22,7 @@ export function AppLayout() {
   const isAuthRoute = pathname === '/login' || pathname.startsWith('/signup')
 
   // routes outside of (app) group - don't redirect for these
+  // TODO likely better to just have (app) be /app
   const isSiteRoute =
     pathname === '/' ||
     pathname === '/help' ||
@@ -41,13 +42,13 @@ export function AppLayout() {
   }
 
   return (
-    // our app is SPA from here on down, we avoid extra rendering by doing this
+    // our app is SPA from here on down, we avoid extra work by disabling SSR
     <Configuration disableSSR animationDriver={animationsApp}>
       <ProvideZero>
         <ToastProvider>
           <NotificationProvider>
             <PlatformSpecificRootProvider>
-              {isWeb ? (
+              {process.env.VITE_PLATFORM === 'web' ? (
                 <DragDropFile>
                   <Gallery />
                   <Slot />

@@ -3,119 +3,30 @@ title: Tamagui
 description: Universal UI for React Native and web
 ---
 
-Tamagui is a style library and UI kit that works across React and React Native. It provides a typed styling system, an optimizing compiler, and a complete set of components - all designed to share code between platforms without sacrificing performance.
+Tamagui is a style library and UI kit that works across React and React Native.
+It provides a typed styling system, an optimizing compiler, and a complete set
+of components - all designed to share code between platforms without sacrificing
+performance.
 
 ## Why Tamagui
 
-Cross-platform styling usually means runtime overhead on web or limited capabilities on native. Tamagui solves this with a compiler that outputs optimized, platform-specific code from a single source.
+Cross-platform styling usually means runtime overhead on web or limited
+capabilities on native. Tamagui solves this with a compiler that outputs
+optimized, platform-specific code from a single source.
 
-- **Zero runtime overhead** - Compiler extracts styles to atomic CSS on web
-- **Full React Native API** - Every style property works on both platforms
+- **Optimizing compiler** - Compiler extracts styles and flattens logical
+  components to achieve ideal performance
+- **Full React Native API** - Complete compatibility with RN, with zero outside
+  depenencies (including even React Native itself)
 - **Type-safe tokens** - Colors, spacing, and typography with full IntelliSense
 - **Theme system** - CSS variables on web, no re-renders on theme change
-
-## Core Concepts
-
-### Styled Components
-
-Create components with the `styled()` function:
-
-```tsx
-import { styled } from 'tamagui'
-
-const Card = styled(View, {
-  bg: '$background',
-  p: '$4',
-  rounded: '$4',
-  shadowColor: '$shadow',
-  shadowRadius: 10,
-
-  variants: {
-    highlighted: {
-      true: {
-        borderColor: '$primary',
-        borderWidth: 2,
-      },
-    },
-  },
-})
-```
-
-### Design Tokens
-
-Define your design system once:
-
-```ts
-const tokens = createTokens({
-  color: {
-    primary: '#007AFF',
-    background: '#FFFFFF',
-    text: '#000000',
-  },
-  space: {
-    1: 4,
-    2: 8,
-    3: 12,
-    4: 16,
-  },
-  radius: {
-    1: 4,
-    2: 8,
-    3: 12,
-    4: 16,
-  },
-})
-```
-
-Access tokens with `$` prefix: `bg="$background"`, `p="$4"`, `rounded="$3"`.
-
-### Themes
-
-Themes cascade through your app via CSS variables:
-
-```tsx
-const lightTheme = {
-  background: '#FFFFFF',
-  color: '#000000',
-}
-
-const darkTheme = {
-  background: '#000000',
-  color: '#FFFFFF',
-}
-
-// components automatically adapt
-<Theme name="dark">
-  <Card>Dark mode card</Card>
-</Theme>
-```
-
-Theme changes don't trigger re-renders - they update CSS variables.
-
-### Responsive Styles
-
-Media queries compile to atomic CSS:
-
-```tsx
-<View
-  width={200}
-  $md={{ width: 400 }}
-  $lg={{ width: 600 }}
-/>
-```
-
-Or use the hook for JS logic:
-
-```tsx
-const media = useMedia()
-const columns = media.lg ? 3 : media.md ? 2 : 1
-```
 
 ## The Compiler
 
 Tamagui's compiler transforms styled components at build time:
 
 **Input:**
+
 ```tsx
 <Stack bg="$background" p="$4" rounded="$3">
   <Text color="$color">Hello</Text>
@@ -123,6 +34,7 @@ Tamagui's compiler transforms styled components at build time:
 ```
 
 **Web output:**
+
 ```html
 <div class="_bg-background _p-4 _rounded-3">
   <span class="_color-text">Hello</span>
@@ -130,6 +42,7 @@ Tamagui's compiler transforms styled components at build time:
 ```
 
 The compiler:
+
 - Extracts styles to atomic CSS classes
 - Flattens nested styled components
 - Eliminates runtime style computation
@@ -139,8 +52,10 @@ The compiler:
 
 Takeout configures Tamagui with:
 
-- **Dual animation drivers** - CSS for static pages, spring physics for app pages
-- **Theme-conditional styles** - `$theme-dark` and `$theme-light` props
+- **Three animation drivers** - CSS for static pages, motion for web dynamic
+  pages, reanimated for native dynamic pages
+- **Dark and light themes** - With `$theme-dark` and `$theme-light` conditional
+  styling
 - **Group selectors** - `$group-button-hover` for parent-scoped states
 - **Pre-built components** - Buttons, inputs, modals, and more
 
@@ -155,8 +70,12 @@ function LoginForm() {
       <Input placeholder="Email" />
       <Input placeholder="Password" secureTextEntry />
       <XStack gap="$2">
-        <Button flex={1} variant="outlined">Cancel</Button>
-        <Button flex={1} theme="primary">Login</Button>
+        <Button flex={1} variant="outlined">
+          Cancel
+        </Button>
+        <Button flex={1} theme="primary">
+          Login
+        </Button>
       </XStack>
     </YStack>
   )

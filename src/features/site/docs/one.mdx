@@ -3,14 +3,20 @@ title: One
 description: React framework for web and native
 ---
 
-One is a cross-platform React framework that runs entirely as a single Vite plugin. It lets you build web and React Native apps from a single codebase while achieving 100 Lighthouse performance scores on the web.
+One is a cross-platform React framework that runs entirely as a single Vite
+plugin. It lets you build web and React Native apps from a single codebase while
+achieving 100 Lighthouse performance scores on the web.
 
 ## Why One
 
-Most cross-platform solutions sacrifice web performance for native compatibility. One takes a different approach: it optimizes for both platforms without compromise.
+Most cross-platform solutions sacrifice web performance for native
+compatibility. One takes a different approach: it optimizes for both platforms
+without compromise.
 
-- **Web-first performance** - SSG, SSR, and SPA modes with aggressive bundle optimization
-- **True native feel** - Full React Navigation integration for native gestures and transitions
+- **Web-first performance** - SSG, SSR, and SPA modes with aggressive bundle
+  optimization
+- **True native feel** - Full React Navigation integration for native gestures
+  and transitions
 - **Single codebase** - Share routes, data, and UI between platforms
 
 ## Key Features
@@ -19,29 +25,42 @@ Most cross-platform solutions sacrifice web performance for native compatibility
 
 Routes are defined by your file structure with full TypeScript support:
 
-<RouteTree routes={[
-  { name: 'app/', children: [
-    { name: 'index.tsx', description: '/' },
-    { name: 'about.tsx', description: '/about' },
-    { name: 'blog/', children: [
-      { name: '[slug].tsx', description: '/blog/:slug' },
-      { name: 'index.tsx', description: '/blog' },
-    ]},
-  ]},
-]} />
+<RouteTree
+  routes={[
+    {
+      name: 'app/',
+      children: [
+        { name: 'index.tsx', description: '/' },
+        { name: 'about.tsx', description: '/about' },
+        {
+          name: 'blog/',
+          children: [
+            { name: '[slug].tsx', description: '/blog/:slug' },
+            { name: 'index.tsx', description: '/blog' },
+          ],
+        },
+      ],
+    },
+  ]}
+/>
 
 ### Platform Divergence
 
 Use file suffixes to diverge per platform while sharing the same route:
 
-<RouteTree routes={[
-  { name: 'app/', children: [
-    { name: 'settings.tsx', description: 'shared code' },
-    { name: 'settings.native.tsx', description: 'native-only' },
-    { name: 'settings.web.tsx', description: 'web-only' },
-    { name: 'settings.ios.tsx', description: 'iOS-only' },
-  ]},
-]} />
+<RouteTree
+  routes={[
+    {
+      name: 'app/',
+      children: [
+        { name: 'settings.tsx', description: 'shared code' },
+        { name: 'settings.native.tsx', description: 'native-only' },
+        { name: 'settings.web.tsx', description: 'web-only' },
+        { name: 'settings.ios.tsx', description: 'iOS-only' },
+      ],
+    },
+  ]}
+/>
 
 ### Render Modes
 
@@ -88,12 +107,11 @@ One achieves web performance through:
 - **LCP optimization** - Defer JS until after first paint
 - **Aggressive code splitting** - Per-route and per-platform bundles
 - **Partial hydration** - Only hydrate interactive components
-- **CSS extraction** - Zero runtime CSS-in-JS overhead on static pages
 
 ## Getting Started
 
 ```bash
-npx one 
+npx one
 ```
 
 Or add to an existing Vite project:
@@ -107,7 +125,7 @@ npm install one
 import { one } from 'one/vite'
 
 export default {
-  plugins: [one()]
+  plugins: [one()],
 }
 ```
 

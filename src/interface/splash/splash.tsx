@@ -37,7 +37,7 @@ export const Splash = memo(({ onAnimationEnd, isReady }: SplashProps) => {
     }
     setTimeout(() => {
       onAnimationEnd()
-    }, 2000)
+    }, 1850)
   }, [isReady])
 
   return (

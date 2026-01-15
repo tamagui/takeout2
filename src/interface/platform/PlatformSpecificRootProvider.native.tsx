@@ -8,9 +8,11 @@ import { useAuth } from '~/features/auth/client/authClient'
 
 import { Splash } from '../splash/splash'
 
+let splashHasBeenShown = false
+
 export function PlatformSpecificRootProvider({ children }: { children: ReactNode }) {
   const { state } = useAuth()
-  const [showSplash, setShowSplash] = useState<boolean>(true)
+  const [showSplash, setShowSplash] = useState<boolean>(!splashHasBeenShown)
 
   useEffect(() => {
     if (state !== 'loading') {
@@ -25,7 +27,13 @@ export function PlatformSpecificRootProvider({ children }: { children: ReactNode
     <KeyboardProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
         {showSplash && (
-          <Splash isReady={true} onAnimationEnd={() => setShowSplash(false)} />
+          <Splash
+            isReady={true}
+            onAnimationEnd={() => {
+              splashHasBeenShown = true
+              setShowSplash(false)
+            }}
+          />
         )}
         <View flex={1}>{children}</View>
       </GestureHandlerRootView>

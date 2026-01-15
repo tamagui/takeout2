@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { Separator, Sheet, Spacer, XStack, YStack } from 'tamagui'
 
 import { LoginButton } from '~/features/auth/ui/LoginButton'
@@ -15,9 +15,7 @@ import { PageContainer } from '~/interface/layout/PageContainer'
 import { ListItem } from '~/interface/lists/ListItem'
 import { ThemeSwitch } from '~/interface/theme/ThemeSwitch'
 
-export const SiteHeader = () => {
-  const [open, setOpen] = useState<boolean>(false)
-
+export const SiteHeader = memo(() => {
   return (
     <ScrollHeader>
       <PageContainer>
@@ -39,7 +37,7 @@ export const SiteHeader = () => {
               </Link>
             </XStack>
 
-            <XStack gap="$4" items="center" display="none" $md={{ display: 'flex' }}>
+            <XStack gap="$2" items="center" display="none" $md={{ display: 'flex' }}>
               <LoginButton />
 
               <Link href="/docs/introduction">
@@ -49,84 +47,94 @@ export const SiteHeader = () => {
               <ThemeSwitch />
             </XStack>
 
-            <ButtonSimple
-              size="large"
-              variant="transparent"
-              circular
-              icon={<ListIcon size="$1" />}
-              aria-label="Menu"
-              onPress={() => setOpen(true)}
-              $md={{ display: 'none' }}
-            />
-
-            <Sheet
-              open={open}
-              onOpenChange={setOpen}
-              transition="quick"
-              transitionConfig={{
-                type: 'spring',
-                damping: 25,
-                mass: 1,
-                stiffness: 200,
-              }}
-              modal
-              dismissOnSnapToBottom
-              snapPoints={[80]}
-            >
-              <Sheet.Overlay
-                transition={animationClamped('quick')}
-                opacity={0.8}
-                bg="$shadow6"
-                enterStyle={{ opacity: 0 }}
-                exitStyle={{ opacity: 0 }}
-              />
-
-              <Sheet.Frame bg="$color2" boxShadow="0 0 10px $shadow6">
-                <YStack flex={1} gap="$2">
-                  <XStack p="$4" pb="$3" justify="space-between">
-                    <Logo height={32} />
-                    <ThemeSwitch />
-                  </XStack>
-
-                  <Separator />
-
-                  <YStack flex={1}>
-                    <LoginListItem
-                      onPressOut={() => {
-                        setTimeout(() => {
-                          setOpen(false)
-                        })
-                      }}
-                    />
-
-                    <Link href="/docs/introduction">
-                      <ListItem
-                        onPressOut={() => {
-                          setOpen(false)
-                        }}
-                      >
-                        <ListItem.Icon>
-                          <FileIcon />
-                        </ListItem.Icon>
-                        <ListItem.Text>Docs</ListItem.Text>
-                      </ListItem>
-                    </Link>
-                  </YStack>
-
-                  <YStack p="$4" pt="$2">
-                    <Separator mb="$3" />
-                    <XStack width="100%" items="center" justify="center">
-                      <Spacer />
-                      <SocialLinksRow />
-                      <Spacer />
-                    </XStack>
-                  </YStack>
-                </YStack>
-              </Sheet.Frame>
-            </Sheet>
+            <SiteHeaderMenu />
           </XStack>
         </YStack>
       </PageContainer>
     </ScrollHeader>
   )
-}
+})
+
+const SiteHeaderMenu = memo(() => {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <>
+      <ButtonSimple
+        size="large"
+        variant="transparent"
+        circular
+        icon={<ListIcon size="$1" />}
+        aria-label="Menu"
+        onPress={() => setOpen(true)}
+        $md={{ display: 'none' }}
+      />
+
+      <Sheet
+        open={open}
+        onOpenChange={setOpen}
+        transition="quick"
+        transitionConfig={{
+          type: 'spring',
+          damping: 25,
+          mass: 1,
+          stiffness: 200,
+        }}
+        modal
+        dismissOnSnapToBottom
+        snapPoints={[80]}
+      >
+        <Sheet.Overlay
+          transition={animationClamped('quick')}
+          opacity={0.8}
+          bg="$shadow6"
+          enterStyle={{ opacity: 0 }}
+          exitStyle={{ opacity: 0 }}
+        />
+
+        <Sheet.Frame bg="$color2" boxShadow="0 0 10px $shadow6">
+          <YStack flex={1} gap="$2">
+            <XStack p="$4" pb="$3" justify="space-between">
+              <Logo height={32} />
+              <ThemeSwitch />
+            </XStack>
+
+            <Separator />
+
+            <YStack flex={1}>
+              <LoginListItem
+                onPressOut={() => {
+                  setTimeout(() => {
+                    setOpen(false)
+                  })
+                }}
+              />
+
+              <Link href="/docs/introduction">
+                <ListItem
+                  onPressOut={() => {
+                    setOpen(false)
+                  }}
+                >
+                  <ListItem.Icon>
+                    <FileIcon />
+                  </ListItem.Icon>
+                  <ListItem.Text>Docs</ListItem.Text>
+                </ListItem>
+              </Link>
+            </YStack>
+
+            <YStack p="$4" pt="$2">
+              <Separator mb="$3" />
+              <XStack width="100%" items="center" justify="center">
+                <Spacer />
+                <SocialLinksRow />
+                <Spacer />
+              </XStack>
+            </YStack>
+          </YStack>
+        </Sheet.Frame>
+      </Sheet>
+    </>
+  )
+})

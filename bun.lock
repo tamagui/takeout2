@@ -161,6 +161,7 @@
       },
       "dependencies": {
         "@clack/prompts": "^0.8.2",
+        "@take-out/docs": "workspace:*",
         "@take-out/scripts": "workspace:*",
         "citty": "^0.1.6",
         "picocolors": "^1.1.1",
@@ -178,6 +179,10 @@
       "optionalPeers": [
         "@expo/config-plugins",
       ],
+    },
+    "packages/docs": {
+      "name": "@take-out/docs",
+      "version": "0.0.41",
     },
     "packages/helpers": {
       "name": "@take-out/helpers",
@@ -1733,6 +1738,8 @@
     "@take-out/better-auth-utils": ["@take-out/better-auth-utils@workspace:packages/better-auth-utils"],
 
     "@take-out/cli": ["@take-out/cli@workspace:packages/cli"],
+
+    "@take-out/docs": ["@take-out/docs@workspace:packages/docs"],
 
     "@take-out/helpers": ["@take-out/helpers@workspace:packages/helpers"],
 

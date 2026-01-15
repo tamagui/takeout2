@@ -13,7 +13,8 @@ import {
   unlinkSync,
   writeFileSync,
 } from 'node:fs'
-import { join, parse, relative } from 'node:path'
+import { createRequire } from 'node:module'
+import { dirname, join, relative } from 'node:path'
 
 import { defineCommand } from 'citty'
 import pc from 'picocolors'
@@ -25,23 +26,9 @@ import {
   syncFileWithConfirmation,
 } from '../utils/sync'
 
-// Find package root by looking for package.json
-function findPackageRoot(startDir: string): string {
-  let dir = startDir
-  while (dir !== parse(dir).root) {
-    if (existsSync(join(dir, 'package.json'))) {
-      const pkg = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf-8'))
-      if (pkg.name === '@take-out/cli') {
-        return dir
-      }
-    }
-    dir = join(dir, '..')
-  }
-  throw new Error('Could not find @take-out/cli package root')
-}
-
-const PACKAGE_ROOT = findPackageRoot(import.meta.dirname)
-const DOCS_DIR = join(PACKAGE_ROOT, 'docs')
+// resolve docs directory from @take-out/docs package
+const require = createRequire(import.meta.url)
+const DOCS_DIR = dirname(require.resolve('@take-out/docs/package.json'))
 
 const listCommand = defineCommand({
   meta: {
@@ -149,7 +136,7 @@ const getCommand = defineCommand({
 
     // print errors if any
     if (errors.length > 0) {
-      for (const { name, error } of errors) {
+      for (const { name } of errors) {
         console.error(pc.red(`✗ Doc file not found: ${name}`))
       }
       console.info()

@@ -1,7 +1,6 @@
 import { router } from 'one'
 import { useCallback, useState } from 'react'
 import {
-  AnimatePresence,
   isWeb,
   SizableText,
   Spinner,
@@ -19,8 +18,6 @@ import {
   TERMS_OF_SERVICE_URL,
 } from '~/constants/app'
 import { signInAsDemo } from '~/features/auth/client/signInAsDemo'
-import { onboardingSlides } from '~/features/onboarding'
-import { Onboarding } from '~/features/onboarding/Onboarding'
 import { useIsDark } from '~/features/theme/useIsDark'
 import { isDemoMode } from '~/helpers/isDemoMode'
 import { Link } from '~/interface/app/Link'
@@ -87,7 +84,7 @@ export const LoginPage = () => {
           Login to {APP_NAME}
         </H2>
         <YStack gap="$3" mt="$4">
-          <Link href="/signup/email" asChild>
+          <Link href="/auth/signup/email" asChild>
             <ButtonSimple
               size="large"
               glass

@@ -38,7 +38,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
   const isOwnProfile = authorId === user?.id
 
   const handleImagePress = () => {
-    router.push(`/home/post/${post.id}?username=${username}`)
+    router.push(`/home/profile/post/${post.id}?username=${username}`)
   }
 
   return (
@@ -117,7 +117,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
             </SizableText>
           )}
         </XStack>
-        <Link href={`/home/post/${post.id}?username=${username}`}>
+        <Link href={`/home/feed/post/${post.id}?username=${username}`}>
           <XStack items="center" gap="$2">
             <ChatCircleDotsIcon size={20} color="$color" />
             {typeof post.commentCount === 'number' && post.commentCount > 0 && (

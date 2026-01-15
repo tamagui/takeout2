@@ -19,24 +19,14 @@ export function AppLayout() {
     return null
   }
 
-  const isAuthRoute = pathname === '/login' || pathname.startsWith('/signup')
-
-  // routes outside of (app) group - don't redirect for these
-  // TODO likely better to just have (app) be /app
-  const isSiteRoute =
-    pathname === '/' ||
-    pathname === '/help' ||
-    pathname.startsWith('/docs') ||
-    pathname === '/terms-of-service' ||
-    pathname === '/privacy-policy' ||
-    pathname === '/eula'
-
-  // redirect logged-out users away from protected routes (but not site routes)
-  if (state === 'logged-out' && !isAuthRoute && !isSiteRoute) {
-    return <Redirect href="/login" />
+  // redirect logged-out users away from protected routes
+  const isLoggedInRoute = pathname.startsWith('/home')
+  if (state === 'logged-out' && isLoggedInRoute) {
+    return <Redirect href="/auth/login" />
   }
 
   // redirect logged-in users away from auth routes
+  const isAuthRoute = pathname.startsWith('/auth')
   if (state === 'logged-in' && isAuthRoute) {
     return <Redirect href="/home" />
   }
@@ -56,8 +46,8 @@ export function AppLayout() {
               ) : (
                 // We need Stack here for transition animation to work on native
                 <Stack screenOptions={{ headerShown: false }}>
-                  <Stack.Screen name="(auth-onboard)" />
-                  <Stack.Screen name="(tabs)" />
+                  <Stack.Screen name="auth" />
+                  <Stack.Screen name="home" />
                   <Stack.Screen name="ai" />
                   <Stack.Screen name="search" />
                   <Stack.Screen name="settings" />

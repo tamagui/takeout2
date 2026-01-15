@@ -37,7 +37,7 @@ import { Link } from 'one'
 
 ```tsx
 // basic navigation
-<Link href="/profile">view profile</Link>
+<Link href="/home/profile">view profile</Link>
 
 // dynamic routes (type-safe)
 <Link href={`/user/${userId}`}>user page</Link>

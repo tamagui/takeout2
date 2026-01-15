@@ -1,4 +1,5 @@
 import { createBetterAuthClient } from '@take-out/better-auth-utils'
+import { href } from 'one'
 
 import { SERVER_URL } from '~/constants/urls'
 import { setUser } from '~/features/user/getUser'
@@ -24,10 +25,14 @@ const betterAuthClient = createBetterAuthClient({
   },
 })
 
-export const {
-  setAuthClientToken,
-  clearAuthClientToken,
-  authState,
-  authClient,
-  useAuth,
-} = betterAuthClient
+export const useAuth = () => {
+  const auth = betterAuthClient.useAuth()
+  return {
+    ...auth,
+    loginText: auth.state === 'logged-in' ? 'Account' : 'Login',
+    loginLink: href(auth.state === 'logged-in' ? '/home/feed' : '/auth/login'),
+  }
+}
+
+export const { setAuthClientToken, clearAuthClientToken, authState, authClient } =
+  betterAuthClient

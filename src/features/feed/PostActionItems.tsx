@@ -45,7 +45,7 @@ export function PostActionItems({
   const handleViewProfile = () => {
     if (!post) return
     onClose?.()
-    router.push(`/home/profile/${post.userId}`)
+    // router.push(`/home/profile/${post.userId}`)
   }
 
   const handleReport = () => {

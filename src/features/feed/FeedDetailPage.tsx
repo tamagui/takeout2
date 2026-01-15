@@ -1,5 +1,4 @@
-import { randomId } from '@take-out/helpers'
-import { formatDistanceToNow } from '@take-out/helpers'
+import { formatDistanceToNow, randomId } from '@take-out/helpers'
 import { useParams, usePathname } from 'one'
 import { memo, useMemo, useState } from 'react'
 import { SizableText, XStack, YStack, isWeb } from 'tamagui'
@@ -29,7 +28,7 @@ export const FeedDetailPage = memo(() => {
   const isOwnProfile = post?.userId === user?.id
 
   const sharedTag = useMemo(() => {
-    const isFromProfile = pathname.includes('/profile/')
+    const isFromProfile = pathname.includes('/home/profile/')
     const prefix = isFromProfile ? 'profile-post-image' : 'post-image'
     return `${prefix}-${feedId}`
   }, [pathname, feedId])

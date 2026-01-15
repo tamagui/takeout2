@@ -431,7 +431,7 @@ export default function Layout() {
         name="profile"
         options={{
           title: 'Profile',
-          href: '/profile',
+          href: '/home/profile',
         }}
       />
     </Tabs>
@@ -452,7 +452,7 @@ export default function Layout() {
 ```
 app/
   _layout.tsx          → tabs (feed, notifications, profile)
-  (feed)/
+  home/
     _layout.tsx        → stack (inside feed tab)
     index.tsx          → feed list
     post-[id].tsx      → individual post
@@ -469,14 +469,14 @@ import { Tabs } from 'one'
 export default function RootLayout() {
   return (
     <Tabs screenOptions={{ headerShown: false }}>
-      <Tabs.Screen name="(feed)" options={{ title: 'Feed', href: '/' }} />
+      <Tabs.Screen name="home" options={{ title: 'Feed', href: '/' }} />
       <Tabs.Screen
         name="notifications"
         options={{ title: 'Notifications', href: '/notifications' }}
       />
       <Tabs.Screen
         name="profile"
-        options={{ title: 'Profile', href: '/profile' }}
+        options={{ title: 'Profile', href: '/home/profile' }}
       />
     </Tabs>
   )
@@ -486,7 +486,7 @@ export default function RootLayout() {
 **stack inside feed tab:**
 
 ```tsx
-// app/(feed)/_layout.tsx
+// app/home/_layout.tsx
 import { Stack, Slot } from 'one'
 
 export default function FeedLayout() {

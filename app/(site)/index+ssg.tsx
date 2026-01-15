@@ -4,7 +4,7 @@ import { CodeInline } from '~/features/docs'
 import { HeadInfo } from '~/interface/app/HeadInfo'
 import { Link } from '~/interface/app/Link'
 import { TechLogos } from '~/interface/home/TechLogos'
-import { H2, H3, H4, SepHeading } from '~/interface/text/Headings'
+import { H2, H4, SepHeading } from '~/interface/text/Headings'
 
 const Hero = styled(H1, {
   size: '$9',

@@ -44,7 +44,7 @@ const ListItemComponent = ({
   return (
     <ListItemFrame
       ref={ref}
-      {...(props as any)}
+      {...(props as any)} // TODO
       {...(props.editable && {
         onKeyDown: (e: KeyboardEvent) => {
           setStartEdit(Date.now())

@@ -137,7 +137,7 @@ everyone can help contribute back.
 ```
 takeout/
 ├── app/                   # File-based routing (One router)
-│   ├── (tabs)/            # Tab navigation
+│   ├── home/              # Tab navigation
 │   └── api/               # API routes
 ├── src/
 │   ├── features/          # Feature modules (auth, feed, profile, etc.)

@@ -25,7 +25,7 @@ export const AvatarWithMenu = memo(
     const router = useRouter()
 
     const handleViewProfile = () => {
-      router.push(`/home/profile/${userId}`)
+      router.push(`/home/feed/profile/${userId}`)
     }
 
     return <Avatar image={avatarUrl} name={username} size={32} />

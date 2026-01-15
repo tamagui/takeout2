@@ -53,7 +53,7 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
             return (
               <Pressable
                 key={item.id}
-                onPress={() => router.push(`/profile/post/${item.id}`)}
+                onPress={() => router.push(`/home/profile/post/${item.id}`)}
               >
                 <Animated.Image
                   source={{ uri: item.image }}

@@ -29,11 +29,11 @@ import { PencilSimpleIcon } from '~/interface/icons/phosphor/PencilSimpleIcon'
 import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
 import { UserIcon } from '~/interface/icons/phosphor/UserIcon'
 
-import { Pressable } from '../buttons/Pressable'
-import { dialogEmit } from '../dialogs/shared'
-import { GlassView } from '../effects/GlassView'
-import { AnimatedTab } from './tabs/AnimatedTab'
-import { ExpandedMenuItem } from './tabs/ExpandedMenuItem'
+import { Pressable } from '../../interface/buttons/Pressable'
+import { dialogEmit } from '../../interface/dialogs/shared'
+import { GlassView } from '../../interface/effects/GlassView'
+import { AnimatedTab } from '../../interface/navigation/AnimatedTab'
+import { ExpandedMenuItem } from '../../interface/navigation/ExpandedMenuItem'
 
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs'
 import type { IconComponent } from '~/interface/icons/types'
@@ -54,7 +54,7 @@ const EXPANDED_MENU_ITEMS: ExpandedMenuItemType[] = [
 ]
 
 const ALL_TABS = [
-  { name: 'home', icon: HouseIcon, hideTabBar: false },
+  { name: 'feed', icon: HouseIcon, hideTabBar: false },
   { name: 'ai', icon: SparkleIcon, hideTabBar: true },
   { name: 'search', icon: MagnifyingGlassIcon, hideTabBar: false },
   { name: 'profile', icon: UserIcon, hideTabBar: false },

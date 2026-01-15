@@ -1,5 +1,6 @@
-import { useHeaderHeight } from '@react-navigation/elements'
+// import { useHeaderHeight } from '@react-navigation/elements'
 
 export function useHeaderHeightSafe(): number {
-  return useHeaderHeight() || 0
+  return 0
+  // return useHeaderHeight() || 0
 }

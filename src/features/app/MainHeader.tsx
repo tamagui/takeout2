@@ -74,7 +74,7 @@ export const MainHeader = () => {
               <ButtonSimple
                 size="medium"
                 circular
-                onPress={() => router.push('/settings')}
+                onPress={() => router.push('/home/settings')}
                 icon={<GearIcon size={18} />}
                 aria-label="Settings"
               />
@@ -111,7 +111,7 @@ export const MainHeader = () => {
                   <Separator />
 
                   <YStack flex={1}>
-                    <Link href="/settings" asChild>
+                    <Link href="/home/settings" asChild>
                       <ListItem onPress={() => setOpen(false)}>
                         <ListItem.Icon>
                           <GearIcon />

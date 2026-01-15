@@ -4,9 +4,9 @@ import { withLayoutContext } from 'one'
 import { useCallback } from 'react'
 import { useSharedValue, withTiming, Easing } from 'react-native-reanimated'
 
+import { TabBar } from '~/features/app/TabBar'
 import { FeedDropdown } from '~/interface/headers/FeedDropdown'
 import { feedDropdownEmitter } from '~/interface/headers/feedDropdownEmitter'
-import { TabBar } from '~/interface/navigation/TabBar'
 
 const Tab = createBottomTabNavigator()
 const Tabs = withLayoutContext(Tab.Navigator)
@@ -35,7 +35,7 @@ export function TabsLayout() {
           headerShown: false,
         }}
       >
-        <Tabs.Screen name="home" />
+        <Tabs.Screen name="feed" />
         <Tabs.Screen name="ai" />
         <Tabs.Screen name="search" />
         <Tabs.Screen name="profile" />

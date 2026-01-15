@@ -79,7 +79,7 @@ export const ProfileHeader = memo(
               <ButtonSimple
                 size="medium"
                 variant="outlined"
-                onPress={() => router.push('/settings/edit-profile')}
+                onPress={() => router.push('/home/settings/edit-profile')}
                 icon={<PencilSimpleIcon size={16} color="$color12" />}
               >
                 Edit Profile

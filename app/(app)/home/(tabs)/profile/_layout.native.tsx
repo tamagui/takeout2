@@ -22,7 +22,7 @@ export const ProfileLayout = () => {
           headerLargeTitle: true,
           headerRight: () => (
             <Pressable
-              onPress={() => router.push('/settings')}
+              onPress={() => router.push('/home/settings')}
               width={36}
               height={36}
               items="center"

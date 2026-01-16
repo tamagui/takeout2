@@ -1,5 +1,5 @@
-import * as Device from 'expo-device'
 import * as Application from 'expo-application'
+import * as Device from 'expo-device'
 import * as Notifications from 'expo-notifications'
 
 type PushNotificationsRegistrationResult =

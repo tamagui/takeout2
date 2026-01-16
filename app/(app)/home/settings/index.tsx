@@ -44,7 +44,7 @@ const ItemContent = ({ item }: { item: SettingItem }) => {
       items="center"
       justify="space-between"
       hoverStyle={{
-        bg: '$color1pt5',
+        bg: '$color2',
       }}
     >
       <XStack gap="$3" items="center" flex={1}>

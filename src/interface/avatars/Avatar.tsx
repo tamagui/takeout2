@@ -41,7 +41,7 @@ export const Avatar = memo(
         position="relative"
         rounded={100}
         {...(!disableBorder && {
-          outlineColor: '$color01',
+          outlineColor: '$color02',
           outlineOffset: 1,
           outlineWidth: 0.5,
           outlineStyle: 'solid',

@@ -43,7 +43,7 @@ export function DocsLayout() {
           width="100%"
           bg="$background"
           borderRightWidth={1}
-          borderRightColor="$color1pt5"
+          borderRightColor="$color2"
           $md={{
             position: 'sticky' as any,
             t: 50,
@@ -153,7 +153,7 @@ const PaginationLinkFrame = styled(XStack, {
   p: '$5',
   rounded: '$4',
   borderWidth: 1.5,
-  borderColor: '$color1pt5',
+  borderColor: '$color2',
   items: 'center',
   gap: '$4',
   cursor: 'pointer',

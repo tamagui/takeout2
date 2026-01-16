@@ -1,6 +1,5 @@
 import { BlurView } from 'expo-blur'
 import { useCallback, useRef, useState } from 'react'
-import { StyleSheet } from 'react-native'
 import PagerView, {
   type PagerViewOnPageScrollEvent,
   type PagerViewOnPageSelectedEvent,

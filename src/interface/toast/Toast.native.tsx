@@ -99,7 +99,7 @@ const ToastBanner = memo(({ toast, onHide }: ToastBannerProps) => {
   const { top } = useSafeAreaInsets()
   const isDark = useIsDark()
   const { height: windowHeight } = useWindowDimensions()
-  const { color01 } = useTheme()
+  const { color02 } = useTheme()
 
   const translateY = useSharedValue(0)
   const hidden = useSharedValue(false)
@@ -291,7 +291,7 @@ const ToastBanner = memo(({ toast, onHide }: ToastBannerProps) => {
               >
                 {/* peek view (collapsed state) */}
                 <Animated.View
-                  style={[{ backgroundColor: color01.val, flex: 1 }, peekAnimatedStyle]}
+                  style={[{ backgroundColor: color02.val, flex: 1 }, peekAnimatedStyle]}
                 >
                   <YStack flex={1} justify="center" px="$4" py="$3" gap="$1">
                     <SizableText

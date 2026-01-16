@@ -69,6 +69,8 @@ export const config = createTamagui({
     onlyAllowShorthands: true,
     maxDarkLightNesting: 1,
     allowedStyleValues: 'somewhat-strict-web',
+    // v5: align flex defaults with react native
+    styleCompat: 'react-native',
   },
 })
 

@@ -1,5 +1,6 @@
 import './root.css'
-import '~/interface/fonts/landing-fonts.css'
+
+// import '~/interface/fonts/landing-fonts.css' // disabled for LCP optimization
 
 import { Slot, Stack } from 'one'
 import { SafeAreaProvider } from 'react-native-safe-area-context'

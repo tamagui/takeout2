@@ -1,30 +1,18 @@
 import { useRouter } from 'one'
 import { memo, useCallback } from 'react'
-import { StyleSheet } from 'react-native'
-import Animated, {
-  Extrapolation,
-  interpolate,
-  useAnimatedStyle,
-  type SharedValue,
-} from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { SizableText, XStack, useTheme } from 'tamagui'
+import { SizableText, XStack, View } from 'tamagui'
 
-import { useIsDark } from '~/features/theme/useIsDark'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 
 import { ButtonSimple } from '../buttons/ButtonSimple'
-import { GlassView } from '../effects/GlassView'
-import { GradientBlurView } from '../effects/GradientBlurView'
 
 import type { ReactNode } from 'react'
 
 export const HEADER_HEIGHT = 44
-const BLUR_START_SCROLL = 10
-const BLUR_END_SCROLL = 60
 
 interface AnimatedBlurHeaderProps {
-  scrollY: SharedValue<number>
+  scrollY?: { value: number }
   title?: string
   leftContent?: ReactNode
   rightContent?: ReactNode
@@ -34,7 +22,6 @@ interface AnimatedBlurHeaderProps {
 
 export const AnimatedBlurHeader = memo(
   ({
-    scrollY,
     title = '',
     leftContent,
     rightContent,
@@ -43,7 +30,6 @@ export const AnimatedBlurHeader = memo(
   }: AnimatedBlurHeaderProps) => {
     const insets = useSafeAreaInsets()
     const router = useRouter()
-    const isDark = useIsDark()
 
     const totalHeaderHeight = HEADER_HEIGHT + insets.top
 
@@ -55,16 +41,6 @@ export const AnimatedBlurHeader = memo(
       }
     }, [onBackPress, router])
 
-    const animatedBlurStyle = useAnimatedStyle(() => {
-      const opacity = interpolate(
-        scrollY.value,
-        [BLUR_START_SCROLL, BLUR_END_SCROLL],
-        [0, 1],
-        Extrapolation.CLAMP
-      )
-      return { opacity }
-    })
-
     const renderLeftContent = () => {
       if (leftContent) return leftContent
 
@@ -74,7 +50,7 @@ export const AnimatedBlurHeader = memo(
             size="large"
             glass
             circular
-            onPress={() => router.back()}
+            onPress={handleBackPress}
             icon={<CaretLeftIcon size={22} color="$color12" />}
           />
         )
@@ -84,29 +60,20 @@ export const AnimatedBlurHeader = memo(
     }
 
     return (
-      <Animated.View
-        style={[
-          {
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: totalHeaderHeight,
-            zIndex: 100,
-            paddingTop: insets.top,
-          },
-        ]}
+      <View
+        position="absolute"
+        t={0}
+        l={0}
+        r={0}
+        height={totalHeaderHeight}
+        z={100}
+        pt={insets.top}
+        bg="$background"
+        style={{
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+        }}
       >
-        <Animated.View style={[StyleSheet.absoluteFill, animatedBlurStyle]}>
-          <GradientBlurView
-            intensity={20}
-            tint={isDark ? 'dark' : 'light'}
-            width="100%"
-            height="100%"
-            inverted
-          />
-        </Animated.View>
-
         <XStack flex={1} items="center" justify="space-between" px="$3">
           <XStack width={60} items="center" justify="flex-start">
             {renderLeftContent()}
@@ -122,7 +89,7 @@ export const AnimatedBlurHeader = memo(
             {rightContent}
           </XStack>
         </XStack>
-      </Animated.View>
+      </View>
     )
   }
 )

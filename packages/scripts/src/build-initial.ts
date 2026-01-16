@@ -20,11 +20,11 @@ if (!(await exists(`./node_modules/.bin/tko`))) {
   }
 }
 
-// check if critical packages are built - both helpers and takeout are needed for tko to work
+// check if critical packages are built - both helpers and cli are needed for tko to work
 if (hasPackages) {
   const needsBuild =
     !(await exists(`./packages/helpers/dist`)) ||
-    !(await exists(`./packages/takeout/dist/esm`))
+    !(await exists(`./packages/cli/dist/esm`))
 
   if (needsBuild) {
     // build helpers first as other packages depend on it
@@ -69,7 +69,7 @@ function symlinkBins() {
   // workaround for https://github.com/oven-sh/bun/issues/19782
   // bun doesn't create symlinks for workspace packages properly
   const packagesWithCLI = [
-    { name: 'takeout', cliFile: 'cli.mjs', alias: 'tko' },
+    { name: 'cli', cliFile: 'cli.mjs', alias: 'tko' },
     { name: 'postgres', cliFile: 'cli.cjs' },
   ]
 

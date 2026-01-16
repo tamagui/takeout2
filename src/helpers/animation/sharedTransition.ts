@@ -1,3 +1,2 @@
-import { SharedTransition } from 'react-native-reanimated'
-
-export const sharedTransition = SharedTransition.springify().damping(15)
+// web version - no shared transitions
+export const sharedTransition = undefined

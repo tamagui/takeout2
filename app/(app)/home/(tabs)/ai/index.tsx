@@ -1,17 +1,12 @@
+// web version - no reanimated / keyboard animations
+
 import { memo, useCallback, useState } from 'react'
-import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller'
-import Animated, {
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { SizableText, View, YStack } from 'tamagui'
 
 import { AIChatInput } from '~/interface/ai/AIChatInput'
 import { AnimatedBlurHeader } from '~/interface/headers/AnimatedBlurHeader'
 import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
-import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter'
 import { PageLayout } from '~/interface/pages/PageLayout'
 
 interface Message {
@@ -20,23 +15,19 @@ interface Message {
   content: string
 }
 
-const EmptyState = memo(
-  ({ style, sparklesStyle }: { style?: any; sparklesStyle?: any }) => (
-    <Animated.View style={[{ alignItems: 'center', gap: 8 }, style]}>
-      <Animated.View style={sparklesStyle}>
-        <SparkleIcon size={52} color="$color11" />
-      </Animated.View>
-      <YStack items="center">
-        <SizableText size="$6" fontWeight="700">
-          Takeout
-        </SizableText>
-        <SizableText size="$4" color="$color10" px="$6" text="center">
-          Your AI-powered assistant
-        </SizableText>
-      </YStack>
-    </Animated.View>
-  )
-)
+const EmptyState = memo(() => (
+  <YStack items="center" gap="$2" flex={1} justify="center">
+    <SparkleIcon size={52} color="$color11" />
+    <YStack items="center">
+      <SizableText size="$6" fontWeight="700">
+        Takeout
+      </SizableText>
+      <SizableText size="$4" color="$color10" px="$6" text="center">
+        Your AI-powered assistant
+      </SizableText>
+    </YStack>
+  </YStack>
+))
 
 const MessageBubble = memo(({ message }: { message: Message }) => {
   const isUser = message.role === 'user'
@@ -58,24 +49,8 @@ const MessageBubble = memo(({ message }: { message: Message }) => {
 })
 
 export const AIPage = memo(() => {
-  const scrollY = useSharedValue(0)
   const insets = useSafeAreaInsets()
   const [messages, setMessages] = useState<Message[]>([])
-
-  const { progress, height } = useReanimatedKeyboardAnimation()
-
-  const sparklesAnimatedStyle = useAnimatedStyle(() => {
-    const rotation = interpolate(progress.value, [0, 1], [0, 90])
-    return {
-      transform: [{ rotate: `${rotation}deg` }],
-    }
-  })
-
-  const emptyStateStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: height.value * 0.3 }],
-    }
-  })
 
   const handleSend = useCallback((content: string) => {
     const userMessage: Message = {
@@ -84,50 +59,35 @@ export const AIPage = memo(() => {
       content,
     }
     setMessages((prev) => [...prev, userMessage])
-
-    // TODO: send to AI and get response
   }, [])
-
-  const renderItem = useCallback(
-    ({ item }: { item: Message }) => <MessageBubble message={item} />,
-    []
-  )
-
-  const keyExtractor = useCallback((item: Message) => item.id, [])
-
-  const ListEmptyComponent = useCallback(
-    () => <EmptyState style={emptyStateStyle} sparklesStyle={sparklesAnimatedStyle} />,
-    [emptyStateStyle]
-  )
 
   return (
     <PageLayout>
-      <AnimatedBlurHeader scrollY={scrollY} title="AI Assistant" />
+      <AnimatedBlurHeader title="AI Assistant" />
 
-      <Animated.FlatList
-        data={messages}
-        renderItem={renderItem}
-        keyExtractor={keyExtractor}
-        ListEmptyComponent={ListEmptyComponent}
-        contentContainerStyle={{
-          flexGrow: 1,
-          paddingTop: insets.top + 60,
-          paddingBottom: 100,
-          paddingHorizontal: 16,
-          gap: 12,
-          ...(messages.length === 0 && {
-            justifyContent: 'center',
-            alignItems: 'center',
-          }),
-        }}
-        showsVerticalScrollIndicator={false}
-        keyboardDismissMode="interactive"
-        inverted={messages.length > 0}
-      />
+      <View px="$4">
+        {messages.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <YStack gap="$3">
+            {messages.map((message) => (
+              <MessageBubble key={message.id} message={message} />
+            ))}
+          </YStack>
+        )}
+      </View>
 
-      <KeyboardStickyFooter>
+      <YStack
+        position="absolute"
+        b={0}
+        l={0}
+        r={0}
+        pb={insets.bottom}
+        px="$3"
+        bg="$background"
+      >
         <AIChatInput onSend={handleSend} />
-      </KeyboardStickyFooter>
+      </YStack>
     </PageLayout>
   )
 })

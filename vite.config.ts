@@ -133,7 +133,6 @@ export default {
 
       router: {
         experimental: {
-          preventLayoutRemounting: true,
           typedRoutesGeneration: 'runtime',
         },
       },

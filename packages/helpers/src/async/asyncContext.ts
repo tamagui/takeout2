@@ -14,10 +14,13 @@ interface AsyncLocalStorageConstructor {
 
 let nodeAsyncLocalStorageCache: AsyncLocalStorageConstructor | null = null
 
+// hide from vite/esbuild static analysis to avoid browser compat warning
+const nodeModuleId = ['node', 'async_hooks'].join(':')
+
 async function getNodeAsyncLocalStorage(): Promise<AsyncLocalStorageConstructor | null> {
   if (!nodeAsyncLocalStorageCache) {
     try {
-      const module = await import('node:async_hooks')
+      const module = await import(/* @vite-ignore */ nodeModuleId)
       nodeAsyncLocalStorageCache =
         module.AsyncLocalStorage as AsyncLocalStorageConstructor
     } catch {

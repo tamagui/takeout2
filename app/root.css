@@ -1,7 +1,7 @@
 :root {
   color-scheme: light dark;
-  --font-heading: 'DM Sans', system-ui, sans-serif;
-  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-heading: system-ui, sans-serif;
+  --font-body: system-ui, sans-serif;
 }
 
 body {

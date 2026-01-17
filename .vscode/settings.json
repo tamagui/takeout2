@@ -5,7 +5,7 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    "config": ".gitignore, .dockerignore, .oxlintrc.json, .oxfmtrc.jsonc, .xcode-version, app.config.ts, hot-updater.config.ts, react-native.config.cjs, sst.config.ts, sst-env.d.ts, tsconfig.json, eas.json",
+    "config": ".gitignore, .dockerignore, .oxlintrc.json, .oxfmtrc.jsonc, .xcode-version, app.config.ts, hot-updater.config.ts, react-native.config.cjs, sst.config.ts, sst-env.d.ts, tsconfig.json, eas.json, .mcp.json",
     ".env": ".env, .env.*"
   },
   "biome.enabled": false,

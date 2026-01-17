@@ -9,3 +9,5 @@ UI-related code in `interface` and `hooks`).
 Note also `setupClient` and `setupServer` directly in this folder. Since they
 run before anything else via the One `setupFile` option, we like them being
 directly here.
+
+Nest things lazily - start flat, but if a folder gets large, slowly add sub-folder.

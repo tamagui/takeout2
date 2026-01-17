@@ -1,9 +1,10 @@
-import { H1, H2, H3, Paragraph, styled, Text, XStack, YStack } from 'tamagui'
+import { H1, H2, H3, Paragraph, styled, XStack, YStack } from 'tamagui'
 
 import { Link } from '~/interface/app/Link'
 import { OneLogo } from '~/interface/icons/logos/OneLogo'
 import { TamaguiLogo } from '~/interface/icons/logos/TamaguiLogo'
 import { ZeroLogo } from '~/interface/icons/logos/ZeroLogo'
+import { Em, InlineLink, Strong } from '~/interface/text/Text'
 
 const SectionContainer = styled(YStack, {
   maxW: 680,
@@ -47,21 +48,6 @@ const GoalTitle = styled(Paragraph, {
   $sm: {
     fontSize: 18,
   },
-})
-
-const Strong = styled(Text, {
-  tag: 'strong',
-  fontWeight: '600',
-})
-
-const Em = styled(Text, {
-  tag: 'em',
-  fontStyle: 'italic',
-})
-
-const InlineLink = styled(Text, {
-  tag: 'span',
-  color: '$blue11',
 })
 
 const TechTitle = styled(H3, {

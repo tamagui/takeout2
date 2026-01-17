@@ -1,4 +1,4 @@
-import { H1, H2, H3, Paragraph, styled, XStack, YStack } from 'tamagui'
+import { H1, H2, H3, Paragraph, styled, Text, XStack, YStack } from 'tamagui'
 
 import { Link } from '~/interface/app/Link'
 import { OneLogo } from '~/interface/icons/logos/OneLogo'
@@ -47,6 +47,21 @@ const GoalTitle = styled(Paragraph, {
   $sm: {
     fontSize: 18,
   },
+})
+
+const Strong = styled(Text, {
+  tag: 'strong',
+  fontWeight: '600',
+})
+
+const Em = styled(Text, {
+  tag: 'em',
+  fontStyle: 'italic',
+})
+
+const InlineLink = styled(Text, {
+  tag: 'span',
+  color: '$blue11',
 })
 
 const TechTitle = styled(H3, {
@@ -168,14 +183,12 @@ export function ContentSection() {
 
       {/* tldr */}
       <ContentParagraph>
-        <Paragraph fontWeight="700" tag="strong">
-          TL;DR:
-        </Paragraph>{' '}
-        Takeout is the result of a many-year effort to create{' '}
-        <Paragraph fontWeight="600" tag="strong">
+        <Strong fontWeight="700">TL;DR:</Strong> Takeout is the result of a many-year
+        effort to create{' '}
+        <Strong>
           a new stack, with some new frontend tech, that dramatically simplifies
           cross-platform development
-        </Paragraph>
+        </Strong>
         . It specifically makes three things simpler and faster than before: framework,
         data, and UI.
       </ContentParagraph>
@@ -183,9 +196,7 @@ export function ContentSection() {
       <ContentParagraph>
         Today,{' '}
         <Link href="https://tamagui.dev/takeout" hideExternalIcon>
-          <Paragraph fontWeight="600" color="$blue11" tag="strong">
-            we're releasing Takeout 2 RC 1
-          </Paragraph>
+          <InlineLink fontWeight="600">we're releasing Takeout 2 RC 1</InlineLink>
         </Link>
         . Takeout aims to bring more Rails-like cohesion to cross-platform React and React
         Native while also improving the native-feel it can achieve.
@@ -195,15 +206,15 @@ export function ContentSection() {
         Even when sharing a lot of code you can get perfect Lighthouse performance scores
         with ease, like this very page does, thanks to our libraries{' '}
         <Link href="https://tamagui.dev" target="_blank" hideExternalIcon>
-          <Paragraph color="$blue11">Tamagui</Paragraph>
+          <InlineLink>Tamagui</InlineLink>
         </Link>{' '}
         and{' '}
         <Link href="https://onestack.dev" target="_blank" hideExternalIcon>
-          <Paragraph color="$blue11">One</Paragraph>
+          <InlineLink>One</InlineLink>
         </Link>
         . Then, make your app come alive better and easier than ever before with{' '}
         <Link href="https://zero.rocicorp.dev" target="_blank" hideExternalIcon>
-          <Paragraph color="$blue11">Zero</Paragraph>
+          <InlineLink>Zero</InlineLink>
         </Link>
         .
       </ContentParagraph>
@@ -220,10 +231,8 @@ export function ContentSection() {
           <GoalTitle>Universal</GoalTitle>
           <ContentParagraph>
             Target iOS, Android, Web and Desktop using React and React Native with fully
-            shared code{' '}
-            <Paragraph fontStyle="italic">that feels native and runs fast</Paragraph>. You
-            don't have to share everything, you don't have to target every platform - but
-            you can, with ease.
+            shared code <Em>that feels native and runs fast</Em>. You don't have to share
+            everything, you don't have to target every platform - but you can, with ease.
           </ContentParagraph>
         </GoalItem>
 
@@ -247,34 +256,23 @@ export function ContentSection() {
 
           <SubGoalItem>
             <ContentParagraph>
-              A{' '}
-              <Paragraph fontWeight="600" tag="strong">
-                website
-              </Paragraph>{' '}
-              with great Lighthouse scores, all the latest CSS features, and perfectly
-              hydrated static or server rendered pages (even when using spring animations,
-              media queries, and light/dark mode, etc).
+              A <Strong>website</Strong> with great Lighthouse scores, all the latest CSS
+              features, and perfectly hydrated static or server rendered pages (even when
+              using spring animations, media queries, and light/dark mode, etc).
             </ContentParagraph>
           </SubGoalItem>
 
           <SubGoalItem>
             <ContentParagraph>
-              A{' '}
-              <Paragraph fontWeight="600" tag="strong">
-                web app
-              </Paragraph>{' '}
-              that can be client-only and look and feel great despite having fully shared
-              code with a performant site.
+              A <Strong>web app</Strong> that can be client-only and look and feel great
+              despite having fully shared code with a performant site.
             </ContentParagraph>
           </SubGoalItem>
 
           <SubGoalItem>
             <ContentParagraph>
-              And of course,{' '}
-              <Paragraph fontWeight="600" tag="strong">
-                native iOS and Android apps
-              </Paragraph>{' '}
-              with native UI and navigation, Liquid Glass, Material UI, etc.
+              And of course, <Strong>native iOS and Android apps</Strong> with native UI
+              and navigation, Liquid Glass, Material UI, etc.
             </ContentParagraph>
           </SubGoalItem>
         </GoalItem>
@@ -324,16 +322,11 @@ export function ContentSection() {
           </ContentParagraph>
 
           <ContentParagraph>
-            With the new{' '}
-            <Paragraph fontWeight="600" tag="strong">
-              Metro-mode
-            </Paragraph>
-            , you get Vite's simplicity for web while optionally running Metro for native.
-            One is now stable for production use, and{' '}
+            With the new <Strong>Metro-mode</Strong>, you get Vite's simplicity for web
+            while optionally running Metro for native. One is now stable for production
+            use, and{' '}
             <Link href="https://onestack.dev" hideExternalIcon>
-              <Paragraph fontWeight="600" color="$blue11" tag="strong">
-                we just released v1 RC1
-              </Paragraph>
+              <InlineLink fontWeight="600">we just released v1 RC1</InlineLink>
             </Link>
             .
           </ContentParagraph>
@@ -353,10 +346,10 @@ export function ContentSection() {
             Zero is the biggest step-change in frontend since React itself. It solves the
             worst area of frontend development today: data. Getting it to the client,
             keeping it in sync, and mutating it instantly. It's{' '}
-            <Paragraph fontWeight="600" tag="strong">
+            <Strong>
               like Firebase if it was OSS and ran on Postgres, and had relations, types,
               schemas, and optimistic mutations out of the box
-            </Paragraph>
+            </Strong>
             .
           </ContentParagraph>
 
@@ -367,9 +360,7 @@ export function ContentSection() {
               target="_blank"
               hideExternalIcon
             >
-              <Paragraph fontWeight="600" color="$blue11" tag="strong">
-                over-zero
-              </Paragraph>
+              <InlineLink fontWeight="600">over-zero</InlineLink>
             </Link>{' '}
             library makes it even easier to use, and can generate some of the boilerplatey
             parts for you, if you like.
@@ -387,11 +378,10 @@ export function ContentSection() {
           </XStack>
 
           <ContentParagraph>
-            Tamagui still offers the best balance of performance on web{' '}
-            <Paragraph fontStyle="italic">and</Paragraph> native, with the largest
-            featureset of any universal style library. It's typed and mergable inline
-            styles, robust UI kit, theme system, and ecosystem make us incredible
-            productive.
+            Tamagui still offers the best balance of performance on web <Em>and</Em>{' '}
+            native, with the largest featureset of any universal style library. It's typed
+            and mergable inline styles, robust UI kit, theme system, and ecosystem make us
+            incredible productive.
           </ContentParagraph>
 
           <ContentParagraph>
@@ -400,9 +390,7 @@ export function ContentSection() {
               target="_blank"
               hideExternalIcon
             >
-              <Paragraph fontWeight="600" color="$blue11" tag="strong">
-                Version 2 RC1 is out now
-              </Paragraph>
+              <InlineLink fontWeight="600">Version 2 RC1 is out now</InlineLink>
             </Link>{' '}
             with stability improvements, more tests, docs, and release guardrails, plus a
             few new components and features.
@@ -424,22 +412,10 @@ export function ContentSection() {
           <TechTitle>And more</TechTitle>
           <ContentParagraph>
             So much more. Tons of scripts, helpers, hooks, and libraries.{' '}
-            <Paragraph fontWeight="600" tag="strong">
-              Better Auth
-            </Paragraph>{' '}
-            integration. Our favorite{' '}
-            <Paragraph fontWeight="600" tag="strong">
-              native dependencies
-            </Paragraph>{' '}
-            for better native UI and functionality. And the choice to deploy with either{' '}
-            <Paragraph fontWeight="600" tag="strong">
-              Uncloud
-            </Paragraph>{' '}
-            or{' '}
-            <Paragraph fontWeight="600" tag="strong">
-              SST
-            </Paragraph>{' '}
-            out of the box.
+            <Strong>Better Auth</Strong> integration. Our favorite{' '}
+            <Strong>native dependencies</Strong> for better native UI and functionality.
+            And the choice to deploy with either <Strong>Uncloud</Strong> or{' '}
+            <Strong>SST</Strong> out of the box.
           </ContentParagraph>
         </TechCard>
       </YStack>
@@ -461,7 +437,7 @@ export function ContentSection() {
         <ContentParagraph>
           -{' '}
           <Link href="https://x.com/natebirdman" target="_blank" hideExternalIcon>
-            <Paragraph color="$blue11">Nate</Paragraph>
+            <InlineLink>Nate</InlineLink>
           </Link>
         </ContentParagraph>
       </YStack>

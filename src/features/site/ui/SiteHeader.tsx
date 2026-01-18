@@ -3,6 +3,7 @@ import { Separator, Sheet, Spacer, XStack, YStack } from 'tamagui'
 
 import { LoginButton } from '~/features/auth/ui/LoginButton'
 import { LoginListItem } from '~/features/auth/ui/LoginListItem'
+import { ProFreeButtons } from '~/features/docs/ProFreeButtons'
 import { SocialLinksRow } from '~/features/site/ui/SocialLinksRow'
 import { animationClamped } from '~/interface/animations/animationClamped'
 import { Link } from '~/interface/app/Link'
@@ -22,6 +23,8 @@ export const SiteHeader = memo(() => {
         <YStack width="100%" py="$2">
           <XStack position="relative" width="100%" items="center" $md={{ px: '$4' }}>
             <SocialLinksRow />
+
+            <ProFreeButtons />
 
             <Spacer flex={1} />
 

@@ -61,7 +61,7 @@ const components = {
 
   strong: (props: any) => (
     <Paragraph
-      tag="strong"
+      render="strong"
       fontWeight="700"
       $platform-web={{
         fontFamily: 'inherit',
@@ -71,9 +71,9 @@ const components = {
     />
   ),
 
-  ul: (props: any) => <YStack tag="ul" mt="$3" mb="$3" ml="$2" {...props} />,
-  ol: (props: any) => <YStack tag="ol" mt="$3" mb="$3" ml="$2" {...props} />,
-  li: (props: any) => <BaseParagraph tag="li" display="list-item" mt={0} {...props} />,
+  ul: (props: any) => <YStack render="ul" mt="$3" mb="$3" ml="$2" {...props} />,
+  ol: (props: any) => <YStack render="ol" mt="$3" mb="$3" ml="$2" {...props} />,
+  li: (props: any) => <BaseParagraph render="li" display="list-item" mt={0} {...props} />,
 
   a: ({ href, children }: any) => {
     const isExternal = href?.startsWith('http')
@@ -100,7 +100,7 @@ const components = {
 
   blockquote: (props: any) => (
     <YStack
-      tag="blockquote"
+      render="blockquote"
       my="$4"
       px="$4"
       py="$3"
@@ -117,7 +117,7 @@ const components = {
 
   img: (props: any) => (
     <YStack
-      tag="img"
+      render="img"
       maxWidth="100%"
       height="auto"
       my="$4"

@@ -54,7 +54,7 @@ const SubTitle = styled(SizableText, {
 })
 
 const HoverableLinkStyled = styled(SizableText, {
-  tag: 'a',
+  render: 'a',
   cursor: 'pointer',
   p: '$2',
   px: '$3',

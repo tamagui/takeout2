@@ -25,13 +25,13 @@ const CodeBlockHeader = styled(XStack, {
 })
 
 const Pre = styled(YStack, {
-  tag: 'pre',
+  render: 'pre',
   bg: '$color2',
   m: 0,
 })
 
 const Code = styled(SizableText, {
-  tag: 'code',
+  render: 'code',
   p: '$4',
   fontFamily: '$mono',
   fontSize: 15,

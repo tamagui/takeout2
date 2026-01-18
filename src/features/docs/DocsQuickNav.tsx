@@ -24,7 +24,7 @@ export const DocsQuickNav = ({ headings = [] }: { headings?: Heading[] }) => {
 
   return (
     <YStack
-      tag="aside"
+      render="aside"
       display="none"
       $lg={{
         display: 'flex',
@@ -36,7 +36,7 @@ export const DocsQuickNav = ({ headings = [] }: { headings?: Heading[] }) => {
       }}
     >
       <YStack gap="$4">
-        <YStack tag="nav" aria-labelledby="site-quick-nav-heading" gap="$2">
+        <YStack render="nav" aria-labelledby="site-quick-nav-heading" gap="$2">
           <XStack items="center" mb="$2" id="site-quick-nav-heading">
             <ListIcon />
             <H4 fontFamily="$mono" size="$4" color="$color11">
@@ -64,7 +64,7 @@ export const DocsQuickNav = ({ headings = [] }: { headings?: Heading[] }) => {
                       style={{ textDecoration: 'none' }}
                     >
                       <Paragraph
-                        tag="span"
+                        render="span"
                         py="$1.5"
                         px={isSubItem ? '$2' : 0}
                         rounded="$2"

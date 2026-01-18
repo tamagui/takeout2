@@ -30,7 +30,7 @@ export const Link = ({ href, replace, asChild, ...props }: LinkProps) => {
 
   return (
     <Text
-      tag="a"
+      render="a"
       asChild={asChild ? 'except-style' : false}
       className="t_Link"
       cursor="pointer"
@@ -150,7 +150,7 @@ const ResultItem = ({
   const url = typeof window !== 'undefined' ? window.location.origin + hit.url : hit.url
   return (
     <Link href={url as any}>
-      <Paragraph tag="span" color="$color">
+      <Paragraph render="span" color="$color">
         {children}
       </Paragraph>
     </Link>

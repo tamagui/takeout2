@@ -99,7 +99,7 @@ const PrimaryButton = styled(YStack, {
   cursor: 'pointer',
   items: 'center',
   justify: 'center',
-  bg: '$blue11',
+  bg: '$blue9',
   shadowColor: '$blue12',
   shadowOffset: { width: 0, height: 4 },
   shadowOpacity: 0.3,
@@ -115,7 +115,7 @@ const PrimaryButton = styled(YStack, {
   },
 
   pressStyle: {
-    bg: '$blue12',
+    bg: '$blue8',
     y: 0,
   },
 })

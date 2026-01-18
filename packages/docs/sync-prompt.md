@@ -1,6 +1,6 @@
 ---
 name: sync-prompt
-description: Intelligent sync guide for updating forked Takeout with upstream changes while preserving customizations. INVOKE WHEN: sync, upstream sync, fork sync, merging upstream, git merge, tamagui/takeout3, upstream changes, update from takeout, takeout updates.
+description: Intelligent sync guide for updating forked Takeout with upstream changes while preserving customizations. INVOKE WHEN: sync, upstream sync, fork sync, merging upstream, git merge, tamagui/takeout2, upstream changes, update from takeout, takeout updates.
 ---
 
 # Takeout Repository Sync Prompt
@@ -9,7 +9,7 @@ You are helping sync a fork of the Takeout starter kit with the latest upstream 
 
 ## Context
 
-This application was forked from Takeout, a full-stack starter kit for building production-ready apps. The upstream repository is at `git@github.com:tamagui/takeout3.git`.
+This application was forked from Takeout, a full-stack starter kit for building production-ready apps. The upstream repository is at `git@github.com:tamagui/takeout2.git`.
 
 ## Your Task
 
@@ -22,7 +22,7 @@ Intelligently sync the latest Takeout changes into this repository while preserv
 Clone the upstream Takeout repository to a temporary directory:
 
 ```bash
-git clone git@github.com:tamagui/takeout3.git /tmp/takeout-upstream
+git clone git@github.com:tamagui/takeout2.git /tmp/takeout-upstream
 cd /tmp/takeout-upstream
 ```
 

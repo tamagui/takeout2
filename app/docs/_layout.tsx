@@ -20,7 +20,7 @@ import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 
 const GITHUB_URL = 'https://github.com'
-const REPO_NAME = 'usetakeout/takeout3'
+const REPO_NAME = 'tamagui/takeout2'
 const BRANCH = 'main'
 
 export function DocsLayout() {

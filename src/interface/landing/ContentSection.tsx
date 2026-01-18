@@ -342,7 +342,7 @@ export function ContentSection() {
           <ContentParagraph>
             Our{' '}
             <Link
-              href="https://github.com/tamagui/takeout3/blob/main/packages/over-zero/readme.md"
+              href="https://github.com/tamagui/takeout2/blob/main/packages/over-zero/readme.md"
               target="_blank"
               hideExternalIcon
             >

@@ -20,7 +20,7 @@ import {
   showSuccess,
 } from '../utils/prompts'
 
-const UPSTREAM_REPO = 'tamagui/takeout3'
+const UPSTREAM_REPO = 'tamagui/takeout2'
 const UPSTREAM_REMOTE = 'takeout-upstream'
 const TAKEOUT_FILE = '.takeout'
 

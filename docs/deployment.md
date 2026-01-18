@@ -169,7 +169,7 @@ bun tko onboard
 
    ```bash
    git clone <repo>
-   cd takeout3
+   cd takeout2
    bun install
    bun tko onboard
    ```

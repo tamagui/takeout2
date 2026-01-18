@@ -106,11 +106,6 @@ export const runCommand = defineCommand({
       const scriptPath = findScript(normalizedName)
 
       if (scriptPath) {
-        // Run the filesystem script
-        const pc = (await import('picocolors')).default
-        console.info(pc.dim(`Running: ${normalizedName}`))
-        console.info()
-
         // Use spawn instead of Bun's $ helper since we're in a compiled context
         const scriptArgsToPass = scriptArgs.slice(1)
         const child = spawn('bun', [scriptPath, ...scriptArgsToPass], {
@@ -118,10 +113,10 @@ export const runCommand = defineCommand({
           shell: false,
         })
 
-        child.on('exit', (code) => {
-          process.exit(code || 0)
+        const code = await new Promise<number>((resolve) => {
+          child.on('exit', (code) => resolve(code || 0))
         })
-        return
+        process.exit(code)
       }
     }
 
@@ -160,8 +155,9 @@ export const runCommand = defineCommand({
       shell: false,
     })
 
-    child.on('exit', (code) => {
-      process.exit(code || 0)
+    const code = await new Promise<number>((resolve) => {
+      child.on('exit', (code) => resolve(code || 0))
     })
+    process.exit(code)
   },
 })

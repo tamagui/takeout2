@@ -17,6 +17,23 @@ const colors = [
 
 const reset = '\x1b[0m'
 
+// filter out bun shell's verbose error output
+function isBunShellNoise(line: string): boolean {
+  // eslint-disable-next-line no-control-regex
+  const stripped = line.replace(/\x1b\[[0-9;]*m/g, '').trim()
+  return (
+    stripped.startsWith('ShellError:') ||
+    stripped.startsWith('exitCode:') ||
+    stripped.startsWith('stdout:') ||
+    stripped.startsWith('stderr:') ||
+    stripped.startsWith('at ShellPromise') ||
+    stripped.startsWith('at BunShell') ||
+    stripped.startsWith('Bun v') ||
+    /^\d+\s*\|/.test(stripped) || // source code lines like "24 |     await $`..."
+    /^\s*\^$/.test(stripped) // caret pointer line
+  )
+}
+
 interface ScriptToRun {
   name: string
   path: string
@@ -98,7 +115,9 @@ function runSingleScript(script: ScriptToRun, colorIndex: number): Promise<void>
 
       const lines = dataStr.split('\n')
       for (const line of lines) {
-        if (line) console.error(`${color}${prefixLabel}${reset} ${line}`)
+        if (line && !isBunShellNoise(line)) {
+          console.error(`${color}${prefixLabel}${reset} ${line}`)
+        }
       }
     })
 
@@ -109,14 +128,20 @@ function runSingleScript(script: ScriptToRun, colorIndex: number): Promise<void>
 
     proc.on('close', (code) => {
       if (code && code !== 0) {
-        console.error(`${color}${prefixLabel}${reset} Process exited with code ${code}`)
+        // detect if this was a bun shell error (already printed inline)
+        // check for ShellError or the bun shell stack trace pattern
+        const isBunShellError =
+          stderrBuffer.includes('ShellError') || stderrBuffer.includes('at BunShell')
 
-        // Show error details
-        if (stderrBuffer.trim()) {
-          console.error(`\n${color}${prefixLabel}${reset} Error output:`)
-          console.error('\x1b[90m' + '─'.repeat(80) + '\x1b[0m')
-          console.error(stderrBuffer)
-          console.error('\x1b[90m' + '─'.repeat(80) + '\x1b[0m\n')
+        if (!isBunShellError) {
+          console.error(`${color}${prefixLabel}${reset} Process exited with code ${code}`)
+
+          if (stderrBuffer.trim()) {
+            console.error(`\n${color}${prefixLabel}${reset} Error output:`)
+            console.error('\x1b[90m' + '─'.repeat(80) + '\x1b[0m')
+            console.error(stderrBuffer)
+            console.error('\x1b[90m' + '─'.repeat(80) + '\x1b[0m\n')
+          }
         }
 
         reject(new Error(`Script ${prefixLabel} failed with code ${code}`))

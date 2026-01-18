@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { H1, Paragraph, View, XStack, YStack, styled } from 'tamagui'
+import { H1, Paragraph, Text, View, XStack, YStack, styled } from 'tamagui'
 
 import { Link } from '~/interface/app/Link'
 import { OneLogo } from '~/interface/icons/logos/OneLogo'
@@ -459,14 +459,15 @@ export function HeroSection() {
         <YStack gap="$5" flex={1} minW={300} maxW={520} items="flex-start">
           <YStack gap="$1">
             <HeroTitle>
-              Ship apps <HighlightText render="span">everywhere.</HighlightText>
+              Less code, faster iteration,{' '}
+              <HighlightText render="span">higher quality.</HighlightText>
             </HeroTitle>
           </YStack>
 
           <HeroSubtitle>
-            A modern and incredibly robust starting point for building apps and websites
-            that run on every platform - iOS, Android, and web, with React and React
-            Native.
+            A complete startup starter, Takeout 2 is the fastest way to deploy{' '}
+            <Text color="$color12">high quality</Text> cross-platform projects with a
+            single repo, bundler, and framework - iOS, Android, and web.
           </HeroSubtitle>
 
           <XStack gap="$3" mt="$2" flexWrap="wrap" items="center">
@@ -479,7 +480,7 @@ export function HeroSection() {
                     color="white"
                     style={{ fontFamily: 'var(--font-body)' }}
                   >
-                    Get Started
+                    Docs
                   </Paragraph>
                   <ArrowRightIcon size={16} color="white" />
                 </XStack>

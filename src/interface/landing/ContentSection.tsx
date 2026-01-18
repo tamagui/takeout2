@@ -1,4 +1,4 @@
-import { H1, H2, H3, Paragraph, styled, XStack, YStack } from 'tamagui'
+import { H1, H2, H3, H4, Paragraph, styled, Text, XStack, YStack } from 'tamagui'
 
 import { Link } from '~/interface/app/Link'
 import { OneLogo } from '~/interface/icons/logos/OneLogo'
@@ -19,60 +19,31 @@ const SectionHeading = styled(H2, {
   letterSpacing: 2,
   color: '$color10',
   textTransform: 'uppercase',
-  style: {
-    fontFamily: 'var(--font-body)',
-  },
 })
 
 const ContentParagraph = styled(Paragraph, {
-  fontSize: 17,
-  color: '$color12',
-  style: {
-    fontFamily: 'var(--font-body)',
-    lineHeight: '1.75',
-  },
-
-  $sm: {
-    fontSize: 18,
-  },
+  size: '$5',
+  color: '$color11',
 })
 
-const GoalTitle = styled(Paragraph, {
-  fontSize: 17,
+const GoalTitle = styled(H4, {
+  size: '$6',
   fontWeight: '700',
-  color: '$color12',
-  style: {
-    fontFamily: 'var(--font-heading)',
-  },
-
-  $sm: {
-    fontSize: 18,
-  },
 })
 
 const TechTitle = styled(H3, {
-  fontSize: 20,
+  size: '$7',
   fontWeight: '700',
-  color: '$color12',
-  style: {
-    fontFamily: 'var(--font-heading)',
-    lineHeight: '1.3',
-  },
-
-  $sm: {
-    fontSize: 22,
-  },
 })
 
-const CodeInline = styled(Paragraph, {
+const CodeInline = styled(Text, {
   fontFamily: '$mono',
-  fontSize: 15,
   bg: '$color3',
+  render: 'code',
   px: '$2',
   py: '$1',
   rounded: '$3',
   color: '$color11',
-  render: 'code',
 })
 
 const SectionDivider = styled(XStack, {
@@ -105,7 +76,7 @@ const TechCard = styled(YStack, {
   p: '$5',
   bg: '$color2',
   rounded: '$6',
-  borderWidth: 1,
+  borderWidth: 0.5,
   borderColor: '$color4',
 })
 
@@ -118,43 +89,24 @@ const LogoWrapper = styled(YStack, {
 })
 
 const ContentTitle = styled(H1, {
-  fontSize: 28,
+  size: '$9',
   fontWeight: '800',
   color: '$color12',
   text: 'center',
-  style: {
-    fontFamily: 'var(--font-heading)',
-    lineHeight: '1.2',
-  },
-
-  $sm: {
-    fontSize: 36,
-  },
 
   $md: {
-    fontSize: 42,
+    size: '$12',
   },
 })
 
-const GradientText = styled(Paragraph, {
-  fontSize: 28,
+const GradientText = styled(Text, {
   fontWeight: '800',
   render: 'span',
-  style: {
-    fontFamily: 'var(--font-heading)',
-    lineHeight: '1.2',
+  '$platform-web': {
     background: 'linear-gradient(135deg, #F97316 0%, #FB923C 50%, #FDBA74 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',
-  },
-
-  $sm: {
-    fontSize: 36,
-  },
-
-  $md: {
-    fontSize: 42,
   },
 })
 
@@ -212,7 +164,7 @@ export function ContentSection() {
         <DividerLine />
       </SectionDivider>
 
-      <YStack gap="$6">
+      <YStack gap="$8">
         <GoalItem>
           <GoalTitle>Universal</GoalTitle>
           <ContentParagraph>
@@ -301,10 +253,11 @@ export function ContentSection() {
           <ContentParagraph>
             Vite simply mogs any other bundler for web, we love how fast and flexible it
             is. So, One ported Expo Router to Vite, and then added a ton of stuff needed
-            for high performance web - especially loaders, and render modes. Server render
-            or statically generate some pages, keep others client-only, all from the same
-            routing definitions, route between them with perfect preloading. Plus, easy
-            API routes and a Hono production server included.
+            for high performance web - especially loaders, render modes, smart preloading
+            and prefetching, and bundle size improvements. Server render or statically
+            generate some pages, keep others client-only, all from the same routing
+            definitions. Plus, easy API routes, great type generation, and a Hono
+            production server included.
           </ContentParagraph>
 
           <ContentParagraph>
@@ -315,6 +268,36 @@ export function ContentSection() {
               <InlineLink fontWeight="600">we just released v1 RC1</InlineLink>
             </Link>
             .
+          </ContentParagraph>
+        </TechCard>
+
+        <TechCard>
+          <XStack items="center" gap="$3">
+            <LogoWrapper bg="rgba(236, 210, 10, 0.15)">
+              <TamaguiLogo size={24} />
+            </LogoWrapper>
+            <Link href="https://tamagui.dev" target="_blank" hideExternalIcon>
+              <TechTitle color="$color12">Tamagui</TechTitle>
+            </Link>
+          </XStack>
+
+          <ContentParagraph>
+            Tamagui has the best balance of performance on web <Em>and</Em> native, the
+            largest featureset of any universal style library, and is amazing with LLMs.
+            It's typed and mergable inline styles, robust UI kit, theme system, and
+            ecosystem make us incredible productive.
+          </ContentParagraph>
+
+          <ContentParagraph>
+            <Link
+              href="https://tamagui.dev/blog/version-two"
+              target="_blank"
+              hideExternalIcon
+            >
+              <InlineLink fontWeight="600">Version 2 RC1 is out now</InlineLink>
+            </Link>{' '}
+            with stability improvements, more tests, docs, and release guardrails, plus a
+            few new components and features.
           </ContentParagraph>
         </TechCard>
 
@@ -350,36 +333,6 @@ export function ContentSection() {
             </Link>{' '}
             library makes it even easier to use, and can generate some of the boilerplatey
             parts for you, if you like.
-          </ContentParagraph>
-        </TechCard>
-
-        <TechCard>
-          <XStack items="center" gap="$3">
-            <LogoWrapper bg="rgba(236, 210, 10, 0.15)">
-              <TamaguiLogo size={24} />
-            </LogoWrapper>
-            <Link href="https://tamagui.dev" target="_blank" hideExternalIcon>
-              <TechTitle color="$color12">Tamagui</TechTitle>
-            </Link>
-          </XStack>
-
-          <ContentParagraph>
-            Tamagui still offers the best balance of performance on web <Em>and</Em>{' '}
-            native, with the largest featureset of any universal style library. It's typed
-            and mergable inline styles, robust UI kit, theme system, and ecosystem make us
-            incredible productive.
-          </ContentParagraph>
-
-          <ContentParagraph>
-            <Link
-              href="https://tamagui.dev/blog/version-two"
-              target="_blank"
-              hideExternalIcon
-            >
-              <InlineLink fontWeight="600">Version 2 RC1 is out now</InlineLink>
-            </Link>{' '}
-            with stability improvements, more tests, docs, and release guardrails, plus a
-            few new components and features.
           </ContentParagraph>
         </TechCard>
 

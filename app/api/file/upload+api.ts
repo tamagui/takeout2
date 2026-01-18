@@ -10,7 +10,6 @@ import { defaultBucket, uploadToS3 } from '~/features/upload/upload'
 const folder = 'uploads'
 
 export default async function handler(req: Request) {
-
   if (req.method !== 'POST') {
     return Response.json({ error: 'Method not allowed' }, { status: 405 })
   }

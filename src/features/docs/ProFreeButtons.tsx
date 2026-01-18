@@ -13,7 +13,12 @@ export const ProFreeButtons = () => {
         ml="$3"
       >
         <XGroup.Item>
-          <Link href="https://tamagui.dev/takeout" target="_blank" hideExternalIcon asChild>
+          <Link
+            href="https://tamagui.dev/takeout"
+            target="_blank"
+            hideExternalIcon
+            asChild
+          >
             <XStack
               render="a"
               px="$2.5"

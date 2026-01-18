@@ -1,0 +1,111 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "rules": {
+    "files": "off",
+    "exports": "off",
+    "types": "off",
+    "duplicates": "off",
+    "optionalPeerDependencies": "off",
+    "binaries": "off",
+    "unresolved": "off"
+  },
+  "workspaces": {
+    ".": {
+      "entry": [
+        "app/**/*.{ts,tsx}",
+        "scripts/**/*.ts",
+        "src/setupClient.ts",
+        "src/setupServer.ts",
+        "src/database/migrate.ts",
+        "src/database/drizzle.config.ts",
+        "src/database/vite.config.ts",
+        "src/test/**/*.config.ts",
+        "src/test/**/*.setup.ts",
+        "hot-updater.config.ts"
+      ],
+      "project": ["src/**/*.{ts,tsx}", "app/**/*.{ts,tsx}", "scripts/**/*.ts"],
+      "ignore": ["src/data/generated/**", "**/*.d.ts", "scripts/node.ts", "scripts/migrate/run.ts"],
+      "ignoreDependencies": [
+        "@types/*",
+        "cloudflared",
+        "drizzle-kit",
+        "subset-font",
+        "@react-native-community/cli",
+        "@tamagui/cli",
+        "@glideapps/ts-helper",
+        "@better-fetch/fetch",
+        "@bottom-tabs/react-navigation",
+        "@expo/ui",
+        "@nandorojo/galeria",
+        "@shopify/react-native-skia",
+        "@take-out/hooks",
+        "@tamagui/build",
+        "@tamagui/proxy-worm",
+        "@tamagui/themes",
+        "async-retry",
+        "baseline-browser-mapping",
+        "better-auth-harmony",
+        "burnt",
+        "dequal",
+        "expo-image",
+        "jsonwebtoken",
+        "motion",
+        "posthog-js",
+        "postmark",
+        "vxrn",
+        "expo-updates",
+        "react-native-web",
+        "@expo/metro-runtime",
+        "expo-system-ui",
+        "@react-navigation/bottom-tabs",
+        "@react-navigation/native",
+        "mdx-bundler",
+        "dotenv",
+        "@clack/prompts",
+        "picocolors",
+        "playwright",
+        "@smithy/types",
+        "expo-file-system",
+        "@tamagui/web",
+        "@tamagui/animate-presence",
+        "@tamagui/text",
+        "@tamagui/stacks"
+      ]
+    },
+    "packages/cli": {
+      "entry": ["src/index.ts", "src/cli.ts"],
+      "project": ["src/**/*.ts"],
+      "ignoreDependencies": ["bun-types"]
+    },
+    "packages/helpers": {
+      "entry": ["src/index.ts", "src/*.ts"],
+      "project": ["src/**/*.ts"]
+    },
+    "packages/hooks": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/postgres": {
+      "entry": ["src/cli.ts"],
+      "project": ["src/**/*.ts"]
+    },
+    "packages/better-auth-utils": {
+      "entry": ["src/index.ts"],
+      "project": ["src/**/*.ts"]
+    },
+    "packages/native-hot-update": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/over-zero": {
+      "entry": ["src/index.ts", "src/cli.ts", "src/server.ts"],
+      "project": ["src/**/*.ts"],
+      "ignoreDependencies": ["@sinclair/typebox", "valibot"]
+    },
+    "packages/scripts": {
+      "entry": ["src/*.ts", "src/helpers/*.ts"],
+      "project": ["src/**/*.ts"],
+      "ignore": ["src/build-initial.ts"],
+      "ignoreDependencies": ["glob"]
+    }
+  },
+  "ignoreWorkspaces": ["packages/docs"]
+}

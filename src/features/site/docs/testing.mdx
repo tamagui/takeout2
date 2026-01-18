@@ -1,0 +1,111 @@
+---
+title: Testing
+description: Integration and unit testing with Playwright and Vitest
+---
+
+Takeout includes integration tests (Playwright) and unit tests (Vitest). We've
+found this combination covers what matters without the overhead of native
+integration tests, which tend to be a net loss unless you're on a large project
+with dedicated QA resources.
+
+## Running Tests
+
+```bash
+bun test              # run all tests
+bun test:unit         # unit tests only
+bun test:integration  # integration tests only
+```
+
+For integration tests, you need the dev server running:
+
+```bash
+bun ci:start-dev      # starts backend + frontend
+bun test:integration  # in another terminal
+```
+
+## Integration Tests
+
+Integration tests live in `src/test/integration/` and use Playwright. They test
+real user flows—login, creating posts, file uploads, API endpoints.
+
+```ts
+// src/test/integration/post-flow.test.ts
+import { test, expect } from '@playwright/test'
+import { loginAsDemo } from './helpers'
+
+test('can create a post', async ({ page }) => {
+  await loginAsDemo(page, '/')
+  await page.click('[data-testid="new-post"]')
+  await page.fill('[data-testid="post-content"]', 'Hello world')
+  await page.click('[data-testid="submit"]')
+  await expect(page.locator('text="Hello world"')).toBeVisible()
+})
+```
+
+Helpers in `helpers.ts` handle common operations like `loginAsDemo()`,
+`loginAsAdmin()`, and `waitForZeroSync()`.
+
+### Database State
+
+Restart `bun ci:start-dev` between test runs for a clean database. Tests create
+data that persists, and stale data causes flaky failures.
+
+### Debugging
+
+```bash
+PWDEBUG=1 bun test:integration --headed  # opens inspector
+```
+
+Traces are saved on failure—view them with:
+
+```bash
+bunx playwright show-trace src/test/integration/.output/test-results/*/trace.zip
+```
+
+## Unit Tests
+
+Unit tests live in `src/test/unit/` and `packages/*/src/`. They test isolated
+logic—utilities, hooks, data transformations.
+
+```ts
+// packages/hooks/src/useDeepMemoizedObject.test.ts
+import { describe, test, expect } from 'vitest'
+
+describe('useDeepMemoizedObject', () => {
+  test('preserves reference for equal objects', () => {
+    // ...
+  })
+})
+```
+
+Run a specific test file:
+
+```bash
+bun test:unit packages/hooks/src/useDeepMemoizedObject.test.ts
+```
+
+## CI Integration
+
+Tests run automatically in CI via `bun run ci`. The full pipeline:
+
+```bash
+bun run ci --dry-run  # run locally without deploying
+```
+
+CI uses single-worker mode with one retry for consistency.
+
+## Why No Native Tests
+
+React Native integration tests require simulators, are slow to run, flaky across
+environments, and expensive to maintain. Unless you have a large team with QA
+resources, the ROI is negative, especially when you're starting out.
+
+Web integration tests catch many issues as you share most code between web and
+native. For native-specific behavior, manual testing or lightweight snapshot
+tests are more practical.
+
+We include an XCode MCP so agents can effectively smoke test your app while
+building features.
+
+We'd like to include a simple test setup eventually. We have robust ones in the
+Tamagui and One repos you can reference.

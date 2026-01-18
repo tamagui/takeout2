@@ -3,159 +3,145 @@ title: Deployment Overview
 description: Deploy Takeout to production
 ---
 
-Takeout supports two deployment options: Uncloud for self-hosting and SST for AWS.
+Takeout supports two deployment platforms: **Uncloud** for self-hosting and
+**SST** for AWS. Both integrate with the same CI/CD pipeline and share most
+configuration.
 
-## Deployment options
+## Getting Started
+
+The fastest way to set up production is the onboarding wizard:
+
+```bash
+bun tko onboard
+```
+
+This walks you through:
+
+- Choosing a deployment platform
+- Configuring your domain and database
+- Generating auth secrets
+- Setting up SSH keys (for Uncloud)
+- Syncing secrets to GitHub
+
+You can also run `bun tko onboard --defaults` for automated setup with sensible
+defaults.
+
+## Platform Comparison
 
 <SimpleTable
-  headers={['Feature', 'Uncloud', 'SST (AWS)']}
+  headers={['', 'Uncloud', 'SST (AWS)']}
   rows={[
     ['Setup time', '~10 minutes', '~30-60 minutes'],
-    ['Cost', 'VPS cost only', 'Pay-as-you-go AWS'],
-    ['Scaling', 'Manual', 'Auto-scaling'],
-    ['Complexity', 'Simple', 'More complex'],
+    ['Cost', 'VPS only ($5-20/mo)', 'Pay-as-you-go'],
+    ['Scaling', 'Manual (multi-machine supported)', 'Auto-scaling'],
     ['Database', 'Self-hosted or managed', 'Aurora (managed)'],
+    ['Best for', 'Starting out, predictable costs', 'Enterprise, auto-scaling'],
   ]}
 />
 
-## Quick comparison
+### Uncloud
 
-### Uncloud (self-hosted)
+Self-hosted deployment to any VPS (DigitalOcean, Hetzner, etc.). Uses Docker
+and Caddy for zero-config SSL.
 
-Best for:
-- Starting out
-- Predictable costs
-- Full control over infrastructure
-- Simpler setup
-
-Deploy with:
 ```bash
 bun tko uncloud deploy-prod
 ```
 
-### SST (AWS)
+### SST
 
-Best for:
-- Auto-scaling requirements
-- Enterprise compliance needs
-- AWS ecosystem integration
-- Managed services
+AWS deployment with managed infrastructure—Aurora PostgreSQL, ECS, ALB,
+auto-scaling.
 
-Deploy with:
 ```bash
-bun tko sst deploy production
+bunx sst deploy --stage production
 ```
+
+## Environment Configuration
+
+Production configuration lives in `.env.production`. Copy the example file to
+get started:
+
+```bash
+cp .env.production.example .env.production
+```
+
+The example file documents every variable with comments. Key sections:
+
+- **Deployment** — platform, architecture, server host
+- **URLs** — your domain for the app and Zero sync server
+- **Database** — PostgreSQL connection strings (Zero needs 3 databases)
+- **Auth** — secret key for Better Auth sessions
+- **Storage** — Cloudflare R2 for file uploads
+- **Optional** — push notifications, email, analytics
+
+The onboarding wizard fills most of these automatically. For manual setup, the
+example file has everything you need.
+
+## Database Requirements
+
+Zero sync requires PostgreSQL with **logical replication** enabled. You need
+three databases on the same host:
+
+- Main database (your app data)
+- `zero_cvr` (client view records)
+- `zero_cdb` (change database)
+
+Most managed PostgreSQL providers support this. For self-hosted, add to
+`postgresql.conf`:
+
+```
+wal_level = logical
+max_replication_slots = 4
+max_wal_senders = 4
+```
+
+## Domain Setup
+
+1. Point your domain to your server (A record for Uncloud, or ALB for SST)
+2. Set `ONE_SERVER_URL` and `BETTER_AUTH_URL` to your domain
+3. Set `VITE_PUBLIC_ZERO_SERVER` to your Zero subdomain
+
+SSL is automatic—Caddy handles Let's Encrypt for Uncloud, ALB handles certs for
+SST.
 
 ## CI/CD
 
-Both options integrate with GitHub Actions. On push to main:
+Both platforms use the same release pipeline. Push to main and it:
 
-1. Run checks (lint, types)
-2. Run tests (unit + integration)
-3. Build the app
-4. Deploy to production
-5. Run health checks
+1. Runs checks and tests
+2. Builds the production app
+3. Deploys to your configured platform
+4. Monitors health until stable
 
-Skip deployment for non-main branches with `--skip-deploy`.
+See [Releasing](/docs/releasing) for details on the pipeline and available
+flags.
 
-## Prerequisites
+## Syncing to GitHub
 
-### For Uncloud
-
-- A VPS (DigitalOcean, Hetzner, etc.)
-- SSH access to the server
-- Docker installed on server
-
-### For SST
-
-- AWS account
-- AWS CLI configured
-- Sufficient IAM permissions
-
-## Production environment
-
-Set up `.env.production` with:
+After configuring `.env.production`, sync secrets to GitHub for CI:
 
 ```bash
-# required
-BETTER_AUTH_SECRET=your-production-secret
-BETTER_AUTH_URL=https://your-domain.com
-ONE_SERVER_URL=https://your-domain.com
-
-# database
-ZERO_UPSTREAM_DB=postgresql://...
-ZERO_CVR_DB=postgresql://...
-ZERO_CHANGE_DB=postgresql://...
-
-# storage
-CLOUDFLARE_R2_ENDPOINT=...
-CLOUDFLARE_R2_ACCESS_KEY=...
-CLOUDFLARE_R2_SECRET_KEY=...
-
-# deployment
-DEPLOYMENT_PLATFORM=uncloud  # or sst
+bun tko env/sync-to-github
 ```
 
-## Database options
-
-### Self-hosted (Uncloud)
-
-PostgreSQL runs alongside your app:
-- Automatic backups
-- Lower cost
-- You manage it
-
-### Managed (both)
-
-Use a managed PostgreSQL service:
-- Neon, Supabase, or RDS
-- Automatic backups
-- Professional support
-- Higher cost
-
-## Domain setup
-
-1. Point your domain to your server/load balancer
-2. Update environment:
-   ```bash
-   BETTER_AUTH_URL=https://your-domain.com
-   ONE_SERVER_URL=https://your-domain.com
-   ```
-3. SSL is handled automatically (Uncloud uses Caddy, SST uses ALB)
+This pushes your environment variables to GitHub repository secrets so the CI
+pipeline can deploy.
 
 ## Monitoring
 
-### Logs
+View logs after deployment:
 
 ```bash
 # Uncloud
-bun tko uncloud/logs
+bun tko uncloud logs
 
 # SST
-bun tko aws/logs
+bun tko ci tail
 ```
 
-### Health checks
+Health checks run automatically after each deploy, verifying:
 
-Both platforms run health checks after deployment:
-- HTTP endpoint check
-- Database connection check
-- Zero sync status
-
-## Rollback
-
-If a deployment fails:
-
-```bash
-# Uncloud - redeploy previous version
-git revert HEAD
-git push
-
-# SST - rollback in AWS console or CLI
-```
-
-## Next steps
-
-- [Uncloud Deployment](/docs/deployment-uncloud) - Self-hosted setup
-- [SST Deployment](/docs/deployment-sst) - AWS setup
-- [Migrations](/docs/deployment-migrations) - Database migrations
+- Containers are running and healthy
+- HTTP endpoints respond
+- Database connections work

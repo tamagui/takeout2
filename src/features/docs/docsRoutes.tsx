@@ -36,7 +36,10 @@ export const docsRoutes: DocsSection[] = [
 
   {
     title: 'Deployment',
-    pages: [{ title: 'Overview', route: '/docs/deployment-overview' }],
+    pages: [
+      { title: 'Overview', route: '/docs/deployment-overview' },
+      { title: 'Releasing', route: '/docs/releasing' },
+    ],
   },
 
   {
@@ -47,6 +50,7 @@ export const docsRoutes: DocsSection[] = [
   {
     title: 'Reference',
     pages: [
+      { title: 'Testing', route: '/docs/testing' },
       { title: 'Conventions', route: '/docs/conventions' },
       { title: 'FAQ', route: '/docs/faq' },
     ],

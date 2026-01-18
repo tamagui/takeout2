@@ -3,19 +3,91 @@ title: Agents
 description: AI-powered development with Takeout
 ---
 
-Takeout has had an immense amount development in setting up a great LLM coding
-agent harness. It has **24** and counting specific skill docs, not to mention
-repo-level docs throughout.
+Takeout treats agent-readability as a first-class concern. The codebase is
+structured so AI coding agents can understand patterns, find examples, and
+verify their work without constant hand-holding.
 
-Going further, the scripting system is extensive, well organized, and well
-documented, which we've found really helps agents find the right tool to use and
-right ways to debug and solve problems.
+The result: describe what you want, and agents can often implement features
+end-to-end—data layer, UI, permissions, tests—using the patterns already in
+place.
 
-The `over-zero` packages bring a Rails-like elegance to the structure of your
-data, schema, mutations, and queries, which we find makes it so agents are
-basically able to entirely solve features without much guidance beyond what you
-want.
+## Skills
 
-A complete test suite with integration tests that's easy to run, run via
-`bun run ci --dry-run`, further lets them verify with certainty their changes
-work all the way through to release.
+Skills are instruction sets that teach agents how to work in this codebase.
+There are 24 skills covering data patterns, routing, deployment, testing, and
+more. They live in `.claude/skills/` and point to detailed docs.
+
+When an agent starts a session, it loads the core guidelines automatically. When
+working on a feature, it can pull in relevant skills—say, `takeout-zero` when
+adding a synced data type, or `takeout-triggers` when setting up database
+automation.
+
+Each skill includes:
+
+- the pattern and why it exists
+- working examples from the codebase
+- common mistakes to avoid
+- verification steps
+
+This means agents don't guess at conventions. They look up the skill, follow the
+pattern, and produce code that fits.
+
+## Over-Zero
+
+The [over-zero](https://github.com/tamagui/over-zero) package structures your
+data layer in a way that's easy for both humans and agents to understand. Models
+define schema, permissions, and mutations together. Queries are plain functions
+that become synced automatically.
+
+When an agent needs to add a new data type, the pattern is clear:
+
+1. create the model in `src/data/models/`
+2. add queries in `src/data/queries/`
+3. run `bun zero/generate` to get types
+4. use the generated hooks in your UI
+
+There's no ambiguity about where things go or how permissions work. Agents can
+implement features involving offline sync, optimistic updates, and row-level
+security without needing to figure out the architecture.
+
+See the [Zero docs](/docs/zero) for the full picture.
+
+## Scripts
+
+The `tko` CLI gives agents (and you) a discoverable set of operations. Run
+`bun tko` to see what's available:
+
+```bash
+bun tko              # list all scripts
+bun tko check/types  # run type checking
+bun tko web/build    # build for web
+```
+
+Scripts are organized by category—`check/`, `ci/`, `web/`, `db/`—so agents can
+find the right tool without asking.
+
+## Verification
+
+Session hooks ensure agents know to verify their work. The core guidelines load
+automatically and include explicit verification steps—run `bun check:all` for
+quick checks, `bun run ci --dry-run` for the full pipeline (see [Releasing](/docs/releasing) for details).
+
+```bash
+bun check:all        # types, lint, tests
+bun run ci --dry-run # full CI pipeline locally
+```
+
+This catches issues early. When an agent says "done," you can trust the tests
+passed and types check.
+
+## What This Enables
+
+A typical agent workflow:
+
+1. You describe a feature ("add a favorites system")
+2. Agent checks relevant skills (zero, triggers, routes)
+3. Implements using established patterns
+4. Runs verification
+5. You review working code
+
+The structure removes guesswork.

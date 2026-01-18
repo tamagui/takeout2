@@ -3,7 +3,7 @@ import { Separator, SizableText, XStack, styled } from 'tamagui'
 import type { ReactNode } from 'react'
 
 export const H1 = styled(SizableText, {
-  tag: 'h1',
+  render: 'h1',
   role: 'heading',
   fontFamily: '$heading',
   size: '$10',
@@ -11,7 +11,7 @@ export const H1 = styled(SizableText, {
 })
 
 export const H2 = styled(SizableText, {
-  tag: 'h2',
+  render: 'h2',
   role: 'heading',
   fontFamily: '$heading',
   size: '$9',
@@ -19,7 +19,7 @@ export const H2 = styled(SizableText, {
 })
 
 export const H3 = styled(SizableText, {
-  tag: 'h3',
+  render: 'h3',
   role: 'heading',
   fontFamily: '$heading',
   size: '$8',
@@ -27,7 +27,7 @@ export const H3 = styled(SizableText, {
 })
 
 export const H4 = styled(SizableText, {
-  tag: 'h4',
+  render: 'h4',
   role: 'heading',
   fontFamily: '$heading',
   size: '$6',
@@ -35,7 +35,7 @@ export const H4 = styled(SizableText, {
 })
 
 export const H5 = styled(SizableText, {
-  tag: 'h5',
+  render: 'h5',
   role: 'heading',
   fontFamily: '$heading',
   size: '$5',
@@ -43,7 +43,7 @@ export const H5 = styled(SizableText, {
 })
 
 export const H6 = styled(SizableText, {
-  tag: 'h6',
+  render: 'h6',
   role: 'heading',
   fontFamily: '$heading',
   size: '$4',

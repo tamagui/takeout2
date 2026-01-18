@@ -85,7 +85,7 @@ const iconSizes: Record<ButtonSizes, number> = {
 
 const ButtonFrame = styled(XStack, {
   context,
-  tag: 'button',
+  render: 'button',
   focusable: true,
   role: 'button',
   group: 'button',

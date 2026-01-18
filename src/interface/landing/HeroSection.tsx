@@ -71,7 +71,7 @@ const HeroSubtitle = styled(Paragraph, {
 })
 
 const HighlightText = styled(Paragraph, {
-  tag: 'span',
+  render: 'span',
   fontSize: 36,
   fontWeight: '800',
   letterSpacing: -1,
@@ -459,7 +459,7 @@ export function HeroSection() {
         <YStack gap="$5" flex={1} minW={300} maxW={520} items="flex-start">
           <YStack gap="$1">
             <HeroTitle>
-              Ship apps <HighlightText tag="span">everywhere.</HighlightText>
+              Ship apps <HighlightText render="span">everywhere.</HighlightText>
             </HeroTitle>
           </YStack>
 

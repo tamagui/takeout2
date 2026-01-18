@@ -6,18 +6,18 @@ export const Text = styled(SizableText, {
 
 export const Strong = styled(TamaguiText, {
   name: 'Strong',
-  tag: 'strong',
+  render: 'strong',
   fontWeight: '600',
 })
 
 export const Em = styled(TamaguiText, {
   name: 'Em',
-  tag: 'em',
+  render: 'em',
   fontStyle: 'italic',
 })
 
 export const InlineLink = styled(TamaguiText, {
   name: 'InlineLink',
-  tag: 'span',
+  render: 'span',
   color: '$blue11',
 })

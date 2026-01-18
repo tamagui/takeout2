@@ -72,7 +72,7 @@ const CodeInline = styled(Paragraph, {
   py: '$1',
   rounded: '$3',
   color: '$color11',
-  tag: 'code',
+  render: 'code',
 })
 
 const SectionDivider = styled(XStack, {
@@ -139,7 +139,7 @@ const ContentTitle = styled(H1, {
 const GradientText = styled(Paragraph, {
   fontSize: 28,
   fontWeight: '800',
-  tag: 'span',
+  render: 'span',
   style: {
     fontFamily: 'var(--font-heading)',
     lineHeight: '1.2',

@@ -21,6 +21,6 @@ export const PageContainer = styled(YStack, {
 })
 
 export const PageMainContainer = styled(PageContainer, {
-  tag: 'main',
+  render: 'main',
   role: 'main',
 })

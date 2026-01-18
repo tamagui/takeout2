@@ -138,7 +138,7 @@ export const Link = ({
         {children}
 
         <View
-          tag="span"
+          render="span"
           ml={4}
           opacity={0.7}
           $platform-web={{ display: 'inline-flex', marginRight: -5, y: -9, x: -2 }}
@@ -152,7 +152,7 @@ export const Link = ({
 
   const linkElement = (
     <SizableText
-      tag="a"
+      render="a"
       target={target}
       disabled={!!disabled}
       // always except-style

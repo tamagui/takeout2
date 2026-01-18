@@ -7,6 +7,45 @@ description: Tamagui UI framework guide. Use when styling, components, tokens ($
 
 This guide covers the Tamagui configuration and usage patterns in this project.
 
+## Version 2 Notes
+
+This project uses Tamagui v2. Key changes from v1:
+
+### Web-Aligned Defaults
+
+- **`defaultPosition: 'static'`** - Elements no longer default to relative positioning
+- **`box-sizing: border-box`** - All elements use border-box by default
+- **`transition` prop** - Use `transition` for CSS transitions (not `animation` which is for spring/keyframe animations)
+
+### Web-First Props (Breaking Changes)
+
+**Accessibility:** Use web-standard props only:
+- ❌ `accessibilityLabel` → ✅ `aria-label`
+- ❌ `accessibilityRole` → ✅ `role`
+- ❌ `focusable` → ✅ `tabIndex`
+
+**Events:** Use web-standard event handlers:
+- ❌ `onPress` → ✅ `onClick`
+- ❌ `onPressIn` → ✅ `onPointerDown`
+- ❌ `onPressOut` → ✅ `onPointerUp`
+- ✅ `onChangeText` - Still supported (ergonomic exception for RN devs)
+
+**Shadows:** Use CSS `boxShadow` instead of legacy RN shadow props:
+- ❌ `shadowColor`, `shadowOffset`, `shadowOpacity`, `shadowRadius`
+- ✅ `boxShadow="0 2px 10px $shadowColor"` - Supports $token in strings
+
+### Updated Components
+
+**Image:** New web-aligned component:
+```tsx
+<Image src="/path/to/image.png" objectFit="cover" />
+```
+
+**Input:** New props for mobile keyboards:
+```tsx
+<Input inputMode="email" enterKeyHint="send" />
+```
+
 ## Configuration Settings
 
 **IMPORTANT:** These settings affect how you write Tamagui code in this project.

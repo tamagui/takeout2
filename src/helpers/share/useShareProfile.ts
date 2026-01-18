@@ -15,10 +15,13 @@ export function useShareProfile() {
         showToast('Profile link copied to clipboard!', { type: 'success' })
       } else {
         // Native: use share sheet
-        await Share.share({
+        const result = await Share.share({
           message: `Check out @${user.username || user.name} on our app!`,
           url: publicProfileUrl,
         })
+        if (result.action === Share.sharedAction) {
+          showToast('Profile shared!', { type: 'success' })
+        }
       }
 
       // Analytics event removed - 'profile_shared' not in event types

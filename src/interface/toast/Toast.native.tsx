@@ -1,6 +1,6 @@
 import { useEmitter } from '@take-out/helpers'
 import { isAndroid } from '@tamagui/constants'
-import { memo, useEffect, useRef, useState, type ReactNode } from 'react'
+import { memo, useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Pressable, StyleSheet, useWindowDimensions } from 'react-native'
 import {
   Gesture,
@@ -133,9 +133,9 @@ const ToastBanner = memo(({ toast, onHide }: ToastBannerProps) => {
     height.value = withSpring(target)
   }
 
-  const hide = () => {
+  const hide = useCallback(() => {
     onHide()
-  }
+  }, [onHide])
 
   const panGesture = Gesture.Pan()
     .minDistance(0)
@@ -195,7 +195,7 @@ const ToastBanner = memo(({ toast, onHide }: ToastBannerProps) => {
           { damping: 20, stiffness: 300 },
           (finished) => {
             if (finished) {
-              scheduleOnRN(() => hide())
+              scheduleOnRN(hide)
             }
           }
         )

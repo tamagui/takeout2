@@ -1,3 +1,7 @@
+// example upload endpoint - add auth before using in production:
+// import { ensureAuth } from '~/features/auth/server/ensureAuth'
+// await ensureAuth(req)
+
 import { randomId } from '@take-out/helpers'
 
 import { s3Client } from '~/features/upload/s3client'
@@ -5,11 +9,7 @@ import { defaultBucket, uploadToS3 } from '~/features/upload/upload'
 
 const folder = 'uploads'
 
-// TODO: upload folder based on user or server
-
 export default async function handler(req: Request) {
-  // TODO
-  // await ensureAuth(req)
 
   if (req.method !== 'POST') {
     return Response.json({ error: 'Method not allowed' }, { status: 405 })

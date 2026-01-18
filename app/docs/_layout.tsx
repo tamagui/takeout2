@@ -147,7 +147,7 @@ export function DocsLayout() {
 }
 
 const PaginationLinkFrame = styled(XStack, {
-  tag: 'a',
+  render: 'a',
   flex: 1,
   minW: 200,
   p: '$5',

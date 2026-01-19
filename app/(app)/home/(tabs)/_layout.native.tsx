@@ -30,6 +30,7 @@ export function TabsLayout() {
   return (
     <>
       <Tabs
+        initialRouteName="feed"
         tabBar={(props) => <TabBar {...props} />}
         screenOptions={{
           headerShown: false,

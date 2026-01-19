@@ -41,7 +41,7 @@ export const LoginPage = () => {
 
   const handleSignInAdmin = () => {
     dialogEmit({ type: 'admin-password' })
-    router.replace('/home')
+    router.replace('/home/feed')
   }
 
   const handleSocialLogin = async (provider: 'google' | 'apple') => {
@@ -132,7 +132,7 @@ export const LoginPage = () => {
                       showToast('Demo login failed', { type: 'error' })
                       return
                     }
-                    router.replace('/home')
+                    router.replace('/home/feed')
                   }}
                   disabled={demoLoading}
                   width="100%"

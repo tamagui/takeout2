@@ -3,64 +3,116 @@ title: Highlights
 description: What makes Takeout unique
 ---
 
+Much the the time spent on Takeout, besides our time spent building Tamagui and
+One, went into making the details right - extensive scripts, repo-level docs,
+well-structured code. Deatils like builiding the new Motion animation driver and
+then configuring logged-out static pages to handing off seamleslly from CSS
+animations to Motion animations took time and aren't reflected in a
+feature-list.
+
+Here's a sample of some intersting work done in Takeout:
+
 ## One
 
-1. **Platform divergence** - `.native.tsx`, `.ios.tsx`, `.android.tsx`, `.web.tsx` suffixes let you share routes but completely diverge UI per platform
-2. **Mixed render modes** - static (`+ssg.tsx`), server-rendered, or client-only pages from the same router
-3. **Typed routes** - `createRoute()` with auto-generated `routes.d.ts` for full type safety on params and links
-4. **Native navigation** - `withLayoutContext()` wraps react-navigation for native tab bars, headers, and gestures
-5. **API routes** - `+api.ts` suffix with typed endpoints, catch-all patterns
-6. **LCP optimization** - `experimental_scriptLoading: 'after-lcp-aggressive'` defers JS until after paint
-
-## Zero
-
-1. **Optimistic mutations** - data syncs to client, queries run locally, mutations apply instantly
-2. **Server-only permissions** - `serverWhere()` returns true on client but enforces rules on server
-3. **Environment-aware mutations** - same mutation code runs optimistically on client, fully on server
-4. **Deferred side effects** - `server.asyncTasks.push()` runs analytics/notifications after transaction commits
-5. **Platform storage** - IndexedDB on web, SQLite on native, memory for anonymous users
-6. **Global query builder** - `zql.post.where(...)` without prop-drilling the Zero instance
+1. **Mixed render modes** - static, server-rendered, or client-only pages from
+   the same router, seamlessly route between.
+2. **Platform divergence** - `.native.tsx`, `.ios.tsx`, `.android.tsx`,
+   `.web.tsx` suffixes let you share routes but completely diverge UI per
+   platform. Typed `one/env` with environment/platform constants.
+3. **Typed routes** - Auto-generated `createRoute()`, auto-generated
+   `routes.d.ts` for full type safety on params and links.
+4. **API routes** - `+api.ts` suffix with typed endpoints, catch-all patterns
+5. **LCP optimization** - `experimental_scriptLoading` defers JS loading for
+   optimal Lighthouse scores.
+6. **Bundle optimized** - Build in bundle analysis and agentic harness to
+   analyze web performance and lighthouse. Aliases to remove bloat.
+7. **Flexible deploy** - Deploy to a Hono server, or switch to Vercel or
+   Cloudflare with a single line of config.
 
 ## Tamagui
 
-1. **Dual animation drivers** - CSS animations for static pages (lighter), spring physics for app pages (smoother)
-2. **Theme-conditional styles** - `$theme-dark` and `$theme-light` props directly in `styled()`
-3. **Group selectors** - `$group-button-hover` for parent-scoped state without prop drilling
-4. **Client-side theme hydration** - themes load from CSS variables, not JS bundle
+1. **Three animation drivers** - CSS animations for static web pages (light,
+   fast), Reanimated (native) or Motion (web) spring animation drivers for app
+   pages.
+2. **Bundle size optimization** - No JS for themes is sent to the client side,
+   CSS is pre-generated and inlined.
+3. **v2 and v5 Config** - Built on the latest version of Tamagui, with great LLM
+   docs on all the new features.
+4. **Less re-rendering** - v2 Motion and Reanimated animation drivers animate
+   internal changes with 0 re-rendering, for much smoother feeling apps.
+
+## Zero
+
+1. **Simplified with `over-zero** - Avoid writing glue code, validators, and
+   having logic spread over many files with `over-zero` auto generation.
+2. **Server-only permissions** - Easy `serverWhere()` helper makes writing
+   permissions often just a line or two of code.
+3. **Mutation setup** - Hard-fought setup for mutators that gives you good
+   structure, common patterns of usage, and great LLM docs around DOs and
+   DON'Ts.
+4. **Logging** - Well set up logging, error tracking, and debug modes for
+   figuring out what's going on.
+5. **Platform storage** - IndexedDB on web, SQLite on native, memory for
+   anonymous users.
+6. **Global query builder** - `zql.post.where(...)` without prop-drilling the
+   Zero instance.
 
 ## [Better Auth](https://www.better-auth.com)
 
 1. **EdDSA JWT** - Ed25519 keys for Zero sync compatibility
 2. **Phone-first signup** - generates temp email for phone-only users
-3. **Database hooks** - auto-creates public profile and user state on signup
+3. **Public/private profile system** - works well with Zero by splitting public
+   and private user information, then gluing together things nicely on the
+   frontend.
 4. **Invite system** - whitelist + invite codes with use limits and expiration
 
 ## [Drizzle](https://orm.drizzle.team)
 
-1. **Public/private schema split** - public tables sync via Zero, private stay server-only
+1. **Public/private schema split** - public tables sync via Zero, private stay
+   server-only
 2. **PostgreSQL triggers** - denormalized counters maintained at database level
 3. **Custom migration runner** - creates Zero's three databases automatically
+4. **Improved migrations** - A lightweight migration system built on top of
+   Drizzle that lets easy write custom up migrations alongside your
+   auto-generated ones with a single command to create or run, and designed to
+   build properly for Lambda environments if deploying with SST.
 
 ## SST / Uncloud
 
-1. **Dual deployment** - AWS via SST or any VPS via Uncloud with same codebase
-2. **Zero replication config** - Aurora with logical replication, WAL retention tuned for sync
-3. **Rolling deploys** - new instances spin up before old ones terminate
-4. **Encrypted config sharing** - team can share deployment credentials securely
+1. **Dual deployment** - AWS via SST or any VPS via Uncloud with same codebase.
+2. **Zero replication config** - Aurora with logical replication, WAL retention
+   tuned for sync.
+3. **Rolling deploys** - new instances spin up before old ones terminate.
+4. **Encrypted config sharing** - team can share deployment credentials
+   securely.
 
 ## CI/CD
 
-1. **Commit-gated native builds** - `native:` prefix in commit triggers expensive iOS/Android builds
-2. **Expo fingerprint caching** - JS-only changes skip native rebuild entirely
-3. **Auto OTA deploys** - hot updates deploy automatically after CI succeeds on main
+1. **Commit-gated native builds** - `native:` prefix in commit triggers
+   expensive iOS/Android builds.
+2. **Highly parallel** - Under 10 minutes to fully deployed without caching
+   including building and uploading images, running integration tests, and
+   monitoring health of the final deploy.
+3. **Expo fingerprint caching** - JS-only changes skip native rebuild entirely.
+4. **Auto OTA deploys** - hot updates deploy automatically after CI succeeds on
+   main.
 
 ## Scripts
 
-1. **Local overrides** - your `./scripts/` shadows built-in scripts
-2. **Parallel runner** - color-coded output with CPU-aware concurrency
-3. **AI-assisted sync** - `tko sync` loads prompt and spawns claude/cursor/aider
+1. **Tons of custom scripts** - A ton of Bun scripts from syncing environment,
+   monitoring health and deploys, shelling into dev/prod servers/databases,
+   easily running CI/CD, and more.
+1. **Local overrides** - your `./scripts/` shadows built-in scripts.
+1. **Parallel runner** - color-coded output with CPU-aware concurrency.
+1. **AI-assisted sync** - `tko sync` to sync with latest Takeout changes, loads
+   prompt and spawns claude/cursor/aider.
 
 ## Environment
 
-1. **Single source of truth** - `package.json` env section generates server exports, CI config, and docker-compose
-2. **SST state integration** - pull production env vars from deployed AWS resources
+1. **Bun** - Fast installs and CI/CD thanks to `bun` used for installs +
+   scripts.
+2. **Unified ENV system** - Custom scripts + `package.json` env section
+   generates server exports, CI config, and docker-compose, keeps them in sync
+   and handles default values.
+3. **SST state integration** - pull production env vars from deployed AWS
+   resources

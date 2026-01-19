@@ -38,7 +38,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
   const isOwnProfile = authorId === user?.id
 
   const handleImagePress = () => {
-    router.push(`/home/profile/post/${post.id}?username=${username}`)
+    router.push(`/home/feed/post/${post.id}?username=${username}`)
   }
 
   return (

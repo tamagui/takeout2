@@ -3,10 +3,10 @@ import { router } from 'one'
 import { memo, useCallback, useMemo, useRef } from 'react'
 import { RefreshControl } from 'react-native'
 import Animated from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { AnimatePresence, Spinner, useWindowDimensions, YStack } from 'tamagui'
 
 import { sharedTransition } from '~/helpers/animation/sharedTransition'
-import { useHeaderHeightSafe } from '~/hooks/useHeaderHeightSafe'
 import { useUser } from '~/hooks/useUser'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { ProfileShimmer } from '~/interface/shimmer/ProfileShimmer'
@@ -22,7 +22,7 @@ const NUM_COLUMNS = 2
 
 export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => {
   const listRef = useRef<LegendListRef>(null)
-  const headerHeight = useHeaderHeightSafe()
+  const insets = useSafeAreaInsets()
   const { width } = useWindowDimensions()
   const columnWidth = (width - 28 - COLUMN_GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS
 
@@ -136,14 +136,14 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
           <YStack
             key="studio-shimmer"
             transition="200ms"
-            pt={headerHeight}
+            pt={insets.top}
             exitStyle={{
               opacity: 0,
             }}
             opacity={1}
             z={999}
             position="absolute"
-            t={10}
+            t={0}
             l={0}
             r={0}
             b={0}

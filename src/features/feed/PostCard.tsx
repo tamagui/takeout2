@@ -104,7 +104,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
           <View width="100%" position="relative" mt="$2">
             <Pressable
               onPress={() =>
-                router.push(`/home/profile/post/${post.id}?username=${username}`)
+                router.push(`/home/feed/post/${post.id}?username=${username}`)
               }
             >
               <PostImage

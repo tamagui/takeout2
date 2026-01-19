@@ -489,7 +489,7 @@ const ButtonBackground = styled(View, {
   position: 'absolute',
   pointerEvents: 'none',
   inset: 0,
-  z: 0,
+  z: -1,
   bg: '$color1',
   opacity: 0.4,
 

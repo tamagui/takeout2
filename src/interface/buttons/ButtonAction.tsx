@@ -9,7 +9,7 @@ export type ButtonActionProps = Omit<ButtonSimpleProps, 'children'> & {
 export const ButtonAction = memo(({ children, ...props }: ButtonActionProps) => {
   return (
     <ButtonSimple theme="blue" variant="floating" {...props}>
-      <ButtonSimple.Text color="white">{children}</ButtonSimple.Text>
+      <ButtonSimple.Text color="$color12">{children}</ButtonSimple.Text>
     </ButtonSimple>
   )
 })

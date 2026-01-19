@@ -70,7 +70,7 @@ export const ProfileEditPage = () => {
 
   return (
     <PageLayout>
-      <View flex={1} px="$3">
+      <View flex={1} flexBasis="auto" px="$3">
         <KeyboardAwareScrollView
           showsVerticalScrollIndicator={false}
           bottomOffset={100}

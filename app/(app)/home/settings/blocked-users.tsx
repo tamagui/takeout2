@@ -99,7 +99,7 @@ export const ProfileBlockedUsersPage = () => {
 
   return (
     <PageLayout>
-      <View flex={1}>
+      <View flex={1} flexBasis="auto">
         {isLoading ? (
           <YStack flex={1} items="center" justify="center">
             <Spinner size="large" color="$color10" />

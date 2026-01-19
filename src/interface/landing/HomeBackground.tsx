@@ -24,11 +24,11 @@ export function HomeBackground() {
       {/* grain texture - fullscreen fixed */}
       <YStack
         className="grain-overlay"
-        position={'fixed' as any}
+        position="absolute"
         t={0}
         l={0}
         r={0}
-        height="100vh"
+        b={0}
         opacity={0.15}
         $theme-light={{
           opacity: 0.1,
@@ -43,7 +43,7 @@ export function HomeBackground() {
 
       {/* gradient orbs - absolute, scroll with page */}
       <YStack
-        position={'absolute' as any}
+        position="absolute"
         t={0}
         l={0}
         r={0}

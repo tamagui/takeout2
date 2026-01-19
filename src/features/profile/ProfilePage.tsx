@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react'
+import { memo } from 'react'
 import { AnimatePresence, Spinner, YStack } from 'tamagui'
 
 import { useHeaderHeightSafe } from '~/hooks/useHeaderHeightSafe'

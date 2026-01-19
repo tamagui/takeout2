@@ -20,9 +20,6 @@ export function useProfilePosts({
   // for web: page-based pagination
   const [currentPage, setCurrentPage] = useState(1)
 
-  // calculate cursor for web pagination (skip to specific page)
-  const webCursor = isWeb && currentPage > 1 ? { page: currentPage } : null
-
   const [posts, status] = useQuery(
     postsPaginated,
     {
@@ -56,8 +53,12 @@ export function useProfilePosts({
   const displayPosts = isWeb ? (posts as Post[]) || [] : allPostsData
 
   const hasMore = posts ? posts.length === pageSize : false
+
+  // only show loading if we have no data yet
+  // this prevents shimmer flicker when Zero reconnects but already has cached data
+  const hasData = posts && posts.length > 0
   const isLoading =
-    status.type === 'unknown' && (isWeb ? true : !cursor && Boolean(userId))
+    status.type === 'unknown' && !hasData && (isWeb ? true : !cursor && Boolean(userId))
 
   // estimate total pages (we don't have total count, so estimate based on hasMore)
   const totalPages = hasMore ? currentPage + 1 : currentPage

@@ -31,6 +31,7 @@ export const ProvideZero = ({ children }: { children: ReactNode }) => {
   const jwtToken = auth?.token || ''
   const role = auth.user?.role
 
+  // memoize authData to prevent unnecessary re-renders
   const authData = useMemo((): AuthData | null => {
     if (userId === 'anon') {
       return null
@@ -42,13 +43,15 @@ export const ProvideZero = ({ children }: { children: ReactNode }) => {
     }
   }, [userId, role])
 
+  const kvStore = isWeb && isClient && userId ? 'idb' : 'mem'
+
   console.info(`[zero]`, { auth, jwtToken, userId, ZERO_SERVER_URL })
 
   return (
     <ProvideZeroWithoutAuth
       userID={userId}
       auth={jwtToken}
-      kvStore={isWeb && isClient && userId ? 'idb' : 'mem'}
+      kvStore={kvStore}
       authData={authData}
       server={ZERO_SERVER_URL}
     >

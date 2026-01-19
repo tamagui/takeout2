@@ -5,14 +5,17 @@ const BASE_URL = 'http://localhost:8081'
 export async function loginAsDemo(page: Page, pathname = '/') {
   console.info('Navigating to login page...')
   await page.goto(`${BASE_URL}/auth/login`, {
-    waitUntil: 'domcontentloaded',
+    waitUntil: 'networkidle',
   })
+
+  // wait for page to hydrate
+  await page.waitForTimeout(3000)
 
   console.info('Logging in as demo user...')
 
   // click the demo login button
   const demoButton = page.locator('[data-testid="login-as-demo"]')
-  await demoButton.waitFor({ state: 'visible', timeout: 10000 })
+  await demoButton.waitFor({ state: 'visible', timeout: 15000 })
   await demoButton.click()
 
   // wait for navigation away from login page (up to 30 seconds in CI)

@@ -1,0 +1,61 @@
+---
+title: Get Started
+description: Clone, install, and run Takeout in minutes
+---
+
+## Prerequisites
+
+- **Bun** - [bun.sh](https://bun.sh) (recommend
+  [bunv](https://github.com/ianh/bunv) for version management)
+- **Docker** - [docker.com](https://docs.docker.com/get-docker/) (on macOS,
+  [OrbStack](https://orbstack.dev) is faster)
+- **Git**
+
+For mobile development:
+
+- **iOS**: macOS with Xcode 26+
+- **Android**: Android Studio with JDK 17+
+
+## Installation
+
+Clone the repo and run the setup:
+
+```bash
+git clone https://github.com/tamagui/takeout.git
+cd takeout
+bun install
+bun onboard
+```
+
+The onboarding wizard guides you through environment setup.
+
+## Development
+
+After onboarding, run in separate terminals:
+
+```bash
+bun backend      # postgres, zero, minio
+bun dev          # web at http://localhost:8081
+```
+
+For mobile:
+
+```bash
+bun ios          # ios simulator
+bun android      # android emulator
+```
+
+## Next Steps
+
+- Run `bun tko` to see available commands
+- Run `bun tko docs list` for built-in documentation
+
+## Pro Version
+
+Takeout is available in two versions:
+
+- **Free** - [github.com/tamagui/takeout](https://github.com/tamagui/takeout)
+- **Pro** - [tamagui.dev/takeout](https://tamagui.dev/takeout) - includes
+  additional features, priority support, and access to the private repo
+
+Both versions follow the same installation steps above.

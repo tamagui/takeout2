@@ -4,10 +4,7 @@ import { isWeb, ScrollView, SizableText, View, XStack, YStack } from 'tamagui'
 
 import { APP_NAME_LOWERCASE, DOMAIN } from '~/constants/app'
 import { useLogout } from '~/features/auth/useLogout'
-import { useUser } from '~/features/user/useUser'
-import { Pressable } from '~/interface/buttons/Pressable'
 import { dialogConfirm } from '~/interface/dialogs/actions'
-import { Switch } from '~/interface/forms/Switch'
 import { BookmarkIcon } from '~/interface/icons/phosphor/BookmarkIcon'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { ChatCircleIcon } from '~/interface/icons/phosphor/ChatCircleIcon'
@@ -17,16 +14,18 @@ import { InfoIcon } from '~/interface/icons/phosphor/InfoIcon'
 import { LockIcon } from '~/interface/icons/phosphor/LockIcon'
 import { UserIcon } from '~/interface/icons/phosphor/UserIcon'
 import { PageLayout } from '~/interface/pages/PageLayout'
-import { H4, SepHeading } from '~/interface/text/Headings'
+import { SepHeading } from '~/interface/text/Headings'
+import { useToggleTheme } from '~/interface/theme/ThemeSwitch'
+
+import type { IconComponent } from '~/interface/icons/types'
 
 interface SettingItem {
   id: string
   title: string
-  icon?: React.ComponentType<any>
-  action?: () => void
+  icon?: IconComponent
+  onPress?: () => void
   href?: Href
   external?: boolean
-  hasSwitch?: boolean
 }
 
 interface SettingSection {
@@ -34,18 +33,18 @@ interface SettingSection {
   items: SettingItem[]
 }
 
-const ItemContent = ({ item }: { item: SettingItem }) => {
+function SettingRow({ item }: { item: SettingItem }) {
   const Icon = item.icon
-  return (
+
+  const content = (
     <XStack
       cursor="pointer"
       height={56}
       px="$4"
       items="center"
       justify="space-between"
-      hoverStyle={{
-        bg: '$color2',
-      }}
+      hoverStyle={{ bg: '$color2' }}
+      {...(item.onPress && { onPress: item.onPress })}
     >
       <XStack gap="$3" items="center" flex={1}>
         {Icon && (
@@ -58,67 +57,39 @@ const ItemContent = ({ item }: { item: SettingItem }) => {
       <CaretRightIcon size={16} color="$color8" />
     </XStack>
   )
-}
 
-const renderItem = (item: SettingItem) => {
-  const Icon = item.icon
-
-  if (item.hasSwitch) {
-    return (
-      <XStack
-        key={item.id}
-        bg="$color1"
-        height={56}
-        px="$4"
-        items="center"
-        justify="space-between"
-        borderBottomWidth={1}
-        borderBottomColor="$color3"
-      >
-        <XStack gap="$3" items="center" flex={1}>
-          {Icon && (
-            <View width={24} items="center" justify="center">
-              <Icon size={20} color="$color11" />
-            </View>
-          )}
-          <SizableText size="$4" color="$color12" fontWeight="600">
-            {item.title}
-          </SizableText>
-        </XStack>
-        <Switch size="$3" checked={false} onCheckedChange={undefined} bg="$color4" />
-      </XStack>
-    )
-  }
-
-  if (item.action) {
-    return (
-      <Pressable key={item.id} onPress={item.action}>
-        <ItemContent item={item} />
-      </Pressable>
-    )
+  if (item.onPress) {
+    return content
   }
 
   if (item.href) {
     if (item.external && !isWeb) {
       return (
-        <Pressable
-          key={item.id}
+        <XStack
+          cursor="pointer"
+          height={56}
+          px="$4"
+          items="center"
+          justify="space-between"
+          hoverStyle={{ bg: '$color2' }}
           onPress={() => Linking.openURL(`https://${DOMAIN}${item.href}`)}
         >
-          <ItemContent item={item} />
-        </Pressable>
+          <XStack gap="$3" items="center" flex={1}>
+            {Icon && (
+              <View width={24} items="center" justify="center">
+                <Icon size={20} color="$color11" />
+              </View>
+            )}
+            <SizableText size="$5">{item.title}</SizableText>
+          </XStack>
+          <CaretRightIcon size={16} color="$color8" />
+        </XStack>
       )
     }
+
     return (
-      <Link
-        key={item.id}
-        href={item.href}
-        target={item.external ? '_blank' : undefined}
-        asChild
-      >
-        <Pressable>
-          <ItemContent item={item} />
-        </Pressable>
+      <Link href={item.href} target={item.external ? '_blank' : undefined} asChild>
+        {content}
       </Link>
     )
   }
@@ -126,9 +97,14 @@ const renderItem = (item: SettingItem) => {
   return null
 }
 
-export const ProfileSettingsPage = () => {
-  const { isAdmin } = useUser()
+export function ProfileSettingsPage() {
   const { logout } = useLogout()
+  const {
+    onPress: toggleTheme,
+    Icon: ThemeIcon,
+    setting: themeSetting,
+  } = useToggleTheme()
+  const themeLabel = themeSetting[0]?.toUpperCase() + themeSetting.slice(1)
 
   const handleDeleteAccount = async () => {
     await dialogConfirm({
@@ -137,10 +113,16 @@ export const ProfileSettingsPage = () => {
     })
   }
 
-  const allSections: SettingSection[] = [
+  const sections: SettingSection[] = [
     {
       title: 'Account',
       items: [
+        {
+          id: 'theme',
+          title: `Theme: ${themeLabel}`,
+          icon: ThemeIcon,
+          onPress: toggleTheme,
+        },
         {
           id: 'profile',
           title: 'Edit Profile',
@@ -190,38 +172,10 @@ export const ProfileSettingsPage = () => {
           id: 'delete',
           title: 'Delete Account',
           icon: InfoIcon,
-          action: handleDeleteAccount,
+          onPress: handleDeleteAccount,
         },
       ],
     },
-    // TODO: handle admin panel
-    // ...(isAdmin
-    //   ? [
-    //       {
-    //         title: 'Admin',
-    //         items: [
-    //           {
-    //             id: 'admin',
-    //             title: 'Admin Panel',
-    //             icon: GearIcon,
-    //             route: '/admin',
-    //           },
-    //           {
-    //             id: 'whitelist',
-    //             title: 'Manage Whitelist',
-    //             icon: ShieldCheckIcon,
-    //             route: '/admin/whitelist',
-    //           },
-    //           {
-    //             id: 'user-reports',
-    //             title: 'User Reports',
-    //             icon: ShieldCheckIcon,
-    //             route: '/admin/user-reports',
-    //           },
-    //         ],
-    //       },
-    //     ]
-    //   : []),
     {
       title: 'Other',
       items: [
@@ -229,24 +183,28 @@ export const ProfileSettingsPage = () => {
           id: 'logout',
           title: 'Log Out',
           icon: DoorIcon,
-          action: logout,
+          onPress: logout,
         },
       ],
     },
   ]
 
   return (
-    <PageLayout useImage={true}>
+    <PageLayout useImage>
       <ScrollView
         flex={1}
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
       >
         <YStack flex={1} pb="$10">
-          {allSections.map((section, sectionIndex) => (
+          {sections.map((section) => (
             <YStack key={section.title} mb="$6" ml="$4">
               <SepHeading>{section.title}</SepHeading>
-              <YStack>{section.items.map((item) => renderItem(item))}</YStack>
+              <YStack>
+                {section.items.map((item) => (
+                  <SettingRow key={item.id} item={item} />
+                ))}
+              </YStack>
             </YStack>
           ))}
 

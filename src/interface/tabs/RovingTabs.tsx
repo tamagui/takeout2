@@ -160,7 +160,7 @@ function RovingTabsTab({
       onInteraction={onInteraction}
       bg="transparent"
       borderWidth={0}
-      cursor="pointer"
+      rounded="$2"
       {...rest}
     >
       {children}
@@ -185,6 +185,7 @@ function RovingTabsIndicator({
       opacity={active ? 1 : 0.5}
       rounded={isUnderline ? '$2' : '$4'}
       transition={animationClamped('quickerLessBouncy')}
+      pointerEvents="none"
       enterStyle={{
         opacity: 0,
       }}

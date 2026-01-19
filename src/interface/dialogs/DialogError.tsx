@@ -34,7 +34,7 @@ export const DialogError = () => {
         }
       }}
     >
-      <YStack pointerEvents="box-none" gap="$3" flex={1}>
+      <YStack pointerEvents="box-none" gap="$3" $md={{ flex: 1 }}>
         <Dialog.Header title={state?.title} description={state?.description} />
       </YStack>
 

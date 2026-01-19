@@ -36,7 +36,7 @@ export const DialogConfirm = () => {
         }
       }}
     >
-      <YStack pointerEvents="box-none" gap="$2" flex={1}>
+      <YStack pointerEvents="box-none" gap="$2" $md={{ flex: 1 }}>
         <Dialog.Header title={state?.title} description={state?.description} />
 
         {state?.extraConfirm && (

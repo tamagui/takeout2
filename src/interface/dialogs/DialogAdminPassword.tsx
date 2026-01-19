@@ -26,7 +26,7 @@ export const DialogAdminPassword = () => {
         if (!open) closeDialog()
       }}
     >
-      <YStack pointerEvents="box-none" gap="$2" flex={1}>
+      <YStack pointerEvents="box-none" gap="$2" $md={{ flex: 1 }}>
         <Dialog.Header title="Admin Login" description="Enter password" />
         <Input
           type="password"

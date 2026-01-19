@@ -13,7 +13,7 @@ import { PageLayout } from '~/interface/pages/PageLayout'
 import type { Post } from '~/data/types'
 
 export const SearchPage = memo(() => {
-  const { top, bottom } = useSafeAreaInsets()
+  const { top } = useSafeAreaInsets()
   const { posts, searchText, setSearchText, isSearching, loadMore, hasMore } =
     usePostsSearch()
 
@@ -21,7 +21,6 @@ export const SearchPage = memo(() => {
 
   return (
     <PageLayout>
-      <AnimatedBlurHeader title="Search" />
       <YStack position="absolute" t={headerHeight} l={0} r={0} p="$3" z={99}>
         <Input
           glass

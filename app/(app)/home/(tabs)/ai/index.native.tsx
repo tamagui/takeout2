@@ -1,15 +1,10 @@
 import { memo, useCallback, useState } from 'react'
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller'
-import Animated, {
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated'
+import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { SizableText, View, YStack } from 'tamagui'
 
 import { AIChatInput } from '~/interface/ai/AIChatInput'
-import { AnimatedBlurHeader } from '~/interface/headers/AnimatedBlurHeader'
 import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
 import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter'
 import { PageLayout } from '~/interface/pages/PageLayout'
@@ -58,7 +53,6 @@ const MessageBubble = memo(({ message }: { message: Message }) => {
 })
 
 export const AIPage = memo(() => {
-  const scrollY = useSharedValue(0)
   const insets = useSafeAreaInsets()
   const [messages, setMessages] = useState<Message[]>([])
 
@@ -102,8 +96,6 @@ export const AIPage = memo(() => {
 
   return (
     <PageLayout>
-      <AnimatedBlurHeader scrollY={scrollY} title="AI Assistant" />
-
       <Animated.FlatList
         data={messages}
         renderItem={renderItem}

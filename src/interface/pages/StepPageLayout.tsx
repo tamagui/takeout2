@@ -1,6 +1,7 @@
 import { router } from 'one'
 import { Circle, H5, isWeb, Spacer, XStack, YStack } from 'tamagui'
 
+import { HeaderBackButton } from '../buttons/HeaderBackButton'
 import { Pressable } from '../buttons/Pressable'
 import { CaretLeftIcon } from '../icons/phosphor/CaretLeftIcon'
 import { PageHeading } from '../text/PageHeading'
@@ -54,13 +55,7 @@ export const StepPageLayout = ({
       <YStack gap="$5">
         {!hideBackButton && !isWeb && (
           <XStack justify="space-between" items="center">
-            <Pressable
-              disabled={disableBackButton}
-              hitSlop={10}
-              onPress={() => router.back()}
-            >
-              <CaretLeftIcon size={24} />
-            </Pressable>
+            <HeaderBackButton disabled={disableBackButton} />
             {headerTitle && <H5>{headerTitle}</H5>}
             {buttonRight ? buttonRight : <Spacer width={24} />}
           </XStack>

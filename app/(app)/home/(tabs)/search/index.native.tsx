@@ -42,26 +42,6 @@ export const SearchPage = memo(() => {
   const { posts, searchText, setSearchText, isSearching, loadMore, hasMore } =
     usePostsSearch()
 
-  const handleSearchTextChange = useCallback(
-    (text: string) => {
-      setSearchText(text)
-    },
-    [setSearchText]
-  )
-
-  useLayoutEffect(() => {
-    if (isNative) {
-      navigation.setOptions({
-        headerSearchBarOptions: {
-          placeholder: 'Search posts...',
-          onChangeText: (e: NativeSyntheticEvent<TextInputChangeEventData>) => {
-            handleSearchTextChange(e.nativeEvent.text)
-          },
-        },
-      })
-    }
-  }, [navigation, handleSearchTextChange])
-
   const renderItem = useCallback(({ item }: LegendListRenderItemProps<Post>) => {
     return <PostCard post={item} />
   }, [])
@@ -115,7 +95,7 @@ export const SearchPage = memo(() => {
 
   return (
     <PageLayout>
-      <AnimatedBlurHeader scrollY={scrollY} title="Search" />
+      {/* <AnimatedBlurHeader scrollY={scrollY} title="Search" /> */}
       <YStack position="absolute" t={headerHeight} l={0} r={0} p="$3" z={99}>
         <Input
           glass
@@ -140,6 +120,7 @@ export const SearchPage = memo(() => {
           contentContainerStyle={{
             paddingBottom: bottom + 100,
           }}
+          contentInsetAdjustmentBehavior="automatic"
           showsVerticalScrollIndicator={false}
         />
       </View>

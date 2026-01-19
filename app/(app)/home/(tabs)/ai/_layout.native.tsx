@@ -1,13 +1,22 @@
 import { Stack } from 'one'
 
-export function AILayout() {
+import { HeaderBackButton } from '~/interface/buttons/HeaderBackButton'
+
+export const AILayout = () => {
   return (
     <Stack
       screenOptions={{
-        headerShown: false,
+        headerTransparent: true,
+        headerShadowVisible: true,
       }}
     >
-      <Stack.Screen name="index" />
+      <Stack.Screen
+        name="index"
+        options={{
+          headerLeft: () => <HeaderBackButton />,
+          title: 'Takeout Assistant',
+        }}
+      />
     </Stack>
   )
 }

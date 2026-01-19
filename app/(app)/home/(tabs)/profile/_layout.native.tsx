@@ -1,8 +1,8 @@
 import { isLiquidGlassAvailable } from 'expo-glass-effect'
 import { router, Stack } from 'one'
 
+import { HeaderBackButton } from '~/interface/buttons/HeaderBackButton'
 import { Pressable } from '~/interface/buttons/Pressable'
-import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { GearIcon } from '~/interface/icons/phosphor/GearIcon'
 
 export const ProfileLayout = () => {
@@ -19,7 +19,6 @@ export const ProfileLayout = () => {
         name="index"
         options={{
           title: 'Profile',
-          headerLargeTitle: true,
           headerRight: () => (
             <Pressable
               onPress={() => router.push('/home/settings')}
@@ -37,17 +36,7 @@ export const ProfileLayout = () => {
         name="post/[feedId]"
         options={() => ({
           title: 'Post',
-          headerLeft: () => (
-            <Pressable
-              onPress={() => router.back()}
-              width={36}
-              height={36}
-              items="center"
-              justify="center"
-            >
-              <CaretLeftIcon size={24} />
-            </Pressable>
-          ),
+          headerLeft: () => <HeaderBackButton />,
         })}
       />
     </Stack>

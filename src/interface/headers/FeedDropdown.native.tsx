@@ -523,7 +523,7 @@ const QuickMenuIcon = ({ item, index, isOpen, onPress }: QuickMenuIconProps) => 
         rounded={14}
         bg="$background04"
       >
-        <Icon size={24} color="white" />
+        <Icon size={24} color="$color12" />
       </Pressable>
     </FastSquircleViewAnimated>
   )
@@ -611,7 +611,7 @@ const QuickMenuRow = ({ item, onPress, onRemove, onSwipeableRef }: QuickMenuRowP
             width="100%"
           >
             <View width={44} height={44} items="center" justify="center" rounded={12}>
-              <Icon size={20} color="white" />
+              <Icon size={20} color="$color12" />
             </View>
             <SizableText fontSize="$4" fontWeight="500" color="$color">
               {item.label}

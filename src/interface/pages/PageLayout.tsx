@@ -17,5 +17,5 @@ export const PageLayout = ({ children, useImage = false }: PageLayoutProps) => {
       </GradientBackground>
     )
   }
-  return <> {children}</>
+  return <>{children}</>
 }

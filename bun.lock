@@ -28,6 +28,7 @@
         "@take-out/hooks": "workspace:*",
         "@take-out/native-hot-update": "workspace:*",
         "@take-out/postgres": "workspace:*",
+        "@tamagui/animations-moti": "^2.0.0-1768858510816",
         "@tamagui/build": "^2.0.0-1768858510816",
         "@tamagui/config": "^2.0.0-1768858510816",
         "@tamagui/constants": "^2.0.0-1768858510816",

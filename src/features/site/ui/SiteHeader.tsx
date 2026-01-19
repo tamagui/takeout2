@@ -76,26 +76,19 @@ const SiteHeaderMenu = memo(() => {
       <Sheet
         open={open}
         onOpenChange={setOpen}
-        transition="quick"
-        transitionConfig={{
-          type: 'spring',
-          damping: 25,
-          mass: 1,
-          stiffness: 200,
-        }}
+        transition="medium"
         modal
         dismissOnSnapToBottom
-        snapPoints={[80]}
+        snapPoints={[50]}
       >
         <Sheet.Overlay
-          transition={animationClamped('quick')}
-          opacity={0.8}
+          transition="quick"
           bg="$shadow6"
           enterStyle={{ opacity: 0 }}
           exitStyle={{ opacity: 0 }}
         />
 
-        <Sheet.Frame bg="$color2" boxShadow="0 0 10px $shadow6">
+        <Sheet.Frame bg="$color2" boxShadow="0 0 10px $shadow4">
           <YStack flex={1} gap="$2">
             <XStack p="$4" pb="$3" justify="space-between">
               <Logo height={32} />
@@ -104,7 +97,7 @@ const SiteHeaderMenu = memo(() => {
 
             <Separator />
 
-            <YStack flex={1}>
+            <YStack flex={1} p="$3" gap="$2">
               <LoginListItem
                 onPressOut={() => {
                   setTimeout(() => {

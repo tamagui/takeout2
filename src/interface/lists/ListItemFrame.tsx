@@ -12,7 +12,10 @@ export const ListItemFrame = styled(XStack, {
   minW: '100%',
   maxW: '100%',
   cursor: 'default',
-  // overflow: 'hidden',
+
+  pressStyle: {
+    bg: '$color3',
+  },
   rounded: '$4',
   tabIndex: 0,
   // without this z-index of ListItemBackground -1 will appear sometimes below

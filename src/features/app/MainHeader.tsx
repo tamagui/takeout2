@@ -1,5 +1,5 @@
 import { Link, router } from 'one'
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { H3, Separator, Sheet, Spacer, View, XStack, YStack } from 'tamagui'
 
 import { useLogout } from '~/features/auth/useLogout'
@@ -20,14 +20,6 @@ import { NavigationTabs } from './NavigationTabs'
 
 export const MainHeader = () => {
   const { user } = useUser()
-  const [open, setOpen] = useState<boolean>(false)
-  const { logout } = useLogout()
-
-  const handleLogout = () => {
-    logout()
-    setOpen(false)
-  }
-
   return (
     <ScrollHeader>
       <PageContainer>
@@ -53,7 +45,6 @@ export const MainHeader = () => {
               </View>
             </XStack>
 
-            {/* desktop controls */}
             <XStack gap="$2.5" items="center" display="none" $md={{ display: 'flex' }}>
               {user && (
                 <UserProfilePopover
@@ -80,80 +71,94 @@ export const MainHeader = () => {
               />
             </XStack>
 
-            {/* mobile controls */}
-            <ButtonSimple
-              size="large"
-              variant="transparent"
-              circular
-              icon={<ListIcon size={20} />}
-              aria-label="Menu"
-              onPress={() => setOpen(true)}
-              $md={{ display: 'none' }}
-            />
-
-            <Sheet
-              open={open}
-              onOpenChange={setOpen}
-              transition="medium"
-              modal
-              dismissOnSnapToBottom
-              snapPoints={[50]}
-            >
-              <Sheet.Frame bg="$color2">
-                <YStack flex={1} gap="$2">
-                  <XStack p="$4" pb="$3" justify="space-between" items="center">
-                    <XStack gap="$3" items="center">
-                      <Logo height={32} />
-                    </XStack>
-                    <ThemeSwitch />
-                  </XStack>
-
-                  <Separator />
-
-                  <YStack flex={1}>
-                    <Link href="/home/settings" asChild>
-                      <ListItem onPress={() => setOpen(false)}>
-                        <ListItem.Icon>
-                          <GearIcon />
-                        </ListItem.Icon>
-                        <ListItem.Text>Settings</ListItem.Text>
-                      </ListItem>
-                    </Link>
-
-                    <ListItem onPress={handleLogout}>
-                      <ListItem.Icon>
-                        <DoorIcon />
-                      </ListItem.Icon>
-                      <ListItem.Text>Logout</ListItem.Text>
-                    </ListItem>
-                  </YStack>
-
-                  {user && (
-                    <XStack p="$4" pt="$2" gap="$3" items="center">
-                      <Avatar
-                        size={40}
-                        image={user.image}
-                        name={user.name ?? user.username ?? 'User'}
-                      />
-                      <YStack flex={1}>
-                        <H3 size="$3" fontWeight="600">
-                          {user.name || user.username}
-                        </H3>
-                      </YStack>
-                    </XStack>
-                  )}
-                </YStack>
-              </Sheet.Frame>
-              <Sheet.Overlay
-                bg="$shadow4"
-                transition="quick"
-                enterStyle={{ opacity: 0 }}
-                exitStyle={{ opacity: 0 }}
-              />
-            </Sheet>
+            <MainHeaderMenu />
           </XStack>
         </YStack>
       </PageContainer>
     </ScrollHeader>
   )
 }
+
+export const MainHeaderMenu = memo(() => {
+  const { user } = useUser()
+  const [open, setOpen] = useState(false)
+  const { logout } = useLogout()
+
+  const handleLogout = () => {
+    logout()
+    setOpen(false)
+  }
+  return (
+    <>
+      <ButtonSimple
+        size="large"
+        variant="transparent"
+        circular
+        icon={<ListIcon size="$1" />}
+        aria-label="Menu"
+        onPress={() => setOpen(true)}
+        $md={{ display: 'none' }}
+      />
+      <Sheet
+        open={open}
+        onOpenChange={setOpen}
+        transition="medium"
+        modal
+        dismissOnSnapToBottom
+        snapPoints={[50]}
+      >
+        <Sheet.Overlay
+          bg="$shadow6"
+          transition="quick"
+          enterStyle={{ opacity: 0 }}
+          exitStyle={{ opacity: 0 }}
+        />
+        <Sheet.Frame bg="$color2" boxShadow="0 0 10px $shadow4">
+          <YStack flex={1} gap="$2">
+            <XStack p="$4" pb="$3" justify="space-between" items="center">
+              <XStack gap="$3" items="center">
+                <Logo height={32} />
+              </XStack>
+              <ThemeSwitch />
+            </XStack>
+
+            <Separator />
+
+            <YStack flex={1} p="$3" gap="$2">
+              <Link href="/home/settings" asChild>
+                <ListItem onPress={() => setOpen(false)}>
+                  <ListItem.Icon>
+                    <GearIcon />
+                  </ListItem.Icon>
+                  <ListItem.Text>Settings</ListItem.Text>
+                </ListItem>
+              </Link>
+
+              <ListItem onPress={handleLogout}>
+                <ListItem.Icon>
+                  <DoorIcon />
+                </ListItem.Icon>
+                <ListItem.Text>Logout</ListItem.Text>
+              </ListItem>
+            </YStack>
+
+            {user && (
+              <XStack p="$4" pt="$2" gap="$3" items="center">
+                <Avatar
+                  size={40}
+                  image={user.image}
+                  name={user.name ?? user.username ?? 'User'}
+                />
+                <YStack flex={1}>
+                  <H3 size="$3" fontWeight="600">
+                    {user.name || user.username}
+                  </H3>
+                </YStack>
+              </XStack>
+            )}
+          </YStack>
+        </Sheet.Frame>
+      </Sheet>
+    </>
+  )
+})

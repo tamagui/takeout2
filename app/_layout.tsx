@@ -6,6 +6,7 @@ import { Slot, Stack } from 'one'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import { SiteRootLayout } from '~/features/site/ui/SiteRootLayout'
+import { HomeBackground } from '~/interface/landing'
 import { GlobalTooltipProvider } from '~/interface/tooltip/TooltipSimple'
 import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
 
@@ -33,9 +34,12 @@ export function Layout() {
             <GlobalTooltipProvider>
               <SafeAreaProvider>
                 {process.env.VITE_PLATFORM === 'web' ? (
-                  <SiteRootLayout>
-                    <Slot />
-                  </SiteRootLayout>
+                  <>
+                    <HomeBackground />
+                    <SiteRootLayout>
+                      <Slot />
+                    </SiteRootLayout>
+                  </>
                 ) : (
                   <Stack screenOptions={{ headerShown: false }}>
                     <Stack.Screen name="(app)" />

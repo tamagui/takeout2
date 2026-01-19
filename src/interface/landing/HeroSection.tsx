@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { H1, Paragraph, Text, View, XStack, YStack, styled } from 'tamagui'
+import { H1, Paragraph, Text, XStack, YStack, styled } from 'tamagui'
 
 import { Link } from '~/interface/app/Link'
 import { OneLogo } from '~/interface/icons/logos/OneLogo'
@@ -8,7 +8,8 @@ import { ZeroLogo } from '~/interface/icons/logos/ZeroLogo'
 import { ArrowRightIcon } from '~/interface/icons/phosphor/ArrowRightIcon'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { CopyIcon } from '~/interface/icons/phosphor/CopyIcon'
-import { TooltipSimple } from '~/interface/tooltip/TooltipSimple'
+
+import { ButtonSimple } from '../buttons/ButtonSimple'
 
 const techLogos = [
   {
@@ -32,92 +33,27 @@ const techLogos = [
 ] as const
 
 const HeroTitle = styled(H1, {
-  fontSize: 36,
-  fontWeight: '800',
   letterSpacing: -1,
   color: '$color12',
-  style: {
-    fontFamily: 'var(--font-heading)',
-    lineHeight: '1.1',
-  },
+  size: '$12',
+  fontWeight: '800',
+  mr: -50,
 
-  $sm: {
-    fontSize: 48,
-    letterSpacing: -1.5,
-  },
-
-  $md: {
-    fontSize: 56,
-    letterSpacing: -2,
+  $maxLG: {
+    size: '$10',
   },
 })
 
 const HeroSubtitle = styled(Paragraph, {
-  fontSize: 15,
   color: '$color11',
   maxW: 480,
-  style: {
-    fontFamily: 'var(--font-body)',
-    lineHeight: '1.6',
-  },
-
-  $sm: {
-    fontSize: 17,
-  },
-
-  $md: {
-    fontSize: 18,
-  },
+  size: '$6',
 })
 
-const HighlightText = styled(Paragraph, {
+const HighlightText = styled(Text, {
   render: 'span',
-  fontSize: 36,
-  fontWeight: '800',
   letterSpacing: -1,
   color: '$blue11',
-  style: {
-    fontFamily: 'var(--font-heading)',
-    lineHeight: '1.1',
-  },
-
-  $sm: {
-    fontSize: 48,
-    letterSpacing: -1.5,
-  },
-
-  $md: {
-    fontSize: 56,
-    letterSpacing: -2,
-  },
-})
-
-const PrimaryButton = styled(YStack, {
-  rounded: '$6',
-  px: '$5',
-  py: '$3.5',
-  cursor: 'pointer',
-  items: 'center',
-  justify: 'center',
-  bg: '$blue9',
-  shadowColor: '$blue12',
-  shadowOffset: { width: 0, height: 4 },
-  shadowOpacity: 0.3,
-  shadowRadius: 12,
-  style: {
-    transition: 'transform 200ms ease, background-color 200ms ease',
-  },
-
-  hoverStyle: {
-    bg: '$blue10',
-    shadowOpacity: 0.4,
-    y: -2,
-  },
-
-  pressStyle: {
-    bg: '$blue8',
-    y: 0,
-  },
 })
 
 const CommandBox = styled(XStack, {
@@ -351,20 +287,10 @@ function HeroTerminal() {
         {typedCommand && (
           <YStack gap="$1">
             <XStack items="center">
-              <Paragraph
-                fontFamily="$mono"
-                fontSize={13}
-                color="#22c55e"
-                style={{ lineHeight: '1.7' }}
-              >
+              <Paragraph fontFamily="$mono" fontSize={13} color="#22c55e">
                 ${' '}
               </Paragraph>
-              <Paragraph
-                fontFamily="$mono"
-                fontSize={13}
-                color="#e5e5e5"
-                style={{ lineHeight: '1.7' }}
-              >
+              <Paragraph fontFamily="$mono" fontSize={13} color="#e5e5e5">
                 {typedCommand}
               </Paragraph>
               {!showOutput && <YStack width={8} height={16} bg="#e5e5e5" ml="$1" />}
@@ -373,25 +299,14 @@ function HeroTerminal() {
         )}
 
         {outputLines.map((line, i) => (
-          <Paragraph
-            key={i}
-            fontFamily="$mono"
-            fontSize={13}
-            color="#888"
-            style={{ lineHeight: '1.7' }}
-          >
+          <Paragraph key={i} fontFamily="$mono" fontSize={13} color="#888">
             {line}
           </Paragraph>
         ))}
 
         {!typedCommand && history.length === 0 && (
           <XStack items="center">
-            <Paragraph
-              fontFamily="$mono"
-              fontSize={13}
-              color="#22c55e"
-              style={{ lineHeight: '1.7' }}
-            >
+            <Paragraph fontFamily="$mono" fontSize={13} color="#22c55e">
               ${' '}
             </Paragraph>
             <YStack width={8} height={16} bg="#e5e5e5" ml="$1" />
@@ -459,36 +374,46 @@ export function HeroSection() {
         <YStack gap="$5" flex={1} minW={300} maxW={520} items="flex-start">
           <YStack gap="$1">
             <HeroTitle>
-              Less code, faster iteration,{' '}
+              Less code,
+              <br /> faster iteration,
+              <br />
               <HighlightText render="span">higher quality.</HighlightText>
             </HeroTitle>
           </YStack>
 
           <HeroSubtitle>
-            A complete startup starter, Takeout 2 is the fastest way to deploy{' '}
-            <Text color="$color12">high quality</Text> cross-platform projects with a
-            single repo, bundler, and framework - iOS, Android, and web.
+            The complete startup starter. Takeout 2 is the fastest way to deploy{' '}
+            <Text color="$color12">high quality</Text> cross-platform projects with less
+            code and complexity — iOS, Android, and web.
           </HeroSubtitle>
 
           <XStack gap="$3" mt="$2" flexWrap="wrap" items="center">
             <Link href="/docs/introduction">
-              <PrimaryButton>
-                <XStack gap="$2.5" items="center">
-                  <Paragraph
-                    fontSize={15}
-                    fontWeight="600"
-                    color="white"
-                    style={{ fontFamily: 'var(--font-body)' }}
-                  >
-                    Docs
-                  </Paragraph>
-                  <ArrowRightIcon size={16} color="white" />
-                </XStack>
-              </PrimaryButton>
+              <ButtonSimple
+                cursor="pointer"
+                theme="accent"
+                size="large"
+                icon={ArrowRightIcon}
+                iconAfter
+              >
+                Docs
+              </ButtonSimple>
             </Link>
 
             <CopyCommand />
           </XStack>
+
+          <Paragraph size="$5" color="$color10">
+            Get access to the{' '}
+            <Link href="https://tamagui.dev/takeout" target="_blank">
+              Pro version
+            </Link>{' '}
+            or the{' '}
+            <Link href="https://github.com/tamagui/takeout-free" target="_blank">
+              Free version
+            </Link>
+            .
+          </Paragraph>
 
           {/* powered by section */}
           {/* <YStack gap="$3" mt="$4">

@@ -11,6 +11,8 @@ export const ProFreeButtons = () => {
         borderColor="$color5"
         overflow="hidden"
         ml="$3"
+        display="none"
+        $md={{ display: 'flex' }}
       >
         <XGroup.Item>
           <Link

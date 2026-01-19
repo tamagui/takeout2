@@ -120,7 +120,7 @@ export function ContentSection() {
       </ContentTitle>
 
       {/* tldr */}
-      <ContentParagraph>
+      <ContentParagraph size="$6">
         <Strong fontWeight="700">TL;DR:</Strong> Takeout is the result of a many-year
         effort to create{' '}
         <Strong>
@@ -131,7 +131,7 @@ export function ContentSection() {
         data, and UI.
       </ContentParagraph>
 
-      <ContentParagraph>
+      <ContentParagraph size="$6">
         Today,{' '}
         <Link href="https://tamagui.dev/takeout" hideExternalIcon>
           <InlineLink fontWeight="600">we're releasing Takeout 2 RC 1</InlineLink>
@@ -140,7 +140,7 @@ export function ContentSection() {
         Native while also improving the native-feel it can achieve.
       </ContentParagraph>
 
-      <ContentParagraph>
+      <ContentParagraph size="$6">
         Even when sharing a lot of code you can get perfect Lighthouse performance scores
         with ease, like this very page does, thanks to our libraries{' '}
         <Link href="https://tamagui.dev" target="_blank" hideExternalIcon>

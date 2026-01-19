@@ -14,11 +14,11 @@ const GradientOrb = styled(YStack, {
 export function GrainBackground() {
   return (
     <YStack
-      position={'fixed' as any}
-      t={0}
+      position={'absolute' as any}
+      t={-100}
       l={0}
       r={0}
-      b={0}
+      height="calc(100vh + 100px)"
       overflow="hidden"
       z={0}
       pointerEvents="none"

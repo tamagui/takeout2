@@ -647,6 +647,8 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   let domain: string
   let zeroUrl: string
 
+  // TODO: reconsider the domain configuration onboarding flow as the cluster DNS xxxxxx.uncld.dev will be available
+  // only after initializing the cluster.
   if (useFreeSubdomain) {
     const appName = await promptText(
       'App name for subdomain:',
@@ -668,6 +670,7 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
     )
     console.info()
     showWarning('Custom domain setup requires DNS configuration after deployment')
+    // TODO: there is no such doc
     console.info(pc.gray('See: https://uncloud.run/docs/domains'))
   }
 
@@ -685,7 +688,7 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   console.info(pc.gray('The deployment will automatically create the Zero databases'))
   console.info()
 
-  const dbUser = await promptText('Database username:', undefined, 'postgres')
+  const dbUser = await promptText('Database username:', 'postgres', 'postgres')
   const dbPassword = await promptText('Database password:', undefined, '')
   const dbHost = await promptText(
     'Database host (e.g., db-xxx.ondigitalocean.com):',
@@ -706,8 +709,18 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   console.info()
   const authSecret = randomBytes(32).toString('hex')
 
-  // Save to .env.production
+  // Ensure .env.production exists (create from example if needed)
   const envFile = '.env.production'
+  if (!envFileExists(cwd, envFile)) {
+    const copyResult = copyEnvFile(cwd, '.env.production.example', envFile)
+    if (copyResult.success) {
+      showSuccess(`Created ${envFile} from .env.production.example`)
+    } else {
+      showError(`Failed to create ${envFile}: ${copyResult.error}`)
+      return
+    }
+  }
+
   updateEnvVariable(cwd, 'DEPLOYMENT_PLATFORM', 'uncloud', envFile)
   updateEnvVariable(cwd, 'DEPLOYMENT_ARCH', deploymentArch, envFile)
   updateEnvVariable(cwd, 'DEPLOY_DB', dbUrl, envFile)
@@ -791,9 +804,7 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   if (configureCustomDomain) {
     console.info()
     console.info(pc.gray('First, run: uc dns reserve'))
-    console.info(
-      pc.gray('This will give you a cluster subdomain like: abc123.cluster.uncld.dev')
-    )
+    console.info(pc.gray('This will give you a cluster subdomain like: abc123.uncld.dev'))
     console.info()
 
     const clusterSubdomain = await promptText(

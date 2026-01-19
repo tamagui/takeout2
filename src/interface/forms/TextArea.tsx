@@ -11,6 +11,9 @@ export const TextArea = styled(TamaguiTextArea, {
   // @ts-expect-error fontSize token type issue in canary
   fontSize: '$4',
 
+  focusStyle: {
+    borderColor: '$color8',
+  },
   placeholderTextColor: '$color8',
 
   variants: {

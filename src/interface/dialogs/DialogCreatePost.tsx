@@ -181,7 +181,7 @@ export const DialogCreatePost = () => {
                   width="100%"
                   aspectRatio={1}
                   objectFit="contain"
-                  bg="$color2"
+                  bg="$background04"
                 />
                 {isUploading && (
                   <YStack
@@ -224,16 +224,16 @@ export const DialogCreatePost = () => {
               >
                 <YStack
                   borderWidth={2}
-                  borderColor="$color5"
+                  borderColor="$borderColor"
                   borderStyle="dashed"
                   rounded="$6"
                   p="$6"
                   items="center"
                   justify="center"
                   gap="$3"
-                  bg="$color2"
+                  bg="$background02"
                 >
-                  <Circle size={56} bg="$color4" items="center" justify="center">
+                  <Circle size={56} bg="$background04" items="center" justify="center">
                     <ImageIcon size={28} color="$color11" />
                   </Circle>
                   <YStack items="center" gap="$1">

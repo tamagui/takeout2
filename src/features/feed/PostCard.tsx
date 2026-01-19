@@ -37,7 +37,13 @@ export const PostCard = memo(({ post }: PostCardProps) => {
       mt="$2"
       pb="$4"
       data-testid={`post-card-${post.id}`}
-      {...(isWeb && { bg: '$background', rounded: '$6', py: '$4' })}
+      $platform-web={{
+        rounded: '$6',
+        py: '$4',
+        maxW: 540,
+        mx: 'auto',
+        width: '100%',
+      }}
     >
       <View px="$4">
         <XStack items="center" justify="space-between" pb="$2">
@@ -83,6 +89,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
                   <Text
                     numberOfLines={open ? undefined : 3}
                     flex={1}
+                    flexBasis="auto"
                     text="left"
                     {...(!isWeb && {
                       onTextLayout: (e: { nativeEvent: { lines: unknown[] } }) => {

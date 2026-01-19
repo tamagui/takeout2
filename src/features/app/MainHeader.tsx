@@ -145,8 +145,8 @@ export const MainHeader = () => {
                 </YStack>
               </Sheet.Frame>
               <Sheet.Overlay
+                bg="$shadow4"
                 transition="quick"
-                opacity={0.8}
                 enterStyle={{ opacity: 0 }}
                 exitStyle={{ opacity: 0 }}
               />

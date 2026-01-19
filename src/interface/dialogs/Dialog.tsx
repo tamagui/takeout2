@@ -73,9 +73,10 @@ const DialogComponent = ({
   return (
     <DialogOpenContext.Provider value={!!open}>
       <TamaguiDialog modal open={open} {...props}>
-        <TamaguiDialog.Adapt platform="touch" when="sm">
+        <TamaguiDialog.Adapt platform="touch" when="maxSM">
           <Sheet transition="medium" zIndex={250_000} modal dismissOnSnapToBottom>
             <Sheet.Overlay
+              bg="$shadow4"
               transition="quick"
               enterStyle={{ opacity: 0 }}
               exitStyle={{ opacity: 0 }}
@@ -103,7 +104,7 @@ const DialogComponent = ({
                 bg: '$color2',
               }}
               $theme-light={{
-                bg: '$shadow6',
+                bg: '$shadow4',
               }}
               opacity={0.8}
             />
@@ -117,37 +118,6 @@ const DialogComponent = ({
             rounded={CONTENT_RADIUS}
             overflow="hidden"
           >
-            <YStack
-              z={-1}
-              fullscreen
-              bg="$color1"
-              opacity={0.24}
-              rounded={CONTENT_RADIUS}
-              pointerEvents="none"
-            />
-            <YStack
-              z={-1}
-              fullscreen
-              borderTopWidth={0.5}
-              borderColor="$white"
-              opacity={0.1}
-              $theme-light={{
-                opacity: 0.8,
-              }}
-              rounded={CONTENT_RADIUS}
-              pointerEvents="none"
-            />
-            <YStack
-              z={-1}
-              fullscreen
-              opacity={0.2}
-              rounded={CONTENT_RADIUS}
-              shadowColor="$shadow6"
-              shadowRadius={40}
-              shadowOffset={{ height: 20, width: 0 }}
-              pointerEvents="none"
-            />
-
             {children}
           </DialogContent>
         </TamaguiDialog.Portal>

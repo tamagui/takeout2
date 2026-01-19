@@ -46,7 +46,7 @@ export function CommentInput({
         <YStack gap="$2" pt="$2">
           <TextArea
             // @ts-expect-error size variant type issue in canary
-            size="small"
+            size="medium"
             placeholder="Add a comment..."
             value={content}
             onChange={(e) => setContent((e.target as HTMLInputElement).value)}

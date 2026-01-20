@@ -1,8 +1,7 @@
 import { useEmitterValue } from '@take-out/helpers'
-import { AnimatePresence } from '@tamagui/animate-presence'
 import { useEffect, useState } from 'react'
 import { useWindowDimensions } from 'react-native'
-import { Portal, styled, XStack, YStack } from 'tamagui'
+import { AnimatePresence, Portal, styled, XStack, YStack } from 'tamagui'
 
 import { animationClamped } from '~/interface/animations/animationClamped'
 import { ButtonSimple, type ButtonSimpleProps } from '~/interface/buttons/ButtonSimple'

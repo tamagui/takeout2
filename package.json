@@ -88,6 +88,7 @@
     "@tamagui/constants": "^2.0.0-1768883422398",
     "@tamagui/helpers-icon": "^2.0.0-1768883422398",
     "@tamagui/linear-gradient": "^2.0.0-1768883422398",
+    "@tamagui/menu": "^2.0.0-1768883422398",
     "@tamagui/themes": "^2.0.0-1768883422398",
     "@tamagui/toast": "^2.0.0-1768883422398",
     "@tamagui/vite-plugin": "^2.0.0-1768883422398",

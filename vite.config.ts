@@ -79,6 +79,7 @@ export default {
       'remark-smartypants',
       'retext',
       'retext-smartypants',
+      '@nandorojo/galeria',
     ],
   },
 

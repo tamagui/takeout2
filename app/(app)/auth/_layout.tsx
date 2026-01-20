@@ -6,7 +6,13 @@ export function AuthAndOnboardingLayout() {
       {process.env.VITE_PLATFORM === 'web' ? (
         <Slot />
       ) : (
-        <Stack screenOptions={{ headerShown: false }} initialRouteName="login">
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            animation: 'none',
+          }}
+          initialRouteName="login"
+        >
           <Stack.Screen name="login" />
           <Stack.Screen name="login/password" />
           <Stack.Screen name="signup/[method]" />

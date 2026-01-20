@@ -41,7 +41,12 @@ export function Layout() {
                     </SiteRootLayout>
                   </>
                 ) : (
-                  <Stack screenOptions={{ headerShown: false }}>
+                  <Stack
+                    screenOptions={{
+                      headerShown: false,
+                      animation: 'none',
+                    }}
+                  >
                     <Stack.Screen name="(app)" />
                   </Stack>
                 )}

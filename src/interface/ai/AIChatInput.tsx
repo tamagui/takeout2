@@ -1,15 +1,7 @@
 import { GlassContainer } from 'expo-glass-effect'
 import { Image } from 'expo-image'
-import { memo, useEffect, useState } from 'react'
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-  interpolate,
-} from 'react-native-reanimated'
-import { Input, View, XStack, YStack } from 'tamagui'
+import { memo, useState } from 'react'
+import { AnimatePresence, Input, View, XStack, YStack } from 'tamagui'
 
 import { GlassView } from '~/interface/effects/GlassView'
 import { ArrowUpIcon } from '~/interface/icons/phosphor/ArrowUpIcon'
@@ -26,7 +18,6 @@ interface AIChatInputProps {
 }
 
 const IMAGE_SECTION_HEIGHT = 80
-const SPRING_CONFIG = { damping: 20, stiffness: 200, mass: 0.6 }
 
 export const AIChatInput = memo(
   ({
@@ -41,41 +32,6 @@ export const AIChatInput = memo(
     const hasText = message.trim().length > 0
     const hasImage = !!selectedImage
     const canSend = hasText || hasImage
-
-    const imageProgress = useSharedValue(0)
-
-    useEffect(() => {
-      if (hasImage) {
-        imageProgress.value = withSpring(1, SPRING_CONFIG)
-      } else {
-        imageProgress.value = withTiming(0, {
-          duration: 200,
-          easing: Easing.out(Easing.cubic),
-        })
-      }
-    }, [hasImage])
-
-    const imageContainerStyle = useAnimatedStyle(() => {
-      const height = interpolate(imageProgress.value, [0, 1], [0, IMAGE_SECTION_HEIGHT])
-      const opacity = interpolate(imageProgress.value, [0, 0.5, 1], [0, 0, 1])
-      const scale = interpolate(imageProgress.value, [0, 1], [0.9, 1])
-
-      return {
-        height,
-        opacity,
-        transform: [{ scale }],
-        overflow: 'hidden' as const,
-      }
-    })
-
-    const removeButtonStyle = useAnimatedStyle(() => {
-      const scale = interpolate(imageProgress.value, [0.7, 1], [0, 1])
-      const rotate = interpolate(imageProgress.value, [0.7, 1], [-90, 0])
-
-      return {
-        transform: [{ scale }, { rotate: `${rotate}deg` }],
-      }
-    })
 
     const handleSend = () => {
       if (canSend) {
@@ -110,36 +66,50 @@ export const AIChatInput = memo(
             containerStyle={{ flex: 1, borderRadius: 22 }}
           >
             <YStack>
-              <Animated.View style={imageContainerStyle}>
-                <XStack p="$3" pb={0}>
-                  <View position="relative">
-                    <Image
-                      source={{ uri: selectedImage ?? '' }}
-                      style={{ width: 64, height: 64, borderRadius: 12 }}
-                      contentFit="cover"
-                    />
-                    <Animated.View
-                      style={[
-                        { position: 'absolute', top: -8, right: -8 },
-                        removeButtonStyle,
-                      ]}
-                    >
-                      <View
-                        bg="$color4"
-                        width={24}
-                        height={24}
-                        rounded="$10"
-                        items="center"
-                        justify="center"
-                        onPress={onRemoveImage}
-                        pressStyle={{ opacity: 0.7 }}
-                      >
-                        <XIcon size={14} color="$color11" />
+              <AnimatePresence>
+                {hasImage && (
+                  <YStack
+                    key="image-preview"
+                    height={IMAGE_SECTION_HEIGHT}
+                    opacity={1}
+                    scale={1}
+                    transition="smoothExpand"
+                    enterStyle={{ height: 0, opacity: 0, scale: 0.9 }}
+                    exitStyle={{ height: 0, opacity: 0, scale: 0.9 }}
+                    overflow="hidden"
+                  >
+                    <XStack p="$3" pb={0}>
+                      <View position="relative">
+                        <Image
+                          source={{ uri: selectedImage ?? '' }}
+                          style={{ width: 64, height: 64, borderRadius: 12 }}
+                          contentFit="cover"
+                        />
+                        <View
+                          position="absolute"
+                          top={-8}
+                          right={-8}
+                          bg="$color4"
+                          width={24}
+                          height={24}
+                          rounded="$10"
+                          items="center"
+                          justify="center"
+                          onPress={onRemoveImage}
+                          pressStyle={{ opacity: 0.7 }}
+                          opacity={1}
+                          scale={1}
+                          rotate="0deg"
+                          transition="quick"
+                          enterStyle={{ opacity: 0, scale: 0, rotate: "-90deg" }}
+                        >
+                          <XIcon size={14} color="$color11" />
+                        </View>
                       </View>
-                    </Animated.View>
-                  </View>
-                </XStack>
-              </Animated.View>
+                    </XStack>
+                  </YStack>
+                )}
+              </AnimatePresence>
 
               <Input
                 unstyled

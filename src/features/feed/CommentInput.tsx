@@ -8,7 +8,7 @@ import Glint from '~/interface/effects/Glint'
 import { Input } from '~/interface/forms/Input'
 import { TextArea } from '~/interface/forms/TextArea'
 import { PaperPlaneTiltIcon } from '~/interface/icons/phosphor/PaperPlaneTiltIcon'
-import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter.native'
+import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter'
 
 import type { User } from 'better-auth'
 

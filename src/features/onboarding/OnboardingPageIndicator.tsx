@@ -13,13 +13,11 @@ interface OnboardingPageIndicatorProps {
   scrollPosition: SharedValue<number>
 }
 
-export const OnboardingPageIndicator = memo(function OnboardingPageIndicator({
+export function OnboardingPageIndicator({
   totalPages,
   scrollPosition,
 }: OnboardingPageIndicatorProps) {
   const theme = useTheme()
-  const activeColor = theme.color9?.get() ?? '#007AFF'
-  const inactiveColor = theme.color5?.get() ?? '#E5E5EA'
 
   return (
     <XStack gap={8} justify="center" items="center" py="$3">
@@ -28,13 +26,13 @@ export const OnboardingPageIndicator = memo(function OnboardingPageIndicator({
           key={idx}
           index={idx}
           scrollPosition={scrollPosition}
-          activeColor={activeColor}
-          inactiveColor={inactiveColor}
+          activeColor={theme.color9?.val}
+          inactiveColor={theme.color5?.val}
         />
       ))}
     </XStack>
   )
-})
+}
 
 interface IndicatorDotProps {
   index: number

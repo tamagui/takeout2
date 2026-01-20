@@ -1,4 +1,3 @@
-import { BlurView } from 'expo-blur'
 import { useCallback, useRef, useState } from 'react'
 import PagerView, {
   type PagerViewOnPageScrollEvent,
@@ -7,21 +6,26 @@ import PagerView, {
 import Animated, {
   Extrapolation,
   interpolate,
-  useAnimatedProps,
   useAnimatedStyle,
   useSharedValue,
   type SharedValue,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { H1, Theme, View, YStack, type ThemeName } from 'tamagui'
+import {
+  H1,
+  Theme,
+  useTheme,
+  View,
+  YStack,
+  type ColorTokens,
+  type ThemeName,
+} from 'tamagui'
 
 import { OnboardingActionButton } from './OnboardingActionButton'
 import { OnboardingPageIndicator } from './OnboardingPageIndicator'
 import { OnboardingSlide } from './OnboardingSlide'
 
 import type { OnboardingProps } from './types'
-
-const AnimatedBlurView = Animated.createAnimatedComponent(BlurView)
 
 const TITLE_HEIGHT = 48
 
@@ -55,8 +59,15 @@ export function Onboarding({ slides, onComplete }: OnboardingProps) {
 
   const goToNextPage = useCallback(() => {
     const nextPage = Math.min(pageIndex + 1, slides.length - 1)
+    // update state immediately for programmatic navigation
+    currentPage.value = nextPage
+    setPageIndex(nextPage)
+    const slide = slides[nextPage]
+    if (slide) {
+      setCurrentTheme(slide.theme)
+    }
     pagerRef.current?.setPage(nextPage)
-  }, [pageIndex, slides.length])
+  }, [pageIndex, slides])
 
   const handleActionPress = useCallback(() => {
     if (pageIndex === slides.length - 1) {
@@ -65,23 +76,6 @@ export function Onboarding({ slides, onComplete }: OnboardingProps) {
       goToNextPage()
     }
   }, [pageIndex, slides.length, onComplete, goToNextPage])
-
-  const blurAnimatedProps = useAnimatedProps(() => {
-    const offset = scrollPosition.value - Math.floor(scrollPosition.value)
-    const intensity = interpolate(offset, [0, 0.5, 1], [0, 80, 0], Extrapolation.CLAMP)
-    return { intensity }
-  })
-
-  const blurOverlayStyle = useAnimatedStyle(() => {
-    const offset = scrollPosition.value - Math.floor(scrollPosition.value)
-    const opacity = interpolate(
-      offset,
-      [0, 0.2, 0.8, 1],
-      [0, 1, 1, 0],
-      Extrapolation.CLAMP
-    )
-    return { opacity }
-  })
 
   return (
     <Theme name={currentTheme}>
@@ -116,24 +110,12 @@ export function Onboarding({ slides, onComplete }: OnboardingProps) {
             />
 
             <OnboardingActionButton
-              currentPage={currentPage}
-              totalPages={slides.length}
+              isLastPage={pageIndex === slides.length - 1}
               onPress={handleActionPress}
               onSkip={onComplete}
             />
           </YStack>
         </YStack>
-
-        {/* <Animated.View
-          style={[{ ...StyleSheet.absoluteFillObject, zIndex: 100 }, blurOverlayStyle]}
-          pointerEvents="none"
-        >
-          <AnimatedBlurView
-            animatedProps={blurAnimatedProps}
-            tint="dark"
-            style={StyleSheet.absoluteFill}
-          />
-        </Animated.View> */}
       </View>
     </Theme>
   )
@@ -145,6 +127,7 @@ interface TitleTickerProps {
 }
 
 function TitleTicker({ slides, scrollPosition }: TitleTickerProps) {
+  const theme = useTheme()
   const animatedStyle = useAnimatedStyle(() => {
     const translateY = interpolate(
       scrollPosition.value,
@@ -173,7 +156,13 @@ function TitleTicker({ slides, scrollPosition }: TitleTickerProps) {
       <Animated.View style={animatedStyle}>
         {slides.map((slide) => (
           <View key={slide.id} style={{ height: TITLE_HEIGHT, justifyContent: 'center' }}>
-            <H1 color="$color12" fontWeight="800" size="$9" lineHeight="$9" px="$5">
+            <H1
+              color={theme.color10?.val as ColorTokens}
+              fontWeight="800"
+              size="$9"
+              lineHeight="$9"
+              px="$5"
+            >
               {slide.title}
             </H1>
           </View>

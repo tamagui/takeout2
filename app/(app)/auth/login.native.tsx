@@ -1,14 +1,13 @@
 import { router } from 'one'
 import { useCallback, useState } from 'react'
 import {
+  AnimatePresence,
   isWeb,
   SizableText,
   Spinner,
-  useTheme,
   View,
   XStack,
   YStack,
-  type ColorTokens,
 } from 'tamagui'
 
 import {
@@ -18,7 +17,7 @@ import {
   TERMS_OF_SERVICE_URL,
 } from '~/constants/app'
 import { signInAsDemo } from '~/features/auth/client/signInAsDemo'
-import { useIsDark } from '~/features/theme/useIsDark'
+import { Onboarding, onboardingSlides } from '~/features/onboarding'
 import { isDemoMode } from '~/helpers/isDemoMode'
 import { Link } from '~/interface/app/Link'
 import { GradientBackground } from '~/interface/backgrounds/GradientBackground'
@@ -31,8 +30,6 @@ import { H2 } from '~/interface/text/Headings'
 import { showToast } from '~/interface/toast/helpers'
 
 export const LoginPage = () => {
-  const theme = useTheme()
-  const isDark = useIsDark()
   const [demoLoading, setDemoLoading] = useState<boolean>(false)
   const [showOnboarding, setShowOnboarding] = useState<boolean>(!isWeb)
 
@@ -165,7 +162,7 @@ export const LoginPage = () => {
         </YStack>
       </View>
 
-      {/* <AnimatePresence>
+      <AnimatePresence>
         {showOnboarding && !isWeb && (
           <View
             transition="200ms"
@@ -181,7 +178,7 @@ export const LoginPage = () => {
             <Onboarding slides={onboardingSlides} onComplete={handleOnboardingComplete} />
           </View>
         )}
-      </AnimatePresence> */}
+      </AnimatePresence>
     </GradientBackground>
   )
 }

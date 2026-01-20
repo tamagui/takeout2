@@ -30,6 +30,8 @@ for (const arg of args) {
     process.exit(1)
   } else if (arg === '--canary') {
     globalTag = 'canary'
+  } else if (arg === '--rc') {
+    globalTag = 'rc'
   } else {
     packagePatterns.push(arg)
   }

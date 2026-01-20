@@ -74,7 +74,13 @@ const DialogComponent = ({
     <DialogOpenContext.Provider value={!!open}>
       <TamaguiDialog modal open={open} {...props}>
         <TamaguiDialog.Adapt platform="touch" when="maxSM">
-          <Sheet transition="medium" zIndex={250_000} modal dismissOnSnapToBottom>
+          <Sheet
+            transition="medium"
+            zIndex={250_000}
+            modal
+            snapPointsMode="fit"
+            dismissOnSnapToBottom
+          >
             <Sheet.Overlay
               bg="$background"
               transition="quick"

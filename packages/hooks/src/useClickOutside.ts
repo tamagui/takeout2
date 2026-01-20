@@ -1,8 +1,8 @@
+import { isWeb } from '@take-out/helpers'
 import { useEffect } from 'react'
-import { isWeb, type TamaguiElement } from 'tamagui'
 
 type UseClickOutsideProps = {
-  ref: React.RefObject<TamaguiElement | null>
+  ref: React.RefObject<HTMLElement | null>
   active: boolean
   onClickOutside?: () => void
 }

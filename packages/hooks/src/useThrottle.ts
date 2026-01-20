@@ -1,5 +1,6 @@
 import { useRef } from 'react'
-import { useEvent } from 'tamagui'
+
+import { useEvent } from './useEvent'
 
 type Timer = ReturnType<typeof setTimeout>
 

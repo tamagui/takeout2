@@ -1,5 +1,5 @@
+import { debounce } from '@take-out/helpers'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { debounce } from 'tamagui'
 
 export function useDebouncePrepend<T extends readonly { id: any }[]>(
   list: T,

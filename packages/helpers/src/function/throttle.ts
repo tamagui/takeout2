@@ -63,11 +63,10 @@ export function throttle<T extends unknown[]>(
   return fn
 }
 
-// we have debounce from tamagui already
-// export function debounce<T extends unknown[]>(
-//   callback: (...args: T) => unknown,
-//   wait = 0,
-//   { start = false, middle = false, once = false }: ThrottleOptions = {}
-// ): Throttler<T> {
-//   return throttle(callback, wait, { start, middle, once })
-// }
+export function debounce<T extends unknown[]>(
+  callback: (...args: T) => unknown,
+  wait = 0,
+  { start = false, middle = false, once = false }: ThrottleOptions = {}
+): Throttler<T> {
+  return throttle(callback, wait, { start, middle, once })
+}

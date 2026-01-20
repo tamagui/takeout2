@@ -37,7 +37,7 @@
   "dependencies": {
     "@take-out/helpers": "workspace:*",
     "react": "*",
-    "tamagui": "^2.0.0-1768869088163"
+    "tamagui": "^2.0.0-1768883422398"
   },
   "peerDependencies": {
     "react": "*",
@@ -45,7 +45,7 @@
     "tamagui": "*"
   },
   "devDependencies": {
-    "@tamagui/build": "^2.0.0-1768869088163",
+    "@tamagui/build": "^2.0.0-1768883422398",
     "react": "*",
     "react-native": "*"
   },

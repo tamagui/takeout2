@@ -55,7 +55,7 @@
     }
   },
   "dependencies": {
-    "@tamagui/constants": "^2.0.0-1768869088163",
+    "@tamagui/constants": "^2.0.0-1768883422398",
     "dequal": "^2.0.3"
   },
   "peerDependencies": {
@@ -65,7 +65,7 @@
     "react-native": "*"
   },
   "devDependencies": {
-    "@tamagui/build": "^2.0.0-1768869088163",
+    "@tamagui/build": "^2.0.0-1768883422398",
     "@types/node": "24.0.3",
     "@types/react": "^19.0.8",
     "oxfmt": "^0.16.0",

@@ -74,21 +74,18 @@ export const AIPage = memo(() => {
     }
   })
 
-  const handleSend = useCallback(
-    (content: string, imageUri?: string) => {
-      const userMessage: Message = {
-        id: Date.now().toString(),
-        role: 'user',
-        content,
-        imageUri,
-      }
-      setMessages((prev) => [...prev, userMessage])
-      setSelectedImage(null)
+  const handleSend = useCallback((content: string, imageUri?: string) => {
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content,
+      imageUri,
+    }
+    setMessages((prev) => [...prev, userMessage])
+    setSelectedImage(null)
 
-      // TODO: send to AI and get response
-    },
-    []
-  )
+    // TODO: send to AI and get response
+  }, [])
 
   const handlePlusPress = useCallback(async () => {
     const result = await pickImageFromLibrary(false)

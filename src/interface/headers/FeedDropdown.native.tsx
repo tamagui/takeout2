@@ -34,11 +34,11 @@ import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
 import { UserIcon } from '~/interface/icons/phosphor/UserIcon'
 
 import { Pressable } from '../buttons/Pressable'
-import { showToast } from '../toast/helpers'
 import { GlassView } from '../effects/GlassView'
 import { CaretDownIcon } from '../icons/phosphor/CaretDownIcon'
 import { TrashIcon } from '../icons/phosphor/TrashIcon'
 import { XIcon } from '../icons/phosphor/XIcon'
+import { showToast } from '../toast/helpers'
 import { FastSquircleView } from '../view/FastSquircleView'
 
 import type { IconComponent } from '~/interface/icons/types'

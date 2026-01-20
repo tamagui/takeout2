@@ -20,9 +20,9 @@ import { CaretDownIcon } from '~/interface/icons/phosphor/CaretDownIcon'
 import { PlusIcon } from '~/interface/icons/phosphor/PlusIcon'
 
 import { Pressable } from '../buttons/Pressable'
-import { showToast } from '../toast/helpers'
 import { isSmallScreen } from '../dimensions'
 import { GradientBlurView } from '../effects/GradientBlurView'
+import { showToast } from '../toast/helpers'
 import { feedDropdownEmitter } from './feedDropdownEmitter'
 
 const ANIMATION_DURATION = 300

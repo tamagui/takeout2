@@ -1,3 +1,4 @@
+import { isNative } from '@take-out/helpers'
 import { Menu } from '@tamagui/menu'
 import { router } from 'one'
 import { useIsTouchDevice } from 'tamagui'
@@ -148,6 +149,12 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
               justify="space-between"
               textValue="Report"
             >
+              {isNative && (
+                <Menu.ItemIcon
+                  ios={{ name: 'exclamationmark.triangle', pointSize: 18 }}
+                  androidIconName="ic_menu_report"
+                />
+              )}
               <Menu.ItemTitle>Report</Menu.ItemTitle>
               <CaretRightIcon size={16} color="$color10" />
             </Menu.SubTrigger>
@@ -156,7 +163,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
               <Menu.SubContent
                 enterStyle={{ scale: 0.9, opacity: 0, x: -5 }}
                 exitStyle={{ scale: 0.95, opacity: 0, x: -3 }}
-                transition="quickestLessBouncy"
+                transition="100ms ease-in-out"
                 transformOrigin="left top"
                 elevation="$3"
                 minW={200}

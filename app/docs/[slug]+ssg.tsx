@@ -64,7 +64,7 @@ export function DocsSlugPage() {
       </H1>
 
       {!!frontmatter.description && (
-        <Paragraph size="$7" color="$color11" mb="$3">
+        <Paragraph size="$7" color="$color9" mb="$3">
           {nbspLastWord(frontmatter.description || '')}
         </Paragraph>
       )}

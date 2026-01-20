@@ -13,6 +13,7 @@ export const docsRoutes: DocsSection[] = [
   {
     pages: [
       { title: 'Introduction', route: '/docs/introduction' },
+      { title: 'Changelog', route: '/docs/changelog' },
       { title: 'Get Started', route: '/docs/get-started' },
       { title: 'Highlights', route: '/docs/highlights' },
     ],

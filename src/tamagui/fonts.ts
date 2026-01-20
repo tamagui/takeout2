@@ -29,7 +29,7 @@ const body = createSystemFont({
     },
   },
   sizeSize: (x) => Math.round(x),
-  sizeLineHeight: (x) => Math.round(x * 1.05 + 10),
+  sizeLineHeight: (x) => Math.round(x * 1.05 + 9),
 })
 
 const heading = createSystemFont({

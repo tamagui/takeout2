@@ -15,6 +15,12 @@ Before you begin, ensure you have:
   we recommend [OrbStack](https://orbstack.dev) as a faster alternative)
 - **Git** - For version control
 
+Note: Ensure bun matches the version in package.json. We've avoided 1.3 because we saw install times jump 10x, due to issues:
+
+- https://github.com/oven-sh/bun/issues/23655
+- https://github.com/oven-sh/bun/pull/21824
+- https://github.com/oven-sh/bun/issues/23969
+
 For mobile development:
 
 - **iOS**: macOS with Xcode 26+

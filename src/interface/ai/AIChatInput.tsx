@@ -73,19 +73,14 @@ export const AIChatInput = memo(
                     height={IMAGE_SECTION_HEIGHT}
                     opacity={1}
                     scale={1}
-                    transition="smoothExpand"
+                    transition="250ms"
                     enterStyle={{ height: 0, opacity: 0, scale: 0.9 }}
                     exitStyle={{ height: 0, opacity: 0, scale: 0.9 }}
                     overflow="hidden"
                   >
                     <XStack p="$3" pb={0}>
                       <View position="relative">
-                        <View
-                          width={64}
-                          height={64}
-                          rounded="$4"
-                          overflow="hidden"
-                        >
+                        <View width={64} height={64} rounded="$4" overflow="hidden">
                           <Image
                             src={selectedImage ?? ''}
                             width={64}

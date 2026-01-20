@@ -3,7 +3,7 @@ import { animations } from '@tamagui/config/v5-motion'
 
 export const animationsApp = createAnimations({
   ...animations.animations,
-  smoothExpand: {
+  '250ms': {
     type: 'tween',
     duration: 0.25,
   },

@@ -9,6 +9,7 @@ import * as groupedQueries from '~/data/generated/groupedQueries'
 import { models } from '~/data/generated/models'
 import { schema } from '~/data/schema'
 import { useAuth } from '~/features/auth/client/authClient'
+import { DEBUG_LEVEL } from '~/features/devtools/constants'
 import { setDevGlobal } from '~/features/devtools/devGlobal'
 
 import type { AuthData } from '~/features/auth/types'
@@ -45,7 +46,9 @@ export const ProvideZero = ({ children }: { children: ReactNode }) => {
 
   const kvStore = isWeb && isClient && userId ? 'idb' : 'mem'
 
-  console.info(`[zero]`, { auth, jwtToken, userId, ZERO_SERVER_URL })
+  if (DEBUG_LEVEL > 1) {
+    console.info(`[zero]`, { auth, jwtToken, userId, ZERO_SERVER_URL })
+  }
 
   return (
     <ProvideZeroWithoutAuth

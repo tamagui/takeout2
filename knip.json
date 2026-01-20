@@ -21,11 +21,15 @@
       "ignore": ["src/data/generated/**", "**/*.d.ts"],
       "ignoreDependencies": [
         "@types/*",
+        "@react-native-menu/menu",
         "baseline-browser-mapping",
         "burnt",
         "jsonwebtoken",
         "motion",
-        "postmark"
+        "postmark",
+        "react-native-ios-context-menu",
+        "react-native-ios-utilities",
+        "zeego"
       ]
     },
     "packages/cli": {

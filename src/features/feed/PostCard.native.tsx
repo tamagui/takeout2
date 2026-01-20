@@ -77,9 +77,11 @@ export const PostCard = memo(({ post }: PostCardProps) => {
       </XStack>
 
       {post.caption && (
-        <SizableText size="$4" color="$color12" numberOfLines={3}>
-          {post.caption}
-        </SizableText>
+        <YStack>
+          <SizableText size="$4" color="$color12" numberOfLines={3}>
+            {post.caption}
+          </SizableText>
+        </YStack>
       )}
 
       <Pressable onPress={handleImagePress}>

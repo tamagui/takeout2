@@ -1,6 +1,7 @@
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated'
 import { SizableText, Stack, XStack, useTheme, type ColorTokens } from 'tamagui'
 
+import { Pressable } from '~/interface/buttons/Pressable'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 
 interface OnboardingActionButtonProps {
@@ -38,16 +39,17 @@ export function OnboardingActionButton({
 
   return (
     <XStack justify="space-between" items="center" width="100%">
-      <Stack
+      <Pressable
         onPress={onSkip}
         hitSlop={12}
         cursor="pointer"
-        pointerEvents={isLastPage ? 'none' : 'auto'}
+        opacity={isLastPage ? 0 : 1}
+        disabled={isLastPage}
       >
         <SizableText color={theme.color10?.val as ColorTokens} size="$4" fontWeight="500">
           Skip
         </SizableText>
-      </Stack>
+      </Pressable>
 
       <Animated.View
         style={[

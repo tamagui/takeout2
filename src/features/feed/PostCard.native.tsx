@@ -4,18 +4,17 @@ import { router } from 'one'
 import { memo, useState } from 'react'
 import { StyleSheet } from 'react-native'
 import Animated, { SharedTransition } from 'react-native-reanimated'
-import { SizableText, styled, XStack, YStack } from 'tamagui'
+import { SizableText, XStack, YStack } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
 import { useUser } from '~/hooks/useUser'
 import { Link } from '~/interface/app/Link'
-import { Avatar } from '~/interface/avatars/Avatar'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { ChatCircleDotsIcon } from '~/interface/icons/phosphor/ChatCircleDotsIcon'
-import { HeartIcon } from '~/interface/icons/phosphor/HeartIcon'
 import { FastSquircleView } from '~/interface/view/FastSquircleView'
 
 import { useIsDark } from '../theme/useIsDark'
+import { AvatarWithMenu } from './AvatarWithMenu'
 import { PostActionMenu } from './PostActionMenu'
 
 import type { Post } from '~/data/types'
@@ -56,11 +55,15 @@ export const PostCard = memo(({ post }: PostCardProps) => {
         tint={isDark ? 'dark' : 'light'}
         style={StyleSheet.absoluteFill}
       />
-      {/* header row: avatar with gradient border + name/time + options */}
-      <XStack items="center" gap="$3">
-        <Avatar image={avatarUrl} name={username || ''} size={40} gradient />
 
-        {/* name and time */}
+      <XStack items="center" gap="$3">
+        <AvatarWithMenu
+          avatarUrl={avatarUrl || ''}
+          userId={authorId}
+          username={username || ''}
+          isOwnProfile={isOwnProfile}
+        />
+
         <YStack flex={1}>
           <SizableText size="$4" fontWeight="700" color="$color12">
             {username}
@@ -70,18 +73,15 @@ export const PostCard = memo(({ post }: PostCardProps) => {
           </SizableText>
         </YStack>
 
-        {/* options button */}
         <PostActionMenu post={post} isOwnPost={isOwnProfile} />
       </XStack>
 
-      {/* caption */}
       {post.caption && (
         <SizableText size="$4" color="$color12" numberOfLines={3}>
           {post.caption}
         </SizableText>
       )}
 
-      {/* image in squircle */}
       <Pressable onPress={handleImagePress}>
         <FastSquircleView
           width="100%"
@@ -106,11 +106,8 @@ export const PostCard = memo(({ post }: PostCardProps) => {
         </FastSquircleView>
       </Pressable>
 
-      {/* comment button */}
-
       <XStack items="center" gap="$4" p="$2">
-        <XStack items="center" gap="$2">
-          <HeartIcon size={20} color="$color" />
+        <XStack items="center">
           {typeof post.commentCount === 'number' && post.commentCount > 0 && (
             <SizableText size="$3" fontWeight="700">
               {post.commentCount}

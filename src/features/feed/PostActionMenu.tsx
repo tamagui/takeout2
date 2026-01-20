@@ -1,9 +1,11 @@
+import { Menu } from '@tamagui/menu'
 import { router } from 'one'
-import * as DropdownMenu from 'zeego/dropdown-menu'
+import { useIsTouchDevice } from 'tamagui'
 
 import { saveRemoteImage } from '~/helpers/media/saveImage'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { dialogConfirm, showError } from '~/interface/dialogs/actions'
+import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
 import { DownloadSimpleIcon } from '~/interface/icons/phosphor/DownloadSimpleIcon'
 import { UserCircleIcon } from '~/interface/icons/phosphor/UserCircleIcon'
@@ -13,8 +15,6 @@ import { showToast } from '~/interface/toast/helpers'
 import { zero } from '~/zero/client'
 
 import type { Post } from '~/data/types'
-
-// TODO: Tamagui v2 Menu!
 
 const REPORT_REASONS = [
   { value: 'inappropriate', label: 'Inappropriate Content' },
@@ -30,6 +30,7 @@ interface PostActionMenuProps {
 
 export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
   const isAdmin = false
+  const isTouchDevice = useIsTouchDevice()
 
   const handleSaveImage = async () => {
     if (!post?.image) return
@@ -92,79 +93,128 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
   }
 
   return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger asChild>
+    <Menu allowFlip placement="bottom-end" offset={8}>
+      <Menu.Trigger asChild>
         <ButtonSimple size="small" circular glass aria-label="Post actions">
           <DotsThreeIcon size={16} color="$color12" />
         </ButtonSimple>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Content>
-        <DropdownMenu.Item key="save-image" onSelect={handleSaveImage}>
-          <DropdownMenu.ItemIcon
-            ios={{ name: 'arrow.down.circle' }}
-            androidIconName="ic_menu_save"
+      </Menu.Trigger>
+
+      <Menu.Portal zIndex={100}>
+        <Menu.Content
+          transition="100ms ease-in-out"
+          borderRadius="$4"
+          enterStyle={{ scale: 0.9, opacity: 0, y: -5 }}
+          exitStyle={{ scale: 0.95, opacity: 0, y: -3 }}
+          boxShadow="0 $2 $4 $shadowColor"
+        >
+          <Menu.Item
+            key="save-image"
+            onSelect={handleSaveImage}
+            justify="space-between"
+            textValue="Save Image"
           >
-            <DownloadSimpleIcon size={22} />
-          </DropdownMenu.ItemIcon>
-          <DropdownMenu.ItemTitle>Save Image</DropdownMenu.ItemTitle>
-        </DropdownMenu.Item>
-
-        {!isOwnPost && (
-          <DropdownMenu.Item key="view-profile" onSelect={handleViewProfile}>
-            <DropdownMenu.ItemIcon
-              ios={{ name: 'person.circle' }}
-              androidIconName="ic_menu_myplaces"
+            <Menu.ItemTitle>Save Image</Menu.ItemTitle>
+            <Menu.ItemIcon
+              ios={{ name: 'arrow.down.circle', pointSize: 18 }}
+              androidIconName="ic_menu_save"
             >
-              <UserCircleIcon />
-            </DropdownMenu.ItemIcon>
-            <DropdownMenu.ItemTitle>View Profile</DropdownMenu.ItemTitle>
-          </DropdownMenu.Item>
-        )}
+              <DownloadSimpleIcon size={18} color="$color10" />
+            </Menu.ItemIcon>
+          </Menu.Item>
 
-        <DropdownMenu.Sub>
-          <DropdownMenu.SubTrigger key="report">
-            <DropdownMenu.ItemIcon
-              ios={{ name: 'exclamationmark.triangle' }}
-              androidIconName="ic_menu_report_image"
+          {!isOwnPost && (
+            <Menu.Item
+              key="view-profile"
+              onSelect={handleViewProfile}
+              justify="space-between"
+              textValue="View Profile"
             >
-              <WarningCircleIcon />
-            </DropdownMenu.ItemIcon>
-            <DropdownMenu.ItemTitle>Report</DropdownMenu.ItemTitle>
-          </DropdownMenu.SubTrigger>
-          <DropdownMenu.SubContent>
-            {REPORT_REASONS.map((reason) => (
-              <DropdownMenu.Item
-                key={reason.value}
-                onSelect={() => handleReportPost(reason.value)}
+              <Menu.ItemTitle>View Profile</Menu.ItemTitle>
+              <Menu.ItemIcon
+                ios={{ name: 'person.circle', pointSize: 18 }}
+                androidIconName="ic_menu_myplaces"
               >
-                <DropdownMenu.ItemTitle>{reason.label}</DropdownMenu.ItemTitle>
-              </DropdownMenu.Item>
-            ))}
-          </DropdownMenu.SubContent>
-        </DropdownMenu.Sub>
+                <UserCircleIcon size={18} color="$color10" />
+              </Menu.ItemIcon>
+            </Menu.Item>
+          )}
 
-        <DropdownMenu.Item key="block" onSelect={handleBlock} destructive>
-          <DropdownMenu.ItemIcon
-            ios={{ name: 'xmark.circle' }}
-            androidIconName="ic_menu_close_clear_cancel"
-          >
-            <XCircleIcon />
-          </DropdownMenu.ItemIcon>
-          <DropdownMenu.ItemTitle>Block User</DropdownMenu.ItemTitle>
-        </DropdownMenu.Item>
+          <Menu.Separator />
 
-        {isAdmin && (
-          <DropdownMenu.Item key="admin-hide" onSelect={handleAdminHide} destructive>
-            <DropdownMenu.ItemIcon
-              ios={{ name: 'eye.slash' }}
-              androidIconName="ic_menu_view"
+          <Menu.Sub placement={isTouchDevice ? 'bottom' : 'right-start'}>
+            <Menu.SubTrigger
+              key="report-trigger"
+              justify="space-between"
+              textValue="Report"
             >
-              <WarningCircleIcon />
-            </DropdownMenu.ItemIcon>
-            <DropdownMenu.ItemTitle>Hide Post (Admin)</DropdownMenu.ItemTitle>
-          </DropdownMenu.Item>
-        )}
-      </DropdownMenu.Content>
-    </DropdownMenu.Root>
+              <Menu.ItemTitle>Report</Menu.ItemTitle>
+              <CaretRightIcon size={16} color="$color10" />
+            </Menu.SubTrigger>
+
+            <Menu.Portal zIndex={200}>
+              <Menu.SubContent
+                enterStyle={{ scale: 0.9, opacity: 0, x: -5 }}
+                exitStyle={{ scale: 0.95, opacity: 0, x: -3 }}
+                transition="quickestLessBouncy"
+                transformOrigin="left top"
+                elevation="$3"
+                minW={200}
+                bg="$background"
+                p="$1.5"
+                borderWidth={1}
+                borderColor="$borderColor"
+              >
+                {REPORT_REASONS.map((reason) => (
+                  <Menu.Item
+                    key={reason.value}
+                    onSelect={() => handleReportPost(reason.value)}
+                    textValue={reason.label}
+                  >
+                    <Menu.ItemTitle>{reason.label}</Menu.ItemTitle>
+                  </Menu.Item>
+                ))}
+              </Menu.SubContent>
+            </Menu.Portal>
+          </Menu.Sub>
+
+          <Menu.Separator />
+
+          <Menu.Item
+            key="block"
+            onSelect={handleBlock}
+            destructive
+            justify="space-between"
+            textValue="Block User"
+          >
+            <Menu.ItemTitle color="$red10">Block User</Menu.ItemTitle>
+            <Menu.ItemIcon
+              ios={{ name: 'xmark.circle', pointSize: 18 }}
+              androidIconName="ic_menu_close_clear_cancel"
+            >
+              <XCircleIcon size={18} color="$red10" />
+            </Menu.ItemIcon>
+          </Menu.Item>
+
+          {isAdmin && (
+            <Menu.Item
+              key="admin-hide"
+              onSelect={handleAdminHide}
+              destructive
+              justify="space-between"
+              textValue="Hide Post (Admin)"
+            >
+              <Menu.ItemTitle color="$red10">Hide Post (Admin)</Menu.ItemTitle>
+              <Menu.ItemIcon
+                ios={{ name: 'eye.slash', pointSize: 18 }}
+                androidIconName="ic_menu_view"
+              >
+                <WarningCircleIcon size={18} color="$red10" />
+              </Menu.ItemIcon>
+            </Menu.Item>
+          )}
+        </Menu.Content>
+      </Menu.Portal>
+    </Menu>
   )
 }

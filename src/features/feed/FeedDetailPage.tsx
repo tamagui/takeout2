@@ -8,7 +8,6 @@ import { useAuth } from '~/features/auth/client/authClient'
 import { CommentInput } from '~/features/feed/CommentInput'
 import { CommentSection } from '~/features/feed/CommentSection'
 import { PostActionMenu } from '~/features/feed/PostActionMenu'
-import { PostActionsPopover } from '~/features/feed/PostActionsPopover'
 import { PostImage } from '~/features/feed/PostImage'
 import { useUser } from '~/features/user/useUser'
 import { Avatar } from '~/interface/avatars/Avatar'
@@ -16,6 +15,7 @@ import { Pressable } from '~/interface/buttons/Pressable'
 import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
 import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
 import { KeyboardAwareScrollView } from '~/interface/keyboard/KeyboardAwareScrollView'
+import { PageLayout } from '~/interface/pages/PageLayout'
 import { Text } from '~/interface/text/Text'
 import { useQuery, zero } from '~/zero/client'
 
@@ -72,7 +72,7 @@ export const FeedDetailPage = memo(() => {
   )
 
   return (
-    <>
+    <PageLayout>
       <KeyboardAwareScrollView
         style={{ paddingHorizontal: 12 }}
         contentContainerStyle={{ paddingBottom: 100 }}
@@ -95,12 +95,7 @@ export const FeedDetailPage = memo(() => {
                 </SizableText>
               </XStack>
             </XStack>
-            {/* Todo: move to tamagui Menu (v2) */}
-            {isWeb ? (
-              <PostActionsPopover post={post} isOwnPost={isOwnProfile} />
-            ) : (
-              <PostActionMenu post={post} isOwnPost={isOwnProfile} />
-            )}
+            <PostActionMenu post={post} isOwnPost={isOwnProfile} />
           </XStack>
         </XStack>
         {isWeb ? (
@@ -136,6 +131,6 @@ export const FeedDetailPage = memo(() => {
       </KeyboardAwareScrollView>
 
       {!isWeb && commentInput}
-    </>
+    </PageLayout>
   )
 })

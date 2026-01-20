@@ -12,7 +12,6 @@ import { Text } from '~/interface/text/Text'
 
 import { AvatarWithMenu } from './AvatarWithMenu'
 import { PostActionMenu } from './PostActionMenu'
-import { PostActionsPopover } from './PostActionsPopover'
 import { PostImage } from './PostImage'
 
 import type { Post } from '~/data/types'
@@ -65,12 +64,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
                     {formatDistanceToNow(post.createdAt)}
                   </SizableText>
                 </XStack>
-                {/* Todo: move to tamagui Menu (v2) */}
-                {isWeb ? (
-                  <PostActionsPopover post={post} isOwnPost={isOwnProfile} />
-                ) : (
-                  <PostActionMenu post={post} isOwnPost={isOwnProfile} />
-                )}
+                <PostActionMenu post={post} isOwnPost={isOwnProfile} />
               </XStack>
             </YStack>
           </XStack>

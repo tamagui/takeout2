@@ -123,7 +123,6 @@ capabilities:
 
 - @tamagui/image-next for optimized image loading (wraps expo-image)
 - expo-image-picker for camera and photo library access
-- @nandorojo/galeria for image galleries
 - react-native-svg for SVG rendering
 - @tamagui/linear-gradient for gradient support
 

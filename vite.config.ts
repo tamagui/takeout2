@@ -125,6 +125,8 @@ export default {
                     // Hot Updater (React Native OTA solution)
                     // https://github.com/gronxb/hot-updater/blob/main/packages/hot-updater/src/plugins/babel.ts
                     'hot-updater/babel-plugin',
+                    // reanimated worklet compilation - MUST be last
+                    'react-native-reanimated/plugin',
                   ],
                 }
               },

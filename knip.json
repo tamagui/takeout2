@@ -35,8 +35,6 @@
         "@glideapps/ts-helper",
         "@better-fetch/fetch",
         "@bottom-tabs/react-navigation",
-        "@expo/ui",
-        "@nandorojo/galeria",
         "@shopify/react-native-skia",
         "@take-out/hooks",
         "@tamagui/build",

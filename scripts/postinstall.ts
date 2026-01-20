@@ -10,5 +10,8 @@ import { $ } from 'bun'
 const buildInitialLocation = require.resolve('@take-out/scripts/build-initial')
 await $`bun run ${buildInitialLocation}`
 
-await $`bun tko run update-local-env`
-await $`bun run one patch`
+await Promise.all([
+  //
+  $`bun tko run update-local-env`,
+  $`bun run one patch`,
+])

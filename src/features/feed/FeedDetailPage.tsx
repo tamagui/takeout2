@@ -26,7 +26,7 @@ export const FeedDetailPage = memo(() => {
   const [post] = useQuery(postById, { postId: feedId })
   const isOwnProfile = post?.userId === user?.id
   const media = useMedia()
-  const isWideScreen = media.md
+  const isWideScreen = media.lg
 
   const [content, setContent] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -96,36 +96,42 @@ export const FeedDetailPage = memo(() => {
 
   if (isWideScreen) {
     return (
-      <YStack flex={1} items="center" justify="center" position="relative">
-        <ButtonSimple
-          size="large"
-          circular
-          theme="accent"
-          position="absolute"
-          t={30}
-          r={0}
-          cursor="pointer"
-          onPress={() => {
-            router.back()
-          }}
-        >
-          <XIcon size={24} color="$color12" />
-        </ButtonSimple>
+      <YStack flex={1} p="$10" items="center" justify="center" position="relative">
         <XStack
           bg="$background"
+          position="relative"
           rounded={16}
           overflow="hidden"
           borderWidth={1}
           borderColor="$color4"
-          maxW={1100}
-          width="100%"
+          maxW={860}
           minH={500}
-          maxH={700}
+          maxH={650}
+          width="100%"
           gap="$4"
         >
-          <YStack flex={1} bg="$color1" minW={400}>
-            <Pressable onPress={openGallery}>
-              <PostImage postId={post.id} image={post.image} caption={post.caption} />
+          <ButtonSimple
+            size="medium"
+            circular
+            theme="accent"
+            position="absolute"
+            cursor="pointer"
+            l="$2"
+            t="$2"
+            onPress={() => {
+              router.back()
+            }}
+          >
+            <XIcon size={24} color="$color12" />
+          </ButtonSimple>
+          <YStack flex={1} bg="$color1">
+            <Pressable flex={1} onPress={openGallery}>
+              <PostImage
+                postId={post.id}
+                image={post.image}
+                caption={post.caption}
+                fill
+              />
             </Pressable>
           </YStack>
 

@@ -84,8 +84,6 @@
     "@take-out/helpers": "workspace:*",
     "@take-out/native-hot-update": "workspace:*",
     "@take-out/postgres": "workspace:*",
-    "@tamagui/animations-moti": "^2.0.0-1768869088163",
-    "@tamagui/build": "^2.0.0-1768869088163",
     "@tamagui/config": "^2.0.0-1768869088163",
     "@tamagui/constants": "^2.0.0-1768869088163",
     "@tamagui/helpers-icon": "^2.0.0-1768869088163",

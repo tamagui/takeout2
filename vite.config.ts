@@ -38,8 +38,7 @@ export default {
   },
 
   server: {
-    allowedHosts: ['host.docker.internal', 'onechat-dev-n8.start.chat'],
-    port: 8081,
+    allowedHosts: ['host.docker.internal'],
   },
 
   optimizeDeps: {

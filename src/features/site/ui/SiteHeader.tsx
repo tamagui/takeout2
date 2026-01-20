@@ -102,14 +102,16 @@ const SiteHeaderMenu = memo(() => {
                 onPressOut={() => {
                   setTimeout(() => {
                     setOpen(false)
-                  })
+                  }, 250)
                 }}
               />
 
               <Link href="/docs/introduction">
                 <ListItem
                   onPressOut={() => {
-                    setOpen(false)
+                    setTimeout(() => {
+                      setOpen(false)
+                    }, 250)
                   }}
                 >
                   <ListItem.Icon>

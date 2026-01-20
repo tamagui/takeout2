@@ -4,6 +4,7 @@ import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { SizableText, View, YStack } from 'tamagui'
 
+import { pickImageFromLibrary } from '~/helpers/media/imagePicker'
 import { AIChatInput } from '~/interface/ai/AIChatInput'
 import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
 import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter'
@@ -13,6 +14,7 @@ interface Message {
   id: string
   role: 'user' | 'assistant'
   content: string
+  imageUri?: string
 }
 
 const EmptyState = memo(
@@ -55,6 +57,7 @@ const MessageBubble = memo(({ message }: { message: Message }) => {
 export const AIPage = memo(() => {
   const insets = useSafeAreaInsets()
   const [messages, setMessages] = useState<Message[]>([])
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
   const { progress, height } = useReanimatedKeyboardAnimation()
 
@@ -71,15 +74,31 @@ export const AIPage = memo(() => {
     }
   })
 
-  const handleSend = useCallback((content: string) => {
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content,
-    }
-    setMessages((prev) => [...prev, userMessage])
+  const handleSend = useCallback(
+    (content: string, imageUri?: string) => {
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        role: 'user',
+        content,
+        imageUri,
+      }
+      setMessages((prev) => [...prev, userMessage])
+      setSelectedImage(null)
 
-    // TODO: send to AI and get response
+      // TODO: send to AI and get response
+    },
+    []
+  )
+
+  const handlePlusPress = useCallback(async () => {
+    const result = await pickImageFromLibrary(false)
+    if (result && !result.canceled && result.assets?.[0]) {
+      setSelectedImage(result.assets[0].uri)
+    }
+  }, [])
+
+  const handleRemoveImage = useCallback(() => {
+    setSelectedImage(null)
   }, [])
 
   const renderItem = useCallback(
@@ -118,7 +137,12 @@ export const AIPage = memo(() => {
       />
 
       <KeyboardStickyFooter>
-        <AIChatInput onSend={handleSend} />
+        <AIChatInput
+          onSend={handleSend}
+          onPlusPress={handlePlusPress}
+          selectedImage={selectedImage}
+          onRemoveImage={handleRemoveImage}
+        />
       </KeyboardStickyFooter>
     </PageLayout>
   )

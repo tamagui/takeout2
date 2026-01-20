@@ -19,7 +19,13 @@ export function HomeLayout() {
           headerShown: false,
         }}
       />
-      <Stack.Screen name="profile/[userId]" />
+      <Stack.Screen
+        name="profile/[userId]"
+        options={{
+          title: '',
+          headerLeft: () => <HeaderBackButton />,
+        }}
+      />
       <Stack.Screen
         name="post/[feedId]"
         options={() => ({

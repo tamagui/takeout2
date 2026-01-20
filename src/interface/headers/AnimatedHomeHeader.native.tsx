@@ -20,6 +20,7 @@ import { CaretDownIcon } from '~/interface/icons/phosphor/CaretDownIcon'
 import { PlusIcon } from '~/interface/icons/phosphor/PlusIcon'
 
 import { Pressable } from '../buttons/Pressable'
+import { showToast } from '../toast/helpers'
 import { isSmallScreen } from '../dimensions'
 import { GradientBlurView } from '../effects/GradientBlurView'
 import { feedDropdownEmitter } from './feedDropdownEmitter'
@@ -81,6 +82,7 @@ export const AnimatedHomeHeader = memo(({ scrollY }: AnimatedHomeHeaderProps) =>
 
   const handleBellPress = useCallback(() => {
     // todo: navigate to notifications
+    showToast('Coming soon', { type: 'info' })
   }, [])
 
   const handleFeedPress = useCallback(() => {

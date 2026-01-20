@@ -292,7 +292,7 @@ function FeatureCard({ feature, size, width, height, horizontal }: FeatureCardPr
             height={48}
             items="center"
             justify="center"
-            bg="$color4"
+            bg={theme.color4?.val as ColorTokens}
             rounded={14}
           >
             <Icon size={26} color={theme.color10?.val as ColorTokens} />

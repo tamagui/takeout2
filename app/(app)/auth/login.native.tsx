@@ -1,15 +1,6 @@
 import { router } from 'one'
 import { useCallback, useState } from 'react'
-import {
-  isWeb,
-  SizableText,
-  Spinner,
-  useTheme,
-  View,
-  XStack,
-  YStack,
-  type ColorTokens,
-} from 'tamagui'
+import { AnimatePresence, SizableText, Spinner, View, XStack, YStack } from 'tamagui'
 
 import {
   APP_NAME,
@@ -18,7 +9,7 @@ import {
   TERMS_OF_SERVICE_URL,
 } from '~/constants/app'
 import { signInAsDemo } from '~/features/auth/client/signInAsDemo'
-import { useIsDark } from '~/features/theme/useIsDark'
+import { Onboarding, onboardingSlides } from '~/features/onboarding'
 import { isDemoMode } from '~/helpers/isDemoMode'
 import { Link } from '~/interface/app/Link'
 import { GradientBackground } from '~/interface/backgrounds/GradientBackground'
@@ -31,10 +22,8 @@ import { H2 } from '~/interface/text/Headings'
 import { showToast } from '~/interface/toast/helpers'
 
 export const LoginPage = () => {
-  const theme = useTheme()
-  const isDark = useIsDark()
   const [demoLoading, setDemoLoading] = useState<boolean>(false)
-  const [showOnboarding, setShowOnboarding] = useState<boolean>(!isWeb)
+  const [showOnboarding, setShowOnboarding] = useState<boolean>(true)
 
   const handleOnboardingComplete = useCallback(() => {
     setShowOnboarding(false)
@@ -75,22 +64,6 @@ export const LoginPage = () => {
               Continue with Email
             </ButtonSimple>
           </Link>
-          {isWeb && window.location.search.includes('showAdmin') && (
-            <ButtonSimple
-              variant="outlined"
-              size="large"
-              onPress={handleSignInAdmin}
-              width="100%"
-              data-testid="login-as-admin"
-              pressStyle={{
-                scale: 0.97,
-              }}
-              transition="200ms"
-              enterStyle={{ opacity: 0, scale: 0.95 }}
-            >
-              Continue as admin (dev)
-            </ButtonSimple>
-          )}
 
           {/* DEMO mode - enabled in dev or when VITE_DEMO_MODE=1 */}
           {isDemoMode && (
@@ -104,9 +77,8 @@ export const LoginPage = () => {
                 setDemoLoading(false)
                 if (error) {
                   showToast('Demo login failed', { type: 'error' })
-                  return
                 }
-                router.replace('/home')
+                // AppLayout handles redirect when auth state changes
               }}
               disabled={demoLoading}
               width="100%"
@@ -165,8 +137,8 @@ export const LoginPage = () => {
         </YStack>
       </View>
 
-      {/* <AnimatePresence>
-        {showOnboarding && !isWeb && (
+      <AnimatePresence>
+        {showOnboarding && (
           <View
             transition="200ms"
             position="absolute"
@@ -181,7 +153,7 @@ export const LoginPage = () => {
             <Onboarding slides={onboardingSlides} onComplete={handleOnboardingComplete} />
           </View>
         )}
-      </AnimatePresence> */}
+      </AnimatePresence>
     </GradientBackground>
   )
 }

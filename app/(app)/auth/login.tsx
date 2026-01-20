@@ -1,15 +1,6 @@
 import { router } from 'one'
-import { useCallback, useState } from 'react'
-import {
-  AnimatePresence,
-  Circle,
-  isWeb,
-  SizableText,
-  Spinner,
-  View,
-  XStack,
-  YStack,
-} from 'tamagui'
+import { useState } from 'react'
+import { Circle, SizableText, Spinner, XStack, YStack } from 'tamagui'
 
 import {
   APP_NAME,
@@ -18,8 +9,6 @@ import {
   TERMS_OF_SERVICE_URL,
 } from '~/constants/app'
 import { signInAsDemo } from '~/features/auth/client/signInAsDemo'
-import { onboardingSlides } from '~/features/onboarding'
-import { Onboarding } from '~/features/onboarding/Onboarding'
 import { isDemoMode } from '~/helpers/isDemoMode'
 import { Link } from '~/interface/app/Link'
 import { LogoIcon } from '~/interface/app/LogoIcon'
@@ -33,11 +22,6 @@ import { showToast } from '~/interface/toast/helpers'
 
 export const LoginPage = () => {
   const [demoLoading, setDemoLoading] = useState<boolean>(false)
-  const [showOnboarding, setShowOnboarding] = useState<boolean>(!isWeb)
-
-  const handleOnboardingComplete = useCallback(() => {
-    setShowOnboarding(false)
-  }, [])
 
   const handleSignInAdmin = () => {
     dialogEmit({ type: 'admin-password' })
@@ -66,8 +50,8 @@ export const LoginPage = () => {
           items="center"
           bg="$background"
           rounded="$8"
-          p={isWeb ? '$6' : '$4'}
-          maxW={isWeb ? 400 : '90%'}
+          p="$6"
+          maxW={400}
         >
           <H2 text="center">Login to {APP_NAME}</H2>
 
@@ -102,7 +86,7 @@ export const LoginPage = () => {
                 </ButtonAction>
               </Link>
 
-              {isWeb && window.location.search.includes('showAdmin') && (
+              {window.location.search.includes('showAdmin') && (
                 <ButtonSimple
                   variant="outlined"
                   size="large"
@@ -130,9 +114,8 @@ export const LoginPage = () => {
                     setDemoLoading(false)
                     if (error) {
                       showToast('Demo login failed', { type: 'error' })
-                      return
                     }
-                    router.replace('/home/feed')
+                    // AppLayout handles redirect when auth state changes
                   }}
                   disabled={demoLoading}
                   width="100%"
@@ -192,24 +175,6 @@ export const LoginPage = () => {
           </YStack>
         </YStack>
       </YStack>
-
-      <AnimatePresence>
-        {showOnboarding && !isWeb && (
-          <View
-            transition="200ms"
-            position="absolute"
-            t={0}
-            l={0}
-            r={0}
-            b={0}
-            z={1000}
-            enterStyle={{ scale: 0.95 }}
-            exitStyle={{ scale: 0 }}
-          >
-            <Onboarding slides={onboardingSlides} onComplete={handleOnboardingComplete} />
-          </View>
-        )}
-      </AnimatePresence>
     </XStack>
   )
 }

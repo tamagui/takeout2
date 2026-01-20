@@ -189,10 +189,3 @@ volumes:
   pgdb_data:
   zero_data:
   minio_data:
-
-networks:
-  default:
-    enable_ipv6: true
-    ipam:
-      config:
-        - subnet: fd00::/80

@@ -45,7 +45,12 @@ export function AppLayout() {
                 </DragDropFile>
               ) : (
                 // We need Stack here for transition animation to work on native
-                <Stack screenOptions={{ headerShown: false }}>
+                <Stack
+                  screenOptions={{
+                    headerShown: false,
+                    animation: 'none',
+                  }}
+                >
                   <Stack.Screen name="home" />
                   <Stack.Screen name="auth" />
                 </Stack>

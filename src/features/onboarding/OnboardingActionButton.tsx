@@ -1,125 +1,91 @@
-import { memo, useState } from 'react'
-import { runOnJS, useAnimatedReaction, type SharedValue } from 'react-native-reanimated'
-import { SizableText, Stack, XStack, YStack, styled } from 'tamagui'
+import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated'
+import { SizableText, Stack, XStack, useTheme, type ColorTokens } from 'tamagui'
 
+import { Pressable } from '~/interface/buttons/Pressable'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 
 interface OnboardingActionButtonProps {
-  currentPage: SharedValue<number>
-  totalPages: number
+  isLastPage: boolean
   onPress: () => void
   onSkip?: () => void
 }
 
-const ActionButton = styled(Stack, {
-  height: 56,
-  items: 'center',
-  justify: 'center',
-  bg: '$color9',
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 4 },
-  shadowOpacity: 0.2,
-  shadowRadius: 8,
-  pressStyle: {
-    scale: 0.97,
-    opacity: 0.9,
-  },
-
-  variants: {
-    isExpanded: {
-      true: {
-        width: 200,
-        borderRadius: 16,
-        bg: '$color10',
-      },
-      false: {
-        width: 56,
-        borderRadius: 28,
-      },
-    },
-  } as const,
-
-  defaultVariants: {
-    isExpanded: false,
-  },
-})
-
-const AnimatedContent = styled(YStack, {
-  position: 'absolute',
-  transition: 'quick',
-
-  variants: {
-    visible: {
-      true: {
-        opacity: 1,
-        scale: 1,
-        y: 0,
-      },
-      false: {
-        opacity: 0,
-        scale: 0.5,
-        y: 10,
-      },
-    },
-  } as const,
-})
-
-const SkipButton = styled(Stack, {
-  transition: 'quick',
-
-  variants: {
-    visible: {
-      true: {
-        opacity: 1,
-        pointerEvents: 'auto',
-      },
-      false: {
-        opacity: 0,
-        pointerEvents: 'none',
-      },
-    },
-  } as const,
-})
-
-export const OnboardingActionButton = memo(function OnboardingActionButton({
-  currentPage,
-  totalPages,
+export function OnboardingActionButton({
+  isLastPage,
   onPress,
   onSkip,
 }: OnboardingActionButtonProps) {
-  const [isLastPage, setIsLastPage] = useState(false)
+  const theme = useTheme()
 
-  useAnimatedReaction(
-    () => currentPage.value === totalPages - 1,
-    (isLast) => {
-      runOnJS(setIsLastPage)(isLast)
-    },
-    [totalPages]
-  )
+  const buttonAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      width: withTiming(isLastPage ? 200 : 56),
+      borderRadius: withTiming(isLastPage ? 16 : 28),
+      backgroundColor: withTiming(isLastPage ? theme.color10?.val : theme.color9?.val),
+    }
+  }, [isLastPage, theme.color9?.val, theme.color10?.val])
+
+  const arrowAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: withTiming(isLastPage ? 0 : 1),
+    }
+  }, [isLastPage])
+
+  const textAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: withTiming(isLastPage ? 1 : 0),
+    }
+  }, [isLastPage])
 
   return (
     <XStack justify="space-between" items="center" width="100%">
-      <SkipButton visible={!isLastPage} onPress={onSkip} hitSlop={12} cursor="pointer">
-        <SizableText color="$color10" size="$4" fontWeight="500">
+      <Pressable
+        onPress={onSkip}
+        hitSlop={12}
+        cursor="pointer"
+        opacity={isLastPage ? 0 : 1}
+        disabled={isLastPage}
+      >
+        <SizableText color={theme.color10?.val as ColorTokens} size="$4" fontWeight="500">
           Skip
         </SizableText>
-      </SkipButton>
+      </Pressable>
 
-      <ActionButton
-        isExpanded={isLastPage}
-        transition="medium"
-        onPress={onPress}
-        cursor="pointer"
+      <Animated.View
+        style={[
+          {
+            height: 56,
+            alignItems: 'center',
+            justifyContent: 'center',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.2,
+            shadowRadius: 8,
+          },
+          buttonAnimatedStyle,
+        ]}
       >
-        <AnimatedContent visible={!isLastPage}>
-          <CaretRightIcon size={28} color="white" />
-        </AnimatedContent>
-        <AnimatedContent visible={isLastPage}>
-          <SizableText color="$color6" size="$5" fontWeight="600">
-            Get Started
-          </SizableText>
-        </AnimatedContent>
-      </ActionButton>
+        <Stack
+          flex={1}
+          items="center"
+          justify="center"
+          onPress={onPress}
+          cursor="pointer"
+        >
+          <Animated.View style={[{ position: 'absolute' }, arrowAnimatedStyle]}>
+            <CaretRightIcon size={28} color="white" />
+          </Animated.View>
+          <Animated.View style={[{ position: 'absolute' }, textAnimatedStyle]}>
+            <SizableText
+              color={theme.color6?.val as ColorTokens}
+              size="$5"
+              fontWeight="600"
+            >
+              Get Started
+            </SizableText>
+          </Animated.View>
+        </Stack>
+      </Animated.View>
     </XStack>
   )
-})
+}

@@ -7,6 +7,7 @@ interface PostImageProps {
   aspectRatio?: number
   onAspectRatioChange?: (ratio: number) => void
   sharedTransitionTag?: string
+  fill?: boolean
 }
 
 export function PostImage({
@@ -14,15 +15,17 @@ export function PostImage({
   caption,
   aspectRatio = 1,
   onAspectRatioChange,
+  fill,
 }: PostImageProps) {
   return (
     <Image
       src={image}
       alt={caption || 'Post image'}
       width="100%"
+      height={fill ? '100%' : undefined}
       objectFit="cover"
-      rounded="$6"
-      aspectRatio={aspectRatio}
+      rounded={fill ? 0 : '$6'}
+      aspectRatio={fill ? undefined : aspectRatio}
       onLoad={
         onAspectRatioChange
           ? (e) => {

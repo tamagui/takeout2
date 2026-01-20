@@ -1,4 +1,4 @@
-import { router, useParams } from 'one'
+import { useParams } from 'one'
 import { useState } from 'react'
 import { Keyboard } from 'react-native'
 import { YStack } from 'tamagui'
@@ -36,9 +36,8 @@ export const PasswordPage = () => {
       if (error) {
         Keyboard.dismiss()
         showError(error)
-        return
       }
-      router.replace('/home')
+      // AppLayout handles redirect when auth state changes
     } catch (err) {
       console.error(err)
     } finally {

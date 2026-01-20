@@ -4,15 +4,13 @@ import { join } from 'node:path'
 
 import { run } from '@take-out/scripts/helpers/run'
 
-const UNCLOUD_VERSION = '0.15.0'
-
 export async function checkUncloudCLI(): Promise<void> {
   try {
     const { stdout } = await run('uc --version', { silent: true, captureOutput: true })
     console.info(`✅ uncloud cli installed (${stdout.trim()})`)
   } catch {
     throw new Error(
-      `uncloud cli not found - install: curl -fsS https://get.uncloud.run/install.sh | sh -s -- --version ${UNCLOUD_VERSION}`
+      `uncloud cli not found - install: curl -fsS https://get.uncloud.run/install.sh | sh`
     )
   }
 }

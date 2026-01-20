@@ -30,9 +30,9 @@ breaking changes may occur.
 ### prerequisites
 
 1. uncloud cli installed:
-   `curl -fsS https://get.uncloud.run/install.sh | sh -s -- --version 0.15.0`
+   `curl -fsS https://get.uncloud.run/install.sh | sh`
 2. digital ocean account (or any VM/dedicated provider)
-3. domain name (optional - can use `yourapp.uncld.dev` subdomain)
+3. domain name (optional - can use a free `yourapp.xxxxxx.uncld.dev` subdomain)
 4. managed postgresql database with logical replication enabled
 
 ### quick start

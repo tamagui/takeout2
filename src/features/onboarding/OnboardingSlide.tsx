@@ -1,14 +1,12 @@
-import { memo } from 'react'
 import { useWindowDimensions } from 'react-native'
 import Animated, {
   Extrapolation,
-  FadeIn,
   interpolate,
   useAnimatedStyle,
   withDelay,
   withTiming,
 } from 'react-native-reanimated'
-import { SizableText, View, YStack } from 'tamagui'
+import { SizableText, useTheme, View, YStack, type ColorTokens } from 'tamagui'
 
 import Glint from '~/interface/effects/Glint'
 
@@ -20,7 +18,7 @@ import type {
   OnboardingSlideProps,
 } from './types'
 
-export const OnboardingSlide = memo(function OnboardingSlide({
+export function OnboardingSlide({
   index,
   slide,
   scrollPosition,
@@ -78,7 +76,7 @@ export const OnboardingSlide = memo(function OnboardingSlide({
       </YStack>
     </View>
   )
-})
+}
 
 interface PositionConfig {
   l?: number
@@ -226,13 +224,7 @@ function AnimatedCardWrapper({
     }
   }, [delay, baseScale, rotation, slideIndex])
 
-  const entering = FadeIn.delay(delay).duration(300)
-
-  return (
-    <Animated.View style={[style, animatedStyle]} entering={entering}>
-      {children}
-    </Animated.View>
-  )
+  return <Animated.View style={[style, animatedStyle]}>{children}</Animated.View>
 }
 
 function GridLayout({ features, cardWidth, currentPage, slideIndex }: LayoutProps) {
@@ -282,6 +274,8 @@ function GridLayout({ features, cardWidth, currentPage, slideIndex }: LayoutProp
 }
 
 function FeatureCard({ feature, size, width, height, horizontal }: FeatureCardProps) {
+  const theme = useTheme()
+
   if (!feature) return null
   const { Icon, title } = feature
 
@@ -298,12 +292,16 @@ function FeatureCard({ feature, size, width, height, horizontal }: FeatureCardPr
             height={48}
             items="center"
             justify="center"
-            bg="$color4"
+            bg={theme.color4?.val as ColorTokens}
             rounded={14}
           >
-            <Icon size={26} color="$color10" />
+            <Icon size={26} color={theme.color10?.val as ColorTokens} />
           </YStack>
-          <SizableText size="$5" fontWeight="600" color="$color12">
+          <SizableText
+            size="$5"
+            fontWeight="600"
+            color={theme.color12?.val as ColorTokens}
+          >
             {title}
           </SizableText>
         </YStack>
@@ -320,15 +318,15 @@ function FeatureCard({ feature, size, width, height, horizontal }: FeatureCardPr
           height={64}
           items="center"
           justify="center"
-          bg="$color4"
+          bg={theme.color4?.val as ColorTokens}
           rounded={18}
         >
-          <Icon size={32} color="$color10" />
+          <Icon size={32} color={theme.color10?.val as ColorTokens} />
         </YStack>
         <SizableText
           size="$4"
           fontWeight="600"
-          color="$color12"
+          color={theme.color12?.val as ColorTokens}
           text="center"
           numberOfLines={2}
         >

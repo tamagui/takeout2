@@ -1,17 +1,20 @@
 import { createGlobalContext, useAsyncEffect } from '@take-out/helpers'
 import { use, useRef } from 'react'
+import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller'
+import Animated, { useAnimatedStyle } from 'react-native-reanimated'
 import {
+  Dialog as TamaguiDialog,
   DialogDescription,
   ScrollView,
   Separator,
   Sheet,
   Spacer,
-  styled,
-  Dialog as TamaguiDialog,
   VisuallyHidden,
-  withStaticProperties,
   XStack,
   YStack,
+  isWeb,
+  styled,
+  withStaticProperties,
   type DialogProps,
   type SizeTokens,
   type TamaguiElement,
@@ -24,6 +27,15 @@ import { dialogEmit } from './shared'
 
 const CONTENT_RADIUS: SizeTokens = '$9'
 
+const useDialogKeyboardOffset = isWeb
+  ? () => ({})
+  : () => {
+      const { height } = useReanimatedKeyboardAnimation()
+      return useAnimatedStyle(() => ({
+        transform: [{ translateY: height.value * 0.3 }], // adjust multiplier as needed
+      }))
+    }
+
 const DialogComponent = ({
   children,
   minH = 400,
@@ -32,6 +44,7 @@ const DialogComponent = ({
   ...props
 }: DialogProps & { minH?: number; minW?: number }) => {
   const dialogContentRef = useRef<TamaguiElement>(null)
+  const animatedStyle = useDialogKeyboardOffset()
 
   useHandleEscapeIf(!!open, () => {
     // TODO allow a throw AbortError that works with handleKeyboardEscape closeAllEscapables
@@ -74,7 +87,13 @@ const DialogComponent = ({
     <DialogOpenContext.Provider value={!!open}>
       <TamaguiDialog modal open={open} {...props}>
         <TamaguiDialog.Adapt platform="touch" when="maxSM">
-          <Sheet transition="medium" zIndex={250_000} modal dismissOnSnapToBottom>
+          <Sheet
+            transition="medium"
+            zIndex={250_000}
+            modal
+            snapPointsMode="fit"
+            dismissOnSnapToBottom
+          >
             <Sheet.Overlay
               bg="$background"
               transition="quick"
@@ -112,8 +131,8 @@ const DialogComponent = ({
               opacity={0.8}
             />
           </DialogOverlay>
-
-          <DialogContent
+          <AnimatedDialogContent
+            style={animatedStyle}
             ref={dialogContentRef}
             minH={minH}
             minW={minW}
@@ -122,7 +141,7 @@ const DialogComponent = ({
             overflow="hidden"
           >
             {children}
-          </DialogContent>
+          </AnimatedDialogContent>
         </TamaguiDialog.Portal>
       </TamaguiDialog>
     </DialogOpenContext.Provider>
@@ -166,6 +185,11 @@ const DialogContent = styled(TamaguiDialog.Content, {
     outlineStyle: 'solid',
   },
 })
+
+const NativeAnimatedDialogContent = Animated.createAnimatedComponent(DialogContent)
+const AnimatedDialogContent = (
+  isWeb ? DialogContent : NativeAnimatedDialogContent
+) as typeof NativeAnimatedDialogContent
 
 const DialogTitle = styled(TamaguiDialog.Title, {
   fontFamily: '$mono',

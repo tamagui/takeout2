@@ -66,7 +66,7 @@ export function CommentInput({
       )}
 
       {isNative && (
-        <KeyboardStickyFooter offset={offset} openedOffset={-10}>
+        <KeyboardStickyFooter openedOffset={-10}>
           <XStack
             items="center"
             gap="$2"
@@ -75,13 +75,11 @@ export function CommentInput({
             overflow="hidden"
             rounded={24}
             bg="$background"
+            mx="$2"
           >
             <Glint rounded={24} />
             <Input
-              unstyled
               flex={1}
-              py="$2.5"
-              px="$2"
               borderWidth={0}
               color="$color"
               placeholder="Add a comment..."

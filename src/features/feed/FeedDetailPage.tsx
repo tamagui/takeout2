@@ -84,7 +84,7 @@ export const FeedDetailPage = memo(() => {
         <XStack items="center" justify="space-between" py="$4">
           <XStack justify="space-between" gap="$3" width="100%">
             <XStack items="center" gap="$3" flex={1}>
-              <Avatar image={user.image as string} size={32} />
+              <Avatar gradient image={user.image as string} size={32} />
               <XStack items="center" gap="$1">
                 <SizableText size="$4" fontWeight="600" numberOfLines={1}>
                   {user.username}

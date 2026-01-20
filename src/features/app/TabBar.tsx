@@ -1,5 +1,5 @@
 import { BlurView } from 'expo-blur'
-import { router } from 'one'
+import { usePathname } from 'one'
 import { useCallback, useEffect, useState } from 'react'
 import { Dimensions, StyleSheet } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
@@ -68,6 +68,7 @@ const TAB_COUNT = ALL_TABS.length
 
 export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) {
   const insets = useSafeAreaInsets()
+  const pathname = usePathname()
   const animationProgress = useSharedValue(0)
   const [selectedMenuIndex, setSelectedMenuIndex] = useState(0)
   const [isExpanded, setIsExpanded] = useState(false)
@@ -78,7 +79,8 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
   const currentTabName = state.routes[state.index]?.name
   const currentTabIndex = ALL_TABS.findIndex((tab) => tab.name === currentTabName)
   const currentTab = ALL_TABS[currentTabIndex]
-  const shouldHideTabBar = currentTab?.hideTabBar ?? false
+  const shouldHideTabBar =
+    (currentTab?.hideTabBar || pathname.startsWith('/home/feed/post/')) ?? false
 
   useEffect(() => {
     if (currentTabIndex >= 0) {

@@ -279,9 +279,65 @@ async function main() {
     }
 
     console.info(`✅ Done\n`)
+
+    // update downstream repos if they exist
+    if (!canary) {
+      await updateDownstreamRepos()
+    }
   } catch (err) {
     console.info('\nError:\n', err)
     process.exit(1)
+  }
+}
+
+async function updateDownstreamRepos() {
+  const homeDir = process.env.HOME || process.env.USERPROFILE || ''
+  const downstreamRepos = [
+    join(homeDir, 'takeout-free'),
+    join(homeDir, 'takeout-static'),
+  ]
+
+  for (const repoPath of downstreamRepos) {
+    if (!(await fs.pathExists(repoPath))) {
+      continue
+    }
+
+    console.info(`\n📦 Found downstream repo: ${repoPath}`)
+
+    try {
+      // check for uncommitted changes
+      const statusOut = await run(`git status --porcelain`, { cwd: repoPath, silent: true })
+      if (statusOut.stdout.trim()) {
+        console.warn(`  ⚠️  Skipping ${repoPath}: has uncommitted changes`)
+        continue
+      }
+
+      // pull latest
+      console.info(`  Pulling latest...`)
+      try {
+        await run(`git pull --rebase origin HEAD`, { cwd: repoPath, silent: true })
+      } catch (err) {
+        console.warn(`  ⚠️  Skipping ${repoPath}: failed to pull from origin`)
+        continue
+      }
+
+      // run upgrade
+      console.info(`  Running upgrade/takeout...`)
+      await run(`bun tko upgrade/takeout`, { cwd: repoPath })
+
+      // run check:all
+      console.info(`  Running check:all...`)
+      try {
+        await run(`bun check:all`, { cwd: repoPath })
+        console.info(`  ✅ ${repoPath} upgraded successfully`)
+      } catch (err) {
+        console.warn(`  ⚠️  ${repoPath}: check:all failed after upgrade, please review manually`)
+        // reset the changes since check failed
+        await run(`git checkout .`, { cwd: repoPath, silent: true })
+      }
+    } catch (err) {
+      console.warn(`  ⚠️  Error updating ${repoPath}:`, err)
+    }
   }
 }
 

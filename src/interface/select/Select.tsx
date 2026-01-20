@@ -69,8 +69,9 @@ export function Select({
             </Sheet.ScrollView>
           </Sheet.Frame>
           <Sheet.Overlay
-            bg="$shadowColor"
-            transition="lazy"
+            bg="$background"
+            opacity={0.5}
+            transition="quick"
             enterStyle={{ opacity: 0 }}
             exitStyle={{ opacity: 0 }}
           />

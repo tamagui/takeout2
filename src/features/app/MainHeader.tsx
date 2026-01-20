@@ -108,7 +108,8 @@ export const MainHeaderMenu = memo(() => {
         snapPoints={[50]}
       >
         <Sheet.Overlay
-          bg="$shadow6"
+          bg="$background"
+          opacity={0.5}
           transition="quick"
           enterStyle={{ opacity: 0 }}
           exitStyle={{ opacity: 0 }}

@@ -14,6 +14,8 @@ export function CommentSection({ postId }: CommentSectionProps) {
   const [comments, status] = useQuery(commentsByPostId, { postId })
   const isLoading = status.type === 'unknown'
 
+  console.log('comments', comments, status)
+
   return (
     <YStack gap="$4" pt="$4">
       <SizableText size="$5" fontWeight="600">

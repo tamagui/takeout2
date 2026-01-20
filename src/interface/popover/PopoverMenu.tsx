@@ -35,8 +35,9 @@ export const PopoverMenu = ({
           snapPointsMode="percent"
         >
           <Sheet.Overlay
+            bg="$background"
+            opacity={0.5}
             transition="quick"
-            bg="$shadow4"
             enterStyle={{ opacity: 0 }}
             exitStyle={{ opacity: 0 }}
           />

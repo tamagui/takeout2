@@ -76,12 +76,13 @@ const DialogComponent = ({
         <TamaguiDialog.Adapt platform="touch" when="maxSM">
           <Sheet transition="medium" zIndex={250_000} modal dismissOnSnapToBottom>
             <Sheet.Overlay
-              bg="$shadow4"
+              bg="$background"
               transition="quick"
+              opacity={0.5}
               enterStyle={{ opacity: 0 }}
               exitStyle={{ opacity: 0 }}
             />
-            <Sheet.Handle />
+            <Sheet.Handle bg="gray" width={60} height={5} self="center" />
             <Sheet.Frame p="$4" gap="$4">
               <TamaguiDialog.Adapt.Contents />
             </Sheet.Frame>

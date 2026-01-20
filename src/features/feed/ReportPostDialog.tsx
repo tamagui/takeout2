@@ -66,8 +66,9 @@ export function ReportPostDialog({ postId, open, onOpenChange }: ReportPostDialo
             <Adapt.Contents />
           </Sheet.Frame>
           <Sheet.Overlay
-            transition="lazy"
+            bg="$background"
             opacity={0.5}
+            transition="quick"
             enterStyle={{ opacity: 0 }}
             exitStyle={{ opacity: 0 }}
           />

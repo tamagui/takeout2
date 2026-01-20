@@ -82,8 +82,9 @@ const SiteHeaderMenu = memo(() => {
         snapPoints={[50]}
       >
         <Sheet.Overlay
+          bg="$background"
+          opacity={0.5}
           transition="quick"
-          bg="$shadow6"
           enterStyle={{ opacity: 0 }}
           exitStyle={{ opacity: 0 }}
         />

@@ -87,8 +87,8 @@ export const AIChatInput = memo(
                         />
                         <View
                           position="absolute"
-                          top={-8}
-                          right={-8}
+                          t={-8}
+                          r={-8}
                           bg="$color4"
                           width={24}
                           height={24}
@@ -101,7 +101,7 @@ export const AIChatInput = memo(
                           scale={1}
                           rotate="0deg"
                           transition="quick"
-                          enterStyle={{ opacity: 0, scale: 0, rotate: "-90deg" }}
+                          enterStyle={{ opacity: 0, scale: 0, rotate: '-90deg' }}
                         >
                           <XIcon size={14} color="$color11" />
                         </View>

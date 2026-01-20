@@ -1,14 +1,6 @@
 import { router } from 'one'
 import { useCallback, useState } from 'react'
-import {
-  AnimatePresence,
-  isWeb,
-  SizableText,
-  Spinner,
-  View,
-  XStack,
-  YStack,
-} from 'tamagui'
+import { AnimatePresence, SizableText, Spinner, View, XStack, YStack } from 'tamagui'
 
 import {
   APP_NAME,
@@ -31,7 +23,7 @@ import { showToast } from '~/interface/toast/helpers'
 
 export const LoginPage = () => {
   const [demoLoading, setDemoLoading] = useState<boolean>(false)
-  const [showOnboarding, setShowOnboarding] = useState<boolean>(!isWeb)
+  const [showOnboarding, setShowOnboarding] = useState<boolean>(true)
 
   const handleOnboardingComplete = useCallback(() => {
     setShowOnboarding(false)
@@ -72,22 +64,6 @@ export const LoginPage = () => {
               Continue with Email
             </ButtonSimple>
           </Link>
-          {isWeb && window.location.search.includes('showAdmin') && (
-            <ButtonSimple
-              variant="outlined"
-              size="large"
-              onPress={handleSignInAdmin}
-              width="100%"
-              data-testid="login-as-admin"
-              pressStyle={{
-                scale: 0.97,
-              }}
-              transition="200ms"
-              enterStyle={{ opacity: 0, scale: 0.95 }}
-            >
-              Continue as admin (dev)
-            </ButtonSimple>
-          )}
 
           {/* DEMO mode - enabled in dev or when VITE_DEMO_MODE=1 */}
           {isDemoMode && (
@@ -163,7 +139,7 @@ export const LoginPage = () => {
       </View>
 
       <AnimatePresence>
-        {showOnboarding && !isWeb && (
+        {showOnboarding && (
           <View
             transition="200ms"
             position="absolute"

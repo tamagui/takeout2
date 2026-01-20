@@ -82,7 +82,9 @@ const DialogComponent = ({
               enterStyle={{ opacity: 0 }}
               exitStyle={{ opacity: 0 }}
             />
-            <Sheet.Handle bg="gray" width={60} height={5} self="center" />
+            <YStack items="center">
+              <Sheet.Handle bg="gray" width={60} height={5} />
+            </YStack>
             <Sheet.Frame p="$4" gap="$4">
               <TamaguiDialog.Adapt.Contents />
             </Sheet.Frame>

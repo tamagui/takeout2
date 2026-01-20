@@ -1,5 +1,4 @@
 import { GlassContainer } from 'expo-glass-effect'
-import { Image } from 'expo-image'
 import { memo, useState } from 'react'
 import { AnimatePresence, Input, View, XStack, YStack } from 'tamagui'
 
@@ -8,6 +7,7 @@ import { ArrowUpIcon } from '~/interface/icons/phosphor/ArrowUpIcon'
 import { MicrophoneIcon } from '~/interface/icons/phosphor/MicrophoneIcon'
 import { PlusIcon } from '~/interface/icons/phosphor/PlusIcon'
 import { XIcon } from '~/interface/icons/phosphor/XIcon'
+import { Image } from '~/interface/image/Image'
 
 interface AIChatInputProps {
   onSend?: (message: string, imageUri?: string) => void
@@ -81,9 +81,11 @@ export const AIChatInput = memo(
                     <XStack p="$3" pb={0}>
                       <View position="relative">
                         <Image
-                          source={{ uri: selectedImage ?? '' }}
-                          style={{ width: 64, height: 64, borderRadius: 12 }}
-                          contentFit="cover"
+                          src={selectedImage ?? ''}
+                          width={64}
+                          height={64}
+                          rounded="$4"
+                          objectFit="cover"
                         />
                         <View
                           position="absolute"

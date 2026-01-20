@@ -1,17 +1,44 @@
 import { formatCount, formatReactionCount } from '@take-out/helpers'
 import { router } from 'one'
 import { memo } from 'react'
-import { SizableText, View, XStack, YStack } from 'tamagui'
+import { SizableText, styled, View, XStack, YStack } from 'tamagui'
 
 import { SERVER_URL } from '~/constants/urls'
 import { useShareProfile } from '~/helpers/share/useShareProfile'
 import { Avatar } from '~/interface/avatars/Avatar'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { PencilSimpleIcon } from '~/interface/icons/phosphor/PencilSimpleIcon'
 import { ShareFatIcon } from '~/interface/icons/phosphor/ShareFatIcon'
 import { Text } from '~/interface/text/Text'
 
 import type { User } from '~/data/types'
+
+const ProfileActionPill = styled(XStack, {
+  items: 'center',
+  rounded: '$10',
+  borderWidth: 1,
+  borderColor: '$color5',
+  bg: '$color2',
+  overflow: 'hidden',
+})
+
+const ProfileActionItem = styled(XStack, {
+  items: 'center',
+  justify: 'center',
+  gap: '$2',
+  px: '$5',
+  height: 40,
+  cursor: 'pointer',
+
+  pressStyle: {
+    bg: '$color4',
+  },
+})
+
+const ProfileActionDivider = styled(View, {
+  width: 1,
+  height: 20,
+  bg: '$color5',
+})
 
 interface ProfileHeaderProps {
   userInfo?: User
@@ -66,26 +93,19 @@ export const ProfileHeader = memo(
             <StatItem value={formatReactionCount(14555)} label="Following" />
           </XStack>
 
-          <XStack gap="$3" pt="$2">
-            <ButtonSimple
-              size="medium"
-              variant="outlined"
-              onPress={handleShare}
-              icon={<ShareFatIcon size={16} color="$color12" />}
-            >
-              Share
-            </ButtonSimple>
+          <ProfileActionPill>
+            <ProfileActionItem onPress={handleShare}>
+              <ShareFatIcon size={18} color="$color11" />
+            </ProfileActionItem>
             {isOwnProfile && (
-              <ButtonSimple
-                size="medium"
-                variant="outlined"
-                onPress={() => router.push('/home/settings/edit-profile')}
-                icon={<PencilSimpleIcon size={16} color="$color12" />}
-              >
-                Edit Profile
-              </ButtonSimple>
+              <>
+                <ProfileActionDivider />
+                <ProfileActionItem onPress={() => router.push('/home/settings/edit-profile')}>
+                  <PencilSimpleIcon size={18} color="$color11" />
+                </ProfileActionItem>
+              </>
             )}
-          </XStack>
+          </ProfileActionPill>
         </YStack>
       </View>
     )

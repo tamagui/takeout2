@@ -75,6 +75,7 @@
     "@hot-updater/react-native": "0.25.6",
     "@hot-updater/supabase": "0.25.6",
     "@legendapp/list": "^2.0.18",
+    "@nandorojo/galeria": "^2.0.0",
     "@op-engineering/op-sqlite": "^15.0.7",
     "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-native-menu/menu": "^2.0.0",

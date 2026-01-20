@@ -1,2 +1,7 @@
-// re-export v5 css animations for root config
-export { animations as animationsRoot } from '@tamagui/config/v5-css'
+import { createAnimations } from '@tamagui/animations-css'
+import { animations } from '@tamagui/config/v5-css'
+
+export const animationsRoot = createAnimations({
+  ...animations.animations,
+  smoothExpand: '250ms ease-out',
+})

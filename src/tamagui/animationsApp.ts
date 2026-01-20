@@ -1,2 +1,10 @@
-// re-export v5 motion animations for app
-export { animations as animationsApp } from '@tamagui/config/v5-motion'
+import { createAnimations } from '@tamagui/animations-motion'
+import { animations } from '@tamagui/config/v5-motion'
+
+export const animationsApp = createAnimations({
+  ...animations.animations,
+  smoothExpand: {
+    type: 'tween',
+    duration: 0.25,
+  },
+})

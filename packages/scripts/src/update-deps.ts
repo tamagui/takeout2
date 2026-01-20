@@ -127,60 +127,62 @@ function doesPackageMatchPattern(packageName: string, pattern: string): boolean 
   return packageName === pattern
 }
 
-async function fetchPackageVersionFromTag(
-  packageName: string,
-  tag: string
-): Promise<string | null> {
-  try {
-    console.info(`⏳ Lookup ${packageName}@${tag}...`)
-    // Use --json to ensure parseable output, even if it's just a string.
-    const result = await $`npm view ${packageName}@${tag} version --json`.text()
-    const versionData = JSON.parse(result.trim())
-
-    let version: string | undefined
-    if (Array.isArray(versionData)) {
-      if (versionData.length === 0) {
-        console.warn(`❓ No specific versions found for ${packageName}@${tag}.`)
-        return null
-      }
-      // If multiple versions, prefer the last one, as it's often the latest/highest precedent for a tag.
-      version = versionData[versionData.length - 1]
-      if (versionData.length > 1) {
-        console.info(
-          `ℹ️ Multiple versions found for ${packageName}@${tag}: [${versionData.join(', ')}]. Using: ${version}`
-        )
-      }
-    } else if (typeof versionData === 'string') {
-      version = versionData
-    }
-
-    if (typeof version === 'string' && version.trim() !== '') {
-      console.info(`✅ Found ${packageName}@${tag}: ${version}`)
-      return version
-    }
-
-    console.warn(
-      `❓ Unexpected or empty version format for ${packageName}@${tag}: ${JSON.stringify(versionData)}`
-    )
-    return null
-  } catch (error: any) {
-    // Trim error message to avoid overly verbose logs from npm
-    const errorMessage = error.message?.split('\n')[0]
-    console.warn(
-      `⚠️ Could not fetch version for ${packageName}@${tag}. Error: ${errorMessage}`
-    )
-    return null
-  }
-}
-
-async function updatePackages(packagesToUpdate: string[], cwd: string) {
+async function updatePackagesInWorkspace(
+  packagesToUpdate: string[],
+  cwd: string,
+  workspaceName: string
+) {
   if (packagesToUpdate.length === 0) {
-    console.info('No packages to update after resolving versions.')
     return
   }
 
   $.cwd(cwd)
 
+  if (globalTag) {
+    // check which packages actually have the tag
+    const packagesWithTag = (
+      await Promise.all(
+        packagesToUpdate.map(async (pkg) => {
+          try {
+            await $`npm view ${pkg}@${globalTag} version --json`.quiet()
+            return pkg
+          } catch {
+            return null
+          }
+        })
+      )
+    ).filter((pkg): pkg is string => pkg !== null)
+
+    if (packagesWithTag.length === 0) {
+      return
+    }
+
+    console.info(`  📦 ${workspaceName}: updating ${packagesWithTag.length} package(s)`)
+
+    const packageNamesWithTags = packagesWithTag.map((pkg) => `${pkg}@${globalTag}`)
+
+    try {
+      await $`bun add ${packageNamesWithTags} --ignore-scripts`.quiet()
+    } catch (error: any) {
+      const errorMessage = error.message?.split('\n')[0]
+      console.warn(`  ⚠️ ${workspaceName}: ${errorMessage}`)
+    }
+  } else {
+    console.info(`  📦 ${workspaceName}: updating ${packagesToUpdate.length} package(s)`)
+
+    try {
+      await $`bun update ${packagesToUpdate} --latest --ignore-scripts`.quiet()
+    } catch (error: any) {
+      const errorMessage = error.message?.split('\n')[0]
+      console.warn(`  ⚠️ ${workspaceName}: ${errorMessage}`)
+    }
+  }
+}
+
+async function updatePackages(
+  packagesByWorkspace: Map<string, { dir: string; packages: string[] }>,
+  rootDir: string
+) {
   try {
     rmSync(`node_modules/vite`, {
       recursive: true,
@@ -191,64 +193,48 @@ async function updatePackages(packagesToUpdate: string[], cwd: string) {
   }
 
   if (globalTag) {
-    // check which packages actually have the tag
     console.info(`🔍 Checking which packages have tag '${globalTag}'...\n`)
-    const packagesWithTag = await Promise.all(
-      packagesToUpdate.flatMap(async (pkg) => {
+    const allPackages = new Set<string>()
+    for (const { packages } of packagesByWorkspace.values()) {
+      packages.forEach((pkg) => allPackages.add(pkg))
+    }
+
+    const packagesWithTag = new Set<string>()
+    await Promise.all(
+      [...allPackages].map(async (pkg) => {
         try {
           await $`npm view ${pkg}@${globalTag} version --json`.quiet()
           console.info(`  ✓ ${pkg}@${globalTag} exists`)
-          return [pkg]
+          packagesWithTag.add(pkg)
         } catch {
           console.info(`  ⊘ ${pkg}@${globalTag} not found, skipping`)
-          return []
         }
       })
     )
 
-    if (packagesWithTag.length === 0) {
+    if (packagesWithTag.size === 0) {
       console.info(`\n⚠️ No packages found with tag '${globalTag}'`)
       return
     }
 
-    console.info(`
-📦 Updating ${packagesWithTag.length} package(s) with tag '${globalTag}' using --ignore-scripts...
-`)
+    console.info(`\n📦 Updating packages across workspaces...`)
 
-    const packageNamesWithTags = packagesWithTag.map((pkg) => `${pkg}@${globalTag}`)
-    const addCommand = `bun add ${packageNamesWithTags.join(' ')} --ignore-scripts`
-    console.info(`\n🪄 Running: ${addCommand}\n`)
-
-    try {
-      await $`bun add ${packageNamesWithTags} --ignore-scripts`
-      console.info(
-        `✅ Successfully updated all packages with tag '${globalTag}' (scripts ignored)`
-      )
-    } catch (error: any) {
-      const errorMessage = error.message?.split('\n')[0]
-      console.warn(`⚠️ Failed to update packages. Error: ${errorMessage}`)
+    for (const [name, { dir, packages }] of packagesByWorkspace) {
+      const validPackages = packages.filter((pkg) => packagesWithTag.has(pkg))
+      await updatePackagesInWorkspace(validPackages, dir, name)
     }
   } else {
-    // Bulk update when not using tags
-    console.info(`
-📦 Bulk updating ${packagesToUpdate.length} package(s) using --latest --ignore-scripts...
-`)
+    console.info(`\n📦 Updating packages across workspaces...`)
 
-    const updateCommand = `bun update ${packagesToUpdate.join(' ')} --latest --ignore-scripts`
-    console.info(`\n🪄 Running: ${updateCommand}\n`)
-
-    try {
-      await $`bun update ${packagesToUpdate} --latest --ignore-scripts`
-      console.info(`✅ Successfully updated all packages (scripts ignored)`)
-    } catch (error: any) {
-      const errorMessage = error.message?.split('\n')[0]
-      console.warn(`⚠️ Failed to update packages. Error: ${errorMessage}`)
+    for (const [name, { dir, packages }] of packagesByWorkspace) {
+      await updatePackagesInWorkspace(packages, dir, name)
     }
   }
 
   console.info(
     "\n⚙️ Running a final 'bun install' to process all changes and run lifecycle scripts..."
   )
+  $.cwd(rootDir)
   try {
     await $`bun install`
     console.info("✅ Final 'bun install' completed successfully.")
@@ -261,15 +247,20 @@ async function updatePackages(packagesToUpdate: string[], cwd: string) {
   }
 }
 
+function getWorkspaceName(packageJsonPath: string, rootDir: string): string {
+  const dir = packageJsonPath.replace('/package.json', '')
+  if (dir === rootDir) return 'root'
+  return dir.replace(rootDir + '/', '')
+}
+
 async function main() {
   const rootDir = process.cwd()
   const packageJsonFiles = findPackageJsonFiles(rootDir)
   console.info(`Found ${packageJsonFiles.length} package.json files`)
 
-  // Get workspace package names to exclude from updates
+  // get workspace package names to exclude from updates
   const workspacePackageNames = new Set<string>()
   for (const packageJsonPath of packageJsonFiles) {
-    // skip the root package.json when collecting workspace names
     if (packageJsonPath === join(rootDir, 'package.json')) continue
 
     try {
@@ -287,50 +278,49 @@ async function main() {
     `Found ${workspacePackageNames.size} workspace packages to exclude from updates`
   )
 
-  const allDependencies = new Set<string>()
+  // build map of packages to update per workspace
+  const packagesByWorkspace = new Map<string, { dir: string; packages: string[] }>()
+  const allMatchingDeps = new Set<string>()
 
   for (const packageJsonPath of packageJsonFiles) {
     const deps = extractDependencies(packageJsonPath)
-    deps.forEach((dep) => allDependencies.add(dep))
-  }
+    const matchingDeps: string[] = []
 
-  console.info(`Found ${allDependencies.size} total dependencies`)
+    for (const dep of deps) {
+      // skip workspace packages
+      if (workspacePackageNames.has(dep)) continue
 
-  const matchingDependencies: string[] = []
-  for (const dep of allDependencies) {
-    // skip workspace packages - they should never be updated through bun update
-    if (workspacePackageNames.has(dep)) {
-      console.info(`⏩ Skipping workspace package: ${dep}`)
-      continue
+      for (const pattern of packagePatterns) {
+        if (doesPackageMatchPattern(dep, pattern)) {
+          matchingDeps.push(dep)
+          allMatchingDeps.add(dep)
+          break
+        }
+      }
     }
 
-    for (const pattern of packagePatterns) {
-      // packagePatterns from arg parsing
-      if (doesPackageMatchPattern(dep, pattern)) {
-        matchingDependencies.push(dep)
-        break
-      }
+    if (matchingDeps.length > 0) {
+      const dir = packageJsonPath.replace('/package.json', '')
+      const name = getWorkspaceName(packageJsonPath, rootDir)
+      packagesByWorkspace.set(name, { dir, packages: matchingDeps })
     }
   }
 
   console.info(
-    `Found ${matchingDependencies.length} dependencies matching patterns: ${packagePatterns.join(', ')}`
+    `Found ${allMatchingDeps.size} dependencies matching patterns: ${packagePatterns.join(', ')}`
   )
+  console.info(`Found matches in ${packagesByWorkspace.size} workspace(s)`)
 
-  if (matchingDependencies.length === 0) {
+  if (allMatchingDeps.size === 0) {
     console.info('No matching packages found to update.')
     return
   }
 
-  const packagesForBunUpdate: string[] = [...matchingDependencies]
-
   if (globalTag) {
-    console.info(
-      `🏷️ Using tag '${globalTag}' for ${packagesForBunUpdate.length} package(s)`
-    )
+    console.info(`🏷️ Using tag '${globalTag}'`)
   }
 
-  await updatePackages(packagesForBunUpdate, rootDir)
+  await updatePackages(packagesByWorkspace, rootDir)
 
   console.info('\n🎉 Dependency update complete!')
 }

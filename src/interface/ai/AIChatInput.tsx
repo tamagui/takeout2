@@ -80,13 +80,19 @@ export const AIChatInput = memo(
                   >
                     <XStack p="$3" pb={0}>
                       <View position="relative">
-                        <Image
-                          src={selectedImage ?? ''}
+                        <View
                           width={64}
                           height={64}
                           rounded="$4"
-                          objectFit="cover"
-                        />
+                          overflow="hidden"
+                        >
+                          <Image
+                            src={selectedImage ?? ''}
+                            width={64}
+                            height={64}
+                            objectFit="cover"
+                          />
+                        </View>
                         <View
                           position="absolute"
                           t={-8}

@@ -77,9 +77,8 @@ export const LoginPage = () => {
                 setDemoLoading(false)
                 if (error) {
                   showToast('Demo login failed', { type: 'error' })
-                  return
                 }
-                router.replace('/home')
+                // AppLayout handles redirect when auth state changes
               }}
               disabled={demoLoading}
               width="100%"

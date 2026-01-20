@@ -1,5 +1,5 @@
 import { useTimer } from '@take-out/helpers'
-import { router, useParams, useRouter } from 'one'
+import { useParams } from 'one'
 import { useEffect, useState } from 'react'
 import { Keyboard } from 'react-native'
 import { SizableText, useEvent, YStack } from 'tamagui'
@@ -81,7 +81,7 @@ export const OtpPage = () => {
       }
 
       timer.pause()
-      router.replace('/home')
+      // AppLayout handles redirect when auth state changes
     } catch (err) {
       console.error(err)
     } finally {

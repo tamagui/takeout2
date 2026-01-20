@@ -1,6 +1,6 @@
 {
   "name": "@take-out/native-hot-update",
-  "version": "0.0.42",
+  "version": "0.0.43",
   "type": "module",
   "sideEffects": false,
   "source": "src/index.ts",

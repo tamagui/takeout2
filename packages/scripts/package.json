@@ -24,7 +24,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@take-out/helpers": "workspace:*"
+    "@take-out/helpers": "workspace:*",
+    "glob": "^11.0.0"
   },
   "devDependencies": {
     "vxrn": "*"

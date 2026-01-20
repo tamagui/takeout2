@@ -65,7 +65,6 @@
     "@tamagui/build": "*",
     "@types/async-retry": "^1.4.8",
     "@types/node": "24.0.3",
-    "drizzle-kit": "^0.30.5",
     "drizzle-orm": "^0.40.0",
     "oxfmt": "^0.16.0",
     "oxlint": "^1.31.0"

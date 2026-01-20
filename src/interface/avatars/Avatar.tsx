@@ -1,5 +1,6 @@
+import { LinearGradient } from '@tamagui/linear-gradient'
 import { memo } from 'react'
-import { Circle, styled, YStack, type CircleProps } from 'tamagui'
+import { Circle, styled, View, YStack, type CircleProps } from 'tamagui'
 
 import { Image } from '~/interface/image/Image'
 
@@ -17,6 +18,8 @@ export type AvatarProps = Omit<CircleProps, 'size'> & {
   gradientColors?: string[]
 }
 
+const DEFAULT_GRADIENT_COLORS = ['#8B5CF6', '#EC4899', '#F59E0B']
+
 export const Avatar = memo(
   ({
     image,
@@ -26,53 +29,76 @@ export const Avatar = memo(
     isOnline,
     disableBorder,
     gradient,
-    gradientColors,
+    gradientColors = DEFAULT_GRADIENT_COLORS,
     ...rest
   }: AvatarProps) => {
     const size = getSimpleSize(sizeIn)
     const isBig = size > 40
     const scale = isBig ? size / 42 : size / 21
 
+    const borderWidth = gradient ? 2 : 0
+
+    const avatarContent = (
+      <SelectableCircle
+        active={active || false}
+        pressable={!!rest.onPress && !active}
+        size={size}
+        overflow="hidden"
+        className={
+          typeof isOnline === 'undefined'
+            ? ''
+            : isBig
+              ? 'avatar-cutout-big'
+              : 'avatar-cutout-small'
+        }
+        z={999}
+        {...rest}
+      >
+        {image ? (
+          <Image
+            src={image}
+            alt={name ? `${name}'s avatar` : 'User avatar'}
+            width={size}
+            height={size}
+            objectFit="cover"
+          />
+        ) : (
+          <UserIcon size={size / 2} />
+        )}
+      </SelectableCircle>
+    )
+
     return (
       <YStack
         pointerEvents="none"
-        width={size}
-        height={size}
+        width={size + borderWidth * 2 + 2}
+        height={size + borderWidth * 2 + 2}
         position="relative"
         rounded={100}
-        {...(!disableBorder && {
-          outlineColor: '$color02',
-          outlineOffset: 1,
-          outlineWidth: 0.5,
-          outlineStyle: 'solid',
-        })}
+        {...(!disableBorder &&
+          !gradient && {
+            outlineColor: '$color02',
+            outlineOffset: 1,
+            outlineWidth: 0.5,
+            outlineStyle: 'solid',
+          })}
       >
-        <SelectableCircle
-          active={active || false}
-          pressable={!!rest.onPress && !active}
-          size={size}
-          overflow="hidden"
-          className={
-            typeof isOnline === 'undefined'
-              ? ''
-              : isBig
-                ? 'avatar-cutout-big'
-                : 'avatar-cutout-small'
-          }
-          {...rest}
-        >
-          {image ? (
-            <Image
-              src={image}
-              alt={name ? `${name}'s avatar` : 'User avatar'}
-              width={size}
-              height={size}
-              objectFit="cover"
-            />
-          ) : (
-            <UserIcon size={size / 2} />
-          )}
-        </SelectableCircle>
+        {gradient ? (
+          <LinearGradient
+            colors={gradientColors as [string, string, ...string[]]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            width={size + 5}
+            height={size + 5}
+            rounded={100}
+            items="center"
+            justify="center"
+          >
+            {avatarContent}
+          </LinearGradient>
+        ) : (
+          avatarContent
+        )}
 
         {typeof isOnline === 'boolean' ? (
           <Circle

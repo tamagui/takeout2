@@ -43,26 +43,47 @@ export function CommentInput({
   return (
     <>
       {isWeb && (
-        <YStack gap="$2" pt="$2">
-          <TextArea
-            // @ts-expect-error size variant type issue in canary
-            size="large"
-            placeholder="Add a comment..."
-            value={content}
-            onChange={(e) => setContent((e.target as HTMLInputElement).value)}
-            minH={60}
-          />
-          <XStack justify="flex-end">
-            <ButtonSimple
-              size="small"
-              theme="accent"
-              disabled={!content.trim() || isSubmitting}
-              onPress={handleSubmit}
+        <XStack gap="$3" maxW={600}>
+          <YStack flex={1} position="relative">
+            <TextArea
+              // @ts-expect-error size variant type issue in canary
+              size="large"
+              placeholder="Write your comments here..."
+              value={content}
+              onChange={(e) => setContent((e.target as HTMLInputElement).value)}
+              minH={100}
+              pr="$6"
+              pb="$6"
+              bg="$color2"
+              borderColor="$color4"
+              borderWidth={1}
+              rounded={16}
+              style={{ resize: 'vertical' }}
+            />
+            <YStack
+              position="absolute"
+              b={12}
+              r={12}
+              transition="quick"
+              scale={hasContent ? 1 : 0.8}
+              opacity={hasContent ? 1 : 0.4}
             >
-              {isSubmitting ? <Spinner size="small" /> : 'Post'}
-            </ButtonSimple>
-          </XStack>
-        </YStack>
+              <ButtonSimple
+                size="large"
+                circular
+                theme="accent"
+                disabled={!content.trim() || isSubmitting}
+                onPress={handleSubmit}
+              >
+                {isSubmitting ? (
+                  <Spinner size="small" color="$color" />
+                ) : (
+                  <PaperPlaneTiltIcon size={18} color="$color" />
+                )}
+              </ButtonSimple>
+            </YStack>
+          </YStack>
+        </XStack>
       )}
 
       {isNative && (
@@ -86,6 +107,7 @@ export function CommentInput({
               value={content}
               onChange={(e) => setContent((e.target as HTMLInputElement).value)}
               maxLength={500}
+              maxHeight={100}
               rows={3}
               multiple
               verticalAlign="top"

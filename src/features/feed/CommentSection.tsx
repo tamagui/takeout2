@@ -1,8 +1,7 @@
-import { formatDistanceToNow } from '@take-out/helpers'
-import { SizableText, Spinner, XStack, YStack } from 'tamagui'
+import { SizableText, Spinner, YStack } from 'tamagui'
 
 import { commentsByPostId } from '~/data/queries/comment'
-import { Avatar } from '~/interface/avatars/Avatar'
+import { CommentItem } from '~/features/feed/CommentItem'
 import { Text } from '~/interface/text/Text'
 import { useQuery } from '~/zero/client'
 
@@ -29,20 +28,13 @@ export function CommentSection({ postId }: CommentSectionProps) {
       ) : (
         <YStack gap="$3">
           {comments?.map((comment) => (
-            <XStack key={comment.id} gap="$3">
-              <Avatar image={comment.user?.image || ''} size={32} />
-              <YStack flex={1} gap="$1">
-                <XStack items="center" gap="$2">
-                  <SizableText size="$3" fontWeight="600">
-                    {comment.user?.username || 'Unknown'}
-                  </SizableText>
-                  <SizableText size="$2" color="$color10">
-                    {formatDistanceToNow(comment.createdAt)}
-                  </SizableText>
-                </XStack>
-                <Text size="$3">{comment.content}</Text>
-              </YStack>
-            </XStack>
+            <CommentItem
+              key={comment.id}
+              image={comment.user?.image}
+              username={comment.user?.username}
+              content={comment.content}
+              createdAt={comment.createdAt}
+            />
           ))}
         </YStack>
       )}

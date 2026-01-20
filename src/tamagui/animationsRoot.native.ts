@@ -3,7 +3,7 @@ import { animations } from '@tamagui/config/v5-reanimated'
 
 export const animationsRoot = createAnimations({
   ...animations.animations,
-  smoothExpand: {
+  '250ms': {
     type: 'timing',
     duration: 250,
   },

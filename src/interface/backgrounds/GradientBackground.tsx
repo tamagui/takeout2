@@ -1,9 +1,7 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
-import { useUserScheme } from '@vxrn/color-scheme'
-import { ImageBackground, StyleSheet, useColorScheme } from 'react-native'
+import { ImageBackground, StyleSheet } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useTheme, useWindowDimensions, View } from 'tamagui'
-import { useThemeName } from 'tamagui'
+import { useWindowDimensions, View } from 'tamagui'
 
 import { useIsDark } from '~/features/theme/useIsDark'
 
@@ -22,11 +20,10 @@ export const GradientBackground = ({
 }: GradientBackgroundProps) => {
   const inset = useSafeAreaInsets()
   const isDark = useIsDark()
-  const theme = useTheme()
   const { width, height } = useWindowDimensions()
-  const themeName = useThemeName()
-  const userScheme = useUserScheme()
-  const colorScheme = useColorScheme()
+
+  const lightColors = ['$color1', '$color2', '$color4', '$color5']
+  const darkColors = ['$color1', '$color3', '$color2', '$color1']
 
   if (useImage) {
     return (
@@ -53,16 +50,11 @@ export const GradientBackground = ({
     )
   }
 
-  // Generated gradient background - dark grey to black using theme colors
-  const color1 = theme.color1.val
-  const color2 = theme.color2.val
-  const color3 = theme.color3.val
-
   return (
     <View flex={1} pb={useInsets ? inset.bottom : 0}>
       {/* Base gradient - using theme colors */}
       <LinearGradient
-        colors={[color1, color2, color3, color1]}
+        colors={isDark ? darkColors : lightColors}
         locations={[0, 0.3, 0.6, 1]}
         start={[0, 0]}
         end={[1, 1]}

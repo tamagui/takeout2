@@ -361,7 +361,6 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
               <GlassView
                 isFallback
                 intensity={60}
-                tint="dark"
                 containerStyle={{
                   flex: 1,
                   width: '100%',

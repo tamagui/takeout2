@@ -1,4 +1,5 @@
 import { BlurView } from 'expo-blur'
+import { useRouter } from 'one'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { Dimensions, StyleSheet } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
@@ -33,6 +34,7 @@ import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
 import { UserIcon } from '~/interface/icons/phosphor/UserIcon'
 
 import { Pressable } from '../buttons/Pressable'
+import { showToast } from '../toast/helpers'
 import { GlassView } from '../effects/GlassView'
 import { CaretDownIcon } from '../icons/phosphor/CaretDownIcon'
 import { TrashIcon } from '../icons/phosphor/TrashIcon'
@@ -82,6 +84,7 @@ interface FeedDropdownProps {
 export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
   const insets = useSafeAreaInsets()
   const isDark = useIsDark()
+  const router = useRouter()
   const expansion = useSharedValue(0)
   const startExpansion = useSharedValue(0)
   const prevIsOpen = useSharedValue(0)
@@ -112,9 +115,38 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
     prevIsOpen.value = isOpen.value
   })
 
-  const handleItemPress = useCallback(() => {
-    lightImpact()
-  }, [])
+  const handleItemPress = useCallback(
+    (id: string) => {
+      lightImpact()
+      onClose()
+
+      switch (id) {
+        case 'home':
+          router.push('/home/feed')
+          break
+        case 'ai':
+          router.push('/home/ai')
+          break
+        case 'search':
+          router.push('/home/search')
+          break
+        case 'profile':
+          router.push('/home/profile')
+          break
+        case 'settings':
+          router.push('/home/settings')
+          break
+        case 'favorites':
+          router.push('/home/feed')
+          break
+        case 'notifications':
+        case 'saved':
+          showToast('Coming soon', { type: 'info' })
+          break
+      }
+    },
+    [onClose, router]
+  )
 
   const handleRemoveItem = useCallback((id: string) => {
     setMenuItems((prev) => prev.filter((item) => item.id !== id))
@@ -386,7 +418,7 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
                       item={item}
                       index={index}
                       isOpen={isOpen}
-                      onPress={handleItemPress}
+                      onPress={() => handleItemPress(item.id)}
                     />
                   ))}
                 </XStack>
@@ -410,7 +442,7 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
                       <QuickMenuRow
                         key={item.id}
                         item={item}
-                        onPress={handleItemPress}
+                        onPress={() => handleItemPress(item.id)}
                         onRemove={handleRemoveItem}
                         onSwipeableRef={(id, ref) => {
                           if (ref) {

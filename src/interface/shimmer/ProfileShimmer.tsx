@@ -12,7 +12,7 @@ interface ProfileShimmerProps {
 export const ProfileShimmer = ({ size = 64 }: ProfileShimmerProps) => {
   return (
     <ShimmerProvider duration={1500}>
-      <YStack bg="$background" height="100%" width="100%" px={14}>
+      <YStack bg="$background" height="100%" width="100%" px={14} pt={60}>
         <XStack gap="$3" items="center" py="$3">
           <CircleShimmer size={size} />
           <YStack flex={1} gap="$2">

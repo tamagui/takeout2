@@ -1,3 +1,4 @@
+import { Galeria } from '@nandorojo/galeria'
 import Animated, { SharedTransition } from 'react-native-reanimated'
 
 const transition = SharedTransition.springify().damping(15)
@@ -18,16 +19,20 @@ export function PostImage({
   sharedTransitionTag,
 }: PostImageProps) {
   return (
-    <Animated.Image
-      source={{ uri: image }}
-      style={{
-        width: '100%',
-        aspectRatio,
-        borderRadius: 12,
-      }}
-      sharedTransitionTag={sharedTransitionTag ?? `post-image-${postId}`}
-      sharedTransitionStyle={transition}
-      resizeMode="cover"
-    />
+    <Galeria urls={[image]}>
+      <Galeria.Image index={0}>
+        <Animated.Image
+          source={{ uri: image }}
+          style={{
+            width: '100%',
+            aspectRatio,
+            borderRadius: 12,
+          }}
+          sharedTransitionTag={sharedTransitionTag ?? `post-image-${postId}`}
+          sharedTransitionStyle={transition}
+          resizeMode="cover"
+        />
+      </Galeria.Image>
+    </Galeria>
   )
 }

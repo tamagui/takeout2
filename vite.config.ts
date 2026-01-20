@@ -8,16 +8,33 @@ export default {
   envPrefix: ['VITE_', 'TAMAGUI_'],
 
   resolve: {
-    alias: {
+    alias: [
+      // use react-native-web-lite instead of react-native-web (~50% smaller)
+      // must come before other aliases as array order matters
+      {
+        find: /^react-native$/,
+        replacement: '@tamagui/react-native-web-lite',
+      },
+      {
+        find: /^react-native-web$/,
+        replacement: '@tamagui/react-native-web-lite',
+      },
+      {
+        find: 'react-native/package.json',
+        replacement: '@tamagui/react-native-web-lite/package.json',
+      },
       // stub out bottom-tabs for web - one framework has it but we don't use it
       // tree shaking should get rid of it, need to investigate why not
-      '@react-navigation/bottom-tabs': resolvePath(
-        './src/interface/shims/react-navigation-bottom-tabs.ts'
-      ),
-
+      {
+        find: '@react-navigation/bottom-tabs',
+        replacement: resolvePath('./src/interface/shims/react-navigation-bottom-tabs.ts'),
+      },
       // use lightweight svg for web (~2KB vs ~50KB)
-      'react-native-svg': '@tamagui/react-native-svg',
-    },
+      {
+        find: 'react-native-svg',
+        replacement: '@tamagui/react-native-svg',
+      },
+    ],
   },
 
   server: {
@@ -84,6 +101,7 @@ export default {
       optimize: true,
       disableExtraction: process.env.NODE_ENV !== 'production',
       disableServerOptimization: true,
+      useReactNativeWebLite: true,
       components: ['tamagui'],
       config: './src/tamagui/tamagui.config.ts',
       outputCSS: './src/tamagui/tamagui.css',

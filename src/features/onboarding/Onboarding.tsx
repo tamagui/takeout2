@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   AnimatePresence,
   SizableText,
@@ -120,7 +120,7 @@ function OnboardingContent({
     [onPrev, onNext]
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     const el = containerRef.current
     if (!el) return
 
@@ -173,11 +173,10 @@ function OnboardingContent({
             z={1}
             transition="medium"
             x={0}
-            opacity={1}
             enterStyle={{ opacity: 0, x: direction === 'next' ? 20 : -20 }}
             exitStyle={{ opacity: 0, x: direction === 'next' ? -20 : 20 }}
           >
-            <YStack gap="$2" px="$2">
+            <YStack gap="$2">
               <SizableText
                 size="$8"
                 fontWeight="800"
@@ -278,7 +277,7 @@ function GridLayout({
   const gridItemSize = (cardWidth - 16) / 2
 
   return (
-    <YStack gap="$3" width={cardWidth}>
+    <YStack gap="$3" width={cardWidth} height={300} justify="center">
       <XStack gap="$3" justify="center">
         <YStack
           rotate={GRID_ROTATIONS[0]}

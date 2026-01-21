@@ -47,7 +47,7 @@ export const LAYOUT_CONFIGS: Record<'rotated' | 'cascade' | 'stack', LayoutConfi
         ],
         cardWidthRatio: 0.85,
         cardHeight: 54,
-        containerHeight: 280,
+        containerHeight: 300,
       },
     }
   : {

@@ -23,16 +23,16 @@ export function AuthAndOnboardingLayout() {
   }
 
   return (
-    <XStack flex={1} items="center" justify="center" p="$4" $maxSM={{ p: 0 }}>
+    <XStack flex={1} flexBasis="auto" items="center" justify="center" $maxSM={{ p: 0 }}>
       <XStack
         width="100%"
-        maxW={1000}
-        minH={600}
-        rounded={32}
+        maxW={860}
+        minH={550}
+        rounded="$10"
         overflow="hidden"
         position="relative"
         boxShadow="0 4px 24px $shadow4"
-        $maxSM={{ minH: 'auto', mt: '$6' }}
+        $maxSM={{ maxH: 'auto', mt: '$6' }}
         $theme-dark={{
           borderWidth: 0.5,
           borderColor: '$borderColor',

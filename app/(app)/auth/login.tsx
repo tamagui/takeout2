@@ -36,22 +36,22 @@ export const LoginPage = () => {
     <XStack flex={1} flexBasis="auto" position="relative">
       <YStack flex={1} justify="center" items="center">
         <Circle
-          size={80}
-          my="$4"
+          size={72}
+          my="$3"
           transition="medium"
           enterStyle={{ scale: 0.95, opacity: 0 }}
         >
-          <LogoIcon size={42} />
+          <LogoIcon size={38} />
         </Circle>
 
         <YStack
-          gap="$6"
+          gap="$4"
           width="100%"
           items="center"
           bg="$background"
           rounded="$8"
-          p="$10"
-          $maxSM={{ p: '$6' }}
+          p="$6"
+          $maxSM={{ p: '$4' }}
         >
           <H2 text="center">Login to {APP_NAME}</H2>
 
@@ -166,8 +166,8 @@ export const LoginPage = () => {
               />
             </XStack>
           </YStack>
-          <YStack items="center" gap="$2" mt="$4">
-            <SizableText size="$3" text="center" color="$color10">
+          <YStack items="center" gap="$2">
+            <SizableText size="$2" text="center" color="$color10">
               {` By continuing, you agree to our\n`}
               <Link href={TERMS_OF_SERVICE_URL}>Terms of Service</Link>,{' '}
               <Link href={PRIVACY_POLICY_URL}>Privacy Policy</Link> and{' '}

@@ -292,10 +292,7 @@ async function main() {
 
 async function updateDownstreamRepos() {
   const homeDir = process.env.HOME || process.env.USERPROFILE || ''
-  const downstreamRepos = [
-    join(homeDir, 'takeout-free'),
-    join(homeDir, 'takeout-static'),
-  ]
+  const downstreamRepos = [join(homeDir, 'takeout-free'), join(homeDir, 'takeout-static')]
 
   for (const repoPath of downstreamRepos) {
     if (!(await fs.pathExists(repoPath))) {
@@ -306,7 +303,10 @@ async function updateDownstreamRepos() {
 
     try {
       // check for uncommitted changes
-      const statusOut = await run(`git status --porcelain`, { cwd: repoPath, silent: true })
+      const statusOut = await run(`git status --porcelain`, {
+        cwd: repoPath,
+        silent: true,
+      })
       if (statusOut.stdout.trim()) {
         console.warn(`  ⚠️  Skipping ${repoPath}: has uncommitted changes`)
         continue
@@ -331,7 +331,9 @@ async function updateDownstreamRepos() {
         await run(`bun check:all`, { cwd: repoPath })
         console.info(`  ✅ ${repoPath} upgraded successfully`)
       } catch (err) {
-        console.warn(`  ⚠️  ${repoPath}: check:all failed after upgrade, please review manually`)
+        console.warn(
+          `  ⚠️  ${repoPath}: check:all failed after upgrade, please review manually`
+        )
         // reset the changes since check failed
         await run(`git checkout .`, { cwd: repoPath, silent: true })
       }

@@ -257,9 +257,10 @@ function HeroTerminal() {
                 fontFamily="$mono"
                 fontSize={13}
                 color="#22c55e"
+                mr="$2"
                 style={{ lineHeight: '1.7' }}
               >
-                ${' '}
+                $
               </Paragraph>
               <Paragraph
                 fontFamily="$mono"
@@ -287,8 +288,8 @@ function HeroTerminal() {
         {typedCommand && (
           <YStack gap="$1">
             <XStack items="center">
-              <Paragraph fontFamily="$mono" fontSize={13} color="#22c55e">
-                ${' '}
+              <Paragraph fontFamily="$mono" fontSize={13} color="#22c55e" mr="$2">
+                $
               </Paragraph>
               <Paragraph fontFamily="$mono" fontSize={13} color="#e5e5e5">
                 {typedCommand}
@@ -306,10 +307,10 @@ function HeroTerminal() {
 
         {!typedCommand && history.length === 0 && (
           <XStack items="center">
-            <Paragraph fontFamily="$mono" fontSize={13} color="#22c55e">
-              ${' '}
+            <Paragraph fontFamily="$mono" fontSize={13} color="#22c55e" mr="$2">
+              $
             </Paragraph>
-            <YStack width={8} height={16} bg="#e5e5e5" ml="$1" />
+            <YStack width={8} height={16} bg="#e5e5e5" />
           </XStack>
         )}
       </div>

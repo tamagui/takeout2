@@ -5,6 +5,7 @@ import { Accordion, isWeb, SizableText, View, XStack, YStack } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
 import { useUser } from '~/hooks/useUser'
+import { Link } from '~/interface/app/Link'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { ChatCircleIcon } from '~/interface/icons/phosphor/ChatCircleIcon'
 import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
@@ -117,14 +118,16 @@ export const PostCard = memo(({ post }: PostCardProps) => {
               />
             </Pressable>
           </View>
-          {typeof post.commentCount === 'number' && (
-            <XStack items="center" gap="$1" pt="$2">
-              <ChatCircleIcon size={18} color="$color11" />
-              <SizableText size="$3" color="$color11" fontWeight="bold">
-                {post.commentCount}
-              </SizableText>
+          <Link href={`/home/feed/post/${post.id}?username=${username}`}>
+            <XStack items="center" gap="$2" pt="$2">
+              <ChatCircleIcon size={26} color="$color11" />
+              {typeof post.commentCount === 'number' && post.commentCount > 0 && (
+                <SizableText size="$4" color="$color11" fontWeight="bold">
+                  {post.commentCount}
+                </SizableText>
+              )}
             </XStack>
-          )}
+          </Link>
         </View>
       </View>
     </View>

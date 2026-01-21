@@ -88,18 +88,18 @@ export default {
     ],
   },
 
-  environments: {
-    client: {
-      build: {
-        rollupOptions: {
-          output: {
-            // reduce parallel modulepreloads, helps web LCP
-            experimentalMinChunkSize: 30_000,
-          },
-        },
-      },
-    },
-  },
+  // environments: {
+  //   client: {
+  //     build: {
+  //       rollupOptions: {
+  //         output: {
+  //           // reduce parallel modulepreloads, helps web LCP
+  //           experimentalMinChunkSize: 30_000,
+  //         },
+  //       },
+  //     },
+  //   },
+  // },
 
   plugins: [
     tamaguiPlugin({
@@ -158,7 +158,7 @@ export default {
       web: {
         experimental_scriptLoading: 'after-lcp-aggressive',
         defaultRenderMode: 'spa',
-        inlineLayoutCSS: false,
+        inlineLayoutCSS: true,
         sitemap: {
           priority: 0.5,
           changefreq: 'weekly',

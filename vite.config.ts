@@ -88,18 +88,18 @@ export default {
     ],
   },
 
-  // environments: {
-  //   client: {
-  //     build: {
-  //       rollupOptions: {
-  //         output: {
-  //           // reduce parallel modulepreloads, helps web LCP
-  //           experimentalMinChunkSize: 30_000,
-  //         },
-  //       },
-  //     },
-  //   },
-  // },
+  environments: {
+    client: {
+      build: {
+        rollupOptions: {
+          output: {
+            // reduce parallel modulepreloads, helps web LCP
+            experimentalMinChunkSize: 30_000,
+          },
+        },
+      },
+    },
+  },
 
   plugins: [
     tamaguiPlugin({

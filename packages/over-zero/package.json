@@ -1,6 +1,6 @@
 {
   "name": "over-zero",
-  "version": "0.0.45",
+  "version": "0.0.46",
   "sideEffects": false,
   "source": "src/index.ts",
   "main": "dist/cjs",
@@ -48,7 +48,7 @@
   "dependencies": {
     "@sinclair/typebox": "^0.34.41",
     "@sinclair/typebox-codegen": "^0.11.1",
-    "@take-out/helpers": "0.0.45",
+    "@take-out/helpers": "0.0.46",
     "chokidar": "^4.0.3",
     "citty": "^0.1.6",
     "pg": "^8.13.1",

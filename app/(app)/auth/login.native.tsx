@@ -1,4 +1,3 @@
-import { router } from 'one'
 import { useCallback, useState } from 'react'
 import { AnimatePresence, SizableText, Spinner, View, XStack, YStack } from 'tamagui'
 
@@ -9,12 +8,11 @@ import {
   TERMS_OF_SERVICE_URL,
 } from '~/constants/app'
 import { signInAsDemo } from '~/features/auth/client/signInAsDemo'
-import { Onboarding, onboardingSlides } from '~/features/onboarding'
+import { Onboarding, onboardingSlides, onboardingStorage } from '~/features/onboarding'
 import { isDemoMode } from '~/helpers/isDemoMode'
 import { Link } from '~/interface/app/Link'
 import { GradientBackground } from '~/interface/backgrounds/GradientBackground'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
-import { dialogEmit } from '~/interface/dialogs/shared'
 import { AppleIcon } from '~/interface/icons/AppleIcon'
 import { GoogleIcon } from '~/interface/icons/GoogleIcon'
 import { Image } from '~/interface/image/Image'
@@ -23,16 +21,12 @@ import { showToast } from '~/interface/toast/helpers'
 
 export const LoginPage = () => {
   const [demoLoading, setDemoLoading] = useState<boolean>(false)
-  const [showOnboarding, setShowOnboarding] = useState<boolean>(true)
+  const [showOnboarding, setShowOnboarding] = useState(() => !onboardingStorage.get())
 
   const handleOnboardingComplete = useCallback(() => {
+    onboardingStorage.set(true)
     setShowOnboarding(false)
   }, [])
-
-  const handleSignInAdmin = () => {
-    dialogEmit({ type: 'admin-password' })
-    router.replace('/home')
-  }
 
   const handleSocialLogin = async (provider: 'google' | 'apple') => {
     showToast(`${provider} login coming soon!`, { type: 'info' })

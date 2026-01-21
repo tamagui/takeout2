@@ -1,11 +1,11 @@
-import { useNavigation } from '@react-navigation/native'
-import { router } from 'one'
-import { useEffect } from 'react'
-import { Alert, Keyboard } from 'react-native'
+import { router, useBlocker } from 'one'
+import { Keyboard } from 'react-native'
 import { Spinner, View, XStack, YStack } from 'tamagui'
 
 import { useProfileEdit } from '~/features/user/useProfileEdit'
+import { ButtonAction } from '~/interface/buttons/ButtonAction'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Dialog } from '~/interface/dialogs/Dialog'
 import { Input } from '~/interface/forms/Input'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { XIcon } from '~/interface/icons/phosphor/XIcon'
@@ -16,7 +16,6 @@ import { Text } from '~/interface/text/Text'
 import { AvatarUpload } from '~/interface/upload/AvatarUpload'
 
 export const ProfileEditPage = () => {
-  const navigation = useNavigation()
   const {
     user,
     username,
@@ -43,32 +42,27 @@ export const ProfileEditPage = () => {
     }
   }
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
-      if (isSaving || !hasUnsavedChanges) {
-        return
-      }
-
-      e.preventDefault()
-
-      Alert.alert(
-        'Discard changes?',
-        'You have unsaved changes. Are you sure you want to discard them?',
-        [
-          { text: "Don't leave", style: 'cancel' },
-          {
-            text: 'Discard',
-            style: 'destructive',
-            onPress: () => navigation.dispatch(e.data.action),
-          },
-        ]
-      )
-    })
-
-    return unsubscribe
-  }, [navigation, hasUnsavedChanges, isSaving])
+  const blocker = useBlocker(!isSaving && hasUnsavedChanges)
 
   return (
+    <>
+      <Dialog
+        open={blocker.state === 'blocked'}
+        onOpenChange={(open) => {
+          if (!open) blocker.reset?.()
+        }}
+        minH={200}
+      >
+        <Dialog.Header
+          title="Discard changes?"
+          description="You have unsaved changes. Are you sure you want to discard them?"
+        />
+        <XStack justify="flex-end" gap="$2">
+          <ButtonSimple onPress={() => blocker.reset?.()}>Stay</ButtonSimple>
+          <ButtonAction onPress={() => blocker.proceed?.()}>Discard</ButtonAction>
+        </XStack>
+      </Dialog>
+
     <PageLayout>
       <View flex={1} flexBasis="auto" px="$3">
         <KeyboardAwareScrollView
@@ -163,5 +157,6 @@ export const ProfileEditPage = () => {
         </KeyboardStickyFooter>
       </View>
     </PageLayout>
+    </>
   )
 }

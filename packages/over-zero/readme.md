@@ -479,7 +479,48 @@ await zeroServer.mutate(async (tx, mutators) => {
 })
 ```
 
-**one-off queries:**
+**one-off queries with `run()`:**
+
+run a query once without subscribing. works on both client and server:
+
+```ts
+import { run } from 'over-zero'
+import { userById } from '~/data/queries/user'
+
+// with params
+const user = await run(userById, { id: userId })
+
+// without params
+const allUsers = await run(allUsers)
+
+// with options (client only)
+const cached = await run(userById, { id: userId }, { type: 'unknown' })
+```
+
+on client, uses `zero.run()` under the hood. on server, uses transaction-based
+execution. same query functions work in both environments.
+
+**preloading data (client only):**
+
+preload query results into cache without subscribing:
+
+```ts
+import { preload } from '~/zero/client'
+import { userNotifications } from '~/data/queries/notification'
+
+// preload after login
+const { complete, cleanup } = preload(userNotifications, { userId, limit: 100 })
+await complete
+
+// cleanup if needed
+cleanup()
+```
+
+useful for prefetching data before navigation to avoid loading states.
+
+**server-only queries:**
+
+for ad-hoc queries that don't use query functions:
 
 ```ts
 const user = await zeroServer.query((q) => q.user.where('id', userId).one())

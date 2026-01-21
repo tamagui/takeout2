@@ -1,16 +1,12 @@
-import { isLiquidGlassAvailable } from 'expo-glass-effect'
 import { Stack } from 'one'
 
-import { HeaderBackButton } from '~/interface/buttons/HeaderBackButton'
+import { HeaderBackButton } from '~/interface/buttons/HeaderButton'
 
 export function HomeLayout() {
   return (
     <Stack
       screenOptions={{
-        headerBlurEffect: isLiquidGlassAvailable() ? undefined : 'regular',
         headerTransparent: true,
-        headerLargeStyle: { backgroundColor: 'transparent' },
-        headerShadowVisible: true,
       }}
     >
       <Stack.Screen
@@ -19,20 +15,22 @@ export function HomeLayout() {
           headerShown: false,
         }}
       />
-      <Stack.Screen
-        name="profile/[userId]"
-        options={{
-          title: '',
-          headerLeft: () => <HeaderBackButton />,
-        }}
-      />
-      <Stack.Screen
-        name="post/[feedId]"
-        options={() => ({
-          title: 'Post',
-          headerLeft: () => <HeaderBackButton />,
-        })}
-      />
+      <Stack.Screen name="profile/[userId]">
+        <Stack.Header>
+          <Stack.Header.Title>Profile</Stack.Header.Title>
+          <Stack.Header.Left asChild>
+            <HeaderBackButton />
+          </Stack.Header.Left>
+        </Stack.Header>
+      </Stack.Screen>
+      <Stack.Screen name="post/[feedId]">
+        <Stack.Header>
+          <Stack.Header.Title>Post</Stack.Header.Title>
+          <Stack.Header.Left asChild>
+            <HeaderBackButton />
+          </Stack.Header.Left>
+        </Stack.Header>
+      </Stack.Screen>
     </Stack>
   )
 }

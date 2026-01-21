@@ -1,44 +1,34 @@
-import { isLiquidGlassAvailable } from 'expo-glass-effect'
 import { router, Stack } from 'one'
 
-import { HeaderBackButton } from '~/interface/buttons/HeaderBackButton'
-import { Pressable } from '~/interface/buttons/Pressable'
+import { HeaderBackButton, HeaderButton } from '~/interface/buttons/HeaderButton'
 import { GearIcon } from '~/interface/icons/phosphor/GearIcon'
 
 export const ProfileLayout = () => {
   return (
     <Stack
       screenOptions={{
-        headerBlurEffect: isLiquidGlassAvailable() ? undefined : 'regular',
         headerTransparent: true,
-        headerLargeStyle: { backgroundColor: 'transparent' },
-        headerShadowVisible: true,
       }}
     >
-      <Stack.Screen
-        name="index"
-        options={{
-          title: 'Profile',
-          headerRight: () => (
-            <Pressable
+      <Stack.Screen name="index">
+        <Stack.Header>
+          <Stack.Header.Title>Profile</Stack.Header.Title>
+          <Stack.Header.Right asChild>
+            <HeaderButton
+              icon={<GearIcon size={24} />}
               onPress={() => router.push('/home/settings')}
-              width={36}
-              height={36}
-              items="center"
-              justify="center"
-            >
-              <GearIcon size={24} color="$color12" />
-            </Pressable>
-          ),
-        }}
-      />
-      <Stack.Screen
-        name="post/[feedId]"
-        options={() => ({
-          title: 'Post',
-          headerLeft: () => <HeaderBackButton />,
-        })}
-      />
+            />
+          </Stack.Header.Right>
+        </Stack.Header>
+      </Stack.Screen>
+      <Stack.Screen name="post/[feedId]">
+        <Stack.Header>
+          <Stack.Header.Title>Post</Stack.Header.Title>
+          <Stack.Header.Left asChild>
+            <HeaderBackButton />
+          </Stack.Header.Left>
+        </Stack.Header>
+      </Stack.Screen>
     </Stack>
   )
 }

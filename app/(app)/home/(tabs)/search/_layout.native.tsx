@@ -1,6 +1,6 @@
 import { Stack } from 'one'
 
-import { HeaderBackButton } from '~/interface/buttons/HeaderBackButton'
+import { HeaderBackButton } from '~/interface/buttons/HeaderButton'
 
 export const SearchLayout = () => {
   return (
@@ -10,13 +10,14 @@ export const SearchLayout = () => {
         headerShadowVisible: true,
       }}
     >
-      <Stack.Screen
-        name="index"
-        options={{
-          title: 'Search',
-          headerLeft: () => <HeaderBackButton />,
-        }}
-      />
+      <Stack.Screen name="index">
+        <Stack.Header>
+          <Stack.Header.Title>Search</Stack.Header.Title>
+          <Stack.Header.Left asChild>
+            <HeaderBackButton />
+          </Stack.Header.Left>
+        </Stack.Header>
+      </Stack.Screen>
     </Stack>
   )
 }

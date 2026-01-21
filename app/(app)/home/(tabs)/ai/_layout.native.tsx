@@ -1,6 +1,6 @@
 import { Stack } from 'one'
 
-import { HeaderBackButton } from '~/interface/buttons/HeaderBackButton'
+import { HeaderBackButton } from '~/interface/buttons/HeaderButton'
 
 export const AILayout = () => {
   return (
@@ -10,13 +10,14 @@ export const AILayout = () => {
         headerShadowVisible: true,
       }}
     >
-      <Stack.Screen
-        name="index"
-        options={{
-          headerLeft: () => <HeaderBackButton />,
-          title: 'Takeout Assistant',
-        }}
-      />
+      <Stack.Screen name="index">
+        <Stack.Header>
+          <Stack.Header.Title>Takeout Assistant</Stack.Header.Title>
+          <Stack.Header.Left asChild>
+            <HeaderBackButton />
+          </Stack.Header.Left>
+        </Stack.Header>
+      </Stack.Screen>
     </Stack>
   )
 }

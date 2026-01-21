@@ -1,6 +1,6 @@
 ---
 name: takeout-zero
-description: Zero sync, offline-first queries, and mutations guide. INVOKE WHEN: useQuery, zql, queries, mutations, mutate, CRUD, permissions, where clauses, auth checks, relations, joins, related data, offline-first, sync, real-time, optimistic updates, convergent mutations.
+description: Zero sync, offline-first queries, and mutations guide. useQuery, zql, queries, mutations, mutate, CRUD, permissions, where clauses, auth checks, relations, joins, related data, offline-first, sync, real-time, optimistic updates, convergent mutations.
 ---
 
 # zero sync guide

@@ -1,6 +1,6 @@
 ---
 name: add-icon
-description: Icons guide for managing Phosphor icon components. INVOKE WHEN: adding icons, new icons, search icons, find icons, icon library, icon components, Phosphor icons.
+description: Icons guide for managing Phosphor icon components. adding icons, new icons, search icons, find icons, icon library, icon components, Phosphor icons.
 ---
 
 # Icons

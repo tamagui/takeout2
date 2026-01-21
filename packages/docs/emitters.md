@@ -1,6 +1,6 @@
 ---
 name: takeout-emitters
-description: Event emitters and pub/sub pattern for ephemeral UI state management. INVOKE WHEN: event emitters, pub/sub, ephemeral state, temporary state, transient state, UI events, event coordination, subscribe, emit, listen, @take-out/helpers emitters.
+description: Event emitters and pub/sub pattern for ephemeral UI state management. event emitters, pub/sub, ephemeral state, temporary state, transient state, UI events, event coordination, subscribe, emit, listen, @take-out/helpers emitters.
 ---
 
 # Emitters Guide - Event-Based State Management

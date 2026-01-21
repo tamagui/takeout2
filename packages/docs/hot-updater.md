@@ -1,6 +1,6 @@
 ---
 name: takeout-hot-updater
-description: Guide for implementing OTA updates and hot updates in React Native apps. INVOKE WHEN: hot updater, OTA updates, over-the-air updates, app updates, code push, deploy updates, @hot-updater/react-native, HotUpdaterProvider, useHotUpdater, update deployment.
+description: Guide for implementing OTA updates and hot updates in React Native apps. hot updater, OTA updates, over-the-air updates, app updates, code push, deploy updates, @hot-updater/react-native, HotUpdaterProvider, useHotUpdater, update deployment.
 ---
 
 # Hot Updater Guide

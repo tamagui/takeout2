@@ -1,6 +1,6 @@
 ---
 name: takeout-database
-description: Database guide for PostgreSQL, Drizzle ORM, and Zero sync. INVOKE WHEN: Drizzle, migrations, schema changes, ALTER TABLE, SQL queries, getDb, getDBClient, queryDb, connection pooling, Aurora, pgvector, vector search.
+description: Database guide for PostgreSQL, Drizzle ORM, and Zero sync. Drizzle, migrations, schema changes, ALTER TABLE, SQL queries, getDb, getDBClient, queryDb, connection pooling, Aurora, pgvector, vector search.
 ---
 
 # Database

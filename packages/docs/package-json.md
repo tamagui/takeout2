@@ -1,6 +1,6 @@
 ---
 name: takeout-package-json
-description: Package.json structure guide. INVOKE WHEN: package.json, package configuration, scripts section, npm scripts, env vars, environment variables, workspaces, monorepo, trustedDependencies, dependencies.
+description: Package.json structure guide. package.json, package configuration, scripts section, npm scripts, env vars, environment variables, workspaces, monorepo, trustedDependencies, dependencies.
 ---
 
 # package.json

@@ -130,7 +130,7 @@ function RovingTabsRoot({
           )}
         </AnimatePresence>
 
-        <Tabs.List disablePassBorderRadius loop={false} bg="transparent" gap="$2">
+        <Tabs.List loop={false} bg="transparent" gap="$2">
           {typeof children === 'function'
             ? (children as (props: RenderProps) => React.ReactNode)({
                 handleOnInteraction,

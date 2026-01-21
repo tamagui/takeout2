@@ -1,5 +1,5 @@
-import { Redirect, Slot, Stack, usePathname } from 'one'
-import { Configuration } from 'tamagui'
+import { Protected, Redirect, Slot, Stack, usePathname } from 'one'
+import { Configuration, isWeb } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
 import { Dialogs } from '~/interface/dialogs/Dialogs'
@@ -14,21 +14,20 @@ import { ProvideZero } from '~/zero/client'
 export function AppLayout() {
   const { state } = useAuth()
   const pathname = usePathname()
+  const isLoggedIn = state === 'logged-in'
 
   if (state === 'loading') {
     return null
   }
 
-  // redirect logged-out users away from protected routes
-  const isLoggedInRoute = pathname.startsWith('/home')
-  if (state === 'logged-out' && isLoggedInRoute) {
-    return <Redirect href="/auth/login" />
-  }
-
-  // redirect logged-in users away from auth routes
-  const isAuthRoute = pathname.startsWith('/auth')
-  if (state === 'logged-in' && isAuthRoute) {
-    return <Redirect href="/home/feed" />
+  // web: use Redirect for auth routing (Protected works with Stack)
+  if (isWeb) {
+    if (!isLoggedIn && pathname.startsWith('/home')) {
+      return <Redirect href="/auth/login" />
+    }
+    if (isLoggedIn && pathname.startsWith('/auth')) {
+      return <Redirect href="/home/feed" />
+    }
   }
 
   return (
@@ -51,8 +50,12 @@ export function AppLayout() {
                     animation: 'none',
                   }}
                 >
-                  <Stack.Screen name="home" />
-                  <Stack.Screen name="auth" />
+                  <Protected guard={!isLoggedIn}>
+                    <Stack.Screen name="auth" />
+                  </Protected>
+                  <Protected guard={isLoggedIn}>
+                    <Stack.Screen name="home" />
+                  </Protected>
                 </Stack>
               )}
               <Dialogs />

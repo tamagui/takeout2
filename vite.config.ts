@@ -55,7 +55,6 @@ export default {
       '@tamagui/toast',
       '@tamagui/animate-presence',
       '@tamagui/react-native-svg',
-      '@tamagui/image-next',
       '@tamagui/linear-gradient',
       '@rocicorp/zero',
       '@rocicorp/zero/react',
@@ -159,7 +158,7 @@ export default {
       web: {
         experimental_scriptLoading: 'after-lcp-aggressive',
         defaultRenderMode: 'spa',
-        inlineLayoutCSS: true,
+        inlineLayoutCSS: false,
         sitemap: {
           priority: 0.5,
           changefreq: 'weekly',

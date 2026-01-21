@@ -37,7 +37,7 @@ export const AvatarUpload = ({
       <Avatar key={image} size={100} image={image} />
 
       {dropOverlay}
-      <XStack gap="$2" position="absolute" b={0} r={0}>
+      <XStack gap="$2" position="absolute" b={0} r={0} z={999}>
         <label htmlFor={id}>
           <input
             style={{ display: 'none' }}

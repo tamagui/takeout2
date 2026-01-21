@@ -2,6 +2,7 @@ import { Separator, SizableText, Spinner, XStack, YStack } from 'tamagui'
 
 import { useLogout } from '~/features/auth/useLogout'
 import { useProfileEdit } from '~/features/user/useProfileEdit'
+import { ButtonAction } from '~/interface/buttons/ButtonAction'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Input } from '~/interface/forms/Input'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
@@ -122,13 +123,15 @@ export const UserProfilePopoverContent = () => {
       <Separator />
 
       {/* Save Button */}
+
       <ButtonSimple
         size="small"
-        variant="default"
+        self="center"
         onPress={handleSave}
         disabled={!canSave || isSaving}
+        bg="$background"
       >
-        {isSaving ? 'Saving...' : 'Save Changes'}
+        {isSaving ? 'Saving...' : 'Save Change'}
       </ButtonSimple>
     </YStack>
   )

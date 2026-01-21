@@ -109,6 +109,8 @@ export const FeedDetailPage = memo(() => {
           maxH={650}
           width="100%"
           gap="$4"
+          transition="medium"
+          enterStyle={{ opacity: 0, scale: 0.97, y: 10 }}
         >
           <ButtonSimple
             size="medium"
@@ -153,7 +155,7 @@ export const FeedDetailPage = memo(() => {
   }
 
   return (
-    <YStack flex={1}>
+    <YStack flex={1} transition="medium" enterStyle={{ opacity: 0, y: 10 }}>
       <YStack py="$4">{postHeader}</YStack>
       <Pressable onPress={openGallery} mb="$4">
         <PostImage postId={post.id} image={post.image} caption={post.caption} />

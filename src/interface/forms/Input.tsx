@@ -26,6 +26,7 @@ export const Input = memo(({ ref, glass, ...props }: InputProps) => {
       bg={glass ? 'transparent' : undefined}
       placeholderTextColor="$color8"
       height={50}
+      size="$5"
       {...props}
     />
   )

@@ -95,65 +95,70 @@ export const OtpPage = () => {
 
   return (
     <YStack
-      gap="$5"
+      gap="$6"
       width="100%"
+      height="100%"
       items="center"
       maxW={340}
-      style={{ animation: 'fadeSlideIn 300ms ease-out' }}
+      transition="medium"
+      enterStyle={{ opacity: 0, y: 10 }}
+      exitStyle={{ opacity: 0, y: -10 }}
     >
-      <XStack width="100%" items="center" gap="$3">
+      <XStack position="absolute" t={0} l={0} z={999}>
         <HeaderBackButton />
       </XStack>
+      <YStack flex={1} items="center" justify="center" gap="$4">
+        <YStack gap="$4" width="100%" items="center">
+          <Circle size={52} bg="$color2" borderWidth={0.5} borderColor="$color3">
+            <PasswordIcon size={28} color="$color11" />
+          </Circle>
 
-      <YStack gap="$4" width="100%" items="center">
-        <Circle size={52} bg="$color2" borderWidth={0.5} borderColor="$color3">
-          <PasswordIcon size={28} color="$color11" />
-        </Circle>
-
-        <YStack gap="$2" items="center">
-          <H2 text="center">Enter Code</H2>
-          <SizableText size="$3" color="$color10" text="center">
-            {isPhone
-              ? 'We sent a verification code to your phone number'
-              : 'We sent a verification code to your email'}
-          </SizableText>
-          <SizableText size="$3" color="$color11" fontWeight="600">
-            {displayValue}
-          </SizableText>
+          <YStack gap="$2" items="center">
+            <H2 text="center">Enter Code</H2>
+            <SizableText size="$3" color="$color10" text="center">
+              {isPhone
+                ? 'We sent a verification code to your phone number'
+                : 'We sent a verification code to your email'}
+            </SizableText>
+            <SizableText size="$3" color="$color11" fontWeight="600">
+              {displayValue}
+            </SizableText>
+          </YStack>
         </YStack>
-      </YStack>
 
-      <YStack items="center" gap="$6" width="100%">
-        <OtpInput
-          data-testid="otp-input"
-          key={otpKey}
-          autoFocus
-          otpCount={6}
-          onCodeChanged={handleCodeChanged}
-          defaultValue={otpCode}
-          isError={isError}
-        />
+        <YStack items="center" gap="$6" width="100%">
+          <OtpInput
+            data-testid="otp-input"
+            key={otpKey}
+            autoFocus
+            otpCount={6}
+            onCodeChanged={handleCodeChanged}
+            defaultValue={otpCode}
+            isError={isError}
+          />
 
-        {timer.count > 0 ? (
-          <SizableText size="$4" color="$color11">
-            Resend Code in ({timer.count})
-          </SizableText>
-        ) : (
-          <ButtonSimple data-testid="resend-otp-button" onPress={handleResendOtp}>
-            Resend
-          </ButtonSimple>
-        )}
+          {timer.count > 0 ? (
+            <SizableText size="$4" color="$color11">
+              Resend Code in ({timer.count})
+            </SizableText>
+          ) : (
+            <ButtonSimple data-testid="resend-otp-button" onPress={handleResendOtp}>
+              Resend
+            </ButtonSimple>
+          )}
 
-        <ButtonAction
-          data-testid="verify-otp-button"
-          size="large"
-          width="100%"
-          disabled={isDisabled}
-          onPress={handleContinue}
-          opacity={isDisabled ? 0.5 : 1}
-        >
-          {loading ? 'Verifying...' : 'Next'}
-        </ButtonAction>
+          <ButtonAction
+            theme="accent"
+            data-testid="verify-otp-button"
+            size="large"
+            width="100%"
+            disabled={isDisabled}
+            onPress={handleContinue}
+            opacity={isDisabled ? 0.5 : 1}
+          >
+            {loading ? 'Verifying...' : 'Next'}
+          </ButtonAction>
+        </YStack>
       </YStack>
     </YStack>
   )

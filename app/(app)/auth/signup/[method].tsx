@@ -114,116 +114,122 @@ export const SignupPage = () => {
     <YStack
       gap="$5"
       width="100%"
+      height="100%"
       items="center"
       maxW={340}
-      style={{ animation: 'fadeSlideIn 300ms ease-out' }}
+      transition="medium"
+      enterStyle={{ opacity: 0, y: 10 }}
+      exitStyle={{ opacity: 0, y: -10 }}
     >
-      <XStack width="100%" items="center" gap="$3">
+      <XStack position="absolute" t={0} l={0}>
         <HeaderBackButton />
       </XStack>
 
-      <YStack gap="$4" width="100%" items="center">
-        <Circle size={52} bg="$color2" borderWidth={0.5} borderColor="$color3">
-          <Icon size={28} color="$color11" />
-        </Circle>
+      <YStack flex={1} items="center" justify="center" gap="$4">
+        <YStack gap="$4" width="100%" items="center">
+          <Circle size={52} bg="$color2" borderWidth={0.5} borderColor="$color3">
+            <Icon size={28} color="$color11" />
+          </Circle>
 
-        <YStack gap="$2" items="center">
-          <H2 text="center">{getMethodTitle()}</H2>
-          <SizableText size="$3" color="$color10" text="center">
-            {getMethodDescription()}
-          </SizableText>
+          <YStack gap="$2" items="center">
+            <H2 text="center">{getMethodTitle()}</H2>
+            <SizableText size="$3" color="$color10" text="center">
+              {getMethodDescription()}
+            </SizableText>
+          </YStack>
         </YStack>
-      </YStack>
 
-      <YStack gap="$4" width="100%">
-        <Input
-          data-testid={isPhone ? 'phone-input' : 'email-input'}
-          glass
-          placeholder={placeholder}
-          value={isPhone ? formatPhoneNumber(inputValue) : inputValue}
-          onChange={(e) => setInputValue((e.target as HTMLInputElement).value)}
-          autoCapitalize="none"
-          onSubmitEditing={handleContinue}
-          type={isPhone ? 'tel' : 'email'}
-          autoFocus
-          {...(isPhone
-            ? {
-                name: 'tel',
-                autoComplete: 'tel',
-                inputMode: 'tel',
-                maxLength: 14,
-              }
-            : {
-                name: 'email',
-                autoComplete: 'email',
-                inputMode: 'email',
-              })}
-        />
+        <YStack gap="$4" width="100%">
+          <Input
+            data-testid={isPhone ? 'phone-input' : 'email-input'}
+            glass
+            placeholder={placeholder}
+            value={isPhone ? formatPhoneNumber(inputValue) : inputValue}
+            onChange={(e) => setInputValue((e.target as HTMLInputElement).value)}
+            autoCapitalize="none"
+            onSubmitEditing={handleContinue}
+            type={isPhone ? 'tel' : 'email'}
+            autoFocus
+            {...(isPhone
+              ? {
+                  name: 'tel',
+                  autoComplete: 'tel',
+                  inputMode: 'tel',
+                  maxLength: 14,
+                }
+              : {
+                  name: 'email',
+                  autoComplete: 'email',
+                  inputMode: 'email',
+                })}
+          />
 
-        {isPhone && (
-          <ButtonSimple
-            data-testid="sms-consent-container"
-            onPress={toggleSmsConsent}
-            borderWidth={1}
-            borderColor="$color6"
-            rounded="$6"
-            p="$3"
-            height="auto"
-          >
-            <XStack gap="$3" items="flex-start">
-              <Checkbox
-                data-testid="sms-consent-checkbox"
-                size="$5"
-                checked={smsConsent}
-                onCheckedChange={handleSmsConsentChange}
-                overflow="hidden"
-              >
-                <Checkbox.Indicator backgroundColor="#AB4ABA" padding={6}>
-                  <CheckIcon size={14} />
-                </Checkbox.Indicator>
-              </Checkbox>
-              <YStack gap="$2" flex={1}>
-                <SizableText size="$2" color="$color10">
-                  You agree to receive transactional texts from {APP_NAME}. Frequency
-                  varies. Msg & data rates may apply. Reply STOP to unsubscribe.
-                </SizableText>
-                <XStack gap="$2" flexWrap="wrap">
-                  <Link
-                    href={PRIVACY_POLICY_URL}
-                    onPress={stopPropagation}
-                    textDecorationLine="underline"
-                    fontSize={12}
-                    color="$color10"
-                  >
-                    Privacy Policy
-                  </Link>
-                  <SizableText opacity={0.3} size="$2">
-                    |
+          {isPhone && (
+            <ButtonSimple
+              data-testid="sms-consent-container"
+              onPress={toggleSmsConsent}
+              borderWidth={1}
+              borderColor="$color6"
+              rounded="$6"
+              p="$3"
+              height="auto"
+            >
+              <XStack gap="$3" items="flex-start">
+                <Checkbox
+                  data-testid="sms-consent-checkbox"
+                  size="$5"
+                  checked={smsConsent}
+                  onCheckedChange={handleSmsConsentChange}
+                  overflow="hidden"
+                >
+                  <Checkbox.Indicator backgroundColor="#AB4ABA" padding={6}>
+                    <CheckIcon size={14} />
+                  </Checkbox.Indicator>
+                </Checkbox>
+                <YStack gap="$2" flex={1}>
+                  <SizableText size="$2" color="$color10">
+                    You agree to receive transactional texts from {APP_NAME}. Frequency
+                    varies. Msg & data rates may apply. Reply STOP to unsubscribe.
                   </SizableText>
-                  <Link
-                    href={TERMS_OF_SERVICE_URL}
-                    onPress={stopPropagation}
-                    textDecorationLine="underline"
-                    fontSize={12}
-                    color="$color10"
-                  >
-                    Terms of Service
-                  </Link>
-                </XStack>
-              </YStack>
-            </XStack>
-          </ButtonSimple>
-        )}
+                  <XStack gap="$2" flexWrap="wrap">
+                    <Link
+                      href={PRIVACY_POLICY_URL}
+                      onPress={stopPropagation}
+                      textDecorationLine="underline"
+                      fontSize={12}
+                      color="$color10"
+                    >
+                      Privacy Policy
+                    </Link>
+                    <SizableText opacity={0.3} size="$2">
+                      |
+                    </SizableText>
+                    <Link
+                      href={TERMS_OF_SERVICE_URL}
+                      onPress={stopPropagation}
+                      textDecorationLine="underline"
+                      fontSize={12}
+                      color="$color10"
+                    >
+                      Terms of Service
+                    </Link>
+                  </XStack>
+                </YStack>
+              </XStack>
+            </ButtonSimple>
+          )}
 
-        <ButtonAction
-          data-testid="next-button"
-          size="large"
-          onPress={handleContinue}
-          disabled={isDisabled}
-          opacity={isDisabled ? 0.5 : 1}
-        >
-          {loading ? 'Processing...' : 'Next'}
-        </ButtonAction>
+          <ButtonAction
+            theme="accent"
+            data-testid="next-button"
+            size="large"
+            onPress={handleContinue}
+            disabled={isDisabled}
+            opacity={isDisabled ? 0.5 : 1}
+          >
+            {loading ? 'Processing...' : 'Next'}
+          </ButtonAction>
+        </YStack>
       </YStack>
     </YStack>
   )

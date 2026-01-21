@@ -66,7 +66,7 @@ export const LoginPage = () => {
             position="relative"
             overflow="hidden"
           >
-            <YStack width="100%" gap="$3">
+            <YStack width="100%" gap="$4">
               <Link
                 href="/auth/signup/email"
                 $platform-web={{
@@ -74,6 +74,7 @@ export const LoginPage = () => {
                 }}
               >
                 <ButtonAction
+                  theme="accent"
                   size="large"
                   pressStyle={{
                     scale: 0.97,

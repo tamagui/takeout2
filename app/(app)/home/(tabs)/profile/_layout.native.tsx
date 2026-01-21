@@ -1,6 +1,7 @@
 import { router, Stack } from 'one'
 
-import { HeaderBackButton, HeaderButton } from '~/interface/buttons/HeaderButton'
+import { HeaderBackButton } from '~/interface/buttons/HeaderBackButton'
+import { HeaderButton } from '~/interface/buttons/HeaderButton'
 import { GearIcon } from '~/interface/icons/phosphor/GearIcon'
 
 export const ProfileLayout = () => {

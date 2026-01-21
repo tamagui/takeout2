@@ -1,7 +1,4 @@
-import { router } from 'one'
-
 import { Pressable } from '~/interface/buttons/Pressable'
-import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 
 import type { ReactNode } from 'react'
 import type { ViewProps } from 'tamagui'
@@ -29,15 +26,5 @@ export const HeaderButton = ({
     >
       {icon}
     </Pressable>
-  )
-}
-
-export const HeaderBackButton = (props: Omit<HeaderButtonProps, 'icon' | 'onPress'>) => {
-  return (
-    <HeaderButton
-      icon={<CaretLeftIcon size={24} />}
-      onPress={() => router.back()}
-      {...props}
-    />
   )
 }

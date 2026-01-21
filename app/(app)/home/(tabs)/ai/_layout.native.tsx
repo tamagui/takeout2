@@ -1,6 +1,6 @@
 import { Stack } from 'one'
 
-import { HeaderBackButton } from '~/interface/buttons/HeaderButton'
+import { HeaderBackButton } from '~/interface/buttons/HeaderBackButton'
 
 export const AILayout = () => {
   return (

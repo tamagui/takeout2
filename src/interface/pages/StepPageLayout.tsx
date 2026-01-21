@@ -1,9 +1,6 @@
-import { router } from 'one'
 import { Circle, H5, isWeb, Spacer, XStack, YStack } from 'tamagui'
 
 import { HeaderBackButton } from '../buttons/HeaderBackButton'
-import { Pressable } from '../buttons/Pressable'
-import { CaretLeftIcon } from '../icons/phosphor/CaretLeftIcon'
 import { PageHeading } from '../text/PageHeading'
 import { BaseStepPageLayout } from './BaseStepPageLayout'
 

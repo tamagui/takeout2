@@ -65,13 +65,21 @@ And high level structure that is good to start learning:
 
 ## Documentation
 
-For docs we intent to update over time as we upgrade the repo, we have the
+For docs we intend to update over time as we upgrade the repo, we have the
 takeout command. See those docs with `bun tko docs list`.
 
-For docs specific to your app, we use the [docs](./docs) directory.
+For docs specific to your app, use the [docs](./docs) directory. Any markdown
+file with YAML frontmatter containing `name` and `description` will be
+automatically symlinked to `.claude/skills/` for Claude Code integration:
 
-It's worth reading over the [./docs/agent.md](agent.md) as it has a lot of
-interesting information.
+```yaml
+---
+name: my-skill
+description: What this skill does and when to use it
+---
+```
+
+Run `bun tko docs skills` to sync skills after adding new docs.
 
 ### Development
 

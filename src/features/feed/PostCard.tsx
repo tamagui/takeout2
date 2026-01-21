@@ -6,6 +6,7 @@ import { Accordion, isWeb, SizableText, View, XStack, YStack } from 'tamagui'
 import { useAuth } from '~/features/auth/client/authClient'
 import { useUser } from '~/hooks/useUser'
 import { Link } from '~/interface/app/Link'
+import { Avatar } from '~/interface/avatars/Avatar'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { ChatCircleIcon } from '~/interface/icons/phosphor/ChatCircleIcon'
 import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
@@ -48,12 +49,11 @@ export const PostCard = memo(({ post }: PostCardProps) => {
       <View px="$4">
         <XStack items="center" justify="space-between" pb="$2">
           <XStack gap="$3" width="100%">
-            <AvatarWithMenu
-              avatarUrl={avatarUrl || ''}
-              userId={authorId}
-              username={username || ''}
-              isOwnProfile={isOwnProfile}
-            />
+            <Link
+              href={isOwnProfile ? '/home/profile' : `/home/feed/profile/${authorId}`}
+            >
+              <Avatar image={avatarUrl || ''} name={username || ''} size={32} gradient />
+            </Link>
             <YStack flex={1} gap="$2">
               <XStack items="center" justify="space-between">
                 <XStack items="center" gap="$1">

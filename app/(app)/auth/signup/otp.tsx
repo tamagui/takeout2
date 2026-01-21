@@ -1,17 +1,16 @@
 import { useTimer } from '@take-out/helpers'
 import { useParams } from 'one'
 import { useEffect, useState } from 'react'
-import { Keyboard } from 'react-native'
-import { SizableText, useEvent, YStack } from 'tamagui'
+import { Circle, SizableText, useEvent, XStack, YStack } from 'tamagui'
 
 import { otpLogin, validateLoginOtpCode } from '~/features/auth/client/otpLogin'
 import { OtpInput } from '~/features/auth/ui/OtpInput'
+import { ButtonAction } from '~/interface/buttons/ButtonAction'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { HeaderBackButton } from '~/interface/buttons/HeaderBackButton'
 import { showError } from '~/interface/dialogs/actions'
-import { isSmallScreen } from '~/interface/dimensions'
 import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
-import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter'
-import { StepPageLayout } from '~/interface/pages/StepPageLayout'
+import { H2 } from '~/interface/text/Headings'
 
 export const OtpPage = () => {
   const timer = useTimer()
@@ -22,7 +21,6 @@ export const OtpPage = () => {
   const [otpKey, setOtpKey] = useState(0)
 
   const isPhone = params.method === 'phone'
-
   const isDisabled = otpCode.length !== 6 || loading
 
   const displayValue =
@@ -33,8 +31,6 @@ export const OtpPage = () => {
       showError('Authentication method or value is not specified.')
       return
     }
-    // Keep loading state active - useAfterLoginRedirect will handle navigation
-    // Loading will be cleared when component unmounts due to navigation
     setLoading(true)
     setOtpCode('')
     setOtpKey(Math.random())
@@ -72,7 +68,6 @@ export const OtpPage = () => {
 
       if (error) {
         setIsError(true)
-        Keyboard.dismiss()
         showError(error)
         setOtpCode('')
         setOtpKey(Math.random())
@@ -81,7 +76,6 @@ export const OtpPage = () => {
       }
 
       timer.pause()
-      // AppLayout handles redirect when auth state changes
     } catch (err) {
       console.error(err)
     } finally {
@@ -100,34 +94,36 @@ export const OtpPage = () => {
   }, [handleContinue, otpCode])
 
   return (
-    <StepPageLayout
-      title="Enter Code"
-      Icon={PasswordIcon}
-      disableScroll={!isSmallScreen}
-      description={
-        isPhone
-          ? `We sent a verification code to your phone number`
-          : `We sent a verification code to your email`
-      }
-      descriptionSecondLine={displayValue}
-      bottom={
-        <KeyboardStickyFooter openedOffset={-10}>
-          <ButtonSimple
-            glass
-            glassTint={isDisabled ? 'transparent' : 'darkslateblue'}
-            width="100%"
-            data-testid="verify-otp-button"
-            size="large"
-            // No need func here because we have onCodeFilled in OtpInput
-            disabled={isDisabled}
-            onPress={handleContinue}
-          >
-            {loading ? 'Verifying...' : 'Next'}
-          </ButtonSimple>
-        </KeyboardStickyFooter>
-      }
+    <YStack
+      gap="$5"
+      width="100%"
+      items="center"
+      maxW={340}
+      style={{ animation: 'fadeSlideIn 300ms ease-out' }}
     >
-      <YStack items="center" gap="$6">
+      <XStack width="100%" items="center" gap="$3">
+        <HeaderBackButton />
+      </XStack>
+
+      <YStack gap="$4" width="100%" items="center">
+        <Circle size={52} bg="$color2" borderWidth={0.5} borderColor="$color3">
+          <PasswordIcon size={28} color="$color11" />
+        </Circle>
+
+        <YStack gap="$2" items="center">
+          <H2 text="center">Enter Code</H2>
+          <SizableText size="$3" color="$color10" text="center">
+            {isPhone
+              ? 'We sent a verification code to your phone number'
+              : 'We sent a verification code to your email'}
+          </SizableText>
+          <SizableText size="$3" color="$color11" fontWeight="600">
+            {displayValue}
+          </SizableText>
+        </YStack>
+      </YStack>
+
+      <YStack items="center" gap="$6" width="100%">
         <OtpInput
           data-testid="otp-input"
           key={otpKey}
@@ -137,6 +133,7 @@ export const OtpPage = () => {
           defaultValue={otpCode}
           isError={isError}
         />
+
         {timer.count > 0 ? (
           <SizableText size="$4" color="$color11">
             Resend Code in ({timer.count})
@@ -146,7 +143,18 @@ export const OtpPage = () => {
             Resend
           </ButtonSimple>
         )}
+
+        <ButtonAction
+          data-testid="verify-otp-button"
+          size="large"
+          width="100%"
+          disabled={isDisabled}
+          onPress={handleContinue}
+          opacity={isDisabled ? 0.5 : 1}
+        >
+          {loading ? 'Verifying...' : 'Next'}
+        </ButtonAction>
       </YStack>
-    </StepPageLayout>
+    </YStack>
   )
 }

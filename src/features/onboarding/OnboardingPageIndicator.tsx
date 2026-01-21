@@ -1,73 +1,28 @@
-import { memo } from 'react'
-import Animated, {
-  Extrapolation,
-  interpolate,
-  interpolateColor,
-  useAnimatedStyle,
-  type SharedValue,
-} from 'react-native-reanimated'
-import { useTheme, XStack } from 'tamagui'
+import { XStack, YStack } from 'tamagui'
 
-interface OnboardingPageIndicatorProps {
-  totalPages: number
-  scrollPosition: SharedValue<number>
-}
+import type { OnboardingPageIndicatorProps } from './types'
 
 export function OnboardingPageIndicator({
   totalPages,
-  scrollPosition,
+  currentPage = 0,
 }: OnboardingPageIndicatorProps) {
-  const theme = useTheme()
-
   return (
     <XStack gap={8} justify="center" items="center" py="$3">
       {Array.from({ length: totalPages }).map((_, idx) => (
-        <IndicatorDot
-          key={idx}
-          index={idx}
-          scrollPosition={scrollPosition}
-          activeColor={theme.color9?.val}
-          inactiveColor={theme.color5?.val}
-        />
+        <IndicatorDot key={idx} isActive={idx === currentPage} />
       ))}
     </XStack>
   )
 }
 
-interface IndicatorDotProps {
-  index: number
-  scrollPosition: SharedValue<number>
-  activeColor: string
-  inactiveColor: string
-}
-
-function IndicatorDot({
-  index,
-  scrollPosition,
-  activeColor,
-  inactiveColor,
-}: IndicatorDotProps) {
-  const animatedStyle = useAnimatedStyle(() => {
-    const distance = Math.abs(scrollPosition.value - index)
-
-    const width = interpolate(distance, [0, 0.5, 1], [28, 14, 8], Extrapolation.CLAMP)
-
-    const backgroundColor = interpolateColor(
-      distance,
-      [0, 1],
-      [activeColor, inactiveColor]
-    )
-
-    const scale = interpolate(distance, [0, 0.2, 1], [1, 1.15, 1], Extrapolation.CLAMP)
-
-    return {
-      width,
-      backgroundColor,
-      transform: [{ scale }],
-    }
-  })
-
+function IndicatorDot({ isActive }: { isActive: boolean }) {
   return (
-    <Animated.View style={[{ width: 8, height: 8, borderRadius: 4 }, animatedStyle]} />
+    <YStack
+      width={isActive ? 28 : 8}
+      height={8}
+      rounded={4}
+      bg={isActive ? '$color10' : '$color7'}
+      transition="medium"
+    />
   )
 }

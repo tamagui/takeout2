@@ -20,6 +20,7 @@ export interface OnboardingSlideData {
   id: string
   theme: ThemeName
   title: string
+  description: string
   layout: SlideLayout
   features: SlideFeature[]
 }
@@ -69,9 +70,11 @@ export interface FeatureCardProps {
   horizontal?: boolean
 }
 
+// shared interface - native uses scrollPosition, web uses currentPage
 export interface OnboardingPageIndicatorProps {
   totalPages: number
-  scrollPosition: SharedValue<number>
+  scrollPosition?: SharedValue<number> // native
+  currentPage?: number // web
 }
 
 export interface IndicatorDotProps {
@@ -79,4 +82,15 @@ export interface IndicatorDotProps {
   scrollPosition: SharedValue<number>
   activeColor: string
   inactiveColor: string
+}
+
+// shared interface - native uses isLastPage/onPress/onSkip, web uses onPrev/onNext
+export interface OnboardingActionButtonProps {
+  // native props
+  isLastPage?: boolean
+  onPress?: () => void
+  onSkip?: () => void
+  // web props
+  onPrev?: () => void
+  onNext?: () => void
 }

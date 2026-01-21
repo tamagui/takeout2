@@ -1,38 +1,29 @@
 import { formatPhoneNumber } from '@take-out/helpers'
-import { createRoute, useParams, useRouter } from 'one'
-import { memo, useLayoutEffect, useRef, useState } from 'react'
-import { Keyboard } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Checkbox, SizableText, useEvent, XStack, YStack } from 'tamagui'
+import { useParams, useRouter, createRoute } from 'one'
+import { useState } from 'react'
+import { Checkbox, Circle, SizableText, useEvent, XStack, YStack } from 'tamagui'
 
 import { APP_NAME, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '~/constants/app'
 import { validateLoginOtpCode } from '~/features/auth/client/otpLogin'
 import { shouldUsePasswordOnlyAuth } from '~/features/auth/constants'
 import { Link } from '~/interface/app/Link'
+import { ButtonAction } from '~/interface/buttons/ButtonAction'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
-import { Pressable } from '~/interface/buttons/Pressable'
+import { HeaderBackButton } from '~/interface/buttons/HeaderBackButton'
 import { showError } from '~/interface/dialogs/actions'
-import { isSmallScreen } from '~/interface/dimensions'
 import { Input } from '~/interface/forms/Input'
-import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { DeviceMobileSpeakerIcon } from '~/interface/icons/phosphor/DeviceMobileSpeakerIcon'
 import { EnvelopeSimpleIcon } from '~/interface/icons/phosphor/EnvelopeSimpleIcon'
-import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter'
-import { StepPageLayout } from '~/interface/pages/StepPageLayout'
+import { H2 } from '~/interface/text/Headings'
 
 import type React from 'react'
-import type { GestureResponderEvent } from 'react-native'
 
 const route = createRoute<'/(app)/auth/signup/[method]'>()
 
-export const SignupPage = memo(() => {
-  const { method } = useParams<{
-    method?: 'phone' | 'email'
-  }>()
-  const { top } = useSafeAreaInsets()
+export const SignupPage = () => {
+  const { method } = useParams<{ method?: 'phone' | 'email' }>()
   const router = useRouter()
-  const inputRef = useRef<Input>(null)
   const [inputValue, setInputValue] = useState<string>('')
   const isPhone = method === 'phone'
   const Icon = isPhone ? DeviceMobileSpeakerIcon : EnvelopeSimpleIcon
@@ -40,14 +31,6 @@ export const SignupPage = memo(() => {
   const [smsConsent, setSmsConsent] = useState<boolean>(false)
 
   const isDisabled = !inputValue.trim() || (isPhone && !smsConsent)
-
-  useLayoutEffect(() => {
-    const timer = setTimeout(() => {
-      inputRef.current?.focus()
-    }, 650) // Small delay for smoother animation
-
-    return () => clearTimeout(timer)
-  }, [])
 
   const getMethodTitle = () => {
     switch (method) {
@@ -75,14 +58,13 @@ export const SignupPage = memo(() => {
     setSmsConsent(!!val)
   )
 
-  const stopPropagation = useEvent((e: GestureResponderEvent | React.MouseEvent) =>
+  const stopPropagation = useEvent((e: { stopPropagation: () => void }) =>
     e.stopPropagation()
   )
-  const handleGoBack = useEvent(() => router.back())
 
   const handleContinue = useEvent(async () => {
     if (!method) {
-      showError('Authentcation method is not specified.')
+      showError('Authentication method is not specified.')
       return
     }
 
@@ -106,7 +88,6 @@ export const SignupPage = memo(() => {
         )
         return
       }
-      Keyboard.dismiss()
       showError(error)
     } finally {
       clearTimeout(tm)
@@ -114,20 +95,15 @@ export const SignupPage = memo(() => {
     }
   })
 
-  // Only show content for phone and email methods
   if (method !== 'phone' && method !== 'email') {
     return (
-      <YStack flex={1} bg="$background" pt={top} px="$4">
-        <XStack items="center" gap="$3">
-          <Pressable onPress={handleGoBack}>
-            <CaretLeftIcon size={24} />
-          </Pressable>
+      <YStack gap="$4" width="100%" items="center" maxW={340}>
+        <XStack width="100%" items="center">
+          <HeaderBackButton />
         </XStack>
-        <YStack flex={1} items="center" justify="center">
-          <SizableText fontSize={16} opacity={0.6}>
-            Invalid authentication method
-          </SizableText>
-        </YStack>
+        <SizableText size="$4" color="$color10">
+          Invalid authentication method
+        </SizableText>
       </YStack>
     )
   }
@@ -135,47 +111,47 @@ export const SignupPage = memo(() => {
   const placeholder = isPhone ? '(202) 555-2813' : 'Enter email address'
 
   return (
-    <StepPageLayout
-      title={getMethodTitle()}
-      Icon={Icon}
-      description={getMethodDescription()}
-      disableScroll={!isSmallScreen}
-      bottom={
-        <KeyboardStickyFooter openedOffset={-10}>
-          <ButtonSimple
-            glass
-            glassTint={isDisabled ? 'transparent' : 'darkslateblue'}
-            data-testid="next-button"
-            size="large"
-            pressStyle={{
-              scale: 0.97,
-              opacity: 0.9,
-            }}
-            onPress={handleContinue}
-            disabled={isDisabled}
-          >
-            {loading ? 'Processing...' : 'Next'}
-          </ButtonSimple>
-        </KeyboardStickyFooter>
-      }
+    <YStack
+      gap="$5"
+      width="100%"
+      items="center"
+      maxW={340}
+      style={{ animation: 'fadeSlideIn 300ms ease-out' }}
     >
-      <YStack gap="$4">
+      <XStack width="100%" items="center" gap="$3">
+        <HeaderBackButton />
+      </XStack>
+
+      <YStack gap="$4" width="100%" items="center">
+        <Circle size={52} bg="$color2" borderWidth={0.5} borderColor="$color3">
+          <Icon size={28} color="$color11" />
+        </Circle>
+
+        <YStack gap="$2" items="center">
+          <H2 text="center">{getMethodTitle()}</H2>
+          <SizableText size="$3" color="$color10" text="center">
+            {getMethodDescription()}
+          </SizableText>
+        </YStack>
+      </YStack>
+
+      <YStack gap="$4" width="100%">
         <Input
           data-testid={isPhone ? 'phone-input' : 'email-input'}
           glass
-          ref={inputRef}
           placeholder={placeholder}
           value={isPhone ? formatPhoneNumber(inputValue) : inputValue}
           onChange={(e) => setInputValue((e.target as HTMLInputElement).value)}
           autoCapitalize="none"
           onSubmitEditing={handleContinue}
           type={isPhone ? 'tel' : 'email'}
+          autoFocus
           {...(isPhone
             ? {
                 name: 'tel',
                 autoComplete: 'tel',
                 inputMode: 'tel',
-                maxLength: 14, // (XXX) XXX-XXXX = 14 characters with formatting
+                maxLength: 14,
               }
             : {
                 name: 'email',
@@ -183,29 +159,31 @@ export const SignupPage = memo(() => {
                 inputMode: 'email',
               })}
         />
+
         {isPhone && (
-          <Pressable
+          <ButtonSimple
             data-testid="sms-consent-container"
             onPress={toggleSmsConsent}
             borderWidth={1}
             borderColor="$color6"
             rounded="$6"
-            p="$2"
+            p="$3"
+            height="auto"
           >
             <XStack gap="$3" items="flex-start">
               <Checkbox
                 data-testid="sms-consent-checkbox"
-                size="$7"
+                size="$5"
                 checked={smsConsent}
                 onCheckedChange={handleSmsConsentChange}
                 overflow="hidden"
               >
-                <Checkbox.Indicator backgroundColor="#AB4ABA" padding={8}>
-                  <CheckIcon />
+                <Checkbox.Indicator backgroundColor="#AB4ABA" padding={6}>
+                  <CheckIcon size={14} />
                 </Checkbox.Indicator>
               </Checkbox>
               <YStack gap="$2" flex={1}>
-                <SizableText fontSize={14} color="$accent8">
+                <SizableText size="$2" color="$color10">
                   You agree to receive transactional texts from {APP_NAME}. Frequency
                   varies. Msg & data rates may apply. Reply STOP to unsubscribe.
                 </SizableText>
@@ -214,27 +192,39 @@ export const SignupPage = memo(() => {
                     href={PRIVACY_POLICY_URL}
                     onPress={stopPropagation}
                     textDecorationLine="underline"
-                    fontSize={14}
-                    color="$accent8"
+                    fontSize={12}
+                    color="$color10"
                   >
                     Privacy Policy
                   </Link>
-                  <SizableText opacity={0.3}>|</SizableText>
+                  <SizableText opacity={0.3} size="$2">
+                    |
+                  </SizableText>
                   <Link
                     href={TERMS_OF_SERVICE_URL}
                     onPress={stopPropagation}
                     textDecorationLine="underline"
-                    fontSize={14}
-                    color="$accent8"
+                    fontSize={12}
+                    color="$color10"
                   >
                     Terms of Service
                   </Link>
                 </XStack>
               </YStack>
             </XStack>
-          </Pressable>
+          </ButtonSimple>
         )}
+
+        <ButtonAction
+          data-testid="next-button"
+          size="large"
+          onPress={handleContinue}
+          disabled={isDisabled}
+          opacity={isDisabled ? 0.5 : 1}
+        >
+          {loading ? 'Processing...' : 'Next'}
+        </ButtonAction>
       </YStack>
-    </StepPageLayout>
+    </YStack>
   )
-})
+}

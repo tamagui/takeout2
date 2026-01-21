@@ -17,6 +17,7 @@ export const onboardingSlides: OnboardingSlideData[] = [
     id: 'universal',
     theme: 'blue',
     title: 'Universal',
+    description: 'Build once, deploy everywhere. iOS, Android, and Web from a single codebase.',
     layout: 'rotated',
     features: [
       { Icon: GlobeIcon, title: 'Cross-platform' },
@@ -29,6 +30,7 @@ export const onboardingSlides: OnboardingSlideData[] = [
     id: 'performance',
     theme: 'red',
     title: 'Blazing Fast',
+    description: 'Optimized for speed with fast builds and lightning-quick runtime.',
     layout: 'cascade',
     features: [
       { Icon: FireIcon, title: 'Fast runtime' },
@@ -41,6 +43,7 @@ export const onboardingSlides: OnboardingSlideData[] = [
     id: 'stack',
     theme: 'green',
     title: 'Modern Stack',
+    description: 'Modern tools that work together seamlessly for the best developer experience.',
     layout: 'stack',
     features: [
       { Icon: RocketIcon, title: 'One' },
@@ -53,6 +56,7 @@ export const onboardingSlides: OnboardingSlideData[] = [
     id: 'reliable',
     theme: 'yellow',
     title: 'Ship Confident',
+    description: 'Type-safe, self-hostable, and open source. Ship with confidence.',
     layout: 'grid',
     features: [
       { Icon: CheckCircleIcon, title: 'Type-safe' },

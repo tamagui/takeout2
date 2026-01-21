@@ -10,6 +10,7 @@ import { SizableText, useTheme, View, YStack, type ColorTokens } from 'tamagui'
 
 import Glint from '~/interface/effects/Glint'
 
+import { GRID_ROTATIONS, LAYOUT_CONFIGS } from './onboardingConfig'
 import type {
   AnimatedCardWrapperProps,
   AnimatedLayoutProps,
@@ -76,56 +77,6 @@ export function OnboardingSlide({
       </YStack>
     </View>
   )
-}
-
-interface PositionConfig {
-  l?: number
-  r?: number
-  t: number
-  rotate: string
-}
-
-interface LayoutConfig {
-  positions: PositionConfig[]
-  cardWidthRatio: number
-  cardHeight: number
-  containerHeight: number
-}
-
-const LAYOUT_CONFIGS: Record<'rotated' | 'cascade' | 'stack', LayoutConfig> = {
-  rotated: {
-    positions: [
-      { l: 0, t: 0, rotate: '-5deg' },
-      { r: 0, t: 90, rotate: '4deg' },
-      { l: 10, t: 180, rotate: '-3deg' },
-      { r: 10, t: 270, rotate: '5deg' },
-    ],
-    cardWidthRatio: 0.75,
-    cardHeight: 72,
-    containerHeight: 380,
-  },
-  cascade: {
-    positions: [
-      { r: 0, t: 0, rotate: '6deg' },
-      { l: 0, t: 85, rotate: '-4deg' },
-      { r: 5, t: 175, rotate: '3deg' },
-      { l: 5, t: 265, rotate: '-5deg' },
-    ],
-    cardWidthRatio: 0.75,
-    cardHeight: 72,
-    containerHeight: 380,
-  },
-  stack: {
-    positions: [
-      { l: 0, t: 0, rotate: '0deg' },
-      { l: 0, t: 78, rotate: '0deg' },
-      { l: 0, t: 156, rotate: '0deg' },
-      { l: 0, t: 234, rotate: '0deg' },
-    ],
-    cardWidthRatio: 0.72,
-    cardHeight: 68,
-    containerHeight: 350,
-  },
 }
 
 function AnimatedLayout({
@@ -229,7 +180,6 @@ function AnimatedCardWrapper({
 
 function GridLayout({ features, cardWidth, currentPage, slideIndex }: LayoutProps) {
   const gridItemSize = (cardWidth - 24) / 2
-  const rotations = ['-3deg', '2deg', '2deg', '-3deg']
 
   return (
     <YStack gap="$3" width={cardWidth}>
@@ -238,7 +188,7 @@ function GridLayout({ features, cardWidth, currentPage, slideIndex }: LayoutProp
           cardIndex={0}
           slideIndex={slideIndex}
           currentPage={currentPage}
-          rotation={rotations[0]}
+          rotation={GRID_ROTATIONS[0]}
         >
           <FeatureCard feature={features[0]} size={gridItemSize} />
         </AnimatedCardWrapper>
@@ -246,7 +196,7 @@ function GridLayout({ features, cardWidth, currentPage, slideIndex }: LayoutProp
           cardIndex={1}
           slideIndex={slideIndex}
           currentPage={currentPage}
-          rotation={rotations[1]}
+          rotation={GRID_ROTATIONS[1]}
         >
           <FeatureCard feature={features[1]} size={gridItemSize} />
         </AnimatedCardWrapper>
@@ -256,7 +206,7 @@ function GridLayout({ features, cardWidth, currentPage, slideIndex }: LayoutProp
           cardIndex={2}
           slideIndex={slideIndex}
           currentPage={currentPage}
-          rotation={rotations[2]}
+          rotation={GRID_ROTATIONS[2]}
         >
           <FeatureCard feature={features[2]} size={gridItemSize} />
         </AnimatedCardWrapper>
@@ -264,7 +214,7 @@ function GridLayout({ features, cardWidth, currentPage, slideIndex }: LayoutProp
           cardIndex={3}
           slideIndex={slideIndex}
           currentPage={currentPage}
-          rotation={rotations[3]}
+          rotation={GRID_ROTATIONS[3]}
         >
           <FeatureCard feature={features[3]} size={gridItemSize} />
         </AnimatedCardWrapper>

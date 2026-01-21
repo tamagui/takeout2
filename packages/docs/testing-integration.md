@@ -1,5 +1,5 @@
 ---
-name: testing-integration
+name: takeout-testing-integration
 description: Integration testing guide. Use when writing Playwright tests, running bun test:integration, testing with loginAsDemo, or debugging test failures. INVOKE WHEN: integration tests, e2e tests, end-to-end, Playwright, browser tests, test:integration, test fixtures, test setup, test users.
 ---
 

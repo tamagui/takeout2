@@ -6,15 +6,11 @@ v1:
 
 - ci/cd:
   - sst working and tested for aws setup
-  - uncloud working and tested for self-hosting
   - working actions to build to both app stores
     - can have eas and self-hosted options
 
 - cleanup:
   - zero migrations cleanup and move into package
-
-- docs:
-  - document asyncTasks/zero tips
 
 v2:
 

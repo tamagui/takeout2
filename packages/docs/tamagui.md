@@ -1,5 +1,5 @@
 ---
-name: tamagui
+name: takeout-tamagui
 description: Tamagui UI framework guide. Use when styling, components, tokens ($color, $size, $space), themes (light/dark mode), media queries, breakpoints, responsive design, shorthands (p, m, bg, f, ai, jc), Stack, XStack, YStack, Text, styled(), useTheme, or any Tamagui component.
 ---
 

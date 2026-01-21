@@ -1,5 +1,5 @@
 ---
-name: one-components
+name: takeout-one-components
 description: One framework components guide for navigation, layouts, and UI elements. INVOKE WHEN: Link, Redirect, navigation, Head, meta tags, SEO, SafeAreaView, StatusBar, device safe areas, Stack, Tabs, Slot, layout components, LoadProgressBar, ScrollBehavior.
 ---
 

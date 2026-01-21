@@ -1,5 +1,5 @@
 ---
-name: xcodebuild-mcp
+name: takeout-xcodebuild-mcp
 description: iOS debugging with XcodeBuildMCP. INVOKE WHEN: run or test react native, debug ios, debug native, ios simulator, run simulator, ios device, device debugging, xcode build, native app debugging, simulator logs, capture screenshot, ui automation, test ios, run on device, launch simulator.
 ---
 

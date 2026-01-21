@@ -1,5 +1,5 @@
 ---
-name: scripts
+name: takeout-scripts
 description: Scripts guide for tko CLI automation. INVOKE WHEN: scripts, CLI scripts, ./scripts/ directory, tko commands, tko run, parallel execution, script management, bun scripts, npm scripts, automation.
 ---
 

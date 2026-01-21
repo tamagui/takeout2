@@ -1,11 +1,10 @@
-# process
+USE YOUR SKILLS - we have lots of skills with lots of keywords added to their descriptions! use multiple skills if possible!
 
-core guidelines for working in this codebase.
+even if youre just exploring for info many of our skills with takeout-* are just informational so just use tem
 
 ## approach
 
 - ultrathink - explore, research, and plan before attempting fixes
-- **check skills first** - before planning any feature, scan available skills for keyword matches (counts, triggers, routes, styling, etc.) and invoke relevant skills to get proper patterns
 - use sub-tasks to parallelize work
 - prefer strong models for complex tasks
 - aggressively improve context using `bun tko docs list`

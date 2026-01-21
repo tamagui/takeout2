@@ -1,5 +1,5 @@
 ---
-name: react-native-navigation-flow
+name: takeout-react-native-navigation-flow
 description: React Native navigation and mobile routing guide for One framework. INVOKE WHEN: React Native navigation, native navigation, useRouter, useParams on native, drawer layout, drawer navigation, mobile routing, One framework routing, screen transitions, navigation flow.
 ---
 

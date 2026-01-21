@@ -1,5 +1,5 @@
 ---
-name: one-hooks
+name: takeout-one-hooks
 description: One framework hooks guide for routing, navigation, data loading, and focus management. INVOKE WHEN: hooks, useRouter, useParams, usePathname, useLoader, useFocusEffect, useNavigation, navigation hooks, data loading hooks, route params, query params, navigation state, screen focus management.
 ---
 

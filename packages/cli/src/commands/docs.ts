@@ -453,22 +453,25 @@ const skillsCommand = defineCommand({
     let unchanged = 0
 
     for (const doc of docs) {
-      const baseName = toSkillName(doc.name)
-      const skillName = `${SKILL_PREFIX}${baseName}`
-      const skillDir = join(skillsDir, skillName)
-      const skillFile = join(skillDir, 'SKILL.md')
-
       // read doc content
       const content = readFileSync(doc.path, 'utf-8')
       const hasFrontmatter = hasSkillFrontmatter(content)
 
-      // ensure skill directory exists
-      if (!existsSync(skillDir)) {
-        mkdirSync(skillDir, { recursive: true })
-      }
-
       if (hasFrontmatter) {
-        // doc has frontmatter - symlink it directly
+        // extract skill name from frontmatter
+        const nameMatch = content.match(/^---\s*\nname:\s*([^\n]+)/m)
+        if (!nameMatch) continue
+
+        const skillName = nameMatch[1].trim()
+        const skillDir = join(skillsDir, skillName)
+        const skillFile = join(skillDir, 'SKILL.md')
+
+        // ensure skill directory exists
+        if (!existsSync(skillDir)) {
+          mkdirSync(skillDir, { recursive: true })
+        }
+
+        // symlink it directly
         const relativePath = relative(skillDir, doc.path)
 
         // check if symlink already exists and points to same target
@@ -499,6 +502,16 @@ const skillsCommand = defineCommand({
         )
       } else {
         // doc lacks frontmatter - generate skill file with frontmatter
+        const baseName = toSkillName(doc.name)
+        const skillName = `${SKILL_PREFIX}${baseName}`
+        const skillDir = join(skillsDir, skillName)
+        const skillFile = join(skillDir, 'SKILL.md')
+
+        // ensure skill directory exists
+        if (!existsSync(skillDir)) {
+          mkdirSync(skillDir, { recursive: true })
+        }
+
         const { title, description } = extractDocMeta(content)
         const skillDescription = description
           ? `${title}. ${description}`.slice(0, 1024)

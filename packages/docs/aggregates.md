@@ -1,5 +1,5 @@
 ---
-name: aggregates
+name: takeout-aggregates
 description: Database aggregates guide using PostgreSQL triggers and stats tables. INVOKE WHEN: commentCount, followerCount, likesCount, reactionCount, replyCount, derived columns, computed values, denormalized data, INSERT ON CONFLICT, UPSERT pattern, maintaining counts, syncing counts, aggregate tables, stats tables.
 ---
 

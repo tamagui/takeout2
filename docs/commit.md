@@ -1,5 +1,5 @@
 ---
-name: git-commit
+name: commit
 description: Git commit guidelines. INVOKE WHEN: commit, create commits, commit message, commit style, commit conventions, commit format, committing changes, make commit, git commit, lowercase messages, one-line commits. Never add yourself as contributor, keep messages lowercase and one-line.
 ---
 

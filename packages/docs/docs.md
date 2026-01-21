@@ -1,5 +1,5 @@
 ---
-name: docs
+name: takeout-docs
 description: Docs/documentation, writing english, JSDoc code comments, markdown, md, mdx, english
 ---
 

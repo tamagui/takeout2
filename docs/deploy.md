@@ -1,5 +1,5 @@
 ---
-name: deployment
+name: deploy
 description: Deployment infrastructure overview and platform setup. INVOKE WHEN: deploy, deployment, production, CI/CD, continuous integration, DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY, uncloud, SST, docker, containers, infrastructure, environment variables, GitHub Actions, or zero-downtime deploys.
 ---
 

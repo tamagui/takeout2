@@ -1,5 +1,5 @@
 ---
-name: cloudflare-dev-tunnel
+name: takeout-cloudflare-dev-tunnel
 description: Cloudflare dev tunnel guide for exposing local development servers publicly. INVOKE WHEN: dev tunnel, cloudflare tunnel, cfargotunnel, dev:tunnel, local tunnel, testing webhooks, webhook testing, share local server, expose localhost, ngrok alternative.
 ---
 

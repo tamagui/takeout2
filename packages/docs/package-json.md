@@ -108,7 +108,7 @@ project-specific metadata for onboarding script etc:
 2. **modifying env-server.ts directly** - always use `env` section +
    `bun env:update`
 
-3. **using full paths when tko works** - prefer `tko check/types` over
+3. **using full paths when tko works** - prefer `tko check types` over
    `bun ./scripts/check/types.ts`
 
 4. **forgetting workspace:\* for internal packages** - always use `workspace:*`

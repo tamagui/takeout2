@@ -322,8 +322,8 @@ async function updateDownstreamRepos() {
       }
 
       // run upgrade
-      console.info(`  Running upgrade/takeout...`)
-      await run(`bun tko upgrade/takeout`, { cwd: repoPath })
+      console.info(`  Running upgrade takeout...`)
+      await run(`bun up takeout`, { cwd: repoPath })
 
       // run check:all
       console.info(`  Running check:all...`)

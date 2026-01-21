@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // @description Build with analyzer, run Lighthouse, open reports and site
-// Usage: bun tko web/build-analyze [route]
-// Example: bun tko web/build-analyze /
+// Usage: bun tko web build-analyze [route]
+// Example: bun tko web build-analyze /
 
 import { $ } from 'bun'
 

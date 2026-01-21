@@ -101,7 +101,7 @@ ${pc.bold('iOS Release Setup')}
 Setup and sync Apple secrets for iOS App Store deployment.
 
 ${pc.bold('Usage:')}
-  bun tko ios/setup-release [options]
+  bun tko ios setup-release [options]
 
 ${pc.bold('Options:')}
   --sync       Only sync existing secrets to GitHub (skip interactive setup)
@@ -342,7 +342,7 @@ ${pc.yellow('Note:')} Add .env.ios to .gitignore (it contains sensitive data)`,
     clack.outro(pc.green('Secrets saved locally'))
     console.info()
     console.info(pc.gray('To sync to GitHub later, run:'))
-    console.info(pc.cyan('  bun tko ios/setup-release --sync'))
+    console.info(pc.cyan('  bun tko ios setup-release --sync'))
   }
 }
 
@@ -573,7 +573,7 @@ async function checkSecrets() {
 
   if (missing > 0) {
     console.info()
-    console.info(pc.yellow(`Run ${pc.cyan('bun tko ios/setup-release')} to configure missing secrets`))
+    console.info(pc.yellow(`Run ${pc.cyan('bun tko ios setup-release')} to configure missing secrets`))
   }
 
   clack.outro(missing === 0 ? pc.green('All secrets configured!') : pc.yellow(`${missing} secrets missing`))

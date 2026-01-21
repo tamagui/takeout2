@@ -33,7 +33,7 @@
     "env:test": "NODE_ENV=test dotenvx run -f .env .env.development --",
     "env:update": "tko run env-update",
     "hot-update": "tko hot-update",
-    "icon:add": "bun tko icon/add-phosphor",
+    "icon:add": "bun tko icon add-phosphor",
     "ios": "one run:ios",
     "format:check": "oxfmt --check",
     "format": "oxfmt",

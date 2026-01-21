@@ -37,7 +37,7 @@ if (help) {
   console.info(`
 Uncloud Deployment Health Check
 
-Usage: bun tko uncloud/check-deployment [options]
+Usage: bun tko uncloud check-deployment [options]
 
 Options:
   --verbose, -v    Show detailed logs and container output

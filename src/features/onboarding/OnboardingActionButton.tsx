@@ -6,10 +6,7 @@ import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 
 import type { OnboardingActionButtonProps } from './types'
 
-export function OnboardingActionButton({
-  onPrev,
-  onNext,
-}: OnboardingActionButtonProps) {
+export function OnboardingActionButton({ onPrev, onNext }: OnboardingActionButtonProps) {
   const theme = useTheme()
 
   return (

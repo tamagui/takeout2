@@ -4,8 +4,8 @@
  * Fetches the icon SVG from Phosphor Icons and converts it to our format
  *
  * Usage:
- *   bun tko icon/add-phosphor Heart
- *   bun tko icon/add-phosphor User --weight=fill
+ *   bun tko icon add-phosphor Heart
+ *   bun tko icon add-phosphor User --weight=fill
  */
 
 import { mkdir, writeFile } from 'node:fs/promises'
@@ -148,12 +148,12 @@ async function addPhosphorIcon(name: string, weight: Weight = 'regular') {
 const args = process.argv.slice(2)
 if (args.length === 0) {
   console.error(
-    'Usage: bun tko icon/add-phosphor <IconName> [--weight=regular|bold|duotone|fill|light|thin]'
+    'Usage: bun tko icon add-phosphor <IconName> [--weight=regular|bold|duotone|fill|light|thin]'
   )
   console.error('')
   console.error('Examples:')
-  console.error('  bun tko icon/add-phosphor Heart')
-  console.error('  bun tko icon/add-phosphor User --weight=fill')
+  console.error('  bun tko icon add-phosphor Heart')
+  console.error('  bun tko icon add-phosphor User --weight=fill')
   process.exit(1)
 }
 

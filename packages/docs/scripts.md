@@ -21,10 +21,7 @@ bun tko ensure-port 8081
 bun tko clean
 
 # run scripts in a category
-bun tko web/build
-bun tko aws/health
-
-# alternate category syntax
+bun tko web build
 bun tko aws health
 ```
 

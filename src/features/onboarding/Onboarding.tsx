@@ -13,10 +13,10 @@ import {
 import Glint from '~/interface/effects/Glint'
 
 import { OnboardingActionButton } from './OnboardingActionButton'
+import { GRID_ROTATIONS, LAYOUT_CONFIGS } from './onboardingConfig'
 import { OnboardingPageIndicator } from './OnboardingPageIndicator'
 import { onboardingSlides } from './onboardingSlides'
 
-import { GRID_ROTATIONS, LAYOUT_CONFIGS } from './onboardingConfig'
 import type {
   OnboardingProps,
   OnboardingSlideData,

@@ -12,8 +12,8 @@ icons are stored in `src/interface/icons/phosphor/` and use the Phosphor icon li
 use the add-phosphor script to fetch and convert icons:
 
 ```bash
-bun tko icon/add-phosphor <IconName>
-bun tko icon/add-phosphor <IconName> --weight=fill
+bun tko icon add-phosphor <IconName>
+bun tko icon add-phosphor <IconName> --weight=fill
 ```
 
 ### weights
@@ -28,9 +28,9 @@ bun tko icon/add-phosphor <IconName> --weight=fill
 ### examples
 
 ```bash
-bun tko icon/add-phosphor Heart
-bun tko icon/add-phosphor ArrowUpRight
-bun tko icon/add-phosphor User --weight=fill
+bun tko icon add-phosphor Heart
+bun tko icon add-phosphor ArrowUpRight
+bun tko icon add-phosphor User --weight=fill
 ```
 
 ## browsing available icons

@@ -181,10 +181,10 @@ To add a new icon:
 
 ```bash
 # Add a regular icon
-bun tko icon/add-phosphor Heart
+bun tko icon add-phosphor Heart
 
 # Add a different weight (regular, bold, duotone, fill, light, thin)
-bun tko icon/add-phosphor User --weight=fill
+bun tko icon add-phosphor User --weight=fill
 ```
 
 Icons are automatically generated in `src/interface/icons/phosphor/` and can be

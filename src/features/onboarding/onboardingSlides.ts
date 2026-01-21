@@ -17,7 +17,8 @@ export const onboardingSlides: OnboardingSlideData[] = [
     id: 'universal',
     theme: 'blue',
     title: 'Universal',
-    description: 'Build once, deploy everywhere. iOS, Android, and Web from a single codebase.',
+    description:
+      'Build once, deploy everywhere. iOS, Android, and Web from a single codebase.',
     layout: 'rotated',
     features: [
       { Icon: GlobeIcon, title: 'Cross-platform' },
@@ -43,7 +44,8 @@ export const onboardingSlides: OnboardingSlideData[] = [
     id: 'stack',
     theme: 'green',
     title: 'Modern Stack',
-    description: 'Modern tools that work together seamlessly for the best developer experience.',
+    description:
+      'Modern tools that work together seamlessly for the best developer experience.',
     layout: 'stack',
     features: [
       { Icon: RocketIcon, title: 'One' },

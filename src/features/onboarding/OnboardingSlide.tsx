@@ -11,6 +11,7 @@ import { SizableText, useTheme, View, YStack, type ColorTokens } from 'tamagui'
 import Glint from '~/interface/effects/Glint'
 
 import { GRID_ROTATIONS, LAYOUT_CONFIGS } from './onboardingConfig'
+
 import type {
   AnimatedCardWrapperProps,
   AnimatedLayoutProps,

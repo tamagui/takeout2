@@ -20,11 +20,15 @@ export const {
   zero,
   ProvideZero: ProvideZeroWithoutAuth,
   zeroEvents,
+  preload,
 } = createZeroClient({
   models,
   schema,
   groupedQueries,
 })
+
+// re-export global run for convenience
+export { run } from 'over-zero'
 
 export const ProvideZero = ({ children }: { children: ReactNode }) => {
   const auth = useAuth()

@@ -21,10 +21,22 @@ import { createUseQuery } from './createUseQuery'
 import { createMutators } from './helpers/createMutators'
 import { prettyFormatZeroQuery } from './helpers/prettyFormatZeroQuery'
 import { registerQuery } from './queryRegistry'
+import { resolveQuery, type PlainQueryFn } from './resolveQuery'
+import { setCustomQueries } from './run'
 import { setAuthData, setSchema } from './state'
+import { setRunner } from './zeroRunner'
 
 import type { AuthData, GenericModels, GetZeroMutators, Where, ZeroEvent } from './types'
-import type { Row, Zero, ZeroOptions, Schema as ZeroSchema } from '@rocicorp/zero'
+import type {
+  HumanReadable,
+  Query,
+  Row,
+  Schema as ZeroSchema,
+  Zero,
+  ZeroOptions,
+} from '@rocicorp/zero'
+
+type PreloadOptions = { ttl?: 'always' | 'never' | number | undefined }
 
 export type GroupedQueries = Record<string, Record<string, (...args: any[]) => any>>
 
@@ -66,6 +78,9 @@ export function createZeroClient<
 
   // create the single shared CustomQuery registry
   const customQueries = defineQueries(wrappedNamespaces)
+
+  // register for global run() helper
+  setCustomQueries(customQueries)
 
   const DisabledContext = createContext(false)
 
@@ -204,7 +219,7 @@ export function createZeroClient<
   }
 
   const SetZeroInstance = () => {
-    const zero = useZero<Schema, ZeroMutators>()
+    const zeroInstance = useZero<Schema, ZeroMutators>()
 
     // TODO last hack zero wants us to use useZero but its a big migration
     // and has some downsides (global zero import leads to simpler code)
@@ -212,8 +227,10 @@ export function createZeroClient<
     // when we do change zero, this should be safe - that said we don't refresh
     // the browser for now, but we also don't handle new auth keys in general
     // we'll need to add that soon
-    if (zero !== latestZeroInstance) {
-      latestZeroInstance = zero
+    if (zeroInstance !== latestZeroInstance) {
+      latestZeroInstance = zeroInstance
+      // register runner for global run() helper
+      setRunner((query, options) => zeroInstance.run(query as any, options))
     }
 
     return null
@@ -248,11 +265,37 @@ export function createZeroClient<
     }
   )
 
+  // preload data for a query into cache without materializing
+  // uses same function signature as useQuery
+  function preload<TArg, TTable extends keyof Schema['tables'] & string, TReturn>(
+    fn: PlainQueryFn<TArg, Query<TTable, Schema, TReturn>>,
+    params: TArg,
+    options?: PreloadOptions
+  ): { cleanup: () => void; complete: Promise<void> }
+  function preload<TTable extends keyof Schema['tables'] & string, TReturn>(
+    fn: PlainQueryFn<void, Query<TTable, Schema, TReturn>>,
+    options?: PreloadOptions
+  ): { cleanup: () => void; complete: Promise<void> }
+  function preload(
+    fnArg: any,
+    paramsOrOptions?: any,
+    optionsArg?: PreloadOptions
+  ): { cleanup: () => void; complete: Promise<void> } {
+    const hasParams =
+      optionsArg !== undefined || (paramsOrOptions && !('ttl' in paramsOrOptions))
+    const params = hasParams ? paramsOrOptions : undefined
+    const options = hasParams ? optionsArg : paramsOrOptions
+
+    const queryRequest = resolveQuery({ customQueries, fn: fnArg, params })
+    return zero.preload(queryRequest as any, options)
+  }
+
   return {
     zeroEvents,
     ProvideZero,
     useQuery,
     usePermission,
     zero,
+    preload,
   }
 }

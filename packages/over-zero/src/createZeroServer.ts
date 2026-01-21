@@ -8,7 +8,9 @@ import { Pool } from 'pg'
 import { createPermissions } from './createPermissions'
 import { createMutators } from './helpers/createMutators'
 import { isInZeroMutation, mutatorContext } from './helpers/mutatorContext'
+import { setCustomQueries } from './run'
 import { setAuthData, setSchema } from './state'
+import { setRunner } from './zeroRunner'
 
 import type {
   AsyncAction,
@@ -193,6 +195,18 @@ export function createZeroServer<
       return cb(tx.query)
     }) as any
   }
+
+  // register for global run() helper
+  if (queries) {
+    setCustomQueries(queries)
+  }
+
+  // server uses transaction-based execution
+  setRunner((queryObj) => {
+    return transaction(async (tx) => {
+      return tx.run(queryObj as any)
+    }) as any
+  })
 
   // This is needed temporarily and will be cleaned up in the future.
   const dummyTransactionInput: TransactionProviderInput = {

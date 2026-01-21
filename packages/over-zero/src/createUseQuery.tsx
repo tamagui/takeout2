@@ -2,7 +2,7 @@ import { useQuery as zeroUseQuery } from '@rocicorp/zero/react'
 import { use, useMemo, type Context } from 'react'
 
 import { useZeroDebug } from './helpers/useZeroDebug'
-import { getQueryName } from './queryRegistry'
+import { resolveQuery, type PlainQueryFn } from './resolveQuery'
 
 import type {
   AnyQueryRegistry,
@@ -19,10 +19,7 @@ export type UseQueryOptions = {
 type QueryResultDetails = ReturnType<typeof zeroUseQuery>[1]
 export type QueryResult<TReturn> = readonly [HumanReadable<TReturn>, QueryResultDetails]
 
-export type PlainQueryFn<
-  TArg = any,
-  TReturn extends Query<any, any, any> = Query<any, any, any>,
-> = (args: TArg) => TReturn
+export type { PlainQueryFn }
 
 export type UseQueryHook<Schema extends ZeroSchema> = {
   // overload 1: plain function with params
@@ -51,15 +48,6 @@ export function createUseQuery<Schema extends ZeroSchema>({
     const [fn, paramsOrOptions, optionsArg] = args
 
     const { queryRequest, options } = useMemo(() => {
-      const queryName = getQueryName(fn)
-      if (!queryName) {
-        const fnName = fn?.name || 'anonymous'
-        throw new Error(
-          `Query function '${fnName}' not registered. ` +
-            `Ensure it is exported from a queries file and passed to createZeroClient via groupedQueries.`
-        )
-      }
-
       // determine if this is with params or no params
       const hasParams =
         optionsArg !== undefined ||
@@ -71,19 +59,7 @@ export function createUseQuery<Schema extends ZeroSchema>({
       const params = hasParams ? paramsOrOptions : undefined
       const opts = hasParams ? optionsArg : paramsOrOptions
 
-      // look up the CustomQuery from the shared registry
-      // queryName is "namespace.name" format, e.g., "user.userById"
-      const [namespace, name] = queryName.split('.', 2)
-      const customQuery = (customQueries as any)[namespace]?.[name]
-
-      if (!customQuery) {
-        throw new Error(
-          `CustomQuery '${queryName}' not found. ` +
-            `Check that the query is exported and the namespace/name matches.`
-        )
-      }
-
-      const queryRequest = params !== undefined ? customQuery(params) : customQuery()
+      const queryRequest = resolveQuery({ customQueries, fn, params })
 
       return { queryRequest, options: opts }
     }, [fn, paramsOrOptions, optionsArg])

@@ -9,15 +9,16 @@ export default {
 
   resolve: {
     alias: [
-      // use react-native-web-lite instead of react-native-web (~50% smaller)
+      // use react-native-web-lite/without-animated instead of react-native-web
+      // this stubs out VirtualizedList/FlatList/SectionList which adds ~50KB
       // must come before other aliases as array order matters
       {
         find: /^react-native$/,
-        replacement: '@tamagui/react-native-web-lite',
+        replacement: '@tamagui/react-native-web-lite/without-animated',
       },
       {
         find: /^react-native-web$/,
-        replacement: '@tamagui/react-native-web-lite',
+        replacement: '@tamagui/react-native-web-lite/without-animated',
       },
       {
         find: 'react-native/package.json',

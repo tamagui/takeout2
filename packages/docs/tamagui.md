@@ -464,10 +464,6 @@ When building UI components, prefer these project-specific implementations over 
 - **Tabs:** Use the custom `Tabs` component
 - **Popover:** Use the custom `Popover` component
 
-### Image Handling
-
-- Use `@tamagui/image-next` for Next.js compatibility
-
 ### Component Hierarchy
 
 1. Check if a project-specific component exists in `src/interface` first

@@ -121,7 +121,7 @@ capabilities:
 
 **Media & Graphics**
 
-- @tamagui/image-next for optimized image loading (wraps expo-image)
+- New @tamagui/image web-aligned, expo-image on native
 - expo-image-picker for camera and photo library access
 - react-native-svg for SVG rendering
 - @tamagui/linear-gradient for gradient support

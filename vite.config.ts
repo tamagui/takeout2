@@ -106,15 +106,10 @@ export default {
     tamaguiPlugin({
       optimize: true,
       disableExtraction: process.env.NODE_ENV !== 'production',
-      disableServerOptimization: true,
       useReactNativeWebLite: true,
       components: ['tamagui'],
       config: './src/tamagui/tamagui.config.ts',
       outputCSS: './src/tamagui/tamagui.css',
-      themeBuilder: {
-        input: './src/tamagui/themes-in.ts',
-        output: './src/tamagui/themes-out.ts',
-      },
     }),
 
     one({
@@ -135,27 +130,25 @@ export default {
         },
       },
 
-      native: process.env.DISABLE_METRO
-        ? {}
-        : {
-            bundler: 'metro',
-            bundlerOptions: {
-              watchman: false, // had some slowness using this
-              babelConfigOverrides: (config) => {
-                return {
-                  ...config,
-                  plugins: [
-                    ...(config?.plugins || []),
-                    // Hot Updater (React Native OTA solution)
-                    // https://github.com/gronxb/hot-updater/blob/main/packages/hot-updater/src/plugins/babel.ts
-                    'hot-updater/babel-plugin',
-                    // reanimated worklet compilation - MUST be last
-                    'react-native-reanimated/plugin',
-                  ],
-                }
-              },
-            },
+      native: {
+        bundler: 'metro',
+        bundlerOptions: {
+          watchman: false, // had some slowness
+          babelConfigOverrides: (config) => {
+            return {
+              ...config,
+              plugins: [
+                ...(config?.plugins || []),
+                // Hot Updater (React Native OTA solution)
+                // https://github.com/gronxb/hot-updater/blob/main/packages/hot-updater/src/plugins/babel.ts
+                'hot-updater/babel-plugin',
+                // reanimated worklet compilation - MUST be last
+                'react-native-reanimated/plugin',
+              ],
+            }
           },
+        },
+      },
 
       router: {
         experimental: {

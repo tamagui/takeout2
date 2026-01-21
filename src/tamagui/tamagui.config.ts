@@ -9,7 +9,7 @@ import { createTamagui } from 'tamagui'
 import { animationsRoot } from './animationsRoot'
 import { breakpoints } from './breakpoints'
 import { fonts } from './fonts'
-import { themes as themesJS } from './themes-out'
+import { themes as themesJS } from './themes'
 
 export const config = createTamagui({
   animations: animationsRoot,

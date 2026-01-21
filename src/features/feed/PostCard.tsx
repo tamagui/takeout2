@@ -7,6 +7,7 @@ import { useAuth } from '~/features/auth/client/authClient'
 import { useUser } from '~/hooks/useUser'
 import { Link } from '~/interface/app/Link'
 import { Avatar } from '~/interface/avatars/Avatar'
+import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { ChatCircleIcon } from '~/interface/icons/phosphor/ChatCircleIcon'
 import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
@@ -118,16 +119,21 @@ export const PostCard = memo(({ post }: PostCardProps) => {
               />
             </Pressable>
           </View>
-          <Link href={`/home/feed/post/${post.id}?username=${username}`}>
-            <XStack items="center" gap="$2" pt="$2">
-              <ChatCircleIcon size={26} color="$color11" />
-              {typeof post.commentCount === 'number' && post.commentCount > 0 && (
-                <SizableText size="$4" color="$color11" fontWeight="bold">
-                  {post.commentCount}
-                </SizableText>
-              )}
-            </XStack>
-          </Link>
+          <XStack pt="$2">
+            <Link href={`/home/feed/post/${post.id}?username=${username}`}>
+              <ButtonSimple
+                variant="transparent"
+                size="medium"
+                icon={<ChatCircleIcon size={22} color="$color11" />}
+              >
+                {typeof post.commentCount === 'number' && post.commentCount > 0 && (
+                  <ButtonSimple.Text color="$color11" fontWeight="600">
+                    {post.commentCount}
+                  </ButtonSimple.Text>
+                )}
+              </ButtonSimple>
+            </Link>
+          </XStack>
         </View>
       </View>
     </View>

@@ -35,7 +35,6 @@ export const Shimmer = memo(() => {
   return (
     <XStack
       opacity={1}
-      fullscreen
       justify="center"
       items="center"
       contain="paint layout"

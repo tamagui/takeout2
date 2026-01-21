@@ -18,10 +18,12 @@ export const HomePage = memo(() => {
           <YStack
             key="home-shimmer"
             transition="200ms"
+            enterStyle={{
+              opacity: 0,
+            }}
             exitStyle={{
               opacity: 0,
             }}
-            opacity={1}
             z={999}
             position="absolute"
             t={60}

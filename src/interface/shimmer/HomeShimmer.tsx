@@ -31,7 +31,7 @@ const MessageShimmer = () => {
   return (
     <XStack items="center" justify="space-between" gap={12}>
       <CircleShimmer size={33} />
-      <YStack flex={1} gap={8}>
+      <YStack flex={1} gap="$2">
         <LineShimmer width={120} height={18} />
         <LineShimmer width={80} height={14} />
       </YStack>
@@ -43,7 +43,7 @@ const ShortMessageShimmer = () => {
   return (
     <XStack items="center" justify="space-between" gap={12}>
       <CircleShimmer size={33} />
-      <YStack flex={1} gap={8}>
+      <YStack flex={1} gap="$2">
         <LineShimmer width={180} height={14} />
         <LineShimmer width={120} height={14} />
       </YStack>
@@ -55,7 +55,7 @@ const LongMessageShimmer = () => {
   return (
     <XStack items="center" justify="space-between" gap={12}>
       <CircleShimmer size={33} />
-      <YStack flex={1} gap={8}>
+      <YStack flex={1} gap="$2">
         <LineShimmer width={180} height={14} />
         <LineShimmer width={120} height={14} />
         <LineShimmer width={80} height={14} />
@@ -77,7 +77,7 @@ export const HomeShimmer = () => {
 
 const FeedCardsShimmer = () => {
   return (
-    <YStack gap={12} p={16}>
+    <YStack gap="$4" p="$4">
       {Array.from({ length: 2 }).map((_, index) => (
         <CardShimmer key={index} />
       ))}
@@ -99,17 +99,12 @@ const CardAvatarShimmer = () => {
 
 const CardShimmer = () => {
   return (
-    <YStack rounded={16} gap={12}>
-      {/* card header with avatar and name */}
-      <CardAvatarShimmer />
-
-      {/* card image placeholder */}
-      <View bg="$color02" height={300} rounded={12} overflow="hidden">
+    <YStack rounded="$4" gap="$4" justify="center" items="center">
+      <View gap="$4" height={300} width="100%" maxW={500} rounded="$4" overflow="hidden">
+        <CardAvatarShimmer />
         <Shimmer />
       </View>
-
-      {/* card actions */}
-      <XStack gap={16} pt={4}>
+      <XStack gap="$4">
         <LineShimmer width={60} height={24} />
         <LineShimmer width={60} height={24} />
         <LineShimmer width={60} height={24} />

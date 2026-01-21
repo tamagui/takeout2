@@ -33,11 +33,13 @@ export function AuthAndOnboardingLayout() {
         position="relative"
         boxShadow="0 4px 24px $shadow4"
         $maxSM={{ minH: 'auto', mt: '$6' }}
+        $theme-dark={{
+          borderWidth: 0.5,
+          borderColor: '$borderColor',
+        }}
       >
-        {/* left panel - onboarding (persists across all auth routes) */}
         <Onboarding />
 
-        {/* right panel - auth content (changes based on route) */}
         <YStack flex={1} p="$3" $maxSM={{ p: 0 }}>
           <Slot />
         </YStack>

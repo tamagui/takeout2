@@ -112,20 +112,19 @@ export const SignupPage = () => {
 
   return (
     <YStack
+      flex={1}
+      flexBasis="auto"
       gap="$5"
+      p="$10"
       width="100%"
       height="100%"
       items="center"
-      maxW={340}
       transition="medium"
       enterStyle={{ opacity: 0, y: 10 }}
       exitStyle={{ opacity: 0, y: -10 }}
+      $maxSM={{ p: '$6' }}
     >
-      <XStack position="absolute" t={0} l={0}>
-        <HeaderBackButton />
-      </XStack>
-
-      <YStack flex={1} items="center" justify="center" gap="$4">
+      <YStack flex={1} flexBasis="auto" gap="$4" width="100%">
         <YStack gap="$4" width="100%" items="center">
           <Circle size={52} bg="$color2" borderWidth={0.5} borderColor="$color3">
             <Icon size={28} color="$color11" />

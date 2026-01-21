@@ -23,7 +23,7 @@ export function AuthAndOnboardingLayout() {
   }
 
   return (
-    <XStack flex={1} items="center" justify="center" p="$4">
+    <XStack flex={1} items="center" justify="center" p="$4" $maxSM={{ p: 0 }}>
       <XStack
         width="100%"
         maxW={1000}
@@ -32,12 +32,13 @@ export function AuthAndOnboardingLayout() {
         overflow="hidden"
         position="relative"
         boxShadow="0 4px 24px $shadow4"
+        $maxSM={{ minH: 'auto', mt: '$6' }}
       >
         {/* left panel - onboarding (persists across all auth routes) */}
         <Onboarding />
 
         {/* right panel - auth content (changes based on route) */}
-        <YStack flex={1} justify="center" items="center" p="$6">
+        <YStack flex={1} p="$3" $maxSM={{ p: 0 }}>
           <Slot />
         </YStack>
       </XStack>

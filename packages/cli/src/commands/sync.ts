@@ -26,24 +26,20 @@ const TAKEOUT_FILE = '.takeout'
 
 function getSyncPrompt(): string {
   try {
-    // find package root by looking for package.json
+    // find monorepo root by looking for packages/docs
     const currentDir = dirname(fileURLToPath(import.meta.url))
-    let packageRoot = currentDir
+    let monorepoRoot = currentDir
 
-    // go up directories until we find package.json with name @take-out/cli
-    while (packageRoot !== parse(packageRoot).root) {
-      const pkgPath = join(packageRoot, 'package.json')
-      if (existsSync(pkgPath)) {
-        const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'))
-        if (pkg.name === '@take-out/cli') {
-          break
-        }
+    // go up directories until we find packages/docs/sync-prompt.md
+    while (monorepoRoot !== parse(monorepoRoot).root) {
+      const promptPath = join(monorepoRoot, 'packages', 'docs', 'sync-prompt.md')
+      if (existsSync(promptPath)) {
+        return readFileSync(promptPath, 'utf-8')
       }
-      packageRoot = dirname(packageRoot)
+      monorepoRoot = dirname(monorepoRoot)
     }
 
-    const promptPath = join(packageRoot, 'docs', 'sync-prompt.md')
-    return readFileSync(promptPath, 'utf-8')
+    throw new Error('Could not find sync-prompt.md in packages/docs')
   } catch (error) {
     throw new Error(
       `Could not load sync prompt: ${error instanceof Error ? error.message : 'Unknown error'}`
@@ -103,70 +99,98 @@ export const syncCommand = defineCommand({
     name: 'sync',
     description: 'Sync your fork with the latest Takeout repository',
   },
-  async run() {
+  args: {
+    auto: {
+      type: 'boolean',
+      description: 'Auto-run with claude-code without prompts (for non-TTY environments)',
+      default: false,
+    },
+    print: {
+      type: 'boolean',
+      description: 'Print the sync prompt and exit',
+      default: false,
+    },
+  },
+  async run({ args }) {
+    const isAuto = args.auto
+    const isPrint = args.print
     showStep('Takeout Repository Sync')
     console.info()
 
-    showInfo('Takeout sync uses AI to intelligently merge upstream changes')
-    console.info()
-    console.info(pc.gray('How it works:'))
-    console.info(pc.gray('  • Analyzes commits from upstream Takeout repository'))
-    console.info(pc.gray('  • Determines which changes are relevant to your fork'))
-    console.info(pc.gray('  • Applies changes while preserving your customizations'))
-    console.info(pc.gray('  • Handles package ejection automatically'))
-    console.info(pc.gray('  • Asks for your input when decisions are needed'))
-    console.info()
+    if (!isAuto && !isPrint) {
+      showInfo('Takeout sync uses AI to intelligently merge upstream changes')
+      console.info()
+      console.info(pc.gray('How it works:'))
+      console.info(pc.gray('  • Analyzes commits from upstream Takeout repository'))
+      console.info(pc.gray('  • Determines which changes are relevant to your fork'))
+      console.info(pc.gray('  • Applies changes while preserving your customizations'))
+      console.info(pc.gray('  • Handles package ejection automatically'))
+      console.info(pc.gray('  • Asks for your input when decisions are needed'))
+      console.info()
+    }
 
     // check what tools are available
     const hasClaudeCode = checkToolAvailable('claude')
     const hasCursor = checkToolAvailable('cursor-agent')
     const hasAider = checkToolAvailable('aider')
 
-    const options: Array<{
-      value: string
-      label: string
-      hint: string
-    }> = []
+    // handle --auto mode
+    let choice: string
+    if (isAuto) {
+      if (!hasClaudeCode) {
+        showError('--auto requires claude CLI to be installed')
+        process.exit(1)
+      }
+      choice = 'claude-code'
+    } else if (isPrint) {
+      choice = 'show-prompt'
+    } else {
+      const options: Array<{
+        value: string
+        label: string
+        hint: string
+      }> = []
 
-    if (hasClaudeCode) {
+      if (hasClaudeCode) {
+        options.push({
+          value: 'claude-code',
+          label: 'Claude Code (recommended)',
+          hint: 'Run sync automatically with Claude Code CLI',
+        })
+      }
+
+      if (hasCursor) {
+        options.push({
+          value: 'cursor',
+          label: 'Cursor Agent',
+          hint: 'Run sync automatically with Cursor CLI',
+        })
+      }
+
+      if (hasAider) {
+        options.push({
+          value: 'aider',
+          label: 'Aider',
+          hint: 'Run sync automatically with Aider CLI',
+        })
+      }
+
       options.push({
-        value: 'claude-code',
-        label: 'Claude Code (recommended)',
-        hint: 'Run sync automatically with Claude Code CLI',
+        value: 'show-prompt',
+        label: 'Show prompt (copy & paste manually)',
+        hint: 'Display the full prompt to use with any LLM',
       })
-    }
 
-    if (hasCursor) {
-      options.push({
-        value: 'cursor',
-        label: 'Cursor Agent',
-        hint: 'Run sync automatically with Cursor CLI',
-      })
-    }
+      choice = await promptSelect<string>('How would you like to sync?', options)
 
-    if (hasAider) {
-      options.push({
-        value: 'aider',
-        label: 'Aider',
-        hint: 'Run sync automatically with Aider CLI',
-      })
-    }
+      if (choice === 'cancel') {
+        console.info()
+        showInfo('Sync cancelled')
+        return
+      }
 
-    options.push({
-      value: 'show-prompt',
-      label: 'Show prompt (copy & paste manually)',
-      hint: 'Display the full prompt to use with any LLM',
-    })
-
-    const choice = await promptSelect<string>('How would you like to sync?', options)
-
-    if (choice === 'cancel') {
       console.info()
-      showInfo('Sync cancelled')
-      return
     }
-
-    console.info()
 
     // fetch upstream to get the target SHA before syncing
     console.info(pc.dim('Fetching upstream repository...'))
@@ -202,18 +226,21 @@ export const syncCommand = defineCommand({
       } else if (choice === 'claude-code') {
         showInfo('Starting Claude Code with sync prompt...')
         console.info()
-        console.info(
-          pc.dim(
-            'Note: Claude Code will run in headless mode and make changes automatically.'
-          )
-        )
-        console.info(pc.dim('You will be asked to confirm important decisions.'))
-        console.info()
 
-        const shouldContinue = await confirmContinue('Continue with Claude Code?', true)
-        if (!shouldContinue) {
-          showInfo('Sync cancelled')
-          return
+        if (!isAuto) {
+          console.info(
+            pc.dim(
+              'Note: Claude Code will run in headless mode and make changes automatically.'
+            )
+          )
+          console.info(pc.dim('You will be asked to confirm important decisions.'))
+          console.info()
+
+          const shouldContinue = await confirmContinue('Continue with Claude Code?', true)
+          if (!shouldContinue) {
+            showInfo('Sync cancelled')
+            return
+          }
         }
 
         // write prompt to temp file to avoid shell escaping issues

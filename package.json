@@ -52,7 +52,7 @@
     "test:unit": "bun run:dev vitest run -c ./src/test/vitest.config.ts",
     "test": "tko run test:unit test:integration",
     "up-dep": "tko update-deps",
-    "up": "tko upgrade",
+    "up": "tko up",
     "watch:types": "tko run typecheck --watch",
     "watch:zero:generate": "bun zero:generate --watch",
     "watch": "tko run watch watch:types watch:zero:generate",

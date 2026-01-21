@@ -35,7 +35,7 @@ const techLogos = [
 const HeroTitle = styled(H1, {
   letterSpacing: -1,
   color: '$color12',
-  size: '$12',
+  size: '$11',
   fontWeight: '800',
   mr: -50,
 
@@ -45,15 +45,19 @@ const HeroTitle = styled(H1, {
 })
 
 const HeroSubtitle = styled(Paragraph, {
-  color: '$color11',
+  color: '$color10',
   maxW: 480,
   size: '$6',
 })
 
 const HighlightText = styled(Text, {
   render: 'span',
-  letterSpacing: -1,
-  color: '$blue11',
+  '$platform-web': {
+    backgroundImage: 'linear-gradient(20deg, var(--yellow9) 0%, var(--red9) 100%)',
+    backgroundClip: 'text',
+    WebkitBackgroundClip: 'text',
+    color: 'transparent',
+  },
 })
 
 const CommandBox = styled(XStack, {
@@ -360,7 +364,13 @@ function CopyCommand() {
 
 export function HeroSection() {
   return (
-    <YStack items="center" gap="$8" px="$4" minH="90vh" justify="center">
+    <YStack
+      items="center"
+      gap="$8"
+      px="$4"
+      minH="calc(min(90vh, 900px))"
+      justify="center"
+    >
       <XStack
         gap="$8"
         items="center"
@@ -375,28 +385,24 @@ export function HeroSection() {
         <YStack gap="$5" flex={1} minW={300} maxW={520} items="flex-start">
           <YStack gap="$1">
             <HeroTitle>
-              Less code,
-              <br /> faster iteration,
-              <br />
-              <HighlightText render="span">higher quality.</HighlightText>
+              The only startup starter that gives you{' '}
+              <HighlightText render="span">an actual edge</HighlightText>.
             </HeroTitle>
           </YStack>
 
           <HeroSubtitle>
-            The complete startup starter. Takeout 2 is the fastest way to deploy{' '}
-            <Text color="$color12">high quality</Text> cross-platform projects with less
-            code and complexity — iOS, Android, and web.
+            We agree — most starter kits suck. Unlike others, Takeout has novel tech,
+            real-world production deploys, and is{' '}
+            <Link href="/docs/changelog">updated like crazy</Link>. It's{' '}
+            <Text fontWeight="600" color="$color11">
+              the highest quality, fastest starter
+            </Text>{' '}
+            for cross-platform React and React Native.
           </HeroSubtitle>
 
           <XStack gap="$3" mt="$2" flexWrap="wrap" items="center">
             <Link href="/docs/introduction">
-              <ButtonSimple
-                cursor="pointer"
-                theme="accent"
-                size="large"
-                icon={ArrowRightIcon}
-                iconAfter
-              >
+              <ButtonSimple theme="accent" size="large" icon={ArrowRightIcon} iconAfter>
                 Docs
               </ButtonSimple>
             </Link>
@@ -404,8 +410,8 @@ export function HeroSection() {
             <CopyCommand />
           </XStack>
 
-          <Paragraph size="$5" color="$color10">
-            Get access to the{' '}
+          <Paragraph size="$6" color="$color10">
+            Check out the{' '}
             <Link href="https://tamagui.dev/takeout" target="_blank">
               Pro version
             </Link>{' '}
@@ -470,35 +476,6 @@ export function HeroSection() {
           $md={{ items: 'flex-end' }}
           position="relative"
         >
-          {/* ambient glow at corners */}
-          <YStack
-            position="absolute"
-            t={-40}
-            l={-30}
-            width={180}
-            height={120}
-            rounded={999}
-            opacity={0.25}
-            style={{
-              background:
-                'radial-gradient(ellipse at center, rgba(251, 146, 60, 0.8) 0%, rgba(249, 115, 22, 0.5) 40%, transparent 70%)',
-              filter: 'blur(35px)',
-            }}
-          />
-          <YStack
-            position="absolute"
-            b={-45}
-            r={-25}
-            width={200}
-            height={130}
-            rounded={999}
-            opacity={0.275}
-            style={{
-              background:
-                'radial-gradient(ellipse at center, rgba(251, 146, 60, 0.75) 0%, rgba(249, 115, 22, 0.45) 50%, transparent 80%)',
-              filter: 'blur(40px)',
-            }}
-          />
           <HeroTerminal />
         </YStack>
       </XStack>

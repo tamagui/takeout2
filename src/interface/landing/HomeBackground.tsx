@@ -29,7 +29,7 @@ export function HomeBackground() {
         l={0}
         r={0}
         b={0}
-        opacity={0.15}
+        opacity={0.1}
         $theme-light={{
           opacity: 0.1,
           filter: 'invert(1)',
@@ -52,8 +52,8 @@ export function HomeBackground() {
         pointerEvents="none"
       >
         <GradientOrb
-          width={800}
-          height={800}
+          width={1200}
+          height={1200}
           t={-300}
           l={-200}
           style={{
@@ -62,8 +62,8 @@ export function HomeBackground() {
           }}
         />
         <GradientOrb
-          width={600}
-          height={600}
+          width={800}
+          height={800}
           t={300}
           r={-200}
           style={{

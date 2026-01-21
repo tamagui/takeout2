@@ -14,16 +14,14 @@ const SectionContainer = styled(YStack, {
 })
 
 const SectionHeading = styled(H2, {
-  fontSize: 13,
+  size: '$6',
   fontWeight: '600',
-  letterSpacing: 2,
   color: '$color10',
-  textTransform: 'uppercase',
 })
 
 const ContentParagraph = styled(Paragraph, {
-  size: '$5',
-  color: '$color11',
+  size: '$6',
+  color: '$color10',
 })
 
 const GoalTitle = styled(H4, {
@@ -55,7 +53,8 @@ const SectionDivider = styled(XStack, {
 const DividerLine = styled(YStack, {
   flex: 1,
   height: 1,
-  bg: '$color4',
+  bg: '$color3',
+  mx: '$6',
 })
 
 const GoalItem = styled(YStack, {
@@ -101,13 +100,8 @@ const ContentTitle = styled(H1, {
 
 const GradientText = styled(Text, {
   fontWeight: '800',
+  color: '$color10',
   render: 'span',
-  '$platform-web': {
-    background: 'linear-gradient(135deg, #F97316 0%, #FB923C 50%, #FDBA74 100%)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    backgroundClip: 'text',
-  },
 })
 
 export function ContentSection() {
@@ -120,9 +114,8 @@ export function ContentSection() {
       </ContentTitle>
 
       {/* tldr */}
-      <ContentParagraph size="$6">
-        <Strong fontWeight="700">TL;DR:</Strong> Takeout is the result of a many-year
-        effort to create{' '}
+      <ContentParagraph color="$color12">
+        <Strong>TL;DR:</Strong> Takeout is the result of a many-year effort to create{' '}
         <Strong>
           a new stack, with some new frontend tech, that dramatically simplifies
           cross-platform development
@@ -131,18 +124,17 @@ export function ContentSection() {
         data, and UI.
       </ContentParagraph>
 
-      <ContentParagraph size="$6">
+      <ContentParagraph>
         Today,{' '}
         <Link href="https://tamagui.dev/takeout" hideExternalIcon>
           <InlineLink fontWeight="600">we're releasing Takeout 2 RC 1</InlineLink>
         </Link>
-        . Takeout aims to bring more Rails-like cohesion to cross-platform React and React
-        Native while also improving the native-feel it can achieve.
+        , bringing a more Rails-like cohesion to cross-platform React and React Native.
       </ContentParagraph>
 
-      <ContentParagraph size="$6">
+      <ContentParagraph>
         Even when sharing a lot of code you can get perfect Lighthouse performance scores
-        with ease, like this very page does, thanks to our libraries{' '}
+        with ease, like this very page, thanks to our libraries{' '}
         <Link href="https://tamagui.dev" target="_blank" hideExternalIcon>
           <InlineLink>Tamagui</InlineLink>
         </Link>{' '}
@@ -252,11 +244,10 @@ export function ContentSection() {
 
           <ContentParagraph>
             Vite simply mogs any other bundler for web, we love how fast and flexible it
-            is. So, One ported Expo Router to Vite, and then added a ton of stuff needed
-            for high performance web - especially loaders, render modes, smart preloading
-            and prefetching, and bundle size improvements. Server render or statically
-            generate some pages, keep others client-only, all from the same routing
-            definitions. Plus, easy API routes, great type generation, and a Hono
+            is. One ported Expo Router to Vite, then added a ton of stuff needed for high
+            performance web - loaders, render modes, smart preloading and prefetching, and
+            bundle size improvements. SSR or statically generate some pages, keep others
+            client-only, easy. Plus, API routes, great type generation, and a Hono
             production server included.
           </ContentParagraph>
 
@@ -264,7 +255,7 @@ export function ContentSection() {
             With the new <Strong>Metro-mode</Strong>, you get Vite's simplicity for web
             while optionally running Metro for native. One is now stable for production
             use, and{' '}
-            <Link href="https://onestack.dev" hideExternalIcon>
+            <Link href="https://onestack.dev/blog/version-one-rc1" hideExternalIcon>
               <InlineLink fontWeight="600">we just released v1 RC1</InlineLink>
             </Link>
             .
@@ -340,21 +331,21 @@ export function ContentSection() {
           <TechTitle>Agents</TechTitle>
           <ContentParagraph>
             Our goal was simple - point a coding agent at Takeout and prompt an entire app
-            into production in hours. We have a powerful new{' '}
-            <CodeInline>takeout</CodeInline> CLI that work alongside some seriously
-            well-structured scripts and docs that all together makes one-shotting features
-            and fixes an expectation.
+            into production in hours. <strong>Over 25 hand-written skills,</strong>{' '}
+            essential MCP integrations, integration tests, an amazing{' '}
+            <CodeInline>takeout</CodeInline> CLI, and a ton of well-structured scripts
+            make Claude Code amazing at one-shotting almost anything.
           </ContentParagraph>
         </TechCard>
 
         <TechCard>
-          <TechTitle>And more</TechTitle>
+          <TechTitle>And a lot of glue</TechTitle>
           <ContentParagraph>
-            So much more. Tons of scripts, helpers, hooks, and libraries.{' '}
-            <Strong>Better Auth</Strong> integration. Our favorite{' '}
-            <Strong>native dependencies</Strong> for better native UI and functionality.
-            And the choice to deploy with either <Strong>Uncloud</Strong> or{' '}
-            <Strong>SST</Strong> out of the box.
+            Years of helpers, libarries, scripts, hooks, etc. Bun for install and
+            scripting. <Strong>Better Auth</Strong> for auth. Some top-tier{' '}
+            <Strong>native dependencies</Strong> for UI and functionality. And the choice
+            to deploy with either <Strong>Uncloud</Strong> or <Strong>SST</Strong>{' '}
+            infra-as-code out of the box.
           </ContentParagraph>
         </TechCard>
       </YStack>

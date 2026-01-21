@@ -50,7 +50,7 @@ type ButtonVariants =
 
 const context = createStyledContext({
   active: false,
-  cursor: 'default',
+  cursor: 'pointer',
   size: 'medium' as ButtonSizes,
   fontFamily: '$mono' as FontFamilyTokens,
   circular: false,

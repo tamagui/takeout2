@@ -4,7 +4,7 @@ import { Link } from '~/interface/app/Link'
 
 export const ProFreeButtons = () => {
   return (
-    <Theme name="accent">
+    <Theme name="black">
       <XGroup
         rounded="$3"
         borderWidth={0.5}
@@ -34,7 +34,7 @@ export const ProFreeButtons = () => {
                 bg: '$color5',
               }}
             >
-              <SizableText size="$3" fontFamily="$mono" color="$color11">
+              <SizableText size="$4" fontFamily="$mono" color="$color11">
                 Pro
               </SizableText>
             </XStack>
@@ -62,7 +62,7 @@ export const ProFreeButtons = () => {
                 bg: '$color5',
               }}
             >
-              <SizableText size="$3" fontFamily="$mono" color="$color11">
+              <SizableText size="$4" fontFamily="$mono" color="$color11">
                 Free
               </SizableText>
             </XStack>

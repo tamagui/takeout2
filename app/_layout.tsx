@@ -1,12 +1,10 @@
 import './root.css'
 
-// import '~/interface/fonts/landing-fonts.css' // disabled for LCP optimization
-
 import { Slot, Stack } from 'one'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import { SiteRootLayout } from '~/features/site/ui/SiteRootLayout'
-import { HomeBackground } from '~/interface/landing'
+import { HomeBackground } from '~/interface/landing/HomeBackground'
 import { GlobalTooltipProvider } from '~/interface/tooltip/TooltipSimple'
 import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
 

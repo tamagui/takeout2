@@ -1,7 +1,8 @@
 import { YStack } from 'tamagui'
 
 import { HeadInfo } from '~/interface/app/HeadInfo'
-import { ContentSection, HeroSection } from '~/interface/landing'
+import { ContentSection } from '~/interface/landing/ContentSection'
+import { HeroSection } from '~/interface/landing/HeroSection'
 
 export function IndexPage() {
   return (

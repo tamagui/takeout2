@@ -67,10 +67,7 @@ const LongMessageShimmer = () => {
 export const HomeShimmer = () => {
   return (
     <ShimmerProvider duration={1500}>
-      <YStack bg="$background" height="100%" width="100%">
-        {/* feed cards shimmer */}
-        <FeedCardsShimmer />
-      </YStack>
+      <FeedCardsShimmer />
     </ShimmerProvider>
   )
 }

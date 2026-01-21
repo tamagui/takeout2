@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { AnimatePresence, Spinner, YStack } from 'tamagui'
 
 import { HomePagination } from '~/features/feed/HomePagination'
@@ -17,7 +17,7 @@ export const HomePage = memo(() => {
         {isLoading && (
           <YStack
             key="home-shimmer"
-            transition="200ms"
+            transition="medium"
             enterStyle={{
               opacity: 0,
             }}
@@ -37,6 +37,13 @@ export const HomePage = memo(() => {
       </AnimatePresence>
 
       <YStack
+        transition="medium"
+        enterStyle={{
+          opacity: 0,
+        }}
+        exitStyle={{
+          opacity: 0,
+        }}
         position="relative"
         flexBasis="auto"
         bg="$background"

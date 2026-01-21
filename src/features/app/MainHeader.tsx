@@ -51,7 +51,6 @@ export const MainHeader = () => {
                   trigger={
                     <ButtonSimple size="medium" circular cursor="pointer">
                       <Avatar
-                        disableBorder
                         size={28}
                         image={user.image}
                         name={user.name ?? user.username ?? 'User'}

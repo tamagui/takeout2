@@ -1,6 +1,6 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
 import { memo } from 'react'
-import { Circle, styled, View, YStack, type CircleProps } from 'tamagui'
+import { Circle, styled, YStack, type CircleProps } from 'tamagui'
 
 import { Image } from '~/interface/image/Image'
 
@@ -13,7 +13,6 @@ export type AvatarProps = Omit<CircleProps, 'size'> & {
   size?: number | SimpleSize
   active?: boolean
   isOnline?: boolean | null
-  disableBorder?: boolean
   gradient?: boolean
   gradientColors?: string[]
 }
@@ -27,7 +26,6 @@ export const Avatar = memo(
     size: sizeIn = 28,
     active,
     isOnline,
-    disableBorder,
     gradient,
     gradientColors = DEFAULT_GRADIENT_COLORS,
     ...rest
@@ -75,21 +73,16 @@ export const Avatar = memo(
         height={size + borderWidth * 2 + 2}
         position="relative"
         rounded={100}
-        {...(!disableBorder &&
-          !gradient && {
-            outlineColor: '$color02',
-            outlineOffset: 1,
-            outlineWidth: 0.5,
-            outlineStyle: 'solid',
-          })}
+        items="center"
+        justify="center"
       >
         {gradient ? (
           <LinearGradient
             colors={gradientColors as [string, string, ...string[]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            width={size + 5}
-            height={size + 5}
+            width={size + borderWidth * 2 + 2}
+            height={size + borderWidth * 2 + 2}
             rounded={100}
             items="center"
             justify="center"

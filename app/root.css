@@ -2,6 +2,7 @@
   color-scheme: light dark;
   --font-heading: system-ui, sans-serif;
   --font-body: system-ui, sans-serif;
+  scrollbar-color: #b1b1b1 transparent;
 }
 
 body {

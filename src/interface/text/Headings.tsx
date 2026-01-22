@@ -1,4 +1,4 @@
-import { Separator, SizableText, XStack, styled } from 'tamagui'
+import { Separator, SizableText, XStack, styled, type FontSizeTokens } from 'tamagui'
 
 import type { ReactNode } from 'react'
 
@@ -60,10 +60,16 @@ export const SubHeading = styled(SizableText, {
   },
 })
 
-export const SepHeading = ({ children }: { children: ReactNode }) => {
+export const SepHeading = ({
+  children,
+  size = '$4',
+}: {
+  children: ReactNode
+  size?: FontSizeTokens
+}) => {
   return (
-    <XStack mt="$6" mb="$4" items="center" gap="$6">
-      <H3 size="$4" color="$color10">
+    <XStack my="$4" items="center" gap="$6">
+      <H3 size={size} color="$color10">
         {children}
       </H3>
       <Separator opacity={0.5} />

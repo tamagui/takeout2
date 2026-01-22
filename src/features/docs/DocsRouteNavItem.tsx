@@ -47,7 +47,7 @@ export const DocsRouteNavItem = function DocsRouteNavItem({
             color: '$color12',
           }}
           $maxSM={{
-            fontWeight: active ? '600' : '400',
+            fontWeight: active ? '500' : '400',
           }}
         >
           {children}

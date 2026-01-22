@@ -15,6 +15,7 @@ import { FileIcon } from '~/interface/icons/phosphor/FileIcon'
 import { ListIcon } from '~/interface/icons/phosphor/ListIcon'
 import { PageContainer } from '~/interface/layout/PageContainer'
 import { ListItem } from '~/interface/lists/ListItem'
+import { SepHeading } from '~/interface/text/Headings'
 import { ThemeSwitch } from '~/interface/theme/ThemeSwitch'
 
 export const SiteHeader = memo(() => {
@@ -99,7 +100,9 @@ const SiteHeaderMenu = memo(() => {
               <ThemeSwitch />
             </XStack>
 
-            <YStack flex={1} px="$4" pt="$4" gap="$2">
+            <Separator />
+
+            <ScrollView px="$4" pt="$4" gap="$2">
               <LoginListItem
                 onPressOut={() => {
                   setTimeout(() => {
@@ -124,15 +127,13 @@ const SiteHeaderMenu = memo(() => {
 
               {isDocsPage && (
                 <>
-                  <Separator />
-                  <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-                    <YStack onPress={() => setOpen(false)}>
-                      <DocsMenuContents />
-                    </YStack>
-                  </ScrollView>
+                  <SepHeading size="$5">Menu</SepHeading>
+                  <YStack onPress={() => setOpen(false)}>
+                    <DocsMenuContents />
+                  </YStack>
                 </>
               )}
-            </YStack>
+            </ScrollView>
 
             <YStack p="$4" pt="$2">
               <Separator mb="$3" />

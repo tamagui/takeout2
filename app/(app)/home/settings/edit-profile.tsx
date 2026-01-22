@@ -1,6 +1,6 @@
 import { router, useBlocker } from 'one'
 import { Keyboard } from 'react-native'
-import { Spinner, View, XStack, YStack } from 'tamagui'
+import { isWeb, Spinner, View, XStack, YStack } from 'tamagui'
 
 import { useProfileEdit } from '~/features/user/useProfileEdit'
 import { ButtonAction } from '~/interface/buttons/ButtonAction'
@@ -44,6 +44,17 @@ export const ProfileEditPage = () => {
 
   const blocker = useBlocker(!isSaving && hasUnsavedChanges)
 
+  const handleDiscard = () => {
+    const destination = blocker.location as any
+    blocker.proceed?.()
+    // TODO: fix this on ONE
+    if (isWeb && destination) {
+      router.push(destination)
+    } else {
+      router.back()
+    }
+  }
+
   return (
     <>
       <Dialog
@@ -59,7 +70,7 @@ export const ProfileEditPage = () => {
         />
         <XStack justify="flex-end" gap="$2">
           <ButtonSimple onPress={() => blocker.reset?.()}>Stay</ButtonSimple>
-          <ButtonAction onPress={() => blocker.proceed?.()}>Discard</ButtonAction>
+          <ButtonAction onPress={handleDiscard}>Discard</ButtonAction>
         </XStack>
       </Dialog>
 

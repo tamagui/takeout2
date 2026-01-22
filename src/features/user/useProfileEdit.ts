@@ -17,6 +17,7 @@ export const useProfileEdit = () => {
   const [isSaving, setIsSaving] = useState(false)
   const [username, setUsername] = useState(user?.username || '')
   const [name, setName] = useState(user?.name || '')
+  const [isTouched, setIsTouched] = useState(false)
   const [isUsernameBlocked, setIsUsernameBlocked] = useState(false)
 
   const lowernameUsername = username.trim().toLowerCase()
@@ -50,7 +51,7 @@ export const useProfileEdit = () => {
     !!existingUser
 
   const hasUnsavedChanges =
-    trimmedUsername !== user?.username || name.trim() !== user?.name
+    isTouched && (trimmedUsername !== user?.username || name.trim() !== user?.name)
 
   const canSave =
     isUsernameValid && !isCheckingAvailability && !isUnavailable && hasUnsavedChanges
@@ -93,12 +94,14 @@ export const useProfileEdit = () => {
   const handleNameChange = (text: string) => {
     if (text.length <= 40) {
       setName(text)
+      setIsTouched(true)
     }
   }
 
   const handleUsernameChange = (text: string) => {
     if (text.length <= 30) {
       setUsername(text)
+      setIsTouched(true)
       if (isUsernameBlocked) {
         setIsUsernameBlocked(false)
       }

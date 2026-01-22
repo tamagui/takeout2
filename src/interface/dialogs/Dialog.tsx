@@ -19,7 +19,6 @@ import {
 
 import { useHandleEscapeIf } from '~/features/shortcuts/handleKeyboardEscape'
 
-import { animationClamped } from '../animations/animationClamped'
 import { dialogEmit } from './shared'
 
 const CONTENT_RADIUS: SizeTokens = '$9'
@@ -136,7 +135,7 @@ const DialogComponent = ({
 }
 
 const DialogOverlay = styled(TamaguiDialog.Overlay, {
-  transition: animationClamped('quickerLessBouncy'),
+  transition: '200ms',
   opacity: 1,
   backdropFilter: 'blur(3px)',
   enterStyle: { opacity: 0 },
@@ -146,7 +145,7 @@ const DialogOverlay = styled(TamaguiDialog.Overlay, {
 const DialogContent = styled(TamaguiDialog.Content, {
   unstyled: true,
   z: 1000000,
-  transition: animationClamped('quickerLessBouncy'),
+  transition: '200ms',
   bg: 'transparent',
   borderWidth: 0.5,
   rounded: CONTENT_RADIUS,

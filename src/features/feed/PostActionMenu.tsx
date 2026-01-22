@@ -103,7 +103,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
 
       <Menu.Portal zIndex={100}>
         <Menu.Content
-          transition="100ms ease-in-out"
+          transition="200ms"
           borderRadius="$4"
           enterStyle={{ scale: 0.9, opacity: 0, y: -5 }}
           exitStyle={{ scale: 0.95, opacity: 0, y: -3 }}

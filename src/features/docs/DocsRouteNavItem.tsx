@@ -39,9 +39,12 @@ export const DocsRouteNavItem = function DocsRouteNavItem({
           size="$4"
           cursor="pointer"
           select="none"
-          color={active ? '$color11' : '$color10'}
+          color={active ? '$color12' : '$color10'}
           hoverStyle={{
             color: '$color12',
+          }}
+          $maxSM={{
+            fontWeight: active ? '600' : '400',
           }}
         >
           {children}

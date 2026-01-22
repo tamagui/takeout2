@@ -1,8 +1,10 @@
+import { usePathname } from 'one'
 import { memo, useState } from 'react'
-import { Separator, Sheet, Spacer, XStack, YStack } from 'tamagui'
+import { ScrollView, Separator, Sheet, Spacer, Text, XStack, YStack } from 'tamagui'
 
 import { LoginButton } from '~/features/auth/ui/LoginButton'
 import { LoginListItem } from '~/features/auth/ui/LoginListItem'
+import { DocsMenuContents } from '~/features/docs/DocsMenuContents'
 import { ProFreeButtons } from '~/features/docs/ProFreeButtons'
 import { SocialLinksRow } from '~/features/site/ui/SocialLinksRow'
 import { Link } from '~/interface/app/Link'
@@ -59,6 +61,8 @@ export const SiteHeader = memo(() => {
 
 const SiteHeaderMenu = memo(() => {
   const [open, setOpen] = useState(false)
+  const pathname = usePathname()
+  const isDocsPage = pathname.startsWith('/docs')
 
   return (
     <>
@@ -78,7 +82,7 @@ const SiteHeaderMenu = memo(() => {
         transition="medium"
         modal
         dismissOnSnapToBottom
-        snapPoints={[50]}
+        snapPoints={[isDocsPage ? 85 : 50]}
       >
         <Sheet.Overlay
           bg="$background"
@@ -95,9 +99,7 @@ const SiteHeaderMenu = memo(() => {
               <ThemeSwitch />
             </XStack>
 
-            <Separator />
-
-            <YStack flex={1} p="$3" gap="$2">
+            <YStack flex={1} px="$4" pt="$4" gap="$2">
               <LoginListItem
                 onPressOut={() => {
                   setTimeout(() => {
@@ -105,7 +107,6 @@ const SiteHeaderMenu = memo(() => {
                   }, 250)
                 }}
               />
-
               <Link href="/docs/introduction">
                 <ListItem
                   onPressOut={() => {
@@ -120,6 +121,17 @@ const SiteHeaderMenu = memo(() => {
                   <ListItem.Text>Docs</ListItem.Text>
                 </ListItem>
               </Link>
+
+              {isDocsPage && (
+                <>
+                  <Separator />
+                  <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+                    <YStack onPress={() => setOpen(false)}>
+                      <DocsMenuContents />
+                    </YStack>
+                  </ScrollView>
+                </>
+              )}
             </YStack>
 
             <YStack p="$4" pt="$2">

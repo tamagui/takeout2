@@ -16,7 +16,6 @@ export const Switch = memo((props: SwitchProps) => {
   })
 
   return (
-    // <Theme name={checked ? 'accent' : null}>
     <TamaguiSwitch
       transition={animationClamped('quickestLessBouncy')}
       pressStyle={{
@@ -32,5 +31,5 @@ export const Switch = memo((props: SwitchProps) => {
     >
       <TamaguiSwitch.Thumb transition={animationClamped('quickestLessBouncy')} />
     </TamaguiSwitch>
-  ) // </Theme>
+  )
 })

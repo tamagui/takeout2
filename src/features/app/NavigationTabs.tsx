@@ -1,7 +1,7 @@
-import { Link, usePathname } from 'one'
-import { useMedia, View } from 'tamagui'
+import { usePathname } from 'one'
+import { useMedia } from 'tamagui'
 
-import { Pressable } from '~/interface/buttons/Pressable'
+import { Link } from '~/interface/app/Link'
 import { HouseIcon } from '~/interface/icons/phosphor/HouseIcon'
 import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
 import { UserCircleIcon } from '~/interface/icons/phosphor/UserCircleIcon'
@@ -39,23 +39,16 @@ export function NavigationTabs() {
       }) =>
         routes.map((route) => {
           const Icon = route.icon
-          const content = (
-            <View items="center" cursor="pointer">
-              <Pressable items="center">
-                <Icon size={iconSize} color="$color" />
-              </Pressable>
-            </View>
-          )
 
           return (
             <RovingTabs.Tab
               key={route.name}
               value={route.name}
               onInteraction={handleOnInteraction}
-              px="$4"
-              py="$2"
             >
-              <Link href={route.href}>{content}</Link>
+              <Link href={route.href} items="center" px="$3" py="$2" $md={{ px: '$4' }}>
+                <Icon size={iconSize} color="$color" />
+              </Link>
             </RovingTabs.Tab>
           )
         })

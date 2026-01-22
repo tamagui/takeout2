@@ -5,7 +5,7 @@ import { LogoIcon } from './LogoIcon'
 
 export const Logo = ({ height = 24 }: { height?: number }) => {
   return (
-    <XStack items="center" $md={{ gap: height / 2 }}>
+    <XStack items="center" $lg={{ gap: height / 2 }}>
       <LogoIcon size={height} />
       <SizableText
         select="none"

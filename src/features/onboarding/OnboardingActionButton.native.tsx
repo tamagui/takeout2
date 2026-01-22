@@ -1,5 +1,5 @@
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated'
-import { SizableText, Stack, XStack, useTheme, type ColorTokens } from 'tamagui'
+import { SizableText, View, XStack, useTheme, type ColorTokens } from 'tamagui'
 
 import { Pressable } from '~/interface/buttons/Pressable'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
@@ -61,13 +61,7 @@ export function OnboardingActionButton({
           buttonAnimatedStyle,
         ]}
       >
-        <Stack
-          flex={1}
-          items="center"
-          justify="center"
-          onPress={onPress}
-          cursor="pointer"
-        >
+        <View flex={1} items="center" justify="center" onPress={onPress} cursor="pointer">
           <Animated.View style={[{ position: 'absolute' }, arrowAnimatedStyle]}>
             <CaretRightIcon size={28} color="white" />
           </Animated.View>
@@ -80,7 +74,7 @@ export function OnboardingActionButton({
               Get Started
             </SizableText>
           </Animated.View>
-        </Stack>
+        </View>
       </Animated.View>
     </XStack>
   )

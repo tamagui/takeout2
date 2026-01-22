@@ -94,15 +94,18 @@ const SiteHeaderMenu = memo(() => {
         />
 
         <Sheet.Frame bg="$color2" boxShadow="0 0 10px $shadow4">
-          <YStack flex={1} gap="$2">
+          <YStack flex={1} flexBasis="auto" gap="$2">
             <XStack p="$4" pb="$3" justify="space-between">
-              <Logo height={32} />
+              <XStack items="center" gap="$2">
+                <Logo height={32} />
+                <ProFreeButtons />
+              </XStack>
               <ThemeSwitch />
             </XStack>
 
             <Separator />
 
-            <ScrollView px="$4" pt="$4" gap="$2">
+            <ScrollView group="frame" flex={1} px="$4" pt="$4" gap="$2">
               <LoginListItem
                 onPressOut={() => {
                   setTimeout(() => {

@@ -46,9 +46,7 @@ export const DocsRouteNavItem = function DocsRouteNavItem({
           hoverStyle={{
             color: '$color12',
           }}
-          $maxSM={{
-            fontWeight: active ? '500' : '400',
-          }}
+          fontWeight={active ? '500' : '400'}
         >
           {children}
         </SizableText>

@@ -96,10 +96,12 @@ const CardAvatarShimmer = () => {
 
 const CardShimmer = () => {
   return (
-    <YStack rounded="$4" gap="$4" justify="center" items="center">
-      <View gap="$4" height={300} width="100%" maxW={500} rounded="$4" overflow="hidden">
+    <YStack rounded="$6" gap="$4" justify="center" items="center">
+      <View gap="$4" width="100%" maxW={500}>
         <CardAvatarShimmer />
-        <Shimmer />
+        <View height={250} rounded="$6" overflow="hidden">
+          <Shimmer />
+        </View>
       </View>
       <XStack gap="$4">
         <LineShimmer width={60} height={24} />

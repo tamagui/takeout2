@@ -8,7 +8,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { scheduleOnRN } from 'react-native-worklets'
-import { AnimatePresence, SizableText, Spinner, View, YStack } from 'tamagui'
+import { AnimatePresence, SizableText, View, YStack } from 'tamagui'
 
 import { scrollToTopEmitter } from '~/features/app/scrollToTopEmitter'
 import { PostCard } from '~/features/feed/PostCard'
@@ -75,11 +75,7 @@ export const HomePage = memo(() => {
 
   const renderEmpty = useCallback(() => {
     if (isLoading) {
-      return (
-        <YStack flex={1} items="center" justify="center" p="$4" minH={400}>
-          <Spinner size="large" />
-        </YStack>
-      )
+      return null
     }
     return (
       <YStack flex={1} items="center" justify="center" p="$4" minH={400}>

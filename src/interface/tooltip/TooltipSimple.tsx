@@ -135,96 +135,91 @@ export const GlobalTooltipProvider = ({
   const disabled = disableFromPopover || !label || disabledProp
 
   return (
-    <Theme name="accent">
-      <Tooltip
-        scope="tooltip"
-        disableRTL
-        offset={20}
-        restMs={200}
-        delay={{ open: 200, close: 200 }}
-        open={open}
-        // ensure we do a state change so we can force close it if need be due to popover
-        onOpenChange={(open) => {
-          const popoverOpen = isPopoverOpen()
+    <Tooltip
+      scope="tooltip"
+      disableRTL
+      offset={20}
+      restMs={200}
+      delay={{ open: 200, close: 200 }}
+      open={open}
+      // ensure we do a state change so we can force close it if need be due to popover
+      onOpenChange={(open) => {
+        const popoverOpen = isPopoverOpen()
 
-          if (
-            open &&
-            disableOnPopover &&
-            popoverEmitter.value?.name === disableOnPopover
-          ) {
-            setOpen(false)
-            return
-          }
+        if (open && disableOnPopover && popoverEmitter.value?.name === disableOnPopover) {
+          setOpen(false)
+          return
+        }
 
-          // if a popover opens right after this, close this
-          if (!popoverOpen) {
-            setTimeout(() => {
-              if (isPopoverOpen()) {
-                setOpen(false)
-                return
-              }
-            }, 10)
-          }
+        // if a popover opens right after this, close this
+        if (!popoverOpen) {
+          setTimeout(() => {
+            if (isPopoverOpen()) {
+              setOpen(false)
+              return
+            }
+          }, 10)
+        }
 
-          setOpen(open)
-        }}
-        allowFlip
-        stayInFrame={{
-          padding: {
-            bottom: 14,
-            left: 14,
-            right: 14,
-            top: 14,
-          },
-        }}
-        {...tooltipProps}
-        {...(disabled ? { open: false } : null)}
+        setOpen(open)
+      }}
+      allowFlip
+      stayInFrame={{
+        padding: {
+          bottom: 14,
+          left: 14,
+          right: 14,
+          top: 14,
+        },
+      }}
+      {...tooltipProps}
+      {...(disabled ? { open: false } : null)}
+      // @ts-expect-error
+      zIndex={Z_INDICES.tooltip}
+    >
+      {providerChildren}
+
+      <Tooltip.Content
+        theme="accent"
         // @ts-expect-error
         zIndex={Z_INDICES.tooltip}
+        enterStyle={{ x: 0, y: -3, opacity: 0 }}
+        exitStyle={{ x: 0, y: -3, opacity: 0 }}
+        x={0}
+        scale={1}
+        y={0}
+        borderWidth={0}
+        opacity={disabled ? 0 : 1}
+        pointerEvents="none"
+        py="$1.5"
+        px="$2"
+        rounded="$2"
+        animateOnly={['transform', 'opacity', 'width', 'height']}
+        // TODO this would make them really nice but it needs to avoid animation when re-targeting
+        enableAnimationForPositionChange
+        transition={disabled ? null : animationClamped('quickerLessBouncy')}
+        $theme-dark={{
+          shadowColor: '$shadow4',
+          shadowRadius: 3,
+          shadowOffset: { height: 2, width: 0 },
+        }}
+        $theme-light={{
+          shadowColor: '$shadow6',
+          shadowRadius: 20,
+          shadowOffset: { height: 7, width: 0 },
+        }}
+        {...contentProps}
       >
-        {providerChildren}
-
-        <Tooltip.Content
-          // @ts-expect-error
-          zIndex={Z_INDICES.tooltip}
-          enterStyle={{ x: 0, y: -3, opacity: 0 }}
-          exitStyle={{ x: 0, y: -3, opacity: 0 }}
-          x={0}
-          scale={1}
-          y={0}
-          borderWidth={0}
-          opacity={disabled ? 0 : 1}
-          pointerEvents="none"
-          py="$1.5"
-          px="$2"
-          rounded="$2"
-          animateOnly={['transform', 'opacity', 'width', 'height']}
-          // TODO this would make them really nice but it needs to avoid animation when re-targeting
-          enableAnimationForPositionChange
-          transition={disabled ? null : animationClamped('quickerLessBouncy')}
-          $theme-dark={{
-            shadowColor: '$shadow4',
-            shadowRadius: 3,
-            shadowOffset: { height: 2, width: 0 },
-          }}
-          $theme-light={{
-            shadowColor: '$shadow6',
-            shadowRadius: 20,
-            shadowOffset: { height: 7, width: 0 },
-          }}
-          {...contentProps}
-        >
-          <Tooltip.Arrow
-            size="$3"
-            shadowColor="$shadow4"
-            shadowRadius={1}
-            shadowOffset={{ height: 2, width: 2 }}
-          />
-          <Paragraph pointerEvents="none" fontFamily="$mono" size="$2">
-            {label}
-          </Paragraph>
-        </Tooltip.Content>
-      </Tooltip>
-    </Theme>
+        <Tooltip.Arrow
+          size="$3"
+          shadowColor="$shadow4"
+          shadowRadius={1}
+          shadowOffset={{ height: 2, width: 2 }}
+        />
+        <Paragraph pointerEvents="none" fontFamily="$mono" size="$2">
+          {label}
+        </Paragraph>
+      </Tooltip.Content>
+    </Tooltip>
   )
 }

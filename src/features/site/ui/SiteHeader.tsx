@@ -98,12 +98,12 @@ const SiteHeaderMenu = memo(() => {
 
         <Sheet.Frame bg="$color2" boxShadow="0 0 10px $shadow4">
           <YStack flex={1} flexBasis="auto" gap="$2">
-            <XStack p="$4" pb="$3" justify="space-between">
-              <XStack items="center" gap="$2">
-                <Logo height={32} />
+            <XStack p="$4" pb="$3" justify="space-between" items="center">
+              <Logo height={32} />
+              <XStack gap="$2" items="center">
                 <ProFreeButtons />
+                <ThemeSwitch />
               </XStack>
-              <ThemeSwitch />
             </XStack>
 
             <Separator />

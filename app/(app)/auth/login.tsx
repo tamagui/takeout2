@@ -50,8 +50,8 @@ export const LoginPage = () => {
           items="center"
           bg="$background"
           rounded="$8"
-          p="$6"
-          $maxSM={{ p: '$4' }}
+          p="$4"
+          $md={{ p: '$6' }}
         >
           <H2 text="center">Login to {APP_NAME}</H2>
 

@@ -1,13 +1,12 @@
 import { useTimer } from '@take-out/helpers'
 import { useParams } from 'one'
 import { useEffect, useState } from 'react'
-import { Circle, SizableText, useEvent, XStack, YStack } from 'tamagui'
+import { Circle, SizableText, useEvent, YStack } from 'tamagui'
 
 import { otpLogin, validateLoginOtpCode } from '~/features/auth/client/otpLogin'
 import { OtpInput } from '~/features/auth/ui/OtpInput'
 import { ButtonAction } from '~/interface/buttons/ButtonAction'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
-import { HeaderBackButton } from '~/interface/buttons/HeaderBackButton'
 import { showError } from '~/interface/dialogs/actions'
 import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
 import { H2 } from '~/interface/text/Headings'
@@ -98,14 +97,13 @@ export const OtpPage = () => {
       flex={1}
       flexBasis="auto"
       gap="$5"
-      p="$10"
+      p="$6"
       width="100%"
       height="100%"
       items="center"
       transition="medium"
       enterStyle={{ opacity: 0, y: 10 }}
       exitStyle={{ opacity: 0, y: -10 }}
-      $maxSM={{ p: '$6' }}
     >
       <YStack flex={1} flexBasis="auto" gap="$4" width="100%">
         <YStack gap="$4" width="100%" items="center">

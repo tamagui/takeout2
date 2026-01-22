@@ -115,14 +115,13 @@ export const SignupPage = () => {
       flex={1}
       flexBasis="auto"
       gap="$5"
-      p="$10"
+      p="$6"
       width="100%"
       height="100%"
       items="center"
       transition="medium"
       enterStyle={{ opacity: 0, y: 10 }}
       exitStyle={{ opacity: 0, y: -10 }}
-      $maxSM={{ p: '$6' }}
     >
       <YStack flex={1} flexBasis="auto" gap="$4" width="100%">
         <YStack gap="$4" width="100%" items="center">

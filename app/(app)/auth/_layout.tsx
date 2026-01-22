@@ -23,16 +23,18 @@ export function AuthAndOnboardingLayout() {
   }
 
   return (
-    <XStack flex={1} flexBasis="auto" items="center" justify="center" $maxSM={{ p: 0 }}>
+    <XStack flex={1} flexBasis="auto" items="center" justify="center">
       <XStack
         width="100%"
         maxW={860}
+        maxH="auto"
         minH={550}
         rounded="$10"
         overflow="hidden"
         position="relative"
         boxShadow="0 4px 24px $shadow4"
-        $maxSM={{ maxH: 'auto', mt: '$6' }}
+        mt="$6"
+        $md={{ maxW: 860, minH: 550, mt: 0 }}
         $theme-dark={{
           borderWidth: 0.5,
           borderColor: '$borderColor',
@@ -40,7 +42,7 @@ export function AuthAndOnboardingLayout() {
       >
         <Onboarding />
 
-        <YStack flex={1} p="$3" $maxSM={{ p: 0 }}>
+        <YStack flex={1} $md={{ p: '$4' }}>
           <Slot />
         </YStack>
       </XStack>

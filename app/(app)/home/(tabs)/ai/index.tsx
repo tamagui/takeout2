@@ -1,11 +1,8 @@
-// web version - no reanimated / keyboard animations
-
-import { memo, useCallback, useState } from 'react'
+import { memo, useCallback, useRef, useState } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { SizableText, View, YStack } from 'tamagui'
+import { ScrollView, SizableText, Spinner, View, XStack, YStack } from 'tamagui'
 
 import { AIChatInput } from '~/interface/ai/AIChatInput'
-import { AnimatedBlurHeader } from '~/interface/headers/AnimatedBlurHeader'
 import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
 import { PageLayout } from '~/interface/pages/PageLayout'
 
@@ -16,14 +13,23 @@ interface Message {
 }
 
 const EmptyState = memo(() => (
-  <YStack items="center" gap="$2" flex={1} justify="center">
-    <SparkleIcon size={52} color="$color11" />
-    <YStack items="center">
-      <SizableText size="$6" fontWeight="700">
-        Takeout
+  <YStack items="center" gap="$4" flex={1} justify="center" pb="$10">
+    <View
+      width={80}
+      height={80}
+      rounded="$6"
+      bg="$color3"
+      items="center"
+      justify="center"
+    >
+      <SparkleIcon size={40} color="$color11" />
+    </View>
+    <YStack items="center" gap="$2">
+      <SizableText size="$7" fontWeight="700">
+        AI Assistant
       </SizableText>
-      <SizableText size="$4" color="$color10" px="$6" text="center">
-        Your AI-powered assistant
+      <SizableText size="$4" color="$color10" px="$6" text="center" maxW={300}>
+        Ask me anything. I'm here to help with questions, ideas, and more.
       </SizableText>
     </YStack>
   </YStack>
@@ -35,13 +41,15 @@ const MessageBubble = memo(({ message }: { message: Message }) => {
   return (
     <View
       self={isUser ? 'flex-end' : 'flex-start'}
-      bg={isUser ? '$color4' : '$color2'}
-      px="$3"
-      py="$2"
-      rounded="$4"
-      maxW="80%"
+      bg={isUser ? '$blue9' : '$color3'}
+      px="$4"
+      py="$3"
+      rounded="$5"
+      maxW="85%"
+      {...(isUser && { roundedBottomRight: '$2' })}
+      {...(!isUser && { roundedBottomLeft: '$2' })}
     >
-      <SizableText size="$4" color="$color12">
+      <SizableText size="$4" color={isUser ? 'white' : '$color12'} lineHeight="$4">
         {message.content}
       </SizableText>
     </View>
@@ -51,6 +59,8 @@ const MessageBubble = memo(({ message }: { message: Message }) => {
 export const AIPage = memo(() => {
   const insets = useSafeAreaInsets()
   const [messages, setMessages] = useState<Message[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const scrollViewRef = useRef<ScrollView>(null)
 
   const handleSend = useCallback((content: string) => {
     const userMessage: Message = {
@@ -59,34 +69,58 @@ export const AIPage = memo(() => {
       content,
     }
     setMessages((prev) => [...prev, userMessage])
+    setIsLoading(true)
+
+    // simulate AI response
+    setTimeout(() => {
+      const aiMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: "I'm a demo AI assistant. This is a placeholder response.",
+      }
+      setMessages((prev) => [...prev, aiMessage])
+      setIsLoading(false)
+    }, 1000)
   }, [])
 
   return (
     <PageLayout>
-      <AnimatedBlurHeader title="AI Assistant" />
+      <YStack flex={1} flexBasis="auto" pt={insets.top}>
+        {/* messages area */}
+        <ScrollView
+          ref={scrollViewRef}
+          flex={1}
+          contentContainerStyle={
+            {
+              flexGrow: 1,
+              padding: 16,
+            } as any
+          }
+          showsVerticalScrollIndicator={false}
+        >
+          {messages.length === 0 ? (
+            <EmptyState />
+          ) : (
+            <YStack gap="$3" pb="$4">
+              {messages.map((message) => (
+                <MessageBubble key={message.id} message={message} />
+              ))}
+              {isLoading && (
+                <XStack self="flex-start" gap="$2" items="center" px="$2">
+                  <Spinner size="small" color="$color10" />
+                  <SizableText size="$3" color="$color10">
+                    Thinking...
+                  </SizableText>
+                </XStack>
+              )}
+            </YStack>
+          )}
+        </ScrollView>
 
-      <View px="$4">
-        {messages.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <YStack gap="$3">
-            {messages.map((message) => (
-              <MessageBubble key={message.id} message={message} />
-            ))}
-          </YStack>
-        )}
-      </View>
-
-      <YStack
-        position="absolute"
-        b={0}
-        l={0}
-        r={0}
-        pb={insets.bottom}
-        px="$3"
-        bg="$background"
-      >
-        <AIChatInput onSend={handleSend} />
+        {/* input area */}
+        <YStack px="$4" py="$3" pb={Math.max(insets.bottom, 16)}>
+          <AIChatInput onSend={handleSend} isLoading={isLoading} />
+        </YStack>
       </YStack>
     </PageLayout>
   )

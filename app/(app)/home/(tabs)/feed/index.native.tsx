@@ -8,7 +8,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { scheduleOnRN } from 'react-native-worklets'
-import { AnimatePresence, SizableText, View, YStack } from 'tamagui'
+import { AnimatePresence, SizableText, Spinner, View, YStack } from 'tamagui'
 
 import { scrollToTopEmitter } from '~/features/app/scrollToTopEmitter'
 import { PostCard } from '~/features/feed/PostCard'

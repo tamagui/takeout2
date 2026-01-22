@@ -1,5 +1,6 @@
 import * as SplashScreen from 'expo-splash-screen'
 import { useEffect, useState, type ReactNode } from 'react'
+import { LogBox } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { KeyboardProvider } from 'react-native-keyboard-controller'
 import { View } from 'tamagui'
@@ -7,6 +8,15 @@ import { View } from 'tamagui'
 import { useAuth } from '~/features/auth/client/authClient'
 
 import { Splash } from '../splash/splash'
+
+LogBox.ignoreLogs([
+  'clientID=',
+  'Got unexpected socket close event',
+  'Failed to connect',
+  'WebSocket connection closed abruptly',
+  'findNodeHandle is deprecated',
+  'findHostInstance_DEPRECATED is deprecated',
+])
 
 let splashHasBeenShown = false
 

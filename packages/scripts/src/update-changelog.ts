@@ -66,9 +66,14 @@ Instructions:
 - update the "last updated" comment to: ${latestSha}
 - create new week sections if needed (weeks start monday)
 - format: "## Week of January 20, 2026" with sha in backticks below
-- use ✚ symbol only for new features, no other emoji
+- no emoji, plain text only
 - group small fixes/chores into "Bug fixes and chores (N)"
 - for tamagui/one upgrades, check ~/tamagui or ~/one repos or github for what actually changed
 - write useful descriptions - explain WHY and WHAT improved, not just "fixed X"
 - stop when you reach commits already in the changelog
+
+Archiving old entries:
+- keep only 10 weeks in changelog.mdx
+- when over 10 weeks, move oldest entries to changelog-YYYY.mdx (by year, e.g. changelog-2025.mdx)
+- add a link at the bottom of changelog.mdx: "See [2025 changes](changelog-2025)" etc
 `)

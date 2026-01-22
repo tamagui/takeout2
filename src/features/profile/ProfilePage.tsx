@@ -62,7 +62,7 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
         )}
       </AnimatePresence>
 
-      <YStack px="$4" pb="$10">
+      <YStack px="$4" pb="$10" maxW={760} mx="auto" z={10}>
         <ProfileHeader
           userInfo={user}
           isOwnProfile={isOwnProfile}

@@ -75,5 +75,5 @@ Instructions:
 Archiving old entries:
 - keep only 10 weeks in changelog.mdx
 - when over 10 weeks, move oldest entries to changelog-YYYY.mdx (by year, e.g. changelog-2025.mdx)
-- add a link at the bottom of changelog.mdx: "See [2025 changes](changelog-2025)" etc
+- add a link at the bottom of changelog.mdx: "See [2025 changes](/docs/changelog-2025)" etc (use absolute path)
 `)

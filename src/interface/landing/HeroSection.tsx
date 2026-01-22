@@ -379,7 +379,7 @@ export function HeroSection() {
         maxW={1200}
         width="100%"
         pb="$14"
-        $md={{ flexWrap: 'nowrap', gap: '$10' }}
+        $lg={{ flexWrap: 'nowrap', gap: '$10' }}
       >
         {/* left side - hero content */}
         <YStack gap="$5" flex={1} minW={300} maxW={520} items="flex-start">

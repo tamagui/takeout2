@@ -1,9 +1,10 @@
 import { memo, useEffect, useState } from 'react'
-import { AnimatePresence, Spinner, YStack } from 'tamagui'
+import { AnimatePresence, Spinner, View, YStack } from 'tamagui'
 
 import { HomePagination } from '~/features/feed/HomePagination'
 import { PostCard } from '~/features/feed/PostCard'
 import { usePostsPaginated } from '~/features/feed/usePosts'
+import { FloatingCreateButton } from '~/interface/buttons/FloatingCreateButton'
 import { HomeShimmer } from '~/interface/shimmer/HomeShimmer'
 import { H5 } from '~/interface/text/Headings'
 
@@ -35,6 +36,8 @@ export const HomePage = memo(() => {
           </YStack>
         )}
       </AnimatePresence>
+
+      <FloatingCreateButton />
 
       <YStack
         transition="medium"

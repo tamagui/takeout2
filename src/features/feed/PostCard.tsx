@@ -42,7 +42,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
       $platform-web={{
         rounded: '$6',
         py: '$4',
-        maxW: 540,
+        maxW: 600,
         mx: 'auto',
         width: '100%',
       }}

@@ -1,5 +1,5 @@
 import { LegendList } from '@legendapp/list'
-import { isNative } from '@take-out/helpers'
+import { isNative, isWeb } from '@take-out/helpers'
 import { useCallback } from 'react'
 import { Alert, RefreshControl } from 'react-native'
 import { ListItem, SizableText, Spinner, View, YStack } from 'tamagui'
@@ -99,7 +99,13 @@ export const ProfileBlockedUsersPage = () => {
 
   return (
     <PageLayout>
-      <View flex={1} flexBasis="auto">
+      <View
+        flex={1}
+        flexBasis="auto"
+        transition="medium"
+        enterStyle={{ opacity: 0, y: 10 }}
+        exitStyle={{ opacity: 0, y: -10 }}
+      >
         {isLoading ? (
           <YStack flex={1} items="center" justify="center">
             <Spinner size="large" color="$color10" />

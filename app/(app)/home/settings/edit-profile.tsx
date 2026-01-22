@@ -75,7 +75,14 @@ export const ProfileEditPage = () => {
       </Dialog>
 
       <PageLayout>
-        <View flex={1} flexBasis="auto" px="$3">
+        <View
+          flex={1}
+          flexBasis="auto"
+          px="$3"
+          transition="medium"
+          enterStyle={{ opacity: 0, y: 10 }}
+          exitStyle={{ opacity: 0, y: -10 }}
+        >
           <KeyboardAwareScrollView
             showsVerticalScrollIndicator={false}
             bottomOffset={100}

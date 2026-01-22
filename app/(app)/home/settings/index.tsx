@@ -1,61 +1,34 @@
-import { Link, type Href } from 'one'
+import { Link, Redirect, usePathname } from 'one'
 import { Linking } from 'react-native'
-import { isWeb, ScrollView, SizableText, View, XStack, YStack } from 'tamagui'
+import { ScrollView, SizableText, styled, View, XStack, YStack } from 'tamagui'
 
 import { APP_NAME_LOWERCASE, DOMAIN } from '~/constants/app'
-import { useLogout } from '~/features/auth/useLogout'
-import { dialogConfirm } from '~/interface/dialogs/actions'
-import { BookmarkIcon } from '~/interface/icons/phosphor/BookmarkIcon'
-import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
-import { ChatCircleIcon } from '~/interface/icons/phosphor/ChatCircleIcon'
-import { DoorIcon } from '~/interface/icons/phosphor/DoorIcon'
-import { FileIcon } from '~/interface/icons/phosphor/FileIcon'
-import { InfoIcon } from '~/interface/icons/phosphor/InfoIcon'
-import { LockIcon } from '~/interface/icons/phosphor/LockIcon'
-import { UserIcon } from '~/interface/icons/phosphor/UserIcon'
-import { PageLayout } from '~/interface/pages/PageLayout'
-import { SepHeading } from '~/interface/text/Headings'
-import { useToggleTheme } from '~/interface/theme/ThemeSwitch'
+import { useSettingsData, type SettingItem } from '~/features/settings/useSettingsData'
 
-import type { IconComponent } from '~/interface/icons/types'
-
-interface SettingItem {
-  id: string
-  title: string
-  icon?: IconComponent
-  onPress?: () => void
-  href?: Href
-  external?: boolean
-}
-
-interface SettingSection {
-  title: string
-  items: SettingItem[]
-}
-
-function SettingRow({ item }: { item: SettingItem }) {
+function SettingRow({ item, isActive }: { item: SettingItem; isActive: boolean }) {
   const Icon = item.icon
 
   const content = (
-    <XStack
-      cursor="pointer"
-      height={56}
-      px="$4"
-      items="center"
-      justify="space-between"
-      hoverStyle={{ bg: '$color2' }}
-      {...(item.onPress && { onPress: item.onPress })}
-    >
-      <XStack gap="$3" items="center" flex={1}>
-        {Icon && (
-          <View width={24} items="center" justify="center">
-            <Icon size={20} color="$color11" />
-          </View>
-        )}
-        <SizableText size="$5">{item.title}</SizableText>
-      </XStack>
-      <CaretRightIcon size={16} color="$color8" />
-    </XStack>
+    <SettingRowFrame active={isActive} {...(item.onPress && { onPress: item.onPress })}>
+      {Icon && (
+        <View
+          width={22}
+          height={22}
+          items="center"
+          justify="center"
+          opacity={isActive ? 1 : 0.7}
+        >
+          <Icon size="$6" color={isActive ? '$color12' : '$color11'} />
+        </View>
+      )}
+      <SizableText
+        size="$4"
+        fontWeight={isActive ? '600' : '400'}
+        color={isActive ? '$color12' : '$color11'}
+      >
+        {item.title}
+      </SizableText>
+    </SettingRowFrame>
   )
 
   if (item.onPress) {
@@ -63,32 +36,26 @@ function SettingRow({ item }: { item: SettingItem }) {
   }
 
   if (item.href) {
-    if (item.external && !isWeb) {
+    if (item.external) {
       return (
-        <XStack
-          cursor="pointer"
-          height={56}
-          px="$4"
-          items="center"
-          justify="space-between"
-          hoverStyle={{ bg: '$color2' }}
+        <SettingRowFrame
+          active={isActive}
           onPress={() => Linking.openURL(`https://${DOMAIN}${item.href}`)}
         >
-          <XStack gap="$3" items="center" flex={1}>
-            {Icon && (
-              <View width={24} items="center" justify="center">
-                <Icon size={20} color="$color11" />
-              </View>
-            )}
-            <SizableText size="$5">{item.title}</SizableText>
-          </XStack>
-          <CaretRightIcon size={16} color="$color8" />
-        </XStack>
+          {Icon && (
+            <View width={22} height={22} items="center" justify="center" opacity={0.7}>
+              <Icon size="$6" color="$color11" />
+            </View>
+          )}
+          <SizableText size="$4" color="$color11">
+            {item.title}
+          </SizableText>
+        </SettingRowFrame>
       )
     }
 
     return (
-      <Link href={item.href} target={item.external ? '_blank' : undefined} asChild>
+      <Link href={item.href} asChild>
         {content}
       </Link>
     )
@@ -97,135 +64,85 @@ function SettingRow({ item }: { item: SettingItem }) {
   return null
 }
 
-export function ProfileSettingsPage() {
-  const { logout } = useLogout()
-  const {
-    onPress: toggleTheme,
-    Icon: ThemeIcon,
-    setting: themeSetting,
-  } = useToggleTheme()
-  const themeLabel = themeSetting[0]?.toUpperCase() + themeSetting.slice(1)
-
-  const handleDeleteAccount = async () => {
-    await dialogConfirm({
-      title: 'Delete Account',
-      description: 'Account deletion is not currently available.',
-    })
-  }
-
-  const sections: SettingSection[] = [
-    {
-      title: 'Account',
-      items: [
-        {
-          id: 'theme',
-          title: `Theme: ${themeLabel}`,
-          icon: ThemeIcon,
-          onPress: toggleTheme,
-        },
-        {
-          id: 'profile',
-          title: 'Edit Profile',
-          icon: UserIcon,
-          href: '/home/settings/edit-profile',
-        },
-        {
-          id: 'blocked-users',
-          title: 'Blocked Users',
-          icon: LockIcon,
-          href: '/home/settings/blocked-users',
-        },
-      ],
-    },
-    {
-      title: 'Support and more',
-      items: [
-        {
-          id: 'help',
-          title: 'Help & Support',
-          icon: ChatCircleIcon,
-          href: '/help',
-          external: true,
-        },
-        {
-          id: 'documentation',
-          title: 'Documentation',
-          icon: BookmarkIcon,
-          href: '/docs/introduction',
-          external: true,
-        },
-        {
-          id: 'terms',
-          title: 'Terms of Service',
-          icon: FileIcon,
-          href: '/terms-of-service',
-          external: true,
-        },
-        {
-          id: 'privacy',
-          title: 'Privacy Policy',
-          icon: LockIcon,
-          href: '/privacy-policy',
-          external: true,
-        },
-        {
-          id: 'delete',
-          title: 'Delete Account',
-          icon: InfoIcon,
-          onPress: handleDeleteAccount,
-        },
-      ],
-    },
-    {
-      title: 'Other',
-      items: [
-        {
-          id: 'logout',
-          title: 'Log Out',
-          icon: DoorIcon,
-          onPress: logout,
-        },
-      ],
-    },
-  ]
-
-  return (
-    <PageLayout useImage>
-      <ScrollView
-        flex={1}
-        showsVerticalScrollIndicator={false}
-        contentInsetAdjustmentBehavior="automatic"
-      >
-        <YStack flex={1} flexBasis="auto" pb="$10">
-          {sections.map((section) => (
-            <YStack key={section.title} mb="$6" ml="$4">
-              <SepHeading>{section.title}</SepHeading>
-              <YStack>
-                {section.items.map((item) => (
-                  <SettingRow key={item.id} item={item} />
-                ))}
-              </YStack>
-            </YStack>
-          ))}
-
-          <LogoAndVersion />
-        </YStack>
-      </ScrollView>
-    </PageLayout>
-  )
-}
-
 function LogoAndVersion() {
   return (
-    <YStack items="center" pb={100} pt="$4">
-      <XStack items="center" gap="$2">
-        <SizableText color="$color10" fontWeight="bold">
-          {APP_NAME_LOWERCASE}
-        </SizableText>
-      </XStack>
-      <SizableText size="$1" color="$color10" mt="$2">
-        v1.0.0
+    <YStack items="center" pt="$6" pb="$4">
+      <SizableText size="$2" color="$color9">
+        {APP_NAME_LOWERCASE} v1.0.0
       </SizableText>
     </YStack>
   )
 }
+
+export function SettingsSidebarContent() {
+  const pathname = usePathname()
+  const { sections } = useSettingsData()
+
+  const isItemActive = (item: SettingItem) => {
+    if (!item.href || item.external) return false
+    return pathname === item.href || pathname.startsWith(`${item.href}/`)
+  }
+
+  return (
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <YStack p="$4" gap="$4">
+        <SizableText size="$7" fontWeight="700" px="$3">
+          Settings
+        </SizableText>
+
+        {sections.map((section) => (
+          <YStack key={section.title} gap="$1">
+            <SectionTitle>{section.title}</SectionTitle>
+            {section.items.map((item) => (
+              <SettingRow key={item.id} item={item} isActive={isItemActive(item)} />
+            ))}
+          </YStack>
+        ))}
+
+        <LogoAndVersion />
+      </YStack>
+    </ScrollView>
+  )
+}
+
+export function ProfileSettingsPage() {
+  return <Redirect href="/home/settings/edit-profile" />
+}
+
+const SettingRowFrame = styled(XStack, {
+  cursor: 'pointer',
+  height: 44,
+  px: '$3',
+  rounded: '$3',
+  items: 'center',
+  gap: '$3',
+  bg: 'transparent',
+  transition: '200ms',
+
+  hoverStyle: {
+    bg: '$color3',
+  },
+
+  pressStyle: {
+    bg: '$color4',
+    scale: 0.98,
+  },
+
+  variants: {
+    active: {
+      true: {
+        bg: '$color3',
+      },
+    },
+  } as const,
+})
+
+const SectionTitle = styled(SizableText, {
+  size: '$2',
+  fontWeight: '600',
+  color: '$color10',
+  textTransform: 'uppercase',
+  letterSpacing: 0.5,
+  px: '$3',
+  py: '$2',
+})

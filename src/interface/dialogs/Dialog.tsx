@@ -72,7 +72,7 @@ const DialogComponent = ({
   return (
     <DialogOpenContext.Provider value={!!open}>
       <TamaguiDialog modal open={open} {...props}>
-        <TamaguiDialog.Adapt platform="touch" when="maxSM">
+        <TamaguiDialog.Adapt platform="touch" when="maxMD">
           <Sheet
             transition="medium"
             zIndex={250_000}

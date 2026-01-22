@@ -5,7 +5,7 @@ import { ArrowUpRightIcon } from '~/interface/icons/phosphor/ArrowUpRightIcon'
 
 export const ProFreeButtons = () => {
   return (
-    <View display="none" $md={{ display: 'flex' }} ml="$3">
+    <View ml="$3">
       <XGroup rounded="$3" borderWidth={0.5} borderColor="$color5" overflow="hidden">
         <XGroup.Item>
           <Theme name="blue">

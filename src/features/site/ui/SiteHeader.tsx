@@ -24,20 +24,23 @@ export const SiteHeader = memo(() => {
       <PageContainer>
         <YStack width="100%" py="$2">
           <XStack position="relative" width="100%" items="center" $md={{ px: '$4' }}>
-            <SocialLinksRow />
-
-            <ProFreeButtons />
+            <XStack display="none" $lg={{ display: 'flex' }} gap="$2" items="center">
+              <SocialLinksRow />
+              <ProFreeButtons />
+            </XStack>
 
             <Spacer flex={1} />
 
             <XStack
               position="absolute"
-              inset={0}
-              pointerEvents="none"
-              items="center"
-              justify="center"
+              l="$4"
+              $lg={{
+                l: '50%',
+                t: '50%',
+                transform: 'translate(-50%, -50%)',
+              }}
             >
-              <Link pointerEvents="auto" href="/" aria-label="Home">
+              <Link href="/" aria-label="Home">
                 <Logo height={20} />
               </Link>
             </XStack>

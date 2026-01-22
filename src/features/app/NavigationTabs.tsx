@@ -2,9 +2,8 @@ import { Link, usePathname } from 'one'
 import { useMedia, View } from 'tamagui'
 
 import { Pressable } from '~/interface/buttons/Pressable'
-import { dialogEmit } from '~/interface/dialogs/shared'
 import { HouseIcon } from '~/interface/icons/phosphor/HouseIcon'
-import { PlusIcon } from '~/interface/icons/phosphor/PlusIcon'
+import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
 import { UserCircleIcon } from '~/interface/icons/phosphor/UserCircleIcon'
 import { RovingTabs } from '~/interface/tabs/RovingTabs'
 
@@ -13,14 +12,13 @@ import type { TabsTabProps } from 'tamagui'
 
 type TabRoute = {
   name: string
-  href?: Href
+  href: Href
   icon: any
-  action?: () => void
 }
 
 const routes: TabRoute[] = [
   { name: 'home', href: '/home/feed', icon: HouseIcon },
-  { name: 'plus', icon: PlusIcon, action: () => dialogEmit({ type: 'create-post' }) },
+  { name: 'ai', href: '/home/ai', icon: SparkleIcon },
   { name: 'profile', href: '/home/profile', icon: UserCircleIcon },
 ]
 
@@ -57,13 +55,7 @@ export function NavigationTabs() {
               px="$4"
               py="$2"
             >
-              {route.href ? (
-                <Link href={route.href}>{content}</Link>
-              ) : (
-                <Pressable onPress={route.action} data-testid="create-post-button">
-                  {content}
-                </Pressable>
-              )}
+              <Link href={route.href}>{content}</Link>
             </RovingTabs.Tab>
           )
         })

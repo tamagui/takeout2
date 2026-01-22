@@ -158,9 +158,15 @@ function RovingTabsTab({
       unstyled
       value={value}
       onInteraction={onInteraction}
-      bg="transparent"
       borderWidth={0}
+      bg="transparent"
       rounded="$2"
+      hoverStyle={{
+        bg: 'transparent',
+      }}
+      pressStyle={{
+        bg: 'transparent',
+      }}
       {...rest}
     >
       {children}

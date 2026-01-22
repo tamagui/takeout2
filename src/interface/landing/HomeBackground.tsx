@@ -47,9 +47,10 @@ export function HomeBackground() {
         t={0}
         l={0}
         r={0}
-        height="100vh"
+        b={0}
         z={0}
         pointerEvents="none"
+        overflow="hidden"
       >
         <GradientOrb
           width={1200}

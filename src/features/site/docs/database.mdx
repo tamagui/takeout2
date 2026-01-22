@@ -11,24 +11,10 @@ the [Zero](/docs/zero) page.
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      PostgreSQL                              │
-│  ┌─────────────────┐    ┌──────────────────────────────┐   │
-│  │  schema-private │    │        schema-public          │   │
-│  │  (auth tables)  │    │  (synced to Zero clients)    │   │
-│  └─────────────────┘    └──────────────────────────────┘   │
-│           │                          │                      │
-│           │                          ▼                      │
-│           │              ┌──────────────────────┐          │
-│           │              │   Zero Replication   │          │
-│           │              └──────────────────────┘          │
-└───────────│─────────────────────────│───────────────────────┘
-            │                         │
-            ▼                         ▼
-    Server-side only          Client devices
-    (auth, sessions)          (offline-first sync)
-```
+PostgreSQL holds two schemas: **schema-private** for auth tables that stay
+server-side only, and **schema-public** for application data that syncs to Zero
+clients. Zero replicates from the public schema to give clients offline-first
+access with real-time updates.
 
 ## Schema Files
 
@@ -105,14 +91,10 @@ with custom TypeScript migrations.
 2. Run migrations:
 
 ```bash
-# local development - generates and runs migrations
 bun migrate run
-
-# production - generates and builds (CI deploys)
-bun migrate build
 ```
 
-That's it. You don't need to run Drizzle commands directly.
+That's it. CI handles building and deploying migrations automatically.
 
 ### Custom Migrations
 
@@ -306,23 +288,8 @@ After schema changes:
 
 Zero replicates from Postgres, so the database must be updated first.
 
-## Production
-
-Production uses AWS Aurora Serverless v2 with PostgreSQL 16. The connection
-pooling handles Aurora's connection limits with:
-
-- Retry logic with exponential backoff
-- Automatic pool recycling when approaching limits
-- Configurable timeouts for serverless environments
-
-Environment variables:
-
-- `ZERO_UPSTREAM_DB` - Main database connection string
-- `ZERO_CVR_DB` - Zero client view records database
-- `ZERO_CHANGE_DB` - Zero change tracking database
-
 ## Learn More
 
 - [Zero page](/docs/zero) - Client-side queries and mutations
 - [Drizzle ORM docs](https://orm.drizzle.team) - Schema and query reference
-- [PostgreSQL docs](https://www.postgresql.org/docs/) - SQL and triggers
+- [PostgreSQL docs](https://www.postgresql.org/docs/)

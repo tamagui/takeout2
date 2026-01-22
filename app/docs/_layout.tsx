@@ -34,6 +34,7 @@ export function DocsLayout() {
         flexBasis="auto"
         mx="auto"
         width="100%"
+        minH="calc(100vh - 50px)"
         $md={{
           flexDirection: 'row',
         }}
@@ -70,7 +71,8 @@ export function DocsLayout() {
           maxW={840}
           mx="auto"
           px="$4"
-          py="$6"
+          pt="$4"
+          pb="$6"
           $md={{ px: '$8' }}
         >
           <EnsureFlexed />

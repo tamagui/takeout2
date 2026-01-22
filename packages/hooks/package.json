@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "build": "tamagui-build --skip-types",
-    "watch": "tamagui-build --skip-types --watch",
+    "watch": "SKIP_INITIAL_BUILD=1 tamagui-build --skip-types --watch",
     "typecheck": "tko run typecheck",
     "lint": "oxlint src",
     "lint:fix": "oxfmt src && oxlint --fix --fix-suggestions src",

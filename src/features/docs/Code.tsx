@@ -6,7 +6,7 @@ export function CodeInline({ children }: { children: any }) {
       render="code"
       fontFamily="$mono"
       fontSize="$3"
-      bg="$color1"
+      bg="$color3"
       px="$1.5"
       py="$1.5"
       rounded="$3"

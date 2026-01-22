@@ -133,8 +133,8 @@ export function ContentSection() {
       </ContentParagraph>
 
       <ContentParagraph>
-        Even when sharing a lot of code you can get perfect Lighthouse performance scores
-        with ease, like this very page, thanks to our libraries{' '}
+        Even when sharing a lot of code you can easily get 90+ Lighthouse performance
+        scores, like this very page, thanks to our libraries{' '}
         <Link href="https://tamagui.dev" target="_blank" hideExternalIcon>
           <InlineLink>Tamagui</InlineLink>
         </Link>{' '}

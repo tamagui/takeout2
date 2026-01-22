@@ -20,7 +20,7 @@
   },
   "scripts": {
     "build": "tamagui-build",
-    "watch": "tamagui-build --watch",
+    "watch": "SKIP_INITIAL_BUILD=1 tamagui-build --watch",
     "lint": "oxlint src",
     "lint:fix": "oxfmt src && oxlint --fix --fix-suggestions src",
     "typecheck": "tko run typecheck",

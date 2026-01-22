@@ -5,6 +5,7 @@ import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 
 import { DocsRouteNavItem } from './DocsRouteNavItem'
 import { docsRoutes } from './docsRoutes'
+import { ProBadge } from './ProBadge'
 import { useDocsMenu } from './useDocsMenu'
 
 import type { DocsSection } from './docsRoutes'
@@ -200,6 +201,7 @@ const SubSection = ({ section, items }: { section: DocsSection; items: Item[] })
             key={`${page.route}${index}`}
           >
             {page.title}
+            {page.pro && <ProBadge ml="$2" />}
           </DocsRouteNavItem>
         )
       })}

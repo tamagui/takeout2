@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "build": "tamagui-build --skip-native",
-    "watch": "tamagui-build --skip-native --watch"
+    "watch": "SKIP_INITIAL_BUILD=1 tamagui-build --skip-native --watch"
   },
   "dependencies": {
     "citty": "^0.1.6",

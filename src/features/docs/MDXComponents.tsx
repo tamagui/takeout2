@@ -4,6 +4,7 @@ import { Link } from '~/interface/app/Link'
 
 import { CodeInline } from './Code'
 import { DocsCodeBlock } from './DocsCodeBlock'
+import { ProBadge } from './ProBadge'
 import { RouteTree } from './RouteTree'
 import { SimpleTable } from './SimpleTable'
 
@@ -145,6 +146,7 @@ const components = {
     </TableCell>
   ),
 
+  ProBadge,
   RouteTree,
   SimpleTable,
 }

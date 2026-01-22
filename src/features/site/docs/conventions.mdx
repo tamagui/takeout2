@@ -105,13 +105,16 @@ const users = await db.query.users.findMany()
 
 ### Exports
 
-Prefer named exports over default exports, especially in routes:
+Prefer named exports over default exports, especially in routes. React Refresh
+doesn't support default exports, so named exports ensure HMR works properly.
+One uses the last export of a file as the page component when there's no default
+export:
 
 ```tsx
-// good
+// good - HMR works, last export used as page
 export function HomePage() { ... }
 
-// avoid
+// avoid - breaks HMR
 export default function HomePage() { ... }
 ```
 

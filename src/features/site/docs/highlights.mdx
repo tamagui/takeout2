@@ -10,7 +10,18 @@ then configuring logged-out static pages to handing off seamleslly from CSS
 animations to Motion animations took time and aren't reflected in a
 feature-list.
 
-Here's a sample of some intersting work done in Takeout:
+Here's a sample of some interesting work done in Takeout:
+
+## Screens <ProBadge />
+
+1. **Feed** - Post feed with real-time sync and optimistic updates.
+2. **Detail / Comments** - Comments with native gallery view and aggregate
+   triggers for counts.
+3. **Profile** - User profiles with avatar upload and post grid.
+4. **Settings** - Account settings, blocked users, theme switching.
+5. **Onboarding** - Multi-step flow with themed slides and animations.
+6. **Minio/S3 Image Uploads** - Local minio for dev, S3 for production.
+7. **Terms and Privacy** - Static legal pages.
 
 ## One
 
@@ -36,14 +47,14 @@ Here's a sample of some intersting work done in Takeout:
    pages.
 2. **Bundle size optimization** - No JS for themes is sent to the client side,
    CSS is pre-generated and inlined.
-3. **v2 and v5 Config** - Built on the latest version of Tamagui, with great LLM
-   docs on all the new features.
+3. **v5 Config** - Built on the latest version of Tamagui, with great LLM docs
+   on all the new features.
 4. **Less re-rendering** - v2 Motion and Reanimated animation drivers animate
    internal changes with 0 re-rendering, for much smoother feeling apps.
 
 ## Zero
 
-1. **Simplified with `over-zero** - Avoid writing glue code, validators, and
+1. **Simplified with over-zero** - Avoid writing glue code, validators, and
    having logic spread over many files with `over-zero` auto generation.
 2. **Server-only permissions** - Easy `serverWhere()` helper makes writing
    permissions often just a line or two of code.
@@ -77,14 +88,22 @@ Here's a sample of some intersting work done in Takeout:
    auto-generated ones with a single command to create or run, and designed to
    build properly for Lambda environments if deploying with SST.
 
-## SST / Uncloud
+## Uncloud
 
-1. **Dual deployment** - AWS via SST or any VPS via Uncloud with same codebase.
-2. **Zero replication config** - Aurora with logical replication, WAL retention
-   tuned for sync.
-3. **Rolling deploys** - new instances spin up before old ones terminate.
-4. **Encrypted config sharing** - team can share deployment credentials
+1. **Any VPS** - Deploy to any server with Docker and SSH access.
+2. **Rolling deploys** - new instances spin up before old ones terminate.
+3. **Encrypted config sharing** - team can share deployment credentials
    securely.
+
+## AWS <ProBadge />
+
+1. **SST infrastructure** - Full AWS deployment with ECS, Aurora, and S3.
+2. **Auto-scaling** - Aurora serverless and ECS auto-scaling for handling load.
+3. **Zero replication config** - Aurora with logical replication, WAL retention
+   tuned for sync.
+4. **Git push deploys** - Push to main triggers deploy with health checks and
+   env-specific scripting.
+5. **Graviton support** - ARM64 builds for ~40% cost savings.
 
 ## CI/CD
 
@@ -94,8 +113,8 @@ Here's a sample of some intersting work done in Takeout:
    including building and uploading images, running integration tests, and
    monitoring health of the final deploy.
 3. **Expo fingerprint caching** - JS-only changes skip native rebuild entirely.
-4. **Auto OTA deploys** - hot updates deploy automatically after CI succeeds on
-   main.
+4. **Auto OTA deploys** <ProBadge /> - hot updates deploy automatically after CI
+   succeeds on main.
 
 ## Scripts
 
@@ -111,8 +130,6 @@ Here's a sample of some intersting work done in Takeout:
 
 1. **Bun** - Fast installs and CI/CD thanks to `bun` used for installs +
    scripts.
-2. **Unified ENV system** - Custom scripts + `package.json` env section
-   generates server exports, CI config, and docker-compose, keeps them in sync
-   and handles default values.
-3. **SST state integration** - pull production env vars from deployed AWS
-   resources
+2. **Smart env management** <ProBadge /> - Scripts to automate syncing env vars
+   to/from GitHub secrets, pull from SST/production, and thread into every
+   service.

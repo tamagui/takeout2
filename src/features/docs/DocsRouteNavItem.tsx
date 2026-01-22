@@ -28,8 +28,11 @@ export const DocsRouteNavItem = function DocsRouteNavItem({
         rounded="$3"
         opacity={pending ? 0.35 : 1}
         pointerEvents={pending ? 'none' : ('inherit' as any)}
+        $platform-web={{
+          transition: 'background-color 100ms',
+        }}
         hoverStyle={{
-          bg: '$color3',
+          bg: '$color2',
         }}
         pressStyle={{
           bg: '$color2',

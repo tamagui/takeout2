@@ -2,6 +2,7 @@ export type DocsPage = {
   title: string
   route: string
   pending?: boolean
+  pro?: boolean
 }
 
 export type DocsSection = {
@@ -13,9 +14,9 @@ export const docsRoutes: DocsSection[] = [
   {
     pages: [
       { title: 'Introduction', route: '/docs/introduction' },
-      { title: 'Changelog', route: '/docs/changelog' },
-      { title: 'Get Started', route: '/docs/get-started' },
       { title: 'Highlights', route: '/docs/highlights' },
+      { title: 'Get Started', route: '/docs/get-started' },
+      { title: 'Changelog', route: '/docs/changelog' },
     ],
   },
 
@@ -40,13 +41,13 @@ export const docsRoutes: DocsSection[] = [
     title: 'Deployment',
     pages: [
       { title: 'Overview', route: '/docs/deployment-overview' },
-      { title: 'Releasing', route: '/docs/releasing' },
+      { title: 'Releasing', route: '/docs/releasing', pro: true },
     ],
   },
 
   {
     title: 'Use Cases',
-    pages: [{ title: 'Static Websites', route: '/docs/static-websites' }],
+    pages: [{ title: 'Static Websites', route: '/docs/static-websites', pro: true }],
   },
 
   {

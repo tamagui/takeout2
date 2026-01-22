@@ -391,13 +391,13 @@ export function HeroSection() {
           </YStack>
 
           <HeroSubtitle>
-            We agree — most starter kits suck. Unlike others, Takeout has novel tech,
-            real-world production deploys, and is{' '}
+            We agree — <strong>most starter kits suck</strong>. Takeout has actual novel
+            tech, real-world production deploys, scalable IaC, and is{' '}
             <Link href="/docs/changelog">updated like crazy</Link>. It's{' '}
             <Text fontWeight="600" color="$color11">
-              the highest quality, fastest starter
-            </Text>{' '}
-            for cross-platform React and React Native.
+              the highest quality, simplest way to target React and React Native at once
+            </Text>
+            .
           </HeroSubtitle>
 
           <XStack gap="$3" mt="$2" flexWrap="wrap" items="center">

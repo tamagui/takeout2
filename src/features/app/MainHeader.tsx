@@ -1,4 +1,4 @@
-import { Link, router } from 'one'
+import { Link, router, usePathname } from 'one'
 import { memo, useState } from 'react'
 import { H3, Separator, Sheet, Spacer, View, XStack, YStack } from 'tamagui'
 
@@ -20,6 +20,9 @@ import { NavigationTabs } from './NavigationTabs'
 
 export const MainHeader = () => {
   const { user } = useUser()
+  const pathname = usePathname()
+  const isOnSettings = pathname.startsWith('/home/settings')
+
   return (
     <ScrollHeader>
       <PageContainer>
@@ -39,6 +42,8 @@ export const MainHeader = () => {
               pointerEvents="none"
               items="center"
               justify="center"
+              display="none"
+              $lg={{ display: 'flex' }}
             >
               <View pointerEvents="auto">
                 <NavigationTabs />
@@ -67,6 +72,7 @@ export const MainHeader = () => {
                 onPress={() => router.push('/home/settings')}
                 icon={<GearIcon size={18} />}
                 aria-label="Settings"
+                disabled={isOnSettings}
               />
             </XStack>
 

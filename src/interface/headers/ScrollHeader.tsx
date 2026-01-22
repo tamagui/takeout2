@@ -56,8 +56,8 @@ export const ScrollHeader = ({ children }: { children: ReactNode }) => {
             inset={0}
             style={{
               ...(isScrolled && {
-                backdropFilter: `blur(16px)`,
-                WebkitBackdropFilter: `blur(16px)`,
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
               }),
             }}
           />

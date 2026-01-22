@@ -1,6 +1,7 @@
 import { Slot } from 'one'
-import { Spacer } from 'tamagui'
+import { Spacer, View } from 'tamagui'
 
+import { BottomTabBar } from '~/features/app/BottomTabBar'
 import { MainHeader } from '~/features/app/MainHeader'
 
 export function TabsLayout() {
@@ -8,7 +9,10 @@ export function TabsLayout() {
     <>
       <MainHeader />
       <Spacer height={50} />
-      <Slot />
+      <View flex={1} pb={0} $md={{ pb: 60 }} $lg={{ pb: 0 }}>
+        <Slot />
+      </View>
+      <BottomTabBar />
     </>
   )
 }

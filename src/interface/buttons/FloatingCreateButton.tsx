@@ -7,7 +7,7 @@ import { Pressable } from './Pressable'
 
 export const FloatingCreateButton = () => {
   return (
-    <View position="fixed" b="$4" l={0} r={0} z={999}>
+    <View position="fixed" b="$10" l={0} r={0} z={999} $lg={{ b: '$4' }}>
       <View mx="auto" width="100%" maxW={1200} px="$4" items="flex-end">
         <Pressable
           data-testid="create-post-button"
@@ -18,7 +18,8 @@ export const FloatingCreateButton = () => {
           items="center"
           justify="center"
           rounded="$10"
-          bg="$color2"
+          bg="$background"
+          boxShadow="0 0 10px $shadow4"
           aria-label="Create post"
           onPress={() => dialogEmit({ type: 'create-post' })}
         >

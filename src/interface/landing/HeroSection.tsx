@@ -37,7 +37,6 @@ const HeroTitle = styled(H1, {
   color: '$color12',
   size: '$11',
   fontWeight: '800',
-  mr: -50,
 
   $maxLG: {
     size: '$10',
@@ -46,7 +45,6 @@ const HeroTitle = styled(H1, {
 
 const HeroSubtitle = styled(Paragraph, {
   color: '$color10',
-  maxW: 480,
   size: '$6',
 })
 
@@ -379,25 +377,29 @@ export function HeroSection() {
         maxW={1200}
         width="100%"
         pb="$14"
-        $lg={{ flexWrap: 'nowrap', gap: '$10' }}
+        $md={{ flexWrap: 'nowrap', gap: '$12' }}
       >
         {/* left side - hero content */}
         <YStack gap="$5" flex={1} minW={300} maxW={520} items="flex-start">
           <YStack gap="$1">
             <HeroTitle>
-              The only startup starter that gives you{' '}
-              <HighlightText render="span">an actual edge</HighlightText>.
+              The startup starter that actually gives you an{' '}
+              <HighlightText render="span">edge</HighlightText>.
             </HeroTitle>
           </YStack>
 
           <HeroSubtitle>
-            We agree — <strong>most starter kits suck</strong>. Takeout has actual novel
-            tech, real-world production deploys, scalable IaC, and is{' '}
-            <Link href="/docs/changelog">updated like crazy</Link>. It's{' '}
+            <strong>Most starter kits suck</strong>. Takeout takes genuine novel tech
+            extracted from real production apps and adds incredible AI&nbsp;harnessing,
+            scalable IaC and <Link href="/docs/changelog">constant updates</Link> (we use
+            it to consult).
+            <br />
+            <br />
+            It's the{' '}
             <Text fontWeight="600" color="$color11">
-              the highest quality, simplest way to target React and React Native at once
+              fastest way to a build a cross-platform startup
             </Text>
-            .
+            , making React Native and web feel like one, simple thing.
           </HeroSubtitle>
 
           <XStack gap="$3" mt="$2" flexWrap="wrap" items="center">
@@ -421,50 +423,6 @@ export function HeroSection() {
             </Link>
             .
           </Paragraph>
-
-          {/* powered by section */}
-          {/* <YStack gap="$3" mt="$4">
-            <XStack items="center" gap="$3">
-              <Paragraph
-                fontSize={11}
-                color="$color11"
-                fontWeight="500"
-                letterSpacing={1}
-              >
-                POWERED BY
-              </Paragraph>
-              <YStack flex={1} height={1} bg="$color4" opacity={0.5} maxW={100} />
-            </XStack>
-
-            <XStack items="center">
-              {techLogos.map(({ name, href, Logo, size }, index) => (
-                <XStack key={name} items="center">
-                  {index > 0 && <YStack width={1} height={18} bg="$color5" mx="$3" />}
-                  <TooltipSimple groupId="hero-tech-logos" label={name}>
-                    <Link href={href} target="_blank" hideExternalIcon>
-                      <View
-                        cursor="pointer"
-                        opacity={0.7}
-                        px="$1"
-                        hoverStyle={{ opacity: 1, scale: 1.1 }}
-                        pressStyle={{ scale: 0.95 }}
-                        style={{
-                          transition: 'opacity 200ms ease, transform 200ms ease',
-                        }}
-                      >
-                        <XStack gap="$2" items="center">
-                          <Logo size={size} />
-                          <Paragraph fontSize={13} color="$color11" fontWeight="600">
-                            {name}
-                          </Paragraph>
-                        </XStack>
-                      </View>
-                    </Link>
-                  </TooltipSimple>
-                </XStack>
-              ))}
-            </XStack>
-          </YStack> */}
         </YStack>
 
         {/* right side - terminal */}

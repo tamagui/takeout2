@@ -186,7 +186,7 @@ function OnboardingContent({
               >
                 {slide.title}
               </SizableText>
-              <SizableText size="$3" color="$color11" lineHeight="$3">
+              <SizableText size="$3" color="$color11">
                 {slide.description}
               </SizableText>
             </YStack>

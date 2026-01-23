@@ -125,6 +125,7 @@ const DialogComponent = ({
             key="content"
             rounded={CONTENT_RADIUS}
             overflow="hidden"
+            p="$3"
           >
             {children}
           </DialogContent>
@@ -188,13 +189,15 @@ const DialogHeader = ({
   description?: string
 }) => {
   const content = (
-    <YStack pointerEvents="box-none" gap="$3" mb="$3">
+    <YStack pointerEvents="box-none" gap="$3">
       <DialogTitle size="$6" fontWeight="600" cursor="default" select="none">
         {title}
       </DialogTitle>
-      <DialogDescription size="$4" color="$color10">
-        {description}
-      </DialogDescription>
+      {!!description && (
+        <DialogDescription size="$4" color="$color10">
+          {description}
+        </DialogDescription>
+      )}
     </YStack>
   )
 

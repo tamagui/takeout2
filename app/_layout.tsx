@@ -1,6 +1,6 @@
 import './root.css'
 
-import { Slot, Stack } from 'one'
+import { LoadProgressBar, Slot, Stack } from 'one'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import { SiteRootLayout } from '~/features/site/ui/SiteRootLayout'
@@ -33,6 +33,7 @@ export function Layout() {
               <SafeAreaProvider>
                 {process.env.VITE_PLATFORM === 'web' ? (
                   <>
+                    <LoadProgressBar startDelay={800} />
                     <HomeBackground />
                     <SiteRootLayout>
                       <Slot />

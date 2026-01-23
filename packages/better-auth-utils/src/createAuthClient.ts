@@ -194,8 +194,19 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
             user?: AuthState<TUser>['user']
           }
 
+      // if we have a persisted session but server hasn't confirmed yet, stay loading
+      // this prevents redirect race on direct navigation while session is being validated
+      const hasPersistedSession = !!keysStorage.get()?.session
+      const nextState = isPending
+        ? 'loading'
+        : data?.session
+          ? 'logged-in'
+          : hasPersistedSession && !data
+            ? 'loading'
+            : 'logged-out'
+
       setState({
-        state: isPending ? 'loading' : data?.session ? 'logged-in' : 'logged-out',
+        state: nextState,
         session: data?.session,
         user: data?.user
           ? createUser

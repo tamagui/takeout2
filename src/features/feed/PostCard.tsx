@@ -57,9 +57,20 @@ export const PostCard = memo(({ post }: PostCardProps) => {
             <YStack flex={1} gap="$2">
               <XStack items="center" justify="space-between">
                 <XStack items="center" gap="$1">
-                  <SizableText size="$4" fontWeight="600" numberOfLines={1}>
-                    {username}
-                  </SizableText>
+                  <Link
+                    href={
+                      isOwnProfile ? '/home/profile' : `/home/feed/profile/${authorId}`
+                    }
+                  >
+                    <SizableText
+                      size="$4"
+                      fontWeight="600"
+                      numberOfLines={1}
+                      hoverStyle={{ color: '$color12' }}
+                    >
+                      {username}
+                    </SizableText>
+                  </Link>
                   <DotIcon size={16} color="$color10" />
                   <SizableText size="$3" color="$color10">
                     {formatDistanceToNow(post.createdAt)}

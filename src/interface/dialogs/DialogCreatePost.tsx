@@ -153,12 +153,8 @@ export const DialogCreatePost = () => {
       )}
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        <YStack gap="$4">
-          <Dialog.Header title="Create Post" hidden />
-
-          <SizableText size="$6" fontWeight="700">
-            Create Post
-          </SizableText>
+        <YStack p="$1" gap="$4">
+          <Dialog.Header title="Create Post" />
 
           <YStack gap="$3">
             <TextArea

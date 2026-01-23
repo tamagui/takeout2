@@ -2,9 +2,9 @@ import { createSystemFont } from '@tamagui/config/v5'
 import { isWeb } from 'tamagui'
 
 const baseFontSizes = {
-  1: 11,
-  2: 12,
-  3: 13,
+  1: 12,
+  2: 13,
+  3: 14,
   4: 15,
   true: 15,
   5: 16,
@@ -29,7 +29,7 @@ const body = createSystemFont({
     },
   },
   sizeSize: (x) => Math.round(x),
-  sizeLineHeight: (x) => Math.round(x * 1.05 + 9),
+  sizeLineHeight: (x) => Math.round(x * 1.05 + 8),
 })
 
 const heading = createSystemFont({

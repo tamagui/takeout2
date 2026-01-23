@@ -35,11 +35,6 @@ export default {
         find: 'react-native-svg',
         replacement: '@tamagui/react-native-svg',
       },
-      // stub out galeria for web - native-only image viewer
-      {
-        find: '@nandorojo/galeria',
-        replacement: resolvePath('./src/interface/shims/galeria.ts'),
-      },
     ],
   },
 
@@ -69,7 +64,7 @@ export default {
     // @hot-updater/cli-tools contains native .node binaries (oxc-transform)
     // that esbuild can't handle - exclude from optimization
     // @nandorojo/galeria is native-only and should not be bundled for web
-    exclude: ['@hot-updater/cli-tools', '@nandorojo/galeria'],
+    exclude: ['@hot-updater/cli-tools'],
   },
 
   ssr: {
@@ -85,7 +80,6 @@ export default {
       'remark-smartypants',
       'retext',
       'retext-smartypants',
-      '@nandorojo/galeria',
     ],
   },
 

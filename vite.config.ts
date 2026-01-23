@@ -63,7 +63,6 @@ export default {
     ],
     // @hot-updater/cli-tools contains native .node binaries (oxc-transform)
     // that esbuild can't handle - exclude from optimization
-    // @nandorojo/galeria is native-only and should not be bundled for web
     exclude: ['@hot-updater/cli-tools'],
   },
 

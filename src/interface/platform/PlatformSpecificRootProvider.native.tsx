@@ -9,6 +9,7 @@ import { useAuth } from '~/features/auth/client/authClient'
 
 import { Splash } from '../splash/splash'
 
+// TODO properly clean these up
 LogBox.ignoreLogs([
   'clientID=',
   'Got unexpected socket close event',
@@ -16,6 +17,7 @@ LogBox.ignoreLogs([
   'WebSocket connection closed abruptly',
   'findNodeHandle is deprecated',
   'findHostInstance_DEPRECATED is deprecated',
+  `Can't perform a React state update on an unmounted`,
 ])
 
 let splashHasBeenShown = false

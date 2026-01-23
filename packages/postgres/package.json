@@ -62,7 +62,7 @@
     "pg": "^8.16.3"
   },
   "devDependencies": {
-    "@tamagui/build": "^2.0.0-1769080004701",
+    "@tamagui/build": "^2.0.0-1769144929270",
     "@types/async-retry": "^1.4.8",
     "@types/node": "24.0.3",
     "drizzle-orm": "^0.40.0",

@@ -13,7 +13,6 @@ import { ChatCircleIcon } from '~/interface/icons/phosphor/ChatCircleIcon'
 import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
 import { Text } from '~/interface/text/Text'
 
-import { AvatarWithMenu } from './AvatarWithMenu'
 import { PostActionMenu } from './PostActionMenu'
 import { PostImage } from './PostImage'
 

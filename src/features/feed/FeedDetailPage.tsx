@@ -105,8 +105,7 @@ export const FeedDetailPage = memo(() => {
           borderWidth={1}
           borderColor="$color4"
           maxW={860}
-          minH={500}
-          maxH={650}
+          height={500}
           width="100%"
           gap="$4"
           transition="medium"

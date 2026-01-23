@@ -115,13 +115,12 @@ export function ContentSection() {
 
       {/* tldr */}
       <ContentParagraph color="$color12">
-        <Strong>TL;DR:</Strong> Takeout is the result of a many-year effort to create{' '}
+        Takeout is the result of a many-year effort to create{' '}
         <Strong>
-          a new stack, with some new frontend tech, that dramatically simplifies
+          a new stack, with some new frontend tech that dramatically simplifies
           cross-platform development
         </Strong>
-        . It specifically makes three things simpler and faster than before: framework,
-        data, and UI.
+        . It makes three things simpler and faster than before: framework, data, and UI.
       </ContentParagraph>
 
       <ContentParagraph>
@@ -220,6 +219,17 @@ export function ContentSection() {
             Self host or deploy to the cloud. Runs on Postgres. Unplug parts you don't
             like. Libraries chosen for being OSS, popular, single-purpose, and well
             maintained and documented.
+          </ContentParagraph>
+        </GoalItem>
+
+        <GoalItem>
+          <GoalTitle>AI-native</GoalTitle>
+          <ContentParagraph>
+            Point a coding agent at Takeout and prompt an entire app into production in
+            hours. <Strong>Over 25 hand-written skills,</Strong> essential MCP
+            integrations, integration tests, an amazing <CodeInline>takeout</CodeInline>{' '}
+            CLI, and a ton of well-structured scripts make Claude Code amazing at
+            one-shotting almost anything.
           </ContentParagraph>
         </GoalItem>
       </YStack>
@@ -324,17 +334,6 @@ export function ContentSection() {
             </Link>{' '}
             library makes it even easier to use, and can generate some of the boilerplatey
             parts for you, if you like.
-          </ContentParagraph>
-        </TechCard>
-
-        <TechCard>
-          <TechTitle>Agents</TechTitle>
-          <ContentParagraph>
-            Our goal was simple - point a coding agent at Takeout and prompt an entire app
-            into production in hours. <strong>Over 25 hand-written skills,</strong>{' '}
-            essential MCP integrations, integration tests, an amazing{' '}
-            <CodeInline>takeout</CodeInline> CLI, and a ton of well-structured scripts
-            make Claude Code amazing at one-shotting almost anything.
           </ContentParagraph>
         </TechCard>
 

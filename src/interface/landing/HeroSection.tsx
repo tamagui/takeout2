@@ -391,8 +391,9 @@ export function HeroSection() {
           <HeroSubtitle>
             <strong>Most starter kits suck</strong>. Takeout takes genuine novel tech
             extracted from real production apps and adds incredible AI&nbsp;harnessing,
-            scalable IaC and <Link href="/docs/changelog">constant updates</Link> (we use
-            it to consult).
+            scalable IaC and <Link href="/docs/changelog">constant updates</Link> —
+            because&nbsp;it's what we use ourselves{' '}
+            <Link href="https://addeven.com">for clients</Link>.
             <br />
             <br />
             It's the{' '}

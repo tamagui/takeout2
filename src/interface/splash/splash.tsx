@@ -19,17 +19,21 @@ type SplashProps = {
 export const Splash = memo(({ onAnimationEnd, isReady }: SplashProps) => {
   const { height } = useWindowDimensions()
   const translateY = useSharedValue(0)
-  const rotate = useSharedValue(0)
+  const rotateY = useSharedValue(0)
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: translateY.value }, { rotate: `${rotate.value}deg` }],
+      transform: [
+        { perspective: 1000 },
+        { translateY: translateY.value },
+        { rotateY: `${rotateY.value}deg` },
+      ],
     }
   })
 
   useEffect(() => {
     if (isReady) {
-      rotate.value = withDelay(500, withSpring(360))
+      rotateY.value = withDelay(500, withSpring(360, { damping: 12, stiffness: 80 }))
       translateY.value = withDelay(
         1000,
         withSequence(withTiming(-50), withTiming(height))

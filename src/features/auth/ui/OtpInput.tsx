@@ -3,7 +3,6 @@ import { memo, useEffect, useRef, useState } from 'react'
 import {
   SizableText,
   Input as TamaguiInput,
-  useTheme,
   useWindowDimensions,
   View,
   XStack,
@@ -37,7 +36,6 @@ export const OtpInput = memo(function OtpInput({
   'data-testid': testId,
   inputProps,
 }: IOtpInput) {
-  const { color, color2, color3, color02, red10 } = useTheme()
   const { width: windowWidth } = useWindowDimensions()
   const width = Math.min(340, windowWidth)
 
@@ -132,11 +130,6 @@ export const OtpInput = memo(function OtpInput({
           .fill(null)
           .map((_, i) => {
             const isFocused = focus === i
-            const borderColor = isError
-              ? red10.val
-              : isFocused
-                ? color02.val
-                : 'transparent'
 
             return (
               <View key={i} position="relative">
@@ -145,7 +138,7 @@ export const OtpInput = memo(function OtpInput({
                   width={inputWidth}
                   height={inputWidth}
                   rounded={12}
-                  inputMode="numeric"
+                  type="number"
                   ref={(ref) => {
                     if (ref) inputRef.current[i] = ref
                   }}
@@ -165,19 +158,14 @@ export const OtpInput = memo(function OtpInput({
                   justify="center"
                   width={inputWidth}
                   height={inputWidth}
-                  bg={color2}
-                  rounded={12}
-                  borderColor={color3 as any}
+                  bg="$color2"
                   borderWidth={1}
+                  borderColor="$color4"
+                  rounded={12}
                   pointerEvents="none"
                 >
                   {otpValue[i] !== '' && (
-                    <SizableText
-                      fontWeight="500"
-                      fontSize={18}
-                      color={color as any}
-                      position="absolute"
-                    >
+                    <SizableText fontWeight="500" fontSize={18} position="absolute">
                       {otpValue[i]}
                     </SizableText>
                   )}

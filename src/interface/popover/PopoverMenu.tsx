@@ -24,7 +24,7 @@ export const PopoverMenu = ({
 }: PopoverMenuProps) => {
   return (
     <Popover name={name} size="$5" placement={placement}>
-      <Popover.Trigger asChild>{trigger}</Popover.Trigger>
+      <Popover.Trigger>{trigger}</Popover.Trigger>
 
       <Adapt when="maxMD" platform="touch">
         <Sheet
@@ -48,10 +48,10 @@ export const PopoverMenu = ({
         </Sheet>
       </Adapt>
 
-      <Popover.Content shadow={shadow} p={0}>
+      <Popover.Content shadow={shadow} p={0} rounded={0}>
         <YStack
           width="100%"
-          rounded="$5"
+          // rounded="$5"
           overflow="hidden"
           height="100%"
           flex={1}

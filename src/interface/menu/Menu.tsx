@@ -43,7 +43,9 @@ const MenuTrigger = ({ children, ...props }: any) => {
           e.preventDefault()
           e.stopPropagation()
         }}
-        asChild
+        borderWidth={0}
+        bg="transparent"
+        p={0}
         {...props}
       >
         {children}

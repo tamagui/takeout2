@@ -35,7 +35,7 @@ export const ListItemMenu = ({ items }: ListItemMenuProps) => {
         }) || []
       }
     >
-      <Menu.Trigger>
+      <Menu.Trigger unstyled borderWidth={0} bg="transparent" p={0}>
         <ButtonSimple
           variant="transparent"
           my={-12}

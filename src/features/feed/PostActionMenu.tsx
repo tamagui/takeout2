@@ -95,7 +95,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
 
   return (
     <Menu allowFlip placement="bottom-end" offset={8}>
-      <Menu.Trigger asChild>
+      <Menu.Trigger borderWidth={0} bg="transparent">
         <ButtonSimple size="small" circular glass aria-label="Post actions">
           <DotsThreeIcon size={16} color="$color12" />
         </ButtonSimple>

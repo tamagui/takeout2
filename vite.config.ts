@@ -79,6 +79,9 @@ export default {
       'remark-smartypants',
       'retext',
       'retext-smartypants',
+      // og image generation - native node addons
+      '@resvg/resvg-js',
+      'satori',
     ],
   },
 

@@ -83,6 +83,7 @@
     "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-native-menu/menu": "^2.0.0",
     "@react-navigation/bottom-tabs": "^7.10.1",
+    "@resvg/resvg-js": "^2.6.2",
     "@rocicorp/zero": "0.25.6",
     "@take-out/better-auth-utils": "workspace:*",
     "@take-out/helpers": "workspace:*",
@@ -147,6 +148,7 @@
     "react-native-screens": "^4.19.0",
     "react-native-svg": "15.12.1",
     "react-native-worklets": "^0.7.2",
+    "satori": "^0.19.1",
     "tamagui": "^2.0.0-1769189735283",
     "zeego": "^3.0.6"
   },

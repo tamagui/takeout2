@@ -49,9 +49,17 @@ export function DocsSlugPage() {
     return words.slice(0, -1).join(' ') + '\u00A0' + words[words.length - 1]
   }
 
+  const ogImageUrl = `${process.env.ONE_SERVER_URL}/api/og?type=blog&title=${encodeURIComponent(frontmatter.title || '')}`
+
   return (
     <>
-      <HeadInfo title={frontmatter.title} description={frontmatter.description} />
+      <HeadInfo
+        title={frontmatter.title}
+        description={frontmatter.description}
+        openGraph={{
+          images: [{ url: ogImageUrl, width: 1200, height: 630 }],
+        }}
+      />
 
       <H1
         mb="$2"

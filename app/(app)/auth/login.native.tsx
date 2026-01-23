@@ -78,7 +78,6 @@ export const LoginPage = () => {
 
         <View transition="300ms" enterStyle={{ opacity: 0, y: 30 }}>
           <GlassView
-            isInteractive={false}
             borderRadius={32}
             intensity={60}
             containerStyle={{

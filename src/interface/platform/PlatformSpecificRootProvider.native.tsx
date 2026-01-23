@@ -17,7 +17,7 @@ LogBox.ignoreLogs([
   'WebSocket connection closed abruptly',
   'findNodeHandle is deprecated',
   'findHostInstance_DEPRECATED is deprecated',
-  `Can't perform a React state update on an unmounted`,
+  `Can't perform a React state update`,
 ])
 
 let splashHasBeenShown = false

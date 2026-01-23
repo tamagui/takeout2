@@ -1,5 +1,6 @@
 import { createGlobalContext, useAsyncEffect } from '@take-out/helpers'
 import { use, useRef } from 'react'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
   DialogDescription,
   ScrollView,
@@ -31,6 +32,7 @@ const DialogComponent = ({
   ...props
 }: DialogProps & { minH?: number; minW?: number }) => {
   const dialogContentRef = useRef<TamaguiElement>(null)
+  const insets = useSafeAreaInsets()
 
   useHandleEscapeIf(!!open, () => {
     // TODO allow a throw AbortError that works with handleKeyboardEscape closeAllEscapables
@@ -90,7 +92,7 @@ const DialogComponent = ({
             <YStack items="center">
               <Sheet.Handle bg="gray" width={60} height={5} />
             </YStack>
-            <Sheet.Frame p="$4" gap="$4">
+            <Sheet.Frame p="$4" pb={insets.bottom} gap="$4">
               <TamaguiDialog.Adapt.Contents />
             </Sheet.Frame>
           </Sheet>
@@ -194,7 +196,7 @@ const DialogHeader = ({
         {title}
       </DialogTitle>
       {!!description && (
-        <DialogDescription size="$4" color="$color10">
+        <DialogDescription size="$5" color="$color10">
           {description}
         </DialogDescription>
       )}

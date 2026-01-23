@@ -69,19 +69,20 @@ const context = createStyledContext({
 const useContext = context.useStyledContext
 
 const buttonBorderRadius: Record<ButtonSizes, RadiusTokens> = {
-  small: '$4',
-  medium: '$5',
-  large: '$6',
-  tiny: '$3',
+  small: isWeb ? '$4' : '$5',
+  medium: isWeb ? '$5' : '$6',
+  large: isWeb ? '$6' : '$7',
+  tiny: isWeb ? '$3' : '$4',
   square: 0,
 }
 
-const buttonWidths: Record<ButtonSizes, number> = {
-  small: 30,
-  medium: 36,
-  large: 42,
-  tiny: 16,
-  square: 36,
+// = minW and height
+const buttonSizes: Record<ButtonSizes, number> = {
+  small: isWeb ? 30 : 40,
+  medium: isWeb ? 36 : 44,
+  large: isWeb ? 42 : 48,
+  tiny: isWeb ? 16 : 32,
+  square: isWeb ? 36 : 44,
 }
 
 const iconSizes: Record<ButtonSizes, number> = {
@@ -105,8 +106,6 @@ const ButtonFrame = styled(XStack, {
   items: 'center',
   justify: 'center',
   gap: '$2.5',
-  minH: 32,
-  minW: 36,
   px: '$2.5',
   rounded: '$5',
   cursor: 'default',
@@ -154,33 +153,35 @@ const ButtonFrame = styled(XStack, {
 
     size: {
       small: {
-        minH: 26,
-        minW: buttonWidths.small,
+        minH: buttonSizes.small,
+        minW: buttonSizes.small,
         rounded: buttonBorderRadius.small,
         gap: '$2',
-        px: '$2.5',
+        px: isWeb ? '$2.5' : '$4',
       },
       large: {
-        minH: 50,
-        minW: buttonWidths.large,
+        minH: buttonSizes.large,
+        minW: buttonSizes.large,
         rounded: buttonBorderRadius.large,
         gap: '$3',
-        px: '$4',
+        px: isWeb ? '$4' : '$5',
       },
       medium: {
-        minW: buttonWidths.medium,
+        minH: buttonSizes.medium,
+        minW: buttonSizes.medium,
         rounded: buttonBorderRadius.medium,
+        px: isWeb ? '$2.5' : '$4',
       },
       square: {
-        width: buttonWidths.square,
-        height: 32,
+        width: buttonSizes.square,
+        height: buttonSizes.square,
         rounded: buttonBorderRadius.square,
         items: 'center',
         justify: 'center',
       },
       tiny: {
-        minH: 24,
-        minW: buttonWidths.tiny,
+        minH: buttonSizes.tiny,
+        minW: buttonSizes.tiny,
         rounded: buttonBorderRadius.tiny,
         gap: '$1',
         px: '$2',
@@ -190,7 +191,7 @@ const ButtonFrame = styled(XStack, {
     circular: {
       true: (_, { props }) => {
         const sizeProp = (props as any).size as ButtonSizes
-        const size = buttonWidths[sizeProp || 'medium']
+        const size = buttonSizes[sizeProp || 'medium']
         return {
           padding: 0,
           rounded: 100,
@@ -453,8 +454,8 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
         containerStyle={
           rest.circular
             ? {
-                width: buttonWidths[rest.size || 'medium'],
-                height: buttonWidths[rest.size || 'medium'],
+                width: buttonSizes[rest.size || 'medium'],
+                height: buttonSizes[rest.size || 'medium'],
               }
             : ({
                 flex: rest.flex,

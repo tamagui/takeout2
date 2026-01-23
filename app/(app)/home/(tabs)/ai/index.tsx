@@ -117,8 +117,15 @@ export const AIPage = memo(() => {
           )}
         </ScrollView>
 
-        {/* input area */}
-        <YStack px="$4" py="$3" pb={Math.max(insets.bottom, 16)}>
+        <YStack
+          py="$3"
+          bg="$background"
+          position="fixed"
+          b={60}
+          l="$4"
+          r="$4"
+          $md={{ b: 0 }}
+        >
           <AIChatInput onSend={handleSend} isLoading={isLoading} />
         </YStack>
       </YStack>

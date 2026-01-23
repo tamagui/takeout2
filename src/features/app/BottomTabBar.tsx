@@ -39,26 +39,15 @@ export function BottomTabBar() {
         WebkitBackdropFilter: 'blur(16px)',
       }}
     >
-      <XStack justify="space-around" py="$2" px="$4">
+      <XStack justify="space-around" height={60} items="center" px="$4">
         {routes.map((route) => {
           const Icon = route.icon
           const isActive = currentTab === route.name
 
           return (
-            <View
-              key={route.name}
-              flex={1}
-              items="center"
-              justify="center"
-              py="$2"
-              opacity={isActive ? 1 : 0.6}
-              hoverStyle={{ opacity: 1 }}
-              cursor="pointer"
-            >
-              <Link href={route.href}>
-                <Icon size={24} color={isActive ? '$color12' : '$color11'} />
-              </Link>
-            </View>
+            <Link key={route.name} href={route.href} items="center" p="$2" rounded="$4">
+              <Icon size={24} />
+            </Link>
           )
         })}
       </XStack>

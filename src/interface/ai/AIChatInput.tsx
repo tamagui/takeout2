@@ -14,10 +14,9 @@ interface AIChatInputProps {
   isLoading?: boolean
 }
 
-// hoisted styled component (rendering-hoist-jsx)
 const SendButton = styled(View, {
-  width: 42,
-  height: 42,
+  width: 48,
+  height: 48,
   rounded: '$10',
   items: 'center',
   justify: 'center',
@@ -65,7 +64,7 @@ export const AIChatInput = memo(({ onSend, isLoading }: AIChatInputProps) => {
   }
 
   return (
-    <XStack gap="$2" items="flex-end" bg="red">
+    <XStack gap="$2" items="center">
       <Input
         flex={1}
         value={message}

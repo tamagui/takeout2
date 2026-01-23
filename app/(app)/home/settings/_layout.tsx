@@ -20,11 +20,13 @@ export const SettingLayout = () => {
           t={50}
           height="calc(100vh - 50px)"
           shrink={0}
+          display="none"
+          $md={{ display: 'flex' }}
         >
           <SettingsSidebarContent />
         </View>
         <YStack flex={1} flexBasis="auto">
-          <PageMainContainer pt="$6" $xl={{ maxW: 680 }}>
+          <PageMainContainer pt="$6" px="$2" $md={{ px: '$4' }} $xl={{ maxW: 680 }}>
             <Slot />
           </PageMainContainer>
         </YStack>

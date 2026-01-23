@@ -1,9 +1,11 @@
 import { Link, Redirect, usePathname } from 'one'
 import { Linking } from 'react-native'
-import { ScrollView, SizableText, styled, View, XStack, YStack } from 'tamagui'
+import { ScrollView, SizableText, styled, useMedia, View, XStack, YStack } from 'tamagui'
 
 import { APP_NAME_LOWERCASE, DOMAIN } from '~/constants/app'
 import { useSettingsData, type SettingItem } from '~/features/settings/useSettingsData'
+import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
+import { SepHeading } from '~/interface/text/Headings'
 
 function SettingRow({ item, isActive }: { item: SettingItem; isActive: boolean }) {
   const Icon = item.icon
@@ -105,8 +107,98 @@ export function SettingsSidebarContent() {
   )
 }
 
+const MobileSettingRow = ({ item }: { item: SettingItem }) => {
+  const Icon = item.icon
+
+  const content = (
+    <MobileSettingRowFrame {...(item.onPress && { onPress: item.onPress })}>
+      <XStack gap="$3" items="center" flex={1}>
+        {Icon && (
+          <View width={24} items="center" justify="center">
+            <Icon size={20} color="$color11" />
+          </View>
+        )}
+        <SizableText size="$5">{item.title}</SizableText>
+      </XStack>
+      <CaretRightIcon size={16} color="$color8" />
+    </MobileSettingRowFrame>
+  )
+
+  if (item.onPress) return content
+
+  if (!item.href) return null
+
+  if (item.external) {
+    return (
+      <MobileSettingRowFrame
+        onPress={() => Linking.openURL(`https://${DOMAIN}${item.href}`)}
+      >
+        <XStack gap="$3" items="center" flex={1}>
+          {Icon && (
+            <View width={24} items="center" justify="center">
+              <Icon size={20} color="$color11" />
+            </View>
+          )}
+          <SizableText size="$5">{item.title}</SizableText>
+        </XStack>
+        <CaretRightIcon size={16} color="$color8" />
+      </MobileSettingRowFrame>
+    )
+  }
+
+  return (
+    <Link href={item.href} asChild>
+      {content}
+    </Link>
+  )
+}
+
+function MobileSettingsContent() {
+  const { sections } = useSettingsData()
+
+  return (
+    <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+      <YStack flex={1} flexBasis="auto" pb="$10" pt="$4">
+        {sections.map((section) => (
+          <YStack key={section.title} mb="$6">
+            <YStack ml="$4">
+              <SepHeading>{section.title}</SepHeading>
+            </YStack>
+            <YStack>
+              {section.items.map((item) => (
+                <MobileSettingRow key={item.id} item={item} />
+              ))}
+            </YStack>
+          </YStack>
+        ))}
+
+        <MobileLogoAndVersion />
+      </YStack>
+    </ScrollView>
+  )
+}
+
+const MobileLogoAndVersion = () => (
+  <YStack items="center" pb={100} pt="$4">
+    <XStack items="center" gap="$2">
+      <SizableText color="$color10" fontWeight="bold">
+        {APP_NAME_LOWERCASE}
+      </SizableText>
+    </XStack>
+    <SizableText size="$1" color="$color10" mt="$2">
+      v1.0.0
+    </SizableText>
+  </YStack>
+)
+
 export function ProfileSettingsPage() {
-  return <Redirect href="/home/settings/edit-profile" />
+  const media = useMedia()
+
+  if (media.md) {
+    return <Redirect href="/home/settings/edit-profile" />
+  }
+
+  return <MobileSettingsContent />
 }
 
 const SettingRowFrame = styled(XStack, {
@@ -145,4 +237,14 @@ const SectionTitle = styled(SizableText, {
   letterSpacing: 0.5,
   px: '$3',
   py: '$2',
+})
+
+const MobileSettingRowFrame = styled(XStack, {
+  cursor: 'pointer',
+  height: 56,
+  px: '$4',
+  items: 'center',
+  justify: 'space-between',
+  hoverStyle: { bg: '$color2' },
+  pressStyle: { bg: '$color3' },
 })

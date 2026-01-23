@@ -7,6 +7,7 @@ import { ButtonAction } from '~/interface/buttons/ButtonAction'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Dialog } from '~/interface/dialogs/Dialog'
 import { Input } from '~/interface/forms/Input'
+import { AnimatedBlurHeader } from '~/interface/headers/AnimatedBlurHeader'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { XIcon } from '~/interface/icons/phosphor/XIcon'
 import { KeyboardAwareScrollView } from '~/interface/keyboard/KeyboardAwareScrollView'
@@ -75,11 +76,15 @@ export const ProfileEditPage = () => {
       </Dialog>
 
       <PageLayout>
+        {isWeb && (
+          <View display="flex" $md={{ display: 'none' }}>
+            <AnimatedBlurHeader title="Edit Profile" />
+          </View>
+        )}
         <View
           flex={1}
           flexBasis="auto"
-          px="$3"
-          transition="medium"
+          transition="200ms"
           enterStyle={{ opacity: 0, y: 10 }}
           exitStyle={{ opacity: 0, y: -10 }}
         >

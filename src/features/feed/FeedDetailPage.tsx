@@ -154,7 +154,13 @@ export const FeedDetailPage = memo(() => {
   }
 
   return (
-    <YStack flex={1} transition="medium" enterStyle={{ opacity: 0, y: 10 }}>
+    <ScrollView
+      flex={1}
+      transition="medium"
+      enterStyle={{ opacity: 0, y: 10 }}
+      pb={60}
+      showsVerticalScrollIndicator={false}
+    >
       <YStack py="$4">{postHeader}</YStack>
       <Pressable onPress={openGallery} mb="$4">
         <PostImage postId={post.id} image={post.image} caption={post.caption} />
@@ -167,6 +173,6 @@ export const FeedDetailPage = memo(() => {
       <CommentSection postId={feedId} />
 
       <YStack py="$4">{commentInput}</YStack>
-    </YStack>
+    </ScrollView>
   )
 })

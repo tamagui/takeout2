@@ -7,7 +7,6 @@ import { ButtonAction } from '~/interface/buttons/ButtonAction'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Dialog } from '~/interface/dialogs/Dialog'
 import { Input } from '~/interface/forms/Input'
-import { AnimatedBlurHeader } from '~/interface/headers/AnimatedBlurHeader'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { XIcon } from '~/interface/icons/phosphor/XIcon'
 import { KeyboardAwareScrollView } from '~/interface/keyboard/KeyboardAwareScrollView'
@@ -76,11 +75,6 @@ export const ProfileEditPage = () => {
       </Dialog>
 
       <PageLayout>
-        {isWeb && (
-          <View display="flex" $md={{ display: 'none' }}>
-            <AnimatedBlurHeader title="Edit Profile" />
-          </View>
-        )}
         <View
           flex={1}
           flexBasis="auto"
@@ -167,20 +161,33 @@ export const ProfileEditPage = () => {
                   </Text>
                 ) : null}
               </YStack>
+              {isWeb && (
+                <ButtonSimple
+                  glass
+                  glassTint={!canSave ? 'transparent' : 'darkslateblue'}
+                  size="large"
+                  onPress={handleSave}
+                  disabled={!canSave}
+                >
+                  {isSaving ? 'Saving...' : 'Save'}
+                </ButtonSimple>
+              )}
             </YStack>
           </KeyboardAwareScrollView>
 
-          <KeyboardStickyFooter openedOffset={-10}>
-            <ButtonSimple
-              glass
-              glassTint={!canSave ? 'transparent' : 'darkslateblue'}
-              size="large"
-              onPress={handleSave}
-              disabled={!canSave}
-            >
-              {isSaving ? 'Saving...' : 'Save'}
-            </ButtonSimple>
-          </KeyboardStickyFooter>
+          {!isWeb && (
+            <KeyboardStickyFooter openedOffset={-10}>
+              <ButtonSimple
+                glass
+                glassTint={!canSave ? 'transparent' : 'darkslateblue'}
+                size="large"
+                onPress={handleSave}
+                disabled={!canSave}
+              >
+                {isSaving ? 'Saving...' : 'Save'}
+              </ButtonSimple>
+            </KeyboardStickyFooter>
+          )}
         </View>
       </PageLayout>
     </>

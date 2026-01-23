@@ -1,7 +1,9 @@
 import { memo, useState } from 'react'
-import { Input, Spinner, styled, View, XStack } from 'tamagui'
+import { Spinner, styled, View, XStack } from 'tamagui'
 
 import { ArrowUpIcon } from '~/interface/icons/phosphor/ArrowUpIcon'
+
+import { Input } from '../forms/Input'
 
 interface AIChatInputProps {
   onSend?: (message: string, imageUri?: string) => void
@@ -63,7 +65,7 @@ export const AIChatInput = memo(({ onSend, isLoading }: AIChatInputProps) => {
   }
 
   return (
-    <XStack gap="$2" items="flex-end">
+    <XStack gap="$2" items="flex-end" bg="red">
       <Input
         flex={1}
         value={message}

@@ -1,5 +1,5 @@
 import { LegendList } from '@legendapp/list'
-import { isNative, isWeb } from '@take-out/helpers'
+import { isNative } from '@take-out/helpers'
 import { useCallback } from 'react'
 import { Alert, RefreshControl } from 'react-native'
 import { ListItem, SizableText, Spinner, View, YStack } from 'tamagui'
@@ -7,7 +7,6 @@ import { ListItem, SizableText, Spinner, View, YStack } from 'tamagui'
 import { useBlockedUsers } from '~/features/profile/useBlockedUsers'
 import { Avatar } from '~/interface/avatars/Avatar'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
-import { AnimatedBlurHeader } from '~/interface/headers/AnimatedBlurHeader'
 import { PageLayout } from '~/interface/pages/PageLayout'
 import { Text } from '~/interface/text/Text'
 
@@ -100,11 +99,6 @@ export const ProfileBlockedUsersPage = () => {
 
   return (
     <PageLayout>
-      {isWeb && (
-        <View display="flex" $md={{ display: 'none' }}>
-          <AnimatedBlurHeader title="Blocked Users" />
-        </View>
-      )}
       <View
         flex={1}
         flexBasis="auto"

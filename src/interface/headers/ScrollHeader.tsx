@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react'
-import { XStack, YStack, isClient } from 'tamagui'
+import { XStack, YStack, isClient, useMedia } from 'tamagui'
 
 import type { ReactNode } from 'react'
 
 export const ScrollHeader = ({ children }: { children: ReactNode }) => {
   const [isScrolled, setIsScrolled] = useState(false)
+  const media = useMedia()
+  const isMobile = media.maxSM
 
   useEffect(() => {
-    if (!isClient) return
+    if (!isClient || isMobile) return
 
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 30)
@@ -42,7 +44,7 @@ export const ScrollHeader = ({ children }: { children: ReactNode }) => {
             rounded: '$10',
             y: 0,
             shadowColor: 'transparent',
-            ...(isScrolled && {
+            ...((isScrolled || isMobile) && {
               y: 6,
               shadowColor: '$shadow4',
               shadowRadius: 8,
@@ -55,7 +57,7 @@ export const ScrollHeader = ({ children }: { children: ReactNode }) => {
             transition="medium"
             inset={0}
             style={{
-              ...(isScrolled && {
+              ...((isScrolled || isMobile) && {
                 backdropFilter: 'blur(16px)',
                 WebkitBackdropFilter: 'blur(16px)',
               }),
@@ -63,7 +65,7 @@ export const ScrollHeader = ({ children }: { children: ReactNode }) => {
           />
 
           <YStack
-            opacity={isScrolled ? 0.85 : 0}
+            opacity={isScrolled || isMobile ? 0.85 : 0}
             position="absolute"
             inset={0}
             bg="$color2"

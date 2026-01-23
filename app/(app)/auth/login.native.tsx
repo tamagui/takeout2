@@ -46,21 +46,14 @@ export const LoginPage = () => {
   return (
     <GradientBackground useImage useInsets={false}>
       <View flex={1}>
-        {/* hero section */}
         <View flex={1} items="center" justify="center" pt={insets.top} px="$6">
-          <Circle
-            size={100}
-            bg="$color2"
-            items="center"
-            justify="center"
-            borderWidth={1}
-            borderColor="$color4"
+          <View
             mb="$5"
             transition="300ms"
             enterStyle={{ opacity: 0, scale: 0.9, y: -20 }}
           >
             <Image src={require('../../../assets/logo.png')} width={60} height={60} />
-          </Circle>
+          </View>
 
           <YStack
             items="center"
@@ -83,7 +76,6 @@ export const LoginPage = () => {
           </YStack>
         </View>
 
-        {/* action card */}
         <View transition="300ms" enterStyle={{ opacity: 0, y: 30 }}>
           <GlassView
             isInteractive={false}
@@ -96,7 +88,6 @@ export const LoginPage = () => {
             }}
           >
             <YStack px="$5" pt="$6" gap="$4">
-              {/* primary action */}
               <Link href="/auth/signup/email" asChild>
                 <ButtonSimple
                   size="large"
@@ -110,7 +101,6 @@ export const LoginPage = () => {
                 </ButtonSimple>
               </Link>
 
-              {/* demo mode */}
               {isDemoMode && (
                 <ButtonSimple
                   size="large"
@@ -132,7 +122,6 @@ export const LoginPage = () => {
                 </ButtonSimple>
               )}
 
-              {/* divider */}
               <XStack items="center" gap="$4">
                 <View flex={1} height={1} bg="$color6" />
                 <SizableText size="$2" color="$color9">
@@ -141,7 +130,6 @@ export const LoginPage = () => {
                 <View flex={1} height={1} bg="$color6" />
               </XStack>
 
-              {/* social buttons */}
               <XStack gap="$3">
                 <ButtonSimple
                   flex={1}
@@ -166,7 +154,6 @@ export const LoginPage = () => {
                 </ButtonSimple>
               </XStack>
 
-              {/* legal text */}
               <SizableText size="$2" text="center" color="$color9" px="$2">
                 By continuing, you agree to our{' '}
                 <Link href={TERMS_OF_SERVICE_URL}>Terms</Link>,{' '}

@@ -3,6 +3,8 @@ import { isWeb } from 'tamagui'
 
 import { APP_NAME } from '~/constants/app'
 
+const DEFAULT_OG_IMAGE = `${process.env.ONE_SERVER_URL}/og.jpg`
+
 export const HeadInfo = memo(function HeadInfo({
   title,
   description,
@@ -25,6 +27,9 @@ export const HeadInfo = memo(function HeadInfo({
   }
 
   const fullTitle = title?.includes(APP_NAME) ? title : `${title} | ${APP_NAME}`
+  const ogImages = openGraph?.images ?? [
+    { url: DEFAULT_OG_IMAGE, width: 1200, height: 630 },
+  ]
 
   return (
     <>
@@ -44,6 +49,19 @@ export const HeadInfo = memo(function HeadInfo({
         </>
       )}
 
+      {ogImages.map((image) => {
+        return (
+          <Fragment key={image.url}>
+            <meta property="og:image" content={image.url} />
+            <meta property="twitter:image" content={image.url} />
+            {image.width && <meta property="og:image:width" content={`${image.width}`} />}
+            {image.height && (
+              <meta property="og:image:height" content={`${image.height}`} />
+            )}
+          </Fragment>
+        )
+      })}
+
       {openGraph && (
         <>
           {openGraph.url && (
@@ -52,20 +70,6 @@ export const HeadInfo = memo(function HeadInfo({
               <meta property="og:type" content="website" />
             </>
           )}
-
-          {openGraph.images?.map((image) => {
-            return (
-              <Fragment key={image.url}>
-                <meta property="og:image" content={image.url} />
-                {image.width && (
-                  <meta property="og:image:width" content={`${image.width}`} />
-                )}
-                {image.height && (
-                  <meta property="og:image:height" content={`${image.height}`} />
-                )}
-              </Fragment>
-            )
-          })}
 
           <meta property="og:locale" content={openGraph.locale ?? 'en_US'} />
           <meta property="og:site_name" content={openGraph.siteName || APP_NAME} />

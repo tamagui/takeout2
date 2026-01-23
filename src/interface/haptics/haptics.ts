@@ -1,6 +1,8 @@
 import { isNative } from '@take-out/helpers'
 import * as ExpoHaptics from 'expo-haptics'
 
+export type HapticStyle = boolean | 'light' | 'medium' | 'heavy' | 'soft' | 'rigid'
+
 // only enable haptics on iOS and Android
 const isHapticsSupported = isNative
 

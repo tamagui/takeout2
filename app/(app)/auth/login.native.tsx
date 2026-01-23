@@ -1,5 +1,14 @@
 import { useCallback, useState } from 'react'
-import { AnimatePresence, SizableText, Spinner, View, XStack, YStack } from 'tamagui'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import {
+  AnimatePresence,
+  Circle,
+  SizableText,
+  Spinner,
+  View,
+  XStack,
+  YStack,
+} from 'tamagui'
 
 import {
   APP_NAME,
@@ -13,13 +22,15 @@ import { isDemoMode } from '~/helpers/isDemoMode'
 import { Link } from '~/interface/app/Link'
 import { GradientBackground } from '~/interface/backgrounds/GradientBackground'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { GlassView } from '~/interface/effects/GlassView'
 import { AppleIcon } from '~/interface/icons/AppleIcon'
 import { GoogleIcon } from '~/interface/icons/GoogleIcon'
+import { EnvelopeSimpleIcon } from '~/interface/icons/phosphor/EnvelopeSimpleIcon'
 import { Image } from '~/interface/image/Image'
-import { H2 } from '~/interface/text/Headings'
 import { showToast } from '~/interface/toast/helpers'
 
 export const LoginPage = () => {
+  const insets = useSafeAreaInsets()
   const [demoLoading, setDemoLoading] = useState<boolean>(false)
   const [showOnboarding, setShowOnboarding] = useState(() => !onboardingStorage.get())
 
@@ -33,102 +44,138 @@ export const LoginPage = () => {
   }
 
   return (
-    <GradientBackground useImage>
-      <View flex={1} px="$4" pb="$4" justify="flex-end" gap="$4">
-        <View items="center">
-          <Image src={require('../../../assets/logo.png')} width={80} height={80} />
+    <GradientBackground useImage useInsets={false}>
+      <View flex={1}>
+        {/* hero section */}
+        <View flex={1} items="center" justify="center" pt={insets.top} px="$6">
+          <Circle
+            size={100}
+            bg="$color2"
+            items="center"
+            justify="center"
+            borderWidth={1}
+            borderColor="$color4"
+            mb="$5"
+            transition="300ms"
+            enterStyle={{ opacity: 0, scale: 0.9, y: -20 }}
+          >
+            <Image src={require('../../../assets/logo.png')} width={60} height={60} />
+          </Circle>
+
+          <YStack
+            items="center"
+            gap="$2"
+            transition="300ms"
+            enterStyle={{ opacity: 0, y: 10 }}
+          >
+            <SizableText
+              size="$9"
+              fontWeight="800"
+              fontFamily="$heading"
+              text="center"
+              color="$color12"
+            >
+              {APP_NAME}
+            </SizableText>
+            <SizableText size="$4" color="$color10" text="center" maxW={280}>
+              Sign in to continue to your account
+            </SizableText>
+          </YStack>
         </View>
-        <H2 text="center" fontFamily="$heading">
-          Login to {APP_NAME}
-        </H2>
-        <YStack gap="$3" mt="$4">
-          <Link href="/auth/signup/email" asChild>
-            <ButtonSimple
-              size="large"
-              glass
-              glassTint="orange"
-              pressStyle={{
-                scale: 0.97,
-                opacity: 0.9,
-              }}
-              width="100%"
-              transition="200ms"
-              enterStyle={{ opacity: 0, scale: 0.95 }}
-            >
-              Continue with Email
-            </ButtonSimple>
-          </Link>
 
-          {/* DEMO mode - enabled in dev or when VITE_DEMO_MODE=1 */}
-          {isDemoMode && (
-            <ButtonSimple
-              size="large"
-              glass
-              glassTint="mediumpurple"
-              onPress={async () => {
-                setDemoLoading(true)
-                const { error } = await signInAsDemo()
-                setDemoLoading(false)
-                if (error) {
-                  showToast('Demo login failed', { type: 'error' })
-                }
-                // AppLayout handles redirect when auth state changes
-              }}
-              disabled={demoLoading}
-              width="100%"
-              data-testid="login-as-demo"
-              pressStyle={{
-                scale: 0.97,
-              }}
-              transition="200ms"
-              enterStyle={{ opacity: 0, scale: 0.95 }}
-            >
-              {demoLoading ? <Spinner size="small" /> : 'Login as Demo User'}
-            </ButtonSimple>
-          )}
-          <XStack width="100%" gap="$3" justify="center">
-            <ButtonSimple
-              glass
-              size="large"
-              onPress={() => handleSocialLogin('google')}
-              pressStyle={{
-                scale: 0.97,
-                bg: '$color2',
-              }}
-              hoverStyle={{
-                bg: '$color2',
-              }}
-              transition="200ms"
-              enterStyle={{ opacity: 0, scale: 0.95 }}
-              icon={<GoogleIcon size={18} />}
-            />
+        {/* action card */}
+        <View transition="300ms" enterStyle={{ opacity: 0, y: 30 }}>
+          <GlassView
+            isInteractive={false}
+            borderRadius={32}
+            intensity={60}
+            containerStyle={{
+              borderBottomLeftRadius: 0,
+              borderBottomRightRadius: 0,
+              paddingBottom: insets.bottom + 16,
+            }}
+          >
+            <YStack px="$5" pt="$6" gap="$4">
+              {/* primary action */}
+              <Link href="/auth/signup/email" asChild>
+                <ButtonSimple
+                  size="large"
+                  theme="accent"
+                  haptic
+                  pressStyle={{ scale: 0.98, opacity: 0.9 }}
+                  width="100%"
+                  icon={<EnvelopeSimpleIcon size={20} />}
+                >
+                  Continue with Email
+                </ButtonSimple>
+              </Link>
 
-            <ButtonSimple
-              glass
-              size="large"
-              onPress={() => handleSocialLogin('apple')}
-              pressStyle={{
-                scale: 0.97,
-                bg: '$color2',
-              }}
-              hoverStyle={{
-                bg: '$color2',
-              }}
-              transition="200ms"
-              enterStyle={{ opacity: 0, scale: 0.95 }}
-              icon={<AppleIcon size={20} />}
-            />
-          </XStack>
-        </YStack>
+              {/* demo mode */}
+              {isDemoMode && (
+                <ButtonSimple
+                  size="large"
+                  haptic
+                  onPress={async () => {
+                    setDemoLoading(true)
+                    const { error } = await signInAsDemo()
+                    setDemoLoading(false)
+                    if (error) {
+                      showToast('Demo login failed', { type: 'error' })
+                    }
+                  }}
+                  disabled={demoLoading}
+                  width="100%"
+                  data-testid="login-as-demo"
+                  pressStyle={{ scale: 0.98 }}
+                >
+                  {demoLoading ? <Spinner size="small" /> : 'Login as Demo User'}
+                </ButtonSimple>
+              )}
 
-        <YStack items="center" gap="$2" mt="$4">
-          <SizableText size="$3" text="center" color="$color">
-            {` By continuing, you agree to our\n`}
-            <Link href={TERMS_OF_SERVICE_URL}>Terms of Service</Link>,{' '}
-            <Link href={PRIVACY_POLICY_URL}>Privacy Policy</Link> and{' '}
-            <Link href={EULA_URL}>EULA.</Link>
-          </SizableText>
-        </YStack>
+              {/* divider */}
+              <XStack items="center" gap="$4">
+                <View flex={1} height={1} bg="$color6" />
+                <SizableText size="$2" color="$color9">
+                  or continue with
+                </SizableText>
+                <View flex={1} height={1} bg="$color6" />
+              </XStack>
+
+              {/* social buttons */}
+              <XStack gap="$3">
+                <ButtonSimple
+                  flex={1}
+                  size="large"
+                  haptic
+                  onPress={() => handleSocialLogin('google')}
+                  pressStyle={{ scale: 0.98, bg: '$color3' }}
+                  icon={<GoogleIcon size={20} />}
+                >
+                  Google
+                </ButtonSimple>
+
+                <ButtonSimple
+                  flex={1}
+                  size="large"
+                  haptic
+                  onPress={() => handleSocialLogin('apple')}
+                  pressStyle={{ scale: 0.98, opacity: 0.9 }}
+                  icon={<AppleIcon size={22} />}
+                >
+                  <SizableText fontWeight="600">Apple</SizableText>
+                </ButtonSimple>
+              </XStack>
+
+              {/* legal text */}
+              <SizableText size="$2" text="center" color="$color9" px="$2">
+                By continuing, you agree to our{' '}
+                <Link href={TERMS_OF_SERVICE_URL}>Terms</Link>,{' '}
+                <Link href={PRIVACY_POLICY_URL}>Privacy</Link> &{' '}
+                <Link href={EULA_URL}>EULA</Link>
+              </SizableText>
+            </YStack>
+          </GlassView>
+        </View>
       </View>
 
       <AnimatePresence>

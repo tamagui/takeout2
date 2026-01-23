@@ -14,10 +14,18 @@ import {
 
 import { GlassView } from '../effects/GlassView'
 import Glint from '../effects/Glint'
+import {
+  heavyImpact,
+  lightImpact,
+  mediumImpact,
+  rigidImpact,
+  softImpact,
+} from '../haptics/haptics'
 import { closeOpenTooltips } from '../tooltip/closeOpenTooltips'
 import { type TooltipWrapperProps, wrapWithTooltip } from '../tooltip/TooltipSimple'
 import { wrapChildrenInText } from './wrapChildrenInText'
 
+import type { HapticStyle } from '../haptics/haptics'
 import type { IconProps } from '@tamagui/helpers-icon'
 import type { FontFamilyTokens, RadiusTokens } from 'tamagui'
 
@@ -30,6 +38,7 @@ type ButtonSimpleAdditionalProps = {
   glass?: boolean
   glassTint?: string
   glow?: boolean
+  haptic?: HapticStyle
   icon?: any
   iconAfter?: boolean
   iconProps?: IconProps
@@ -328,6 +337,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
       glass,
       glassTint,
       glow,
+      haptic,
       icon,
       iconAfter,
       iconProps,
@@ -343,6 +353,20 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
     },
     ref
   ) => {
+    const handleHaptic = () => {
+      if (!haptic) return
+      if (haptic === true || haptic === 'light') {
+        lightImpact()
+      } else if (haptic === 'medium') {
+        mediumImpact()
+      } else if (haptic === 'heavy') {
+        heavyImpact()
+      } else if (haptic === 'soft') {
+        softImpact()
+      } else if (haptic === 'rigid') {
+        rigidImpact()
+      }
+    }
     // avoid de-structuring which messes up style order from parents
     const variant = rest.variant
 
@@ -385,6 +409,10 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
           pointerEvents: 'none',
           cursor: 'not-allowed',
         })}
+        onPressIn={(e) => {
+          handleHaptic()
+          rest.onPressIn?.(e)
+        }}
         onPressOut={() => {
           if (!keepTooltipOpen) {
             closeOpenTooltips()

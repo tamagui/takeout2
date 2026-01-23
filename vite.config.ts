@@ -10,7 +10,7 @@ export default {
       // use react-native-web-lite/without-animated instead of react-native-web
       // much smaller bundle size
       ...tamaguiAliases({
-        rnwLite: true,
+        rnwLite: 'without-animated',
         svg: true,
       }),
       // stub out bottom-tabs for web - one framework has it but we don't use it
@@ -51,7 +51,7 @@ export default {
       '@hot-updater/cli-tools',
       // we are avoiding reanimated on web - for many apps this may not be desirable
       // if you can live with motion/tamagui animations + one-off CSS, then its simpler
-      'react-native-reanimated',
+      // 'react-native-reanimated',
     ],
   },
 
@@ -91,7 +91,6 @@ export default {
     tamaguiPlugin({
       optimize: true,
       disableExtraction: process.env.NODE_ENV !== 'production',
-      useReactNativeWebLite: true,
       components: ['tamagui'],
       config: './src/tamagui/tamagui.config.ts',
       outputCSS: './src/tamagui/tamagui.css',
@@ -105,14 +104,7 @@ export default {
       },
 
       react: {
-        compiler: true,
-      },
-
-      ssr: {
-        autoDepsOptimization: {
-          // TODO: add in ONE
-          exclude: ['*/react-native-fast-squircle/*'],
-        },
+        compiler: process.env.NODE_ENV === 'production',
       },
 
       native: {

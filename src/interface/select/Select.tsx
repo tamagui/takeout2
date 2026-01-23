@@ -62,7 +62,12 @@ export function Select({
       </TamaguiSelect.Trigger>
 
       <Adapt when="maxMD" platform="touch">
-        <Sheet native={!!props.native} modal dismissOnSnapToBottom transition="medium">
+        <Sheet
+          native={!!props.native}
+          modal
+          dismissOnSnapToBottom
+          transition="quickLessBouncy"
+        >
           <Sheet.Frame>
             <Sheet.ScrollView>
               <Adapt.Contents />

@@ -214,7 +214,7 @@ const ButtonFrame = styled(XStack, {
 
         pressStyle: {
           bg: '$color1',
-          opacity: 1,
+          opacity: 0.6,
         },
 
         focusVisibleStyle: {
@@ -241,34 +241,6 @@ const ButtonText = styled(Text, {
   },
 
   variants: {
-    active: {
-      true: {
-        // '$theme-light': {
-        //   color: '$color1',
-        // },
-      },
-    },
-
-    variant: {
-      ':string': (val: string, { props }: any) => {
-        if (val === 'outlined') {
-          if (props.active) {
-            return {
-              // '$theme-light': {
-              //   color: '$color11',
-              // },
-            }
-          }
-
-          return {
-            // '$theme-light': {
-            //   color: '$color11',
-            // },
-          }
-        }
-      },
-    },
-
     size: {
       small: {
         fontSize: '$3',

@@ -83,7 +83,7 @@ const SiteHeaderMenu = memo(() => {
       <Sheet
         open={open}
         onOpenChange={setOpen}
-        transition="medium"
+        transition="quickLessBouncy"
         modal
         dismissOnSnapToBottom
         snapPoints={[isDocsPage ? 85 : 50]}

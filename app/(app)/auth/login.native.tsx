@@ -91,8 +91,8 @@ export const LoginPage = () => {
                 <ButtonSimple
                   size="large"
                   theme="accent"
+                  transition="100ms"
                   haptic
-                  pressStyle={{ scale: 0.98, opacity: 0.9 }}
                   width="100%"
                   icon={<EnvelopeSimpleIcon size={20} />}
                 >

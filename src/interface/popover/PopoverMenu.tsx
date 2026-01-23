@@ -28,7 +28,7 @@ export const PopoverMenu = ({
 
       <Adapt when="maxMD" platform="touch">
         <Sheet
-          transition="medium"
+          transition="quickLessBouncy"
           modal
           dismissOnSnapToBottom
           snapPoints={snapPoints}

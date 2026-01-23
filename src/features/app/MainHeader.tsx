@@ -107,7 +107,7 @@ export const MainHeaderMenu = memo(() => {
       <Sheet
         open={open}
         onOpenChange={setOpen}
-        transition="medium"
+        transition="quickLessBouncy"
         modal
         dismissOnSnapToBottom
         snapPoints={[50]}

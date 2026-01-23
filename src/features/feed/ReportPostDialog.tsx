@@ -61,7 +61,7 @@ export function ReportPostDialog({ postId, open, onOpenChange }: ReportPostDialo
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <Adapt when="maxMD" platform="touch">
-        <Sheet transition="medium" modal dismissOnSnapToBottom snapPoints={[60]}>
+        <Sheet transition="quickLessBouncy" modal dismissOnSnapToBottom snapPoints={[60]}>
           <Sheet.Frame p="$4">
             <Adapt.Contents />
           </Sheet.Frame>

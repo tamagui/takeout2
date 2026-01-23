@@ -113,8 +113,8 @@ export const OtpPage = () => {
       bottom={
         <KeyboardStickyFooter openedOffset={-10}>
           <ButtonSimple
+            theme="accent"
             glass
-            glassTint={isDisabled ? 'transparent' : 'darkslateblue'}
             width="100%"
             data-testid="verify-otp-button"
             size="large"

@@ -143,8 +143,8 @@ export const SignupPage = memo(() => {
       bottom={
         <KeyboardStickyFooter openedOffset={-10}>
           <ButtonSimple
+            theme="accent"
             glass
-            glassTint={isDisabled ? 'transparent' : 'darkslateblue'}
             data-testid="next-button"
             size="large"
             pressStyle={{

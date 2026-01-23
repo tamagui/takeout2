@@ -191,6 +191,7 @@ export const OtpInput = memo(function OtpInput({
         variant="transparent"
         size="small"
         onPress={handlePaste}
+        self="center"
         icon={ClipboardIcon}
         {...(isFilled && {
           opacity: 0,

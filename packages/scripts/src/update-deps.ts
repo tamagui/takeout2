@@ -4,7 +4,7 @@
  * @description Update dependencies across workspace packages
  */
 
-import { existsSync, readdirSync, readFileSync, rmSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { $ } from 'bun'
@@ -129,61 +129,48 @@ function doesPackageMatchPattern(packageName: string, pattern: string): boolean 
   return packageName === pattern
 }
 
-async function updatePackagesInWorkspace(
+function updatePackageJsonVersions(
+  packageJsonPath: string,
   packagesToUpdate: string[],
-  cwd: string,
-  workspaceName: string
-) {
-  if (packagesToUpdate.length === 0) {
-    return
-  }
+  versionMap: Map<string, string>
+): number {
+  const content = readFileSync(packageJsonPath, 'utf-8')
+  const packageJson = JSON.parse(content) as PackageJson
+  let updatedCount = 0
 
-  $.cwd(cwd)
-
-  if (globalTag) {
-    // check which packages actually have the tag
-    const packagesWithTag = (
-      await Promise.all(
-        packagesToUpdate.map(async (pkg) => {
-          try {
-            await $`npm view ${pkg}@${globalTag} version --json`.quiet()
-            return pkg
-          } catch {
-            return null
-          }
-        })
-      )
-    ).filter((pkg): pkg is string => pkg !== null)
-
-    if (packagesWithTag.length === 0) {
-      return
-    }
-
-    console.info(`  📦 ${workspaceName}: updating ${packagesWithTag.length} package(s)`)
-
-    const packageNamesWithTags = packagesWithTag.map((pkg) => `${pkg}@${globalTag}`)
-
-    try {
-      await $`bun add ${packageNamesWithTags} --ignore-scripts`.quiet()
-    } catch (error: any) {
-      const errorMessage = error.message?.split('\n')[0]
-      console.warn(`  ⚠️ ${workspaceName}: ${errorMessage}`)
-    }
-  } else {
-    console.info(`  📦 ${workspaceName}: updating ${packagesToUpdate.length} package(s)`)
-
-    try {
-      await $`bun update ${packagesToUpdate} --latest --ignore-scripts`.quiet()
-    } catch (error: any) {
-      const errorMessage = error.message?.split('\n')[0]
-      console.warn(`  ⚠️ ${workspaceName}: ${errorMessage}`)
+  const updateDeps = (depsObject: Record<string, string> | undefined) => {
+    if (!depsObject) return
+    for (const pkg of packagesToUpdate) {
+      if (pkg in depsObject && !depsObject[pkg].startsWith('workspace:')) {
+        const newVersion = versionMap.get(pkg)
+        if (newVersion) {
+          const currentVersion = depsObject[pkg]
+          // preserve version prefix (^, ~, >=, etc) or use exact if none
+          const prefixMatch = currentVersion.match(/^([^\d]*)/)
+          const prefix = prefixMatch?.[1] || ''
+          depsObject[pkg] = `${prefix}${newVersion}`
+          updatedCount++
+        }
+      }
     }
   }
+
+  updateDeps(packageJson.dependencies)
+  updateDeps(packageJson.devDependencies)
+  updateDeps(packageJson.peerDependencies)
+  updateDeps(packageJson.optionalDependencies)
+
+  if (updatedCount > 0) {
+    writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n')
+  }
+
+  return updatedCount
 }
 
 async function updatePackages(
   packagesByWorkspace: Map<string, { dir: string; packages: string[] }>,
-  rootDir: string
+  rootDir: string,
+  packageJsonFiles: string[]
 ) {
   try {
     rmSync(`node_modules/vite`, {
@@ -194,58 +181,73 @@ async function updatePackages(
     // ignore if vite is not there
   }
 
-  if (globalTag) {
-    console.info(`🔍 Checking which packages have tag '${globalTag}'...\n`)
-    const allPackages = new Set<string>()
-    for (const { packages } of packagesByWorkspace.values()) {
-      packages.forEach((pkg) => allPackages.add(pkg))
-    }
+  // collect all unique packages to update
+  const allPackages = new Set<string>()
+  for (const { packages } of packagesByWorkspace.values()) {
+    packages.forEach((pkg) => allPackages.add(pkg))
+  }
 
-    const packagesWithTag = new Set<string>()
-    await Promise.all(
-      [...allPackages].map(async (pkg) => {
-        try {
-          await $`npm view ${pkg}@${globalTag} version --json`.quiet()
-          console.info(`  ✓ ${pkg}@${globalTag} exists`)
-          packagesWithTag.add(pkg)
-        } catch {
-          console.info(`  ⊘ ${pkg}@${globalTag} not found, skipping`)
+  // fetch versions for all packages (with tag if specified)
+  const versionMap = new Map<string, string>()
+  console.info(`\n🔍 Fetching versions for ${allPackages.size} package(s)...`)
+
+  await Promise.all(
+    [...allPackages].map(async (pkg) => {
+      try {
+        const tag = globalTag || 'latest'
+        const result = await $`npm view ${pkg}@${tag} version`.quiet()
+        const version = result.text().trim()
+        if (version) {
+          versionMap.set(pkg, version)
+          console.info(`  ✓ ${pkg}@${tag} → ${version}`)
         }
-      })
-    )
+      } catch {
+        if (globalTag) {
+          console.info(`  ⊘ ${pkg}@${globalTag} not found, skipping`)
+        } else {
+          console.info(`  ⊘ ${pkg} not found, skipping`)
+        }
+      }
+    })
+  )
 
-    if (packagesWithTag.size === 0) {
-      console.info(`\n⚠️ No packages found with tag '${globalTag}'`)
-      return
-    }
+  if (versionMap.size === 0) {
+    console.info(`\n⚠️ No packages found to update`)
+    return
+  }
 
-    console.info(`\n📦 Updating packages across workspaces...`)
+  // update all package.json files directly
+  console.info(`\n📦 Updating ${packageJsonFiles.length} package.json file(s)...`)
+  let totalUpdates = 0
 
-    for (const [name, { dir, packages }] of packagesByWorkspace) {
-      const validPackages = packages.filter((pkg) => packagesWithTag.has(pkg))
-      await updatePackagesInWorkspace(validPackages, dir, name)
-    }
-  } else {
-    console.info(`\n📦 Updating packages across workspaces...`)
+  for (const packageJsonPath of packageJsonFiles) {
+    const packagesInWorkspace =
+      packagesByWorkspace.get(getWorkspaceName(packageJsonPath, rootDir))?.packages || []
 
-    for (const [name, { dir, packages }] of packagesByWorkspace) {
-      await updatePackagesInWorkspace(packages, dir, name)
+    if (packagesInWorkspace.length > 0) {
+      const updates = updatePackageJsonVersions(
+        packageJsonPath,
+        packagesInWorkspace,
+        versionMap
+      )
+      if (updates > 0) {
+        const name = getWorkspaceName(packageJsonPath, rootDir)
+        console.info(`  ✓ ${name}: ${updates} package(s)`)
+        totalUpdates += updates
+      }
     }
   }
 
-  console.info(
-    "\n⚙️ Running a final 'bun install' to process all changes and run lifecycle scripts..."
-  )
+  console.info(`\n📝 Updated ${totalUpdates} dependency version(s)`)
+
+  console.info(`\n⚙️ Running 'bun install'...`)
   $.cwd(rootDir)
   try {
     await $`bun install`
-    console.info("✅ Final 'bun install' completed successfully.")
+    console.info('✅ Done!')
   } catch (error: any) {
     const errorMessage = error.message?.split('\n')[0]
-    console.error(`🚨 Final 'bun install' failed. Error: ${errorMessage}`)
-    console.error(
-      'Your dependencies might be in an inconsistent state. Please check manually.'
-    )
+    console.error(`🚨 'bun install' failed: ${errorMessage}`)
   }
 }
 
@@ -322,7 +324,7 @@ async function main() {
     console.info(`🏷️ Using tag '${globalTag}'`)
   }
 
-  await updatePackages(packagesByWorkspace, rootDir)
+  await updatePackages(packagesByWorkspace, rootDir, packageJsonFiles)
 
   console.info('\n🎉 Dependency update complete!')
 }

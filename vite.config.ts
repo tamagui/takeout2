@@ -1,39 +1,23 @@
-import { tamaguiPlugin } from '@tamagui/vite-plugin'
+import { tamaguiAliases, tamaguiPlugin } from '@tamagui/vite-plugin'
 import { one, resolvePath } from 'one/vite'
 import { visualizer } from 'rollup-plugin-visualizer'
 
 import type { UserConfig } from 'vite'
 
 export default {
-  envPrefix: ['VITE_', 'TAMAGUI_'],
-
   resolve: {
     alias: [
       // use react-native-web-lite/without-animated instead of react-native-web
-      // this stubs out VirtualizedList/FlatList/SectionList which adds ~50KB
-      // must come before other aliases as array order matters
-      {
-        find: /^react-native$/,
-        replacement: '@tamagui/react-native-web-lite/without-animated',
-      },
-      {
-        find: /^react-native-web$/,
-        replacement: '@tamagui/react-native-web-lite/without-animated',
-      },
-      {
-        find: 'react-native/package.json',
-        replacement: '@tamagui/react-native-web-lite/package.json',
-      },
+      // much smaller bundle size
+      ...tamaguiAliases({
+        rnwLite: true,
+        svg: true,
+      }),
       // stub out bottom-tabs for web - one framework has it but we don't use it
       // tree shaking should get rid of it, need to investigate why not
       {
         find: '@react-navigation/bottom-tabs',
         replacement: resolvePath('./src/interface/shims/react-navigation-bottom-tabs.ts'),
-      },
-      // use lightweight svg for web (~2KB vs ~50KB)
-      {
-        find: 'react-native-svg',
-        replacement: '@tamagui/react-native-svg',
       },
     ],
   },
@@ -63,7 +47,12 @@ export default {
     ],
     // @hot-updater/cli-tools contains native .node binaries (oxc-transform)
     // that esbuild can't handle - exclude from optimization
-    exclude: ['@hot-updater/cli-tools'],
+    exclude: [
+      '@hot-updater/cli-tools',
+      // we are avoiding reanimated on web - for many apps this may not be desirable
+      // if you can live with motion/tamagui animations + one-off CSS, then its simpler
+      'react-native-reanimated',
+    ],
   },
 
   ssr: {

@@ -1,11 +1,10 @@
 import { usePathname } from 'one'
 import { memo, useState } from 'react'
-import { ScrollView, Separator, Sheet, Spacer, Text, XStack, YStack } from 'tamagui'
+import { ScrollView, Separator, Sheet, Spacer, XStack, YStack } from 'tamagui'
 
 import { LoginButton } from '~/features/auth/ui/LoginButton'
 import { LoginListItem } from '~/features/auth/ui/LoginListItem'
 import { DocsMenuContents } from '~/features/docs/DocsMenuContents'
-import { ProFreeButtons } from '~/features/docs/ProFreeButtons'
 import { SocialLinksRow } from '~/features/site/ui/SocialLinksRow'
 import { Link } from '~/interface/app/Link'
 import { Logo } from '~/interface/app/Logo'
@@ -13,6 +12,7 @@ import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { ScrollHeader } from '~/interface/headers/ScrollHeader'
 import { FileIcon } from '~/interface/icons/phosphor/FileIcon'
 import { ListIcon } from '~/interface/icons/phosphor/ListIcon'
+import { PromoLinksRow } from '~/interface/landing/PromoLinksRow'
 import { PageContainer } from '~/interface/layout/PageContainer'
 import { ListItem } from '~/interface/lists/ListItem'
 import { SepHeading } from '~/interface/text/Headings'
@@ -26,7 +26,7 @@ export const SiteHeader = memo(() => {
           <XStack position="relative" width="100%" items="center" $md={{ px: '$4' }}>
             <XStack display="none" $lg={{ display: 'flex' }} gap="$2" items="center">
               <SocialLinksRow />
-              <ProFreeButtons />
+              <PromoLinksRow />
             </XStack>
 
             <Spacer flex={1} />
@@ -101,7 +101,7 @@ const SiteHeaderMenu = memo(() => {
             <XStack p="$4" pb="$3" justify="space-between" items="center">
               <Logo height={32} />
               <XStack gap="$2" items="center">
-                <ProFreeButtons />
+                <PromoLinksRow />
                 <ThemeSwitch />
               </XStack>
             </XStack>

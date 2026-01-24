@@ -7,8 +7,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
  * and that the storage driver is properly set before auth code runs.
  *
  * The native auth bug was caused by:
- * 1. vite.config.ts missing `native: './src/setupClient.ts'` in setupFile config
- * 2. This meant setupClient.ts never ran on native
+ * 1. vite.config.ts missing `native: './src/setupNative.ts'` in setupFile config
+ * 2. This meant setupNative.ts never ran on native
  * 3. setupClient.ts imports setupStorage which sets up the storage driver
  * 4. Without the driver, createStorage() silently fails (returns undefined)
  * 5. Auth tokens were never persisted, breaking the auth flow
@@ -47,7 +47,7 @@ describe('auth initialization requirements', () => {
       const viteConfig = readFileSync(viteConfigPath, 'utf-8')
 
       // verify native setup file is configured
-      expect(viteConfig).toMatch(/native:\s*['"`]\.\/src\/setupClient\.ts['"`]/)
+      expect(viteConfig).toMatch(/native:\s*['"`]\.\/src\/setupNative\.ts['"`]/)
     })
   })
 

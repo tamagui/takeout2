@@ -207,8 +207,9 @@ const ButtonFrame = styled(XStack, {
     isAccent: {
       true: {
         bg: '$color1',
+
         hoverStyle: {
-          bg: '$color5',
+          bg: '$color1',
         },
 
         pressStyle: {

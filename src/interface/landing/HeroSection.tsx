@@ -10,6 +10,7 @@ import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { CopyIcon } from '~/interface/icons/phosphor/CopyIcon'
 
 import { ButtonSimple } from '../buttons/ButtonSimple'
+import { Strong } from '../text/Text'
 
 const techLogos = [
   {
@@ -383,24 +384,26 @@ export function HeroSection() {
         <YStack gap="$5" flex={1} minW={300} maxW={520} items="flex-start">
           <YStack gap="$1">
             <HeroTitle>
-              The startup starter that actually gives you an{' '}
+              The startup starter that <em>actually</em> gives you an{' '}
               <HighlightText render="span">edge</HighlightText>.
             </HeroTitle>
           </YStack>
 
           <HeroSubtitle>
-            <strong>Most starter kits suck</strong>. Takeout takes genuine novel tech
-            extracted from real production apps and adds incredible AI&nbsp;harnessing,
-            scalable IaC and <Link href="/docs/changelog">constant updates</Link> —
-            because&nbsp;it's what we use ourselves{' '}
-            <Link href="https://addeven.com">for clients</Link>.
+            <Strong fontWeight="600" color="$color11">
+              Most starter kits suck
+            </Strong>
+            . Takeout doesn't: genuinely novel tech deployed in real apps, plus robust
+            AI&nbsp;harnessing, scalable IaC, auth, examples, UI, and{' '}
+            <Link href="/docs/changelog">constant updates</Link> — it's&nbsp;what we use
+            for ourselves and <Link href="https://addeven.com">our clients</Link>.
             <br />
             <br />
             It's the{' '}
-            <Text fontWeight="600" color="$color11">
-              fastest way to a build a cross-platform startup
-            </Text>
-            , making React Native and web feel like one, simple thing.
+            <Strong fontWeight="600" color="$color11">
+              fastest way to a build a great startups
+            </Strong>
+            , turning React Native + web into one smooth, simple thing.
           </HeroSubtitle>
 
           <XStack gap="$3" mt="$2" flexWrap="wrap" items="center">

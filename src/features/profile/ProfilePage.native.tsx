@@ -138,6 +138,7 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
             key="studio-shimmer"
             transition="200ms"
             pt={insets.top}
+            bg="$background"
             exitStyle={{
               opacity: 0,
             }}

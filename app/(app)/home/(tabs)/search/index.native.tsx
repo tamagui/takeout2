@@ -118,6 +118,7 @@ export const SearchPage = memo(() => {
           onEndReached={loadMore}
           onEndReachedThreshold={0.5}
           contentContainerStyle={{
+            paddingTop: 40,
             paddingBottom: bottom + 100,
           }}
           contentInsetAdjustmentBehavior="automatic"

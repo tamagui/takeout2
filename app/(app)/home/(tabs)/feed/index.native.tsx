@@ -107,6 +107,7 @@ export const HomePage = memo(() => {
               transition="200ms"
               exitStyle={{ opacity: 0 }}
               opacity={1}
+              bg="$background"
               z={1000}
               position="absolute"
               t={headerHeight + insets.top}

@@ -401,7 +401,7 @@ export function HeroSection() {
             <br />
             It's the{' '}
             <Strong fontWeight="600" color="$color11">
-              fastest way to a build a great startups
+              fastest way to build a great startup
             </Strong>
             , turning React Native + web into one smooth, simple thing.
           </HeroSubtitle>

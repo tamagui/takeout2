@@ -340,7 +340,7 @@ export function ContentSection() {
         <TechCard>
           <TechTitle>And a lot of glue</TechTitle>
           <ContentParagraph>
-            Years of helpers, libarries, scripts, hooks, etc. Bun for install and
+            Years of helpers, libraries, scripts, hooks, etc. Bun for install and
             scripting. <Strong>Better Auth</Strong> for auth. Some top-tier{' '}
             <Strong>native dependencies</Strong> for UI and functionality. And the choice
             to deploy with either <Strong>Uncloud</Strong> or <Strong>SST</Strong>{' '}

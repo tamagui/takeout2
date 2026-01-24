@@ -16,14 +16,15 @@ const permissions = serverWhere('block', (_, auth) => {
 })
 
 export const mutate = mutations(schema, permissions, {
-  insert: async ({ tx, environment, server }, data: { blockedId: string }) => {
+  insert: async (
+    { tx, environment, server },
+    data: { blockedId: string; id: string; createdAt: number }
+  ) => {
     const authData = ensureLoggedIn()
 
     await tx.mutate.block.insert({
-      id: randomId(),
+      ...data,
       blockerId: authData.id,
-      blockedId: data.blockedId,
-      createdAt: Date.now(),
     })
 
     if (environment === 'server' && server) {

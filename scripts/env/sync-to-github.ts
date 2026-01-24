@@ -232,15 +232,21 @@ async function main() {
   )
   if (placeholderVars.length > 0 && !forceYes) {
     console.info('')
-    console.info(pc.red('⚠️  Found placeholder values that look like they were never configured:'))
+    console.info(
+      pc.red('⚠️  Found placeholder values that look like they were never configured:')
+    )
     for (const { key, value } of placeholderVars) {
       console.info(pc.yellow(`  ${key} = ${value}`))
     }
     console.info('')
-    console.info(pc.gray('These would overwrite real secrets in GitHub with placeholder values.'))
+    console.info(
+      pc.gray('These would overwrite real secrets in GitHub with placeholder values.')
+    )
     console.info(pc.gray('Either:'))
     console.info(pc.gray('  1. Update .env.production with real values'))
-    console.info(pc.gray('  2. Sync only specific vars: bun tko env/sync-to-github VAR1 VAR2'))
+    console.info(
+      pc.gray('  2. Sync only specific vars: bun tko env/sync-to-github VAR1 VAR2')
+    )
     console.info(pc.gray('  3. Force anyway with --force (dangerous!)'))
     console.info('')
     clack.cancel('Sync aborted due to placeholder values')

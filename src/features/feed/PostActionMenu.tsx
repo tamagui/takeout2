@@ -1,10 +1,9 @@
-import { isNative } from '@take-out/helpers'
+import { isNative, randomId } from '@take-out/helpers'
 import { Menu } from '@tamagui/menu'
 import { router } from 'one'
 import { useIsTouchDevice } from 'tamagui'
 
 import { saveRemoteImage } from '~/helpers/media/saveImage'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { dialogConfirm, showError } from '~/interface/dialogs/actions'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
@@ -71,7 +70,9 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
     if (!confirmed) return
 
     try {
-      await zero.mutate.block.insert({
+      zero.mutate.block.insert({
+        id: randomId(),
+        createdAt: Date.now(),
         blockedId: post.userId,
       })
       showToast('User blocked')

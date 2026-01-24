@@ -155,7 +155,6 @@ export const DialogCreatePost = () => {
           <YStack position="relative" rounded="$6" overflow="hidden">
             <Image
               src={previewUrl}
-              width="100%"
               aspectRatio={1}
               objectFit="contain"
               bg="$background04"

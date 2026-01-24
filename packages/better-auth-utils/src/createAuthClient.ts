@@ -205,10 +205,19 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
             ? 'loading'
             : 'logged-out'
 
+      // only update session/user when we have definitive data (not during pending state)
+      // this prevents clearing persisted data during the loading phase
+      const sessionUpdate =
+        nextState === 'loading'
+          ? {}
+          : {
+              session: data?.session ?? null,
+              user: data?.user ? (createUser ? createUser(data.user) : data.user) : null,
+            }
+
       setState({
         state: nextState,
-        session: data?.session,
-        user: data?.user ? (createUser ? createUser(data.user) : data.user) : null,
+        ...sessionUpdate,
       })
 
       // get token on creating a new session (for native + tauri)

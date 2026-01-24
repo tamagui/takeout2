@@ -1,40 +1,25 @@
 import { useCallback, useState } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { AnimatePresence, SizableText, Spinner, View, XStack, YStack } from 'tamagui'
+import { AnimatePresence, SizableText, View, YStack } from 'tamagui'
 
-import {
-  APP_NAME,
-  EULA_URL,
-  PRIVACY_POLICY_URL,
-  TERMS_OF_SERVICE_URL,
-} from '~/constants/app'
-import { signInAsDemo } from '~/features/auth/client/signInAsDemo'
+import { APP_NAME } from '~/constants/app'
+import { LoginDemoButton } from '~/features/auth/ui/LoginDemoButton'
+import { LoginEmailButton } from '~/features/auth/ui/LoginEmailButton'
+import { LoginLegalText } from '~/features/auth/ui/LoginLegalText'
+import { LoginSocialButtons } from '~/features/auth/ui/LoginSocialButtons'
 import { Onboarding, onboardingSlides, onboardingStorage } from '~/features/onboarding'
-import { isDemoMode } from '~/helpers/isDemoMode'
-import { Link } from '~/interface/app/Link'
 import { GradientBackground } from '~/interface/backgrounds/GradientBackground'
-import { ButtonAction } from '~/interface/buttons/ButtonAction'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { GlassView } from '~/interface/effects/GlassView'
-import { AppleIcon } from '~/interface/icons/AppleIcon'
-import { GoogleIcon } from '~/interface/icons/GoogleIcon'
-import { EnvelopeSimpleIcon } from '~/interface/icons/phosphor/EnvelopeSimpleIcon'
 import { Image } from '~/interface/image/Image'
-import { showToast } from '~/interface/toast/helpers'
 
 export const LoginPage = () => {
   const insets = useSafeAreaInsets()
-  const [demoLoading, setDemoLoading] = useState<boolean>(false)
   const [showOnboarding, setShowOnboarding] = useState(() => !onboardingStorage.get())
 
   const handleOnboardingComplete = useCallback(() => {
     onboardingStorage.set(true)
     setShowOnboarding(false)
   }, [])
-
-  const handleSocialLogin = async (provider: 'google' | 'apple') => {
-    showToast(`${provider} login coming soon!`, { type: 'info' })
-  }
 
   return (
     <GradientBackground useImage useInsets={false}>
@@ -80,77 +65,10 @@ export const LoginPage = () => {
             }}
           >
             <YStack px="$5" pt="$6" gap="$4">
-              <Link href="/auth/signup/email" asChild>
-                <ButtonAction
-                  size="large"
-                  variant="floating"
-                  haptic
-                  width="100%"
-                  icon={EnvelopeSimpleIcon}
-                >
-                  Continue with Email
-                </ButtonAction>
-              </Link>
-
-              {isDemoMode && (
-                <ButtonSimple
-                  size="large"
-                  haptic
-                  onPress={async () => {
-                    setDemoLoading(true)
-                    const { error } = await signInAsDemo()
-                    setDemoLoading(false)
-                    if (error) {
-                      showToast('Demo login failed', { type: 'error' })
-                    }
-                  }}
-                  disabled={demoLoading}
-                  width="100%"
-                  data-testid="login-as-demo"
-                  pressStyle={{ scale: 0.98 }}
-                >
-                  {demoLoading ? <Spinner size="small" /> : 'Login as Demo User'}
-                </ButtonSimple>
-              )}
-
-              <XStack items="center" gap="$4">
-                <View flex={1} height={1} bg="$color6" />
-                <SizableText size="$2" color="$color9">
-                  or continue with
-                </SizableText>
-                <View flex={1} height={1} bg="$color6" />
-              </XStack>
-
-              <XStack gap="$3">
-                <ButtonSimple
-                  flex={1}
-                  size="large"
-                  haptic
-                  onPress={() => handleSocialLogin('google')}
-                  pressStyle={{ scale: 0.98, bg: '$color3' }}
-                  icon={<GoogleIcon size={20} />}
-                >
-                  Google
-                </ButtonSimple>
-
-                <ButtonSimple
-                  flex={1}
-                  size="large"
-                  haptic
-                  onPress={() => handleSocialLogin('apple')}
-                  pressStyle={{ scale: 0.98, opacity: 0.9 }}
-                  icon={<AppleIcon size={22} />}
-                >
-                  <SizableText fontWeight="600">Apple</SizableText>
-                </ButtonSimple>
-              </XStack>
-
-              <SizableText size="$2" text="center" color="$color9" px="$2">
-                By continuing, you agree to our{' '}
-                <Link href={TERMS_OF_SERVICE_URL}>Terms</Link>,{' '}
-                <Link href={PRIVACY_POLICY_URL}>Privacy</Link> &{' '}
-                <Link href={EULA_URL}>EULA</Link>
-              </SizableText>
+              <LoginEmailButton />
+              <LoginDemoButton />
+              <LoginSocialButtons />
+              <LoginLegalText />
             </YStack>
           </GlassView>
         </View>

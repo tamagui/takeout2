@@ -46,22 +46,21 @@ export function OnboardingActionButton({
           Skip
         </SizableText>
       </Pressable>
-
-      <Animated.View
-        style={[
-          {
-            height: 56,
-            alignItems: 'center',
-            justifyContent: 'center',
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.2,
-            shadowRadius: 8,
-          },
-          buttonAnimatedStyle,
-        ]}
-      >
-        <View flex={1} items="center" justify="center" onPress={onPress} cursor="pointer">
+      <Pressable onPress={onPress} hitSlop={12}>
+        <Animated.View
+          style={[
+            {
+              height: 56,
+              alignItems: 'center',
+              justifyContent: 'center',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.2,
+              shadowRadius: 8,
+            },
+            buttonAnimatedStyle,
+          ]}
+        >
           <Animated.View style={[{ position: 'absolute' }, arrowAnimatedStyle]}>
             <CaretRightIcon size={28} color="white" />
           </Animated.View>
@@ -74,8 +73,8 @@ export function OnboardingActionButton({
               Get Started
             </SizableText>
           </Animated.View>
-        </View>
-      </Animated.View>
+        </Animated.View>
+      </Pressable>
     </XStack>
   )
 }

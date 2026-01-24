@@ -48,7 +48,7 @@ export const PopoverMenu = ({
         </Sheet>
       </Adapt>
 
-      <Popover.Content shadow={shadow} p={0} rounded={0}>
+      <Popover.Content shadow={shadow} p={0}>
         <YStack
           width="100%"
           // rounded="$5"

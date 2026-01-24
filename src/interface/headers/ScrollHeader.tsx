@@ -50,13 +50,12 @@ export const ScrollHeader = ({ children }: { children: ReactNode }) => {
             }),
           }}
         >
-          {/* blur layer - always has blur applied, opacity controls visibility */}
           <YStack
             position="absolute"
             transition="medium"
             inset={0}
-            opacity={isScrolled ? 1 : 0}
-            $maxSM={{ opacity: 1 }}
+            opacity={1}
+            $md={{ opacity: isScrolled ? 1 : 0 }}
             style={{
               backdropFilter: 'blur(16px)',
               WebkitBackdropFilter: 'blur(16px)',
@@ -64,12 +63,11 @@ export const ScrollHeader = ({ children }: { children: ReactNode }) => {
           />
 
           <YStack
-            opacity={isScrolled ? 0.85 : 0}
-            $maxSM={{ opacity: 0.85 }}
+            opacity={0.85}
+            $md={{ opacity: isScrolled ? 0.85 : 0, rounded: '$10' }}
             position="absolute"
             inset={0}
             bg="$color2"
-            $md={{ rounded: '$10' }}
           />
 
           <XStack z={1} width="100%" items="center">

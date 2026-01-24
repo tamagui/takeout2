@@ -1,6 +1,6 @@
-import { XStack, useTheme, type ColorTokens } from 'tamagui'
+import { XStack, isWeb, useTheme } from 'tamagui'
 
-import { Pressable } from '~/interface/buttons/Pressable'
+import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 
@@ -10,35 +10,34 @@ export function OnboardingActionButton({ onPrev, onNext }: OnboardingActionButto
   const theme = useTheme()
 
   return (
-    <XStack gap="$2">
-      <Pressable
+    <XStack
+      gap="$2"
+      $platform-native={{
+        justify: 'space-between',
+        items: 'center',
+        width: '100%',
+      }}
+    >
+      <ButtonSimple
         onPress={onPrev}
-        width={40}
-        height={40}
-        rounded={20}
+        circular
+        size={isWeb ? 'medium' : 'xl'}
         bg="$color6"
-        items="center"
-        justify="center"
-        cursor="pointer"
         hoverStyle={{ bg: '$color7' }}
-        pressStyle={{ scale: 0.95 }}
+        pressStyle={{ bg: '$color4' }}
       >
-        <CaretLeftIcon size={18} color={theme.color11?.val as ColorTokens} />
-      </Pressable>
-      <Pressable
+        <CaretLeftIcon size={18} color="$color11" />
+      </ButtonSimple>
+      <ButtonSimple
         onPress={onNext}
-        width={40}
-        height={40}
-        rounded={20}
+        circular
+        size={isWeb ? 'medium' : 'xl'}
         bg="$color10"
-        items="center"
-        justify="center"
-        cursor="pointer"
         hoverStyle={{ bg: '$color11' }}
-        pressStyle={{ scale: 0.95 }}
+        pressStyle={{ bg: '$color4' }}
       >
         <CaretRightIcon size={18} color="white" />
-      </Pressable>
+      </ButtonSimple>
     </XStack>
   )
 }

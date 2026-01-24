@@ -3,7 +3,6 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { LogBox } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { KeyboardProvider } from 'react-native-keyboard-controller'
-import { View } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
 
@@ -37,7 +36,7 @@ export function PlatformSpecificRootProvider({ children }: { children: ReactNode
 
   return (
     <KeyboardProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureHandlerRootView style={{ display: 'contents' }}>
         {showSplash && (
           <Splash
             isReady={true}
@@ -47,7 +46,7 @@ export function PlatformSpecificRootProvider({ children }: { children: ReactNode
             }}
           />
         )}
-        <View flex={1}>{children}</View>
+        {children}
       </GestureHandlerRootView>
     </KeyboardProvider>
   )

@@ -235,8 +235,7 @@ function FeatureCard({ feature, size, width, height, horizontal }: FeatureCardPr
 
   if (horizontal) {
     return (
-      <View style={{ width: cardWidth, height: cardHeight }} rounded={24}>
-        <Glint rounded={24} />
+      <View width={cardWidth} height={cardHeight} bg="$color1" rounded={24}>
         <YStack flex={1} flexDirection="row" items="center" gap="$4" px="$5">
           <YStack
             width={48}

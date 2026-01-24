@@ -1,5 +1,5 @@
 import { memo, useEffect } from 'react'
-import { StyleSheet } from 'react-native'
+import { Dimensions, StyleSheet } from 'react-native'
 import Animated, {
   FadeOut,
   useAnimatedStyle,
@@ -9,7 +9,6 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated'
-import { useWindowDimensions } from 'tamagui'
 
 type SplashProps = {
   isReady: boolean
@@ -17,7 +16,6 @@ type SplashProps = {
 }
 
 export const Splash = memo(({ onAnimationEnd, isReady }: SplashProps) => {
-  const { height } = useWindowDimensions()
   const translateY = useSharedValue(0)
   const rotateY = useSharedValue(0)
 
@@ -36,7 +34,7 @@ export const Splash = memo(({ onAnimationEnd, isReady }: SplashProps) => {
       rotateY.value = withDelay(500, withSpring(360, { damping: 12, stiffness: 80 }))
       translateY.value = withDelay(
         1000,
-        withSequence(withTiming(-50), withTiming(height))
+        withSequence(withTiming(-50), withTiming(Dimensions.get('window').height))
       )
     }
     setTimeout(() => {

@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import { SiteRootLayout } from '~/features/site/ui/SiteRootLayout'
 import { HomeBackground } from '~/interface/landing/HomeBackground'
+import { PlatformSpecificRootProvider } from '~/interface/platform/PlatformSpecificRootProvider'
 import { GlobalTooltipProvider } from '~/interface/tooltip/TooltipSimple'
 import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
 
@@ -24,30 +25,32 @@ export function Layout() {
 
       <body>
         <div style={{ display: 'contents' }} data-testid="app-container">
-          <TamaguiRootProvider>
-            <GlobalTooltipProvider>
-              <SafeAreaProvider>
-                {process.env.VITE_PLATFORM === 'web' ? (
-                  <>
-                    <LoadProgressBar startDelay={800} />
-                    <HomeBackground />
-                    <SiteRootLayout>
-                      <Slot />
-                    </SiteRootLayout>
-                  </>
-                ) : (
-                  <Stack
-                    screenOptions={{
-                      headerShown: false,
-                      animation: 'none',
-                    }}
-                  >
-                    <Stack.Screen name="(app)" />
-                  </Stack>
-                )}
-              </SafeAreaProvider>
-            </GlobalTooltipProvider>
-          </TamaguiRootProvider>
+          <PlatformSpecificRootProvider>
+            <TamaguiRootProvider>
+              <GlobalTooltipProvider>
+                <SafeAreaProvider>
+                  {process.env.VITE_PLATFORM === 'web' ? (
+                    <>
+                      <LoadProgressBar startDelay={800} />
+                      <HomeBackground />
+                      <SiteRootLayout>
+                        <Slot />
+                      </SiteRootLayout>
+                    </>
+                  ) : (
+                    <Stack
+                      screenOptions={{
+                        headerShown: false,
+                        animation: 'none',
+                      }}
+                    >
+                      <Stack.Screen name="(app)" />
+                    </Stack>
+                  )}
+                </SafeAreaProvider>
+              </GlobalTooltipProvider>
+            </TamaguiRootProvider>
+          </PlatformSpecificRootProvider>
         </div>
       </body>
     </html>

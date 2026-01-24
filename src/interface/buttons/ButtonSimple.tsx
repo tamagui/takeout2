@@ -47,7 +47,7 @@ type ButtonSimpleAdditionalProps = {
   scaleIcon?: number
 } & TooltipWrapperProps
 
-type ButtonSizes = 'small' | 'medium' | 'large' | 'square' | 'tiny'
+type ButtonSizes = 'small' | 'medium' | 'large' | 'xl' | 'square' | 'tiny'
 
 type ButtonVariants =
   | 'accent'
@@ -72,6 +72,7 @@ const buttonBorderRadius: Record<ButtonSizes, RadiusTokens> = {
   small: isWeb ? '$4' : '$5',
   medium: isWeb ? '$5' : '$6',
   large: isWeb ? '$6' : '$7',
+  xl: isWeb ? '$7' : '$8',
   tiny: isWeb ? '$3' : '$4',
   square: 0,
 }
@@ -81,12 +82,14 @@ const buttonSizes: Record<ButtonSizes, number> = {
   small: isWeb ? 30 : 40,
   medium: isWeb ? 36 : 44,
   large: isWeb ? 42 : 48,
+  xl: isWeb ? 48 : 56,
   tiny: isWeb ? 16 : 32,
   square: isWeb ? 36 : 44,
 }
 
 const iconSizes: Record<ButtonSizes, number> = {
   large: 16,
+  xl: 20,
   medium: 14,
   small: 12,
   tiny: 10,
@@ -164,6 +167,13 @@ const ButtonFrame = styled(XStack, {
         rounded: buttonBorderRadius.large,
         gap: '$3',
         px: isWeb ? '$4' : '$5',
+      },
+      xl: {
+        minH: buttonSizes.xl,
+        minW: buttonSizes.xl,
+        rounded: buttonBorderRadius.xl,
+        gap: '$3.5',
+        px: isWeb ? '$5' : '$6',
       },
       medium: {
         minH: buttonSizes.medium,
@@ -255,6 +265,11 @@ const ButtonText = styled(Text, {
       large: {
         fontSize: '$5',
         lineHeight: '$5',
+      },
+
+      xl: {
+        fontSize: '$7',
+        lineHeight: '$7',
       },
     },
   } as const,
@@ -372,25 +387,25 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
     const buttonElement = (
       <ButtonFrame
         size="medium"
-        ref={ref}
-        theme={theme}
-        isAccent={theme === 'accent'}
-        disabled={disabled}
-        className={glow ? 'path-glow' : ''}
-        {...(disabled && {
-          opacity: 0.1,
-          pointerEvents: 'none',
-          cursor: 'not-allowed',
-        })}
-        onPressIn={(e) => {
-          handleHaptic()
-          rest.onPressIn?.(e)
-        }}
-        onPressOut={() => {
-          if (!keepTooltipOpen) {
-            closeOpenTooltips()
-          }
-        }}
+        // ref={ref}
+        // theme={theme}
+        // isAccent={theme === 'accent'}
+        // disabled={disabled}
+        // className={glow ? 'path-glow' : ''}
+        // {...(disabled && {
+        //   opacity: 0.1,
+        //   pointerEvents: 'none',
+        //   cursor: 'not-allowed',
+        // })}
+        // onPressIn={(e) => {
+        //   handleHaptic()
+        //   rest.onPressIn?.(e)
+        // }}
+        // onPressOut={() => {
+        //   if (!keepTooltipOpen) {
+        //     closeOpenTooltips()
+        //   }
+        // }}
         {...rest}
         {...(delayPress && {
           async onPress(e) {
@@ -477,6 +492,9 @@ const buttonFrameVariants = {
     },
     large: {
       rounded: buttonBorderRadius.large,
+    },
+    xl: {
+      rounded: buttonBorderRadius.xl,
     },
     square: {
       rounded: 5,

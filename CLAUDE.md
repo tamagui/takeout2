@@ -1,6 +1,6 @@
 USE YOUR SKILLS - we have lots of skills with lots of keywords added to their descriptions! use multiple skills if possible!
 
-even if youre just exploring for info many of our skills with takeout-* are just informational so just use tem
+even if you're just exploring for info, many of our skills with takeout-* are just informational, so just use them
 
 ## approach
 

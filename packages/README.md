@@ -10,7 +10,7 @@ we've decided to move them into this repo for a few reasons:
 3. it serves as an example of setting up your own packages
 
 you don't really need packages for most apps, this is only if you are sharing
-code with another app, in which case our release script may be useful for your
+code with another app, in which case our release script may be useful for you
 as well.
 
 if you'd like to avoid the clutter and just rely on the published versions of

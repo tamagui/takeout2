@@ -2,7 +2,7 @@
 
 Minimal feature flag implementation for the demo app using PostHog.
 
-Note these are not SSR safe so only use them on SPA / app features not (site).
+Note: these are not SSR-safe, so only use them on SPA/app features, not site features.
 
 ## Quick Start
 

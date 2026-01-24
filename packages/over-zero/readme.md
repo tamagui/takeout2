@@ -8,9 +8,9 @@ helpers for building offline-first apps with [zero](https://zero.rocicorp.dev)
 
 over-zero provides three integrated systems on top of zero:
 
-**queries** - plain functions that become synced queries **mutations** -
-server-validated operations with auto-generated crud **permissions** -
-composable access control checked at runtime
+- **queries** - plain functions that become synced queries
+- **mutations** - server-validated operations with auto-generated crud
+- **permissions** - composable access control checked at runtime
 
 the package handles schema setup, type generation, and react integration. models
 live alongside their permissions and mutations. queries are just functions that
@@ -106,7 +106,7 @@ export const permissions = where('message', (q, auth) => {
   return q.cmp('authorId', auth?.id || '')
 })
 
-// CRUD migrations with permissions by passing schema + permissions:
+// CRUD mutations with permissions by passing schema + permissions:
 export const mutate = mutations(schema, permissions, {
   async send(ctx, props: { content: string; channelId: string }) {
     await ctx.can(permissions, props)

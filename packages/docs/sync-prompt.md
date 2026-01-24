@@ -202,7 +202,7 @@ What would you like to do? [a/b]
 
 ## Final Notes
 
-- This is a **intelligent sync**, not a blind merge
+- This is an **intelligent sync**, not a blind merge
 - The goal is to **keep you up-to-date** while **respecting your customizations**
 - When uncertain, **always ask** before making changes
 - Keep a **detailed log** of all changes for review

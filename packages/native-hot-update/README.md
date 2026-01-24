@@ -86,7 +86,7 @@ export default function RootLayout() {
 }
 ```
 
-### 3. Display Version Info
+### 4. Display Version Info
 
 ```tsx
 import { hotUpdater } from './hotUpdater'
@@ -105,7 +105,7 @@ export function VersionDisplay() {
 }
 ```
 
-### 4. Dev Tools
+### 5. Dev Tools
 
 ```tsx
 import { hotUpdater } from './hotUpdater'

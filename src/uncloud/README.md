@@ -9,8 +9,8 @@ more tested and robust as it sets up AWS services, but it requires a lot more
 initial work to get set up and costs more to run.
 
 uncloud is a new utility that makes deploying to your own dedicated servers and
-other cloud providers as simple as a docker-compose.yml file with no need to
-setup separate docker container pipelines or even have a "master" server that
+other cloud providers as simple as a `docker-compose.yml` file with no need to
+set up separate docker container pipelines or even have a "master" server that
 coordinates deploys.
 
 ## structure

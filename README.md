@@ -23,7 +23,7 @@ Note: Ensure bun matches the version in package.json. We've avoided 1.3 because 
 
 For mobile development:
 
-- **iOS**: macOS with Xcode 26+
+- **iOS**: macOS with Xcode 15+
 - **Android**: Android Studio with JDK 17+
 
 ## Quick Start
@@ -56,7 +56,7 @@ At a high level, the primary technologies used are:
 - [Drizzle ORM](https://orm.drizzle.team) - Database schema
 - [SST](https://sst.dev) / [Uncloud](https://uncloud.run) - Deployment
 
-And high level structure that is good to start learning:
+And the high-level structure worth learning:
 
 - `./app` - your file-system routes
 - `./src/*` - all non-feature-specific code
@@ -277,7 +277,7 @@ bun tko uncloud deploy-prod
 bun tko sst deploy production
 ```
 
-See [deployment docs](./docs/deployment.md) for detailed setup instructions.
+See [deployment docs](./docs/deploy.md) for detailed setup instructions.
 
 ## Mobile Apps
 

@@ -23,9 +23,9 @@ v2:
 # backlog
 
 - "Customize web server port"
-  - i cant find a way to make the native app default to a differnet port
-    shockingly so this is sort of bad, id love to keep it though else we should
-    dsiable before release
+  - i can't find a way to make the native app default to a different port
+    shockingly so this is sort of bad, i'd love to keep it though else we should
+    disable before release
 
 
 - improve tree shaking out animated package:
@@ -49,20 +49,20 @@ vite config :
   - show avatar when logged in
 
 - Resend Code should be actually stored on the server - if i refresh the page it
-  just counts down from 30 again when in fact ive waited already whihc is
-  anonying
-  - OTP isnt auto-submitting on paste
+  just counts down from 30 again when in fact i've waited already which is
+  annoying
+  - OTP isn't auto-submitting on paste
   - {"code":"INVALID_OTP","message":"Invalid OTP"} getting this but used right
     code
 
-- dark/light setting isnt being saved properly to cookies like ti does on
+- dark/light setting isn't being saved properly to cookies like it does on
   tamagui.dev/onestack.dev
 
 - we need to support / message about rebuilding the native app for a different
   port if they want something other than 8081
   - likewise i'd like there to be way less areas to touch when doing so
 
-- can we prevent vscode autocomplete of extenral overlaps:
+- can we prevent vscode autocomplete of external overlaps:
   - Image, Link, Dialog
 
 quan:

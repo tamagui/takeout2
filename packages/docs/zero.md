@@ -144,7 +144,7 @@ enforced.
 // src/data/where/isUsersOwn.ts
 import { where } from 'over-zero'
 
-export const isUsersOwn = serverWehere<'userPublic'>((q, auth) =>
+export const isUsersOwn = serverWhere<'userPublic'>((q, auth) =>
   q.cmp('id', '=', auth?.id || ''),
 )
 ```

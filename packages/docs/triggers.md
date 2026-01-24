@@ -233,7 +233,7 @@ IF TG_OP = 'DELETE' THEN
 
   IF NOT parent_exists THEN
     RETURN OLD;
-  END IF
+  END IF;
 
   UPDATE parent_table SET counter = counter - 1 WHERE id = OLD.parent_id;
 END IF;

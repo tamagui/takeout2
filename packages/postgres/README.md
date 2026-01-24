@@ -2,8 +2,8 @@
 
 PostgreSQL database utilities and migration system for vxrn applications.
 
-Note: feel free to eject from this package and just copy parts of it out, it's
-not the most flexible abstraction just meant to provide a starting point.
+Note: feel free to eject from this package and just copy parts of it out. It's
+not the most flexible abstraction, just meant to provide a starting point.
 
 ## Features
 

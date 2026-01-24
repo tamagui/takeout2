@@ -1,5 +1,5 @@
-import { memo, useEffect, useState } from 'react'
-import { AnimatePresence, Spinner, View, YStack } from 'tamagui'
+import { memo } from 'react'
+import { AnimatePresence, YStack } from 'tamagui'
 
 import { HomePagination } from '~/features/feed/HomePagination'
 import { PostCard } from '~/features/feed/PostCard'
@@ -66,12 +66,6 @@ export const HomePage = memo(() => {
               {posts.map((post) => (
                 <PostCard key={post.id} post={post} />
               ))}
-
-              {isLoading && (
-                <YStack p="$4" items="center" justify="center">
-                  <Spinner size="small" />
-                </YStack>
-              )}
 
               <HomePagination
                 currentPage={currentPage}

@@ -1,4 +1,5 @@
 import '@tamagui/native/setup-gesture-handler'
+// import '@tamagui/native/setup-portal'
 import '~/features/analytics/analytics'
 import '~/features/storage/setupStorage'
 import '~/helpers/crypto/polyfill'

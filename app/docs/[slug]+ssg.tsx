@@ -1,3 +1,4 @@
+import { nbspLastWord } from '@take-out/helpers'
 import { getMDXComponent } from 'mdx-bundler/client'
 import { createRoute, useLoader } from 'one'
 import { useMemo } from 'react'
@@ -25,7 +26,7 @@ export async function generateStaticParams() {
   return paths
 }
 
-export async function loader({ params }: { params: { slug: string } }) {
+export const loader = route.createLoader(async ({ params }) => {
   const { getMDXBySlug } = await import('@vxrn/mdx')
   const { frontmatter, code } = await getMDXBySlug(
     'src/features/site/docs',
@@ -36,18 +37,11 @@ export async function loader({ params }: { params: { slug: string } }) {
     frontmatter,
     code,
   }
-}
+})
 
 export function DocsSlugPage() {
   const { code, frontmatter } = useLoader(loader)
   const Component = useMemo(() => getMDXComponent(code), [code])
-
-  const nbspLastWord = (text: string) => {
-    if (!text) return text
-    const words = text.split(' ')
-    if (words.length <= 1) return text
-    return words.slice(0, -1).join(' ') + '\u00A0' + words[words.length - 1]
-  }
 
   const ogImageUrl = `${process.env.ONE_SERVER_URL}/api/og?type=blog&title=${encodeURIComponent(frontmatter.title || '')}`
 

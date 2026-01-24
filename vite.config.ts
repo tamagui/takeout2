@@ -92,7 +92,7 @@ export default {
     one({
       setupFile: {
         client: './src/setupClient.ts',
-        native: './src/setupClient.ts',
+        native: './src/setupNative.ts',
         server: './src/setupServer.ts',
       },
 

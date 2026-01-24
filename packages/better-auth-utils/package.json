@@ -52,7 +52,7 @@
     "react": "*"
   },
   "devDependencies": {
-    "@tamagui/build": "^2.0.0-1769233344020",
+    "@tamagui/build": "^2.0.0-1769256574467",
     "@types/node": "24.0.3",
     "@types/react": "^19.0.8",
     "oxfmt": "^0.16.0",

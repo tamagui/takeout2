@@ -7,18 +7,11 @@ import type { UserConfig } from 'vite'
 export default {
   resolve: {
     alias: [
-      // use react-native-web-lite/without-animated instead of react-native-web
-      // much smaller bundle size
+      // use react-native-web-lite/without-animated, much smaller bundle size
       ...tamaguiAliases({
         rnwLite: 'without-animated',
         svg: true,
       }),
-      // stub out bottom-tabs for web - one framework has it but we don't use it
-      // tree shaking should get rid of it, need to investigate why not
-      {
-        find: '@react-navigation/bottom-tabs',
-        replacement: resolvePath('./src/interface/shims/react-navigation-bottom-tabs.ts'),
-      },
     ],
   },
 

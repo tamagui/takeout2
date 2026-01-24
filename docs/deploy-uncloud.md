@@ -40,7 +40,7 @@ breaking changes may occur.
 1. **run onboarding:**
 
    ```bash
-   bun tko onboard
+   bun onboard
    ```
 
    - choose "set up production deployment"

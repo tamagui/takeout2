@@ -16,7 +16,7 @@ export const SearchButton = () => {
       onPress={searchContext.onOpen}
       ml="$1"
       mr="$3"
-      px="$2"
+      px="$2.5"
       py="$1.5"
       mb="$4"
       rounded="$3"
@@ -38,7 +38,7 @@ export const SearchButton = () => {
       <Paragraph flex={1} text="left" ml="$2" size="$3" color="$color9">
         Search
       </Paragraph>
-      <Paragraph size="$1" color="$color8" fontFamily="$mono">
+      <Paragraph size="$2" color="$color8" fontFamily="$mono" letterSpacing={1}>
         ⌘K
       </Paragraph>
     </XStack>

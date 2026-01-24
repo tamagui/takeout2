@@ -89,7 +89,7 @@ async function detectDeploymentPlatform(): Promise<'sst' | 'uncloud'> {
 **production setup wizard** (packages/takeout/src/commands/onboard.ts)
 
 ```bash
-bun tko onboard
+bun onboard
 ```
 
 **uncloud flow:**
@@ -171,7 +171,7 @@ bun tko onboard
    git clone <repo>
    cd takeout2
    bun install
-   bun tko onboard
+   bun onboard
    ```
 
 2. **development (immediate)**
@@ -193,7 +193,7 @@ bun tko onboard
 **from uncloud to sst**
 
 ```bash
-bun tko onboard
+bun onboard
 # → choose "production setup"
 # → choose "sst"
 # → automatically cleans up uncloud vars
@@ -203,7 +203,7 @@ bun tko onboard
 **from sst to uncloud**
 
 ```bash
-bun tko onboard
+bun onboard
 # → choose "production setup"
 # → choose "uncloud"
 # → configures deploy vars

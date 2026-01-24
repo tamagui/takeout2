@@ -20,10 +20,10 @@ Here's a sample of some interesting work done in Takeout:
 3. **Profile** - User profiles with avatar upload and post grid.
 4. **Settings** - Account settings, blocked users, theme switching.
 5. **Onboarding** - Multi-step flow with themed slides and animations.
-6. **Minio/S3 Image Uploads** - Local minio for dev, S3 for production.
+6. **Minio/S3 Image Uploads** - Local minio for dev, S3/R2 for production.
 7. **Terms and Privacy** - Static legal pages.
 
-## One
+## [One](https://onestack.dev)
 
 1. **Mixed render modes** - static, server-rendered, or client-only pages from
    the same router, seamlessly route between.
@@ -32,15 +32,14 @@ Here's a sample of some interesting work done in Takeout:
    platform. Typed `one/env` with environment/platform constants.
 3. **Typed routes** - Auto-generated `createRoute()`, auto-generated
    `routes.d.ts` for full type safety on params and links.
-4. **API routes** - `+api.ts` suffix with typed endpoints, catch-all patterns
-5. **LCP optimization** - `experimental_scriptLoading` defers JS loading for
+4. **LCP optimization** - `experimental_scriptLoading` defers JS loading for
    optimal Lighthouse scores.
-6. **Bundle optimized** - Built-in bundle analysis and agentic harness to
+5. **Bundle optimized** - Built-in bundle analysis and agentic harness to
    analyze web performance and lighthouse. Aliases to remove bloat.
-7. **Flexible deploy** - Deploy to a Hono server, or switch to Vercel or
+6. **Flexible deploy** - Deploy to a Hono server, or switch to Vercel or
    Cloudflare with a single line of config.
 
-## Tamagui
+## [Tamagui](https://tamagui.dev)
 
 1. **Three animation drivers** - CSS animations for static web pages (light,
    fast), Reanimated (native) or Motion (web) spring animation drivers for app
@@ -51,8 +50,10 @@ Here's a sample of some interesting work done in Takeout:
    on all the new features.
 4. **Less re-rendering** - v2 Motion and Reanimated animation drivers animate
    internal changes with 0 re-rendering, for much smoother feeling apps.
+5. **Best-in-class themes** - No re-render switch on web and native,
+   SSR-friendly, unlimited sub-themes.
 
-## Zero
+## [Zero](https://zero.rocicorp.dev)
 
 1. **Simplified with over-zero** - Avoid writing glue code, validators, and
    having logic spread over many files with `over-zero` auto generation.
@@ -65,17 +66,19 @@ Here's a sample of some interesting work done in Takeout:
    figuring out what's going on.
 5. **Platform storage** - IndexedDB on web, SQLite on native, memory for
    anonymous users.
-6. **Global query builder** - `zql.post.where(...)` without prop-drilling the
-   Zero instance.
+6. **Streamlined Deploy** <ProBadge /> - Automated restart and migrate progress
+   for seamless deploys to production.
 
 ## [Better Auth](https://www.better-auth.com)
 
-1. **EdDSA JWT** - Ed25519 keys for Zero sync compatibility
-2. **Phone-first signup** - generates temp email for phone-only users
-3. **Public/private profile system** - works well with Zero by splitting public
+1. **Onboarding** <ProBadge /> - Full auth setup with onboarding flow, OTP,
+   multi-step profile setup.
+2. **Zero Compatible** - Set up to work automatically with our Zero setup.
+3. **Phone-first signup** - generates temp email for phone-only users
+4. **Public/private profile system** - works well with Zero by splitting public
    and private user information, then gluing together things nicely on the
    frontend.
-4. **Invite system** - whitelist + invite codes with use limits and expiration
+5. **Invite system** - whitelist + invite codes with use limits and expiration
 
 ## [Drizzle](https://orm.drizzle.team)
 

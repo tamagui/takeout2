@@ -12,7 +12,7 @@ configuration.
 The fastest way to set up production is the onboarding wizard:
 
 ```bash
-bun tko onboard
+bun onboard
 ```
 
 This walks you through:
@@ -23,7 +23,7 @@ This walks you through:
 - Setting up SSH keys (for Uncloud)
 - Syncing secrets to GitHub
 
-You can also run `bun tko onboard --defaults` for automated setup with sensible
+You can also run `bun onboard --defaults` for automated setup with sensible
 defaults.
 
 ## Platform Comparison
@@ -44,18 +44,23 @@ defaults.
 Self-hosted deployment to any VPS (DigitalOcean, Hetzner, etc.). Uses Docker
 and Caddy for zero-config SSL.
 
-```bash
-bun tko uncloud deploy-prod
-```
-
-### SST
+### SST <ProBadge />
 
 AWS deployment with managed infrastructure—Aurora PostgreSQL, ECS, ALB,
 auto-scaling.
 
+## Deploying
+
+`bun onboard` walks you through choosing a platform and configuring your
+environment. Once set up, `bun run ci release` handles everything—building,
+testing, and deploying.
+
 ```bash
-bunx sst deploy --stage production
+bun run ci release
 ```
+
+There are individual scripts for each step if you need them, but the ci command
+does it all.
 
 ## Environment Configuration
 

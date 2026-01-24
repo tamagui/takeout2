@@ -141,11 +141,11 @@ const steps: CommandStep[] = [
     ],
   },
   {
-    command: 'bun tko deploy-prod',
+    command: 'bun run ci release',
     output: [
       '  Building for production...',
       '  Running migrations...',
-      '  Deploying to AWS...',
+      '  Deploying...',
       '  Live at https://my-app.com',
     ],
   },

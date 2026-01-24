@@ -317,8 +317,8 @@ export function ContentSection() {
             worst area of frontend development today: data. Getting it to the client,
             keeping it in sync, and mutating it instantly. It's{' '}
             <Strong>
-              like Firebase if it was OSS and ran on Postgres, and had relations, types,
-              schemas, and optimistic mutations out of the box
+              like Firebase, but open source, on Postgres, with relations, types, and
+              optimistic mutations built in
             </Strong>
             .
           </ContentParagraph>
@@ -358,8 +358,8 @@ export function ContentSection() {
 
       <YStack gap="$4">
         <ContentParagraph>
-          We built Takeout for ourselves, much like Tamagui and One - passion projects
-          born out of stubbornly wanting better things. We hope you enjoy this somewhat
+          We built Takeout for ourselves, much like Tamagui and One. They're passion
+          projects born out of stubbornly wanting better things. We hope you enjoy this somewhat
           early version of our new stack.
         </ContentParagraph>
 

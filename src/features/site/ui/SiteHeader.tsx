@@ -116,20 +116,20 @@ const SiteHeaderMenu = memo(() => {
                   }, 250)
                 }}
               />
-              <Link href="/docs/introduction">
-                <ListItem
-                  onPressOut={() => {
-                    setTimeout(() => {
-                      setOpen(false)
-                    }, 250)
-                  }}
-                >
-                  <ListItem.Icon>
-                    <FileIcon />
-                  </ListItem.Icon>
-                  <ListItem.Text>Docs</ListItem.Text>
-                </ListItem>
-              </Link>
+              {/* <Link href="/docs/introduction"> */}
+              <ListItem
+                onPressOut={() => {
+                  setTimeout(() => {
+                    setOpen(false)
+                  }, 250)
+                }}
+              >
+                <ListItem.Icon>
+                  <FileIcon />
+                </ListItem.Icon>
+                <ListItem.Text>Docs</ListItem.Text>
+              </ListItem>
+              {/* </Link> */}
 
               {isDocsPage && (
                 <>

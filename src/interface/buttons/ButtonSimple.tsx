@@ -96,7 +96,7 @@ const iconSizes: Record<ButtonSizes, number> = {
 const ButtonFrame = styled(XStack, {
   context,
   render: 'button',
-  focusable: true,
+  position: 'relative',
   role: 'button',
   group: 'button',
   bg: 'transparent',
@@ -109,7 +109,6 @@ const ButtonFrame = styled(XStack, {
   px: '$2.5',
   rounded: '$5',
   cursor: 'default',
-  position: 'relative',
 
   pressStyle: {
     opacity: 0.5,

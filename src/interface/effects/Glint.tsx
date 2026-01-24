@@ -13,7 +13,7 @@ const Glint = styled(YStack, {
     borderRightWidth: 1,
   }),
 
-  z: 100_000_000,
+  z: 10,
 
   '$theme-dark': {
     opacity: 0.1,

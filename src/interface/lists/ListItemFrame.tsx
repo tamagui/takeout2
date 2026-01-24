@@ -6,7 +6,7 @@ export const ListItemFrame = styled(XStack, {
   context: ListItemContext,
   group: 'item',
   containerType: 'normal',
-  // contain: 'layout paint',
+  position: 'relative',
   items: 'center',
   gap: '$2.5',
   minW: '100%',

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Accordion, Paragraph, Square, useMedia, View, XStack, YStack } from 'tamagui'
+import { Accordion, Paragraph, Square, View, XStack, YStack } from 'tamagui'
 
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 
@@ -44,13 +44,12 @@ const ActiveIndicator = ({
       rounded="$2"
       transition="quick"
       z={999}
+      enterStyle={{ opacity: 0 }}
     />
   )
 }
 
 export const DocsMenuContents = () => {
-  const media = useMedia()
-  const isMobile = media.maxSM
   const activeItems = allItems.filter(Boolean) as Item[]
   const { currentPath } = useDocsMenu()
   const [itemPositions, setItemPositions] = useState<
@@ -127,42 +126,8 @@ export const DocsMenuContents = () => {
     }
   }, [currentPath, openSections])
 
-  if (isMobile) {
-    return (
-      <YStack width="100%" gap="$3">
-        {Object.keys(itemsGrouped).map((sectionTitle) => {
-          const items = itemsGrouped[sectionTitle]
-          const section = items?.[0]?.section
-          if (!section) return null
-          return (
-            <YStack key={sectionTitle}>
-              {section.title && (
-                <Paragraph size="$5" fontWeight="600" color="$color12" px="$2" mb="$1">
-                  {section.title}
-                </Paragraph>
-              )}
-              <YStack px="$2">
-                {items.map(({ page }, index) => {
-                  const isActive = currentPath === page.route
-                  return (
-                    <DocsRouteNavItem
-                      href={page.route}
-                      active={isActive}
-                      pending={page.pending}
-                      key={`${page.route}${index}`}
-                    >
-                      {page.title}
-                    </DocsRouteNavItem>
-                  )
-                })}
-              </YStack>
-            </YStack>
-          )
-        })}
-      </YStack>
-    )
-  }
-
+  // always render accordion layout to avoid SSR/client mismatch
+  // mobile styling is handled via responsive props in SubSection
   return (
     <YStack width="100%" ref={containerRef as any} position="relative">
       <ActiveIndicator

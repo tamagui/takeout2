@@ -68,7 +68,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
                       numberOfLines={1}
                       hoverStyle={{ color: '$color12' }}
                     >
-                      {username}
+                      {username || 'No name'}
                     </SizableText>
                   </Link>
                   <DotIcon size={16} color="$color10" />

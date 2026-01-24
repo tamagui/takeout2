@@ -88,7 +88,7 @@ export const ProfileEditPage = () => {
             keyboardShouldPersistTaps="handled"
             contentInsetAdjustmentBehavior="automatic"
           >
-            <YStack pt="$3" gap="$3" width="100%" maxW={400} self="center">
+            <YStack pt="$3" gap="$3" width="100%" maxW={400} self="center" select="none">
               <YStack py="$3" justify="center" items="center">
                 <AvatarUpload
                   id="avatar"

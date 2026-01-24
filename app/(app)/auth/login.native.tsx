@@ -1,14 +1,6 @@
 import { useCallback, useState } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import {
-  AnimatePresence,
-  Circle,
-  SizableText,
-  Spinner,
-  View,
-  XStack,
-  YStack,
-} from 'tamagui'
+import { AnimatePresence, SizableText, Spinner, View, XStack, YStack } from 'tamagui'
 
 import {
   APP_NAME,
@@ -21,6 +13,7 @@ import { Onboarding, onboardingSlides, onboardingStorage } from '~/features/onbo
 import { isDemoMode } from '~/helpers/isDemoMode'
 import { Link } from '~/interface/app/Link'
 import { GradientBackground } from '~/interface/backgrounds/GradientBackground'
+import { ButtonAction } from '~/interface/buttons/ButtonAction'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { GlassView } from '~/interface/effects/GlassView'
 import { AppleIcon } from '~/interface/icons/AppleIcon'
@@ -88,16 +81,15 @@ export const LoginPage = () => {
           >
             <YStack px="$5" pt="$6" gap="$4">
               <Link href="/auth/signup/email" asChild>
-                <ButtonSimple
+                <ButtonAction
                   size="large"
-                  theme="accent"
-                  transition="100ms"
+                  variant="floating"
                   haptic
                   width="100%"
-                  icon={<EnvelopeSimpleIcon size={20} />}
+                  icon={EnvelopeSimpleIcon}
                 >
                   Continue with Email
-                </ButtonSimple>
+                </ButtonAction>
               </Link>
 
               {isDemoMode && (

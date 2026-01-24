@@ -387,25 +387,25 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
     const buttonElement = (
       <ButtonFrame
         size="medium"
-        // ref={ref}
-        // theme={theme}
-        // isAccent={theme === 'accent'}
-        // disabled={disabled}
-        // className={glow ? 'path-glow' : ''}
-        // {...(disabled && {
-        //   opacity: 0.1,
-        //   pointerEvents: 'none',
-        //   cursor: 'not-allowed',
-        // })}
-        // onPressIn={(e) => {
-        //   handleHaptic()
-        //   rest.onPressIn?.(e)
-        // }}
-        // onPressOut={() => {
-        //   if (!keepTooltipOpen) {
-        //     closeOpenTooltips()
-        //   }
-        // }}
+        ref={ref}
+        theme={theme}
+        isAccent={theme === 'accent'}
+        disabled={disabled}
+        className={glow ? 'path-glow' : ''}
+        {...(disabled && {
+          opacity: 0.1,
+          pointerEvents: 'none',
+          cursor: 'not-allowed',
+        })}
+        onPressIn={(e) => {
+          handleHaptic()
+          rest.onPressIn?.(e)
+        }}
+        onPressOut={() => {
+          if (!keepTooltipOpen) {
+            closeOpenTooltips()
+          }
+        }}
         {...rest}
         {...(delayPress && {
           async onPress(e) {

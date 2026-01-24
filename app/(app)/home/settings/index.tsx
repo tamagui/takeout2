@@ -88,6 +88,7 @@ export function SettingsSidebarContent() {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
+      <HeadInfo title="Settings" />
       <YStack p="$4" gap="$4" select="none">
         <SizableText size="$7" fontWeight="700" px="$3">
           Settings

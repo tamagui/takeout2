@@ -1,4 +1,4 @@
-import { SizableText, View, XStack } from 'tamagui'
+import { Separator, SizableText, XStack } from 'tamagui'
 
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { AppleIcon } from '~/interface/icons/AppleIcon'
@@ -13,11 +13,11 @@ export const LoginSocialButtons = () => {
   return (
     <>
       <XStack items="center" gap="$4">
-        <View flex={1} height={1} bg="$color6" />
+        <Separator />
         <SizableText size="$2" color="$color9">
           or continue with
         </SizableText>
-        <View flex={1} height={1} bg="$color6" />
+        <Separator />
       </XStack>
 
       <XStack gap="$3">

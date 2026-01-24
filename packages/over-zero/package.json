@@ -61,7 +61,7 @@
     "react-native": "*"
   },
   "devDependencies": {
-    "@tamagui/build": "^2.0.0-1769288527117",
+    "@tamagui/build": "^2.0.0-1769294704640",
     "@typeschema/valibot": "^0.14.0",
     "react": "*",
     "react-native": "*"

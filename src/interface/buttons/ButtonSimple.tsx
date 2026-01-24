@@ -243,6 +243,7 @@ const ButtonText = styled(Text, {
   cursor: 'default',
   fontFamily: '$mono',
   fontWeight: '500',
+  ellipsis: true,
   select: 'none',
   y: IS_SAFARI ? 1 : 0,
 

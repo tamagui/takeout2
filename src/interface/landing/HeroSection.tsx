@@ -10,7 +10,7 @@ import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { CopyIcon } from '~/interface/icons/phosphor/CopyIcon'
 
 import { ButtonSimple } from '../buttons/ButtonSimple'
-import { Strong } from '../text/Text'
+import { Span, Strong } from '../text/Text'
 
 const techLogos = [
   {
@@ -393,8 +393,8 @@ export function HeroSection() {
             <Strong fontWeight="600" color="$color11">
               Most starter kits suck
             </Strong>
-            . Takeout doesn't: genuinely novel tech deployed in real apps, plus robust
-            AI&nbsp;harnessing, scalable IaC, auth, examples, UI, and{' '}
+            . Takeout doesn&rsquo;t: truly novel tech, deployed in real apps, robust
+            AI&nbsp;harness, scalable IaC, auth, examples, UI, and{' '}
             <Link href="/docs/changelog">constant updates</Link> — it's&nbsp;what we use
             for ourselves and <Link href="https://addeven.com">our clients</Link>.
             <br />
@@ -419,11 +419,11 @@ export function HeroSection() {
           <Paragraph size="$6" color="$color10">
             Check out the{' '}
             <Link href="https://tamagui.dev/takeout" target="_blank">
-              Pro version
+              <Span color="$color12">pro version</Span>
             </Link>{' '}
             or the{' '}
             <Link href="https://github.com/tamagui/takeout-free" target="_blank">
-              Free version
+              <Span color="$color12">free version</Span>
             </Link>
             .
           </Paragraph>

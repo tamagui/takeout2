@@ -9,6 +9,10 @@ export const Strong = styled(TamaguiText, {
   fontWeight: '600',
 })
 
+export const Span = styled(TamaguiText, {
+  render: 'span',
+})
+
 export const Em = styled(TamaguiText, {
   render: 'em',
   fontStyle: 'italic',

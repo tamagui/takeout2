@@ -80,7 +80,7 @@ p a,
 .t_Link:not(:has(div, span)) {
   text-decoration: underline;
   text-decoration-thickness: 2px;
-  text-decoration-color: var(--color0075);
+  text-decoration-color: var(--color01);
   text-underline-offset: 4px;
   transition: all ease-in 100ms;
 }

@@ -53,6 +53,7 @@ export const DialogCreatePost = () => {
 
   const latestUpload = uploads[uploads.length - 1]
   const isUploading = latestUpload?.status === 'uploading'
+  const uploadError = latestUpload?.status === 'error' ? latestUpload.error : undefined
   const uploadedUrl = latestUpload?.url
   const previewUrl = latestUpload?.preview
 
@@ -197,7 +198,28 @@ export const DialogCreatePost = () => {
                     </SizableText>
                   </YStack>
                 )}
-                {!isUploading && (
+                {uploadError && (
+                  <YStack
+                    position="absolute"
+                    t={0}
+                    l={0}
+                    r={0}
+                    b={0}
+                    bg="$red3"
+                    opacity={0.9}
+                    items="center"
+                    justify="center"
+                    p="$4"
+                  >
+                    <SizableText size="$5" fontWeight="600" color="$red11">
+                      Upload failed
+                    </SizableText>
+                    <SizableText mt="$2" size="$3" color="$red10">
+                      {uploadError}
+                    </SizableText>
+                  </YStack>
+                )}
+                {!isUploading && !uploadError && (
                   <Pressable
                     position="absolute"
                     t="$3"

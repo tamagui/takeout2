@@ -87,7 +87,7 @@ export function SettingsSidebarContent() {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <YStack p="$4" gap="$4">
+      <YStack p="$4" gap="$4" select="none">
         <SizableText size="$7" fontWeight="700" px="$3">
           Settings
         </SizableText>

@@ -36,10 +36,7 @@ export const ProfileEditPage = () => {
 
   const handleSave = async () => {
     Keyboard.dismiss()
-    const success = await saveProfile()
-    if (success) {
-      router.back()
-    }
+    await saveProfile()
   }
 
   const blocker = useBlocker(!isSaving && hasUnsavedChanges)

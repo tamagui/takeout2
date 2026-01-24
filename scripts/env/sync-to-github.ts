@@ -37,6 +37,11 @@ async function main() {
   const iosOnly = args.includes('--ios')
   const skipIos = args.includes('--no-ios')
 
+  // filter to specific env vars (non-flag args)
+  const onlyVars = args
+    .filter((a) => !a.startsWith('--') && !a.startsWith('-'))
+    .map((a) => a.toUpperCase())
+
   clack.intro(pc.bgCyan(pc.black(' Sync Environment to GitHub Secrets ')))
 
   // check for gh cli
@@ -216,11 +221,41 @@ async function main() {
     }
   }
 
-  if (varsToSync.length === 0) {
+  // filter to specific vars if provided
+  const filteredVars =
+    onlyVars.length > 0 ? varsToSync.filter((v) => onlyVars.includes(v.key)) : varsToSync
+
+  // check for placeholder values
+  const forceYes = args.includes('--force')
+  const placeholderVars = filteredVars.filter(
+    (v) => v.value.includes('your-') || v.value.includes('your_')
+  )
+  if (placeholderVars.length > 0 && !forceYes) {
+    console.info('')
+    console.info(pc.red('⚠️  Found placeholder values that look like they were never configured:'))
+    for (const { key, value } of placeholderVars) {
+      console.info(pc.yellow(`  ${key} = ${value}`))
+    }
+    console.info('')
+    console.info(pc.gray('These would overwrite real secrets in GitHub with placeholder values.'))
+    console.info(pc.gray('Either:'))
+    console.info(pc.gray('  1. Update .env.production with real values'))
+    console.info(pc.gray('  2. Sync only specific vars: bun tko env/sync-to-github VAR1 VAR2'))
+    console.info(pc.gray('  3. Force anyway with --force (dangerous!)'))
+    console.info('')
+    clack.cancel('Sync aborted due to placeholder values')
+    process.exit(1)
+  }
+
+  if (filteredVars.length === 0) {
     clack.outro(pc.yellow('No variables to sync'))
-    console.info(pc.gray('\nAll environment variables are either:'))
-    console.info(pc.gray('  - Not set in .env.production or .env.ios'))
-    console.info(pc.gray('  - Using default values'))
+    if (onlyVars.length > 0) {
+      console.info(pc.gray(`\nNo matching variables found for: ${onlyVars.join(', ')}`))
+    } else {
+      console.info(pc.gray('\nAll environment variables are either:'))
+      console.info(pc.gray('  - Not set in .env.production or .env.ios'))
+      console.info(pc.gray('  - Using default values'))
+    }
     return
   }
 
@@ -228,8 +263,8 @@ async function main() {
   console.info('')
   console.info(pc.bold('Variables to sync:'))
 
-  const productionVars = varsToSync.filter((v) => v.source === '.env.production')
-  const iosVars = varsToSync.filter((v) => v.source === '.env.ios')
+  const productionVars = filteredVars.filter((v) => v.source === '.env.production')
+  const iosVars = filteredVars.filter((v) => v.source === '.env.ios')
 
   if (productionVars.length > 0) {
     console.info('')
@@ -262,7 +297,7 @@ async function main() {
   }
 
   console.info('')
-  console.info(pc.gray(`Total: ${varsToSync.length} variables will be synced`))
+  console.info(pc.gray(`Total: ${filteredVars.length} variables will be synced`))
 
   if (dryRun) {
     console.info('')
@@ -274,7 +309,7 @@ async function main() {
   if (!yes) {
     console.info('')
     const confirm = await clack.confirm({
-      message: `Sync ${varsToSync.length} variables to GitHub secrets?`,
+      message: `Sync ${filteredVars.length} variables to GitHub secrets?`,
       initialValue: true,
     })
 
@@ -290,7 +325,7 @@ async function main() {
 
   const results: Array<{ key: string; success: boolean; error?: string }> = []
 
-  for (const { key, value } of varsToSync) {
+  for (const { key, value } of filteredVars) {
     try {
       // write to temp file to preserve multiline values (esp SSH keys)
       const tmpFile = join(tmpdir(), `gh-secret-${key}-${Date.now()}`)

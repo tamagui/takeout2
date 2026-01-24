@@ -3,6 +3,7 @@ import { AnimatePresence, Spinner, YStack } from 'tamagui'
 
 import { useHeaderHeightSafe } from '~/hooks/useHeaderHeightSafe'
 import { useUser } from '~/hooks/useUser'
+import { HeadInfo } from '~/interface/app/HeadInfo'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
 import { Image } from '~/interface/image/Image'
@@ -38,8 +39,12 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
     })
   }
 
+  const title = user?.username ? `@${user.username}` : 'Profile'
+
   return (
     <>
+      <HeadInfo title={title} />
+
       <AnimatePresence>
         {isLoading && (
           <YStack

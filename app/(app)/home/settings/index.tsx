@@ -4,6 +4,7 @@ import { ScrollView, SizableText, styled, useMedia, View, XStack, YStack } from 
 
 import { APP_NAME_LOWERCASE, DOMAIN } from '~/constants/app'
 import { useSettingsData, type SettingItem } from '~/features/settings/useSettingsData'
+import { HeadInfo } from '~/interface/app/HeadInfo'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { SepHeading } from '~/interface/text/Headings'
 
@@ -158,6 +159,7 @@ function MobileSettingsContent() {
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+      <HeadInfo title="Settings" />
       <YStack flex={1} flexBasis="auto" pb="$10" pt="$4">
         {sections.map((section) => (
           <YStack key={section.title} mb="$6">

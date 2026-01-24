@@ -4,6 +4,7 @@ import { AnimatePresence, Spinner, View, YStack } from 'tamagui'
 import { HomePagination } from '~/features/feed/HomePagination'
 import { PostCard } from '~/features/feed/PostCard'
 import { usePostsPaginated } from '~/features/feed/usePosts'
+import { HeadInfo } from '~/interface/app/HeadInfo'
 import { FloatingCreateButton } from '~/interface/buttons/FloatingCreateButton'
 import { HomeShimmer } from '~/interface/shimmer/HomeShimmer'
 import { H5 } from '~/interface/text/Headings'
@@ -14,6 +15,7 @@ export const HomePage = memo(() => {
 
   return (
     <>
+      <HeadInfo title="Feed" />
       <AnimatePresence>
         {isLoading && (
           <YStack

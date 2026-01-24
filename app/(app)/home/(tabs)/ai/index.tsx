@@ -3,6 +3,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ScrollView, SizableText, Spinner, View, XStack, YStack } from 'tamagui'
 
 import { AIChatInput } from '~/interface/ai/AIChatInput'
+import { HeadInfo } from '~/interface/app/HeadInfo'
 import { SparkleIcon } from '~/interface/icons/phosphor/SparkleIcon'
 import { PageLayout } from '~/interface/pages/PageLayout'
 
@@ -85,6 +86,7 @@ export const AIPage = memo(() => {
 
   return (
     <PageLayout>
+      <HeadInfo title="AI" />
       <YStack flex={1} flexBasis="auto" pt={insets.top}>
         {/* messages area */}
         <ScrollView

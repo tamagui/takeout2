@@ -10,6 +10,7 @@ import { CommentSection } from '~/features/feed/CommentSection'
 import { PostActionMenu } from '~/features/feed/PostActionMenu'
 import { PostImage } from '~/features/feed/PostImage'
 import { useUser } from '~/features/user/useUser'
+import { HeadInfo } from '~/interface/app/HeadInfo'
 import { Avatar } from '~/interface/avatars/Avatar'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { Pressable } from '~/interface/buttons/Pressable'
@@ -56,6 +57,13 @@ export const FeedDetailPage = memo(() => {
     return null
   }
 
+  // truncate for title display
+  const postTitle = post.caption
+    ? post.caption.length > 60
+      ? `${post.caption.slice(0, 60)}...`
+      : post.caption
+    : `Post by @${user.username}`
+
   const openGallery = () => {
     galleryEmitter.emit({
       items: [{ id: post.id.toString(), url: post.image }],
@@ -97,6 +105,7 @@ export const FeedDetailPage = memo(() => {
   if (isWideScreen) {
     return (
       <YStack flex={1} p="$10" items="center" justify="center" position="relative">
+        <HeadInfo title={postTitle} description={post.caption || undefined} />
         <XStack
           bg="$background"
           position="relative"
@@ -161,6 +170,7 @@ export const FeedDetailPage = memo(() => {
       pb={60}
       showsVerticalScrollIndicator={false}
     >
+      <HeadInfo title={postTitle} description={post.caption || undefined} />
       <YStack py="$4">{postHeader}</YStack>
       <Pressable onPress={openGallery} mb="$4">
         <PostImage postId={post.id} image={post.image} caption={post.caption} />

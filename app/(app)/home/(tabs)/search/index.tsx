@@ -6,6 +6,7 @@ import { SizableText, Spinner, View, YStack } from 'tamagui'
 
 import { PostCard } from '~/features/feed/PostCard'
 import { usePostsSearch } from '~/features/feed/usePosts'
+import { HeadInfo } from '~/interface/app/HeadInfo'
 import { Input } from '~/interface/forms/Input'
 import { AnimatedBlurHeader, HEADER_HEIGHT } from '~/interface/headers/AnimatedBlurHeader'
 import { PageLayout } from '~/interface/pages/PageLayout'
@@ -21,6 +22,7 @@ export const SearchPage = memo(() => {
 
   return (
     <PageLayout>
+      <HeadInfo title="Search" />
       <YStack position="absolute" t={headerHeight} l={0} r={0} p="$3" z={99}>
         <Input
           glass

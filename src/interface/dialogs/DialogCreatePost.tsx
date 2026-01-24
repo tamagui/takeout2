@@ -133,6 +133,131 @@ export const DialogCreatePost = () => {
 
   const canPost = caption.trim() && uploadedUrl && !isUploading && !isPosting
 
+  const content = (
+    <YStack p="$1" gap="$4">
+      <Dialog.Header title="Create Post" />
+
+      <YStack gap="$3">
+        <TextArea
+          verticalAlign="top"
+          maxLength={6000}
+          rows={3}
+          size="$4"
+          placeholder="What's on your mind?"
+          value={caption}
+          onChange={(e) => setCaption((e.target as HTMLInputElement).value)}
+          autoFocus={isWeb}
+          rounded="$6"
+          data-testid="create-post-caption"
+        />
+
+        {previewUrl && (
+          <YStack position="relative" rounded="$6" overflow="hidden">
+            <Image
+              src={previewUrl}
+              width="100%"
+              aspectRatio={1}
+              objectFit="contain"
+              bg="$background04"
+            />
+            {isUploading && (
+              <YStack
+                position="absolute"
+                t={0}
+                l={0}
+                r={0}
+                b={0}
+                bg="$background"
+                opacity={0.8}
+                items="center"
+                justify="center"
+              >
+                <Spinner size="large" />
+                <SizableText mt="$2" size="$3">
+                  Uploading...
+                </SizableText>
+              </YStack>
+            )}
+            {uploadError && (
+              <YStack
+                position="absolute"
+                t={0}
+                l={0}
+                r={0}
+                b={0}
+                bg="$red3"
+                opacity={0.9}
+                items="center"
+                justify="center"
+                p="$4"
+              >
+                <SizableText size="$5" fontWeight="600" color="$red11">
+                  Upload failed
+                </SizableText>
+                <SizableText mt="$2" size="$3" color="$red10">
+                  {uploadError}
+                </SizableText>
+              </YStack>
+            )}
+            {!isUploading && !uploadError && (
+              <Pressable position="absolute" t="$3" r="$3" onPress={handleRemoveImage}>
+                <Circle size={36} bg="$background" items="center" justify="center">
+                  <XIcon size={20} color="$color11" />
+                </Circle>
+              </Pressable>
+            )}
+          </YStack>
+        )}
+
+        {!previewUrl && (
+          <Pressable
+            onPress={handleSelectImage}
+            disabled={isUploading}
+            data-testid="create-post-image-picker"
+          >
+            <YStack
+              borderWidth={2}
+              borderColor="$borderColor"
+              borderStyle="dashed"
+              rounded="$6"
+              p="$6"
+              items="center"
+              justify="center"
+              gap="$3"
+              bg="$background02"
+            >
+              <Circle size={56} bg="$background04" items="center" justify="center">
+                <ImageIcon size={28} color="$color11" />
+              </Circle>
+              <YStack items="center" gap="$1">
+                <SizableText size="$5" fontWeight="600">
+                  Add Image
+                </SizableText>
+                <SizableText size="$3" color="$color10">
+                  {isWeb ? 'Click to select' : 'Tap to select from library'}
+                </SizableText>
+              </YStack>
+            </YStack>
+          </Pressable>
+        )}
+      </YStack>
+
+      <Dialog.Footer>
+        <ButtonSimple glass onPress={handleClose}>
+          Cancel
+        </ButtonSimple>
+        <ButtonSimple
+          glass
+          onPress={handlePost}
+          disabled={!canPost}
+          data-testid="create-post-submit"
+        >
+          {isPosting ? 'Posting...' : 'Post'}
+        </ButtonSimple>
+      </Dialog.Footer>
+    </YStack>
+  )
+
   return (
     <Dialog
       minH={500}
@@ -142,146 +267,21 @@ export const DialogCreatePost = () => {
         if (!open) handleClose()
       }}
     >
-      {isWeb && (
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          style={{ display: 'none' }}
-          onChange={handleWebFileChange}
-          data-testid="create-post-file-input"
-        />
+      {!isWeb ? (
+        content
+      ) : (
+        <>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            style={{ display: 'none' }}
+            onChange={handleWebFileChange}
+            data-testid="create-post-file-input"
+          />
+          <ScrollView showsVerticalScrollIndicator={false}>{content}</ScrollView>
+        </>
       )}
-
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <YStack p="$1" gap="$4">
-          <Dialog.Header title="Create Post" />
-
-          <YStack gap="$3">
-            <TextArea
-              verticalAlign="top"
-              maxLength={6000}
-              rows={3}
-              size="$4"
-              placeholder="What's on your mind?"
-              value={caption}
-              onChange={(e) => setCaption((e.target as HTMLInputElement).value)}
-              autoFocus={isWeb}
-              rounded="$6"
-              data-testid="create-post-caption"
-            />
-
-            {previewUrl && (
-              <YStack position="relative" rounded="$6" overflow="hidden">
-                <Image
-                  src={previewUrl}
-                  width="100%"
-                  aspectRatio={1}
-                  objectFit="contain"
-                  bg="$background04"
-                />
-                {isUploading && (
-                  <YStack
-                    position="absolute"
-                    t={0}
-                    l={0}
-                    r={0}
-                    b={0}
-                    bg="$background"
-                    opacity={0.8}
-                    items="center"
-                    justify="center"
-                  >
-                    <Spinner size="large" />
-                    <SizableText mt="$2" size="$3">
-                      Uploading...
-                    </SizableText>
-                  </YStack>
-                )}
-                {uploadError && (
-                  <YStack
-                    position="absolute"
-                    t={0}
-                    l={0}
-                    r={0}
-                    b={0}
-                    bg="$red3"
-                    opacity={0.9}
-                    items="center"
-                    justify="center"
-                    p="$4"
-                  >
-                    <SizableText size="$5" fontWeight="600" color="$red11">
-                      Upload failed
-                    </SizableText>
-                    <SizableText mt="$2" size="$3" color="$red10">
-                      {uploadError}
-                    </SizableText>
-                  </YStack>
-                )}
-                {!isUploading && !uploadError && (
-                  <Pressable
-                    position="absolute"
-                    t="$3"
-                    r="$3"
-                    onPress={handleRemoveImage}
-                  >
-                    <Circle size={36} bg="$background" items="center" justify="center">
-                      <XIcon size={20} color="$color11" />
-                    </Circle>
-                  </Pressable>
-                )}
-              </YStack>
-            )}
-
-            {!previewUrl && (
-              <Pressable
-                onPress={handleSelectImage}
-                disabled={isUploading}
-                data-testid="create-post-image-picker"
-              >
-                <YStack
-                  borderWidth={2}
-                  borderColor="$borderColor"
-                  borderStyle="dashed"
-                  rounded="$6"
-                  p="$6"
-                  items="center"
-                  justify="center"
-                  gap="$3"
-                  bg="$background02"
-                >
-                  <Circle size={56} bg="$background04" items="center" justify="center">
-                    <ImageIcon size={28} color="$color11" />
-                  </Circle>
-                  <YStack items="center" gap="$1">
-                    <SizableText size="$5" fontWeight="600">
-                      Add Image
-                    </SizableText>
-                    <SizableText size="$3" color="$color10">
-                      {isWeb ? 'Click to select' : 'Tap to select from library'}
-                    </SizableText>
-                  </YStack>
-                </YStack>
-              </Pressable>
-            )}
-          </YStack>
-
-          <Dialog.Footer>
-            <ButtonSimple glass onPress={handleClose}>
-              Cancel
-            </ButtonSimple>
-            <ButtonSimple
-              glass
-              onPress={handlePost}
-              disabled={!canPost}
-              data-testid="create-post-submit"
-            >
-              {isPosting ? 'Posting...' : 'Post'}
-            </ButtonSimple>
-          </Dialog.Footer>
-        </YStack>
-      </ScrollView>
     </Dialog>
   )
 }

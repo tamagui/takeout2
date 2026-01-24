@@ -40,7 +40,7 @@ export function where<Table extends TableName, Builder extends Where<Table>>(
       }
     }
     return result
-  }) as any as Builder
+  }) as Builder
 
   if (b) {
     WhereTableNameMap.set(wrappedWhereFn, a as Table)

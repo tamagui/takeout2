@@ -577,10 +577,10 @@ export function createShorthandCommand(name: string) {
           args: {
             name: scriptName,
             _: rawArgs.slice(1),
-          } as any,
+          },
           rawArgs: scriptArgs,
           cmd: scriptCommand,
-        } as any)
+        })
       }
     },
   })

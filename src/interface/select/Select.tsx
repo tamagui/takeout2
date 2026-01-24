@@ -13,11 +13,15 @@ import { CaretDownIcon } from '~/interface/icons/phosphor/CaretDownIcon'
 import { CaretUpIcon } from '~/interface/icons/phosphor/CaretUpIcon'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 
-import type { FontSizeTokens, SelectProps as TamaguiSelectProps } from 'tamagui'
+import type {
+  FontSizeTokens,
+  SizeTokens,
+  SelectProps as TamaguiSelectProps,
+} from 'tamagui'
 
 export type SelectProps = Omit<TamaguiSelectProps, 'children'> & {
   items: { name: string; id: string; icon?: React.ReactNode }[]
-  width?: number | string
+  width?: SizeTokens
 }
 
 export function Select({
@@ -32,7 +36,7 @@ export function Select({
 
   const handleChange = (val: string) => {
     setId(val)
-    onValueChange?.(val as any)
+    onValueChange?.(val)
   }
 
   return (
@@ -48,8 +52,8 @@ export function Select({
         borderColor="$color3"
         {...(width
           ? {
-              width: width as any,
-              maxWidth: (typeof width === 'string' ? width : width || 220) as any,
+              width,
+              maxWidth: typeof width === 'string' ? width : width || 220,
             }
           : {
               maxWidth: 220,

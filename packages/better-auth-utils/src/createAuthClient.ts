@@ -208,11 +208,7 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
       setState({
         state: nextState,
         session: data?.session,
-        user: data?.user
-          ? createUser
-            ? createUser(data.user as User)
-            : (data.user as any)
-          : null,
+        user: data?.user ? (createUser ? createUser(data.user) : data.user) : null,
       })
 
       // get token on creating a new session (for native + tauri)

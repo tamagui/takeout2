@@ -48,7 +48,7 @@ export const ListItemText = forwardRef<TamaguiElement, ListItemTextProps>(
     if (editing && editable) {
       return (
         <ListItemInput
-          ref={ref as any}
+          ref={ref}
           defaultValue={editingValue || (children as string)}
           autoFocus
           onSubmitEditing={(e) => {

@@ -90,12 +90,10 @@ export const AIPage = memo(() => {
         <ScrollView
           ref={scrollViewRef}
           flex={1}
-          contentContainerStyle={
-            {
-              flexGrow: 1,
-              padding: 16,
-            } as any
-          }
+          contentContainerStyle={{
+            flex: 1,
+            p: 16,
+          }}
           showsVerticalScrollIndicator={false}
         >
           {messages.length === 0 ? (

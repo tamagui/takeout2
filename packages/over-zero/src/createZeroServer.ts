@@ -181,7 +181,7 @@ export function createZeroServer<
       }
       // @ts-expect-error type
       const output = await zeroDb.transaction(query, dummyTransactionInput)
-      return output as any
+      return output
     } catch (err) {
       console.error(`Error running transaction(): ${err}`)
       throw err
@@ -204,8 +204,8 @@ export function createZeroServer<
   // server uses transaction-based execution
   setRunner((queryObj) => {
     return transaction(async (tx) => {
-      return tx.run(queryObj as any)
-    }) as any
+      return tx.run(queryObj)
+    })
   })
 
   // This is needed temporarily and will be cleaned up in the future.

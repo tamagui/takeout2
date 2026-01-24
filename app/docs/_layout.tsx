@@ -46,7 +46,7 @@ export function DocsLayout() {
           borderRightWidth={1}
           borderRightColor="$color2"
           $md={{
-            position: 'sticky' as any,
+            position: 'sticky',
             t: 50,
             height: 'calc(100vh - 50px)',
             width: 225,

@@ -16,39 +16,6 @@ const allItems = docsRoutes.flatMap((section, sectionIndex) =>
 
 type Item = NonNullable<(typeof allItems)[0]>
 
-const ActiveIndicator = ({
-  items,
-  activeIndex,
-  visible,
-}: {
-  items: Array<{ top: number; height: number }>
-  activeIndex: number
-  visible: boolean
-}) => {
-  if (items.length === 0 || activeIndex < 0 || !visible) return null
-
-  const activeItem = items[activeIndex]
-  if (!activeItem) return null
-
-  const indicatorHeight = 20
-  const topPosition = activeItem.top + (activeItem.height - indicatorHeight) / 2
-
-  return (
-    <View
-      position="absolute"
-      l={0}
-      t={topPosition}
-      height={indicatorHeight}
-      width={3}
-      bg="$color12"
-      rounded="$2"
-      transition="quick"
-      z={999}
-      enterStyle={{ opacity: 0 }}
-    />
-  )
-}
-
 export const DocsMenuContents = () => {
   const activeItems = allItems.filter(Boolean) as Item[]
   const { currentPath } = useDocsMenu()
@@ -208,5 +175,38 @@ const SubSection = ({ section, items }: { section: DocsSection; items: Item[] })
         </Accordion.Content>
       </Accordion.HeightAnimator>
     </Accordion.Item>
+  )
+}
+
+const ActiveIndicator = ({
+  items,
+  activeIndex,
+  visible,
+}: {
+  items: Array<{ top: number; height: number }>
+  activeIndex: number
+  visible: boolean
+}) => {
+  if (items.length === 0 || activeIndex < 0 || !visible) return null
+
+  const activeItem = items[activeIndex]
+  if (!activeItem) return null
+
+  const indicatorHeight = 20
+  const topPosition = activeItem.top + (activeItem.height - indicatorHeight) / 2
+
+  return (
+    <View
+      position="absolute"
+      l={0}
+      t={topPosition}
+      height={indicatorHeight}
+      width={3}
+      bg="$color12"
+      rounded="$2"
+      transition="quick"
+      z={999}
+      enterStyle={{ opacity: 0 }}
+    />
   )
 }

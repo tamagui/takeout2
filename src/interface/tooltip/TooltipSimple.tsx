@@ -103,6 +103,7 @@ export const TooltipSimple: React.FC<TooltipSimpleProps> = memo((props) => {
       }}
       onMouseLeave={() => {
         isHoveredRef.current = false
+        globalTooltip.emit({})
       }}
     >
       {child}

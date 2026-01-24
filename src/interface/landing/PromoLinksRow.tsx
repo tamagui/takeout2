@@ -10,7 +10,7 @@ const tooltipDelay = { open: 0, close: 150 }
 const PromoButton = styled(XStack, {
   items: 'center',
   justify: 'center',
-  gap: '$1',
+  gap: '$2',
   minW: 72,
   px: '$3',
   py: '$2',
@@ -31,38 +31,6 @@ const PromoButton = styled(XStack, {
     bg: '$color5',
     scale: 0.98,
   },
-
-  variants: {
-    variant: {
-      pro: {
-        bg: '$orange3',
-        borderColor: '$orange6',
-
-        hoverStyle: {
-          bg: '$orange4',
-          borderColor: '$orange8',
-        },
-
-        pressStyle: {
-          bg: '$orange5',
-        },
-      },
-
-      free: {
-        bg: '$color3',
-        borderColor: '$color5',
-
-        hoverStyle: {
-          bg: '$color4',
-          borderColor: '$color7',
-        },
-
-        pressStyle: {
-          bg: '$color5',
-        },
-      },
-    },
-  } as const,
 })
 
 const PromoButtonText = styled(Text, {
@@ -70,19 +38,6 @@ const PromoButtonText = styled(Text, {
   fontWeight: '600',
   fontSize: '$2',
   letterSpacing: 0.5,
-  textTransform: 'uppercase',
-
-  variants: {
-    variant: {
-      pro: {
-        color: '$orange11',
-      },
-
-      free: {
-        color: '$color11',
-      },
-    },
-  } as const,
 })
 
 export function PromoLinksRow() {
@@ -98,9 +53,9 @@ export function PromoLinksRow() {
             onMouseEnter={() => setLabel('Pro — full features and support')}
           >
             <Link href="https://tamagui.dev/takeout" target="_blank" hideExternalIcon>
-              <PromoButton variant="pro">
-                <SparkleIcon size={14} color="$orange10" />
-                <PromoButtonText variant="pro">Pro</PromoButtonText>
+              <PromoButton theme="blue">
+                <SparkleIcon size={14} color="$color10" />
+                <PromoButtonText>Pro</PromoButtonText>
               </PromoButton>
             </Link>
           </Tooltip.Trigger>
@@ -117,9 +72,9 @@ export function PromoLinksRow() {
               target="_blank"
               hideExternalIcon
             >
-              <PromoButton variant="free">
+              <PromoButton>
                 <GithubLogoIcon size={14} color="$color10" />
-                <PromoButtonText variant="free">Free</PromoButtonText>
+                <PromoButtonText>Free</PromoButtonText>
               </PromoButton>
             </Link>
           </Tooltip.Trigger>

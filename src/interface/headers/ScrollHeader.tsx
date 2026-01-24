@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react'
-import { XStack, YStack, isClient, useMedia } from 'tamagui'
+import { XStack, YStack, isClient } from 'tamagui'
 
 import type { ReactNode } from 'react'
 
 export const ScrollHeader = ({ children }: { children: ReactNode }) => {
   const [isScrolled, setIsScrolled] = useState(false)
-  const media = useMedia()
-  const isMobile = media.maxSM
 
   useEffect(() => {
-    if (!isClient || isMobile) return
+    if (!isClient) return
 
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 30)
@@ -52,20 +50,22 @@ export const ScrollHeader = ({ children }: { children: ReactNode }) => {
             }),
           }}
         >
+          {/* blur layer - always has blur applied, opacity controls visibility */}
           <YStack
             position="absolute"
             transition="medium"
             inset={0}
+            opacity={isScrolled ? 1 : 0}
+            $maxSM={{ opacity: 1 }}
             style={{
-              ...((isScrolled || isMobile) && {
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
-              }),
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
             }}
           />
 
           <YStack
-            opacity={isScrolled || isMobile ? 0.85 : 0}
+            opacity={isScrolled ? 0.85 : 0}
+            $maxSM={{ opacity: 0.85 }}
             position="absolute"
             inset={0}
             bg="$color2"

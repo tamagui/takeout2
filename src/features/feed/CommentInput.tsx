@@ -88,42 +88,31 @@ export function CommentInput({
 
       {isNative && (
         <KeyboardStickyFooter openedOffset={-10}>
-          <XStack
-            items="center"
-            gap="$2"
-            px="$3"
-            py="$2"
-            overflow="hidden"
-            rounded={24}
-            bg="$background"
-            mx="$2"
-          >
-            <Glint rounded={24} />
+          <XStack items="center" gap="$2" px="$3" py="$2" overflow="hidden">
             <Input
+              unstyled
               flex={1}
-              borderWidth={0}
+              rounded={24}
+              bg="$color2"
               color="$color"
+              borderColor="$borderColor"
               placeholder="Add a comment..."
               value={content}
               onChange={(e) => setContent((e.target as HTMLInputElement).value)}
               maxLength={500}
               maxHeight={100}
-              rows={3}
-              multiple
+              minH={44}
+              maxH={100}
+              rows={2}
               verticalAlign="top"
             />
 
-            <YStack
-              key="send-button"
-              transition="200ms"
-              scale={hasContent ? 1 : 0.5}
-              opacity={hasContent ? 1 : 0}
-            >
+            <YStack key="send-button">
               <ButtonSimple
                 size="large"
                 circular
                 bg="$color6"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !content.trim()}
                 onPress={onSubmit}
               >
                 {isSubmitting ? (

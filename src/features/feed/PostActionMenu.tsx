@@ -5,6 +5,7 @@ import { useIsTouchDevice } from 'tamagui'
 
 import { saveRemoteImage } from '~/helpers/media/saveImage'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Pressable } from '~/interface/buttons/Pressable'
 import { dialogConfirm, showError } from '~/interface/dialogs/actions'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
@@ -95,10 +96,20 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
 
   return (
     <Menu allowFlip placement="bottom-end" offset={8}>
-      <Menu.Trigger borderWidth={0} bg="transparent">
-        <ButtonSimple size="small" circular glass aria-label="Post actions">
-          <DotsThreeIcon size={16} color="$color12" />
-        </ButtonSimple>
+      <Menu.Trigger asChild>
+        <Pressable
+          width={32}
+          height={32}
+          rounded="$10"
+          aria-label="Post actions"
+          bg="$color3"
+          borderWidth={0}
+          items="center"
+          justify="center"
+          boxShadow="0 $2 $4 $shadowColor"
+        >
+          <DotsThreeIcon size={16} />
+        </Pressable>
       </Menu.Trigger>
 
       <Menu.Portal zIndex={100}>

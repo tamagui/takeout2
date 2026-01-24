@@ -1,4 +1,4 @@
-import { isWeb, useEmitter, useEmitterValue } from '@take-out/helpers'
+import { useEmitter, useEmitterValue } from '@take-out/helpers'
 import {
   ToastProvider as TamaguiToastProvider,
   Toast,
@@ -92,8 +92,7 @@ const ToastDisplay = () => {
       shadowColor="$shadow2"
       shadowRadius={8}
       shadowOffset={{ height: 4, width: 0 }}
-      // @ts-ignore web-only
-      boxShadow="0 4px 8px var(--shadow2), 0 16px 40px var(--shadow4)"
+      boxShadow="0 4px 8px $shadow2, 0 16px 40px $shadow4"
       rounded="$8"
     >
       <YStack>

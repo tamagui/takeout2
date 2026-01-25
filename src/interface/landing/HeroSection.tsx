@@ -40,7 +40,8 @@ const HeroTitle = styled(H1, {
   fontWeight: '800',
 
   $maxLG: {
-    size: '$10',
+    size: '$9',
+    fontWeight: '800',
   },
 })
 
@@ -399,15 +400,14 @@ export function HeroSection() {
             <Strong fontWeight="600" color="$color12">
               Most starter kits suck
             </Strong>
-            . Takeout doesn&rsquo;t: truly novel tech, real-world deployments, smart
-            AI&nbsp;harnessing, scalable IaC, auth, examples, UI, and{' '}
-            <Link href="/docs/changelog">constant updates</Link> — it's&nbsp;what we use
-            for ourselves and <Link href="https://addeven.com">our clients</Link>.
+            . Takeout may not: novel tech, battle tested, AI&nbsp;harnessing, scalable
+            IaC, flows, and <Link href="/docs/changelog">updates</Link> — it's&nbsp;what
+            we use for ourselves and <Link href="https://addeven.com">our clients</Link>.
             <br />
             <br />
             It's the{' '}
             <Strong fontWeight="600" color="$color11">
-              fastest way to build a great startup
+              fast way to build a startup
             </Strong>
             , turning React Native + web into one smooth, simple stack.
           </HeroSubtitle>
@@ -423,13 +423,13 @@ export function HeroSection() {
           </XStack>
 
           <Paragraph size="$6" color="$color10">
-            Check out the{' '}
+            Check the{' '}
             <Link href="https://tamagui.dev/takeout" target="_blank">
               <Span color="$color12">pro version</Span>
             </Link>{' '}
-            or the{' '}
+            or{' '}
             <Link href="https://github.com/tamagui/takeout-free" target="_blank">
-              <Span color="$color12">free version</Span>
+              <Span color="$color12">free one</Span>
             </Link>
             .
           </Paragraph>

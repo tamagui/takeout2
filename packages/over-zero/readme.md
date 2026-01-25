@@ -1,6 +1,10 @@
 # over-zero
 
-<img src="./over-zero.svg" width="120" alt="over-zero" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./over-zero-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./over-zero.svg">
+  <img src="./over-zero.svg" width="120" alt="over-zero">
+</picture>
 
 helpers for building offline-first apps with [zero](https://zero.rocicorp.dev)
 

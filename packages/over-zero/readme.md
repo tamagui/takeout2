@@ -6,7 +6,7 @@
   <img src="./over-zero.svg" width="120" alt="over-zero">
 </picture>
 
-helpers for building offline-first apps with [zero](https://zero.rocicorp.dev)
+makes [zero](https://zero.rocicorp.dev) really simple to use
 
 ## what it does
 

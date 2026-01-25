@@ -1,12 +1,7 @@
 ---
 name: takeout-zero
-description: Zero sync, offline-first queries, and mutations guide. useQuery, zql, queries, mutations, mutate, CRUD, permissions, where clauses, auth checks, relations, joins, related data, offline-first, sync, real-time, optimistic updates, convergent mutations.
+description: Zero sync queries, and mutations guide. useQuery, zql, queries, mutations, mutate, CRUD, permissions, where clauses, auth checks, relations, joins, related data, sync, real-time, optimistic updates, convergent mutations.
 ---
-
-# zero sync guide
-
-zero powers offline-first sync in this app via postgres replication. this guide
-covers patterns using over-zero.
 
 ## queries
 

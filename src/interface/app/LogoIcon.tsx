@@ -1,6 +1,7 @@
+import { memo } from 'react'
 import { Defs, G, LinearGradient, Path, Polygon, Stop, Svg } from 'react-native-svg'
 
-export const LogoIcon = ({ size = 24 }: { size?: number }) => {
+export const LogoIcon = memo(({ size = 24 }: { size?: number }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 128 128">
       <Defs>
@@ -128,4 +129,4 @@ export const LogoIcon = ({ size = 24 }: { size?: number }) => {
       </G>
     </Svg>
   )
-}
+})

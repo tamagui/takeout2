@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { XStack, YStack } from 'tamagui'
 
 import type { OnboardingPageIndicatorProps } from './types'
@@ -15,7 +16,7 @@ export function OnboardingPageIndicator({
   )
 }
 
-function IndicatorDot({ isActive }: { isActive: boolean }) {
+const IndicatorDot = memo(({ isActive }: { isActive: boolean }) => {
   return (
     <YStack
       width={isActive ? 28 : 8}
@@ -25,4 +26,4 @@ function IndicatorDot({ isActive }: { isActive: boolean }) {
       transition="medium"
     />
   )
-}
+})

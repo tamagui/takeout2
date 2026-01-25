@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import Animated, {
   Extrapolation,
@@ -24,13 +25,13 @@ interface ExpandedMenuItemProps {
   onPress: () => void
 }
 
-export function ExpandedMenuItem({
+export const ExpandedMenuItem = memo(({
   item,
   index,
   animationProgress,
   isSelected,
   onPress,
-}: ExpandedMenuItemProps) {
+}: ExpandedMenuItemProps) => {
   const Icon = item.icon
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -110,7 +111,7 @@ export function ExpandedMenuItem({
       </Pressable>
     </Animated.View>
   )
-}
+})
 
 const styles = StyleSheet.create({
   menuItem: {

@@ -1,6 +1,6 @@
 import { LegendList } from '@legendapp/list'
 import { isNative } from '@take-out/helpers'
-import { useCallback } from 'react'
+import { memo, useCallback } from 'react'
 import { Alert, RefreshControl } from 'react-native'
 import { ListItem, ScrollView, SizableText, Spinner, View, YStack } from 'tamagui'
 
@@ -13,13 +13,13 @@ import { Text } from '~/interface/text/Text'
 
 import type { User } from '~/data/types'
 
-function BlockedUserItem({
+const BlockedUserItem = memo(({
   user,
   onUnblock,
 }: {
   user: User
   onUnblock: (user: User) => void
-}) {
+}) => {
   return (
     <ListItem
       bg="$background"
@@ -48,9 +48,9 @@ function BlockedUserItem({
       </ButtonSimple>
     </ListItem>
   )
-}
+})
 
-function EmptyState() {
+const EmptyState = memo(() => {
   return (
     <YStack flex={1} items="center" justify="center" p="$4" minH={400}>
       <SizableText size="$5" color="$color10">
@@ -64,7 +64,7 @@ function EmptyState() {
       )}
     </YStack>
   )
-}
+})
 
 export const ProfileBlockedUsersPage = () => {
   const { blockedUsers, isLoading, hasMore, loadMore, refresh, unblockUser } =

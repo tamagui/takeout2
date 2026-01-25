@@ -115,6 +115,8 @@ export default {
             return {
               ...config,
               plugins: [
+                // React Compiler for automatic memoization - must run first
+                'babel-plugin-react-compiler',
                 ...(config?.plugins || []),
                 // Hot Updater (React Native OTA solution)
                 'hot-updater/babel-plugin',

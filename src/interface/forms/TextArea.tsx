@@ -4,6 +4,7 @@ export const TextArea = styled(TamaguiTextArea, {
   name: 'TextArea',
   borderWidth: 1,
   borderColor: '$borderColor',
+  placeholderTextColor: '$color8',
   rounded: '$2',
   px: '$3',
   py: '$2',
@@ -14,7 +15,6 @@ export const TextArea = styled(TamaguiTextArea, {
   focusStyle: {
     borderColor: '$color8',
   },
-  placeholderTextColor: '$color8',
 
   variants: {
     size: {
@@ -22,6 +22,8 @@ export const TextArea = styled(TamaguiTextArea, {
         // @ts-expect-error fontSize token type issue in canary
         fontSize: '$3',
         minHeight: 80,
+        px: '$2.5',
+        py: '$2',
       },
       medium: {
         // @ts-expect-error fontSize token type issue in canary
@@ -32,6 +34,8 @@ export const TextArea = styled(TamaguiTextArea, {
         // @ts-expect-error fontSize token type issue in canary
         fontSize: '$5',
         minHeight: 120,
+        px: '$4',
+        py: '$3',
       },
     },
   } as const,

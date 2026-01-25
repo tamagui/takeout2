@@ -359,8 +359,8 @@ export function ContentSection() {
       <YStack gap="$4">
         <ContentParagraph>
           We built Takeout for ourselves, much like Tamagui and One. They're passion
-          projects born out of stubbornly wanting better things. We hope you enjoy this somewhat
-          early version of our new stack.
+          projects born out of stubbornly wanting better things. We hope you enjoy this
+          somewhat early version of our new stack.
         </ContentParagraph>
 
         <ContentParagraph>

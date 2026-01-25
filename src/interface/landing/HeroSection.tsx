@@ -99,8 +99,9 @@ const TerminalContainer = styled(YStack, {
 
 const TerminalHeader = styled(XStack, {
   bg: '#1a1a1a',
+  pointerEvents: 'none',
   px: '$4',
-  py: '$3',
+  py: '$2',
   items: 'center',
   gap: '$2',
   borderBottomWidth: 1,
@@ -132,7 +133,11 @@ const steps: CommandStep[] = [
     ],
   },
   {
-    command: 'cd my-app && bun dev',
+    command: 'cd my-app && bun onboard',
+    output: ['  (multi-step onboarding wizard 🧙‍♂️...)'],
+  },
+  {
+    command: 'bun dev',
     output: [
       '  Starting development server...',
       '  Vite: http://localhost:5173',
@@ -236,6 +241,7 @@ function HeroTerminal() {
           flex={1}
           text="center"
           mr="$8"
+          select="none"
         >
           takeout-cli
         </Paragraph>
@@ -390,11 +396,11 @@ export function HeroSection() {
           </YStack>
 
           <HeroSubtitle>
-            <Strong fontWeight="600" color="$color11">
+            <Strong fontWeight="600" color="$color12">
               Most starter kits suck
             </Strong>
-            . Takeout doesn&rsquo;t: truly novel tech, deployed in real apps, robust
-            AI&nbsp;harness, scalable IaC, auth, examples, UI, and{' '}
+            . Takeout doesn&rsquo;t: truly novel tech, real-world deployments, smart
+            AI&nbsp;harnessing, scalable IaC, auth, examples, UI, and{' '}
             <Link href="/docs/changelog">constant updates</Link> — it's&nbsp;what we use
             for ourselves and <Link href="https://addeven.com">our clients</Link>.
             <br />
@@ -403,7 +409,7 @@ export function HeroSection() {
             <Strong fontWeight="600" color="$color11">
               fastest way to build a great startup
             </Strong>
-            , turning React Native + web into one smooth, simple thing.
+            , turning React Native + web into one smooth, simple stack.
           </HeroSubtitle>
 
           <XStack gap="$3" mt="$2" flexWrap="wrap" items="center">

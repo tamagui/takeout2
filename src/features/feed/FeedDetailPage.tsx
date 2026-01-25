@@ -38,7 +38,7 @@ export const FeedDetailPage = memo(() => {
     setIsSubmitting(true)
 
     try {
-      await zero.mutate.comment.insert({
+      zero.mutate.comment.insert({
         id: randomId(),
         postId: feedId,
         userId: currentUser.id,

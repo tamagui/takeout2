@@ -1,10 +1,7 @@
 import { Keyboard } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { isWeb, Spinner, XStack, YStack } from 'tamagui'
 
-import { isNative } from '~/constants/platform'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
-import Glint from '~/interface/effects/Glint'
 import { Input } from '~/interface/forms/Input'
 import { TextArea } from '~/interface/forms/TextArea'
 import { PaperPlaneTiltIcon } from '~/interface/icons/phosphor/PaperPlaneTiltIcon'
@@ -29,9 +26,7 @@ export function CommentInput({
   handleSubmit,
   isSubmitting,
 }: CommentInputProps) {
-  const { bottom } = useSafeAreaInsets()
   const hasContent = content.trim().length > 0
-  const offset = -(bottom + 50)
 
   const onSubmit = () => {
     handleSubmit()
@@ -86,7 +81,7 @@ export function CommentInput({
         </XStack>
       )}
 
-      {isNative && (
+      {process.env.VITE_PLATFORM === 'native' && (
         <KeyboardStickyFooter openedOffset={-10}>
           <XStack items="center" gap="$2" px="$3" py="$2" overflow="hidden">
             <Input

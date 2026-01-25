@@ -1,7 +1,7 @@
 import { useEmitterValue } from '@take-out/helpers'
 import { useEffect, useState } from 'react'
 import { useWindowDimensions } from 'react-native'
-import { AnimatePresence, Portal, styled, XStack, YStack } from 'tamagui'
+import { AnimatePresence, Circle, Portal, styled, XStack, YStack } from 'tamagui'
 
 import { animationClamped } from '~/interface/animations/animationClamped'
 import { ButtonSimple, type ButtonSimpleProps } from '~/interface/buttons/ButtonSimple'
@@ -12,6 +12,7 @@ import { Image } from '~/interface/image/Image'
 import { isVideoFile } from '~/interface/upload/helpers'
 import { Video } from '~/interface/video/Video'
 
+import { Pressable } from '../buttons/Pressable'
 import { galleryEmitter } from './galleryEmitter'
 
 import type { ReactNode } from 'react'
@@ -113,10 +114,12 @@ export const Gallery = () => {
         overflow="hidden"
         bg="$black02"
         backdropFilter="blur(20px)"
-        width="100%"
         items="center"
-        position="absolute"
-        inset={0}
+        position="fixed"
+        t={0}
+        l={0}
+        r={0}
+        b={0}
         z={100_000}
         onPress={closeGallery}
         {...(hidden
@@ -131,16 +134,21 @@ export const Gallery = () => {
       >
         {items && (
           <>
-            <ButtonSimple
+            <Pressable
+              onPress={(e: any) => {
+                e.stopPropagation()
+                e.preventDefault()
+                closeGallery()
+              }}
               position="absolute"
-              circular
-              icon={<XIcon />}
-              z={100}
-              size="large"
               t="$4"
               r="$4"
-              onPress={closeGallery}
-            />
+              z={999}
+            >
+              <Circle size={40} bg="$color2">
+                <XIcon />
+              </Circle>
+            </Pressable>
 
             <AnimatePresence initial={false} custom={{ going }}>
               <GalleryItem

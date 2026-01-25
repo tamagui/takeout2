@@ -36,7 +36,7 @@ export function PlatformSpecificRootProvider({ children }: { children: ReactNode
 
   return (
     <KeyboardProvider>
-      <GestureHandlerRootView style={{ display: 'contents' }}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
         {showSplash && (
           <Splash
             isReady={true}

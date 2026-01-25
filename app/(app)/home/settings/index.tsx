@@ -1,4 +1,5 @@
 import { Link, Redirect, usePathname } from 'one'
+import { memo } from 'react'
 import { Linking } from 'react-native'
 import { ScrollView, SizableText, styled, useMedia, View, XStack, YStack } from 'tamagui'
 
@@ -8,7 +9,7 @@ import { HeadInfo } from '~/interface/app/HeadInfo'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { SepHeading } from '~/interface/text/Headings'
 
-function SettingRow({ item, isActive }: { item: SettingItem; isActive: boolean }) {
+const SettingRow = memo(({ item, isActive }: { item: SettingItem; isActive: boolean }) => {
   const Icon = item.icon
 
   const content = (
@@ -65,9 +66,9 @@ function SettingRow({ item, isActive }: { item: SettingItem; isActive: boolean }
   }
 
   return null
-}
+})
 
-function LogoAndVersion() {
+const LogoAndVersion = memo(() => {
   return (
     <YStack items="center" pt="$6" pb="$4">
       <SizableText size="$2" color="$color9">
@@ -75,7 +76,7 @@ function LogoAndVersion() {
       </SizableText>
     </YStack>
   )
-}
+})
 
 export function SettingsSidebarContent() {
   const pathname = usePathname()
@@ -109,7 +110,7 @@ export function SettingsSidebarContent() {
   )
 }
 
-const MobileSettingRow = ({ item }: { item: SettingItem }) => {
+const MobileSettingRow = memo(({ item }: { item: SettingItem }) => {
   const Icon = item.icon
 
   const content = (
@@ -153,7 +154,7 @@ const MobileSettingRow = ({ item }: { item: SettingItem }) => {
       {content}
     </Link>
   )
-}
+})
 
 function MobileSettingsContent() {
   const { sections } = useSettingsData()
@@ -181,7 +182,7 @@ function MobileSettingsContent() {
   )
 }
 
-const MobileLogoAndVersion = () => (
+const MobileLogoAndVersion = memo(() => (
   <YStack items="center" pb={100} pt="$4">
     <XStack items="center" gap="$2">
       <SizableText color="$color10" fontWeight="bold">
@@ -192,7 +193,7 @@ const MobileLogoAndVersion = () => (
       v1.0.0
     </SizableText>
   </YStack>
-)
+))
 
 export function ProfileSettingsPage() {
   const media = useMedia()

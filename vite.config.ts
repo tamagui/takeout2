@@ -116,6 +116,8 @@ export default {
               ...config,
               plugins: [
                 ...(config?.plugins || []),
+                // React Compiler for automatic memoization
+                'babel-plugin-react-compiler',
                 // Hot Updater (React Native OTA solution)
                 'hot-updater/babel-plugin',
                 // reanimated worklet compilation - MUST be last

@@ -1,4 +1,5 @@
 import { useUserScheme } from '@vxrn/color-scheme'
+import { memo, useCallback, useMemo } from 'react'
 import { styled, View } from 'tamagui'
 
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
@@ -27,7 +28,7 @@ const IconContainer = styled(View, {
 
 const schemeSettings = ['light', 'dark', 'system'] as const
 
-export function ThemeSwitch({ size = '$2' }: { size?: SizeTokens }) {
+export const ThemeSwitch = memo(({ size = '$2' }: { size?: SizeTokens }) => {
   const { onPress, setting } = useToggleTheme()
 
   const iconSize = size === '$1' ? 16 : size === '$2' ? 20 : size === '$3' ? 24 : 28
@@ -58,28 +59,34 @@ export function ThemeSwitch({ size = '$2' }: { size?: SizeTokens }) {
       </TooltipSimple>
     </View>
   )
-}
+})
 
 export function useToggleTheme() {
   const userScheme = useUserScheme()
-  const Icon =
+
+  const Icon = useMemo(() =>
     userScheme.setting === 'system'
       ? CircleHalfIcon
       : userScheme.setting === 'dark'
         ? MoonStarsIcon
-        : SunIcon
+        : SunIcon,
+    [userScheme.setting]
+  )
 
-  return {
+  const onPress = useCallback(() => {
+    const currentIndex = schemeSettings.indexOf(userScheme.setting)
+    const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % 3 : 0
+    const next = schemeSettings[nextIndex]!
+    userScheme.set(next)
+  }, [userScheme])
+
+  return useMemo(() => ({
     setting: userScheme.setting,
     scheme: userScheme.value,
     Icon,
-    onPress: () => {
-      const currentIndex = schemeSettings.indexOf(userScheme.setting)
-      const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % 3 : 0
-      const next = schemeSettings[nextIndex]!
-      userScheme.set(next)
-    },
-  }
+    onPress,
+  }), [userScheme.setting, userScheme.value, Icon, onPress])
 }
 
+// @ts-expect-error adding display name for debugging
 ThemeSwitch.title = 'Theme Switch'

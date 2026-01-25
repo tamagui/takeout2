@@ -1,4 +1,5 @@
 import { formatDistanceToNow } from '@take-out/helpers'
+import { memo } from 'react'
 import { SizableText, XStack, YStack } from 'tamagui'
 
 import { Avatar } from '~/interface/avatars/Avatar'
@@ -11,7 +12,7 @@ interface CommentItemProps {
   createdAt: number
 }
 
-export function CommentItem({ image, username, content, createdAt }: CommentItemProps) {
+export const CommentItem = memo(({ image, username, content, createdAt }: CommentItemProps) => {
   return (
     <XStack gap="$3">
       <Avatar image={image || ''} size={32} />
@@ -28,4 +29,4 @@ export function CommentItem({ image, username, content, createdAt }: CommentItem
       </YStack>
     </XStack>
   )
-}
+})

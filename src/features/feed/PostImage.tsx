@@ -1,3 +1,5 @@
+import { memo } from 'react'
+
 import { Image } from '~/interface/image/Image'
 
 interface PostImageProps {
@@ -10,13 +12,13 @@ interface PostImageProps {
   fill?: boolean
 }
 
-export function PostImage({
+export const PostImage = memo(({
   image,
   caption,
   aspectRatio = 1,
   onAspectRatioChange,
   fill,
-}: PostImageProps) {
+}: PostImageProps) => {
   return (
     <Image
       src={image}
@@ -38,4 +40,4 @@ export function PostImage({
       }
     />
   )
-}
+})

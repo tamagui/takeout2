@@ -1,10 +1,11 @@
+import { memo } from 'react'
 import Svg, { Path } from 'react-native-svg'
 
 import { useIconProps } from '~/interface/icons/useIconProps'
 
 import type { IconProps } from '~/interface/icons/types'
 
-export const SunIcon = (props: IconProps) => {
+export const SunIcon = memo((props: IconProps) => {
   const { width, height, fill, ...svgProps } = useIconProps(props)
 
   return (
@@ -15,4 +16,4 @@ export const SunIcon = (props: IconProps) => {
       />
     </Svg>
   )
-}
+})

@@ -9,7 +9,7 @@ import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { PageLayout } from '~/interface/pages/PageLayout'
 import { SepHeading } from '~/interface/text/Headings'
 
-const SettingRow = ({ item }: { item: SettingItem }) => {
+const SettingRow = memo(({ item }: { item: SettingItem }) => {
   const Icon = item.icon
 
   const content = (
@@ -51,7 +51,7 @@ const SettingRow = ({ item }: { item: SettingItem }) => {
       {content}
     </Link>
   )
-}
+})
 
 export const ProfileSettingsPage = () => {
   const { sections } = useSettingsData()
@@ -82,7 +82,7 @@ export const ProfileSettingsPage = () => {
   )
 }
 
-const LogoAndVersion = () => (
+const LogoAndVersion = memo(() => (
   <YStack items="center" pb={100} pt="$4">
     <XStack items="center" gap="$2">
       <SizableText color="$color10" fontWeight="bold">
@@ -93,7 +93,7 @@ const LogoAndVersion = () => (
       v1.0.0
     </SizableText>
   </YStack>
-)
+))
 
 const SettingRowFrame = styled(XStack, {
   cursor: 'pointer',

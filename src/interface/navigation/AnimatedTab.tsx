@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { memo, useEffect } from 'react'
 import Animated, {
   Easing,
   Extrapolation,
@@ -21,13 +21,13 @@ interface AnimatedTabProps {
   animationProgress: SharedValue<number>
 }
 
-export function AnimatedTab({
+export const AnimatedTab = memo(({
   isFocused,
   icon: Icon,
   onPress,
   onLongPress,
   animationProgress,
-}: AnimatedTabProps) {
+}: AnimatedTabProps) => {
   const focusProgress = useSharedValue(isFocused ? 1 : 0)
 
   useEffect(() => {
@@ -73,4 +73,4 @@ export function AnimatedTab({
       </Animated.View>
     </Pressable>
   )
-}
+})

@@ -52,10 +52,16 @@ export function useBlockedUsers(options?: UseBlockedUsersOptions) {
   }
 
   const unblockUser = async (blockedUserId: string) => {
-    if (!user?.id) return
+    if (!user?.id || !blocks) return
+
+    const block = blocks.find((b) => b.blockedId === blockedUserId)
+    if (!block) {
+      console.error('Block not found for user:', blockedUserId)
+      return
+    }
 
     try {
-      await zero.mutate.block.delete(blockedUserId).client
+      await zero.mutate.block.delete({ id: block.id, blockedUserId }).client
     } catch (error) {
       console.error('Failed to unblock user:', error)
     }

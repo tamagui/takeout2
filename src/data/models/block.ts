@@ -36,25 +36,22 @@ export const mutate = mutations(schema, permissions, {
     }
   },
 
-  delete: async ({ tx, authData, environment, server }, blockedUserId: string) => {
+  delete: async (
+    { tx, authData, environment, server },
+    data: { id: string; blockedUserId?: string }
+  ) => {
     if (!authData) throw new Error('Must be logged in')
 
-    const block = await (tx.query as any).block
-      .where('blockerId', authData.id)
-      .where('blockedId', blockedUserId)
-      .one()
-      .run()
+    // permissions already ensure user can only delete their own blocks
+    await tx.mutate.block.delete({ id: data.id })
 
-    if (block?.id) {
-      await tx.mutate.block.delete({ id: block.id })
-
-      if (environment === 'server' && server) {
-        server.asyncTasks.push(() =>
-          server.actions.analyticsActions().logEvent(authData.id, 'user_unblocked', {
-            targetUserId: blockedUserId,
-          })
-        )
-      }
+    const blockedUserId = data.blockedUserId
+    if (environment === 'server' && server && blockedUserId) {
+      server.asyncTasks.push(() =>
+        server.actions.analyticsActions().logEvent(authData.id, 'user_unblocked', {
+          targetUserId: blockedUserId,
+        })
+      )
     }
   },
 })

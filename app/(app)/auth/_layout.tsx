@@ -9,7 +9,6 @@ export function AuthAndOnboardingLayout() {
       <Stack
         screenOptions={{
           headerShown: false,
-          animation: 'none',
         }}
         initialRouteName="login"
       >

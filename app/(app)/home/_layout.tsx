@@ -10,7 +10,6 @@ export function AppLayout() {
         <Stack
           screenOptions={{
             headerShown: false,
-            animation: 'none',
           }}
         >
           <Stack.Screen name="(tabs)" />

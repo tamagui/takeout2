@@ -10,6 +10,7 @@ import { GradientBlurView } from '../effects/GradientBlurView'
 interface GradientBackgroundProps {
   useImage?: boolean
   useInsets?: boolean
+  bottomOffset?: number
   children?: React.ReactNode
 }
 
@@ -17,10 +18,12 @@ export const GradientBackground = ({
   useImage = false,
   useInsets = true,
   children,
+  bottomOffset,
 }: GradientBackgroundProps) => {
   const inset = useSafeAreaInsets()
   const isDark = useIsDark()
   const { width, height } = useWindowDimensions()
+  const offset = bottomOffset || inset.top + 60
 
   const lightColors = ['$color1', '$color2', '$color4', '$color5']
   const darkColors = ['$color1', '$color3', '$color2', '$color1']
@@ -28,7 +31,14 @@ export const GradientBackground = ({
   if (useImage) {
     return (
       <>
-        <View flex={1} pb={useInsets ? inset.bottom : 0}>
+        <View
+          flex={1}
+          pb={useInsets ? inset.bottom : 0}
+          $platform-android={{
+            // TODO: check this on One Stack Header
+            pt: offset,
+          }}
+        >
           {/* Content */}
           {children}
         </View>
@@ -51,7 +61,14 @@ export const GradientBackground = ({
   }
 
   return (
-    <View flex={1} pb={useInsets ? inset.bottom : 0}>
+    <View
+      flex={1}
+      pb={useInsets ? inset.bottom : 0}
+      $platform-android={{
+        // TODO: check this on One Stack Header
+        pt: offset,
+      }}
+    >
       {/* Base gradient - using theme colors */}
       <LinearGradient
         colors={isDark ? darkColors : lightColors}

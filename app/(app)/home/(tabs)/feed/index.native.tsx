@@ -96,7 +96,7 @@ export const HomePage = memo(() => {
   }, [hasMore, posts.length])
 
   return (
-    <PageLayout>
+    <PageLayout bottomOffset={8}>
       <AnimatedHomeHeader scrollY={scrollY} />
 
       <View flex={1} px="$3">

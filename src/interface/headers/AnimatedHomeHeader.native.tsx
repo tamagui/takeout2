@@ -60,6 +60,11 @@ export const AnimatedHomeHeader = memo(({ scrollY }: AnimatedHomeHeaderProps) =>
       return
     }
 
+    // ignore large jumps (layout changes, not user scrolling)
+    if (Math.abs(diff) > 100) {
+      return
+    }
+
     // scrolling down (finger moving up, content going up) - hide
     if (diff > 2) {
       headerOffset.value = withTiming(-totalHeaderHeight, { duration: 200 })

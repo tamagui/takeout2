@@ -33,7 +33,7 @@ export const HomePage = memo(() => {
   const { posts, loadMore, isLoading, hasMore, refresh } = usePostsPaginated()
   const [showScrollToTop, setShowScrollToTop] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const headerHeight = 60
+  const headerHeight = 44
   const insets = useSafeAreaInsets()
   const scrollY = useSharedValue(0)
 
@@ -98,28 +98,27 @@ export const HomePage = memo(() => {
   return (
     <PageLayout bottomOffset={8}>
       <AnimatedHomeHeader scrollY={scrollY} />
+      <AnimatePresence>
+        {isLoading && (
+          <YStack
+            key="studio-shimmer"
+            transition="200ms"
+            exitStyle={{ opacity: 0 }}
+            opacity={1}
+            bg="$background"
+            z={1000}
+            position="absolute"
+            t={headerHeight + insets.top}
+            l={0}
+            r={0}
+            b={0}
+          >
+            <HomeShimmer />
+          </YStack>
+        )}
+      </AnimatePresence>
 
       <View flex={1} px="$3">
-        <AnimatePresence>
-          {isLoading && (
-            <YStack
-              key="studio-shimmer"
-              transition="200ms"
-              exitStyle={{ opacity: 0 }}
-              opacity={1}
-              bg="$background"
-              z={1000}
-              position="absolute"
-              t={headerHeight + insets.top}
-              l={0}
-              r={0}
-              b={0}
-            >
-              <HomeShimmer />
-            </YStack>
-          )}
-        </AnimatePresence>
-
         <AnimatedLegendList
           ref={listRef}
           data={posts}
@@ -131,6 +130,7 @@ export const HomePage = memo(() => {
           onScroll={scrollHandler}
           scrollEventThrottle={16}
           onEndReachedThreshold={0.5}
+          // TODO: padding top here causes the content pushed sometimes
           contentContainerStyle={{ paddingTop: 44 + insets.top, paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
           refreshControl={

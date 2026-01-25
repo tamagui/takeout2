@@ -93,7 +93,7 @@ const DialogComponent = ({
             <YStack items="center">
               <Sheet.Handle bg="gray" width={60} height={5} />
             </YStack>
-            <Sheet.Frame p="$4" pb={insets.bottom} gap="$4">
+            <Sheet.Frame p="$4" pb={insets.bottom} gap="$4" rounded="$10">
               <TamaguiDialog.Adapt.Contents />
             </Sheet.Frame>
           </Sheet>

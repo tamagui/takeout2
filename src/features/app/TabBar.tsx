@@ -88,8 +88,8 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
   useEffect(() => {
     if (currentTabIndex >= 0) {
       activeTabIndex.value = withSpring(currentTabIndex, {
-        damping: 18,
-        stiffness: 180,
+        damping: 30,
+        stiffness: 680,
         mass: 0.8,
       })
 

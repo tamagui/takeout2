@@ -48,8 +48,6 @@ export const ProvideZero = ({ children }: { children: ReactNode }) => {
     }
   }, [userId, role])
 
-  console.info(`hello?`, authData)
-
   const kvStore = isWeb && isClient && userId ? 'idb' : 'mem'
 
   if (DEBUG_LEVEL > 1) {

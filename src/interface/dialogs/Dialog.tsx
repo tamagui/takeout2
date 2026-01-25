@@ -81,6 +81,7 @@ const DialogComponent = ({
             modal
             snapPointsMode="fit"
             dismissOnSnapToBottom
+            moveOnKeyboardChange
           >
             <Sheet.Overlay
               bg="$background"

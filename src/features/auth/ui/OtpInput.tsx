@@ -142,14 +142,13 @@ export const OtpInput = memo(function OtpInput({
                   ref={(ref) => {
                     if (ref) inputRef.current[i] = ref
                   }}
-                  // @ts-expect-error fontSize token type issue in canary
                   fontSize="$5"
                   value={otpValue[i]}
                   onChange={(e) => onFocusNext((e.target as HTMLInputElement).value, i)}
                   onKeyDown={(e) => onFocusPrevious(e.nativeEvent.key, i)}
                   autoComplete="one-time-code"
                   autoFocus={autoFocus && i === 0}
-                  {...inputProps}
+                  {...(inputProps as any)}
                 />
                 <View
                   position="absolute"

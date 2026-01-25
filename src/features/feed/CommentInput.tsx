@@ -41,7 +41,6 @@ export function CommentInput({
         <XStack gap="$3" maxW={600}>
           <YStack flex={1} position="relative">
             <TextArea
-              // @ts-expect-error size variant type issue in canary
               size="large"
               placeholder="Write your comments here..."
               value={content}

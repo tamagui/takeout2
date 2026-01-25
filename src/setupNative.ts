@@ -1,5 +1,8 @@
+// setup tamagui native
 import '@tamagui/native/setup-gesture-handler'
-// import '@tamagui/native/setup-portal'
+import '@tamagui/native/setup-teleport'
+//
+// setup global side effects
 import '~/features/analytics/analytics'
 import '~/features/storage/setupStorage'
 import '~/helpers/crypto/polyfill'

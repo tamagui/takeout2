@@ -35,8 +35,8 @@ export function PlatformSpecificRootProvider({ children }: { children: ReactNode
   }, [state])
 
   return (
-    <KeyboardProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <KeyboardProvider>
         {showSplash && (
           <Splash
             isReady={true}
@@ -47,7 +47,7 @@ export function PlatformSpecificRootProvider({ children }: { children: ReactNode
           />
         )}
         {children}
-      </GestureHandlerRootView>
-    </KeyboardProvider>
+      </KeyboardProvider>
+    </GestureHandlerRootView>
   )
 }

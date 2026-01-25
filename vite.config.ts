@@ -145,6 +145,25 @@ export default {
 
       deps: {
         pg: true,
+
+        // fix RNGH crash on RN 0.81+ new architecture
+        // getShadowNodeFromRef crashes when findHostInstance_DEPRECATED returns null
+        'react-native-gesture-handler': {
+          'lib/module/getShadowNodeFromRef.js': (contents) => {
+            return contents?.replace(
+              `return getInternalInstanceHandleFromPublicInstance(findHostInstance_DEPRECATED(ref)).stateNode.node;`,
+              `const hostInstance = findHostInstance_DEPRECATED(ref);
+  if (hostInstance === null || hostInstance === undefined) {
+    return null;
+  }
+  const internalHandle = getInternalInstanceHandleFromPublicInstance(hostInstance);
+  if (internalHandle === null || internalHandle === undefined) {
+    return null;
+  }
+  return internalHandle.stateNode?.node ?? null;`
+            )
+          },
+        },
       },
 
       build: {

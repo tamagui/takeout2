@@ -5,7 +5,6 @@ import { useAuth } from '~/features/auth/client/authClient'
 import { Dialogs } from '~/interface/dialogs/Dialogs'
 import { Gallery } from '~/interface/gallery/Gallery'
 import { NotificationProvider } from '~/interface/notification/Notification'
-import { PlatformSpecificRootProvider } from '~/interface/platform/PlatformSpecificRootProvider'
 import { ToastProvider } from '~/interface/toast/Toast'
 import { DragDropFile } from '~/interface/upload/DragDropFile'
 import { animationsApp } from '~/tamagui/animationsApp'
@@ -36,31 +35,29 @@ export function AppLayout() {
       <ProvideZero>
         <ToastProvider>
           <NotificationProvider>
-            <PlatformSpecificRootProvider>
-              {process.env.VITE_PLATFORM === 'web' ? (
-                <DragDropFile>
-                  <Gallery />
-                  <Slot />
-                </DragDropFile>
-              ) : (
-                // We need Stack here for transition animation to work on native
-                <Stack
-                  screenOptions={{
-                    headerShown: false,
-                    animation: 'none',
-                  }}
-                >
-                  <Protected guard={!isLoggedIn}>
-                    <Stack.Screen name="auth" />
-                  </Protected>
-                  <Protected guard={isLoggedIn}>
-                    <Stack.Screen name="home" />
-                  </Protected>
-                </Stack>
-              )}
-              <Dialogs />
-            </PlatformSpecificRootProvider>
+            {process.env.VITE_PLATFORM === 'web' ? (
+              <DragDropFile>
+                <Gallery />
+                <Slot />
+              </DragDropFile>
+            ) : (
+              // We need Stack here for transition animation to work on native
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  animation: 'none',
+                }}
+              >
+                <Protected guard={!isLoggedIn}>
+                  <Stack.Screen name="auth" />
+                </Protected>
+                <Protected guard={isLoggedIn}>
+                  <Stack.Screen name="home" />
+                </Protected>
+              </Stack>
+            )}
           </NotificationProvider>
+          <Dialogs />
         </ToastProvider>
       </ProvideZero>
     </Configuration>

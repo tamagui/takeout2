@@ -19,7 +19,7 @@ export function AppLayout() {
     return null
   }
 
-  // web: use Redirect for auth routing (Protected works with Stack)
+  // Redirect for auth routing
   if (isWeb) {
     if (!isLoggedIn && pathname.startsWith('/home')) {
       return <Redirect href="/auth/login" />
@@ -30,7 +30,7 @@ export function AppLayout() {
   }
 
   return (
-    // our app is SPA from here on down, we avoid extra work by disabling SSR
+    // our app is SPA from here on down, avoid extra work by disabling SSR
     <Configuration disableSSR animationDriver={animationsApp}>
       <ProvideZero>
         <ToastProvider>
@@ -41,7 +41,7 @@ export function AppLayout() {
                 <Slot />
               </DragDropFile>
             ) : (
-              // We need Stack here for transition animation to work on native
+              // Stack transition animation on native
               <Stack
                 screenOptions={{
                   headerShown: false,

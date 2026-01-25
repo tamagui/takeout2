@@ -45,10 +45,7 @@ export const GlassView = memo(
     // android fallback - just use simple View (blur doesn't work on android)
     if (isAndroid) {
       return (
-        <View
-          bg="$background"
-          style={[{ borderRadius, overflow: 'hidden' }, containerStyle]}
-        >
+        <View bg="$color4" style={[{ borderRadius, overflow: 'hidden' }, containerStyle]}>
           {children}
         </View>
       )

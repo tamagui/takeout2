@@ -394,7 +394,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
         disabled={disabled}
         className={glow ? 'path-glow' : ''}
         {...(disabled && {
-          opacity: 0.1,
+          opacity: 0.5,
           pointerEvents: 'none',
           cursor: 'not-allowed',
         })}

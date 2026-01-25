@@ -37,6 +37,13 @@ export default {
       'zeego/dropdown-menu',
       'mdx-bundler/client',
       'react-native',
+
+      // login/feed
+      'react/jsx-runtime',
+      'react-native-keyboard-controller',
+      '@tamagui/config/v5-motion',
+      '@tamagui/animations-motion',
+      '@tamagui/menu',
     ],
     // @hot-updater/cli-tools contains native .node binaries (oxc-transform)
     // that esbuild can't handle - exclude from optimization

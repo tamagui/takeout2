@@ -14,7 +14,8 @@ import { Image } from '~/interface/image/Image'
 
 export const LoginPage = () => {
   const insets = useSafeAreaInsets()
-  const [showOnboarding, setShowOnboarding] = useState(() => !onboardingStorage.get())
+  // for demo always show
+  const [showOnboarding, setShowOnboarding] = useState(() => true)
 
   const handleOnboardingComplete = useCallback(() => {
     onboardingStorage.set(true)
@@ -84,8 +85,9 @@ export const LoginPage = () => {
             r={0}
             b={0}
             z={1000}
+            opacity={1}
             enterStyle={{ scale: 0.95 }}
-            exitStyle={{ scale: 0 }}
+            exitStyle={{ scale: 0.85, opacity: 0 }}
           >
             <Onboarding slides={onboardingSlides} onComplete={handleOnboardingComplete} />
           </View>

@@ -113,7 +113,7 @@ const DialogComponent = ({
           </Sheet>
         </TamaguiDialog.Adapt>
 
-        <TamaguiDialog.Portal zIndex={500_000}>
+        <TamaguiDialog.Portal z={500_000}>
           <DialogOverlay
             key="overlay"
             bg="$shadow6"

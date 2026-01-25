@@ -1,6 +1,6 @@
 import { LegendList } from '@legendapp/list'
 import { isNative } from '@take-out/helpers'
-import { useCallback } from 'react'
+import { memo, useCallback } from 'react'
 import { Alert, RefreshControl } from 'react-native'
 import { ListItem, ScrollView, SizableText, Spinner, View, YStack } from 'tamagui'
 
@@ -13,44 +13,40 @@ import { Text } from '~/interface/text/Text'
 
 import type { User } from '~/data/types'
 
-function BlockedUserItem({
-  user,
-  onUnblock,
-}: {
-  user: User
-  onUnblock: (user: User) => void
-}) {
-  return (
-    <ListItem
-      bg="$background"
-      hoverStyle={{ bg: '$color1' }}
-      pressStyle={{ bg: '$color3' }}
-      px="$4"
-      py="$3"
-    >
-      <Avatar image={user.image} size={44} mr="$3" />
-
-      <YStack gap="$1" flex={1}>
-        <Text size="$3" color="$color10" numberOfLines={1}>
-          @{user.username}
-        </Text>
-      </YStack>
-
-      <ButtonSimple
-        size="small"
-        bg="$color3"
-        onPress={() => onUnblock(user)}
-        rounded="$5"
-        px="$3"
-        py="$2"
+const BlockedUserItem = memo(
+  ({ user, onUnblock }: { user: User; onUnblock: (user: User) => void }) => {
+    return (
+      <ListItem
+        bg="$background"
+        hoverStyle={{ bg: '$color1' }}
+        pressStyle={{ bg: '$color3' }}
+        px="$4"
+        py="$3"
       >
-        Unblock
-      </ButtonSimple>
-    </ListItem>
-  )
-}
+        <Avatar image={user.image} size={44} mr="$3" />
 
-function EmptyState() {
+        <YStack gap="$1" flex={1}>
+          <Text size="$3" color="$color10" numberOfLines={1}>
+            @{user.username}
+          </Text>
+        </YStack>
+
+        <ButtonSimple
+          size="small"
+          bg="$color3"
+          onPress={() => onUnblock(user)}
+          rounded="$5"
+          px="$3"
+          py="$2"
+        >
+          Unblock
+        </ButtonSimple>
+      </ListItem>
+    )
+  }
+)
+
+const EmptyState = memo(() => {
   return (
     <YStack flex={1} items="center" justify="center" p="$4" minH={400}>
       <SizableText size="$5" color="$color10">
@@ -64,7 +60,7 @@ function EmptyState() {
       )}
     </YStack>
   )
-}
+})
 
 export const ProfileBlockedUsersPage = () => {
   const { blockedUsers, isLoading, hasMore, loadMore, refresh, unblockUser } =

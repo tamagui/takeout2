@@ -1,4 +1,5 @@
 import { Link, Redirect, usePathname } from 'one'
+import { memo } from 'react'
 import { Linking } from 'react-native'
 import { ScrollView, SizableText, styled, useMedia, View, XStack, YStack } from 'tamagui'
 
@@ -8,66 +9,68 @@ import { HeadInfo } from '~/interface/app/HeadInfo'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { SepHeading } from '~/interface/text/Headings'
 
-function SettingRow({ item, isActive }: { item: SettingItem; isActive: boolean }) {
-  const Icon = item.icon
+const SettingRow = memo(
+  ({ item, isActive }: { item: SettingItem; isActive: boolean }) => {
+    const Icon = item.icon
 
-  const content = (
-    <SettingRowFrame active={isActive} {...(item.onPress && { onPress: item.onPress })}>
-      {Icon && (
-        <View
-          width={22}
-          height={22}
-          items="center"
-          justify="center"
-          opacity={isActive ? 1 : 0.7}
+    const content = (
+      <SettingRowFrame active={isActive} {...(item.onPress && { onPress: item.onPress })}>
+        {Icon && (
+          <View
+            width={22}
+            height={22}
+            items="center"
+            justify="center"
+            opacity={isActive ? 1 : 0.7}
+          >
+            <Icon size="$6" color={isActive ? '$color12' : '$color11'} />
+          </View>
+        )}
+        <SizableText
+          size="$4"
+          fontWeight={isActive ? '600' : '400'}
+          color={isActive ? '$color12' : '$color11'}
         >
-          <Icon size="$6" color={isActive ? '$color12' : '$color11'} />
-        </View>
-      )}
-      <SizableText
-        size="$4"
-        fontWeight={isActive ? '600' : '400'}
-        color={isActive ? '$color12' : '$color11'}
-      >
-        {item.title}
-      </SizableText>
-    </SettingRowFrame>
-  )
+          {item.title}
+        </SizableText>
+      </SettingRowFrame>
+    )
 
-  if (item.onPress) {
-    return content
-  }
+    if (item.onPress) {
+      return content
+    }
 
-  if (item.href) {
-    if (item.external) {
+    if (item.href) {
+      if (item.external) {
+        return (
+          <SettingRowFrame
+            active={isActive}
+            onPress={() => Linking.openURL(`https://${DOMAIN}${item.href}`)}
+          >
+            {Icon && (
+              <View width={22} height={22} items="center" justify="center" opacity={0.7}>
+                <Icon size="$6" color="$color11" />
+              </View>
+            )}
+            <SizableText size="$4" color="$color11">
+              {item.title}
+            </SizableText>
+          </SettingRowFrame>
+        )
+      }
+
       return (
-        <SettingRowFrame
-          active={isActive}
-          onPress={() => Linking.openURL(`https://${DOMAIN}${item.href}`)}
-        >
-          {Icon && (
-            <View width={22} height={22} items="center" justify="center" opacity={0.7}>
-              <Icon size="$6" color="$color11" />
-            </View>
-          )}
-          <SizableText size="$4" color="$color11">
-            {item.title}
-          </SizableText>
-        </SettingRowFrame>
+        <Link href={item.href} asChild>
+          {content}
+        </Link>
       )
     }
 
-    return (
-      <Link href={item.href} asChild>
-        {content}
-      </Link>
-    )
+    return null
   }
+)
 
-  return null
-}
-
-function LogoAndVersion() {
+const LogoAndVersion = memo(() => {
   return (
     <YStack items="center" pt="$6" pb="$4">
       <SizableText size="$2" color="$color9">
@@ -75,7 +78,7 @@ function LogoAndVersion() {
       </SizableText>
     </YStack>
   )
-}
+})
 
 export function SettingsSidebarContent() {
   const pathname = usePathname()
@@ -109,7 +112,7 @@ export function SettingsSidebarContent() {
   )
 }
 
-const MobileSettingRow = ({ item }: { item: SettingItem }) => {
+const MobileSettingRow = memo(({ item }: { item: SettingItem }) => {
   const Icon = item.icon
 
   const content = (
@@ -153,7 +156,7 @@ const MobileSettingRow = ({ item }: { item: SettingItem }) => {
       {content}
     </Link>
   )
-}
+})
 
 function MobileSettingsContent() {
   const { sections } = useSettingsData()
@@ -181,7 +184,7 @@ function MobileSettingsContent() {
   )
 }
 
-const MobileLogoAndVersion = () => (
+const MobileLogoAndVersion = memo(() => (
   <YStack items="center" pb={100} pt="$4">
     <XStack items="center" gap="$2">
       <SizableText color="$color10" fontWeight="bold">
@@ -192,7 +195,7 @@ const MobileLogoAndVersion = () => (
       v1.0.0
     </SizableText>
   </YStack>
-)
+))
 
 export function ProfileSettingsPage() {
   const media = useMedia()

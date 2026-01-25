@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import Animated, {
   Extrapolation,
@@ -24,93 +25,89 @@ interface ExpandedMenuItemProps {
   onPress: () => void
 }
 
-export function ExpandedMenuItem({
-  item,
-  index,
-  animationProgress,
-  isSelected,
-  onPress,
-}: ExpandedMenuItemProps) {
-  const Icon = item.icon
+export const ExpandedMenuItem = memo(
+  ({ item, index, animationProgress, isSelected, onPress }: ExpandedMenuItemProps) => {
+    const Icon = item.icon
 
-  const animatedStyle = useAnimatedStyle(() => {
-    const startThreshold = 0.4
-    const staggerDelay = index * 0.05
-    const itemStartThreshold = startThreshold + staggerDelay
-    const itemEndThreshold = Math.min(itemStartThreshold + 0.3, 1)
+    const animatedStyle = useAnimatedStyle(() => {
+      const startThreshold = 0.4
+      const staggerDelay = index * 0.05
+      const itemStartThreshold = startThreshold + staggerDelay
+      const itemEndThreshold = Math.min(itemStartThreshold + 0.3, 1)
 
-    const itemProgress = interpolate(
-      animationProgress.value,
-      [itemStartThreshold, itemEndThreshold],
-      [0, 1],
-      Extrapolation.CLAMP
+      const itemProgress = interpolate(
+        animationProgress.value,
+        [itemStartThreshold, itemEndThreshold],
+        [0, 1],
+        Extrapolation.CLAMP
+      )
+
+      const opacity = interpolate(
+        itemProgress,
+        [0, 0.5, 1],
+        [0, 0.8, 1],
+        Extrapolation.CLAMP
+      )
+
+      const translateY = withSpring(
+        interpolate(itemProgress, [0, 1], [40, 0], Extrapolation.CLAMP),
+        SPRING_CONFIG
+      )
+
+      const scale = withSpring(
+        interpolate(itemProgress, [0, 0.8, 1], [0.7, 1.02, 1], Extrapolation.CLAMP),
+        SPRING_CONFIG
+      )
+
+      const isInteractive = animationProgress.value > 0.7
+
+      return {
+        opacity,
+        transform: [{ translateY }, { scale }],
+        pointerEvents: isInteractive ? 'auto' : 'none',
+      }
+    })
+
+    const animatedSelectionStyle = useAnimatedStyle(() => {
+      const scale = isSelected ? 1 : 0.95
+      const opacity = isSelected ? 0.15 : 0
+
+      return {
+        opacity,
+        transform: [{ scale: withSpring(scale, SPRING_CONFIG) }],
+      }
+    })
+
+    return (
+      <Animated.View style={animatedStyle}>
+        <Pressable
+          onPress={onPress}
+          style={styles.menuItem}
+          accessible={true}
+          accessibilityRole="button"
+          accessibilityLabel={item.label}
+          accessibilityState={{ selected: isSelected }}
+        >
+          <Animated.View
+            style={[
+              StyleSheet.absoluteFillObject,
+              styles.menuItemBackground,
+              animatedSelectionStyle,
+            ]}
+          />
+
+          <View style={styles.menuIconContainer}>
+            <Icon size={20} color={isSelected ? 'white' : '$color8'} />
+          </View>
+
+          <Text style={[styles.menuLabel, { color: isSelected ? '#FFFFFF' : '#AAAAAA' }]}>
+            {item.label}
+          </Text>
+        </Pressable>
+      </Animated.View>
     )
-
-    const opacity = interpolate(
-      itemProgress,
-      [0, 0.5, 1],
-      [0, 0.8, 1],
-      Extrapolation.CLAMP
-    )
-
-    const translateY = withSpring(
-      interpolate(itemProgress, [0, 1], [40, 0], Extrapolation.CLAMP),
-      SPRING_CONFIG
-    )
-
-    const scale = withSpring(
-      interpolate(itemProgress, [0, 0.8, 1], [0.7, 1.02, 1], Extrapolation.CLAMP),
-      SPRING_CONFIG
-    )
-
-    const isInteractive = animationProgress.value > 0.7
-
-    return {
-      opacity,
-      transform: [{ translateY }, { scale }],
-      pointerEvents: isInteractive ? 'auto' : 'none',
-    }
-  })
-
-  const animatedSelectionStyle = useAnimatedStyle(() => {
-    const scale = isSelected ? 1 : 0.95
-    const opacity = isSelected ? 0.15 : 0
-
-    return {
-      opacity,
-      transform: [{ scale: withSpring(scale, SPRING_CONFIG) }],
-    }
-  })
-
-  return (
-    <Animated.View style={animatedStyle}>
-      <Pressable
-        onPress={onPress}
-        style={styles.menuItem}
-        accessible={true}
-        accessibilityRole="button"
-        accessibilityLabel={item.label}
-        accessibilityState={{ selected: isSelected }}
-      >
-        <Animated.View
-          style={[
-            StyleSheet.absoluteFillObject,
-            styles.menuItemBackground,
-            animatedSelectionStyle,
-          ]}
-        />
-
-        <View style={styles.menuIconContainer}>
-          <Icon size={20} color={isSelected ? 'white' : '$color8'} />
-        </View>
-
-        <Text style={[styles.menuLabel, { color: isSelected ? '#FFFFFF' : '#AAAAAA' }]}>
-          {item.label}
-        </Text>
-      </Pressable>
-    </Animated.View>
-  )
-}
+  }
+)
 
 const styles = StyleSheet.create({
   menuItem: {

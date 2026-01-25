@@ -62,6 +62,7 @@ export function ThemeSwitch({ size = '$2' }: { size?: SizeTokens }) {
 
 export function useToggleTheme() {
   const userScheme = useUserScheme()
+
   const Icon =
     userScheme.setting === 'system'
       ? CircleHalfIcon
@@ -69,16 +70,18 @@ export function useToggleTheme() {
         ? MoonStarsIcon
         : SunIcon
 
+  const onPress = () => {
+    const currentIndex = schemeSettings.indexOf(userScheme.setting)
+    const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % 3 : 0
+    const next = schemeSettings[nextIndex]!
+    userScheme.set(next)
+  }
+
   return {
     setting: userScheme.setting,
     scheme: userScheme.value,
     Icon,
-    onPress: () => {
-      const currentIndex = schemeSettings.indexOf(userScheme.setting)
-      const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % 3 : 0
-      const next = schemeSettings[nextIndex]!
-      userScheme.set(next)
-    },
+    onPress,
   }
 }
 

@@ -1,5 +1,6 @@
 import { randomId, useEmitterSelector } from '@take-out/helpers'
 import { useRef, useState } from 'react'
+import { KeyboardController } from 'react-native-keyboard-controller'
 import {
   Circle,
   isWeb,
@@ -61,6 +62,8 @@ export const DialogCreatePost = () => {
     if (isWeb) {
       fileInputRef.current?.click()
     } else {
+      KeyboardController.dismiss()
+
       pickImageFromLibrary(false).then((result) => {
         if (result && !result.canceled && result.assets?.[0]) {
           const asset = result.assets[0]

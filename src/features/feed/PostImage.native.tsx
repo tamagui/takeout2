@@ -1,7 +1,9 @@
 // import { Galeria } from '@nandorojo/galeria'
 import Animated, { SharedTransition } from 'react-native-reanimated'
+import { useWindowDimensions } from 'tamagui'
 
 import { Gallery } from '~/interface/gallery/Gallery'
+import { Image } from '~/interface/image/Image'
 
 const transition = SharedTransition.springify().damping(15)
 
@@ -20,7 +22,9 @@ export function PostImage({
   aspectRatio = 1,
   sharedTransitionTag,
 }: PostImageProps) {
-  return null
+  const dim = useWindowDimensions()
+
+  return <Image key="wtf" src={image} width={dim.width - 24} height={300} />
 
   // return (
   //   <Galeria urls={[image]}>

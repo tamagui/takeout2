@@ -48,6 +48,8 @@ export const ProvideZero = ({ children }: { children: ReactNode }) => {
     }
   }, [userId, role])
 
+  console.info(`hello?`, authData)
+
   const kvStore = isWeb && isClient && userId ? 'idb' : 'mem'
 
   if (DEBUG_LEVEL > 1) {
@@ -60,7 +62,7 @@ export const ProvideZero = ({ children }: { children: ReactNode }) => {
       auth={jwtToken}
       kvStore={kvStore}
       authData={authData}
-      server={ZERO_SERVER_URL}
+      cacheURL={ZERO_SERVER_URL}
     >
       {children}
       <ZeroDevTools />

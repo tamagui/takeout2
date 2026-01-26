@@ -83,8 +83,8 @@ const buttonBorderRadius: Record<ButtonSizes, RadiusTokens> = {
 const buttonSizes: Record<ButtonSizes, number> = {
   small: isWeb ? 30 : 40,
   medium: isWeb ? 32 : 44,
-  large: isWeb ? 42 : 48,
-  xl: isWeb ? 48 : 56,
+  large: isWeb ? 46 : 52,
+  xl: isWeb ? 52 : 60,
   tiny: isWeb ? 16 : 32,
   square: isWeb ? 36 : 44,
 }
@@ -245,7 +245,7 @@ const ButtonText = styled(Text, {
   color: '$color12',
   cursor: 'default',
   fontFamily: '$mono',
-  fontWeight: '500',
+  fontWeight: '600',
   ellipsis: true,
   select: 'none',
   y: IS_SAFARI ? 1 : 0,

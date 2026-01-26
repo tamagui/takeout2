@@ -61,13 +61,13 @@ const HighlightText = styled(Text, {
 })
 
 const CommandBox = styled(XStack, {
-  rounded: '$5',
+  rounded: '$6',
   px: '$4',
   py: '$3',
   bg: '$color3',
   items: 'center',
   flex: 1,
-  mr: -50,
+  mr: -20,
   gap: '$3',
   overflow: 'hidden',
   cursor: 'pointer',
@@ -388,7 +388,7 @@ export function HeroSection() {
         maxW={1200}
         width="100%"
         pb="$14"
-        $md={{ flexWrap: 'nowrap', gap: '$12' }}
+        $lg={{ flexWrap: 'nowrap', gap: '$12' }}
       >
         {/* left side - hero content */}
         <YStack
@@ -414,19 +414,20 @@ export function HeroSection() {
             <Strong fontWeight="600" color="$color12">
               Most starter kits suck
             </Strong>
-            . Takeout may not: novel tech, prod-tested, skills + MCPs, scalable IaC, and{' '}
-            <Link href="/docs/changelog">updated often</Link> — it's&nbsp;what we use for
-            ourselves and <Link href="https://addeven.com">our clients</Link>.
+            . Takeout sucks less: groundbreaking new tech, battle-tested CI/CD, scalable
+            IaC, strapped-up for AI and{' '}
+            <Link href="/docs/changelog">updated constantly</Link> — it's&nbsp;what we use
+            for ourselves, and our <Link href="https://addeven.com">clients</Link>.
             <br />
             <br />
             It's the{' '}
             <Strong fontWeight="600" color="$color11">
               fast way to build a startup
             </Strong>{' '}
-            with React Native and web.
+            on both React Native and web.
           </HeroSubtitle>
 
-          <XStack gap="$3" mt="$2" items="center">
+          <XStack maxW="100%" gap="$3" mt="$2" items="center">
             <Link href="/docs/introduction">
               <ButtonSimple theme="accent" size="large" icon={ArrowRightIcon} iconAfter>
                 Docs
@@ -454,8 +455,9 @@ export function HeroSection() {
           flex={1}
           minW={300}
           maxW={560}
+          mr={-50}
           items="center"
-          $md={{ items: 'flex-end' }}
+          $lg={{ items: 'flex-end', mr: 0 }}
           position="relative"
         >
           <HeroTerminal />

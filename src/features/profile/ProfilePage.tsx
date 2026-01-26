@@ -40,10 +40,20 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
   }
 
   const title = user?.username ? `@${user.username}` : 'Profile'
+  const description = user?.name
+    ? `${user.name} (@${user.username}) on Takeout`
+    : user?.username
+      ? `@${user.username} on Takeout`
+      : undefined
+  const ogImage = user?.image
+    ? {
+        images: [{ url: user.image as string, width: 1200, height: 630 }],
+      }
+    : undefined
 
   return (
     <>
-      <HeadInfo title={title} />
+      <HeadInfo title={title} description={description} openGraph={ogImage} />
 
       <AnimatePresence>
         {isLoading && (

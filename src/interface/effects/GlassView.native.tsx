@@ -1,10 +1,9 @@
 import { isAndroid } from '@take-out/helpers'
-import { BlurView } from 'expo-blur'
 import { GlassView as ExpoGlassView, isLiquidGlassAvailable } from 'expo-glass-effect'
 import { memo } from 'react'
 import { View } from 'tamagui'
 
-import { useIsDark } from '~/features/theme/useIsDark'
+import { BlurView } from '~/interface/effects/BlurView'
 
 import type { GlassViewProps } from './types'
 
@@ -12,7 +11,7 @@ export const GlassView = memo(
   ({
     borderRadius = 16,
     intensity = 40,
-    tint: tintProp,
+    tint,
     containerStyle,
     children,
     glassEffectStyle = 'clear',
@@ -21,9 +20,6 @@ export const GlassView = memo(
     tintColor,
     isInteractive = true,
   }: GlassViewProps) => {
-    const isDark = useIsDark()
-    const tint = tintProp || (isDark ? 'dark' : 'light')
-
     // use expo-glass-effect for iOS 26+
     if (isLiquidGlassAvailable() && !isFallback) {
       return (

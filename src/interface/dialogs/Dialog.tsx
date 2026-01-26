@@ -20,6 +20,7 @@ import {
 
 import { useHandleEscapeIf } from '~/features/shortcuts/handleKeyboardEscape'
 
+import { BlurView } from '../effects/BlurView'
 import { GradientBlurView } from '../effects/GradientBlurView'
 import { dialogEmit } from './shared'
 
@@ -101,10 +102,10 @@ const DialogComponent = ({
               borderBottomRightRadius={0}
               borderBottomLeftRadius={0}
               bg="transparent"
-              boxShadow="-20px 0 40px rgba(0,0,0,0.8)"
+              boxShadow="0px 0 40px rgba(0,0,0,0.65)"
             >
-              <YStack z={0} bg="$shadow6" inset={0} position="absolute" />
-              <GradientBlurView position="absolute" inset={0} />
+              <YStack z={0} bg="$black" opacity={0.85} inset={0} position="absolute" />
+              <BlurView intensity={50} position="absolute" inset={0} />
               <Sheet.ScrollView>
                 <TamaguiDialog.Adapt.Contents />
               </Sheet.ScrollView>

@@ -1,5 +1,4 @@
 import { useEmitter } from '@take-out/helpers'
-import { BlurView } from 'expo-blur'
 import { memo, useCallback } from 'react'
 import { StyleSheet } from 'react-native'
 import Animated, {
@@ -13,8 +12,8 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { SizableText, useTheme, XStack } from 'tamagui'
 
-import { useIsDark } from '~/features/theme/useIsDark'
 import { dialogEmit } from '~/interface/dialogs/shared'
+import { BlurView } from '~/interface/effects/BlurView'
 import { BellIcon } from '~/interface/icons/phosphor/BellIcon'
 import { CaretDownIcon } from '~/interface/icons/phosphor/CaretDownIcon'
 import { PlusIcon } from '~/interface/icons/phosphor/PlusIcon'
@@ -35,7 +34,6 @@ interface AnimatedHomeHeaderProps {
 
 export const AnimatedHomeHeader = memo(({ scrollY }: AnimatedHomeHeaderProps) => {
   const insets = useSafeAreaInsets()
-  const isDark = useIsDark()
   const totalHeaderHeight = HEADER_HEIGHT + insets.top
   const prevScrollY = useSharedValue(0)
   const headerOffset = useSharedValue(0)
@@ -108,7 +106,6 @@ export const AnimatedHomeHeader = memo(({ scrollY }: AnimatedHomeHeaderProps) =>
     <>
       <GradientBlurView
         intensity={20}
-        tint={isDark ? 'dark' : 'light'}
         width="100%"
         height={isSmallScreen ? 30 : 60}
         inverted
@@ -123,11 +120,7 @@ export const AnimatedHomeHeader = memo(({ scrollY }: AnimatedHomeHeaderProps) =>
           animatedHeaderStyle,
         ]}
       >
-        <BlurView
-          intensity={60}
-          tint={isDark ? 'dark' : 'light'}
-          style={StyleSheet.absoluteFill}
-        />
+        <BlurView intensity={60} position="absolute" inset={0} />
         <XStack flex={1} items="center" justify="space-between" px="$3" pb="$2">
           <Pressable
             onPress={handlePlusPress}

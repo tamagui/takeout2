@@ -1,4 +1,3 @@
-import { BlurView } from 'expo-blur'
 import { useRouter } from 'one'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { Dimensions, StyleSheet } from 'react-native'
@@ -22,7 +21,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { scheduleOnRN } from 'react-native-worklets'
 import { SizableText, View, XStack, YStack } from 'tamagui'
 
-import { useIsDark } from '~/features/theme/useIsDark'
+import { BlurView } from '~/interface/effects/BlurView'
 import { lightImpact, mediumImpact } from '~/interface/haptics/haptics'
 import { BellIcon } from '~/interface/icons/phosphor/BellIcon'
 import { BookmarkIcon } from '~/interface/icons/phosphor/BookmarkIcon'
@@ -83,7 +82,6 @@ interface FeedDropdownProps {
 
 export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
   const insets = useSafeAreaInsets()
-  const isDark = useIsDark()
   const router = useRouter()
   const expansion = useSharedValue(0)
   const startExpansion = useSharedValue(0)
@@ -357,11 +355,7 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
       <Animated.View
         style={[StyleSheet.absoluteFill, { zIndex: 998 }, animatedBackdropStyle]}
       >
-        <BlurView
-          intensity={20}
-          tint={isDark ? 'dark' : 'light'}
-          style={StyleSheet.absoluteFill}
-        />
+        <BlurView intensity={20} position="absolute" inset={0} />
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
       </Animated.View>
 
@@ -383,7 +377,6 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
         <GlassView
           isFallback
           intensity={80}
-          tint={isDark ? 'dark' : 'light'}
           containerStyle={{ flex: 1, width: '100%', height: '100%' }}
         >
           <YStack flex={1} pt={insets.top} px="$4" pb="$3">

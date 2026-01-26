@@ -1,4 +1,3 @@
-import { BlurView } from 'expo-blur'
 import { usePathname } from 'one'
 import { useCallback, useEffect, useState } from 'react'
 import { Dimensions, StyleSheet } from 'react-native'
@@ -16,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { scheduleOnRN } from 'react-native-worklets'
 import { View } from 'tamagui'
 
+import { BlurView } from '~/interface/effects/BlurView'
 import {
   lightImpact,
   mediumImpact,

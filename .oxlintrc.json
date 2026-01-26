@@ -19,6 +19,10 @@
               "Image"
             ],
             "message": "Use custom component from ~/interface instead"
+          },
+          {
+            "name": "expo-blur",
+            "message": "Use BlurView from ~/interface/effects/BlurView instead"
           }
         ]
       }

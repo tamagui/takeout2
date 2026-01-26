@@ -133,6 +133,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
               <DownloadSimpleIcon size={18} color="$color10" />
             </Menu.ItemIcon>
           </Menu.Item>
+
           {!isOwnPost && (
             <Menu.Item
               key="view-profile"
@@ -149,8 +150,10 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
               </Menu.ItemIcon>
             </Menu.Item>
           )}
+          <Menu.Separator />
 
           {/* TODO: Just a tmp fix—the SubMenu on native doesn’t work inside a fragment */}
+
           {!isOwnPost && (
             <Menu.Sub placement={isTouchDevice ? 'bottom' : 'right-start'}>
               <Menu.SubTrigger

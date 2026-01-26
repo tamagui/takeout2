@@ -12,6 +12,8 @@ import {
   XStack,
 } from 'tamagui'
 
+import { isNative } from '~/constants/platform'
+
 import { GlassView } from '../effects/GlassView'
 import Glint from '../effects/Glint'
 import {
@@ -434,31 +436,32 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
     )
 
     // wrap with glass view if requested (not supported on web)
-    const glassWrappedElement = glass ? (
-      <GlassView
-        glassEffectStyle="clear"
-        isInteractive={isInteractive}
-        borderRadius={rest.circular ? 100 : undefined}
-        tintColor={glassTint}
-        containerStyle={
-          rest.circular
-            ? {
-                width: buttonSizes[rest.size || 'medium'],
-                height: buttonSizes[rest.size || 'medium'],
-              }
-            : ({
-                flex: rest.flex,
-                flexGrow: rest.grow,
-                flexShrink: rest.shrink,
-                alignSelf: rest.self,
-              } as any)
-        }
-      >
-        {buttonElement}
-      </GlassView>
-    ) : (
-      buttonElement
-    )
+    const glassWrappedElement =
+      glass && isNative ? (
+        <GlassView
+          glassEffectStyle="clear"
+          isInteractive={isInteractive}
+          borderRadius={rest.circular ? 100 : undefined}
+          tintColor={glassTint}
+          containerStyle={
+            rest.circular
+              ? {
+                  width: buttonSizes[rest.size || 'medium'],
+                  height: buttonSizes[rest.size || 'medium'],
+                }
+              : ({
+                  flex: rest.flex,
+                  flexGrow: rest.grow,
+                  flexShrink: rest.shrink,
+                  alignSelf: rest.self,
+                } as any)
+          }
+        >
+          {buttonElement}
+        </GlassView>
+      ) : (
+        buttonElement
+      )
 
     return wrapWithTooltip(glassWrappedElement, {
       tooltip,

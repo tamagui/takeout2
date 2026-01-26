@@ -260,7 +260,7 @@ function FeatureCard({ feature, size, width, height, horizontal }: FeatureCardPr
   }
 
   return (
-    <View style={{ width: cardWidth, height: cardHeight }} rounded={24}>
+    <View position="relative" width={cardWidth} height={cardHeight} rounded={24}>
       <Glint rounded={24} />
       <YStack flex={1} items="center" justify="center" gap="$3" p="$5">
         <YStack

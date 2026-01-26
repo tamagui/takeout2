@@ -1,7 +1,7 @@
 import { formatDistanceToNow } from '@take-out/helpers'
 import { router } from 'one'
 import { memo, useState } from 'react'
-import { Accordion, isWeb, SizableText, View, XStack, YStack } from 'tamagui'
+import { isWeb, SizableText, View, XStack, YStack } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
 import { useUser } from '~/hooks/useUser'
@@ -83,38 +83,20 @@ export const PostCard = memo(({ post }: PostCardProps) => {
           </XStack>
         </XStack>
         <View>
-          <Accordion overflow="hidden" type="multiple">
-            <Accordion.Item value="caption" bg="transparent" borderWidth={0} p={0}>
-              <Accordion.Trigger
-                unstyled
-                disabled={!isTruncated}
-                p={0}
-                bg="transparent"
-                borderWidth={0}
-              >
-                {({ open }: { open: boolean }) => (
-                  <Text
-                    numberOfLines={open ? undefined : 3}
-                    flex={1}
-                    flexBasis="auto"
-                    text="left"
-                    {...(!isWeb && {
-                      onTextLayout: (e: { nativeEvent: { lines: unknown[] } }) => {
-                        if (e.nativeEvent.lines.length >= 3) {
-                          setIsTruncated(true)
-                        }
-                      },
-                    })}
-                  >
-                    {post.caption}
-                  </Text>
-                )}
-              </Accordion.Trigger>
-              <Accordion.HeightAnimator transition="200ms">
-                <Accordion.Content transition="200ms" exitStyle={{ opacity: 0 }} />
-              </Accordion.HeightAnimator>
-            </Accordion.Item>
-          </Accordion>
+          <Text
+            flex={1}
+            flexBasis="auto"
+            text="left"
+            {...(!isWeb && {
+              onTextLayout: (e: { nativeEvent: { lines: unknown[] } }) => {
+                if (e.nativeEvent.lines.length >= 3) {
+                  setIsTruncated(true)
+                }
+              },
+            })}
+          >
+            {post.caption}
+          </Text>
           <View width="100%" position="relative" mt="$2">
             <Pressable
               onPress={() =>

@@ -12,7 +12,7 @@ export const LineShimmer = ({ width = 200, height = 20, style }: LineShimmerProp
   const lineStyle: ViewStyle = {
     width: width,
     height: height,
-    bg: '$color02',
+    bg: '$color4',
     rounded: 10,
     overflow: 'hidden',
     ...style,

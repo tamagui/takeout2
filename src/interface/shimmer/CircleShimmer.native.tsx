@@ -9,7 +9,7 @@ export const CircleShimmer = ({ size = 36, style }: CircleShimmerNativeProps) =>
     width: size,
     height: size,
     rounded: size / 2,
-    bg: '$color02',
+    bg: '$color4',
     overflow: 'hidden',
     ...style,
   }

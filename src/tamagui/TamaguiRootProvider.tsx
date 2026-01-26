@@ -27,5 +27,5 @@ const TamaguiInnerProvider = ({ children }: { children: ReactNode }) => {
 
 const ThemeMetaTag = () => {
   const theme = useTheme()
-  return <MetaTheme color={theme.background.val} darkColor={'#000'} lightColor="#fff" />
+  return <MetaTheme color={theme.background.val} darkColor="#000" lightColor="#fff" />
 }

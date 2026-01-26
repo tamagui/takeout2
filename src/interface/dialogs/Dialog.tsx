@@ -21,7 +21,6 @@ import {
 import { useHandleEscapeIf } from '~/features/shortcuts/handleKeyboardEscape'
 
 import { BlurView } from '../effects/BlurView'
-import { GradientBlurView } from '../effects/GradientBlurView'
 import { dialogEmit } from './shared'
 
 const CONTENT_RADIUS: SizeTokens = '$9'
@@ -104,6 +103,15 @@ const DialogComponent = ({
               bg="transparent"
               boxShadow="0px 0 40px rgba(0,0,0,0.65)"
             >
+              <YStack
+                position="absolute"
+                inset={0}
+                pointerEvents="none"
+                z={100}
+                borderWidth={10}
+                rounded="$10"
+                borderColor="red"
+              />
               <YStack z={0} bg="$black" opacity={0.85} inset={0} position="absolute" />
               <BlurView intensity={50} position="absolute" inset={0} />
               <Sheet.ScrollView>

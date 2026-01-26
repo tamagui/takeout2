@@ -9,14 +9,15 @@ interface PostCommentPreviewProps {
 
 export function PostCommentPreview({ comment }: PostCommentPreviewProps) {
   return (
-    <XStack items="center" gap="$2" flex={1}>
-      <SizableText size="$3" color="$color10" numberOfLines={1} flex={1} mr="$1">
-        <SizableText size="$3" fontWeight="600" color="$color10">
+    <XStack items="center" gap="$3" flex={1}>
+      <SizableText size="$4" color="$color10" numberOfLines={1} flex={1}>
+        <SizableText size="$4" fontWeight="500" color="$color10">
           {comment.user?.username}
-        </SizableText>{' '}
+        </SizableText>
+        {'  '}
         {comment.content}
       </SizableText>
-      <SizableText size="$2" color="$color8" shrink={0}>
+      <SizableText size="$3" color="$color8" shrink={0}>
         {formatDistanceToNow(comment.createdAt)}
       </SizableText>
     </XStack>

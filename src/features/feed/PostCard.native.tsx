@@ -65,7 +65,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
           <SizableText size="$4" fontWeight="700" color="$color12">
             {username}
           </SizableText>
-          <SizableText size="$2" color="$color10">
+          <SizableText size="$3" color="$color9">
             {formatDistanceToNow(post.createdAt)}
           </SizableText>
         </YStack>
@@ -74,11 +74,9 @@ export const PostCard = memo(({ post }: PostCardProps) => {
       </XStack>
 
       {post.caption && (
-        <YStack>
-          <SizableText size="$4" color="$color12" numberOfLines={3}>
-            {post.caption}
-          </SizableText>
-        </YStack>
+        <SizableText size="$5" m="$-0.25" color="$color12" my="$1" numberOfLines={3}>
+          {post.caption}
+        </SizableText>
       )}
 
       <Pressable onPress={handleImagePress}>

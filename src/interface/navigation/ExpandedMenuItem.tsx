@@ -97,10 +97,10 @@ export const ExpandedMenuItem = memo(
           />
 
           <View style={styles.menuIconContainer}>
-            <Icon size={20} color={isSelected ? 'white' : '$color8'} />
+            <Icon size={20} color={isSelected ? 'white' : '$color10'} />
           </View>
 
-          <Text style={[styles.menuLabel, { color: isSelected ? '#FFFFFF' : '#AAAAAA' }]}>
+          <Text style={[styles.menuLabel, { color: isSelected ? '#FFFFFF' : '#ccc' }]}>
             {item.label}
           </Text>
         </Pressable>

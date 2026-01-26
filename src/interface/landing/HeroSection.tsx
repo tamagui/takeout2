@@ -48,6 +48,9 @@ const HeroTitle = styled(H1, {
 const HeroSubtitle = styled(Paragraph, {
   color: '$color10',
   size: '$6',
+  '$platform-web': {
+    textWrap: 'balance',
+  },
 })
 
 const HighlightText = styled(Text, {

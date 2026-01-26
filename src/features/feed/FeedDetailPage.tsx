@@ -111,7 +111,11 @@ export const FeedDetailPage = memo(() => {
   if (isWideScreen) {
     return (
       <YStack flex={1} p="$10" items="center" justify="center" position="relative">
-        <HeadInfo title={postTitle} description={post.caption || undefined} openGraph={ogImage} />
+        <HeadInfo
+          title={postTitle}
+          description={post.caption || undefined}
+          openGraph={ogImage}
+        />
         <XStack
           bg="$background"
           position="relative"
@@ -176,7 +180,11 @@ export const FeedDetailPage = memo(() => {
       pb={60}
       showsVerticalScrollIndicator={false}
     >
-      <HeadInfo title={postTitle} description={post.caption || undefined} openGraph={ogImage} />
+      <HeadInfo
+        title={postTitle}
+        description={post.caption || undefined}
+        openGraph={ogImage}
+      />
       <YStack py="$4">{postHeader}</YStack>
       <Pressable onPress={openGallery} mb="$4">
         <PostImage postId={post.id} image={post.image} caption={post.caption} />

@@ -43,7 +43,7 @@
     "react-native": "*"
   },
   "devDependencies": {
-    "@tamagui/build": "^2.0.0-1769410422406",
+    "@tamagui/build": "^2.0.0-1769421444918",
     "react": "*",
     "react-native": "*"
   },

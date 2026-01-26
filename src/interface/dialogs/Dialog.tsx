@@ -20,6 +20,7 @@ import {
 
 import { useHandleEscapeIf } from '~/features/shortcuts/handleKeyboardEscape'
 
+import { GradientBlurView } from '../effects/GradientBlurView'
 import { dialogEmit } from './shared'
 
 const CONTENT_RADIUS: SizeTokens = '$9'
@@ -85,26 +86,25 @@ const DialogComponent = ({
           >
             <Sheet.Overlay
               bg="$shadow6"
-              opacity={0.8}
-              transition="quick"
+              opacity={0.5}
+              transition="300ms"
               enterStyle={{ opacity: 0 }}
               exitStyle={{ opacity: 0 }}
             />
-            <YStack items="center">
-              <Sheet.Handle bg="gray" width={60} height={5} />
-            </YStack>
             <Sheet.Frame
+              theme="surface2"
               p="$4"
-              pb={insets.bottom}
+              pb={insets.bottom + 100}
+              y={100}
               gap="$4"
               rounded="$10"
               borderBottomRightRadius={0}
               borderBottomLeftRadius={0}
-              bg="$color2"
-              borderWidth={0.5}
-              borderColor="$color4"
-              boxShadow="0 0 40px rgba(0,0,0,0.8)"
+              bg="transparent"
+              boxShadow="-20px 0 40px rgba(0,0,0,0.8)"
             >
+              <YStack z={0} bg="$shadow6" inset={0} position="absolute" />
+              <GradientBlurView position="absolute" inset={0} />
               <Sheet.ScrollView>
                 <TamaguiDialog.Adapt.Contents />
               </Sheet.ScrollView>
@@ -115,24 +115,13 @@ const DialogComponent = ({
         <TamaguiDialog.Portal zIndex={500_000}>
           <DialogOverlay
             key="overlay"
-            bg="$background08"
+            bg="$shadow6"
             onPress={(e) => {
               props.onOpenChange?.(false)
               e.stopPropagation()
               e.preventDefault()
             }}
-          >
-            <YStack
-              fullscreen
-              $theme-dark={{
-                bg: '$color2',
-              }}
-              $theme-light={{
-                bg: '$shadow4',
-              }}
-              opacity={0.8}
-            />
-          </DialogOverlay>
+          />
 
           <DialogContent
             ref={dialogContentRef}

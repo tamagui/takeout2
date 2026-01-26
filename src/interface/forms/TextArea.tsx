@@ -5,7 +5,6 @@ export const TextArea = styled(TamaguiTextArea, {
   borderWidth: 0.5,
   borderColor: '$borderColor',
   placeholderTextColor: '$color8',
-  rounded: '$2',
   minH: 100,
   fontSize: '$4',
 
@@ -22,16 +21,19 @@ export const TextArea = styled(TamaguiTextArea, {
   variants: {
     size: {
       small: {
+        rounded: '$2',
         fontSize: '$3',
         minHeight: 80,
         px: '$2.5',
         py: '$2',
       },
       medium: {
+        rounded: '$4',
         fontSize: '$4',
         minHeight: 100,
       },
       large: {
+        rounded: '$6',
         fontSize: '$5',
         minHeight: 120,
         px: '$4',

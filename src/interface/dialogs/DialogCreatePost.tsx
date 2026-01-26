@@ -140,17 +140,16 @@ export const DialogCreatePost = () => {
     <YStack p="$1" gap="$4">
       <Dialog.Header title="Create Post" />
 
-      <YStack gap="$3">
+      <YStack gap="$2">
         <TextArea
           verticalAlign="top"
           maxLength={6000}
           rows={3}
-          size="$4"
+          size="large"
           placeholder="What's on your mind?"
           value={caption}
           onChangeText={(val) => setCaption(val)}
           autoFocus={isWeb}
-          rounded="$6"
           enterKeyHint="done"
           submitBehavior="blurAndSubmit"
           data-testid="create-post-caption"
@@ -233,11 +232,11 @@ export const DialogCreatePost = () => {
               <Circle size={56} bg="$background04" items="center" justify="center">
                 <ImageIcon size={28} color="$color11" />
               </Circle>
-              <YStack items="center" gap="$1">
+              <YStack items="center" gap="$2">
                 <SizableText size="$5" fontWeight="600">
                   Add Image
                 </SizableText>
-                <SizableText size="$3" color="$color10">
+                <SizableText size="$3" color="$color6">
                   {isWeb ? 'Click to select' : 'Tap to select from library'}
                 </SizableText>
               </YStack>

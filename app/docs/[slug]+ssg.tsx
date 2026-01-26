@@ -17,10 +17,9 @@ const route = createRoute<'/(site)/docs/[slug]'>()
 export async function generateStaticParams() {
   const { getAllFrontmatter } = await import('@vxrn/mdx')
   const frontmatters = getAllFrontmatter('src/features/site/docs')
-  const paths = frontmatters.map(({ slug }) => ({
+  return frontmatters.map(({ slug }) => ({
     slug: slug.replace(/.*docs\//, ''),
   }))
-  return paths
 }
 
 export const loader = route.createLoader(async ({ params }) => {

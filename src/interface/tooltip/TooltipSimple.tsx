@@ -141,7 +141,7 @@ export const GlobalTooltipProvider = ({
       disableRTL
       offset={20}
       restMs={200}
-      delay={{ open: 200, close: 200 }}
+      delay={{ open: 0, close: 200 }}
       open={open}
       // ensure we do a state change so we can force close it if need be due to popover
       onOpenChange={(open) => {

@@ -134,7 +134,7 @@ export const DialogCreatePost = () => {
     }
   }
 
-  const canPost = caption.trim() && uploadedUrl && !isUploading && !isPosting
+  const canPost = true // caption.trim() && uploadedUrl && !isUploading && !isPosting
 
   const content = (
     <YStack p="$1" gap="$4">
@@ -146,11 +146,13 @@ export const DialogCreatePost = () => {
           maxLength={6000}
           rows={3}
           size="$4"
-          placeholder="What's on your mind?"
+          placeholder="What's on your mind2?"
           value={caption}
           onChangeText={(val) => setCaption(val)}
           autoFocus={isWeb}
           rounded="$6"
+          enterKeyHint="done"
+          blurOnSubmit
           data-testid="create-post-caption"
         />
 
@@ -270,7 +272,13 @@ export const DialogCreatePost = () => {
       }}
     >
       {!isWeb ? (
-        content
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+        >
+          {content}
+        </ScrollView>
       ) : (
         <>
           <input

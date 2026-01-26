@@ -73,6 +73,7 @@ export const UserProfilePopoverContent = () => {
           value={name}
           onChange={(e) => handleNameChange((e.target as HTMLInputElement).value)}
           autoCapitalize="words"
+          // @ts-expect-error canary regression
           autoCorrect="off"
         />
       </YStack>
@@ -95,6 +96,7 @@ export const UserProfilePopoverContent = () => {
             value={username}
             onChange={(e) => handleUsernameChange((e.target as HTMLInputElement).value)}
             autoCapitalize="none"
+            // @ts-expect-error canary regression
             autoCorrect="off"
             pr="$8"
           />

@@ -43,19 +43,15 @@ export const PostCard = memo(({ post }: PostCardProps) => {
   return (
     <FastSquircleView
       mt="$3"
-      rounded={20}
+      rounded={30}
       cornerSmoothing={1}
       overflow="hidden"
       data-testid={`post-card-${post.id}`}
-      p="$3"
+      py="$4"
+      px="$3.5"
       gap="$3"
+      bg="$color005"
     >
-      <BlurView
-        intensity={100}
-        tint={isDark ? 'dark' : 'light'}
-        style={StyleSheet.absoluteFill}
-      />
-
       <XStack items="center" gap="$3">
         <AvatarWithMenu
           avatarUrl={avatarUrl || ''}

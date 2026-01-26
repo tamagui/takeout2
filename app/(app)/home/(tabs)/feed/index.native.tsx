@@ -118,7 +118,7 @@ export const HomePage = memo(() => {
         )}
       </AnimatePresence>
 
-      <View flex={1} px="$3">
+      <View flex={1} px="$2">
         <AnimatedLegendList
           ref={listRef}
           data={posts}

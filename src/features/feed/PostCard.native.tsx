@@ -42,14 +42,16 @@ export const PostCard = memo(({ post }: PostCardProps) => {
   return (
     <FastSquircleView
       mt="$3"
-      rounded={30}
+      rounded={25}
       cornerSmoothing={1}
       overflow="hidden"
       data-testid={`post-card-${post.id}`}
       py="$4"
       px="$3.5"
       gap="$3"
-      bg="$color005"
+      $theme-dark={{
+        bg: '$shadow4',
+      }}
     >
       <XStack items="center" gap="$3">
         <AvatarWithMenu

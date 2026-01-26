@@ -56,12 +56,12 @@
     "valibot": "^1.1.0"
   },
   "peerDependencies": {
-    "@rocicorp/zero": "*",
+    "@rocicorp/zero": "*0.25.9",
     "react": "*",
     "react-native": "*"
   },
   "devDependencies": {
-    "@tamagui/build": "^2.0.0-1769421444918",
+    "@tamagui/build": "^2.0.0-1769435599888",
     "@typeschema/valibot": "^0.14.0",
     "react": "*",
     "react-native": "*"

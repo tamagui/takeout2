@@ -98,7 +98,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
 
   return (
     <Menu allowFlip placement="bottom-end" offset={8}>
-      <Menu.Trigger asChild>
+      <Menu.Trigger render="span">
         <ButtonSimple
           circular
           aria-label="Post actions"

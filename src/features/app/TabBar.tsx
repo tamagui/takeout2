@@ -359,15 +359,15 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
                 {
                   overflow: 'hidden',
                   backgroundColor: 'transparent',
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.7)',
+                  boxShadow: '0 20px 30px rgba(0,0,0,0.35)',
                 },
                 animatedFloatingBarStyle,
                 animatedTabBarStyle,
               ]}
             >
               <GlassView
-                isFallback
-                intensity={60}
+                intensity={90}
+                glassEffectStyle="regular"
                 containerStyle={{
                   flex: 1,
                   width: '100%',

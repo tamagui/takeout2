@@ -55,17 +55,17 @@
     }
   },
   "dependencies": {
-    "@tamagui/constants": "^2.0.0-1769421444918",
+    "@tamagui/constants": "^2.0.0-1769435599888",
     "dequal": "^2.0.3"
   },
   "peerDependencies": {
-    "@rocicorp/zero": "*",
+    "@rocicorp/zero": "*0.25.9",
     "expo-clipboard": "*",
     "react": "*",
     "react-native": "*"
   },
   "devDependencies": {
-    "@tamagui/build": "^2.0.0-1769421444918",
+    "@tamagui/build": "^2.0.0-1769435599888",
     "@types/node": "24.0.3",
     "@types/react": "^19.0.8",
     "oxfmt": "^0.16.0",

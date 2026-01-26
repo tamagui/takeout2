@@ -130,7 +130,7 @@ interface CommandStep {
 
 const steps: CommandStep[] = [
   {
-    command: 'bunx create-takeout@latest my-app',
+    command: 'bun create takeout',
     output: [
       '  Creating new Takeout app...',
       '  Installing dependencies...',
@@ -334,7 +334,7 @@ function HeroTerminal() {
   )
 }
 
-const INSTALL_COMMAND = 'bunx create-takeout@latest'
+const INSTALL_COMMAND = 'bun create takeout'
 
 function CopyCommand() {
   const [copied, setCopied] = useState(false)
@@ -362,7 +362,7 @@ function CopyCommand() {
       <Paragraph fontFamily="$mono" fontSize={14} color="$color11">
         $
       </Paragraph>
-      <Paragraph flex={1} ellipsis fontFamily="$mono" fontSize={14} color="$color12">
+      <Paragraph pr="$4" flex={1} ellipsis fontFamily="$mono" fontWeight="700">
         {INSTALL_COMMAND}
       </Paragraph>
       {copied ? (

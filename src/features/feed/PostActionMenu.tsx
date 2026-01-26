@@ -41,7 +41,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
 
   const handleViewProfile = () => {
     if (!post) return
-    router.push(`/home/profile/post/${post.userId}`)
+    router.push(`/home/feed/profile/${post.userId}`)
   }
 
   const handleReportPost = (reason: string) => {

@@ -10,7 +10,7 @@ export const DotsThreeVerticalIcon = (props: IconProps) => {
   return (
     <Svg width={width} height={height} viewBox="0 0 256 256" fill="none" {...svgProps}>
       <Path
-        d="M140,128a12,12,0,1,1-12-12A12,12,0,0,1,140,128ZM128,72a12,12,0,1,0-12-12A12,12,0,0,0,128,72Zm0,112a12,12,0,1,0,12,12A12,12,0,0,0,128,184Z"
+        d="M112,60a16,16,0,1,1,16,16A16,16,0,0,1,112,60Zm16,52a16,16,0,1,0,16,16A16,16,0,0,0,128,112Zm0,68a16,16,0,1,0,16,16A16,16,0,0,0,128,180Z"
         fill={fill}
       />
     </Svg>

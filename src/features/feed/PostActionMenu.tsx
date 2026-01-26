@@ -5,7 +5,6 @@ import { useIsTouchDevice } from 'tamagui'
 
 import { saveRemoteImage } from '~/helpers/media/saveImage'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
-import { Pressable } from '~/interface/buttons/Pressable'
 import { dialogConfirm, showError } from '~/interface/dialogs/actions'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
@@ -105,8 +104,6 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
           variant="floating"
           icon={DotsThreeIcon}
           scaleIcon={2}
-          width={36}
-          height={36}
           disableBackground
         />
       </Menu.Trigger>
@@ -168,7 +165,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
                   />
                 )}
                 <Menu.ItemTitle>Report</Menu.ItemTitle>
-                <CaretRightIcon size={16} color="$color10" />
+                <CaretRightIcon size={18} color="$color10" />
               </Menu.SubTrigger>
 
               <Menu.Portal zIndex={200}>

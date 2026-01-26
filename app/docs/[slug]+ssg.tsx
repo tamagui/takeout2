@@ -2,13 +2,10 @@ import { nbspLastWord } from '@take-out/helpers'
 import { getMDXComponent } from 'mdx-bundler/client'
 import { createRoute, useLoader } from 'one'
 import { useMemo } from 'react'
-import remarkSmartypants from 'remark-smartypants'
 import { H1, Paragraph } from 'tamagui'
 
 import { components } from '~/features/docs/MDXComponents'
 import { HeadInfo } from '~/interface/app/HeadInfo'
-
-import type { UnifiedPlugin } from '@vxrn/mdx'
 
 export const sitemap = {
   priority: 0.8,
@@ -28,11 +25,7 @@ export async function generateStaticParams() {
 
 export const loader = route.createLoader(async ({ params }) => {
   const { getMDXBySlug } = await import('@vxrn/mdx')
-  const { frontmatter, code } = await getMDXBySlug(
-    'src/features/site/docs',
-    params.slug,
-    [remarkSmartypants] as UnifiedPlugin
-  )
+  const { frontmatter, code } = await getMDXBySlug('src/features/site/docs', params.slug)
   return {
     frontmatter,
     code,

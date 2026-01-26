@@ -65,7 +65,6 @@ export default {
       'over-zero',
       '@vxrn/mdx',
       '@rocicorp/zero',
-      'remark-smartypants',
       'retext',
       'retext-smartypants',
       // og image generation - native node addons

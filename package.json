@@ -179,7 +179,6 @@
     "picocolors": "^1.1.1",
     "playwright": "^1.57.0",
     "react-native-pager-view": "^8.0.0",
-    "remark-smartypants": "^3.0.2",
     "rollup-plugin-visualizer": "^6.0.5",
     "sst": "3.17.10",
     "subset-font": "^2.4.0",

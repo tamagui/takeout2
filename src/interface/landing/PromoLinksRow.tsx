@@ -12,12 +12,12 @@ const PromoButton = styled(XStack, {
   justify: 'center',
   gap: '$2',
   minW: 72,
-  px: '$3',
+  px: '$2.5',
   py: '$2',
   rounded: '$4',
   cursor: 'pointer',
   bg: '$color3',
-  borderWidth: 1,
+  borderWidth: 0.5,
   borderColor: '$color5',
   transition: 'quick',
 
@@ -46,7 +46,7 @@ export function PromoLinksRow() {
   return (
     <TooltipGroup delay={tooltipDelay}>
       <Tooltip scope="promo-tooltip" offset={20} placement="bottom">
-        <XStack gap="$3" items="center" justify="center" z={1000}>
+        <XStack gap="$2.5" items="center" justify="center" z={1000}>
           <Tooltip.Trigger
             scope="promo-tooltip"
             asChild

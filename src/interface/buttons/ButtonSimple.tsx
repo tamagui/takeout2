@@ -239,7 +239,7 @@ const ButtonFrame = styled(XStack, {
 
 const ButtonText = styled(Text, {
   context,
-  color: '$color',
+  color: '$color12',
   cursor: 'default',
   fontFamily: '$mono',
   fontWeight: '500',

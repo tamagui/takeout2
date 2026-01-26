@@ -1,6 +1,6 @@
 import { formatDistanceToNow, randomId } from '@take-out/helpers'
-import { useParams, usePathname } from 'one'
-import { memo, useMemo, useState } from 'react'
+import { useNavigation, useParams, usePathname } from 'one'
+import { memo, useLayoutEffect, useMemo, useState } from 'react'
 import { SizableText, XStack, YStack } from 'tamagui'
 
 import { postById } from '~/data/queries/post'
@@ -11,7 +11,6 @@ import { PostActionMenu } from '~/features/feed/PostActionMenu'
 import { PostImage } from '~/features/feed/PostImage'
 import { useUser } from '~/features/user/useUser'
 import { Avatar } from '~/interface/avatars/Avatar'
-import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
 import { KeyboardAwareScrollView } from '~/interface/keyboard/KeyboardAwareScrollView'
 import { PageLayout } from '~/interface/pages/PageLayout'
 import { Text } from '~/interface/text/Text'
@@ -24,6 +23,14 @@ export const FeedDetailPage = memo(() => {
   const { user } = useUser()
   const [post] = useQuery(postById, { postId: feedId })
   const isOwnProfile = post?.userId === user?.id
+  const navigation = useNavigation()
+
+  useLayoutEffect(() => {
+    if (!post) return
+    navigation.setOptions({
+      headerRight: () => <PostActionMenu post={post} isOwnPost={isOwnProfile} />,
+    })
+  }, [navigation, post, isOwnProfile])
 
   const sharedTag = useMemo(() => {
     const isFromProfile = pathname.includes('/home/profile/')
@@ -69,22 +76,16 @@ export const FeedDetailPage = memo(() => {
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="interactive"
       >
-        <XStack items="center" justify="space-between" py="$4">
-          <XStack justify="space-between" gap="$3" width="100%">
-            <XStack items="center" gap="$3" flex={1}>
-              <Avatar gradient image={user.image as string} size={32} />
-              <XStack items="center" gap="$1">
-                <SizableText size="$4" fontWeight="600" numberOfLines={1}>
-                  {user.username}
-                </SizableText>
-                <DotIcon size={16} color="$color10" />
-                <SizableText size="$3" color="$color10">
-                  {formatDistanceToNow(post.createdAt)}
-                </SizableText>
-              </XStack>
-            </XStack>
-            <PostActionMenu post={post} isOwnPost={isOwnProfile} />
-          </XStack>
+        <XStack items="center" gap="$3" py="$4">
+          <Avatar gradient image={user.image as string} size={32} />
+          <YStack flex={1}>
+            <SizableText size="$4" fontWeight="700" color="$color12">
+              {user.username}
+            </SizableText>
+            <SizableText size="$2" color="$color10">
+              {formatDistanceToNow(post.createdAt)}
+            </SizableText>
+          </YStack>
         </XStack>
 
         <YStack mb="$4">
@@ -102,7 +103,6 @@ export const FeedDetailPage = memo(() => {
 
         <CommentSection postId={feedId} />
       </KeyboardAwareScrollView>
-
       <CommentInput
         user={currentUser}
         content={content}

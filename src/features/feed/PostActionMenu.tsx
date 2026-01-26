@@ -105,6 +105,9 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
           variant="floating"
           icon={DotsThreeIcon}
           scaleIcon={2}
+          width={36}
+          height={36}
+          disableBackground
         />
       </Menu.Trigger>
 

@@ -247,9 +247,12 @@ export const DialogCreatePost = () => {
       </YStack>
 
       <Dialog.Footer>
-        <ButtonSimple onPress={handleClose}>Cancel</ButtonSimple>
+        <ButtonSimple glass onPress={handleClose}>
+          Cancel
+        </ButtonSimple>
         <ButtonSimple
           theme="accent"
+          glass
           onPress={handlePost}
           disabled={!canPost}
           data-testid="create-post-submit"

@@ -11,20 +11,16 @@ type DevGlobals = Record<string, any>
 type DevDestroys = Record<string, DestroyFn<any> | undefined>
 
 export function getDevGlobal(name?: string) {
-  // @ts-expect-error global on purpose
-  const devGlobal = globalThis['Dev'] as DevGlobals | undefined
+  const devGlobal = (globalThis as any)['Dev'] as DevGlobals | undefined
   return name && devGlobal ? devGlobal[name] : devGlobal
 }
 
 const Dev: DevGlobals = getDevGlobal() ?? {}
-// @ts-expect-error global on purpose
-globalThis['Dev'] ||= Dev
+;(globalThis as any)['Dev'] ||= Dev
 
-// @ts-expect-error global on purpose
-const _globalDestroys = globalThis['_DevDestroys'] as DevDestroys | undefined
+const _globalDestroys = (globalThis as any)['_DevDestroys'] as DevDestroys | undefined
 const DevDestroys: DevDestroys = _globalDestroys ?? {}
-// @ts-expect-error global on purpose
-globalThis['_DevDestroys'] ||= DevDestroys
+;(globalThis as any)['_DevDestroys'] ||= DevDestroys
 
 export function setDevGlobal<Obj>(object: Obj, name: string, destroy?: DestroyFn<Obj>) {
   const destroyer = DevDestroys[name]

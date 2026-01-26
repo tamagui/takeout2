@@ -41,10 +41,10 @@ export function createMutators<Models extends GenericModels>({
         can,
         server:
           environment === 'server'
-            ? {
+            ? ({
                 actions: serverActions || {},
                 asyncTasks: asyncTasks || {},
-              }
+              } as MutatorContext['server'])
             : undefined,
       }
 

@@ -29,7 +29,7 @@ export function Layout() {
             <TamaguiRootProvider>
               <GlobalTooltipProvider>
                 <SafeAreaProvider>
-                  {process.env.VITE_PLATFORM === 'web' ? (
+                  {!process.env.VITE_NATIVE ? (
                     <>
                       <LoadProgressBar startDelay={800} />
                       <HomeBackground />

@@ -16,7 +16,7 @@ export const alertController = {
   show: (options: AlertOptions) => {
     const { title, message, buttons = [{ text: 'OK' }] } = options
 
-    if (process.env.VITE_PLATFORM === 'web') {
+    if (!process.env.VITE_NATIVE) {
       // For web, use browser alert/confirm
       if (buttons.length === 1) {
         window.alert(message ? `${title}\n\n${message}` : title)

@@ -12,8 +12,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tamagui-build",
-    "watch": "SKIP_INITIAL_BUILD=1 tamagui-build --watch",
+    "build": "tamagui-build --skip-types",
+    "watch": "tamagui-build --skip-types --watch",
     "typecheck": "tko run typecheck",
     "lint": "oxlint src",
     "lint:fix": "oxfmt src && oxlint --fix --fix-suggestions src",
@@ -54,7 +54,7 @@
     }
   },
   "dependencies": {
-    "@tamagui/constants": "^2.0.0-1769439083296",
+    "@tamagui/constants": "^2.0.0-1769464790617",
     "dequal": "^2.0.3"
   },
   "peerDependencies": {
@@ -64,7 +64,7 @@
     "react-native": "*"
   },
   "devDependencies": {
-    "@tamagui/build": "^2.0.0-1769439083296",
+    "@tamagui/build": "^2.0.0-1769464790617",
     "@types/node": "24.0.3",
     "@types/react": "^19.0.8",
     "oxfmt": "^0.16.0",

@@ -33,7 +33,7 @@
   ],
   "scripts": {
     "build": "tamagui-build --skip-types",
-    "watch": "SKIP_INITIAL_BUILD=1 tamagui-build --skip-types --watch",
+    "watch": "tamagui-build --skip-types --watch",
     "clean": "tamagui-build clean",
     "typecheck": "tko run typecheck",
     "lint": "oxlint src",
@@ -53,7 +53,7 @@
     }
   },
   "devDependencies": {
-    "@tamagui/build": "^2.0.0-1769439083296",
+    "@tamagui/build": "^2.0.0-1769464790617",
     "@types/react": "^18.3.18",
     "react": "*",
     "react-native": "*",

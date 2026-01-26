@@ -296,17 +296,13 @@ function HeroTerminal() {
         </Paragraph>
       </TerminalHeader>
 
-      <div
-        ref={contentRef}
+      <YStack
+        ref={contentRef as any}
         className="terminal-content"
-        style={{
-          padding: 16,
-          height: TERMINAL_HEIGHT,
-          overflowY: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 4,
-        }}
+        p="$4"
+        height={TERMINAL_HEIGHT}
+        overflow="scroll"
+        gap="$1"
       >
         {history.map((entry, i) => (
           <HistoryEntry key={i} command={entry.command} output={entry.output} />
@@ -348,7 +344,7 @@ function HeroTerminal() {
             <YStack className="terminal-cursor" width={8} height={16} bg="#e5e5e5" />
           </XStack>
         )}
-      </div>
+      </YStack>
     </TerminalContainer>
   )
 }
@@ -403,14 +399,14 @@ export function HeroSection() {
       justify="center"
     >
       <XStack
-        gap="$8"
+        gap="$2"
         items="center"
         justify="center"
         flexWrap="wrap"
         maxW={1200}
         width="100%"
         pb="$14"
-        $lg={{ flexWrap: 'nowrap', gap: '$12' }}
+        $lg={{ flexWrap: 'nowrap', gap: '$8' }}
       >
         {/* left side - hero content */}
         <YStack
@@ -427,8 +423,7 @@ export function HeroSection() {
           <YStack gap="$1">
             <HeroTitle>
               The <Span $maxXL={{ display: 'none' }}>startup</Span> starter that{' '}
-              <em>actually</em> gives you an{' '}
-              <HighlightText render="span">edge</HighlightText>.
+              <em>actually</em> gives you an <HighlightText>edge</HighlightText>.
             </HeroTitle>
           </YStack>
 
@@ -436,12 +431,12 @@ export function HeroSection() {
             <Strong fontWeight="600" color="$color12">
               Most starter kits suck
             </Strong>
-            . Takeout sucks less: groundbreaking new tech, battle-tested CI/CD, scalable
-            IaC, strapped-up for AI and{' '}
-            <Link href="/docs/changelog">updated constantly</Link> — it's&nbsp;what we use
+            . Takeout sucks less: fun new tech, real-world experience, auto-CI/CD,
+            scalable&nbsp;IaC, and strapped-up for AI with{' '}
+            <Link href="/docs/changelog">constant updates</Link> — it's&nbsp;what we use
             for ourselves, and our <Link href="https://addeven.com">clients</Link>.
-            <br />
-            <br />
+          </HeroSubtitle>
+          <HeroSubtitle>
             It's the{' '}
             <Strong fontWeight="600" color="$color11">
               fast way to build a startup
@@ -476,11 +471,13 @@ export function HeroSection() {
         <YStack
           flex={1}
           minW={300}
-          maxW={560}
-          mr={-50}
+          maxW={480}
+          x={0}
           items="center"
-          $lg={{ items: 'flex-end', mr: 0 }}
+          $md={{ x: 50 }}
+          $lg={{ items: 'flex-end', x: 0 }}
           position="relative"
+          transition="bouncy"
         >
           <HeroTerminal />
         </YStack>

@@ -17,7 +17,8 @@ export function usePostsPaginated(pageSize = 3) {
   // web: page-based pagination
   const [currentPage, setCurrentPage] = useState(1)
 
-  // blocking is now handled server-side via notBlockedByViewer permission
+  // blocking is handled server-side via notBlockedByViewer permission
+  // server filters with not(exists()), client query becomes no-op
   const [posts, status] = useQuery(feedPosts, {
     pageSize,
     cursor: isWeb ? null : cursor,
@@ -173,7 +174,7 @@ export function usePostsSearch(pageSize = 12) {
   const [cursor, setCursor] = useState<PostCursor>(null)
   const [lastSearchText, setLastSearchText] = useState<string>('')
 
-  // blocking is now handled server-side via notBlockedByViewer permission
+  // blocking is handled server-side via notBlockedByViewer permission
   const [posts, status] = useQuery(
     searchPosts,
     {

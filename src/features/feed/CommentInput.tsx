@@ -72,7 +72,7 @@ export function CommentInput({
         </XStack>
       )}
 
-      {process.env.VITE_PLATFORM !== 'web' && (
+      {process.env.VITE_NATIVE && (
         <KeyboardStickyFooter openedOffset={-10}>
           <XStack items="center" gap="$2" px="$3" py="$2" overflow="hidden">
             <Input

@@ -16,7 +16,7 @@ export const IS_SAFARI: boolean =
     /Version\/[\d.]+.*Safari/.test(navigator.userAgent) &&
     /Apple Computer/.test(navigator.vendor))
 
-export { isAndroid, isClient, isIos, isServer, isWeb } from '@tamagui/constants'
+export { isAndroid, isBrowser, isIos, isServer, isWeb } from '@tamagui/constants'
 
 export const EMPTY_ARRAY = [] as never
 export const EMPTY_OBJECT = {} as never

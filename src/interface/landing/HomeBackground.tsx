@@ -15,7 +15,7 @@ export function HomeBackground() {
   const pathname = usePathname()
 
   // only show on homepage and web
-  if (pathname !== '/' || process.env.VITE_PLATFORM !== 'web') {
+  if (pathname !== '/' || process.env.VITE_NATIVE) {
     return null
   }
 

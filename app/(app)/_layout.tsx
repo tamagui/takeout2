@@ -35,7 +35,7 @@ export function AppLayout() {
       <ProvideZero>
         <ToastProvider>
           <NotificationProvider>
-            {process.env.VITE_PLATFORM === 'web' ? (
+            {!process.env.VITE_NATIVE ? (
               <DragDropFile>
                 <Gallery />
                 <Slot />

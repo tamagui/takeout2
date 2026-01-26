@@ -3,7 +3,7 @@ import { Slot, Stack } from 'one'
 export function AppLayout() {
   return (
     <>
-      {process.env.VITE_PLATFORM === 'web' ? (
+      {!process.env.VITE_NATIVE ? (
         <Slot />
       ) : (
         // We need Stack here for transition animation to work on native

@@ -1,4 +1,4 @@
-import { globalValue, isClient } from '@take-out/helpers'
+import { globalValue, isServer } from '@take-out/helpers'
 
 import { getQueryOrMutatorAuthData } from './helpers/getQueryOrMutatorAuthData'
 
@@ -26,8 +26,8 @@ export function where<Table extends TableName, Builder extends Where<Table>>(
     a: ExpressionBuilder<any, any>,
     b = getQueryOrMutatorAuthData()
   ) => {
-    if (isClient && isServerOnly) {
-      // on client where conditions always pass
+    if (!isServer && isServerOnly) {
+      // on client (web or native) where conditions always pass
       return a.and()
     }
 

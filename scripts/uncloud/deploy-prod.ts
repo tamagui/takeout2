@@ -151,7 +151,7 @@ async function main(): Promise<void> {
   const zeroVersion = getZeroVersion()
   console.info(pc.gray(`   zero version: ${zeroVersion}`))
   processComposeEnv('src/uncloud/docker-compose.yml', processedCompose, {
-    ...process.env,
+    ...(process.env as Record<string, string | undefined>),
     // derived zero database urls from DEPLOY_DB
     ZERO_UPSTREAM_DB,
     ZERO_CVR_DB,

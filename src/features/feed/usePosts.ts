@@ -72,7 +72,9 @@ export function usePostsPaginated(pageSize = 3) {
       setIsLoadingMore(true)
       const lastPost = posts[posts.length - 1]
       if (lastPost) {
-        setCursor(lastPost)
+        // only pass orderBy fields — passing the full post (with related data like
+        // `comments`) causes Zero's NameMapper to choke on non-column fields
+        setCursor({ id: lastPost.id, createdAt: lastPost.createdAt } as Post)
       }
     }
   }
@@ -153,7 +155,7 @@ export function usePostsByUserId(userId: string, pageSize = 12) {
 
       const lastPost = posts[posts.length - 1]
       if (lastPost) {
-        setCursor(lastPost)
+        setCursor({ id: lastPost.id, createdAt: lastPost.createdAt } as Post)
       }
     }
   }
@@ -250,7 +252,7 @@ export function usePostsSearch(pageSize = 12) {
       setIsLoadingMore(true)
       const lastPost = posts[posts.length - 1]
       if (lastPost) {
-        setCursor(lastPost)
+        setCursor({ id: lastPost.id, createdAt: lastPost.createdAt } as Post)
       }
     }
   }

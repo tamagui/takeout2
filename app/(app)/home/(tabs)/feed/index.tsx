@@ -15,7 +15,19 @@ export const HomePage = memo(() => {
 
   return (
     <>
-      <HeadInfo title="Feed" />
+      <HeadInfo
+        title="Feed"
+        description="See what's happening on Takeout"
+        openGraph={{
+          images: [
+            {
+              url: `${process.env.ONE_SERVER_URL}/api/og?type=index`,
+              width: 1200,
+              height: 630,
+            },
+          ],
+        }}
+      />
       <AnimatePresence>
         {isLoading && (
           <YStack

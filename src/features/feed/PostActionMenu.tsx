@@ -130,7 +130,6 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
               <DownloadSimpleIcon size={18} color="$color10" />
             </Menu.ItemIcon>
           </Menu.Item>
-
           {!isOwnPost && (
             <Menu.Item
               key="view-profile"
@@ -147,56 +146,54 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
               </Menu.ItemIcon>
             </Menu.Item>
           )}
+          <Menu.Separator />
+          // TODO: Just a tmp fix—the SubMenu on native doesn’t work inside a fragment
+          {!isOwnPost && (
+            <Menu.Sub placement={isTouchDevice ? 'bottom' : 'right-start'}>
+              <Menu.SubTrigger
+                key="report-trigger"
+                justify="space-between"
+                textValue="Report"
+              >
+                {isNative && (
+                  <Menu.ItemIcon
+                    ios={{ name: 'exclamationmark.triangle', pointSize: 18 }}
+                    androidIconName="ic_menu_report"
+                  />
+                )}
+                <Menu.ItemTitle>Report</Menu.ItemTitle>
+                <CaretRightIcon size={16} color="$color10" />
+              </Menu.SubTrigger>
 
+              <Menu.Portal zIndex={200}>
+                <Menu.SubContent
+                  enterStyle={{ scale: 0.9, opacity: 0, x: -5 }}
+                  exitStyle={{ scale: 0.95, opacity: 0, x: -3 }}
+                  transition="100ms ease-in-out"
+                  transformOrigin="left top"
+                  elevation="$3"
+                  minW={200}
+                  bg="$background"
+                  p="$1.5"
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                >
+                  {REPORT_REASONS.map((reason) => (
+                    <Menu.Item
+                      key={reason.value}
+                      onSelect={() => handleReportPost(reason.value)}
+                      textValue={reason.label}
+                    >
+                      <Menu.ItemTitle>{reason.label}</Menu.ItemTitle>
+                    </Menu.Item>
+                  ))}
+                </Menu.SubContent>
+              </Menu.Portal>
+            </Menu.Sub>
+          )}
           {/* report and block options only for other users' posts */}
           {!isOwnPost && (
             <>
-              <Menu.Separator />
-
-              <Menu.Sub placement={isTouchDevice ? 'bottom' : 'right-start'}>
-                <Menu.SubTrigger
-                  key="report-trigger"
-                  justify="space-between"
-                  textValue="Report"
-                >
-                  {isNative && (
-                    <Menu.ItemIcon
-                      ios={{ name: 'exclamationmark.triangle', pointSize: 18 }}
-                      androidIconName="ic_menu_report"
-                    />
-                  )}
-                  <Menu.ItemTitle>Report</Menu.ItemTitle>
-                  <CaretRightIcon size={16} color="$color10" />
-                </Menu.SubTrigger>
-
-                <Menu.Portal zIndex={200}>
-                  <Menu.SubContent
-                    enterStyle={{ scale: 0.9, opacity: 0, x: -5 }}
-                    exitStyle={{ scale: 0.95, opacity: 0, x: -3 }}
-                    transition="100ms ease-in-out"
-                    transformOrigin="left top"
-                    elevation="$3"
-                    minW={200}
-                    bg="$background"
-                    p="$1.5"
-                    borderWidth={1}
-                    borderColor="$borderColor"
-                  >
-                    {REPORT_REASONS.map((reason) => (
-                      <Menu.Item
-                        key={reason.value}
-                        onSelect={() => handleReportPost(reason.value)}
-                        textValue={reason.label}
-                      >
-                        <Menu.ItemTitle>{reason.label}</Menu.ItemTitle>
-                      </Menu.Item>
-                    ))}
-                  </Menu.SubContent>
-                </Menu.Portal>
-              </Menu.Sub>
-
-              <Menu.Separator />
-
               <Menu.Item
                 key="block"
                 onSelect={handleBlock}
@@ -212,9 +209,9 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
                   <XCircleIcon size={18} color="$red10" />
                 </Menu.ItemIcon>
               </Menu.Item>
+              <Menu.Separator />
             </>
           )}
-
           {isAdmin && (
             <Menu.Item
               key="admin-hide"

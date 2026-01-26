@@ -65,7 +65,7 @@ export const ProfileSettingsPage = () => {
       >
         <YStack flex={1} flexBasis="auto" pb="$10">
           {sections.map((section) => (
-            <YStack key={section.title} mb="$6" ml="$4">
+            <YStack key={section.title} mb="$6">
               <SepHeading>{section.title}</SepHeading>
               <YStack>
                 {section.items.map((item) => (
@@ -102,5 +102,5 @@ const SettingRowFrame = styled(XStack, {
   items: 'center',
   justify: 'space-between',
   hoverStyle: { bg: '$color2' },
-  pressStyle: { bg: '$color3' },
+  pressStyle: { bg: '$background02' },
 })

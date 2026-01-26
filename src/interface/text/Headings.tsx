@@ -68,7 +68,7 @@ export const SepHeading = ({
   size?: FontSizeTokens
 }) => {
   return (
-    <XStack my="$4" items="center" gap="$6">
+    <XStack ml="$3" my="$4" items="center" gap="$6">
       <H3 size={size} color="$color10">
         {children}
       </H3>

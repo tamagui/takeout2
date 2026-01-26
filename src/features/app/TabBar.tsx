@@ -356,7 +356,11 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
           <Animated.View>
             <Animated.View
               style={[
-                { overflow: 'hidden', backgroundColor: 'transparent' },
+                {
+                  overflow: 'hidden',
+                  backgroundColor: 'transparent',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.7)',
+                },
                 animatedFloatingBarStyle,
                 animatedTabBarStyle,
               ]}

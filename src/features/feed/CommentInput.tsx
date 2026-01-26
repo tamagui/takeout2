@@ -45,14 +45,6 @@ export function CommentInput({
               placeholder="Write your comments here..."
               value={content}
               onChange={(e) => setContent((e.target as HTMLInputElement).value)}
-              minH={100}
-              pr="$6"
-              pb="$6"
-              bg="$color2"
-              borderColor="$color4"
-              borderWidth={1}
-              rounded={16}
-              style={{ resize: 'vertical' }}
             />
             <YStack
               position="absolute"

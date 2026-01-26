@@ -7,13 +7,15 @@ import { useQuery } from '~/zero/client'
 import type { UseProfilePostsOptions, UseProfilePostsResult } from './types'
 import type { Post } from '~/data/types'
 
+type PostCursor = { id: string; createdAt: number } | null
+
 export function useProfilePosts({
   userId,
   pageSize = 12,
 }: UseProfilePostsOptions): UseProfilePostsResult {
   // for native: cursor-based infinite scroll
   const [allPostsData, setAllPostsData] = useState<Post[]>([])
-  const [cursor, setCursor] = useState<Post | null>(null)
+  const [cursor, setCursor] = useState<PostCursor>(null)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [hasInitialLoad, setHasInitialLoad] = useState(false)
 
@@ -72,7 +74,8 @@ export function useProfilePosts({
       setIsLoadingMore(true)
       const lastPost = posts[posts.length - 1]
       if (lastPost) {
-        setCursor(lastPost)
+        // only pass cursor fields, not the full post with relations
+        setCursor({ id: lastPost.id, createdAt: lastPost.createdAt })
       }
     }
   }

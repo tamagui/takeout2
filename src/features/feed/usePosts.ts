@@ -8,13 +8,15 @@ import { useQuery } from '~/zero/client'
 
 import type { Post } from '~/data/types'
 
+type PostCursor = { id: string; createdAt: number } | null
+
 export function usePostsPaginated(pageSize = 3) {
   const { user } = useAuth()
   // native: cursor-based infinite scroll
   const [allPostsData, setAllPostsData] = useState<Post[]>([])
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
   const [hasInitialLoad, setHasInitialLoad] = useState<boolean>(false)
-  const [cursor, setCursor] = useState<Post | null>(null)
+  const [cursor, setCursor] = useState<PostCursor>(null)
   // web: page-based pagination
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -72,9 +74,8 @@ export function usePostsPaginated(pageSize = 3) {
       setIsLoadingMore(true)
       const lastPost = posts[posts.length - 1]
       if (lastPost) {
-        // only pass orderBy fields — passing the full post (with related data like
-        // `comments`) causes Zero's NameMapper to choke on non-column fields
-        setCursor({ id: lastPost.id, createdAt: lastPost.createdAt } as Post)
+        // only pass cursor fields, not the full post with relations
+        setCursor({ id: lastPost.id, createdAt: lastPost.createdAt })
       }
     }
   }
@@ -117,7 +118,7 @@ export function usePostsByUserId(userId: string, pageSize = 12) {
   const [allPostsData, setAllPostsData] = useState<Post[]>([])
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
   const [hasInitialLoad, setHasInitialLoad] = useState<boolean>(false)
-  const [cursor, setCursor] = useState<Post | null>(null)
+  const [cursor, setCursor] = useState<PostCursor>(null)
 
   const [posts, status] = useQuery(
     postsPaginated,
@@ -155,7 +156,8 @@ export function usePostsByUserId(userId: string, pageSize = 12) {
 
       const lastPost = posts[posts.length - 1]
       if (lastPost) {
-        setCursor({ id: lastPost.id, createdAt: lastPost.createdAt } as Post)
+        // only pass cursor fields, not the full post with relations
+        setCursor({ id: lastPost.id, createdAt: lastPost.createdAt })
       }
     }
   }
@@ -188,7 +190,7 @@ export function usePostsSearch(pageSize = 12) {
   const [allPostsData, setAllPostsData] = useState<Post[]>([])
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
   const [hasInitialLoad, setHasInitialLoad] = useState<boolean>(false)
-  const [cursor, setCursor] = useState<Post | null>(null)
+  const [cursor, setCursor] = useState<PostCursor>(null)
   const [lastSearchText, setLastSearchText] = useState<string>('')
 
   // query blocked users
@@ -252,7 +254,8 @@ export function usePostsSearch(pageSize = 12) {
       setIsLoadingMore(true)
       const lastPost = posts[posts.length - 1]
       if (lastPost) {
-        setCursor({ id: lastPost.id, createdAt: lastPost.createdAt } as Post)
+        // only pass cursor fields, not the full post with relations
+        setCursor({ id: lastPost.id, createdAt: lastPost.createdAt })
       }
     }
   }

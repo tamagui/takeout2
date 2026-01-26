@@ -21,9 +21,8 @@
       "ignore": ["src/data/generated/**", "**/*.d.ts"],
       "ignoreDependencies": [
         "@types/*",
+        "@nandorojo/galeria",
         "@react-native-menu/menu",
-        "baseline-browser-mapping",
-        "burnt",
         "jsonwebtoken",
         "motion",
         "postmark",

@@ -1,8 +1,8 @@
 import { createAnimations } from '@tamagui/animations-reanimated'
-import { animations } from '@tamagui/config/v5-reanimated'
+import { animationsReanimated } from '@tamagui/config/v5-reanimated'
 
 export const animationsRoot = createAnimations({
-  ...animations.animations,
+  ...animationsReanimated.animations,
   '250ms': {
     type: 'timing',
     duration: 250,

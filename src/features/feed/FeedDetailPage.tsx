@@ -7,6 +7,7 @@ import {
   SizableText,
   styled,
   useMedia,
+  VisuallyHidden,
   XStack,
   YStack,
 } from 'tamagui'
@@ -143,6 +144,9 @@ export const FeedDetailPage = memo(() => {
           />
 
           <ModalContent key="content">
+            <VisuallyHidden>
+              <Dialog.Title>{postTitle}</Dialog.Title>
+            </VisuallyHidden>
             <YStack flex={1} items="center" justify="center" position="relative">
               <HeadInfo
                 title={postTitle}

@@ -1,9 +1,14 @@
 import { Slot } from 'one'
-import { View, YStack } from 'tamagui'
+import { useMedia, View, YStack } from 'tamagui'
 
 import { FeedContent } from '~/features/feed/FeedContent'
 
 export function HomeLayout() {
+  const { lg } = useMedia()
+  if (!lg) {
+    return <Slot />
+  }
+
   return (
     <YStack flex={1}>
       <FeedContent />

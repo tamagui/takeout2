@@ -1,6 +1,7 @@
 // setup tamagui native
 import '@tamagui/native/setup-gesture-handler'
 import '@tamagui/native/setup-teleport'
+import '@tamagui/native/setup-expo-linear-gradient'
 //
 // setup global side effects
 import '~/features/analytics/analytics'

@@ -134,7 +134,7 @@ export const DialogCreatePost = () => {
     }
   }
 
-  const canPost = true // caption.trim() && uploadedUrl && !isUploading && !isPosting
+  const canPost = caption.trim() && uploadedUrl && !isUploading && !isPosting
 
   const content = (
     <YStack p="$1" gap="$4">

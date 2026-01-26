@@ -1,21 +1,23 @@
-import { serverWhere, zql } from 'over-zero'
+import { zql } from 'over-zero'
 
-const permission = serverWhere('post', () => {
-  // TODO
-  return true
-})
+import { notBlockedByViewer } from '~/data/where/notBlockedByViewer'
 
 export const postById = (props: { postId: string }) => {
-  return zql.post.where(permission).where('id', props.postId).one()
+  return zql.post
+    .where(notBlockedByViewer)
+    .where('id', props.postId)
+    .one()
+    .related('user', (q) => q.one())
 }
 
 export const postsByUserId = (props: { userId: string; limit?: number }) => {
   return zql.post
-    .where(permission)
+    .where(notBlockedByViewer)
     .where('userId', props.userId)
     .orderBy('createdAt', 'desc')
     .orderBy('id', 'desc')
     .limit(props.limit || 20)
+    .related('user', (q) => q.one())
 }
 
 export const postsPaginated = (props: {
@@ -24,10 +26,11 @@ export const postsPaginated = (props: {
   cursor?: { id: string; createdAt: number } | null
 }) => {
   let query = zql.post
-    .where(permission)
+    .where(notBlockedByViewer)
     .orderBy('createdAt', 'desc')
     .orderBy('id', 'desc')
     .limit(props.pageSize)
+    .related('user', (q) => q.one())
 
   if (props.userId) {
     query = query.where('userId', props.userId)
@@ -40,28 +43,16 @@ export const postsPaginated = (props: {
   return query
 }
 
-export const postsWithBlocks = (props: {
-  userId?: string
-  blockedUserIds: string[]
+export const feedPosts = (props: {
   pageSize: number
   cursor?: { id: string; createdAt: number } | null
 }) => {
   let query = zql.post
-    .where(permission)
-    .where((eb) => {
-      if (!props.userId) {
-        return eb.cmp('id', '!=', '')
-      }
-
-      if (props.blockedUserIds.length > 0) {
-        return eb.not(eb.cmp('userId', 'IN', props.blockedUserIds))
-      }
-
-      return eb.cmp('id', '!=', '')
-    })
+    .where(notBlockedByViewer)
     .orderBy('createdAt', 'desc')
     .orderBy('id', 'desc')
     .limit(props.pageSize)
+    .related('user', (q) => q.one())
     .related('comments', (q) =>
       q
         .orderBy('createdAt', 'desc')
@@ -76,31 +67,37 @@ export const postsWithBlocks = (props: {
   return query
 }
 
+export const postDetail = (props: { postId: string }) => {
+  return zql.post
+    .where(notBlockedByViewer)
+    .where('id', props.postId)
+    .one()
+    .related('user', (q) => q.one())
+    .related('comments', (q) =>
+      q
+        .orderBy('createdAt', 'asc')
+        .limit(50)
+        .related('user', (u) => u.one())
+    )
+}
+
 export const searchPosts = (props: {
   searchText: string
-  userId?: string
-  blockedUserIds: string[]
   pageSize: number
   cursor?: { id: string; createdAt: number } | null
 }) => {
-  let query = zql.post.where(permission).where((eb) => {
+  let query = zql.post.where(notBlockedByViewer).where((eb) => {
     if (!props.searchText) {
       return eb.cmp('id', '!=', '')
     }
-
-    const captionCondition = eb.cmp('caption', 'LIKE', `%${props.searchText}%`)
-
-    if (props.userId && props.blockedUserIds.length > 0) {
-      return eb.and(
-        captionCondition,
-        eb.not(eb.cmp('userId', 'IN', props.blockedUserIds))
-      )
-    }
-
-    return captionCondition
+    return eb.cmp('caption', 'LIKE', `%${props.searchText}%`)
   })
 
-  query = query.orderBy('createdAt', 'desc').orderBy('id', 'desc').limit(props.pageSize)
+  query = query
+    .orderBy('createdAt', 'desc')
+    .orderBy('id', 'desc')
+    .limit(props.pageSize)
+    .related('user', (q) => q.one())
 
   if (props.cursor) {
     query = query.start(props.cursor)

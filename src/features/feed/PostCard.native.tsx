@@ -5,7 +5,6 @@ import Animated, { SharedTransition } from 'react-native-reanimated'
 import { SizableText, XStack, YStack } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
-import { useUser } from '~/hooks/useUser'
 import { Link } from '~/interface/app/Link'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { ChatCircleDotsIcon } from '~/interface/icons/phosphor/ChatCircleDotsIcon'
@@ -28,9 +27,9 @@ export const PostCard = memo(({ post }: PostCardProps) => {
   const isDark = useIsDark()
   const { user } = useAuth()
   const authorId = post.userId
-  const [author] = useUser(authorId)
-  const avatarUrl = author?.image
-  const username = author?.username
+  // user is loaded with the post query, no N+1
+  const avatarUrl = post.user?.image
+  const username = post.user?.username
 
   const [aspectRatio, setAspectRatio] = useState<number>(1)
   const isOwnProfile = authorId === user?.id

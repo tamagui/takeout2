@@ -3,13 +3,12 @@ import { useNavigation, useParams, usePathname } from 'one'
 import { memo, useLayoutEffect, useMemo, useState } from 'react'
 import { SizableText, XStack, YStack } from 'tamagui'
 
-import { postById } from '~/data/queries/post'
+import { postDetail } from '~/data/queries/post'
 import { useAuth } from '~/features/auth/client/authClient'
 import { CommentInput } from '~/features/feed/CommentInput'
 import { CommentSection } from '~/features/feed/CommentSection'
 import { PostActionMenu } from '~/features/feed/PostActionMenu'
 import { PostImage } from '~/features/feed/PostImage'
-import { useUser } from '~/features/user/useUser'
 import { Avatar } from '~/interface/avatars/Avatar'
 import { KeyboardAwareScrollView } from '~/interface/keyboard/KeyboardAwareScrollView'
 import { PageLayout } from '~/interface/pages/PageLayout'
@@ -20,9 +19,9 @@ export const FeedDetailPage = memo(() => {
   const { feedId = '' } = useParams<{ feedId?: string }>()
   const pathname = usePathname()
   const { user: currentUser } = useAuth()
-  const { user } = useUser()
-  const [post] = useQuery(postById, { postId: feedId })
-  const isOwnProfile = post?.userId === user?.id
+  const [post] = useQuery(postDetail, { postId: feedId })
+  const author = post?.user
+  const isOwnProfile = post?.userId === currentUser?.id
   const navigation = useNavigation()
 
   useLayoutEffect(() => {
@@ -62,7 +61,7 @@ export const FeedDetailPage = memo(() => {
     }
   }
 
-  if (!post || !user) {
+  if (!post || !author) {
     return null
   }
 
@@ -77,10 +76,10 @@ export const FeedDetailPage = memo(() => {
         keyboardDismissMode="interactive"
       >
         <XStack items="center" gap="$3" py="$4">
-          <Avatar gradient image={user.image as string} size={32} />
+          <Avatar gradient image={author.image as string} size={32} />
           <YStack flex={1}>
             <SizableText size="$4" fontWeight="700" color="$color12">
-              {user.username}
+              {author.username}
             </SizableText>
             <SizableText size="$2" color="$color10">
               {formatDistanceToNow(post.createdAt)}
@@ -101,7 +100,7 @@ export const FeedDetailPage = memo(() => {
           <Text>{post.caption}</Text>
         </YStack>
 
-        <CommentSection postId={feedId} />
+        <CommentSection comments={post.comments} />
       </KeyboardAwareScrollView>
       <CommentInput
         user={currentUser}

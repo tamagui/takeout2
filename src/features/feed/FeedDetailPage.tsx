@@ -1,6 +1,6 @@
 import { formatDistanceToNow, randomId } from '@take-out/helpers'
 import { router, useParams } from 'one'
-import { memo, useEffect, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import {
   Dialog,
   ScrollView,
@@ -12,13 +12,12 @@ import {
   YStack,
 } from 'tamagui'
 
-import { postById } from '~/data/queries/post'
+import { postDetail } from '~/data/queries/post'
 import { useAuth } from '~/features/auth/client/authClient'
 import { CommentInput } from '~/features/feed/CommentInput'
 import { CommentSection } from '~/features/feed/CommentSection'
 import { PostActionMenu } from '~/features/feed/PostActionMenu'
 import { PostImage } from '~/features/feed/PostImage'
-import { useUser } from '~/features/user/useUser'
 import { HeadInfo } from '~/interface/app/HeadInfo'
 import { Avatar } from '~/interface/avatars/Avatar'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
@@ -32,15 +31,17 @@ import { useQuery, zero } from '~/zero/client'
 export const FeedDetailPage = memo(() => {
   const { feedId = '' } = useParams<{ feedId?: string }>()
   const { user: currentUser } = useAuth()
-  const { user } = useUser()
-  const [post] = useQuery(postById, { postId: feedId })
-  const isOwnProfile = post?.userId === user?.id
+  const [post] = useQuery(postDetail, { postId: feedId })
+  const author = post?.user
+  const isOwnProfile = post?.userId === currentUser?.id
   const media = useMedia()
   const isWideScreen = media.lg
   const [isClosing, setIsClosing] = useState(false)
 
   const [content, setContent] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const commentsScrollRef = useRef<HTMLElement>(null)
+  const pageScrollRef = useRef<HTMLElement>(null)
 
   const handleClose = () => {
     if (isClosing) return
@@ -70,13 +71,24 @@ export const FeedDetailPage = memo(() => {
       })
       setContent('')
       setIsSubmitting(false)
+
+      // smooth scroll to bottom after comment is added
+      setTimeout(() => {
+        const scrollTarget = isWideScreen
+          ? commentsScrollRef.current
+          : pageScrollRef.current
+        if (scrollTarget instanceof HTMLElement) {
+          scrollTarget.style.scrollBehavior = 'smooth'
+          scrollTarget.scrollTop = scrollTarget.scrollHeight - scrollTarget.clientHeight
+        }
+      }, 100)
     } catch (error) {
       console.error('Failed to post comment:', error)
       setIsSubmitting(false)
     }
   }
 
-  if (!post || !user) {
+  if (!post || !author) {
     return null
   }
 
@@ -85,7 +97,7 @@ export const FeedDetailPage = memo(() => {
     ? post.caption.length > 60
       ? `${post.caption.slice(0, 60)}...`
       : post.caption
-    : `Post by @${user.username}`
+    : `Post by @${author.username}`
 
   const openGallery = () => {
     galleryEmitter.emit({
@@ -106,12 +118,12 @@ export const FeedDetailPage = memo(() => {
 
   const postHeader = (
     <XStack gap="$2" pr="$4">
-      <Avatar gradient image={user.image as string} size={32} />
+      <Avatar gradient image={author.image as string} size={32} />
       <XStack flex={1}>
         <YStack flex={1} gap="$2">
           <XStack items="center" gap="$1">
             <SizableText size="$4" fontWeight="600" numberOfLines={1}>
-              {user.username}
+              {author.username}
             </SizableText>
             <DotIcon size={16} color="$color10" />
             <SizableText size="$3" color="$color10">
@@ -192,8 +204,14 @@ export const FeedDetailPage = memo(() => {
                   <YStack pb="$4" borderBottomWidth={1} borderColor="$borderColor">
                     {postHeader}
                   </YStack>
-                  <ScrollView flex={1} pl="$2" pb="$4" bg="transparent">
-                    <CommentSection postId={feedId} />
+                  <ScrollView
+                    ref={commentsScrollRef as any}
+                    flex={1}
+                    pl="$2"
+                    pb="$4"
+                    bg="transparent"
+                  >
+                    <CommentSection comments={post.comments} />
                   </ScrollView>
 
                   <YStack pb="$4" pr="$4">
@@ -210,6 +228,7 @@ export const FeedDetailPage = memo(() => {
 
   return (
     <ScrollView
+      ref={pageScrollRef as any}
       flex={1}
       transition="medium"
       enterStyle={{ opacity: 0, y: 10 }}
@@ -230,7 +249,7 @@ export const FeedDetailPage = memo(() => {
         <Text>{post.caption}</Text>
       </YStack>
 
-      <CommentSection postId={feedId} />
+      <CommentSection comments={post.comments} />
 
       <YStack py="$4">{commentInput}</YStack>
     </ScrollView>

@@ -4,7 +4,6 @@ import { memo, useState } from 'react'
 import { isWeb, SizableText, View, XStack, YStack } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
-import { useUser } from '~/hooks/useUser'
 import { Link } from '~/interface/app/Link'
 import { Avatar } from '~/interface/avatars/Avatar'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
@@ -26,9 +25,9 @@ interface PostCardProps {
 export const PostCard = memo(({ post }: PostCardProps) => {
   const { user } = useAuth()
   const authorId = post.userId
-  const [author] = useUser(authorId)
-  const avatarUrl = author?.image
-  const username = author?.username
+  // user is loaded with the post query, no N+1
+  const avatarUrl = post.user?.image
+  const username = post.user?.username
 
   const [isTruncated, setIsTruncated] = useState<boolean>(false)
   const [aspectRatio, setAspectRatio] = useState<number>(1)

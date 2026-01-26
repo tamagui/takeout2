@@ -26,11 +26,32 @@ const comment = {
 }
 
 const post = {
+  feedPosts: defineQuery(
+    v.object({
+      pageSize: v.number(),
+      cursor: v.optional(
+        v.union([
+          v.object({
+            id: v.string(),
+            createdAt: v.number(),
+          }),
+          v.null(),
+        ])
+      ),
+    }),
+    ({ args }) => Queries.post.feedPosts(args)
+  ),
   postById: defineQuery(
     v.object({
       postId: v.string(),
     }),
     ({ args }) => Queries.post.postById(args)
+  ),
+  postDetail: defineQuery(
+    v.object({
+      postId: v.string(),
+    }),
+    ({ args }) => Queries.post.postDetail(args)
   ),
   postsByUserId: defineQuery(
     v.object({
@@ -55,28 +76,9 @@ const post = {
     }),
     ({ args }) => Queries.post.postsPaginated(args)
   ),
-  postsWithBlocks: defineQuery(
-    v.object({
-      userId: v.optional(v.string()),
-      blockedUserIds: v.array(v.string()),
-      pageSize: v.number(),
-      cursor: v.optional(
-        v.union([
-          v.object({
-            id: v.string(),
-            createdAt: v.number(),
-          }),
-          v.null(),
-        ])
-      ),
-    }),
-    ({ args }) => Queries.post.postsWithBlocks(args)
-  ),
   searchPosts: defineQuery(
     v.object({
       searchText: v.string(),
-      userId: v.optional(v.string()),
-      blockedUserIds: v.array(v.string()),
       pageSize: v.number(),
       cursor: v.optional(
         v.union([

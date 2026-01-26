@@ -1,9 +1,7 @@
 import { useMemo, useState } from 'react'
 import { isWeb, useDebounceValue } from 'tamagui'
 
-import { blockedByUser } from '~/data/queries/block'
-import { postsPaginated, postsWithBlocks, searchPosts } from '~/data/queries/post'
-import { useAuth } from '~/features/auth/client/authClient'
+import { feedPosts, postsPaginated, searchPosts } from '~/data/queries/post'
 import { useQuery } from '~/zero/client'
 
 import type { Post } from '~/data/types'
@@ -11,7 +9,6 @@ import type { Post } from '~/data/types'
 type PostCursor = { id: string; createdAt: number } | null
 
 export function usePostsPaginated(pageSize = 3) {
-  const { user } = useAuth()
   // native: cursor-based infinite scroll
   const [allPostsData, setAllPostsData] = useState<Post[]>([])
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
@@ -20,24 +17,10 @@ export function usePostsPaginated(pageSize = 3) {
   // web: page-based pagination
   const [currentPage, setCurrentPage] = useState(1)
 
-  // query blocked users
-  const [blockedByMe] = useQuery(
-    blockedByUser,
-    { userId: user?.id || 'no-user', limit: 100 },
-    { enabled: Boolean(user?.id) }
-  )
-
-  // get blocked user ids
-  const blockedUserIds = useMemo(() => {
-    return blockedByMe?.map((b) => b.blockedId) || []
-  }, [blockedByMe])
-
-  // query posts with blocking filter
-  const [posts, status] = useQuery(postsWithBlocks, {
-    userId: user?.id,
-    blockedUserIds,
+  // blocking is now handled server-side via notBlockedByViewer permission
+  const [posts, status] = useQuery(feedPosts, {
     pageSize,
-    cursor: isWeb ? null : cursor, // web fetches fresh each page
+    cursor: isWeb ? null : cursor,
   })
 
   // native: accumulate posts for infinite scroll
@@ -74,7 +57,6 @@ export function usePostsPaginated(pageSize = 3) {
       setIsLoadingMore(true)
       const lastPost = posts[posts.length - 1]
       if (lastPost) {
-        // only pass cursor fields, not the full post with relations
         setCursor({ id: lastPost.id, createdAt: lastPost.createdAt })
       }
     }
@@ -113,7 +95,7 @@ export function usePostsPaginated(pageSize = 3) {
   }
 }
 
-// Cursor-based pagination for user posts
+// cursor-based pagination for user posts
 export function usePostsByUserId(userId: string, pageSize = 12) {
   const [allPostsData, setAllPostsData] = useState<Post[]>([])
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
@@ -130,7 +112,7 @@ export function usePostsByUserId(userId: string, pageSize = 12) {
     { enabled: Boolean(userId) }
   )
 
-  // Accumulate posts when new data arrives
+  // accumulate posts when new data arrives
   useMemo(() => {
     if (posts && posts.length > 0) {
       setAllPostsData((prev) => {
@@ -156,7 +138,6 @@ export function usePostsByUserId(userId: string, pageSize = 12) {
 
       const lastPost = posts[posts.length - 1]
       if (lastPost) {
-        // only pass cursor fields, not the full post with relations
         setCursor({ id: lastPost.id, createdAt: lastPost.createdAt })
       }
     }
@@ -182,9 +163,8 @@ export function usePostsByUserId(userId: string, pageSize = 12) {
   }
 }
 
-// Search posts
+// search posts
 export function usePostsSearch(pageSize = 12) {
-  const { user } = useAuth()
   const [searchText, setSearchText] = useState<string>('')
   const debouncedSearchText = useDebounceValue(searchText, 300)
   const [allPostsData, setAllPostsData] = useState<Post[]>([])
@@ -193,25 +173,11 @@ export function usePostsSearch(pageSize = 12) {
   const [cursor, setCursor] = useState<PostCursor>(null)
   const [lastSearchText, setLastSearchText] = useState<string>('')
 
-  // query blocked users
-  const [blockedByMe] = useQuery(
-    blockedByUser,
-    { userId: user?.id || 'no-user', limit: 100 },
-    { enabled: Boolean(user?.id) }
-  )
-
-  // get blocked user ids
-  const blockedUserIds = useMemo(() => {
-    return blockedByMe?.map((b) => b.blockedId) || []
-  }, [blockedByMe])
-
-  // query posts with search filter
+  // blocking is now handled server-side via notBlockedByViewer permission
   const [posts, status] = useQuery(
     searchPosts,
     {
       searchText: debouncedSearchText,
-      userId: user?.id,
-      blockedUserIds,
       pageSize,
       cursor,
     },
@@ -254,7 +220,6 @@ export function usePostsSearch(pageSize = 12) {
       setIsLoadingMore(true)
       const lastPost = posts[posts.length - 1]
       if (lastPost) {
-        // only pass cursor fields, not the full post with relations
         setCursor({ id: lastPost.id, createdAt: lastPost.createdAt })
       }
     }

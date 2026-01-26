@@ -13,42 +13,38 @@ import { Text } from '~/interface/text/Text'
 
 import type { User } from '~/data/types'
 
-const BlockedUserItem = memo(({
-  user,
-  onUnblock,
-}: {
-  user: User
-  onUnblock: (user: User) => void
-}) => {
-  return (
-    <ListItem
-      bg="$background"
-      hoverStyle={{ bg: '$color1' }}
-      pressStyle={{ bg: '$color3' }}
-      px="$4"
-      py="$3"
-    >
-      <Avatar image={user.image} size={44} mr="$3" />
-
-      <YStack gap="$1" flex={1}>
-        <Text size="$3" color="$color10" numberOfLines={1}>
-          @{user.username}
-        </Text>
-      </YStack>
-
-      <ButtonSimple
-        size="small"
-        bg="$color3"
-        onPress={() => onUnblock(user)}
-        rounded="$5"
-        px="$3"
-        py="$2"
+const BlockedUserItem = memo(
+  ({ user, onUnblock }: { user: User; onUnblock: (user: User) => void }) => {
+    return (
+      <ListItem
+        bg="$background"
+        hoverStyle={{ bg: '$color1' }}
+        pressStyle={{ bg: '$color3' }}
+        px="$4"
+        py="$3"
       >
-        Unblock
-      </ButtonSimple>
-    </ListItem>
-  )
-})
+        <Avatar image={user.image} size={44} mr="$3" />
+
+        <YStack gap="$1" flex={1}>
+          <Text size="$3" color="$color10" numberOfLines={1}>
+            @{user.username}
+          </Text>
+        </YStack>
+
+        <ButtonSimple
+          size="small"
+          bg="$color3"
+          onPress={() => onUnblock(user)}
+          rounded="$5"
+          px="$3"
+          py="$2"
+        >
+          Unblock
+        </ButtonSimple>
+      </ListItem>
+    )
+  }
+)
 
 const EmptyState = memo(() => {
   return (

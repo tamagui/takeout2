@@ -9,64 +9,66 @@ import { HeadInfo } from '~/interface/app/HeadInfo'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { SepHeading } from '~/interface/text/Headings'
 
-const SettingRow = memo(({ item, isActive }: { item: SettingItem; isActive: boolean }) => {
-  const Icon = item.icon
+const SettingRow = memo(
+  ({ item, isActive }: { item: SettingItem; isActive: boolean }) => {
+    const Icon = item.icon
 
-  const content = (
-    <SettingRowFrame active={isActive} {...(item.onPress && { onPress: item.onPress })}>
-      {Icon && (
-        <View
-          width={22}
-          height={22}
-          items="center"
-          justify="center"
-          opacity={isActive ? 1 : 0.7}
+    const content = (
+      <SettingRowFrame active={isActive} {...(item.onPress && { onPress: item.onPress })}>
+        {Icon && (
+          <View
+            width={22}
+            height={22}
+            items="center"
+            justify="center"
+            opacity={isActive ? 1 : 0.7}
+          >
+            <Icon size="$6" color={isActive ? '$color12' : '$color11'} />
+          </View>
+        )}
+        <SizableText
+          size="$4"
+          fontWeight={isActive ? '600' : '400'}
+          color={isActive ? '$color12' : '$color11'}
         >
-          <Icon size="$6" color={isActive ? '$color12' : '$color11'} />
-        </View>
-      )}
-      <SizableText
-        size="$4"
-        fontWeight={isActive ? '600' : '400'}
-        color={isActive ? '$color12' : '$color11'}
-      >
-        {item.title}
-      </SizableText>
-    </SettingRowFrame>
-  )
+          {item.title}
+        </SizableText>
+      </SettingRowFrame>
+    )
 
-  if (item.onPress) {
-    return content
-  }
+    if (item.onPress) {
+      return content
+    }
 
-  if (item.href) {
-    if (item.external) {
+    if (item.href) {
+      if (item.external) {
+        return (
+          <SettingRowFrame
+            active={isActive}
+            onPress={() => Linking.openURL(`https://${DOMAIN}${item.href}`)}
+          >
+            {Icon && (
+              <View width={22} height={22} items="center" justify="center" opacity={0.7}>
+                <Icon size="$6" color="$color11" />
+              </View>
+            )}
+            <SizableText size="$4" color="$color11">
+              {item.title}
+            </SizableText>
+          </SettingRowFrame>
+        )
+      }
+
       return (
-        <SettingRowFrame
-          active={isActive}
-          onPress={() => Linking.openURL(`https://${DOMAIN}${item.href}`)}
-        >
-          {Icon && (
-            <View width={22} height={22} items="center" justify="center" opacity={0.7}>
-              <Icon size="$6" color="$color11" />
-            </View>
-          )}
-          <SizableText size="$4" color="$color11">
-            {item.title}
-          </SizableText>
-        </SettingRowFrame>
+        <Link href={item.href} asChild>
+          {content}
+        </Link>
       )
     }
 
-    return (
-      <Link href={item.href} asChild>
-        {content}
-      </Link>
-    )
+    return null
   }
-
-  return null
-})
+)
 
 const LogoAndVersion = memo(() => {
   return (

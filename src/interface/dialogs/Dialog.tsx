@@ -84,9 +84,9 @@ const DialogComponent = ({
             moveOnKeyboardChange
           >
             <Sheet.Overlay
-              bg="$background"
+              bg="$shadow6"
+              opacity={0.8}
               transition="quick"
-              opacity={0.5}
               enterStyle={{ opacity: 0 }}
               exitStyle={{ opacity: 0 }}
             />
@@ -101,7 +101,9 @@ const DialogComponent = ({
               borderBottomRightRadius={0}
               borderBottomLeftRadius={0}
               bg="$color2"
-              boxShadow="0 0 20px $shadow6"
+              borderWidth={0.5}
+              borderColor="$color4"
+              boxShadow="0 0 40px rgba(0,0,0,0.8)"
             >
               <Sheet.ScrollView>
                 <TamaguiDialog.Adapt.Contents />

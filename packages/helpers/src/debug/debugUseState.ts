@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 
-export function debugUseState<T>(
+export function useDebugState<T>(
   useState: [T, React.Dispatch<React.SetStateAction<T>>]
 ): [T, React.Dispatch<React.SetStateAction<T>>] {
   const [state, setState] = useState

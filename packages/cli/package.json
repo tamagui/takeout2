@@ -7,7 +7,7 @@
   "source": "src/index.ts",
   "main": "dist/cjs",
   "module": "dist/esm",
-  "types": "./types/index.d.ts",
+  "types": "./src/index.ts",
   "bin": {
     "takeout": "./cli.mjs",
     "tko": "./cli.mjs"
@@ -22,17 +22,17 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "types": "./types/index.d.ts",
+      "types": "./src/index.ts",
       "import": "./dist/esm/index.mjs",
       "require": "./dist/cjs/index.cjs"
     },
     "./utils/*": {
-      "types": "./types/utils/*.d.ts",
+      "types": "./src/utils/*.ts",
       "import": "./dist/esm/utils/*.mjs",
       "require": "./dist/cjs/utils/*.cjs"
     },
     "./constants/*": {
-      "types": "./types/constants/*.d.ts",
+      "types": "./src/constants/*.ts",
       "import": "./dist/esm/constants/*.mjs",
       "require": "./dist/cjs/constants/*.cjs"
     },
@@ -64,7 +64,7 @@
     }
   },
   "devDependencies": {
-    "@tamagui/build": "^2.0.0-1769435599888",
+    "@tamagui/build": "^2.0.0-1769439083296",
     "@types/node": "24.0.3",
     "bun-types": "latest",
     "oxfmt": "^0.16.0",

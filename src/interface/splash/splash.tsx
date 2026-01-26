@@ -29,6 +29,7 @@ export const Splash = memo(({ onAnimationEnd, isReady }: SplashProps) => {
     }
   })
 
+  /* oxlint-disable react-hooks/exhaustive-deps -- shared values are stable refs */
   useEffect(() => {
     if (isReady) {
       rotateY.value = withDelay(500, withSpring(360, { damping: 12, stiffness: 80 }))
@@ -40,7 +41,8 @@ export const Splash = memo(({ onAnimationEnd, isReady }: SplashProps) => {
     setTimeout(() => {
       onAnimationEnd()
     }, 1850)
-  }, [isReady])
+  }, [isReady, onAnimationEnd])
+  /* oxlint-enable react-hooks/exhaustive-deps */
 
   return (
     <Animated.View

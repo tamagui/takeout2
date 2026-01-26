@@ -88,7 +88,7 @@ export const TooltipSimple: React.FC<TooltipSimpleProps> = memo((props) => {
     if (isHoveredRef.current) {
       globalTooltip.emit(props)
     }
-  }, [label])
+  }, [label, props])
 
   return (
     <Tooltip.Trigger

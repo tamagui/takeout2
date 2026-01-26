@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Accordion, Paragraph, Square, View, XStack, YStack } from 'tamagui'
 
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
@@ -24,12 +24,15 @@ export const DocsMenuContents = () => {
   >([])
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const itemsGrouped: Record<string, Item[]> = {}
-  for (const item of activeItems) {
-    const key = item.section.title || ''
-    itemsGrouped[key] ||= []
-    itemsGrouped[key].push(item)
-  }
+  const itemsGrouped = useMemo(() => {
+    const grouped: Record<string, Item[]> = {}
+    for (const item of activeItems) {
+      const key = item.section.title || ''
+      grouped[key] ||= []
+      grouped[key].push(item)
+    }
+    return grouped
+  }, [activeItems])
 
   const getAllSections = () =>
     Object.entries(itemsGrouped).map(([title]) => title || 'base')
@@ -45,7 +48,7 @@ export const DocsMenuContents = () => {
       const newSections = [...new Set([...prev, ...activeSections])]
       return newSections
     })
-  }, [currentPath])
+  }, [currentPath, itemsGrouped])
 
   // get only visible items (items in sections that are open or have no title)
   const visibleItems = activeItems.filter((item) => {

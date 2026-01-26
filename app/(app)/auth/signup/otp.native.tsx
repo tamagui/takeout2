@@ -91,7 +91,7 @@ export const OtpPage = () => {
 
   useEffect(() => {
     timer.start(30, true)
-  }, [timer.start])
+  }, [timer])
 
   useEffect(() => {
     if (otpCode.length === 6) {

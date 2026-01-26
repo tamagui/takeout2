@@ -7,7 +7,7 @@
   "source": "src/index.ts",
   "main": "dist/cjs",
   "module": "dist/esm",
-  "types": "./types/index.d.ts",
+  "types": "./src/index.ts",
   "files": [
     "src",
     "types",
@@ -28,7 +28,7 @@
         "import": "./dist/esm/index.native.js",
         "require": "./dist/cjs/index.native.js"
       },
-      "types": "./types/index.d.ts",
+      "types": "./src/index.ts",
       "import": "./dist/esm/index.mjs",
       "require": "./dist/cjs/index.cjs",
       "default": "./dist/esm/index.mjs"
@@ -38,7 +38,7 @@
         "import": "./dist/esm/client.native.js",
         "require": "./dist/cjs/client.native.js"
       },
-      "types": "./types/client.d.ts",
+      "types": "./src/client.ts",
       "import": "./dist/esm/client.mjs",
       "require": "./dist/cjs/client.cjs",
       "default": "./dist/esm/client.mjs"
@@ -52,7 +52,7 @@
     "react": "*"
   },
   "devDependencies": {
-    "@tamagui/build": "^2.0.0-1769435599888",
+    "@tamagui/build": "^2.0.0-1769439083296",
     "@types/node": "24.0.3",
     "@types/react": "^19.0.8",
     "oxfmt": "^0.16.0",

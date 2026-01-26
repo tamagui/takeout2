@@ -6,7 +6,7 @@
   "main": "dist/cjs",
   "module": "dist/esm",
   "type": "module",
-  "types": "./types/index.d.ts",
+  "types": "./src/index.ts",
   "bin": {
     "over-zero": "./cli.cjs"
   },
@@ -34,13 +34,13 @@
         "import": "./dist/esm/index.native.js",
         "require": "./dist/cjs/index.native.js"
       },
-      "types": "./types/index.d.ts",
+      "types": "./src/index.ts",
       "import": "./dist/esm/index.mjs",
       "require": "./dist/cjs/index.cjs",
       "default": "./dist/cjs/index.native.js"
     },
     "./server": {
-      "types": "./types/server.d.ts",
+      "types": "./src/server.ts",
       "import": "./dist/esm/server.mjs",
       "require": "./dist/cjs/server.cjs"
     }
@@ -61,7 +61,7 @@
     "react-native": "*"
   },
   "devDependencies": {
-    "@tamagui/build": "^2.0.0-1769435599888",
+    "@tamagui/build": "^2.0.0-1769439083296",
     "@typeschema/valibot": "^0.14.0",
     "react": "*",
     "react-native": "*"

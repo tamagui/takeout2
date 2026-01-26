@@ -114,7 +114,6 @@ export const ProfileEditPage = () => {
                   value={name}
                   onChangeText={handleNameChange}
                   autoCapitalize="words"
-                  // @ts-expect-error canary regression
                   autoCorrect="off"
                 />
               </YStack>
@@ -136,7 +135,6 @@ export const ProfileEditPage = () => {
                     value={username}
                     onChangeText={handleUsernameChange}
                     autoCapitalize="none"
-                    // @ts-expect-error canary regression
                     autoCorrect="off"
                     pr="$10"
                   />

@@ -149,8 +149,8 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
               </Menu.ItemIcon>
             </Menu.Item>
           )}
-          <Menu.Separator />
-          // TODO: Just a tmp fix—the SubMenu on native doesn’t work inside a fragment
+
+          {/* TODO: Just a tmp fix—the SubMenu on native doesn’t work inside a fragment */}
           {!isOwnPost && (
             <Menu.Sub placement={isTouchDevice ? 'bottom' : 'right-start'}>
               <Menu.SubTrigger

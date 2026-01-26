@@ -1,6 +1,14 @@
-import type { Block, Post, Report, User, UserState } from './generated/types'
+import type { Block, Comment, Post, Report, User, UserState } from './generated/types'
 
 export type * from './generated/types'
+
+export type CommentWithUser = Comment & {
+  user?: User
+}
+
+export type PostWithLatestComment = Post & {
+  comments?: readonly CommentWithUser[]
+}
 
 export type PostWithUser = Post & {
   user?: User

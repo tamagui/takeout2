@@ -1,8 +1,6 @@
 import { formatDistanceToNow } from '@take-out/helpers'
-import { BlurView } from 'expo-blur'
 import { router } from 'one'
 import { memo, useState } from 'react'
-import { StyleSheet } from 'react-native'
 import Animated, { SharedTransition } from 'react-native-reanimated'
 import { SizableText, XStack, YStack } from 'tamagui'
 
@@ -16,13 +14,14 @@ import { FastSquircleView } from '~/interface/view/FastSquircleView'
 import { useIsDark } from '../theme/useIsDark'
 import { AvatarWithMenu } from './AvatarWithMenu'
 import { PostActionMenu } from './PostActionMenu'
+import { PostCommentPreview } from './PostCommentPreview'
 
-import type { Post } from '~/data/types'
+import type { PostWithLatestComment } from '~/data/types'
 
 const transition = SharedTransition.springify().damping(15)
 
 interface PostCardProps {
-  post: Post
+  post: PostWithLatestComment
 }
 
 export const PostCard = memo(({ post }: PostCardProps) => {
@@ -104,7 +103,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
         </FastSquircleView>
       </Pressable>
 
-      <XStack items="center" gap="$4" p="$2">
+      <XStack items="center" gap="$3" p="$2">
         <Link href={`/home/feed/post/${post.id}?username=${username}`}>
           <XStack items="center" gap="$2">
             <ChatCircleDotsIcon size={26} color="$color" />
@@ -115,6 +114,11 @@ export const PostCard = memo(({ post }: PostCardProps) => {
             )}
           </XStack>
         </Link>
+        {post.comments?.[0] && (
+          <Link href={`/home/feed/post/${post.id}?username=${username}`} flex={1}>
+            <PostCommentPreview comment={post.comments[0]} />
+          </Link>
+        )}
       </XStack>
     </FastSquircleView>
   )

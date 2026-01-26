@@ -66,7 +66,10 @@ const CommandBox = styled(XStack, {
   py: '$3',
   bg: '$color3',
   items: 'center',
+  flex: 1,
+  mr: -50,
   gap: '$3',
+  overflow: 'hidden',
   cursor: 'pointer',
   borderWidth: 1,
   borderColor: '$color5',
@@ -356,7 +359,7 @@ function CopyCommand() {
       <Paragraph fontFamily="$mono" fontSize={14} color="$color11">
         $
       </Paragraph>
-      <Paragraph fontFamily="$mono" fontSize={14} color="$color12">
+      <Paragraph flex={1} ellipsis fontFamily="$mono" fontSize={14} color="$color12">
         {INSTALL_COMMAND}
       </Paragraph>
       {copied ? (
@@ -401,7 +404,8 @@ export function HeroSection() {
         >
           <YStack gap="$1">
             <HeroTitle>
-              The startup starter that <em>actually</em> gives you an{' '}
+              The <Span $maxXL={{ display: 'none' }}>startup</Span> starter that{' '}
+              <em>actually</em> gives you an{' '}
               <HighlightText render="span">edge</HighlightText>.
             </HeroTitle>
           </YStack>
@@ -410,19 +414,19 @@ export function HeroSection() {
             <Strong fontWeight="600" color="$color12">
               Most starter kits suck
             </Strong>
-            . Takeout may not: novel tech, battle tested, AI&nbsp;harnessing, scalable
-            IaC, flows, and <Link href="/docs/changelog">updates</Link> — it's&nbsp;what
-            we use for ourselves and <Link href="https://addeven.com">our clients</Link>.
+            . Takeout may not: novel tech, prod-tested, skills + MCPs, scalable IaC, and{' '}
+            <Link href="/docs/changelog">updated often</Link> — it's&nbsp;what we use for
+            ourselves and <Link href="https://addeven.com">our clients</Link>.
             <br />
             <br />
             It's the{' '}
             <Strong fontWeight="600" color="$color11">
               fast way to build a startup
-            </Strong>
-            , turning React Native + web into one smooth, simple stack.
+            </Strong>{' '}
+            with React Native and web.
           </HeroSubtitle>
 
-          <XStack gap="$3" mt="$2" flexWrap="wrap" items="center">
+          <XStack gap="$3" mt="$2" items="center">
             <Link href="/docs/introduction">
               <ButtonSimple theme="accent" size="large" icon={ArrowRightIcon} iconAfter>
                 Docs

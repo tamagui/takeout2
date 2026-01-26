@@ -62,6 +62,12 @@ export const postsWithBlocks = (props: {
     .orderBy('createdAt', 'desc')
     .orderBy('id', 'desc')
     .limit(props.pageSize)
+    .related('comments', (q) =>
+      q
+        .orderBy('createdAt', 'desc')
+        .limit(1)
+        .related('user', (u) => u.one())
+    )
 
   if (props.cursor) {
     query = query.start(props.cursor)

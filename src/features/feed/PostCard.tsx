@@ -14,12 +14,13 @@ import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
 import { Text } from '~/interface/text/Text'
 
 import { PostActionMenu } from './PostActionMenu'
+import { PostCommentPreview } from './PostCommentPreview'
 import { PostImage } from './PostImage'
 
-import type { Post } from '~/data/types'
+import type { PostWithLatestComment } from '~/data/types'
 
 interface PostCardProps {
-  post: Post
+  post: PostWithLatestComment
 }
 
 export const PostCard = memo(({ post }: PostCardProps) => {
@@ -129,7 +130,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
               />
             </Pressable>
           </View>
-          <XStack pt="$2">
+          <XStack pt="$2" items="center" gap="$2">
             <Link href={`/home/feed/post/${post.id}?username=${username}`}>
               <ButtonSimple
                 variant="transparent"
@@ -143,6 +144,11 @@ export const PostCard = memo(({ post }: PostCardProps) => {
                 )}
               </ButtonSimple>
             </Link>
+            {post.comments?.[0] && (
+              <Link href={`/home/feed/post/${post.id}?username=${username}`} flex={1}>
+                <PostCommentPreview comment={post.comments[0]} />
+              </Link>
+            )}
           </XStack>
         </View>
       </View>

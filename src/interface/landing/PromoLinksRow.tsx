@@ -45,7 +45,7 @@ export function PromoLinksRow() {
 
   return (
     <TooltipGroup delay={tooltipDelay}>
-      <Tooltip scope="promo-tooltip" offset={12} placement="bottom">
+      <Tooltip scope="promo-tooltip" offset={20} placement="bottom">
         <XStack gap="$3" items="center" justify="center" z={1000}>
           <Tooltip.Trigger
             scope="promo-tooltip"

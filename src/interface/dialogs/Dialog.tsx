@@ -93,8 +93,19 @@ const DialogComponent = ({
             <YStack items="center">
               <Sheet.Handle bg="gray" width={60} height={5} />
             </YStack>
-            <Sheet.Frame p="$4" pb={insets.bottom} gap="$4" rounded="$10" bg="$color2">
-              <TamaguiDialog.Adapt.Contents />
+            <Sheet.Frame
+              p="$4"
+              pb={insets.bottom}
+              gap="$4"
+              rounded="$10"
+              borderBottomRightRadius={0}
+              borderBottomLeftRadius={0}
+              bg="$color2"
+              boxShadow="0 0 20px $shadow6"
+            >
+              <Sheet.ScrollView>
+                <TamaguiDialog.Adapt.Contents />
+              </Sheet.ScrollView>
             </Sheet.Frame>
           </Sheet>
         </TamaguiDialog.Adapt>

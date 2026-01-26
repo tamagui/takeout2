@@ -146,13 +146,13 @@ export const DialogCreatePost = () => {
           maxLength={6000}
           rows={3}
           size="$4"
-          placeholder="What's on your mind2?"
+          placeholder="What's on your mind?"
           value={caption}
           onChangeText={(val) => setCaption(val)}
           autoFocus={isWeb}
           rounded="$6"
           enterKeyHint="done"
-          blurOnSubmit
+          submitBehavior="blurAndSubmit"
           data-testid="create-post-caption"
         />
 
@@ -247,7 +247,7 @@ export const DialogCreatePost = () => {
       </YStack>
 
       <Dialog.Footer>
-        <ButtonSimple glass onPress={handleClose}>
+        <ButtonSimple theme="accent" onPress={handleClose}>
           Cancel
         </ButtonSimple>
         <ButtonSimple
@@ -272,14 +272,16 @@ export const DialogCreatePost = () => {
       }}
     >
       {!isWeb ? (
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="interactive"
-        >
-          {content}
-        </ScrollView>
+        <>{content}</>
       ) : (
+        // DEMO
+        // <ScrollView
+        //   showsVerticalScrollIndicator={false}
+        //   keyboardShouldPersistTaps="handled"
+        //   keyboardDismissMode="interactive"
+        // >
+        //   {content}
+        // </ScrollView>
         <>
           <input
             ref={fileInputRef}

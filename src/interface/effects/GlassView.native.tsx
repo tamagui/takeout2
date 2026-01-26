@@ -23,6 +23,7 @@ export const GlassView = memo(
   }: GlassViewProps) => {
     const isDark = useIsDark()
     const tint = tintProp || (isDark ? 'dark' : 'light')
+
     // use expo-glass-effect for iOS 26+
     if (isLiquidGlassAvailable() && !isFallback) {
       return (

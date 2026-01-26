@@ -388,7 +388,17 @@ export function HeroSection() {
         $md={{ flexWrap: 'nowrap', gap: '$12' }}
       >
         {/* left side - hero content */}
-        <YStack gap="$5" flex={1} minW={300} maxW={520} items="flex-start">
+        <YStack
+          gap="$5"
+          flex={1}
+          minW={300}
+          maxW={520}
+          items="flex-start"
+          scale={0.9}
+          $heightLG={{
+            scale: 1,
+          }}
+        >
           <YStack gap="$1">
             <HeroTitle>
               The startup starter that <em>actually</em> gives you an{' '}

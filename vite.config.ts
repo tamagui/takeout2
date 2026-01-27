@@ -135,8 +135,8 @@ export default {
 
       web: {
         experimental_scriptLoading: 'after-lcp-aggressive',
-        defaultRenderMode: 'spa',
         inlineLayoutCSS: true,
+        defaultRenderMode: 'spa',
         sitemap: {
           priority: 0.5,
           changefreq: 'weekly',

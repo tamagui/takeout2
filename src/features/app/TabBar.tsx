@@ -359,7 +359,7 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
                 {
                   overflow: 'hidden',
                   backgroundColor: 'transparent',
-                  boxShadow: '0 20px 30px rgba(0,0,0,0.5)',
+                  boxShadow: '0 20px 30px rgba(0,0,0,0.35)',
                 },
                 animatedFloatingBarStyle,
                 animatedTabBarStyle,

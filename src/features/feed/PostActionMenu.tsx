@@ -85,7 +85,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
     if (!post || !isAdmin) return
 
     try {
-      await zero.mutate.post.update({
+      zero.mutate.post.update({
         id: post.id,
         hiddenByAdmin: true,
       })

@@ -390,7 +390,7 @@ function FeatureCardSquare({
         bg="$color5"
         rounded={12}
       >
-        <Icon size={24} color="$color10" />
+        <Icon size={24} color="$color11" />
       </YStack>
       <SizableText
         size="$2"

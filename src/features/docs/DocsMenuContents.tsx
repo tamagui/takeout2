@@ -40,7 +40,7 @@ export const DocsMenuContents = () => {
   const [openSections, setOpenSections] = useState<string[]>(getAllSections)
 
   // sync open sections when currentPath changes to ensure active section is open
-  // TODO BUG
+  // TODO BUG max re-render needs to be more conservative out lint fix ruls of hooks broke
   // useEffect(() => {
   //   const activeSections = Object.entries(itemsGrouped)
   //     .filter(([_, items]) => items.some((item) => currentPath === item.page.route))

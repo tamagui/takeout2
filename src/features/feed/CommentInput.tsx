@@ -7,9 +7,23 @@ import { TextArea } from '~/interface/forms/TextArea'
 import { PaperPlaneTiltIcon } from '~/interface/icons/phosphor/PaperPlaneTiltIcon'
 import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter'
 
+import type { ReactNode } from 'react'
 import type { User } from 'better-auth'
 
 type AppUser = User & { role?: 'admin' }
+
+function MaybeKeyboardStickyFooter({
+  disabled,
+  children,
+}: {
+  disabled: boolean
+  children: ReactNode
+}) {
+  if (disabled) {
+    return <>{children}</>
+  }
+  return <KeyboardStickyFooter openedOffset={-10}>{children}</KeyboardStickyFooter>
+}
 
 interface CommentInputProps {
   user: AppUser | null
@@ -17,6 +31,8 @@ interface CommentInputProps {
   setContent: (value: string) => void
   handleSubmit: () => void
   isSubmitting: boolean
+  disableStickyFooter?: boolean
+  keepKeyboardOpen?: boolean
 }
 
 export function CommentInput({
@@ -25,12 +41,16 @@ export function CommentInput({
   setContent,
   handleSubmit,
   isSubmitting,
+  disableStickyFooter = false,
+  keepKeyboardOpen = false,
 }: CommentInputProps) {
   const hasContent = content.trim().length > 0
 
   const onSubmit = () => {
     handleSubmit()
-    Keyboard.dismiss()
+    if (!keepKeyboardOpen) {
+      Keyboard.dismiss()
+    }
   }
 
   if (!user) return null
@@ -73,8 +93,8 @@ export function CommentInput({
       )}
 
       {process.env.VITE_NATIVE && (
-        <KeyboardStickyFooter openedOffset={-10}>
-          <XStack items="center" gap="$2" px="$3" py="$2" overflow="hidden">
+        <MaybeKeyboardStickyFooter disabled={disableStickyFooter}>
+          <XStack items="center" gap="$2" px="$3" py="$2" overflow="hidden" bg="$background">
             <Input
               unstyled
               flex={1}
@@ -109,7 +129,7 @@ export function CommentInput({
               </ButtonSimple>
             </YStack>
           </XStack>
-        </KeyboardStickyFooter>
+        </MaybeKeyboardStickyFooter>
       )}
     </>
   )

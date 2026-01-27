@@ -30,7 +30,10 @@ export const PostCard = memo(({ post }: PostCardProps) => {
   const username = post.user?.username
 
   const [isTruncated, setIsTruncated] = useState<boolean>(false)
-  const [aspectRatio, setAspectRatio] = useState<number>(1)
+  const storedAspectRatio = post.imageWidth && post.imageHeight
+    ? post.imageWidth / post.imageHeight
+    : undefined
+  const [aspectRatio, setAspectRatio] = useState<number>(storedAspectRatio ?? 1.5)
   const isOwnProfile = authorId === user?.id
 
   return (
@@ -107,7 +110,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
                 image={post.image}
                 caption={post.caption}
                 aspectRatio={aspectRatio}
-                onAspectRatioChange={setAspectRatio}
+                onAspectRatioChange={storedAspectRatio ? undefined : setAspectRatio}
               />
             </Pressable>
           </View>

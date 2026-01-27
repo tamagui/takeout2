@@ -10,7 +10,6 @@ import { Pressable } from '~/interface/buttons/Pressable'
 import { ChatCircleDotsIcon } from '~/interface/icons/phosphor/ChatCircleDotsIcon'
 import { FastSquircleView } from '~/interface/view/FastSquircleView'
 
-import { useIsDark } from '../theme/useIsDark'
 import { AvatarWithMenu } from './AvatarWithMenu'
 import { PostActionMenu } from './PostActionMenu'
 import { PostCommentPreview } from './PostCommentPreview'
@@ -24,14 +23,16 @@ interface PostCardProps {
 }
 
 export const PostCard = memo(({ post }: PostCardProps) => {
-  const isDark = useIsDark()
   const { user } = useAuth()
   const authorId = post.userId
   // user is loaded with the post query, no N+1
   const avatarUrl = post.user?.image
   const username = post.user?.username
 
-  const [aspectRatio, setAspectRatio] = useState<number>(1)
+  const storedAspectRatio = post.imageWidth && post.imageHeight
+    ? post.imageWidth / post.imageHeight
+    : undefined
+  const [aspectRatio, setAspectRatio] = useState<number>(storedAspectRatio ?? 1.5)
   const isOwnProfile = authorId === user?.id
 
   const handleImagePress = () => {
@@ -92,7 +93,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
             sharedTransitionTag={`post-image-${post.id}`}
             sharedTransitionStyle={transition}
             resizeMode="cover"
-            onLoad={(e) => {
+            onLoad={storedAspectRatio ? undefined : (e) => {
               const { width, height } = e.nativeEvent.source
               if (width && height) {
                 setAspectRatio(width / height)

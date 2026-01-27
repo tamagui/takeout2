@@ -1,24 +1,22 @@
 import { useTimer } from '@take-out/helpers'
 import { useParams } from 'one'
 import { useEffect, useState } from 'react'
-import { SizableText, useEvent, YStack } from 'tamagui'
+import { Circle, SizableText, useEvent, YStack } from 'tamagui'
 
 import { otpLogin, validateLoginOtpCode } from '~/features/auth/client/otpLogin'
 import { OtpInput } from '~/features/auth/ui/OtpInput'
+import { ButtonAction } from '~/interface/buttons/ButtonAction'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { showError } from '~/interface/dialogs/actions'
-import { isSmallScreen } from '~/interface/dimensions'
 import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
-import { dismissKeyboard } from '~/interface/keyboard/dismissKeyboard'
-import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter'
-import { StepPageLayout } from '~/interface/pages/StepPageLayout'
+import { H2 } from '~/interface/text/Headings'
 
 export const OtpPage = () => {
-  const { start: startTimer, pause: pauseTimer, count: timerCount } = useTimer()
+  const timer = useTimer()
   const params = useParams<{ method?: 'phone' | 'email'; value?: string }>()
-  const [otpCode, setOtpCode] = useState('')
-  const [isError, setIsError] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [otpCode, setOtpCode] = useState<string>('')
+  const [isError, setIsError] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
   const [otpKey, setOtpKey] = useState(0)
 
   const isPhone = params.method === 'phone'
@@ -43,7 +41,7 @@ export const OtpPage = () => {
       }
 
       setIsError(!!error)
-      startTimer(30, true)
+      timer.start(30, true)
     } finally {
       setLoading(false)
     }
@@ -69,7 +67,6 @@ export const OtpPage = () => {
 
       if (error) {
         setIsError(true)
-        dismissKeyboard()
         showError(error)
         setOtpCode('')
         setOtpKey(Math.random())
@@ -77,7 +74,7 @@ export const OtpPage = () => {
         return
       }
 
-      pauseTimer()
+      timer.pause()
     } catch (err) {
       console.error(err)
     } finally {
@@ -86,8 +83,8 @@ export const OtpPage = () => {
   })
 
   useEffect(() => {
-    startTimer(30, true)
-  }, [startTimer])
+    timer.start(30, true)
+  }, [timer])
 
   useEffect(() => {
     if (otpCode.length === 6) {
@@ -96,49 +93,71 @@ export const OtpPage = () => {
   }, [handleContinue, otpCode])
 
   return (
-    <StepPageLayout
-      title="Enter Code"
-      Icon={PasswordIcon}
-      disableScroll={!isSmallScreen}
-      description="We sent a verification code to your email"
-      descriptionSecondLine={displayValue}
-      bottom={
-        <KeyboardStickyFooter openedOffset={-10}>
-          <ButtonSimple
+    <YStack
+      flex={1}
+      flexBasis="auto"
+      gap="$5"
+      p="$6"
+      width="100%"
+      height="100%"
+      items="center"
+      transition="medium"
+      enterStyle={{ opacity: 0, y: 10 }}
+      exitStyle={{ opacity: 0, y: -10 }}
+    >
+      <YStack flex={1} flexBasis="auto" gap="$4" width="100%">
+        <YStack gap="$4" width="100%" items="center">
+          <Circle size={52} bg="$color2" borderWidth={0.5} borderColor="$color3">
+            <PasswordIcon size={28} color="$color11" />
+          </Circle>
+
+          <YStack gap="$2" items="center">
+            <H2 text="center">Enter Code</H2>
+            <SizableText size="$3" color="$color10" text="center">
+              {isPhone
+                ? 'We sent a verification code to your phone number'
+                : 'We sent a verification code to your email'}
+            </SizableText>
+            <SizableText size="$3" color="$color11" fontWeight="600">
+              {displayValue}
+            </SizableText>
+          </YStack>
+        </YStack>
+
+        <YStack items="center" gap="$6" width="100%">
+          <OtpInput
+            data-testid="otp-input"
+            key={otpKey}
+            autoFocus
+            otpCount={6}
+            onCodeChanged={handleCodeChanged}
+            defaultValue={otpCode}
+            isError={isError}
+          />
+
+          {timer.count > 0 ? (
+            <SizableText size="$4" color="$color11">
+              Resend Code in ({timer.count})
+            </SizableText>
+          ) : (
+            <ButtonSimple data-testid="resend-otp-button" onPress={handleResendOtp}>
+              Resend
+            </ButtonSimple>
+          )}
+
+          <ButtonAction
             theme="accent"
-            glass
             data-testid="verify-otp-button"
             size="large"
+            width="100%"
             disabled={isDisabled}
             onPress={handleContinue}
             opacity={isDisabled ? 0.5 : 1}
           >
             {loading ? 'Verifying...' : 'Next'}
-          </ButtonSimple>
-        </KeyboardStickyFooter>
-      }
-    >
-      <YStack items="center">
-        <OtpInput
-          data-testid="otp-input"
-          key={otpKey}
-          autoFocus
-          otpCount={6}
-          onCodeChanged={handleCodeChanged}
-          defaultValue={otpCode}
-          isError={isError}
-        />
-
-        {timerCount > 0 ? (
-          <SizableText size="$4" color="$color11">
-            Resend Code in ({timerCount})
-          </SizableText>
-        ) : (
-          <ButtonSimple data-testid="resend-otp-button" onPress={handleResendOtp}>
-            Resend
-          </ButtonSimple>
-        )}
+          </ButtonAction>
+        </YStack>
       </YStack>
-    </StepPageLayout>
+    </YStack>
   )
 }

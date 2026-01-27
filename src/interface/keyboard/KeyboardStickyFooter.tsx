@@ -12,7 +12,7 @@ export interface KeyboardStickyFooterProps {
 
 export const KeyboardStickyFooter = ({ children, offset }: KeyboardStickyFooterProps) => {
   return (
-    <YStack maxW={500} self="center" pt="$8" pb={offset}>
+    <YStack maxW={500} pt="$8" pb={offset}>
       {children}
     </YStack>
   )

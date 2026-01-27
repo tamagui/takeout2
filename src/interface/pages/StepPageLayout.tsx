@@ -71,7 +71,12 @@ export const StepPageLayout = ({
           </XStack>
         )}
 
-        <YStack gap="$4" mt="$2">
+        <YStack
+          gap="$4"
+          mt="$2"
+          items="center"
+          $platform-native={{ items: 'flex-start' }}
+        >
           {isWeb && Icon && (
             <Circle
               size={52}

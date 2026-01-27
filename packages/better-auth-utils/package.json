@@ -32,16 +32,6 @@
       "import": "./dist/esm/index.mjs",
       "require": "./dist/cjs/index.cjs",
       "default": "./dist/esm/index.mjs"
-    },
-    "./client": {
-      "react-native": {
-        "import": "./dist/esm/client.native.js",
-        "require": "./dist/cjs/client.native.js"
-      },
-      "types": "./src/client.ts",
-      "import": "./dist/esm/client.mjs",
-      "require": "./dist/cjs/client.cjs",
-      "default": "./dist/esm/client.mjs"
     }
   },
   "dependencies": {

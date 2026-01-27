@@ -40,15 +40,16 @@ export const DocsMenuContents = () => {
   const [openSections, setOpenSections] = useState<string[]>(getAllSections)
 
   // sync open sections when currentPath changes to ensure active section is open
-  useEffect(() => {
-    const activeSections = Object.entries(itemsGrouped)
-      .filter(([_, items]) => items.some((item) => currentPath === item.page.route))
-      .map(([title]) => title || 'base')
-    setOpenSections((prev) => {
-      const newSections = [...new Set([...prev, ...activeSections])]
-      return newSections
-    })
-  }, [currentPath, itemsGrouped])
+  // TODO BUG
+  // useEffect(() => {
+  //   const activeSections = Object.entries(itemsGrouped)
+  //     .filter(([_, items]) => items.some((item) => currentPath === item.page.route))
+  //     .map(([title]) => title || 'base')
+  //   setOpenSections((prev) => {
+  //     const newSections = [...new Set([...prev, ...activeSections])]
+  //     return newSections
+  //   })
+  // }, [currentPath, itemsGrouped])
 
   // get only visible items (items in sections that are open or have no title)
   const visibleItems = activeItems.filter((item) => {

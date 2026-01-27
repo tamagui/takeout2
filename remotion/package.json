@@ -1,0 +1,25 @@
+{
+  "name": "takeout-launch-video",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts LaunchIntro out/launch-intro.mp4",
+    "preview": "remotion preview src/index.ts"
+  },
+  "dependencies": {
+    "@remotion/fonts": "4.0.410",
+    "@remotion/transitions": "4.0.410",
+    "@remotion/zod-types": "4.0.410",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "remotion": "4.0.410",
+    "zod": "3.22.3"
+  },
+  "devDependencies": {
+    "@remotion/cli": "4.0.410",
+    "@types/react": "~19.1.10",
+    "typescript": "^5.9.3"
+  }
+}

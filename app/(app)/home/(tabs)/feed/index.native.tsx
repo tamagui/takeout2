@@ -15,7 +15,9 @@ import { PostCard } from '~/features/feed/PostCard'
 import { usePostsPaginated } from '~/features/feed/usePosts'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { AnimatedHomeHeader } from '~/interface/headers/AnimatedHomeHeader'
+import { HelloTakeout } from '~/interface/hello-takeout/HelloTakeout'
 import { ArrowUpIcon } from '~/interface/icons/phosphor/ArrowUpIcon'
+import { LiquidGlassTakeout } from '~/interface/liquid-glass/LiquidGlassTakeout'
 import { PageLayout } from '~/interface/pages/PageLayout'
 import { HomeShimmer } from '~/interface/shimmer/HomeShimmer'
 
@@ -30,6 +32,7 @@ const AnimatedLegendList = Animated.createAnimatedComponent(
 
 export const HomePage = memo(() => {
   const listRef = useRef<LegendListRef>(null)
+  const [showIntro, setShowIntro] = useState(true)
   const { posts, loadMore, isLoading, hasMore, refresh } = usePostsPaginated()
   const [showScrollToTop, setShowScrollToTop] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
@@ -96,81 +99,10 @@ export const HomePage = memo(() => {
   }, [hasMore, posts.length])
 
   return (
-    <PageLayout bottomOffset={8}>
-      <AnimatedHomeHeader scrollY={scrollY} />
-      <AnimatePresence>
-        {isLoading && (
-          <YStack
-            key="studio-shimmer"
-            transition="200ms"
-            exitStyle={{ opacity: 0 }}
-            opacity={1}
-            bg="$background"
-            z={1000}
-            position="absolute"
-            t={headerHeight + insets.top}
-            l={0}
-            r={0}
-            b={0}
-          >
-            <HomeShimmer />
-          </YStack>
-        )}
-      </AnimatePresence>
-
-      <View flex={1} px="$2">
-        <AnimatedLegendList
-          ref={listRef}
-          data={posts}
-          renderItem={renderItem}
-          keyExtractor={keyExtractor}
-          ListEmptyComponent={renderEmpty}
-          ListFooterComponent={renderFooter}
-          onEndReached={loadMore}
-          onScroll={scrollHandler}
-          scrollEventThrottle={16}
-          onEndReachedThreshold={0.5}
-          // TODO: padding top here causes the content pushed sometimes
-          contentContainerStyle={{ paddingTop: 44 + insets.top, paddingBottom: 100 }}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={handleRefresh}
-              tintColor="white"
-              colors={['white']}
-              progressViewOffset={44 + insets.top}
-            />
-          }
-        />
-
-        {/* scroll to top button */}
-        <AnimatePresence>
-          {showScrollToTop && (
-            <YStack
-              key="scroll-to-top"
-              transition="200ms"
-              position="absolute"
-              b={88}
-              r={32}
-              z={1000}
-              enterStyle={{ scale: 0.5, y: 30 }}
-              exitStyle={{ scale: 0.5, y: 30 }}
-            >
-              <ButtonSimple
-                glass
-                size="large"
-                circular
-                onPress={() =>
-                  listRef.current?.scrollToOffset({ offset: 0, animated: true })
-                }
-              >
-                <ArrowUpIcon size={20} color="white" />
-              </ButtonSimple>
-            </YStack>
-          )}
-        </AnimatePresence>
-      </View>
-    </PageLayout>
+    <View flex={1} bg="white">
+      {/* <HelloTakeout /> */}
+      {/* <LiquidGlassTakeout /> */}
+      <LiquidGlassTakeout onComplete={() => setShowIntro(false)} duration={4000} />
+    </View>
   )
 })

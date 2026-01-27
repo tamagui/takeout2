@@ -85,7 +85,6 @@ export default {
     plugins: [
       'vxrn/expo-plugin',
       'expo-web-browser',
-      'expo-font',
       'react-native-bottom-tabs',
       [
         'expo-plugin-ios-static-libraries',
@@ -137,19 +136,12 @@ export default {
         },
       ],
       // Custom fonts
-      // [
-      //   'expo-font',
-      //   {
-      //     fonts: [
-      //       './assets/fonts/Inter-Black.ttf',
-      //       './assets/fonts/Inter-Bold.ttf',
-      //       './assets/fonts/Inter-Light.ttf',
-      //       './assets/fonts/Inter-Medium.ttf',
-      //       './assets/fonts/Inter-Regular.ttf',
-      //       './assets/fonts/Inter-SemiBold.ttf',
-      //     ],
-      //   },
-      // ],
+      [
+        'expo-font',
+        {
+          fonts: ['./src/interface/fonts/DNCursive-Regular.ttf'],
+        },
+      ],
       [
         'expo-splash-screen',
         {

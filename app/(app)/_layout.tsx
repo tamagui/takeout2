@@ -57,7 +57,7 @@ export function AppLayout() {
               </Stack>
             )}
           </NotificationProvider>
-          <Dialogs />
+          {/* <Dialogs /> */}
         </ToastProvider>
       </ProvideZero>
     </Configuration>

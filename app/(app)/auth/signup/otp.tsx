@@ -7,14 +7,14 @@ import { otpLogin, validateLoginOtpCode } from '~/features/auth/client/otpLogin'
 import { OtpInput } from '~/features/auth/ui/OtpInput'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { showError } from '~/interface/dialogs/actions'
-import { dismissKeyboard } from '~/interface/keyboard/dismissKeyboard'
 import { isSmallScreen } from '~/interface/dimensions'
 import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
+import { dismissKeyboard } from '~/interface/keyboard/dismissKeyboard'
 import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 
 export const OtpPage = () => {
-  const timer = useTimer()
+  const { start: startTimer, pause: pauseTimer, count: timerCount } = useTimer()
   const params = useParams<{ method?: 'phone' | 'email'; value?: string }>()
   const [otpCode, setOtpCode] = useState('')
   const [isError, setIsError] = useState(false)
@@ -43,7 +43,7 @@ export const OtpPage = () => {
       }
 
       setIsError(!!error)
-      timer.start(30, true)
+      startTimer(30, true)
     } finally {
       setLoading(false)
     }
@@ -77,7 +77,7 @@ export const OtpPage = () => {
         return
       }
 
-      timer.pause()
+      pauseTimer()
     } catch (err) {
       console.error(err)
     } finally {
@@ -86,8 +86,8 @@ export const OtpPage = () => {
   })
 
   useEffect(() => {
-    timer.start(30, true)
-  }, [timer, timer.start])
+    startTimer(30, true)
+  }, [startTimer])
 
   useEffect(() => {
     if (otpCode.length === 6) {
@@ -129,9 +129,9 @@ export const OtpPage = () => {
           isError={isError}
         />
 
-        {timer.count > 0 ? (
+        {timerCount > 0 ? (
           <SizableText size="$4" color="$color11">
-            Resend Code in ({timer.count})
+            Resend Code in ({timerCount})
           </SizableText>
         ) : (
           <ButtonSimple data-testid="resend-otp-button" onPress={handleResendOtp}>

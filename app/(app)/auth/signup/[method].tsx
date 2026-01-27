@@ -1,6 +1,5 @@
 import { createRoute, useParams, useRouter } from 'one'
 import { memo, useLayoutEffect, useRef, useState } from 'react'
-import { Keyboard } from 'react-native'
 import { isWeb, SizableText, useEvent, YStack } from 'tamagui'
 
 import { validateLoginOtpCode } from '~/features/auth/client/otpLogin'
@@ -9,6 +8,7 @@ import { showError } from '~/interface/dialogs/actions'
 import { isSmallScreen } from '~/interface/dimensions'
 import { Input } from '~/interface/forms/Input'
 import { EnvelopeSimpleIcon } from '~/interface/icons/phosphor/EnvelopeSimpleIcon'
+import { dismissKeyboard } from '~/interface/keyboard/dismissKeyboard'
 import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter'
 import { StepPageLayout } from '~/interface/pages/StepPageLayout'
 
@@ -70,9 +70,7 @@ export const SignupPage = memo(() => {
         )
         return
       }
-      if (!isWeb) {
-        Keyboard.dismiss()
-      }
+      dismissKeyboard()
       showError(error)
     } finally {
       clearTimeout(tm)

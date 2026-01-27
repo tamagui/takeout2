@@ -2,7 +2,7 @@ import { useAuth } from '~/features/auth/client/authClient'
 import { Link } from '~/interface/app/Link'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 
-export const LoginButton = ({ listItem }: { listItem?: boolean }) => {
+export const LoginButton = () => {
   const { loginText, loginLink } = useAuth()
 
   return (

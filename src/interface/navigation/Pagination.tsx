@@ -1,19 +1,19 @@
 import { memo } from 'react'
 import { SizableText, XStack } from 'tamagui'
 
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
-import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
-import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
+import { ButtonSimple } from '../buttons/ButtonSimple'
+import { CaretLeftIcon } from '../icons/phosphor/CaretLeftIcon'
+import { CaretRightIcon } from '../icons/phosphor/CaretRightIcon'
 
-interface HomePaginationProps {
+export interface PaginationProps {
   currentPage: number
   hasMore: boolean
   onPrevPage: () => void
   onNextPage: () => void
 }
 
-export const HomePagination = memo(
-  ({ currentPage, hasMore, onPrevPage, onNextPage }: HomePaginationProps) => {
+export const Pagination = memo(
+  ({ currentPage, hasMore, onPrevPage, onNextPage }: PaginationProps) => {
     const hasPrev = currentPage > 1
 
     if (!hasPrev && !hasMore) {

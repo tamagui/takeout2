@@ -9,13 +9,6 @@ import { PlatformSpecificRootProvider } from '~/interface/platform/PlatformSpeci
 import { GlobalTooltipProvider } from '~/interface/tooltip/TooltipSimple'
 import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
 
-console.log(
-  'process.env.VITE_NATIVE2',
-  process.env.VITE_NATIVE,
-  process.env.EXPO_OS,
-  process.env.VITE_ENVIRONMENT
-)
-
 export function Layout() {
   return (
     <html lang="en-US">
@@ -37,14 +30,6 @@ export function Layout() {
               <GlobalTooltipProvider>
                 <SafeAreaProvider>
                   {process.env.VITE_NATIVE ? (
-                    <>
-                      <LoadProgressBar startDelay={800} />
-                      <HomeBackground />
-                      <SiteRootLayout>
-                        <Slot />
-                      </SiteRootLayout>
-                    </>
-                  ) : (
                     <Stack
                       screenOptions={{
                         headerShown: false,
@@ -53,6 +38,14 @@ export function Layout() {
                     >
                       <Stack.Screen name="(app)" />
                     </Stack>
+                  ) : (
+                    <>
+                      <LoadProgressBar startDelay={800} />
+                      <HomeBackground />
+                      <SiteRootLayout>
+                        <Slot />
+                      </SiteRootLayout>
+                    </>
                   )}
                 </SafeAreaProvider>
               </GlobalTooltipProvider>

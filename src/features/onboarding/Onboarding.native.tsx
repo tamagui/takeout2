@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import PagerView, {
   type PagerViewOnPageScrollEvent,
   type PagerViewOnPageSelectedEvent,
@@ -17,7 +17,6 @@ import {
   useTheme,
   View,
   YStack,
-  type ColorTokens,
   type ThemeName,
 } from 'tamagui'
 
@@ -39,27 +38,23 @@ export function Onboarding({ onComplete }: { onComplete?: () => void }) {
   const [currentTheme, setCurrentTheme] = useState<ThemeName>(slides[0]?.theme ?? 'blue')
   const [pageIndex, setPageIndex] = useState(0)
 
-  const onPageScroll = useCallback((e: PagerViewOnPageScrollEvent) => {
+  const onPageScroll = (e: PagerViewOnPageScrollEvent) => {
     const { position, offset } = e.nativeEvent
     scrollPosition.value = position + offset
-  }, [])
+  }
 
-  const onPageSelected = useCallback(
-    (e: PagerViewOnPageSelectedEvent) => {
-      const page = e.nativeEvent.position
-      currentPage.value = page
-      setPageIndex(page)
-      const slide = slides[page]
-      if (slide) {
-        setCurrentTheme(slide.theme)
-      }
-    },
-    [slides]
-  )
+  const onPageSelected = (e: PagerViewOnPageSelectedEvent) => {
+    const page = e.nativeEvent.position
+    currentPage.value = page
+    setPageIndex(page)
+    const slide = slides[page]
+    if (slide) {
+      setCurrentTheme(slide.theme)
+    }
+  }
 
-  const goToNextPage = useCallback(() => {
+  const goToNextPage = () => {
     const nextPage = Math.min(pageIndex + 1, slides.length - 1)
-    // update state immediately for programmatic navigation
     currentPage.value = nextPage
     setPageIndex(nextPage)
     const slide = slides[nextPage]
@@ -67,15 +62,15 @@ export function Onboarding({ onComplete }: { onComplete?: () => void }) {
       setCurrentTheme(slide.theme)
     }
     pagerRef.current?.setPage(nextPage)
-  }, [pageIndex, slides])
+  }
 
-  const handleActionPress = useCallback(() => {
+  const handleActionPress = () => {
     if (pageIndex === slides.length - 1) {
       onComplete?.()
     } else {
       goToNextPage()
     }
-  }, [pageIndex, slides.length, onComplete, goToNextPage])
+  }
 
   return (
     <Theme name={currentTheme}>
@@ -157,7 +152,7 @@ function TitleTicker({ slides, scrollPosition }: TitleTickerProps) {
         {slides.map((slide) => (
           <View key={slide.id} style={{ height: TITLE_HEIGHT, justifyContent: 'center' }}>
             <H1
-              color={theme.color10?.val as ColorTokens}
+              color="$color10"
               fontWeight="800"
               size="$9"
               lineHeight="$9"

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   AnimatePresence,
   SizableText,
@@ -6,7 +6,6 @@ import {
   XStack,
   YStack,
   useTheme,
-  type ColorTokens,
   type ThemeName,
 } from 'tamagui'
 
@@ -45,15 +44,15 @@ export function Onboarding(_props?: Partial<OnboardingProps>) {
 
   const currentSlide = onboardingSlides[slideIndex]
 
-  const goToPrev = useCallback(() => {
+  const goToPrev = () => {
     setDirection('prev')
     setSlideIndex((prev) => (prev > 0 ? prev - 1 : onboardingSlides.length - 1))
-  }, [])
+  }
 
-  const goToNext = useCallback(() => {
+  const goToNext = () => {
     setDirection('next')
     setSlideIndex((prev) => (prev < onboardingSlides.length - 1 ? prev + 1 : 0))
-  }, [])
+  }
 
   return (
     <Theme name={(currentSlide?.theme ?? 'blue') as ThemeName}>
@@ -99,26 +98,23 @@ function OnboardingContent({
   const touchStartX = useRef<number | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const handlePointerDown = useCallback((e: PointerEvent) => {
+  const handlePointerDown = (e: PointerEvent) => {
     touchStartX.current = e.clientX
-  }, [])
+  }
 
-  const handlePointerUp = useCallback(
-    (e: PointerEvent) => {
-      if (touchStartX.current === null) return
+  const handlePointerUp = (e: PointerEvent) => {
+    if (touchStartX.current === null) return
 
-      const diff = e.clientX - touchStartX.current
+    const diff = e.clientX - touchStartX.current
 
-      if (diff > SWIPE_THRESHOLD) {
-        onPrev()
-      } else if (diff < -SWIPE_THRESHOLD) {
-        onNext()
-      }
+    if (diff > SWIPE_THRESHOLD) {
+      onPrev()
+    } else if (diff < -SWIPE_THRESHOLD) {
+      onNext()
+    }
 
-      touchStartX.current = null
-    },
-    [onPrev, onNext]
-  )
+    touchStartX.current = null
+  }
 
   useEffect(() => {
     const el = containerRef.current
@@ -355,7 +351,7 @@ function FeatureCard({
         bg="$color4"
         rounded={10}
       >
-        <Icon size={20} color={theme.color10?.val as ColorTokens} />
+        <Icon size={20} color="$color10" />
       </YStack>
       <SizableText size="$3" fontWeight="600" color="$color12">
         {title}
@@ -398,7 +394,7 @@ function FeatureCardSquare({
         bg="$color5"
         rounded={12}
       >
-        <Icon size={24} color={theme.color10?.val as ColorTokens} />
+        <Icon size={24} color="$color10" />
       </YStack>
       <SizableText
         size="$2"

@@ -1,5 +1,5 @@
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated'
-import { SizableText, View, XStack, useTheme, type ColorTokens } from 'tamagui'
+import { SizableText, XStack, useTheme, type ColorTokens } from 'tamagui'
 
 import { Pressable } from '~/interface/buttons/Pressable'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
@@ -42,7 +42,7 @@ export function OnboardingActionButton({
         opacity={isLastPage ? 0 : 1}
         disabled={isLastPage}
       >
-        <SizableText color={theme.color10?.val as ColorTokens} size="$4" fontWeight="500">
+        <SizableText color="$color10" size="$4" fontWeight="500">
           Skip
         </SizableText>
       </Pressable>
@@ -65,11 +65,7 @@ export function OnboardingActionButton({
             <CaretRightIcon size={28} color="white" />
           </Animated.View>
           <Animated.View style={[{ position: 'absolute' }, textAnimatedStyle]}>
-            <SizableText
-              color={theme.color6?.val as ColorTokens}
-              size="$5"
-              fontWeight="600"
-            >
+            <SizableText size="$5" fontWeight="600">
               Get Started
             </SizableText>
           </Animated.View>

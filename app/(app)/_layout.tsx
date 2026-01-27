@@ -1,5 +1,5 @@
 import { Protected, Redirect, Slot, Stack, usePathname } from 'one'
-import { Configuration, isWeb } from 'tamagui'
+import { Configuration, isWeb, SizableText } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
 import { Dialogs } from '~/interface/dialogs/Dialogs'
@@ -16,7 +16,11 @@ export function AppLayout() {
   const isLoggedIn = state === 'logged-in'
 
   if (state === 'loading') {
-    return null
+    return (
+      <SizableText m="auto" color="$color8">
+        Loading...
+      </SizableText>
+    )
   }
 
   // Redirect for auth routing

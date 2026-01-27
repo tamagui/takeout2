@@ -7,7 +7,7 @@ import { LoginDemoButton } from '~/features/auth/ui/LoginDemoButton'
 import { LoginEmailButton } from '~/features/auth/ui/LoginEmailButton'
 import { LoginLegalText } from '~/features/auth/ui/LoginLegalText'
 import { LoginSocialButtons } from '~/features/auth/ui/LoginSocialButtons'
-import { Onboarding, onboardingSlides, onboardingStorage } from '~/features/onboarding'
+import { Onboarding, onboardingStorage } from '~/features/onboarding'
 import { GradientBackground } from '~/interface/backgrounds/GradientBackground'
 import { GlassView } from '~/interface/effects/GlassView'
 import { Image } from '~/interface/image/Image'
@@ -89,7 +89,7 @@ export const LoginPage = () => {
             enterStyle={{ scale: 0.95 }}
             exitStyle={{ scale: 0.85, opacity: 0 }}
           >
-            <Onboarding slides={onboardingSlides} onComplete={handleOnboardingComplete} />
+            <Onboarding onComplete={handleOnboardingComplete} />
           </View>
         )}
       </AnimatePresence>

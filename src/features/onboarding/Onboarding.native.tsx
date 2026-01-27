@@ -24,12 +24,12 @@ import {
 import { OnboardingActionButton } from './OnboardingActionButton'
 import { OnboardingPageIndicator } from './OnboardingPageIndicator'
 import { OnboardingSlide } from './OnboardingSlide'
-
-import type { OnboardingProps } from './types'
+import { onboardingSlides } from './onboardingSlides'
 
 const TITLE_HEIGHT = 48
 
-export function Onboarding({ slides, onComplete }: OnboardingProps) {
+export function Onboarding({ onComplete }: { onComplete?: () => void }) {
+  const slides = onboardingSlides
   const pagerRef = useRef<PagerView>(null)
   const safeAreaInsets = useSafeAreaInsets()
 
@@ -39,14 +39,11 @@ export function Onboarding({ slides, onComplete }: OnboardingProps) {
   const [currentTheme, setCurrentTheme] = useState<ThemeName>(slides[0]?.theme ?? 'blue')
   const [pageIndex, setPageIndex] = useState(0)
 
-  /* oxlint-disable react-hooks/exhaustive-deps -- shared value is stable ref */
   const onPageScroll = useCallback((e: PagerViewOnPageScrollEvent) => {
     const { position, offset } = e.nativeEvent
     scrollPosition.value = position + offset
   }, [])
-  /* oxlint-enable react-hooks/exhaustive-deps */
 
-  /* oxlint-disable react-hooks/exhaustive-deps -- shared value is stable ref */
   const onPageSelected = useCallback(
     (e: PagerViewOnPageSelectedEvent) => {
       const page = e.nativeEvent.position
@@ -59,9 +56,7 @@ export function Onboarding({ slides, onComplete }: OnboardingProps) {
     },
     [slides]
   )
-  /* oxlint-enable react-hooks/exhaustive-deps */
 
-  /* oxlint-disable react-hooks/exhaustive-deps -- shared value is stable ref */
   const goToNextPage = useCallback(() => {
     const nextPage = Math.min(pageIndex + 1, slides.length - 1)
     // update state immediately for programmatic navigation
@@ -73,7 +68,6 @@ export function Onboarding({ slides, onComplete }: OnboardingProps) {
     }
     pagerRef.current?.setPage(nextPage)
   }, [pageIndex, slides])
-  /* oxlint-enable react-hooks/exhaustive-deps */
 
   const handleActionPress = useCallback(() => {
     if (pageIndex === slides.length - 1) {
@@ -128,7 +122,7 @@ export function Onboarding({ slides, onComplete }: OnboardingProps) {
 }
 
 interface TitleTickerProps {
-  slides: OnboardingProps['slides']
+  slides: typeof onboardingSlides
   scrollPosition: SharedValue<number>
 }
 

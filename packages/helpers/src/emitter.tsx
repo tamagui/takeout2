@@ -24,14 +24,12 @@ function useGet<A>(
     curRef.current = currentValue
   })
 
-  /* oxlint-disable react-hooks/exhaustive-deps -- ref-based stable callback */
   return React.useCallback(
     forwardToFunction
       ? (...args) => curRef.current?.apply(null, args)
       : () => curRef.current,
     []
   )
-  /* oxlint-enable react-hooks/exhaustive-deps */
 }
 
 type EmitterOptions<T> = CreateEmitterOpts<T> & {
@@ -167,8 +165,6 @@ export const useEmitterValue = <E extends Emitter<any>>(
     }
 
     return emitter.listen(setState)
-    // intentionally omit state from deps - we only want to re-subscribe when emitter changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [disabled, emitter])
 
   return state
@@ -220,7 +216,6 @@ export const useEmitterSelector = <E extends Emitter<any>, T extends EmitterType
     }
   }
 
-  /* oxlint-disable react-hooks/exhaustive-deps -- intentional spread deps pattern */
   useLayoutEffect(() => {
     if (disabled) return
     return emitter.listen((val) => {
@@ -236,7 +231,6 @@ export const useEmitterSelector = <E extends Emitter<any>, T extends EmitterType
       }
     })
   }, [disabled, emitter, getSelector, ...args])
-  /* oxlint-enable react-hooks/exhaustive-deps */
 
   return state
 }
@@ -254,7 +248,6 @@ export const useEmittersSelector = <const E extends readonly Emitter<any>[], R>(
     return getSelector()(values)
   })
 
-  /* oxlint-disable react-hooks/exhaustive-deps -- intentional spread deps pattern */
   useLayoutEffect(() => {
     if (disabled) {
       return
@@ -289,7 +282,6 @@ export const useEmittersSelector = <const E extends readonly Emitter<any>[], R>(
       disposals.forEach((d) => d())
     }
   }, [disabled, getSelector, ...emitters])
-  /* oxlint-enable react-hooks/exhaustive-deps */
 
   return state
 }

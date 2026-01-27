@@ -39,8 +39,8 @@
     "./withOpSqliteStatic": "./src/withOpSqliteStatic.cjs"
   },
   "scripts": {
-    "build": "tamagui-build --skip-types",
-    "watch": "tamagui-build --skip-types --watch",
+    "build": "tamagui-build --skip-native --skip-types",
+    "watch": "tamagui-build --skip-native --skip-types --watch",
     "typecheck": "tko run typecheck",
     "lint": "oxlint src",
     "lint:fix": "oxfmt src && oxlint --fix --fix-suggestions src",

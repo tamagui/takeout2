@@ -7,7 +7,7 @@ import type { UserConfig } from 'vite'
 export default {
   resolve: {
     alias: [
-      // use react-native-web-lite/without-animated, much smaller bundle size
+      // much smaller bundle size on web
       ...tamaguiAliases({
         rnwLite: 'without-animated',
         svg: true,

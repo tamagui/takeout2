@@ -380,11 +380,7 @@ function CopyCommand() {
       <Paragraph pr="$4" flex={1} ellipsis fontFamily="$mono" fontWeight="700">
         {INSTALL_COMMAND}
       </Paragraph>
-      {copied ? (
-        <CheckIcon size={18} color={'$color10' as any} />
-      ) : (
-        <CopyIcon size={18} color={'$color10' as any} />
-      )}
+      {copied ? <CheckIcon size={18} color="$color10" /> : <CopyIcon size={18} color="$color10" />}
     </CommandBox>
   )
 }

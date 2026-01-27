@@ -5,7 +5,6 @@ import {
   Theme,
   XStack,
   YStack,
-  useTheme,
   type ThemeName,
 } from 'tamagui'
 
@@ -327,7 +326,6 @@ function FeatureCard({
   width: number
   height: number
 }) {
-  const theme = useTheme()
   const { Icon, title } = feature
 
   return (
@@ -367,8 +365,6 @@ function FeatureCardSquare({
   feature: SlideFeature | undefined
   size: number
 }) {
-  const theme = useTheme()
-
   if (!feature) return null
   const { Icon, title } = feature
 

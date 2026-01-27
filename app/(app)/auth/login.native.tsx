@@ -42,10 +42,10 @@ export const LoginPage = () => {
           >
             <SizableText
               size="$9"
-              fontWeight="800"
               fontFamily="$heading"
               text="center"
               color="$color12"
+              fontWeight="700"
             >
               {APP_NAME}
             </SizableText>

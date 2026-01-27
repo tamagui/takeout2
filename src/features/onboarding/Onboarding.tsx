@@ -97,27 +97,27 @@ function OnboardingContent({
   const touchStartX = useRef<number | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const handlePointerDown = (e: PointerEvent) => {
-    touchStartX.current = e.clientX
-  }
-
-  const handlePointerUp = (e: PointerEvent) => {
-    if (touchStartX.current === null) return
-
-    const diff = e.clientX - touchStartX.current
-
-    if (diff > SWIPE_THRESHOLD) {
-      onPrev()
-    } else if (diff < -SWIPE_THRESHOLD) {
-      onNext()
-    }
-
-    touchStartX.current = null
-  }
-
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
+
+    const handlePointerDown = (e: PointerEvent) => {
+      touchStartX.current = e.clientX
+    }
+
+    const handlePointerUp = (e: PointerEvent) => {
+      if (touchStartX.current === null) return
+
+      const diff = e.clientX - touchStartX.current
+
+      if (diff > SWIPE_THRESHOLD) {
+        onPrev()
+      } else if (diff < -SWIPE_THRESHOLD) {
+        onNext()
+      }
+
+      touchStartX.current = null
+    }
 
     el.addEventListener('pointerdown', handlePointerDown)
     el.addEventListener('pointerup', handlePointerUp)
@@ -126,7 +126,7 @@ function OnboardingContent({
       el.removeEventListener('pointerdown', handlePointerDown)
       el.removeEventListener('pointerup', handlePointerUp)
     }
-  }, [handlePointerDown, handlePointerUp])
+  }, [onPrev, onNext])
 
   if (!slide) return null
 

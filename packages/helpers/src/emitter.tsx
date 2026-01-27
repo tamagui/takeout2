@@ -24,11 +24,12 @@ function useGet<A>(
     curRef.current = currentValue
   })
 
+  // oxlint-disable-next-line exhaustive-deps
   return React.useCallback(
     forwardToFunction
       ? (...args) => curRef.current?.apply(null, args)
       : () => curRef.current,
-    []
+    [curRef, forwardToFunction]
   )
 }
 
@@ -165,7 +166,7 @@ export const useEmitterValue = <E extends Emitter<any>>(
     }
 
     return emitter.listen(setState)
-  }, [disabled, emitter])
+  }, [state, disabled, emitter])
 
   return state
 }
@@ -230,6 +231,7 @@ export const useEmitterSelector = <E extends Emitter<any>, T extends EmitterType
         throw error
       }
     })
+    // oxlint-disable-next-line exhaustive-deps
   }, [disabled, emitter, getSelector, ...args])
 
   return state
@@ -281,6 +283,7 @@ export const useEmittersSelector = <const E extends readonly Emitter<any>[], R>(
     return () => {
       disposals.forEach((d) => d())
     }
+    // oxlint-disable-next-line exhaustive-deps
   }, [disabled, getSelector, ...emitters])
 
   return state

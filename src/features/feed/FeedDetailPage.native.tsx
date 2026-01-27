@@ -1,6 +1,6 @@
 import { formatDistanceToNow, randomId } from '@take-out/helpers'
 import { useNavigation, useParams, usePathname } from 'one'
-import { memo, useLayoutEffect, useMemo, useState } from 'react'
+import { memo, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useKeyboardHandler } from 'react-native-keyboard-controller'
 import Animated, {
   useAnimatedRef,
@@ -10,6 +10,7 @@ import Animated, {
   scrollTo,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { scheduleOnUI } from 'react-native-worklets'
 import { SizableText, XStack, YStack } from 'tamagui'
 
 import { postDetail } from '~/data/queries/post'
@@ -50,6 +51,71 @@ export const FeedDetailPage = memo(() => {
 
   const [content, setContent] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const shouldScrollToEnd = useRef(false)
+
+  // keyboard handling - using concurrent-safe .get()/.set()
+  const scrollRef = useAnimatedRef<Animated.ScrollView>()
+  const keyboardHeight = useSharedValue(0)
+  const contentHeight = useSharedValue(0)
+  const containerHeight = useSharedValue(0)
+
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: () => {
+      // tracking scroll if needed
+    },
+  })
+
+  const scrollToEndWorklet = () => {
+    'worklet'
+    const kbHeight = keyboardHeight.get()
+    const cHeight = contentHeight.get()
+    const ctHeight = containerHeight.get()
+    const maxScroll = cHeight - ctHeight + kbHeight + INPUT_BAR_HEIGHT
+    if (maxScroll > 0) {
+      scrollTo(scrollRef, 0, maxScroll, true)
+    }
+  }
+
+  useKeyboardHandler({
+    onMove: (event) => {
+      'worklet'
+      keyboardHeight.set(event.height)
+    },
+    onEnd: (event) => {
+      'worklet'
+      keyboardHeight.set(event.height)
+
+      // when keyboard opens, scroll to end to show comments
+      if (event.height > 0) {
+        scrollToEndWorklet()
+      }
+    },
+  })
+
+  const inputContainerStyle = useAnimatedStyle(() => {
+    const kbHeight = keyboardHeight.get()
+    return {
+      transform: [{ translateY: -kbHeight }],
+      paddingBottom: kbHeight > 0 ? 0 : insets.bottom,
+    }
+  })
+
+  const scrollViewStyle = useAnimatedStyle(() => {
+    const kbHeight = keyboardHeight.get()
+    return {
+      marginBottom:
+        kbHeight > 0 ? kbHeight + INPUT_BAR_HEIGHT : INPUT_BAR_HEIGHT + insets.bottom,
+    }
+  })
+
+  const handleContentSizeChange = (_: number, h: number) => {
+    contentHeight.set(h)
+    // scroll to end when content grows after posting
+    if (shouldScrollToEnd.current) {
+      shouldScrollToEnd.current = false
+      scheduleOnUI(scrollToEndWorklet)
+    }
+  }
 
   const handleSubmit = async () => {
     if (!content.trim() || !currentUser?.id) return
@@ -66,56 +132,13 @@ export const FeedDetailPage = memo(() => {
       })
       setContent('')
       setIsSubmitting(false)
+      // flag to scroll when content size updates
+      shouldScrollToEnd.current = true
     } catch (error) {
       console.error('Failed to post comment:', error)
       setIsSubmitting(false)
     }
   }
-
-  // keyboard handling
-  const scrollRef = useAnimatedRef<Animated.ScrollView>()
-  const keyboardHeight = useSharedValue(0)
-  const scrollY = useSharedValue(0)
-  const contentHeight = useSharedValue(0)
-  const containerHeight = useSharedValue(0)
-
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: (event) => {
-      scrollY.value = event.contentOffset.y
-    },
-  })
-
-  useKeyboardHandler({
-    onMove: (event) => {
-      'worklet'
-      keyboardHeight.value = event.height
-    },
-    onEnd: (event) => {
-      'worklet'
-      keyboardHeight.value = event.height
-
-      // when keyboard opens, scroll to end if we have content below the fold
-      if (event.height > 0) {
-        const maxScroll =
-          contentHeight.value - containerHeight.value + event.height + INPUT_BAR_HEIGHT
-        if (maxScroll > 0) {
-          scrollTo(scrollRef, 0, maxScroll, true)
-        }
-      }
-    },
-  })
-
-  const inputContainerStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: -keyboardHeight.value }],
-    paddingBottom: keyboardHeight.value > 0 ? 0 : insets.bottom,
-  }))
-
-  const scrollViewStyle = useAnimatedStyle(() => ({
-    marginBottom:
-      keyboardHeight.value > 0
-        ? keyboardHeight.value + INPUT_BAR_HEIGHT
-        : INPUT_BAR_HEIGHT + insets.bottom,
-  }))
 
   if (!post || !author) {
     return null
@@ -133,11 +156,9 @@ export const FeedDetailPage = memo(() => {
         keyboardDismissMode="interactive"
         onScroll={scrollHandler}
         scrollEventThrottle={16}
-        onContentSizeChange={(_, h) => {
-          contentHeight.value = h
-        }}
+        onContentSizeChange={handleContentSizeChange}
         onLayout={(e) => {
-          containerHeight.value = e.nativeEvent.layout.height
+          containerHeight.set(e.nativeEvent.layout.height)
         }}
       >
         <XStack items="center" gap="$3" py="$4">
@@ -186,6 +207,7 @@ export const FeedDetailPage = memo(() => {
           handleSubmit={handleSubmit}
           isSubmitting={isSubmitting}
           disableStickyFooter
+          keepKeyboardOpen
         />
       </Animated.View>
     </PageLayout>

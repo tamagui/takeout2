@@ -93,7 +93,7 @@ const DialogComponent = ({
             <Sheet.Frame
               theme="surface2"
               p="$4"
-              pb={insets.bottom + 100}
+              pb={insets.bottom + 100 + 30}
               y={100}
               gap="$4"
               rounded="$10"

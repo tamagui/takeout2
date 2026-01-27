@@ -11,7 +11,7 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { H1, Theme, View, YStack, type ThemeName } from 'tamagui'
+import { Theme, View, YStack, type ThemeName } from 'tamagui'
 
 import { OnboardingActionButton } from './OnboardingActionButton'
 import { OnboardingPageIndicator } from './OnboardingPageIndicator'
@@ -143,9 +143,9 @@ function TitleTicker({ slides, scrollPosition }: TitleTickerProps) {
       <Animated.View style={animatedStyle}>
         {slides.map((slide) => (
           <View key={slide.id} style={{ height: TITLE_HEIGHT, justifyContent: 'center' }}>
-            <H1 color="$color10" size="$9" fontWeight="800" lineHeight="$9" px="$5">
+            {/* <H1 color="$color10" size="$12" fontWeight="300" lineHeight="$9" px="$5">
               {slide.title}
-            </H1>
+            </H1> */}
           </View>
         ))}
       </Animated.View>

@@ -94,7 +94,14 @@ export function CommentInput({
 
       {process.env.VITE_NATIVE && (
         <MaybeKeyboardStickyFooter disabled={disableStickyFooter}>
-          <XStack items="center" gap="$2" px="$3" py="$2" overflow="hidden">
+          <XStack
+            items="center"
+            gap="$2"
+            px="$3"
+            py="$2"
+            overflow="hidden"
+            bg="$background"
+          >
             <Input
               unstyled
               flex={1}

@@ -5,6 +5,10 @@
   "main": "./src/run.ts",
   "sideEffects": false,
   "exports": {
+    ".": {
+      "types": "./src/run.ts",
+      "default": "./src/run.ts"
+    },
     "./package.json": "./package.json",
     "./helpers/*": {
       "types": "./src/helpers/*.ts",

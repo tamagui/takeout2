@@ -65,7 +65,7 @@ export function OnboardingActionButton({
             <CaretRightIcon size={28} color="white" />
           </Animated.View>
           <Animated.View style={[{ position: 'absolute' }, textAnimatedStyle]}>
-            <SizableText size="$5" fontWeight="600">
+            <SizableText size="$5" fontWeight="600" color="$color8">
               Get Started
             </SizableText>
           </Animated.View>

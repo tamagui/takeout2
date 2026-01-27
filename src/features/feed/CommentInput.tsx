@@ -7,8 +7,8 @@ import { TextArea } from '~/interface/forms/TextArea'
 import { PaperPlaneTiltIcon } from '~/interface/icons/phosphor/PaperPlaneTiltIcon'
 import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter'
 
-import type { ReactNode } from 'react'
 import type { User } from 'better-auth'
+import type { ReactNode } from 'react'
 
 type AppUser = User & { role?: 'admin' }
 
@@ -94,7 +94,14 @@ export function CommentInput({
 
       {process.env.VITE_NATIVE && (
         <MaybeKeyboardStickyFooter disabled={disableStickyFooter}>
-          <XStack items="center" gap="$2" px="$3" py="$2" overflow="hidden" bg="$background">
+          <XStack
+            items="center"
+            gap="$2"
+            px="$3"
+            py="$2"
+            overflow="hidden"
+            bg="$background"
+          >
             <Input
               unstyled
               flex={1}

@@ -29,9 +29,8 @@ export const PostCard = memo(({ post }: PostCardProps) => {
   const avatarUrl = post.user?.image
   const username = post.user?.username
 
-  const storedAspectRatio = post.imageWidth && post.imageHeight
-    ? post.imageWidth / post.imageHeight
-    : undefined
+  const storedAspectRatio =
+    post.imageWidth && post.imageHeight ? post.imageWidth / post.imageHeight : undefined
   const [aspectRatio, setAspectRatio] = useState<number>(storedAspectRatio ?? 1.5)
   const isOwnProfile = authorId === user?.id
 
@@ -93,12 +92,16 @@ export const PostCard = memo(({ post }: PostCardProps) => {
             sharedTransitionTag={`post-image-${post.id}`}
             sharedTransitionStyle={transition}
             resizeMode="cover"
-            onLoad={storedAspectRatio ? undefined : (e) => {
-              const { width, height } = e.nativeEvent.source
-              if (width && height) {
-                setAspectRatio(width / height)
-              }
-            }}
+            onLoad={
+              storedAspectRatio
+                ? undefined
+                : (e) => {
+                    const { width, height } = e.nativeEvent.source
+                    if (width && height) {
+                      setAspectRatio(width / height)
+                    }
+                  }
+            }
           />
         </FastSquircleView>
       </Pressable>

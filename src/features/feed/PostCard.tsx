@@ -30,9 +30,8 @@ export const PostCard = memo(({ post }: PostCardProps) => {
   const username = post.user?.username
 
   const [isTruncated, setIsTruncated] = useState<boolean>(false)
-  const storedAspectRatio = post.imageWidth && post.imageHeight
-    ? post.imageWidth / post.imageHeight
-    : undefined
+  const storedAspectRatio =
+    post.imageWidth && post.imageHeight ? post.imageWidth / post.imageHeight : undefined
   const [aspectRatio, setAspectRatio] = useState<number>(storedAspectRatio ?? 1.5)
   const isOwnProfile = authorId === user?.id
 

@@ -96,7 +96,8 @@ export const FeedDetailPage = memo(() => {
 
       // when keyboard opens, scroll to end if we have content below the fold
       if (event.height > 0) {
-        const maxScroll = contentHeight.value - containerHeight.value + event.height + INPUT_BAR_HEIGHT
+        const maxScroll =
+          contentHeight.value - containerHeight.value + event.height + INPUT_BAR_HEIGHT
         if (maxScroll > 0) {
           scrollTo(scrollRef, 0, maxScroll, true)
         }
@@ -110,7 +111,10 @@ export const FeedDetailPage = memo(() => {
   }))
 
   const scrollViewStyle = useAnimatedStyle(() => ({
-    marginBottom: keyboardHeight.value > 0 ? keyboardHeight.value + INPUT_BAR_HEIGHT : INPUT_BAR_HEIGHT + insets.bottom,
+    marginBottom:
+      keyboardHeight.value > 0
+        ? keyboardHeight.value + INPUT_BAR_HEIGHT
+        : INPUT_BAR_HEIGHT + insets.bottom,
   }))
 
   if (!post || !author) {

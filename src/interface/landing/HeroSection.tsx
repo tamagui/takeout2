@@ -308,7 +308,7 @@ function HeroTerminal() {
           <HistoryEntry key={i} command={entry.command} output={entry.output} />
         ))}
 
-        {typedCommand && (
+        {!!typedCommand && (
           <YStack gap="$1">
             <XStack items="center">
               <Paragraph fontFamily="$mono" fontSize={13} color="#22c55e" mr="$2">

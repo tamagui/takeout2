@@ -4,7 +4,6 @@ import { Keyboard } from 'react-native'
 import { isWeb, SizableText, useEvent, YStack } from 'tamagui'
 
 import { validateLoginOtpCode } from '~/features/auth/client/otpLogin'
-import { shouldUsePasswordOnlyAuth } from '~/features/auth/constants'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { showError } from '~/interface/dialogs/actions'
 import { isSmallScreen } from '~/interface/dimensions'
@@ -63,13 +62,6 @@ export const SignupPage = memo(() => {
     }, 1000)
 
     try {
-      if (shouldUsePasswordOnlyAuth) {
-        router.push(
-          `/auth/login/password?method=${method}&value=${encodeURIComponent(inputValue)}`
-        )
-        return
-      }
-
       const { success, error } = await validateLoginOtpCode(method, inputValue)
 
       if (success) {

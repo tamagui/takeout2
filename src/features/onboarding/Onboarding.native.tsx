@@ -1,35 +1,19 @@
-import { useCallback, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import PagerView, {
   type PagerViewOnPageScrollEvent,
   type PagerViewOnPageSelectedEvent,
 } from 'react-native-pager-view'
-import Animated, {
-  Extrapolation,
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-  type SharedValue,
-} from 'react-native-reanimated'
+import { useSharedValue } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import {
-  H1,
-  Theme,
-  useTheme,
-  View,
-  YStack,
-  type ColorTokens,
-  type ThemeName,
-} from 'tamagui'
+import { Theme, View, YStack, type ThemeName } from 'tamagui'
 
 import { OnboardingActionButton } from './OnboardingActionButton'
 import { OnboardingPageIndicator } from './OnboardingPageIndicator'
 import { OnboardingSlide } from './OnboardingSlide'
+import { onboardingSlides } from './onboardingSlides'
 
-import type { OnboardingProps } from './types'
-
-const TITLE_HEIGHT = 48
-
-export function Onboarding({ slides, onComplete }: OnboardingProps) {
+export function Onboarding({ onComplete }: { onComplete?: () => void }) {
+  const slides = onboardingSlides
   const pagerRef = useRef<PagerView>(null)
   const safeAreaInsets = useSafeAreaInsets()
 
@@ -39,32 +23,23 @@ export function Onboarding({ slides, onComplete }: OnboardingProps) {
   const [currentTheme, setCurrentTheme] = useState<ThemeName>(slides[0]?.theme ?? 'blue')
   const [pageIndex, setPageIndex] = useState(0)
 
-  /* oxlint-disable react-hooks/exhaustive-deps -- shared value is stable ref */
-  const onPageScroll = useCallback((e: PagerViewOnPageScrollEvent) => {
+  const onPageScroll = (e: PagerViewOnPageScrollEvent) => {
     const { position, offset } = e.nativeEvent
     scrollPosition.value = position + offset
-  }, [])
-  /* oxlint-enable react-hooks/exhaustive-deps */
+  }
 
-  /* oxlint-disable react-hooks/exhaustive-deps -- shared value is stable ref */
-  const onPageSelected = useCallback(
-    (e: PagerViewOnPageSelectedEvent) => {
-      const page = e.nativeEvent.position
-      currentPage.value = page
-      setPageIndex(page)
-      const slide = slides[page]
-      if (slide) {
-        setCurrentTheme(slide.theme)
-      }
-    },
-    [slides]
-  )
-  /* oxlint-enable react-hooks/exhaustive-deps */
+  const onPageSelected = (e: PagerViewOnPageSelectedEvent) => {
+    const page = e.nativeEvent.position
+    currentPage.value = page
+    setPageIndex(page)
+    const slide = slides[page]
+    if (slide) {
+      setCurrentTheme(slide.theme)
+    }
+  }
 
-  /* oxlint-disable react-hooks/exhaustive-deps -- shared value is stable ref */
-  const goToNextPage = useCallback(() => {
+  const goToNextPage = () => {
     const nextPage = Math.min(pageIndex + 1, slides.length - 1)
-    // update state immediately for programmatic navigation
     currentPage.value = nextPage
     setPageIndex(nextPage)
     const slide = slides[nextPage]
@@ -72,23 +47,20 @@ export function Onboarding({ slides, onComplete }: OnboardingProps) {
       setCurrentTheme(slide.theme)
     }
     pagerRef.current?.setPage(nextPage)
-  }, [pageIndex, slides])
-  /* oxlint-enable react-hooks/exhaustive-deps */
+  }
 
-  const handleActionPress = useCallback(() => {
+  const handleActionPress = () => {
     if (pageIndex === slides.length - 1) {
       onComplete?.()
     } else {
       goToNextPage()
     }
-  }, [pageIndex, slides.length, onComplete, goToNextPage])
+  }
 
   return (
     <Theme name={currentTheme}>
       <View flex={1}>
         <YStack flex={1} bg="$color2" pt={safeAreaInsets.top}>
-          <TitleTicker slides={slides} scrollPosition={scrollPosition} />
-
           <PagerView
             ref={pagerRef}
             style={{ flex: 1 }}
@@ -124,56 +96,5 @@ export function Onboarding({ slides, onComplete }: OnboardingProps) {
         </YStack>
       </View>
     </Theme>
-  )
-}
-
-interface TitleTickerProps {
-  slides: OnboardingProps['slides']
-  scrollPosition: SharedValue<number>
-}
-
-function TitleTicker({ slides, scrollPosition }: TitleTickerProps) {
-  const theme = useTheme()
-  const animatedStyle = useAnimatedStyle(() => {
-    const translateY = interpolate(
-      scrollPosition.value,
-      [0, slides.length - 1],
-      [0, -(slides.length - 1) * TITLE_HEIGHT],
-      Extrapolation.CLAMP
-    )
-    return {
-      transform: [{ translateY }],
-    }
-  })
-
-  const opacityStyle = useAnimatedStyle(() => {
-    const offset = scrollPosition.value - Math.floor(scrollPosition.value)
-    const shouldAnimate = offset > 0.01 && offset < 0.99
-    const opacity = shouldAnimate
-      ? interpolate(offset, [0, 0.5, 0.99], [1, 0, 1], Extrapolation.CLAMP)
-      : 1
-    return { opacity }
-  })
-
-  return (
-    <Animated.View
-      style={[{ height: TITLE_HEIGHT, overflow: 'hidden', marginTop: 16 }, opacityStyle]}
-    >
-      <Animated.View style={animatedStyle}>
-        {slides.map((slide) => (
-          <View key={slide.id} style={{ height: TITLE_HEIGHT, justifyContent: 'center' }}>
-            <H1
-              color={theme.color10?.val as ColorTokens}
-              fontWeight="800"
-              size="$9"
-              lineHeight="$9"
-              px="$5"
-            >
-              {slide.title}
-            </H1>
-          </View>
-        ))}
-      </Animated.View>
-    </Animated.View>
   )
 }

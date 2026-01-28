@@ -86,33 +86,23 @@ const DialogComponent = ({
           >
             <Sheet.Overlay
               bg="$shadow6"
-              opacity={0.5}
-              transition="300ms"
+              transition="medium"
               enterStyle={{ opacity: 0 }}
               exitStyle={{ opacity: 0 }}
             />
             <Sheet.Frame
               theme="surface2"
               p="$4"
-              pb={insets.bottom + 100}
+              pb={insets.bottom + 100 + 30}
               y={100}
               gap="$4"
               rounded="$10"
               borderBottomRightRadius={0}
               borderBottomLeftRadius={0}
               bg="transparent"
-              boxShadow="0px 0 40px rgba(0,0,0,0.65)"
+              boxShadow="0px 0 40px $shadow6"
             >
-              <YStack
-                position="absolute"
-                inset={0}
-                pointerEvents="none"
-                z={100}
-                borderWidth={10}
-                rounded="$10"
-                borderColor="red"
-              />
-              <YStack z={0} bg="$black" opacity={0.85} inset={0} position="absolute" />
+              <YStack z={0} bg="$color5" opacity={0.5} inset={0} position="absolute" />
               <BlurView intensity={50} position="absolute" inset={0} />
               <Sheet.ScrollView>
                 <TamaguiDialog.Adapt.Contents />
@@ -204,11 +194,11 @@ const DialogHeader = ({
 }) => {
   const content = (
     <YStack pointerEvents="box-none" gap="$3">
-      <DialogTitle size="$6" fontWeight="600" cursor="default" select="none">
+      <DialogTitle size="$5" fontWeight="600" cursor="default" select="none">
         {title}
       </DialogTitle>
       {!!description && (
-        <DialogDescription size="$5" color="$color10">
+        <DialogDescription size="$4" color="$color10">
           {description}
         </DialogDescription>
       )}

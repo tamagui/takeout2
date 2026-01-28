@@ -1,37 +1,13 @@
-import { useEffect, useRef, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import { H1, Paragraph, Text, XStack, YStack, styled } from 'tamagui'
 
 import { Link } from '~/interface/app/Link'
-import { OneLogo } from '~/interface/icons/logos/OneLogo'
-import { TamaguiLogo } from '~/interface/icons/logos/TamaguiLogo'
-import { ZeroLogo } from '~/interface/icons/logos/ZeroLogo'
 import { ArrowRightIcon } from '~/interface/icons/phosphor/ArrowRightIcon'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { CopyIcon } from '~/interface/icons/phosphor/CopyIcon'
 
 import { ButtonSimple } from '../buttons/ButtonSimple'
 import { Span, Strong } from '../text/Text'
-
-const techLogos = [
-  {
-    name: 'One',
-    href: 'https://onestack.dev',
-    Logo: OneLogo,
-    size: 24,
-  },
-  {
-    name: 'Zero',
-    href: 'https://zero.rocicorp.dev',
-    Logo: ZeroLogo,
-    size: 22,
-  },
-  {
-    name: 'Tamagui',
-    href: 'https://tamagui.dev',
-    Logo: TamaguiLogo,
-    size: 22,
-  },
-] as const
 
 const HeroTitle = styled(H1, {
   letterSpacing: -1,
@@ -128,6 +104,61 @@ interface CommandStep {
   output: string[]
 }
 
+// memoized window dots to prevent re-renders
+const TerminalDots = memo(function TerminalDots() {
+  return (
+    <XStack gap="$2">
+      <TerminalDot bg="#ff5f57" />
+      <TerminalDot bg="#ffbd2e" />
+      <TerminalDot bg="#28ca42" />
+    </XStack>
+  )
+})
+
+// memoized history entry to prevent re-renders
+const HistoryEntry = memo(function HistoryEntry({
+  command,
+  output,
+}: {
+  command: string
+  output: string[]
+}) {
+  return (
+    <YStack opacity={0.5} mb="$3" gap="$1">
+      <XStack>
+        <Paragraph
+          fontFamily="$mono"
+          fontSize={13}
+          color="#22c55e"
+          mr="$2"
+          style={{ lineHeight: '1.7' }}
+        >
+          $
+        </Paragraph>
+        <Paragraph
+          fontFamily="$mono"
+          fontSize={13}
+          color="#e5e5e5"
+          style={{ lineHeight: '1.7' }}
+        >
+          {command}
+        </Paragraph>
+      </XStack>
+      {output.map((line, j) => (
+        <Paragraph
+          key={j}
+          fontFamily="$mono"
+          fontSize={13}
+          color="#888"
+          style={{ lineHeight: '1.7' }}
+        >
+          {line}
+        </Paragraph>
+      ))}
+    </YStack>
+  )
+})
+
 const steps: CommandStep[] = [
   {
     command: 'bun create takeout',
@@ -185,11 +216,17 @@ function HeroTerminal() {
     if (!step) return
 
     let charIndex = 0
+    let outputInterval: ReturnType<typeof setInterval> | null = null
+    let transitionTimeout: ReturnType<typeof setTimeout> | null = null
+    let resetTimeout: ReturnType<typeof setTimeout> | null = null
+    let cancelled = false
+
     setTypedCommand('')
     setShowOutput(false)
     setOutputLines([])
 
     const typeInterval = setInterval(() => {
+      if (cancelled) return
       if (charIndex < step.command.length) {
         setTypedCommand(step.command.slice(0, charIndex + 1))
         charIndex++
@@ -198,15 +235,17 @@ function HeroTerminal() {
         setShowOutput(true)
 
         let lineIndex = 0
-        const outputInterval = setInterval(() => {
+        outputInterval = setInterval(() => {
+          if (cancelled) return
           if (lineIndex < step.output.length) {
             const line = step.output[lineIndex]!
             setOutputLines((prev) => [...prev, line])
             lineIndex++
           } else {
-            clearInterval(outputInterval)
+            if (outputInterval) clearInterval(outputInterval)
 
-            setTimeout(() => {
+            transitionTimeout = setTimeout(() => {
+              if (cancelled) return
               setHistory((prev) => [
                 ...prev,
                 { command: step.command, output: step.output },
@@ -219,7 +258,8 @@ function HeroTerminal() {
               if (nextStep < steps.length) {
                 setCurrentStep(nextStep)
               } else {
-                setTimeout(() => {
+                resetTimeout = setTimeout(() => {
+                  if (cancelled) return
                   setHistory([])
                   setCurrentStep(0)
                 }, 2000)
@@ -230,17 +270,19 @@ function HeroTerminal() {
       }
     }, 50)
 
-    return () => clearInterval(typeInterval)
+    return () => {
+      cancelled = true
+      clearInterval(typeInterval)
+      if (outputInterval) clearInterval(outputInterval)
+      if (transitionTimeout) clearTimeout(transitionTimeout)
+      if (resetTimeout) clearTimeout(resetTimeout)
+    }
   }, [currentStep])
 
   return (
     <TerminalContainer>
       <TerminalHeader>
-        <XStack gap="$2">
-          <TerminalDot bg="#ff5f57" />
-          <TerminalDot bg="#ffbd2e" />
-          <TerminalDot bg="#28ca42" />
-        </XStack>
+        <TerminalDots />
         <Paragraph
           fontSize={12}
           color="#999"
@@ -254,54 +296,19 @@ function HeroTerminal() {
         </Paragraph>
       </TerminalHeader>
 
-      <div
-        ref={contentRef}
+      <YStack
+        ref={contentRef as any}
         className="terminal-content"
-        style={{
-          padding: 16,
-          height: TERMINAL_HEIGHT,
-          overflowY: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 4,
-        }}
+        p="$4"
+        height={TERMINAL_HEIGHT}
+        overflow="scroll"
+        gap="$1"
       >
         {history.map((entry, i) => (
-          <YStack key={i} opacity={0.5} mb="$3" gap="$1">
-            <XStack>
-              <Paragraph
-                fontFamily="$mono"
-                fontSize={13}
-                color="#22c55e"
-                mr="$2"
-                style={{ lineHeight: '1.7' }}
-              >
-                $
-              </Paragraph>
-              <Paragraph
-                fontFamily="$mono"
-                fontSize={13}
-                color="#e5e5e5"
-                style={{ lineHeight: '1.7' }}
-              >
-                {entry.command}
-              </Paragraph>
-            </XStack>
-            {entry.output.map((line, j) => (
-              <Paragraph
-                key={j}
-                fontFamily="$mono"
-                fontSize={13}
-                color="#888"
-                style={{ lineHeight: '1.7' }}
-              >
-                {line}
-              </Paragraph>
-            ))}
-          </YStack>
+          <HistoryEntry key={i} command={entry.command} output={entry.output} />
         ))}
 
-        {typedCommand && (
+        {!!typedCommand && (
           <YStack gap="$1">
             <XStack items="center">
               <Paragraph fontFamily="$mono" fontSize={13} color="#22c55e" mr="$2">
@@ -310,7 +317,15 @@ function HeroTerminal() {
               <Paragraph fontFamily="$mono" fontSize={13} color="#e5e5e5">
                 {typedCommand}
               </Paragraph>
-              {!showOutput && <YStack width={8} height={16} bg="#e5e5e5" ml="$1" />}
+              {!showOutput && (
+                <YStack
+                  className="terminal-cursor"
+                  width={8}
+                  height={16}
+                  bg="#e5e5e5"
+                  ml="$1"
+                />
+              )}
             </XStack>
           </YStack>
         )}
@@ -326,10 +341,10 @@ function HeroTerminal() {
             <Paragraph fontFamily="$mono" fontSize={13} color="#22c55e" mr="$2">
               $
             </Paragraph>
-            <YStack width={8} height={16} bg="#e5e5e5" />
+            <YStack className="terminal-cursor" width={8} height={16} bg="#e5e5e5" />
           </XStack>
         )}
-      </div>
+      </YStack>
     </TerminalContainer>
   )
 }
@@ -366,9 +381,9 @@ function CopyCommand() {
         {INSTALL_COMMAND}
       </Paragraph>
       {copied ? (
-        <CheckIcon size={18} color={'$color10' as any} />
+        <CheckIcon size={18} color="$color10" />
       ) : (
-        <CopyIcon size={18} color={'$color10' as any} />
+        <CopyIcon size={18} color="$color10" />
       )}
     </CommandBox>
   )
@@ -384,14 +399,14 @@ export function HeroSection() {
       justify="center"
     >
       <XStack
-        gap="$8"
+        gap="$2"
         items="center"
         justify="center"
         flexWrap="wrap"
         maxW={1200}
         width="100%"
         pb="$14"
-        $lg={{ flexWrap: 'nowrap', gap: '$12' }}
+        $lg={{ flexWrap: 'nowrap', gap: '$8' }}
       >
         {/* left side - hero content */}
         <YStack
@@ -408,8 +423,7 @@ export function HeroSection() {
           <YStack gap="$1">
             <HeroTitle>
               The <Span $maxXL={{ display: 'none' }}>startup</Span> starter that{' '}
-              <em>actually</em> gives you an{' '}
-              <HighlightText render="span">edge</HighlightText>.
+              <em>actually</em> gives you an <HighlightText>edge</HighlightText>.
             </HeroTitle>
           </YStack>
 
@@ -417,12 +431,12 @@ export function HeroSection() {
             <Strong fontWeight="600" color="$color12">
               Most starter kits suck
             </Strong>
-            . Takeout sucks less: groundbreaking new tech, battle-tested CI/CD, scalable
-            IaC, strapped-up for AI and{' '}
-            <Link href="/docs/changelog">updated constantly</Link> — it's&nbsp;what we use
+            . Takeout sucks less: fun new tech, real-world experience, auto-CI/CD,
+            scalable&nbsp;IaC, and strapped-up for AI with{' '}
+            <Link href="/docs/changelog">constant updates</Link> — it's&nbsp;what we use
             for ourselves, and our <Link href="https://addeven.com">clients</Link>.
-            <br />
-            <br />
+          </HeroSubtitle>
+          <HeroSubtitle>
             It's the{' '}
             <Strong fontWeight="600" color="$color11">
               fast way to build a startup
@@ -457,11 +471,13 @@ export function HeroSection() {
         <YStack
           flex={1}
           minW={300}
-          maxW={560}
-          mr={-50}
+          maxW={480}
+          x={0}
           items="center"
-          $lg={{ items: 'flex-end', mr: 0 }}
+          $md={{ x: 50 }}
+          $lg={{ items: 'flex-end', x: 0 }}
           position="relative"
+          transition="bouncy"
         >
           <HeroTerminal />
         </YStack>

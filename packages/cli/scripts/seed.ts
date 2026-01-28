@@ -62,24 +62,32 @@ const seedPosts = [
     id: 'seed-post-1',
     userId: 'seed-user-1',
     image: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=1200',
+    imageWidth: 1200,
+    imageHeight: 800,
     caption: 'morning coffee vibes',
   },
   {
     id: 'seed-post-2',
     userId: 'seed-user-2',
     image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200',
+    imageWidth: 1200,
+    imageHeight: 800,
     caption: 'caught this sunset on my hike today',
   },
   {
     id: 'seed-post-3',
     userId: 'seed-user-3',
     image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=1200',
+    imageWidth: 1200,
+    imageHeight: 799,
     caption: 'someone wanted to say hi',
   },
   {
     id: 'seed-post-4',
     userId: 'seed-user-4',
     image: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=1200',
+    imageWidth: 1200,
+    imageHeight: 799,
     caption: 'city lights never get old',
   },
 ]
@@ -176,10 +184,10 @@ async function seed() {
 
   for (const p of seedPosts) {
     await pool.query(
-      `INSERT INTO post (id, "userId", image, caption, "hiddenByAdmin", "createdAt", "commentCount")
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
-       ON CONFLICT (id) DO NOTHING`,
-      [p.id, p.userId, p.image, p.caption, false, now, 0]
+      `INSERT INTO post (id, "userId", image, "imageWidth", "imageHeight", caption, "hiddenByAdmin", "createdAt", "commentCount")
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       ON CONFLICT (id) DO UPDATE SET "imageWidth" = $4, "imageHeight" = $5`,
+      [p.id, p.userId, p.image, p.imageWidth, p.imageHeight, p.caption, false, now, 0]
     )
 
     console.info(`  created post: ${p.id}`)

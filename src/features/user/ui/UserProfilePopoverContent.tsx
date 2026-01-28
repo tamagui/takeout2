@@ -68,7 +68,7 @@ export const UserProfilePopoverContent = () => {
           </SizableText>
         </XStack>
         <Input
-          size="$3"
+          size="small"
           placeholder="John Doe"
           value={name}
           onChange={(e) => handleNameChange((e.target as HTMLInputElement).value)}
@@ -89,7 +89,7 @@ export const UserProfilePopoverContent = () => {
         </XStack>
         <XStack items="center" position="relative">
           <Input
-            size="$3"
+            size="small"
             flex={1}
             placeholder="johndoe"
             value={username}

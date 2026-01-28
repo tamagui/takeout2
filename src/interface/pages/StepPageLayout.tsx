@@ -1,6 +1,8 @@
+import { router } from 'one'
 import { Circle, H5, isWeb, Spacer, XStack, YStack } from 'tamagui'
 
-import { HeaderBackButton } from '../buttons/HeaderBackButton'
+import { ButtonSimple } from '../buttons/ButtonSimple'
+import { CaretLeftIcon } from '../icons/phosphor/CaretLeftIcon'
 import { PageHeading } from '../text/PageHeading'
 import { BaseStepPageLayout } from './BaseStepPageLayout'
 
@@ -49,17 +51,33 @@ export const StepPageLayout = ({
       hideBackButton={hideBackButton}
       keyboardOffset={keyboardOffset}
     >
-      <YStack gap="$5">
+      <YStack gap="$4">
         {!hideBackButton && !isWeb && (
           <XStack justify="space-between" items="center">
-            <HeaderBackButton disabled={disableBackButton} />
-            {headerTitle && <H5>{headerTitle}</H5>}
-            {buttonRight ? buttonRight : <Spacer width={24} />}
+            <ButtonSimple
+              size="large"
+              glass
+              circular
+              onPress={() => router.back()}
+              icon={<CaretLeftIcon size={22} color="$color12" />}
+              disabled={disableBackButton}
+            />
+            {headerTitle && (
+              <H5 fontFamily="$heading" color="$color12">
+                {headerTitle}
+              </H5>
+            )}
+            {buttonRight ? buttonRight : <Spacer width={42} />}
           </XStack>
         )}
 
-        <YStack gap="$5">
-          {Icon && (
+        <YStack
+          gap="$4"
+          mt="$2"
+          items="center"
+          $platform-native={{ items: 'flex-start' }}
+        >
+          {isWeb && Icon && (
             <Circle
               size={52}
               bg="$color2"
@@ -75,6 +93,8 @@ export const StepPageLayout = ({
             </Circle>
           )}
 
+          {!isWeb && Icon && <Icon size={28} color="$color11" />}
+
           {IconGroup && IconGroup}
 
           <PageHeading
@@ -85,7 +105,7 @@ export const StepPageLayout = ({
         </YStack>
       </YStack>
 
-      <YStack pt="$5" gap="$4">
+      <YStack pt="$4" gap="$4">
         {children}
       </YStack>
     </BaseStepPageLayout>

@@ -1,19 +1,18 @@
-import { memo } from 'react'
 import Svg, { Path } from 'react-native-svg'
 
 import { useIconProps } from '~/interface/icons/useIconProps'
 
 import type { IconProps } from '~/interface/icons/types'
 
-export const CircleHalfIcon = memo((props: IconProps) => {
+export const CircleHalfIcon = (props: IconProps) => {
   const { width, height, fill, ...svgProps } = useIconProps(props)
 
   return (
     <Svg width={width} height={height} viewBox="0 0 256 256" fill="none" {...svgProps}>
       <Path
-        d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,16.37a86.4,86.4,0,0,1,16,3V212.67a86.4,86.4,0,0,1-16,3Zm32,9.26a87.81,87.81,0,0,1,16,10.54V195.83a87.81,87.81,0,0,1-16,10.54ZM40,128a88.11,88.11,0,0,1,80-87.63V215.63A88.11,88.11,0,0,1,40,128Zm160,50.54V77.46a87.82,87.82,0,0,1,0,101.08Z"
+        d="M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20Zm12,24.87a83.53,83.53,0,0,1,24,7.25V203.88a83.53,83.53,0,0,1-24,7.25ZM44,128a84.12,84.12,0,0,1,72-83.13V211.13A84.12,84.12,0,0,1,44,128Zm144,58.71V69.29a83.81,83.81,0,0,1,0,117.42Z"
         fill={fill}
       />
     </Svg>
   )
-})
+}

@@ -1,8 +1,8 @@
 import { dropAllDatabases } from '@rocicorp/zero'
 import { useZero } from '@rocicorp/zero/react'
+import { isBrowser } from '@tamagui/constants'
 import { createZeroClient } from 'over-zero'
 import { memo, useEffect, useMemo, type ReactNode } from 'react'
-import { isClient, isWeb } from 'tamagui'
 
 import { ZERO_SERVER_URL } from '~/constants/urls'
 import * as groupedQueries from '~/data/generated/groupedQueries'
@@ -48,7 +48,7 @@ export const ProvideZero = ({ children }: { children: ReactNode }) => {
     }
   }, [userId, role])
 
-  const kvStore = isWeb && isClient && userId ? 'idb' : 'mem'
+  const kvStore = isBrowser && userId ? 'idb' : 'mem'
 
   if (DEBUG_LEVEL > 1) {
     console.info(`[zero]`, { auth, jwtToken, userId, ZERO_SERVER_URL })

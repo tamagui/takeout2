@@ -8,6 +8,8 @@ export const schema = table('post')
     id: string(),
     userId: string(),
     image: string(),
+    imageWidth: number().optional(),
+    imageHeight: number().optional(),
     caption: string().optional(),
     hiddenByAdmin: boolean(),
     commentCount: number(),

@@ -13,5 +13,11 @@ const mono = createSystemFont({
 
 export const fonts = {
   ...baseFonts,
+  body: {
+    ...baseFonts.body,
+    weight: {
+      4: '400',
+    },
+  },
   mono,
 }

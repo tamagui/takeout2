@@ -84,7 +84,9 @@ export async function run(
   return runInternal()
 
   async function runInternal() {
-    if (!silent) {
+    // respect TKO_SILENT env var for quiet mode in watch scenarios
+    const effectiveSilent = silent || process.env.TKO_SILENT === '1'
+    if (!effectiveSilent) {
       console.info(`$ ${command}${cwd ? ` (in ${cwd})` : ``}`)
     }
 
@@ -117,7 +119,7 @@ export async function run(
       const coloredPrefix = prefix ? `${color}[${prefix}]${reset}` : ''
 
       const writeOutput = (text: string, isStderr: boolean) => {
-        if (!silent) {
+        if (!effectiveSilent) {
           const output = prefix ? `${coloredPrefix} ${text}` : text
           if (!prefix || !captureOutput) {
             const stream = isStderr ? process.stderr : process.stdout
@@ -130,7 +132,7 @@ export async function run(
         stream: ReadableStream<Uint8Array> | undefined,
         isStderr: boolean
       ): Promise<string> => {
-        if (silent && !captureOutput) {
+        if (effectiveSilent && !captureOutput) {
           return ''
         }
 

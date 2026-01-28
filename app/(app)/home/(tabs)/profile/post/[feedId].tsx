@@ -1,5 +1,8 @@
+import { FeedDetailPage as FeedDetailPageComponent } from '~/features/feed/FeedDetailPage'
 import { createRoute } from 'one'
 
-const route = createRoute<'/(app)/home/profile/post/[feedId]'>()
+const route = createRoute<'/(app)/home/(tabs)/profile/post/[feedId]'>()
 
-export { FeedDetailPage } from '~/features/feed/FeedDetailPage'
+export const FeedDetailPage = () => {
+  return <FeedDetailPageComponent />
+}

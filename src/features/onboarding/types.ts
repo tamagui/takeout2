@@ -26,7 +26,6 @@ export interface OnboardingSlideData {
 }
 
 export interface OnboardingProps {
-  slides: OnboardingSlideData[]
   onComplete?: () => void
 }
 

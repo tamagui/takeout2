@@ -9,7 +9,7 @@ export const DotIcon = (props: IconProps) => {
 
   return (
     <Svg width={width} height={height} viewBox="0 0 256 256" fill="none" {...svgProps}>
-      <Path d="M140,128a12,12,0,1,1-12-12A12,12,0,0,1,140,128Z" fill={fill} />
+      <Path d="M144,128a16,16,0,1,1-16-16A16,16,0,0,1,144,128Z" fill={fill} />
     </Svg>
   )
 }

@@ -13,17 +13,21 @@ import { handleProcessExit } from '@take-out/scripts/helpers/handleProcessExit'
 import { getIsExiting } from './helpers/run'
 import { checkNodeVersion } from './node-version-check'
 
+// 256-color grays for subtle differentiation (232=darkest, 255=lightest)
 const colors = [
-  '\x1b[36m', // Cyan
-  '\x1b[35m', // Magenta
-  '\x1b[33m', // Yellow
-  '\x1b[32m', // Green
-  '\x1b[34m', // Blue
-  '\x1b[31m', // Red
-  '\x1b[90m', // Gray
+  '\x1b[38;5;245m', // medium gray
+  '\x1b[38;5;240m', // darker gray
+  '\x1b[38;5;250m', // lighter gray
+  '\x1b[38;5;243m', // medium-dark gray
+  '\x1b[38;5;248m', // medium-light gray
+  '\x1b[38;5;238m', // dark gray
+  '\x1b[38;5;252m', // light gray
 ]
 
 const reset = '\x1b[0m'
+
+// eslint-disable-next-line no-control-regex
+const ansiPattern = /\x1b\[[0-9;]*m/g
 
 // Verbose logging flag - set to false to reduce logs
 const verbose = false
@@ -226,7 +230,10 @@ const runScript = async (
   let stderrBuffer = ''
 
   // Construct command with arguments to forward
-  const runArgs = ['run', runBun ? '--bun' : '', name, ...forwardArgs].filter(Boolean)
+  // --silent suppresses bun's "$ command" output
+  const runArgs = ['run', '--silent', runBun ? '--bun' : '', name, ...forwardArgs].filter(
+    Boolean
+  )
 
   // Log the exact command being run
   const commandDisplay = `bun ${runArgs.join(' ')}`
@@ -247,6 +254,8 @@ const runScript = async (
       FORCE_COLOR: '3',
       BUN_RUN_PARENT_SCRIPT: name,
       BUN_RUN_SCRIPTS: allRunningScripts,
+      // propagate silent mode to child scripts
+      TKO_SILENT: '1',
     } as any,
     cwd: resolve(cwd),
     detached: true,
@@ -261,6 +270,9 @@ const runScript = async (
     if (getIsExiting()) return // prevent output during cleanup
     const lines = data.toString().split('\n')
     for (const line of lines) {
+      // filter out bun's "$ command" echo lines in nested scripts
+      const stripped = line.replace(ansiPattern, '')
+      if (stripped.startsWith('$ ')) continue
       if (line) log.output(`${color}${prefixLabel}${reset} ${line}`)
     }
   })
@@ -272,6 +284,9 @@ const runScript = async (
     if (getIsExiting()) return // prevent output during cleanup
     const lines = dataStr.split('\n')
     for (const line of lines) {
+      // filter out bun's "$ command" echo lines in nested scripts
+      const stripped = line.replace(ansiPattern, '')
+      if (stripped.startsWith('$ ')) continue
       if (line) log.error(`${color}${prefixLabel}${reset} ${line}`)
     }
   })
@@ -352,7 +367,7 @@ async function main() {
         const workspaceScriptPromises = scripts
           .filter((scriptName) => !parentRunningScripts.includes(scriptName))
           .map((scriptName) =>
-            runScript(scriptName, workspace, `[${packageName}] [${scriptName}]`)
+            runScript(scriptName, workspace, `${packageName} ${scriptName}`)
           )
 
         await Promise.all(workspaceScriptPromises)

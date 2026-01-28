@@ -26,10 +26,10 @@ export const BaseStepPageLayout = ({
   const content = (
     <>
       {isWeb ? (
-        <YStack flex={1} items="center">
-          <YStack width="100%" maxW={400} p="$2">
+        <YStack flex={1} p="$5">
+          <YStack width="100%" maxW={400}>
             {children}
-            {bottomElement && <YStack pt="$4">{bottomElement}</YStack>}
+            {bottomElement && bottomElement}
           </YStack>
         </YStack>
       ) : (

@@ -120,10 +120,6 @@ bun tko check                # Run all checks (lint, types, dependencies)
 bun lint:fix                 # Auto-fix linting issues
 bun tko check types          # TypeScript type checking
 
-# Testing
-bun test:unit                # Unit tests
-bun test:integration         # Integration tests
-
 # Database
 bun migrate run              # Build and run migrations
 bun db:migrate-add <name>    # Create one-off migrations
@@ -204,6 +200,57 @@ import { HeartIcon } from '~/interface/icons/phosphor/HeartIcon'
 
 **Note:** For brand icons (Apple, Google, Discord, GitHub, X/Twitter), use the
 custom icons in `src/interface/icons/` as these are not available in Phosphor.
+
+## Testing
+
+Takeout has two types of tests:
+
+### Unit Tests (Vitest)
+
+Unit tests run fast and don't require the backend:
+
+```bash
+bun test:unit
+```
+
+- Location: `src/test/unit/` and `packages/*/src/**/*.test.ts`
+- Config: `src/test/vitest.config.ts`
+- No backend required for most tests
+
+### Integration Tests (Playwright)
+
+Integration tests run against a live server with the full backend:
+
+```bash
+# requires backend + frontend running on port 8081
+bun test:integration
+```
+
+- Location: `src/test/integration/`
+- Config: `src/test/playwright.config.ts`
+- Requires: Docker backend + frontend server on port 8081
+
+### Running All Tests (CI Mode)
+
+The easiest way to run everything correctly is through CI:
+
+```bash
+bun run ci release --dry-run    # full pipeline without deploying
+bun run ci release --skip-deploy # same thing
+```
+
+This handles all the setup automatically:
+1. Starts Docker backend (postgres, zero, minio)
+2. Waits for migrations to complete
+3. Runs unit tests
+4. Builds and serves the frontend
+5. Runs Playwright integration tests
+
+Use `--dev` for faster iteration (runs frontend in dev mode instead of building):
+
+```bash
+bun run ci release --dry-run --dev
+```
 
 ## Database
 

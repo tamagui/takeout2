@@ -1,11 +1,11 @@
 import { memo } from 'react'
 import { AnimatePresence, YStack } from 'tamagui'
 
-import { HomePagination } from '~/features/feed/HomePagination'
 import { PostCard } from '~/features/feed/PostCard'
 import { usePostsPaginated } from '~/features/feed/usePosts'
 import { HeadInfo } from '~/interface/app/HeadInfo'
 import { FloatingCreateButton } from '~/interface/buttons/FloatingCreateButton'
+import { Pagination } from '~/interface/navigation/Pagination'
 import { HomeShimmer } from '~/interface/shimmer/HomeShimmer'
 import { H5 } from '~/interface/text/Headings'
 
@@ -79,7 +79,7 @@ export const FeedContent = memo(() => {
                 <PostCard key={post.id} post={post} />
               ))}
 
-              <HomePagination
+              <Pagination
                 currentPage={currentPage}
                 hasMore={hasMore}
                 onPrevPage={prevPage}

@@ -30,7 +30,8 @@ async function fetchPhosphorIcon(
     .replace(/([A-Z])/g, '-$1')
     .toLowerCase()
     .replace(/^-/, '')
-  const url = `${PHOSPHOR_BASE}/${weight}/${kebabName}.svg`
+  // phosphor file naming: icon-name-weight.svg (e.g., bell-bold.svg)
+  const url = `${PHOSPHOR_BASE}/${weight}/${kebabName}-${weight}.svg`
 
   const response = await fetch(url)
   if (!response.ok) {

@@ -4,7 +4,7 @@ import { XStack, YStack } from 'tamagui'
 import { Onboarding } from '~/features/onboarding'
 
 export function AuthAndOnboardingLayout() {
-  if (process.env.VITE_PLATFORM !== 'web') {
+  if (process.env.VITE_NATIVE) {
     return (
       <Stack
         screenOptions={{

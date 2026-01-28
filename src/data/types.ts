@@ -7,6 +7,7 @@ export type CommentWithUser = Comment & {
 }
 
 export type PostWithLatestComment = Post & {
+  user?: User
   comments?: readonly CommentWithUser[]
 }
 

@@ -5,13 +5,11 @@ import Animated, { SharedTransition } from 'react-native-reanimated'
 import { SizableText, XStack, YStack } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
-import { useUser } from '~/hooks/useUser'
 import { Link } from '~/interface/app/Link'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { ChatCircleDotsIcon } from '~/interface/icons/phosphor/ChatCircleDotsIcon'
 import { FastSquircleView } from '~/interface/view/FastSquircleView'
 
-import { useIsDark } from '../theme/useIsDark'
 import { AvatarWithMenu } from './AvatarWithMenu'
 import { PostActionMenu } from './PostActionMenu'
 import { PostCommentPreview } from './PostCommentPreview'
@@ -25,14 +23,15 @@ interface PostCardProps {
 }
 
 export const PostCard = memo(({ post }: PostCardProps) => {
-  const isDark = useIsDark()
   const { user } = useAuth()
   const authorId = post.userId
-  const [author] = useUser(authorId)
-  const avatarUrl = author?.image
-  const username = author?.username
+  // user is loaded with the post query, no N+1
+  const avatarUrl = post.user?.image
+  const username = post.user?.username
 
-  const [aspectRatio, setAspectRatio] = useState<number>(1)
+  const storedAspectRatio =
+    post.imageWidth && post.imageHeight ? post.imageWidth / post.imageHeight : undefined
+  const [aspectRatio, setAspectRatio] = useState<number>(storedAspectRatio ?? 1.5)
   const isOwnProfile = authorId === user?.id
 
   const handleImagePress = () => {
@@ -84,7 +83,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
           width="100%"
           rounded={16}
           overflow="hidden"
-          style={[{ aspectRatio: Math.max(aspectRatio, 0.8) }]}
+          aspectRatio={Math.max(aspectRatio, 0.8)}
           cornerSmoothing={1}
         >
           <Animated.Image
@@ -93,12 +92,16 @@ export const PostCard = memo(({ post }: PostCardProps) => {
             sharedTransitionTag={`post-image-${post.id}`}
             sharedTransitionStyle={transition}
             resizeMode="cover"
-            onLoad={(e) => {
-              const { width, height } = e.nativeEvent.source
-              if (width && height) {
-                setAspectRatio(width / height)
-              }
-            }}
+            onLoad={
+              storedAspectRatio
+                ? undefined
+                : (e) => {
+                    const { width, height } = e.nativeEvent.source
+                    if (width && height) {
+                      setAspectRatio(width / height)
+                    }
+                  }
+            }
           />
         </FastSquircleView>
       </Pressable>

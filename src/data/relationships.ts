@@ -51,6 +51,12 @@ export const postRelationships = relationships(tables.post, ({ one, many }) => (
     destSchema: tables.comment,
     destField: ['postId'],
   }),
+  // enables filtering posts whose author is blocked by viewer
+  authorBlockedBy: many({
+    sourceField: ['userId'],
+    destSchema: tables.block,
+    destField: ['blockedId'],
+  }),
 }))
 
 export const blockRelationships = relationships(tables.block, ({ one }) => ({

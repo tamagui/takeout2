@@ -19,8 +19,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tamagui-build",
-    "watch": "SKIP_INITIAL_BUILD=1 tamagui-build --watch",
+    "build": "tamagui-build --skip-types",
+    "watch": "tamagui-build --skip-types --watch",
     "lint": "oxlint src",
     "lint:fix": "oxfmt src && oxlint --fix --fix-suggestions src",
     "typecheck": "tko run typecheck",
@@ -61,7 +61,7 @@
     "react-native": "*"
   },
   "devDependencies": {
-    "@tamagui/build": "^2.0.0-1769439083296",
+    "@tamagui/build": "^2.0.0-1769573246601",
     "@typeschema/valibot": "^0.14.0",
     "react": "*",
     "react-native": "*"

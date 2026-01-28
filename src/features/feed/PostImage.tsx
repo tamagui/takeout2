@@ -3,7 +3,7 @@ import { memo } from 'react'
 import { Image } from '~/interface/image/Image'
 
 interface PostImageProps {
-  postId: string
+  postId?: string
   image: string
   caption?: string | null
   aspectRatio?: number

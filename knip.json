@@ -21,7 +21,6 @@
       "ignore": ["src/data/generated/**", "**/*.d.ts"],
       "ignoreDependencies": [
         "@types/*",
-        "@nandorojo/galeria",
         "@react-native-menu/menu",
         "jsonwebtoken",
         "motion",
@@ -32,12 +31,12 @@
       ]
     },
     "packages/cli": {
-      "entry": ["src/index.ts", "src/cli.ts"],
+      "entry": ["src/cli.ts"],
       "project": ["src/**/*.ts"],
       "ignoreDependencies": ["bun-types"]
     },
     "packages/helpers": {
-      "entry": ["src/index.ts", "src/*.ts"],
+      "entry": ["src/*.ts"],
       "project": ["src/**/*.ts"]
     },
     "packages/hooks": {
@@ -48,14 +47,13 @@
       "project": ["src/**/*.ts"]
     },
     "packages/better-auth-utils": {
-      "entry": ["src/index.ts"],
       "project": ["src/**/*.ts"]
     },
     "packages/native-hot-update": {
       "project": ["src/**/*.ts"]
     },
     "packages/over-zero": {
-      "entry": ["src/index.ts", "src/cli.ts", "src/server.ts"],
+      "entry": ["src/cli.ts"],
       "project": ["src/**/*.ts"],
       "ignoreDependencies": ["@sinclair/typebox", "valibot"]
     },

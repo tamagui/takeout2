@@ -1,4 +1,4 @@
-import { XStack, isWeb, useTheme } from 'tamagui'
+import { XStack, isWeb } from 'tamagui'
 
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
@@ -7,8 +7,6 @@ import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import type { OnboardingActionButtonProps } from './types'
 
 export function OnboardingActionButton({ onPrev, onNext }: OnboardingActionButtonProps) {
-  const theme = useTheme()
-
   return (
     <XStack
       gap="$2"

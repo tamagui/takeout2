@@ -24,6 +24,9 @@ const HeroTitle = styled(H1, {
 const HeroSubtitle = styled(Paragraph, {
   color: '$color10',
   size: '$6',
+  $xl: {
+    size: '$7',
+  },
   '$platform-web': {
     textWrap: 'balance',
   },
@@ -413,7 +416,7 @@ export function HeroSection() {
           gap="$5"
           flex={1}
           minW={300}
-          maxW={520}
+          maxW={620}
           items="flex-start"
           scale={0.9}
           $heightLG={{
@@ -422,8 +425,8 @@ export function HeroSection() {
         >
           <YStack gap="$1">
             <HeroTitle>
-              The <Span $maxXL={{ display: 'none' }}>startup</Span> starter that{' '}
-              <em>actually</em> gives you an <HighlightText>edge</HighlightText>.
+              The <Span $maxXL={{ display: 'none' }}>startup</Span> stack that{' '}
+              <em>actually</em> <HighlightText>cares.</HighlightText>
             </HeroTitle>
           </YStack>
 
@@ -431,8 +434,8 @@ export function HeroSection() {
             <Strong fontWeight="600" color="$color12">
               Most starter kits suck
             </Strong>
-            . Takeout sucks less: novel tech meets real-world experience, auto-CI/CD,
-            scalable&nbsp;IaC, strapped-up for AI, and{' '}
+            . Takeout sucks less: novel&nbsp;tech 🤝 real-world experience, actual CI/CD
+            with IaC, lots of "agent" stuff, and{' '}
             <Link href="/docs/changelog">constant updates</Link> — it's&nbsp;what we use
             for ourselves, and our <Link href="https://addeven.com">clients</Link>.
           </HeroSubtitle>
@@ -476,6 +479,9 @@ export function HeroSection() {
           items="center"
           $md={{ x: 50 }}
           $lg={{ items: 'flex-end', x: 0 }}
+          $sm={{
+            mt: '$15',
+          }}
           position="relative"
           transition="bouncy"
         >
@@ -484,6 +490,7 @@ export function HeroSection() {
             maxH="100%"
             items="center"
             justify="center"
+            self="center"
             aspectRatio="588 / 1176"
           >
             <svg width="0" height="0" style={{ position: 'absolute' }}>
@@ -511,8 +518,8 @@ export function HeroSection() {
                   playsInline
                   style={{
                     position: 'absolute',
-                    top: -3,
-                    left: -4,
+                    top: -1,
+                    left: -3.5,
                     width: 294 + 4,
                     height: 588 + 12,
                     objectFit: 'cover',

@@ -29,7 +29,7 @@ export function HomeBackground() {
         l={0}
         r={0}
         b={0}
-        opacity={0.15}
+        opacity={0.2}
         filter="invert(1)"
         z={0}
         pointerEvents="none"

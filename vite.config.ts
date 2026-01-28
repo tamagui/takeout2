@@ -1,5 +1,5 @@
 import { tamaguiAliases, tamaguiPlugin } from '@tamagui/vite-plugin'
-import { one, resolvePath } from 'one/vite'
+import { one } from 'one/vite'
 import { visualizer } from 'rollup-plugin-visualizer'
 
 import type { UserConfig } from 'vite'

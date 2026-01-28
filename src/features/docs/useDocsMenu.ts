@@ -9,14 +9,6 @@ export const useDocsMenu = () => {
   const router = useRouter()
   const currentPath = pathname
 
-  const currentPageIndex = allNotPending.findIndex((page) => page.route === currentPath)
-  const previous = allNotPending[currentPageIndex - 1]
-  let nextIndex = currentPageIndex + 1
-  let next = allNotPending[nextIndex]
-  while (next && next.route.startsWith('http')) {
-    next = allNotPending[++nextIndex]
-  }
-
   // on route change close menu
   useEffect(() => {
     return router.subscribe(() => {
@@ -24,7 +16,15 @@ export const useDocsMenu = () => {
         setOpen(false)
       })
     })
-  }, [router.subscribe])
+  }, [router])
+
+  const currentPageIndex = allNotPending.findIndex((page) => page.route === currentPath)
+  const previous = allNotPending[currentPageIndex - 1]
+  let nextIndex = currentPageIndex + 1
+  let next = allNotPending[nextIndex]
+  while (next && next.route.startsWith('http')) {
+    next = allNotPending[++nextIndex]
+  }
 
   return {
     open,

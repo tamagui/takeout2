@@ -6,15 +6,14 @@
   "source": "src/index.ts",
   "main": "dist/cjs",
   "module": "dist/esm",
-  "types": "./types/index.d.ts",
   "files": [
     "src",
     "types",
     "dist"
   ],
   "scripts": {
-    "build": "tamagui-build",
-    "watch": "SKIP_INITIAL_BUILD=1 tamagui-build --watch",
+    "build": "tamagui-build --skip-types",
+    "watch": "tamagui-build --skip-types --watch",
     "typecheck": "tko run typecheck",
     "lint": "oxlint src",
     "lint:fix": "oxfmt src && oxlint --fix --fix-suggestions src",
@@ -28,7 +27,7 @@
         "import": "./dist/esm/index.native.js",
         "require": "./dist/cjs/index.native.js"
       },
-      "types": "./types/index.d.ts",
+      "types": "./src/index.ts",
       "import": "./dist/esm/index.mjs",
       "require": "./dist/cjs/index.cjs",
       "default": "./dist/esm/index.mjs"
@@ -38,7 +37,7 @@
         "import": "./dist/esm/server-only.native.js",
         "require": "./dist/cjs/server-only.native.js"
       },
-      "types": "./types/server-only.d.ts",
+      "types": "./src/server-only.ts",
       "import": "./dist/esm/server-only.mjs",
       "require": "./dist/cjs/server-only.cjs",
       "default": "./dist/esm/server-only.mjs"
@@ -48,24 +47,24 @@
         "import": "./dist/esm/client-only.native.js",
         "require": "./dist/cjs/client-only.native.js"
       },
-      "types": "./types/client-only.d.ts",
+      "types": "./src/client-only.ts",
       "import": "./dist/esm/client-only.mjs",
       "require": "./dist/cjs/client-only.cjs",
       "default": "./dist/esm/client-only.mjs"
     }
   },
   "dependencies": {
-    "@tamagui/constants": "^2.0.0-1769320275396",
+    "@tamagui/constants": "^2.0.0-1769573246601",
     "dequal": "^2.0.3"
   },
   "peerDependencies": {
-    "@rocicorp/zero": "*",
+    "@rocicorp/zero": "^0.25.9",
     "expo-clipboard": "*",
     "react": "*",
     "react-native": "*"
   },
   "devDependencies": {
-    "@tamagui/build": "^2.0.0-1769320275396",
+    "@tamagui/build": "^2.0.0-1769573246601",
     "@types/node": "24.0.3",
     "@types/react": "^19.0.8",
     "oxfmt": "^0.16.0",

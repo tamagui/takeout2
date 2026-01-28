@@ -1,34 +1,40 @@
-import { SizableText, Spinner, YStack } from 'tamagui'
+import { Separator, SizableText, YStack } from 'tamagui'
 
-import { commentsByPostId } from '~/data/queries/comment'
 import { CommentItem } from '~/features/feed/CommentItem'
+import { ChatCircleDotsIcon } from '~/interface/icons/phosphor/ChatCircleDotsIcon'
 import { Text } from '~/interface/text/Text'
-import { useQuery } from '~/zero/client'
+
+import type { CommentWithUser } from '~/data/types'
 
 interface CommentSectionProps {
-  postId: string
+  comments: readonly CommentWithUser[]
 }
 
-export function CommentSection({ postId }: CommentSectionProps) {
-  const [comments, status] = useQuery(commentsByPostId, { postId })
-  const isLoading = status.type === 'unknown'
+export function CommentSection({ comments }: CommentSectionProps) {
+  const count = comments.length
 
   return (
-    <YStack gap="$4" pt="$4">
-      <SizableText size="$5" fontWeight="600">
-        Comments {comments?.length ? `(${comments.length})` : ''}
-      </SizableText>
+    <YStack pt="$4">
+      {process.env.VITE_NATIVE && <Separator mt="$1" mb="$4" borderColor="$color4" />}
 
-      {isLoading ? (
-        <YStack items="center" py="$4">
-          <Spinner />
+      {count > 0 && (
+        <SizableText size="$3" fontWeight="600" pb="$2" color="$color7">
+          Comments ({count})
+        </SizableText>
+      )}
+
+      {count === 0 ? (
+        <YStack items="center" gap="$3" py="$6">
+          <ChatCircleDotsIcon size={36} color="$color8" />
+          <Text size="$3" color="$color10">
+            No comments yet
+          </Text>
         </YStack>
-      ) : comments?.length === 0 ? (
-        <Text color="$color10">No comments yet. Be the first to comment!</Text>
       ) : (
-        <YStack gap="$3">
-          {comments?.map((comment) => (
+        <YStack gap="$4" pt="$2">
+          {comments.map((comment, index) => (
             <CommentItem
+              index={index}
               key={comment.id}
               image={comment.user?.image}
               username={comment.user?.username}

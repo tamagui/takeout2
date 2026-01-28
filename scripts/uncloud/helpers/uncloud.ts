@@ -80,7 +80,7 @@ export async function initUncloud(
   // fresh server - need to initialize
   console.info('📦 uncloud not installed on server - initializing...')
 
-  const flags = []
+  const flags: string[] = []
   if (options.noDNS) flags.push('--no-dns')
   if (options.noCaddy) flags.push('--no-caddy')
   const flagStr = flags.join(' ')

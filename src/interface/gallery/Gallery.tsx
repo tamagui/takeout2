@@ -79,7 +79,7 @@ export const Gallery = () => {
     if (mediaUrls.length) {
       setLastMediaUrls(mediaUrls)
     }
-  }, [galleryItems])
+  }, [mediaUrls])
 
   const [fullyHidden, setFullyHidden] = useState(true)
 

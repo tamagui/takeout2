@@ -8,12 +8,7 @@ import { fileURLToPath } from 'node:url'
 
 import pc from 'picocolors'
 
-// re-export needed functions from script command
-import {
-  discoverScripts,
-  getLocalScriptsDir,
-  getScriptMetadata,
-} from '../commands/script'
+import { discoverScripts, getLocalScriptsDir, getScriptMetadata } from './script-utils'
 
 // find scripts package root using import.meta.resolve
 function findScriptsPackageRoot(): string | null {

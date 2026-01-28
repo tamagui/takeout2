@@ -84,7 +84,7 @@ jobs:
 
       - name: Prebuild iOS
         if: steps.cache-ios.outputs.cache-hit != 'true'
-        run: bun run prebuild:native --platform ios --no-install
+        run: bun run native:prebuild --platform ios --no-install
         env:
           APP_VARIANT: ${{ env.APP_VARIANT }}
 

@@ -87,7 +87,7 @@ type GetModelMutators<Models extends GenericModels> = {
 export type GenericModels = {
   [key: string]: {
     mutate: Record<string, (ctx: MutatorContext, obj?: any) => Promise<any>>
-    permissions?: Where<string, Condition | boolean>
+    permissions?: Where<any, Condition | boolean>
   }
 }
 

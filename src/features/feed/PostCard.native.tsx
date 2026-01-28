@@ -1,39 +1,37 @@
 import { formatDistanceToNow } from '@take-out/helpers'
-import { BlurView } from 'expo-blur'
 import { router } from 'one'
 import { memo, useState } from 'react'
-import { StyleSheet } from 'react-native'
 import Animated, { SharedTransition } from 'react-native-reanimated'
 import { SizableText, XStack, YStack } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
-import { useUser } from '~/hooks/useUser'
 import { Link } from '~/interface/app/Link'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { ChatCircleDotsIcon } from '~/interface/icons/phosphor/ChatCircleDotsIcon'
 import { FastSquircleView } from '~/interface/view/FastSquircleView'
 
-import { useIsDark } from '../theme/useIsDark'
 import { AvatarWithMenu } from './AvatarWithMenu'
 import { PostActionMenu } from './PostActionMenu'
+import { PostCommentPreview } from './PostCommentPreview'
 
-import type { Post } from '~/data/types'
+import type { PostWithLatestComment } from '~/data/types'
 
 const transition = SharedTransition.springify().damping(15)
 
 interface PostCardProps {
-  post: Post
+  post: PostWithLatestComment
 }
 
 export const PostCard = memo(({ post }: PostCardProps) => {
-  const isDark = useIsDark()
   const { user } = useAuth()
   const authorId = post.userId
-  const [author] = useUser(authorId)
-  const avatarUrl = author?.image
-  const username = author?.username
+  // user is loaded with the post query, no N+1
+  const avatarUrl = post.user?.image
+  const username = post.user?.username
 
-  const [aspectRatio, setAspectRatio] = useState<number>(1)
+  const storedAspectRatio =
+    post.imageWidth && post.imageHeight ? post.imageWidth / post.imageHeight : undefined
+  const [aspectRatio, setAspectRatio] = useState<number>(storedAspectRatio ?? 1.5)
   const isOwnProfile = authorId === user?.id
 
   const handleImagePress = () => {
@@ -43,19 +41,17 @@ export const PostCard = memo(({ post }: PostCardProps) => {
   return (
     <FastSquircleView
       mt="$3"
-      rounded={20}
+      rounded={25}
       cornerSmoothing={1}
       overflow="hidden"
       data-testid={`post-card-${post.id}`}
-      p="$3"
+      py="$4"
+      px="$3.5"
       gap="$3"
+      $theme-dark={{
+        bg: '$shadow4',
+      }}
     >
-      <BlurView
-        intensity={100}
-        tint={isDark ? 'dark' : 'light'}
-        style={StyleSheet.absoluteFill}
-      />
-
       <XStack items="center" gap="$3">
         <AvatarWithMenu
           avatarUrl={avatarUrl || ''}
@@ -68,7 +64,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
           <SizableText size="$4" fontWeight="700" color="$color12">
             {username}
           </SizableText>
-          <SizableText size="$2" color="$color10">
+          <SizableText size="$3" color="$color9">
             {formatDistanceToNow(post.createdAt)}
           </SizableText>
         </YStack>
@@ -77,11 +73,9 @@ export const PostCard = memo(({ post }: PostCardProps) => {
       </XStack>
 
       {post.caption && (
-        <YStack>
-          <SizableText size="$4" color="$color12" numberOfLines={3}>
-            {post.caption}
-          </SizableText>
-        </YStack>
+        <SizableText size="$5" m="$-0.25" color="$color12" my="$1" numberOfLines={3}>
+          {post.caption}
+        </SizableText>
       )}
 
       <Pressable onPress={handleImagePress}>
@@ -98,17 +92,21 @@ export const PostCard = memo(({ post }: PostCardProps) => {
             sharedTransitionTag={`post-image-${post.id}`}
             sharedTransitionStyle={transition}
             resizeMode="cover"
-            onLoad={(e) => {
-              const { width, height } = e.nativeEvent.source
-              if (width && height) {
-                setAspectRatio(width / height)
-              }
-            }}
+            onLoad={
+              storedAspectRatio
+                ? undefined
+                : (e) => {
+                    const { width, height } = e.nativeEvent.source
+                    if (width && height) {
+                      setAspectRatio(width / height)
+                    }
+                  }
+            }
           />
         </FastSquircleView>
       </Pressable>
 
-      <XStack items="center" gap="$4" p="$2">
+      <XStack items="center" gap="$3" p="$2">
         <Link href={`/home/feed/post/${post.id}?username=${username}`}>
           <XStack items="center" gap="$2">
             <ChatCircleDotsIcon size={26} color="$color" />
@@ -119,6 +117,11 @@ export const PostCard = memo(({ post }: PostCardProps) => {
             )}
           </XStack>
         </Link>
+        {post.comments?.[0] && (
+          <Link href={`/home/feed/post/${post.id}?username=${username}`} flex={1}>
+            <PostCommentPreview comment={post.comments[0]} />
+          </Link>
+        )}
       </XStack>
     </FastSquircleView>
   )

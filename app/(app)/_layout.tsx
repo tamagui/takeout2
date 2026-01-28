@@ -1,5 +1,5 @@
 import { Protected, Redirect, Slot, Stack, usePathname } from 'one'
-import { Configuration, isWeb } from 'tamagui'
+import { Configuration, isWeb, SizableText } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
 import { Dialogs } from '~/interface/dialogs/Dialogs'
@@ -16,10 +16,14 @@ export function AppLayout() {
   const isLoggedIn = state === 'logged-in'
 
   if (state === 'loading') {
-    return null
+    return (
+      <SizableText m="auto" color="$color8">
+        Loading...
+      </SizableText>
+    )
   }
 
-  // web: use Redirect for auth routing (Protected works with Stack)
+  // Redirect for auth routing
   if (isWeb) {
     if (!isLoggedIn && pathname.startsWith('/home')) {
       return <Redirect href="/auth/login" />
@@ -30,18 +34,18 @@ export function AppLayout() {
   }
 
   return (
-    // our app is SPA from here on down, we avoid extra work by disabling SSR
+    // our app is SPA from here on down, avoid extra work by disabling SSR
     <Configuration disableSSR animationDriver={animationsApp}>
       <ProvideZero>
         <ToastProvider>
           <NotificationProvider>
-            {process.env.VITE_PLATFORM === 'web' ? (
+            {!process.env.VITE_NATIVE ? (
               <DragDropFile>
                 <Gallery />
                 <Slot />
               </DragDropFile>
             ) : (
-              // We need Stack here for transition animation to work on native
+              // Stack transition animation on native
               <Stack
                 screenOptions={{
                   headerShown: false,

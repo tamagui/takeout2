@@ -10,17 +10,34 @@ with dedicated QA resources.
 
 ## Running Tests
 
+The easiest way to run the full test suite:
+
 ```bash
-bun test              # run all tests
-bun test:unit         # unit tests only
-bun test:integration  # integration tests only
+bun run ci release --dry-run       # full pipeline without deploying
+bun run ci release --dry-run --dev # faster: uses dev server instead of build
 ```
 
-For integration tests, you need the dev server running:
+This starts backend, runs unit tests, builds/serves frontend, and runs
+integration tests automatically.
+
+For running tests individually:
 
 ```bash
-bun ci:start-dev      # starts backend + frontend
-bun test:integration  # in another terminal
+bun test:unit         # unit tests only (no backend needed)
+bun test:integration  # integration tests only (needs backend + frontend running)
+```
+
+For manual integration test setup:
+
+```bash
+# terminal 1: start backend (optional: backend:clean first for fresh db)
+bun backend
+
+# terminal 2: start frontend
+bun dev
+
+# terminal 3: run tests
+bun test:integration
 ```
 
 ## Integration Tests
@@ -47,8 +64,8 @@ Helpers in `helpers.ts` handle common operations like `loginAsDemo()`,
 
 ### Database State
 
-Restart `bun ci:start-dev` between test runs for a clean database. Tests create
-data that persists, and stale data causes flaky failures.
+For a clean database, use `bun backend:clean && bun backend`. Tests create data
+that persists, and stale data/keys can cause flaky failures or auth errors.
 
 ### Debugging
 
@@ -86,10 +103,10 @@ bun test:unit packages/hooks/src/useDeepMemoizedObject.test.ts
 
 ## CI Integration
 
-Tests run automatically in CI via `bun run ci`. The full pipeline:
+Tests run automatically in CI via `bun run ci release`. The full pipeline:
 
 ```bash
-bun run ci --dry-run  # run locally without deploying
+bun run ci release --dry-run  # run locally without deploying
 ```
 
 CI uses single-worker mode with one retry for consistency.

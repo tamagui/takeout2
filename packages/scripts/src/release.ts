@@ -216,10 +216,14 @@ async function main() {
 
           const filename = `${name.replace('/', '_')}-package.tmp.tgz`
           const absolutePath = `${tmpDir}/${filename}`
-          await run(`npm pack --pack-destination ${tmpDir}`, {
-            cwd: tmpPackageDir,
-            silent: true,
-          })
+          // use --swap-exports to swap types ./src/*.ts -> ./types/*.d.ts during pack
+          await run(
+            `bunx tamagui-build --swap-exports -- npm pack --pack-destination ${tmpDir}`,
+            {
+              cwd: tmpPackageDir,
+              silent: true,
+            }
+          )
 
           // rename npm's output to our expected filename
           const npmFilename = `${name.replace('@', '').replace('/', '-')}-${nextVersion}.tgz`

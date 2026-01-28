@@ -20,6 +20,7 @@ import {
 
 import { useHandleEscapeIf } from '~/features/shortcuts/handleKeyboardEscape'
 
+import { BlurView } from '../effects/BlurView'
 import { dialogEmit } from './shared'
 
 const CONTENT_RADIUS: SizeTokens = '$9'
@@ -84,42 +85,42 @@ const DialogComponent = ({
             moveOnKeyboardChange
           >
             <Sheet.Overlay
-              bg="$background"
-              transition="quick"
-              opacity={0.5}
+              bg="$shadow6"
+              transition="medium"
               enterStyle={{ opacity: 0 }}
               exitStyle={{ opacity: 0 }}
             />
-            <YStack items="center">
-              <Sheet.Handle bg="gray" width={60} height={5} />
-            </YStack>
-            <Sheet.Frame p="$4" pb={insets.bottom} gap="$4">
-              <TamaguiDialog.Adapt.Contents />
+            <Sheet.Frame
+              theme="surface2"
+              p="$4"
+              pb={insets.bottom + 100 + 30}
+              y={100}
+              gap="$4"
+              rounded="$10"
+              borderBottomRightRadius={0}
+              borderBottomLeftRadius={0}
+              bg="transparent"
+              boxShadow="0px 0 40px $shadow6"
+            >
+              <YStack z={0} bg="$color5" opacity={0.5} inset={0} position="absolute" />
+              <BlurView intensity={50} position="absolute" inset={0} />
+              <Sheet.ScrollView>
+                <TamaguiDialog.Adapt.Contents />
+              </Sheet.ScrollView>
             </Sheet.Frame>
           </Sheet>
         </TamaguiDialog.Adapt>
 
-        <TamaguiDialog.Portal zIndex={500_000}>
+        <TamaguiDialog.Portal z={500_000}>
           <DialogOverlay
             key="overlay"
-            bg="$background08"
+            bg="$shadow6"
             onPress={(e) => {
               props.onOpenChange?.(false)
               e.stopPropagation()
               e.preventDefault()
             }}
-          >
-            <YStack
-              fullscreen
-              $theme-dark={{
-                bg: '$color2',
-              }}
-              $theme-light={{
-                bg: '$shadow4',
-              }}
-              opacity={0.8}
-            />
-          </DialogOverlay>
+          />
 
           <DialogContent
             ref={dialogContentRef}
@@ -193,11 +194,11 @@ const DialogHeader = ({
 }) => {
   const content = (
     <YStack pointerEvents="box-none" gap="$3">
-      <DialogTitle size="$6" fontWeight="600" cursor="default" select="none">
+      <DialogTitle size="$5" fontWeight="600" cursor="default" select="none">
         {title}
       </DialogTitle>
       {!!description && (
-        <DialogDescription size="$5" color="$color10">
+        <DialogDescription size="$4" color="$color10">
           {description}
         </DialogDescription>
       )}

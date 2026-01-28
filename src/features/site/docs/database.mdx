@@ -13,8 +13,8 @@ the [Zero](/docs/zero) page.
 
 PostgreSQL holds two schemas: **schema-private** for auth tables that stay
 server-side only, and **schema-public** for application data that syncs to Zero
-clients. Zero replicates from the public schema to give clients offline-first
-access with real-time updates.
+clients. Zero replicates from the public schema to give clients access with
+real-time updates.
 
 ## Schema Files
 
@@ -146,16 +146,19 @@ const db = getDb()
 const user = await db.select().from(userPublic).where(eq(userPublic.id, userId))
 ```
 
-See the [Drizzle ORM docs](https://orm.drizzle.team/docs/select) for the full query API.
+See the [Drizzle ORM docs](https://orm.drizzle.team/docs/select) for the full
+query API.
 
-For client-side queries that sync in real-time, use Zero's ZQL—see the [Zero page](/docs/zero) and [Zero's Reading Data docs](https://zero.rocicorp.dev/docs/reading-data).
+For client-side queries that sync in real-time, use Zero's ZQL—see the
+[Zero page](/docs/zero) and
+[Zero's Reading Data docs](https://zero.rocicorp.dev/docs/reading-data).
 
 ## Aggregates and Triggers
 
 Zero doesn't support aggregates, but even if it did, computing aggregates on
-read is slow for any database. Queries like `SELECT COUNT(*) FROM comments WHERE
-postId = ?` seem innocent but become problematic at scale—they lock rows, block
-writes, and get slower as data grows.
+read is slow for any database. Queries like
+`SELECT COUNT(*) FROM comments WHERE postId = ?` seem innocent but become
+problematic at scale—they lock rows, block writes, and get slower as data grows.
 
 The solution is **denormalization**: pre-computing and storing derived values
 alongside your source data. Instead of counting comments on every read, we store

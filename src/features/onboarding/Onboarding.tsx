@@ -1,12 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   AnimatePresence,
   SizableText,
   Theme,
   XStack,
   YStack,
-  useTheme,
-  type ColorTokens,
   type ThemeName,
 } from 'tamagui'
 
@@ -45,15 +43,15 @@ export function Onboarding(_props?: Partial<OnboardingProps>) {
 
   const currentSlide = onboardingSlides[slideIndex]
 
-  const goToPrev = useCallback(() => {
+  const goToPrev = () => {
     setDirection('prev')
     setSlideIndex((prev) => (prev > 0 ? prev - 1 : onboardingSlides.length - 1))
-  }, [])
+  }
 
-  const goToNext = useCallback(() => {
+  const goToNext = () => {
     setDirection('next')
     setSlideIndex((prev) => (prev < onboardingSlides.length - 1 ? prev + 1 : 0))
-  }, [])
+  }
 
   return (
     <Theme name={(currentSlide?.theme ?? 'blue') as ThemeName}>
@@ -99,12 +97,15 @@ function OnboardingContent({
   const touchStartX = useRef<number | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const handlePointerDown = useCallback((e: PointerEvent) => {
-    touchStartX.current = e.clientX
-  }, [])
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
 
-  const handlePointerUp = useCallback(
-    (e: PointerEvent) => {
+    const handlePointerDown = (e: PointerEvent) => {
+      touchStartX.current = e.clientX
+    }
+
+    const handlePointerUp = (e: PointerEvent) => {
       if (touchStartX.current === null) return
 
       const diff = e.clientX - touchStartX.current
@@ -116,13 +117,7 @@ function OnboardingContent({
       }
 
       touchStartX.current = null
-    },
-    [onPrev, onNext]
-  )
-
-  useEffect(() => {
-    const el = containerRef.current
-    if (!el) return
+    }
 
     el.addEventListener('pointerdown', handlePointerDown)
     el.addEventListener('pointerup', handlePointerUp)
@@ -131,7 +126,7 @@ function OnboardingContent({
       el.removeEventListener('pointerdown', handlePointerDown)
       el.removeEventListener('pointerup', handlePointerUp)
     }
-  }, [handlePointerDown, handlePointerUp])
+  }, [onPrev, onNext])
 
   if (!slide) return null
 
@@ -331,7 +326,6 @@ function FeatureCard({
   width: number
   height: number
 }) {
-  const theme = useTheme()
   const { Icon, title } = feature
 
   return (
@@ -355,7 +349,7 @@ function FeatureCard({
         bg="$color4"
         rounded={10}
       >
-        <Icon size={20} color={theme.color10?.val as ColorTokens} />
+        <Icon size={20} color="$color10" />
       </YStack>
       <SizableText size="$3" fontWeight="600" color="$color12">
         {title}
@@ -371,8 +365,6 @@ function FeatureCardSquare({
   feature: SlideFeature | undefined
   size: number
 }) {
-  const theme = useTheme()
-
   if (!feature) return null
   const { Icon, title } = feature
 
@@ -398,7 +390,7 @@ function FeatureCardSquare({
         bg="$color5"
         rounded={12}
       >
-        <Icon size={24} color={theme.color10?.val as ColorTokens} />
+        <Icon size={24} color="$color11" />
       </YStack>
       <SizableText
         size="$2"

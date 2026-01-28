@@ -1,20 +1,20 @@
 import MaskedView from '@react-native-masked-view/masked-view'
-import { BlurView, type BlurViewProps } from 'expo-blur'
 import { LinearGradient } from 'expo-linear-gradient'
 import { StyleSheet } from 'react-native'
 import { View, type ViewProps } from 'tamagui'
 
 import { easeGradient } from '~/helpers/gradient'
+import { BlurView, type BlurTint } from '~/interface/effects/BlurView'
 
 interface GradientBlurViewProps extends ViewProps {
   intensity?: number
-  tint?: BlurViewProps['tint']
+  tint?: BlurTint
   inverted?: boolean
 }
 
 export const GradientBlurView = ({
   intensity = 80,
-  tint = 'default',
+  tint,
   inverted = false,
   ...viewProps
 }: GradientBlurViewProps) => {

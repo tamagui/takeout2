@@ -137,7 +137,7 @@ export function Select({
               b={0}
               items="center"
               justify="center"
-              width={'$4'}
+              width="$4"
               pointerEvents="none"
             >
               <CaretDownIcon

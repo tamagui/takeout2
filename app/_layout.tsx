@@ -29,15 +29,7 @@ export function Layout() {
             <TamaguiRootProvider>
               <GlobalTooltipProvider>
                 <SafeAreaProvider>
-                  {process.env.VITE_PLATFORM === 'web' ? (
-                    <>
-                      <LoadProgressBar startDelay={800} />
-                      <HomeBackground />
-                      <SiteRootLayout>
-                        <Slot />
-                      </SiteRootLayout>
-                    </>
-                  ) : (
+                  {process.env.VITE_NATIVE ? (
                     <Stack
                       screenOptions={{
                         headerShown: false,
@@ -46,6 +38,14 @@ export function Layout() {
                     >
                       <Stack.Screen name="(app)" />
                     </Stack>
+                  ) : (
+                    <>
+                      <LoadProgressBar startDelay={800} />
+                      <HomeBackground />
+                      <SiteRootLayout>
+                        <Slot />
+                      </SiteRootLayout>
+                    </>
                   )}
                 </SafeAreaProvider>
               </GlobalTooltipProvider>

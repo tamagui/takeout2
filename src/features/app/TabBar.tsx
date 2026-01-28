@@ -1,4 +1,3 @@
-import { BlurView } from 'expo-blur'
 import { usePathname } from 'one'
 import { useCallback, useEffect, useState } from 'react'
 import { Dimensions, StyleSheet } from 'react-native'
@@ -16,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { scheduleOnRN } from 'react-native-worklets'
 import { View } from 'tamagui'
 
+import { BlurView } from '~/interface/effects/BlurView'
 import {
   lightImpact,
   mediumImpact,
@@ -88,8 +88,8 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
   useEffect(() => {
     if (currentTabIndex >= 0) {
       activeTabIndex.value = withSpring(currentTabIndex, {
-        damping: 18,
-        stiffness: 180,
+        damping: 30,
+        stiffness: 680,
         mass: 0.8,
       })
 
@@ -356,14 +356,18 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
           <Animated.View>
             <Animated.View
               style={[
-                { overflow: 'hidden', backgroundColor: 'transparent' },
+                {
+                  overflow: 'hidden',
+                  backgroundColor: 'transparent',
+                  boxShadow: '0 20px 30px rgba(0,0,0,0.35)',
+                },
                 animatedFloatingBarStyle,
                 animatedTabBarStyle,
               ]}
             >
               <GlassView
-                isFallback
-                intensity={60}
+                intensity={90}
+                glassEffectStyle="regular"
                 containerStyle={{
                   flex: 1,
                   width: '100%',

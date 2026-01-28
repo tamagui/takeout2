@@ -200,7 +200,7 @@ export function createZeroClient<
         authData,
         can: permissionsHelpers.can,
       })
-    }, [models, authData])
+    }, [authData])
 
     // for now we re-parent
     if (disable) {

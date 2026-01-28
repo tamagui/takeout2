@@ -51,11 +51,7 @@ export const GradientBackground = ({
           style={[StyleSheet.absoluteFillObject, { zIndex: -2 }]}
           resizeMode="cover"
         />
-        <GradientBlurView
-          tint={isDark ? 'dark' : 'light'}
-          width={width}
-          height={height / 1.5}
-        />
+        <GradientBlurView width={width} height={height / 1.5} />
       </>
     )
   }

@@ -1,94 +1,13 @@
-import { memo } from 'react'
-import { AnimatePresence, YStack } from 'tamagui'
+import { useMedia } from 'tamagui'
 
-import { HomePagination } from '~/features/feed/HomePagination'
-import { PostCard } from '~/features/feed/PostCard'
-import { usePostsPaginated } from '~/features/feed/usePosts'
-import { HeadInfo } from '~/interface/app/HeadInfo'
-import { FloatingCreateButton } from '~/interface/buttons/FloatingCreateButton'
-import { HomeShimmer } from '~/interface/shimmer/HomeShimmer'
-import { H5 } from '~/interface/text/Headings'
+import { FeedContent } from '~/features/feed/FeedContent'
 
-export const HomePage = memo(() => {
-  const { posts, isLoading, hasMore, currentPage, nextPage, prevPage } =
-    usePostsPaginated(10)
+export const HomePage = () => {
+  const { lg } = useMedia()
 
-  return (
-    <>
-      <HeadInfo
-        title="Feed"
-        description="See what's happening on Takeout"
-        openGraph={{
-          images: [
-            {
-              url: `${process.env.ONE_SERVER_URL}/api/og?type=index`,
-              width: 1200,
-              height: 630,
-            },
-          ],
-        }}
-      />
-      <AnimatePresence>
-        {isLoading && (
-          <YStack
-            key="home-shimmer"
-            transition="medium"
-            enterStyle={{
-              opacity: 0,
-            }}
-            exitStyle={{
-              opacity: 0,
-            }}
-            z={999}
-            position="absolute"
-            t={60}
-            l={0}
-            r={0}
-            b={0}
-          >
-            <HomeShimmer />
-          </YStack>
-        )}
-      </AnimatePresence>
+  if (!lg) {
+    return <FeedContent />
+  }
 
-      <FloatingCreateButton />
-
-      <YStack
-        transition="medium"
-        enterStyle={{
-          opacity: 0,
-        }}
-        exitStyle={{
-          opacity: 0,
-        }}
-        position="relative"
-        flexBasis="auto"
-        bg="$background"
-        width="100vw"
-        ml="50%"
-        transform="translateX(-50%)"
-      >
-        <YStack pb="$10" gap="$4" mx="auto" px="$4" width="100%" $xl={{ maxW: 760 }}>
-          {!isLoading && posts.length === 0 ? (
-            <YStack p="$4" items="center" justify="center" mt="$4">
-              <H5 select="none">No posts yet</H5>
-            </YStack>
-          ) : (
-            <>
-              {posts.map((post) => (
-                <PostCard key={post.id} post={post} />
-              ))}
-
-              <HomePagination
-                currentPage={currentPage}
-                hasMore={hasMore}
-                onPrevPage={prevPage}
-                onNextPage={nextPage}
-              />
-            </>
-          )}
-        </YStack>
-      </YStack>
-    </>
-  )
-})
+  return null
+}

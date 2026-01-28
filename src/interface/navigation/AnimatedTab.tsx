@@ -70,7 +70,7 @@ export const AnimatedTab = memo(
         position="relative"
       >
         <Animated.View style={animatedIconStyle}>
-          <Icon size={22} color={isFocused ? '$color' : '$color10'} />
+          <Icon size={24} color={isFocused ? '$color' : '$color10'} />
         </Animated.View>
       </Pressable>
     )

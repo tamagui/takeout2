@@ -1,8 +1,6 @@
 import { memo } from 'react'
 import { isWeb, Input as TamaguiInput } from 'tamagui'
 
-import { useIsDark } from '~/features/theme/useIsDark'
-
 import { GlassView } from '../effects/GlassView'
 
 import type { RefObject } from 'react'
@@ -16,8 +14,6 @@ export type InputProps = GetProps<typeof TamaguiInput> & {
 export type Input = TamaguiElement
 
 export const Input = memo(({ ref, glass, ...props }: InputProps) => {
-  const isDark = useIsDark()
-
   const inputElement = (
     <TamaguiInput
       borderWidth={glass && !isWeb ? 0 : 0.5}
@@ -32,7 +28,7 @@ export const Input = memo(({ ref, glass, ...props }: InputProps) => {
   )
   if (glass && !isWeb) {
     return (
-      <GlassView borderRadius={14} intensity={40} tint={isDark ? 'dark' : 'light'}>
+      <GlassView borderRadius={14} intensity={40}>
         {inputElement}
       </GlassView>
     )

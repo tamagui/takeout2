@@ -20,7 +20,7 @@ export const Shimmer = ({ style, speed = 1 }: ShimmerNativeProps): React.ReactNo
 
   const animatedStyle = useAnimatedStyle(() => {
     const progress = (shimmer?.progress?.value ?? 0) * speed
-    const opacity = interpolate(progress % 1, [0, 0.5, 1], [1, 0.1, 1])
+    const opacity = interpolate(progress % 1, [0, 0.25, 1], [1, 0.05, 1])
     return {
       opacity,
     }
@@ -42,6 +42,6 @@ const styles = StyleSheet.create({
   },
   shimmerOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: 'rgba(150, 150, 150, 0.2)',
   },
 })

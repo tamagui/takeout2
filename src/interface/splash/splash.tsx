@@ -31,16 +31,18 @@ export const Splash = memo(({ onAnimationEnd, isReady }: SplashProps) => {
 
   useEffect(() => {
     if (isReady) {
-      rotateY.value = withDelay(500, withSpring(360, { damping: 12, stiffness: 80 }))
-      translateY.value = withDelay(
-        1000,
-        withSequence(withTiming(-50), withTiming(Dimensions.get('window').height))
+      rotateY.set(withDelay(500, withSpring(360, { damping: 12, stiffness: 80 })))
+      translateY.set(
+        withDelay(
+          1000,
+          withSequence(withTiming(-50), withTiming(Dimensions.get('window').height))
+        )
       )
     }
     setTimeout(() => {
       onAnimationEnd()
     }, 1850)
-  }, [isReady])
+  }, [rotateY, translateY, isReady, onAnimationEnd])
 
   return (
     <Animated.View

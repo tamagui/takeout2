@@ -7,14 +7,15 @@ import { LoginDemoButton } from '~/features/auth/ui/LoginDemoButton'
 import { LoginEmailButton } from '~/features/auth/ui/LoginEmailButton'
 import { LoginLegalText } from '~/features/auth/ui/LoginLegalText'
 import { LoginSocialButtons } from '~/features/auth/ui/LoginSocialButtons'
-import { Onboarding, onboardingSlides, onboardingStorage } from '~/features/onboarding'
+import { Onboarding, onboardingStorage } from '~/features/onboarding'
 import { GradientBackground } from '~/interface/backgrounds/GradientBackground'
 import { GlassView } from '~/interface/effects/GlassView'
 import { Image } from '~/interface/image/Image'
 
 export const LoginPage = () => {
   const insets = useSafeAreaInsets()
-  const [showOnboarding, setShowOnboarding] = useState(() => !onboardingStorage.get())
+  // for demo always show
+  const [showOnboarding, setShowOnboarding] = useState(() => true)
 
   const handleOnboardingComplete = useCallback(() => {
     onboardingStorage.set(true)
@@ -41,10 +42,10 @@ export const LoginPage = () => {
           >
             <SizableText
               size="$9"
-              fontWeight="800"
               fontFamily="$heading"
               text="center"
               color="$color12"
+              fontWeight="700"
             >
               {APP_NAME}
             </SizableText>
@@ -84,10 +85,11 @@ export const LoginPage = () => {
             r={0}
             b={0}
             z={1000}
+            opacity={1}
             enterStyle={{ scale: 0.95 }}
-            exitStyle={{ scale: 0 }}
+            exitStyle={{ scale: 0.85, opacity: 0 }}
           >
-            <Onboarding slides={onboardingSlides} onComplete={handleOnboardingComplete} />
+            <Onboarding onComplete={handleOnboardingComplete} />
           </View>
         )}
       </AnimatePresence>

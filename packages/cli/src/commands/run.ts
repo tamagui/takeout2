@@ -34,7 +34,7 @@ export const runCommand = defineCommand({
 
         if (hasAllFlag) {
           // Run all scripts in this category in parallel
-          const { discoverScripts } = await import('./script')
+          const { discoverScripts } = await import('../utils/script-utils')
           const { runScriptsInParallel } = await import('../utils/parallel-runner')
           const pc = (await import('picocolors')).default
           const categoryScripts = discoverScripts(categoryPath)
@@ -59,7 +59,8 @@ export const runCommand = defineCommand({
         }
 
         // Lazy load script functions only when needed
-        const { discoverScripts, getScriptMetadata } = await import('./script')
+        const { discoverScripts, getScriptMetadata } =
+          await import('../utils/script-utils')
         const pc = (await import('picocolors')).default
 
         // List scripts in this category

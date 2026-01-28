@@ -2,6 +2,10 @@
   // cursor not working with tsgo yet:
   // and a bit slow in vscode i think
   // "typescript.experimental.useTsgo": true,
+
+  // this + oxc auto-fix = only way to autocomplete both key="value" in jsx
+  "typescript.preferences.jsxAttributeCompletionStyle": "braces",
+  
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
@@ -22,19 +26,31 @@
   },
   "[javascript]": {
     "editor.defaultFormatter": "oxc.oxc-vscode",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.oxc": "explicit"
+    }
   },
   "[javascriptreact]": {
     "editor.defaultFormatter": "oxc.oxc-vscode",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.oxc": "explicit"
+    }
   },
   "[typescript]": {
     "editor.defaultFormatter": "oxc.oxc-vscode",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.oxc": "explicit"
+    }
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "oxc.oxc-vscode",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.oxc": "explicit"
+    }
   },
   "[jsonc]": {
     "editor.defaultFormatter": "oxc.oxc-vscode",

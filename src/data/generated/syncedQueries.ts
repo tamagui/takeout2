@@ -2,114 +2,115 @@
 // server-side query definitions with validators
 import { defineQuery, defineQueries } from '@rocicorp/zero'
 import * as v from 'valibot'
-
 import * as Queries from './groupedQueries'
 
 const block = {
   blockedByUser: defineQuery(
     v.object({
-      userId: v.string(),
-      limit: v.optional(v.number()),
-    }),
-    ({ args }) => Queries.block.blockedByUser(args)
+  userId: v.string(),
+  limit: v.optional(v.number())
+}),
+    ({ args }) => Queries.block.blockedByUser(args),
   ),
 }
 
 const comment = {
   commentsByPostId: defineQuery(
     v.object({
-      postId: v.string(),
-      limit: v.optional(v.number()),
-    }),
-    ({ args }) => Queries.comment.commentsByPostId(args)
+  postId: v.string(),
+  limit: v.optional(v.number())
+}),
+    ({ args }) => Queries.comment.commentsByPostId(args),
   ),
 }
 
 const post = {
+  feedPosts: defineQuery(
+    v.object({
+  pageSize: v.number(),
+  cursor: v.optional(
+    v.union([
+      v.object({
+        id: v.string(),
+        createdAt: v.number()
+      }),
+      v.null()
+    ])
+  )
+}),
+    ({ args }) => Queries.post.feedPosts(args),
+  ),
   postById: defineQuery(
     v.object({
-      postId: v.string(),
-    }),
-    ({ args }) => Queries.post.postById(args)
+  postId: v.string()
+}),
+    ({ args }) => Queries.post.postById(args),
+  ),
+  postDetail: defineQuery(
+    v.object({
+  postId: v.string()
+}),
+    ({ args }) => Queries.post.postDetail(args),
   ),
   postsByUserId: defineQuery(
     v.object({
-      userId: v.string(),
-      limit: v.optional(v.number()),
-    }),
-    ({ args }) => Queries.post.postsByUserId(args)
+  userId: v.string(),
+  limit: v.optional(v.number())
+}),
+    ({ args }) => Queries.post.postsByUserId(args),
   ),
   postsPaginated: defineQuery(
     v.object({
-      userId: v.optional(v.string()),
-      pageSize: v.number(),
-      cursor: v.optional(
-        v.union([
-          v.object({
-            id: v.string(),
-            createdAt: v.number(),
-          }),
-          v.null(),
-        ])
-      ),
-    }),
-    ({ args }) => Queries.post.postsPaginated(args)
-  ),
-  postsWithBlocks: defineQuery(
-    v.object({
-      userId: v.optional(v.string()),
-      blockedUserIds: v.array(v.string()),
-      pageSize: v.number(),
-      cursor: v.optional(
-        v.union([
-          v.object({
-            id: v.string(),
-            createdAt: v.number(),
-          }),
-          v.null(),
-        ])
-      ),
-    }),
-    ({ args }) => Queries.post.postsWithBlocks(args)
+  userId: v.optional(v.string()),
+  pageSize: v.number(),
+  cursor: v.optional(
+    v.union([
+      v.object({
+        id: v.string(),
+        createdAt: v.number()
+      }),
+      v.null()
+    ])
+  )
+}),
+    ({ args }) => Queries.post.postsPaginated(args),
   ),
   searchPosts: defineQuery(
     v.object({
-      searchText: v.string(),
-      userId: v.optional(v.string()),
-      blockedUserIds: v.array(v.string()),
-      pageSize: v.number(),
-      cursor: v.optional(
-        v.union([
-          v.object({
-            id: v.string(),
-            createdAt: v.number(),
-          }),
-          v.null(),
-        ])
-      ),
-    }),
-    ({ args }) => Queries.post.searchPosts(args)
+  searchText: v.string(),
+  pageSize: v.number(),
+  cursor: v.optional(
+    v.union([
+      v.object({
+        id: v.string(),
+        createdAt: v.number()
+      }),
+      v.null()
+    ])
+  )
+}),
+    ({ args }) => Queries.post.searchPosts(args),
   ),
 }
 
 const user = {
   userById: defineQuery(
     v.object({
-      userId: v.string(),
-    }),
-    ({ args }) => Queries.user.userById(args)
+  userId: v.string()
+}),
+    ({ args }) => Queries.user.userById(args),
   ),
   userByUsername: defineQuery(
     v.object({
-      username: v.string(),
-    }),
-    ({ args }) => Queries.user.userByUsername(args)
+  username: v.string()
+}),
+    ({ args }) => Queries.user.userByUsername(args),
   ),
   userWithState: defineQuery(
     v.object({
-      userId: v.string(),
-    }),
-    ({ args }) => Queries.user.userWithState(args)
+  userId: v.string()
+}),
+    ({ args }) => Queries.user.userWithState(args),
   ),
 }
 

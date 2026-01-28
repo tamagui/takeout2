@@ -1,8 +1,8 @@
 import { createAnimations } from '@tamagui/animations-motion'
-import { animations } from '@tamagui/config/v5-motion'
+import { animationsMotion } from '@tamagui/config/v5-motion'
 
 export const animationsApp = createAnimations({
-  ...animations.animations,
+  ...animationsMotion.animations,
   '200ms': {
     duration: 200,
   },

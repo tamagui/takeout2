@@ -132,7 +132,7 @@ function RovingTabsRoot({
 
         <Tabs.List loop={false} bg="transparent" gap="$2">
           {typeof children === 'function'
-            ? (children as (props: RenderProps) => React.ReactNode)({
+            ? children({
                 handleOnInteraction,
                 currentTab: value,
               })
@@ -187,7 +187,6 @@ function RovingTabsIndicator({
   return (
     <View
       position="absolute"
-      bg={active ? '$color10' : '$color6'}
       opacity={active ? 1 : 0.5}
       rounded={isUnderline ? '$2' : '$4'}
       transition={animationClamped('quickerLessBouncy')}

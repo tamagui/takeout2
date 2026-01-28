@@ -1,10 +1,9 @@
 import { formatDistanceToNow } from '@take-out/helpers'
 import { router } from 'one'
 import { memo, useState } from 'react'
-import { Accordion, isWeb, SizableText, View, XStack, YStack } from 'tamagui'
+import { isWeb, SizableText, View, XStack, YStack } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
-import { useUser } from '~/hooks/useUser'
 import { Link } from '~/interface/app/Link'
 import { Avatar } from '~/interface/avatars/Avatar'
 import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
@@ -14,23 +13,26 @@ import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
 import { Text } from '~/interface/text/Text'
 
 import { PostActionMenu } from './PostActionMenu'
+import { PostCommentPreview } from './PostCommentPreview'
 import { PostImage } from './PostImage'
 
-import type { Post } from '~/data/types'
+import type { PostWithLatestComment } from '~/data/types'
 
 interface PostCardProps {
-  post: Post
+  post: PostWithLatestComment
 }
 
 export const PostCard = memo(({ post }: PostCardProps) => {
   const { user } = useAuth()
   const authorId = post.userId
-  const [author] = useUser(authorId)
-  const avatarUrl = author?.image
-  const username = author?.username
+  // user is loaded with the post query, no N+1
+  const avatarUrl = post.user?.image
+  const username = post.user?.username
 
-  const [isTruncated, setIsTruncated] = useState<boolean>(false)
-  const [aspectRatio, setAspectRatio] = useState<number>(1)
+  const [, setIsTruncated] = useState<boolean>(false)
+  const storedAspectRatio =
+    post.imageWidth && post.imageHeight ? post.imageWidth / post.imageHeight : undefined
+  const [aspectRatio, setAspectRatio] = useState<number>(storedAspectRatio ?? 1.5)
   const isOwnProfile = authorId === user?.id
 
   return (
@@ -82,38 +84,20 @@ export const PostCard = memo(({ post }: PostCardProps) => {
           </XStack>
         </XStack>
         <View>
-          <Accordion overflow="hidden" type="multiple">
-            <Accordion.Item value="caption" bg="transparent" borderWidth={0} p={0}>
-              <Accordion.Trigger
-                unstyled
-                disabled={!isTruncated}
-                p={0}
-                bg="transparent"
-                borderWidth={0}
-              >
-                {({ open }: { open: boolean }) => (
-                  <Text
-                    numberOfLines={open ? undefined : 3}
-                    flex={1}
-                    flexBasis="auto"
-                    text="left"
-                    {...(!isWeb && {
-                      onTextLayout: (e: { nativeEvent: { lines: unknown[] } }) => {
-                        if (e.nativeEvent.lines.length >= 3) {
-                          setIsTruncated(true)
-                        }
-                      },
-                    })}
-                  >
-                    {post.caption}
-                  </Text>
-                )}
-              </Accordion.Trigger>
-              <Accordion.HeightAnimator transition="200ms">
-                <Accordion.Content transition="200ms" exitStyle={{ opacity: 0 }} />
-              </Accordion.HeightAnimator>
-            </Accordion.Item>
-          </Accordion>
+          <Text
+            flex={1}
+            flexBasis="auto"
+            text="left"
+            {...(!isWeb && {
+              onTextLayout: (e: { nativeEvent: { lines: unknown[] } }) => {
+                if (e.nativeEvent.lines.length >= 3) {
+                  setIsTruncated(true)
+                }
+              },
+            })}
+          >
+            {post.caption}
+          </Text>
           <View width="100%" position="relative" mt="$2">
             <Pressable
               onPress={() =>
@@ -125,11 +109,11 @@ export const PostCard = memo(({ post }: PostCardProps) => {
                 image={post.image}
                 caption={post.caption}
                 aspectRatio={aspectRatio}
-                onAspectRatioChange={setAspectRatio}
+                onAspectRatioChange={storedAspectRatio ? undefined : setAspectRatio}
               />
             </Pressable>
           </View>
-          <XStack pt="$2">
+          <XStack pt="$2" items="center" gap="$2">
             <Link href={`/home/feed/post/${post.id}?username=${username}`}>
               <ButtonSimple
                 variant="transparent"
@@ -143,6 +127,11 @@ export const PostCard = memo(({ post }: PostCardProps) => {
                 )}
               </ButtonSimple>
             </Link>
+            {post.comments?.[0] && (
+              <Link href={`/home/feed/post/${post.id}?username=${username}`} flex={1}>
+                <PostCommentPreview comment={post.comments[0]} />
+              </Link>
+            )}
           </XStack>
         </View>
       </View>

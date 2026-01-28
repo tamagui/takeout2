@@ -1,6 +1,8 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "import"],
   "rules": {
+    "import/no-cycle": "error",
     "no-restricted-imports": [
       "error",
       {
@@ -19,6 +21,10 @@
               "Image"
             ],
             "message": "Use custom component from ~/interface instead"
+          },
+          {
+            "name": "expo-blur",
+            "message": "Use BlurView from ~/interface/effects/BlurView instead"
           }
         ]
       }
@@ -35,7 +41,8 @@
     "unicorn/no-thenable": "off",
     "oxc/const-comparisons": "off",
     "react-hooks/exhaustive-deps": "warn",
-    "react-hooks/rules-of-hooks": "error"
+    "react-hooks/rules-of-hooks": "error",
+    "react/jsx-curly-brace-presence": ["warn", { "props": "never", "children": "never" }]
   },
   "overrides": [
     {

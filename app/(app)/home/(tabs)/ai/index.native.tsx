@@ -107,7 +107,7 @@ export const AIPage = memo(() => {
 
   const ListEmptyComponent = useCallback(
     () => <EmptyState style={emptyStateStyle} sparklesStyle={sparklesAnimatedStyle} />,
-    [emptyStateStyle]
+    [emptyStateStyle, sparklesAnimatedStyle]
   )
 
   return (

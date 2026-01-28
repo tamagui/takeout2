@@ -6,7 +6,7 @@ import Animated, {
   withDelay,
   withTiming,
 } from 'react-native-reanimated'
-import { SizableText, useTheme, View, YStack, type ColorTokens } from 'tamagui'
+import { SizableText, View, YStack } from 'tamagui'
 
 import Glint from '~/interface/effects/Glint'
 
@@ -225,8 +225,6 @@ function GridLayout({ features, cardWidth, currentPage, slideIndex }: LayoutProp
 }
 
 function FeatureCard({ feature, size, width, height, horizontal }: FeatureCardProps) {
-  const theme = useTheme()
-
   if (!feature) return null
   const { Icon, title } = feature
 
@@ -242,16 +240,12 @@ function FeatureCard({ feature, size, width, height, horizontal }: FeatureCardPr
             height={48}
             items="center"
             justify="center"
-            bg={theme.color4?.val as ColorTokens}
+            bg="$color4"
             rounded={14}
           >
-            <Icon size={26} color={theme.color10?.val as ColorTokens} />
+            <Icon size={26} color="$color10" />
           </YStack>
-          <SizableText
-            size="$5"
-            fontWeight="600"
-            color={theme.color12?.val as ColorTokens}
-          >
+          <SizableText size="$5" fontWeight="600" color="$color12">
             {title}
           </SizableText>
         </YStack>
@@ -260,7 +254,7 @@ function FeatureCard({ feature, size, width, height, horizontal }: FeatureCardPr
   }
 
   return (
-    <View style={{ width: cardWidth, height: cardHeight }} rounded={24}>
+    <View position="relative" width={cardWidth} height={cardHeight} rounded={24}>
       <Glint rounded={24} />
       <YStack flex={1} items="center" justify="center" gap="$3" p="$5">
         <YStack
@@ -268,15 +262,15 @@ function FeatureCard({ feature, size, width, height, horizontal }: FeatureCardPr
           height={64}
           items="center"
           justify="center"
-          bg={theme.color4?.val as ColorTokens}
+          bg="$color4"
           rounded={18}
         >
-          <Icon size={32} color={theme.color10?.val as ColorTokens} />
+          <Icon size={32} color="$color10" />
         </YStack>
         <SizableText
           size="$4"
           fontWeight="600"
-          color={theme.color12?.val as ColorTokens}
+          color="$color12"
           text="center"
           numberOfLines={2}
         >

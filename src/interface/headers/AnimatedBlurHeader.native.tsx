@@ -10,7 +10,6 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { SizableText, XStack, useTheme } from 'tamagui'
 
-import { useIsDark } from '~/features/theme/useIsDark'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 
 import { ButtonSimple } from '../buttons/ButtonSimple'
@@ -43,7 +42,6 @@ export const AnimatedBlurHeader = memo(
   }: AnimatedBlurHeaderProps) => {
     const insets = useSafeAreaInsets()
     const router = useRouter()
-    const isDark = useIsDark()
 
     const totalHeaderHeight = HEADER_HEIGHT + insets.top
 
@@ -98,13 +96,7 @@ export const AnimatedBlurHeader = memo(
         ]}
       >
         <Animated.View style={[StyleSheet.absoluteFill, animatedBlurStyle]}>
-          <GradientBlurView
-            intensity={20}
-            tint={isDark ? 'dark' : 'light'}
-            width="100%"
-            height="100%"
-            inverted
-          />
+          <GradientBlurView intensity={20} width="100%" height="100%" inverted />
         </Animated.View>
 
         <XStack flex={1} items="center" justify="space-between" px="$3">

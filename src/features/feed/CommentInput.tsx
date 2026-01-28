@@ -8,8 +8,22 @@ import { PaperPlaneTiltIcon } from '~/interface/icons/phosphor/PaperPlaneTiltIco
 import { KeyboardStickyFooter } from '~/interface/keyboard/KeyboardStickyFooter'
 
 import type { User } from 'better-auth'
+import type { ReactNode } from 'react'
 
 type AppUser = User & { role?: 'admin' }
+
+function MaybeKeyboardStickyFooter({
+  disabled,
+  children,
+}: {
+  disabled: boolean
+  children: ReactNode
+}) {
+  if (disabled) {
+    return <>{children}</>
+  }
+  return <KeyboardStickyFooter openedOffset={-10}>{children}</KeyboardStickyFooter>
+}
 
 interface CommentInputProps {
   user: AppUser | null
@@ -17,6 +31,8 @@ interface CommentInputProps {
   setContent: (value: string) => void
   handleSubmit: () => void
   isSubmitting: boolean
+  disableStickyFooter?: boolean
+  keepKeyboardOpen?: boolean
 }
 
 export function CommentInput({
@@ -25,12 +41,16 @@ export function CommentInput({
   setContent,
   handleSubmit,
   isSubmitting,
+  disableStickyFooter = false,
+  keepKeyboardOpen = false,
 }: CommentInputProps) {
   const hasContent = content.trim().length > 0
 
   const onSubmit = () => {
     handleSubmit()
-    Keyboard.dismiss()
+    if (!keepKeyboardOpen) {
+      Keyboard.dismiss()
+    }
   }
 
   if (!user) return null
@@ -45,14 +65,6 @@ export function CommentInput({
               placeholder="Write your comments here..."
               value={content}
               onChange={(e) => setContent((e.target as HTMLInputElement).value)}
-              minH={100}
-              pr="$6"
-              pb="$6"
-              bg="$color2"
-              borderColor="$color4"
-              borderWidth={1}
-              rounded={16}
-              style={{ resize: 'vertical' }}
             />
             <YStack
               position="absolute"
@@ -80,9 +92,16 @@ export function CommentInput({
         </XStack>
       )}
 
-      {process.env.VITE_PLATFORM === 'native' && (
-        <KeyboardStickyFooter openedOffset={-10}>
-          <XStack items="center" gap="$2" px="$3" py="$2" overflow="hidden">
+      {process.env.VITE_NATIVE && (
+        <MaybeKeyboardStickyFooter disabled={disableStickyFooter}>
+          <XStack
+            items="center"
+            gap="$2"
+            px="$3"
+            py="$2"
+            overflow="hidden"
+            bg="$background"
+          >
             <Input
               unstyled
               flex={1}
@@ -117,7 +136,7 @@ export function CommentInput({
               </ButtonSimple>
             </YStack>
           </XStack>
-        </KeyboardStickyFooter>
+        </MaybeKeyboardStickyFooter>
       )}
     </>
   )

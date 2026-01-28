@@ -43,7 +43,7 @@ const generateQueries = defineCommand({
   async run({ args }) {
     const dir = resolve(args.dir)
 
-    const { readdirSync, writeFileSync } = await import('node:fs')
+    const { readdirSync } = await import('node:fs')
 
     const files = readdirSync(dir).filter((f) => f.endsWith('.ts'))
 
@@ -144,7 +144,8 @@ const generate = defineCommand({
     const generatedDir = resolve(baseDir, 'generated')
     const queriesDir = resolve(baseDir, 'queries')
 
-    const runGenerate = async () => {
+    const runGenerate = async (options?: { silent?: boolean }) => {
+      const silent = options?.silent ?? false
       // ensure generated dir exists
       if (!existsSync(generatedDir)) {
         mkdirSync(generatedDir, { recursive: true })
@@ -191,7 +192,7 @@ const generate = defineCommand({
       ])
 
       const filesChanged = writeResults.filter(Boolean).length
-      if (filesChanged > 0) {
+      if (filesChanged > 0 && !silent) {
         console.info(`  📝 Updated ${filesChanged} file(s)`)
       }
 
@@ -286,39 +287,55 @@ const generate = defineCommand({
           syncedQueriesOutput
         )
 
-        if (groupedChanged) {
-          console.info(`  📝 Updated groupedQueries.ts`)
-        }
-        if (syncedChanged) {
-          console.info(`  📝 Updated syncedQueries.ts`)
+        const queryFilesChanged = (groupedChanged ? 1 : 0) + (syncedChanged ? 1 : 0)
+        const totalFilesChanged = filesChanged + queryFilesChanged
+
+        if (totalFilesChanged > 0 && !silent) {
+          if (groupedChanged) {
+            console.info(`  📝 Updated groupedQueries.ts`)
+          }
+          if (syncedChanged) {
+            console.info(`  📝 Updated syncedQueries.ts`)
+          }
+          console.info(
+            `✓ ${allModelFiles.length} models (${filesWithSchema.length} schemas), ${allQueries.length} queries`
+          )
         }
 
-        console.info(
-          `✓ ${allModelFiles.length} models (${filesWithSchema.length} schemas), ${allQueries.length} queries`
-        )
+        // run after command only if files changed and not silent
+        if (totalFilesChanged > 0 && !silent && args.after) {
+          try {
+            const { execSync } = await import('node:child_process')
+            execSync(args.after, { stdio: 'inherit' })
+          } catch (err) {
+            console.error(`Error running after command: ${err}`)
+          }
+        }
       } else {
-        console.info(
-          `✓ ${allModelFiles.length} models (${filesWithSchema.length} schemas)`
-        )
-      }
+        if (filesChanged > 0 && !silent) {
+          console.info(
+            `✓ ${allModelFiles.length} models (${filesWithSchema.length} schemas)`
+          )
+        }
 
-      // run after command if provided
-      if (args.after) {
-        try {
-          const { execSync } = await import('node:child_process')
-          execSync(args.after, { stdio: 'inherit' })
-        } catch (err) {
-          console.error(`Error running after command: ${err}`)
+        // run after command only if files changed and not silent
+        if (filesChanged > 0 && !silent && args.after) {
+          try {
+            const { execSync } = await import('node:child_process')
+            execSync(args.after, { stdio: 'inherit' })
+          } catch (err) {
+            console.error(`Error running after command: ${err}`)
+          }
         }
       }
     }
 
-    // run once
-    await runGenerate()
+    // run once (silent in watch mode for clean startup)
+    await runGenerate({ silent: args.watch })
 
     // watch mode
     if (args.watch) {
-      console.info('\n👀 watching...\n')
+      console.info('👀 watching...\n')
       const chokidar = await import('chokidar')
 
       let debounceTimer: ReturnType<typeof setTimeout> | null = null

@@ -127,7 +127,7 @@ export function createZeroServer<
     }
 
     // set authData globally for permission checks in query functions
-    setAuthData(authData || {})
+    setAuthData(authData || ({} as AuthData))
 
     const response = await zeroHandleQueryRequest(
       (name, args) => {

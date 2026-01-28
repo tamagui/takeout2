@@ -8,11 +8,11 @@ import { Pressable } from '~/interface/buttons/Pressable'
 import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
 import { Image } from '~/interface/image/Image'
 import { SimpleGrid, SimpleGridItem } from '~/interface/layout/SimpleGrid'
+import { Pagination } from '~/interface/navigation/Pagination'
 import { ProfileShimmer } from '~/interface/shimmer/ProfileShimmer'
 import { H5 } from '~/interface/text/Headings'
 
 import { ProfileHeader } from './ProfileHeader'
-import { ProfilePagination } from './ProfilePagination'
 import { useProfilePosts } from './useProfilePosts'
 
 import type { ProfilePageProps } from './types'
@@ -112,7 +112,7 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
               </YStack>
             )}
 
-            <ProfilePagination
+            <Pagination
               currentPage={currentPage}
               hasMore={hasMore}
               onPrevPage={prevPage}

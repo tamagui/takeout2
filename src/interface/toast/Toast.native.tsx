@@ -1,7 +1,6 @@
 import { useEmitter } from '@take-out/helpers'
 import { isAndroid } from '@tamagui/constants'
 import { memo, useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
-import { Pressable, StyleSheet, useWindowDimensions } from 'react-native'
 import {
   Gesture,
   GestureDetector,
@@ -22,15 +21,16 @@ import {
   SizableText,
   Theme,
   useTheme,
+  useWindowDimensions,
   View,
   XStack,
   YStack,
   type ThemeName,
 } from 'tamagui'
 
-import { useIsDark } from '~/features/theme/useIsDark'
 import { GlassView } from '~/interface/effects/GlassView'
 
+import { Pressable } from '../buttons/Pressable'
 import { toastEmitter } from './emitter'
 
 import type { ToastData, ToastType } from './types'
@@ -81,7 +81,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
   return (
     <>
       {children}
-      <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+      <View position="absolute" t={0} l={0} r={0} b={0} pointerEvents="box-none">
         {toast && (
           <ToastBanner key={toast.id} toast={toast} onHide={() => setToast(null)} />
         )}
@@ -97,7 +97,6 @@ interface ToastBannerProps {
 
 const ToastBanner = memo(({ toast, onHide }: ToastBannerProps) => {
   const { top } = useSafeAreaInsets()
-  const isDark = useIsDark()
   const { height: windowHeight } = useWindowDimensions()
   const { color02 } = useTheme()
 
@@ -257,12 +256,21 @@ const ToastBanner = memo(({ toast, onHide }: ToastBannerProps) => {
 
   return (
     <Theme name={themeName}>
-      <GestureHandlerRootView style={StyleSheet.absoluteFill} pointerEvents="box-none">
+      <GestureHandlerRootView
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+        pointerEvents="box-none"
+      >
         {/* blur overlay for expanded state */}
         <AnimatedPressable
           style={[
-            StyleSheet.absoluteFill,
-            { backgroundColor: 'rgba(0, 0, 0, 0.4)' },
+            {
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.4)',
+            },
             overlayAnimatedStyle,
           ]}
           onPress={handleOverlayPress}
@@ -282,11 +290,10 @@ const ToastBanner = memo(({ toast, onHide }: ToastBannerProps) => {
           ]}
         >
           <GestureDetector gesture={panGesture}>
-            <Pressable onPress={handlePress} style={{ flex: 1 }}>
+            <Pressable onPress={handlePress} flex={1}>
               <GlassView
                 borderRadius={24}
                 intensity={50}
-                tint={isDark ? 'dark' : 'light'}
                 containerStyle={{ flex: 1, overflow: 'hidden' }}
               >
                 {/* peek view (collapsed state) */}
@@ -335,7 +342,11 @@ const ToastBanner = memo(({ toast, onHide }: ToastBannerProps) => {
                   <Animated.View
                     style={[
                       {
-                        ...StyleSheet.absoluteFillObject,
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
                         margin: 1,
                         overflow: 'hidden',
                         borderRadius: 24,

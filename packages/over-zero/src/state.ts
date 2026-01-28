@@ -20,7 +20,7 @@ export const getSchema = () => {
 
 export const setSchema = (_: Schema) => {
   schema = _
-  zql = createBuilder(_)
+  zql = createBuilder(_) as QueryBuilder
 }
 
 export const getAuthData = () => {

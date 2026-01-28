@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "build": "tamagui-build --skip-native",
-    "watch": "SKIP_INITIAL_BUILD=1 tamagui-build --skip-native --watch"
+    "watch": "tamagui-build --skip-native --watch"
   },
   "dependencies": {
     "citty": "^0.1.6",
@@ -18,7 +18,7 @@
     "yocto-spinner": "^0.1.0"
   },
   "devDependencies": {
-    "@tamagui/build": "^2.0.0-1769320275396",
+    "@tamagui/build": "^2.0.0-1769573246601",
     "@types/prompts": "^2.4.9",
     "typescript": "^5.0.0"
   },

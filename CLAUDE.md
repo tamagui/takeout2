@@ -21,7 +21,25 @@ even if you're just exploring for info, many of our skills with takeout-* are ju
 after completing work:
 
 - small changes: `bun check:all`
-- larger changes: `bun run ci --dry-run`
+- larger changes: `bun run ci release --dry-run`
+
+## testing
+
+two test types - unit (vitest) and integration (playwright):
+
+```bash
+bun test:unit                      # unit tests only (fast, no backend needed)
+bun run ci release --dry-run       # full test suite with backend setup
+bun run ci release --dry-run --dev # faster: uses dev server instead of build
+```
+
+integration tests require the full backend (docker) + frontend on port 8081.
+the CI command handles all setup automatically - it's the easiest way to run everything.
+
+to run integration tests manually:
+1. `bun backend` (wait for migrations)
+2. `bun dev` or `bun web serve` (port 8081)
+3. `cd src/test && bunx playwright test`
 
 ## code style
 

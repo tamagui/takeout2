@@ -12,6 +12,8 @@ import {
   XStack,
 } from 'tamagui'
 
+import { isNative } from '~/constants/platform'
+
 import { GlassView } from '../effects/GlassView'
 import Glint from '../effects/Glint'
 import {
@@ -81,8 +83,8 @@ const buttonBorderRadius: Record<ButtonSizes, RadiusTokens> = {
 const buttonSizes: Record<ButtonSizes, number> = {
   small: isWeb ? 30 : 40,
   medium: isWeb ? 32 : 44,
-  large: isWeb ? 42 : 48,
-  xl: isWeb ? 48 : 56,
+  large: isWeb ? 46 : 52,
+  xl: isWeb ? 52 : 60,
   tiny: isWeb ? 16 : 32,
   square: isWeb ? 36 : 44,
 }
@@ -199,8 +201,9 @@ const ButtonFrame = styled(XStack, {
 
     circular: {
       true: (_, { props }) => {
-        const sizeProp = (props as any).size as ButtonSizes
-        const size = buttonSizes[sizeProp || 'medium']
+        const p = props as any
+        const size =
+          p.width || p.height || buttonSizes[(p.size as ButtonSizes) || 'medium']
         return {
           padding: 0,
           rounded: 100,
@@ -239,10 +242,10 @@ const ButtonFrame = styled(XStack, {
 
 const ButtonText = styled(Text, {
   context,
-  color: '$color',
+  color: '$color12',
   cursor: 'default',
   fontFamily: '$mono',
-  fontWeight: '500',
+  fontWeight: '600',
   ellipsis: true,
   select: 'none',
   y: IS_SAFARI ? 1 : 0,
@@ -433,31 +436,32 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonSimpleProps>(
     )
 
     // wrap with glass view if requested (not supported on web)
-    const glassWrappedElement = glass ? (
-      <GlassView
-        glassEffectStyle="clear"
-        isInteractive={isInteractive}
-        borderRadius={rest.circular ? 100 : undefined}
-        tintColor={glassTint}
-        containerStyle={
-          rest.circular
-            ? {
-                width: buttonSizes[rest.size || 'medium'],
-                height: buttonSizes[rest.size || 'medium'],
-              }
-            : ({
-                flex: rest.flex,
-                flexGrow: rest.grow,
-                flexShrink: rest.shrink,
-                alignSelf: rest.self,
-              } as any)
-        }
-      >
-        {buttonElement}
-      </GlassView>
-    ) : (
-      buttonElement
-    )
+    const glassWrappedElement =
+      glass && isNative ? (
+        <GlassView
+          glassEffectStyle="clear"
+          isInteractive={isInteractive}
+          borderRadius={rest.circular ? 100 : undefined}
+          tintColor={glassTint}
+          containerStyle={
+            rest.circular
+              ? {
+                  width: buttonSizes[rest.size || 'medium'],
+                  height: buttonSizes[rest.size || 'medium'],
+                }
+              : ({
+                  flex: rest.flex,
+                  flexGrow: rest.grow,
+                  flexShrink: rest.shrink,
+                  alignSelf: rest.self,
+                } as any)
+          }
+        >
+          {buttonElement}
+        </GlassView>
+      ) : (
+        buttonElement
+      )
 
     return wrapWithTooltip(glassWrappedElement, {
       tooltip,

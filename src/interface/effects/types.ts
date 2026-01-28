@@ -1,10 +1,10 @@
-import type { BlurViewProps } from 'expo-blur'
 import type { ViewProps } from 'tamagui'
+import type { BlurTint } from '~/interface/effects/BlurView'
 
 export interface GlassViewProps {
   borderRadius?: number
   intensity?: number
-  tint?: BlurViewProps['tint']
+  tint?: BlurTint
   containerStyle?: ViewProps['style']
   children?: React.ReactNode
   glassEffectStyle?: 'clear' | 'regular'

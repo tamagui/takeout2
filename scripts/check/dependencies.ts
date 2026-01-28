@@ -6,4 +6,5 @@
 
 import { $ } from 'bun'
 
-await $`tko run check-circular-deps --ignore MarkdownSandboxQuery,afterCreateUser.ts,server.ts`
+// uses oxlint import/no-cycle rule configured in .oxlintrc.json
+await $`oxlint --import-plugin --deny import/no-cycle app/ src/`

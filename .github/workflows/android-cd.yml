@@ -87,7 +87,7 @@ jobs:
 
       - name: Prebuild Android
         if: steps.cache-android.outputs.cache-hit != 'true'
-        run: bun run prebuild:native --platform android --no-install
+        run: bun run native:prebuild --platform android --no-install
         env:
           APP_VARIANT: ${{ env.APP_VARIANT }}
 

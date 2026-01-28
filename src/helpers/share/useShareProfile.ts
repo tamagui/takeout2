@@ -9,7 +9,7 @@ import type { User } from '~/data/types'
 export function useShareProfile() {
   const shareProfile = useCallback(async (user: User, publicProfileUrl: string) => {
     try {
-      if (process.env.VITE_PLATFORM === 'web') {
+      if (!process.env.VITE_NATIVE) {
         // Web: copy to clipboard
         await navigator.clipboard.writeText(publicProfileUrl)
         showToast('Profile link copied to clipboard!', { type: 'success' })

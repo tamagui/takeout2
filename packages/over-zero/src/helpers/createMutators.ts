@@ -1,4 +1,4 @@
-import { isClient, isServer, mapObject, time } from '@take-out/helpers'
+import { isBrowser, isServer, mapObject, time } from '@take-out/helpers'
 
 import { runWithContext } from './mutatorContext'
 
@@ -41,10 +41,10 @@ export function createMutators<Models extends GenericModels>({
         can,
         server:
           environment === 'server'
-            ? {
+            ? ({
                 actions: serverActions || {},
                 asyncTasks: asyncTasks || {},
-              }
+              } as MutatorContext['server'])
             : undefined,
       }
 
@@ -73,7 +73,7 @@ export function createMutators<Models extends GenericModels>({
         }
         const result = await fn(...args)
         const duration = (performance.now() - startTime).toFixed(2)
-        if (isClient) {
+        if (isBrowser) {
           console.groupCollapsed(`[mutator] ${name} completed in ${duration}ms`)
           console.info('→', args[1])
           console.info('←', result)

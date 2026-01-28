@@ -4,7 +4,7 @@ import { router } from 'one'
 import { useIsTouchDevice } from 'tamagui'
 
 import { saveRemoteImage } from '~/helpers/media/saveImage'
-import { Pressable } from '~/interface/buttons/Pressable'
+import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
 import { dialogConfirm, showError } from '~/interface/dialogs/actions'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
@@ -40,7 +40,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
 
   const handleViewProfile = () => {
     if (!post) return
-    router.push(`/home/profile/post/${post.userId}`)
+    router.push(`/home/feed/profile/${post.userId}`)
   }
 
   const handleReportPost = (reason: string) => {
@@ -85,7 +85,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
     if (!post || !isAdmin) return
 
     try {
-      await zero.mutate.post.update({
+      zero.mutate.post.update({
         id: post.id,
         hiddenByAdmin: true,
       })
@@ -97,20 +97,15 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
 
   return (
     <Menu allowFlip placement="bottom-end" offset={8}>
-      <Menu.Trigger asChild>
-        <Pressable
-          width={32}
-          height={32}
-          rounded="$10"
+      <Menu.Trigger render="span">
+        <ButtonSimple
+          circular
           aria-label="Post actions"
-          bg="$color3"
-          borderWidth={0}
-          items="center"
-          justify="center"
-          boxShadow="0 $2 $4 $shadowColor"
-        >
-          <DotsThreeIcon size={16} />
-        </Pressable>
+          variant="floating"
+          icon={DotsThreeIcon}
+          scaleIcon={2}
+          disableBackground
+        />
       </Menu.Trigger>
 
       <Menu.Portal zIndex={100}>
@@ -152,56 +147,57 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
               </Menu.ItemIcon>
             </Menu.Item>
           )}
+          <Menu.Separator />
 
+          {/* TODO: Just a tmp fix—the SubMenu on native doesn’t work inside a fragment */}
+
+          {!isOwnPost && (
+            <Menu.Sub placement={isTouchDevice ? 'bottom' : 'right-start'}>
+              <Menu.SubTrigger
+                key="report-trigger"
+                justify="space-between"
+                textValue="Report"
+              >
+                {isNative && (
+                  <Menu.ItemIcon
+                    ios={{ name: 'exclamationmark.triangle', pointSize: 18 }}
+                    androidIconName="ic_menu_report"
+                  />
+                )}
+                <Menu.ItemTitle>Report</Menu.ItemTitle>
+                <CaretRightIcon size={18} color="$color10" />
+              </Menu.SubTrigger>
+
+              <Menu.Portal zIndex={200}>
+                <Menu.SubContent
+                  enterStyle={{ scale: 0.9, opacity: 0, x: -5 }}
+                  exitStyle={{ scale: 0.95, opacity: 0, x: -3 }}
+                  transition="100ms ease-in-out"
+                  transformOrigin="left top"
+                  elevation="$3"
+                  minW={200}
+                  bg="$background"
+                  p="$1.5"
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                >
+                  {REPORT_REASONS.map((reason) => (
+                    <Menu.Item
+                      key={reason.value}
+                      onSelect={() => handleReportPost(reason.value)}
+                      textValue={reason.label}
+                    >
+                      <Menu.ItemTitle>{reason.label}</Menu.ItemTitle>
+                    </Menu.Item>
+                  ))}
+                </Menu.SubContent>
+              </Menu.Portal>
+            </Menu.Sub>
+          )}
+          
           {/* report and block options only for other users' posts */}
           {!isOwnPost && (
             <>
-              <Menu.Separator />
-
-              <Menu.Sub placement={isTouchDevice ? 'bottom' : 'right-start'}>
-                <Menu.SubTrigger
-                  key="report-trigger"
-                  justify="space-between"
-                  textValue="Report"
-                >
-                  {isNative && (
-                    <Menu.ItemIcon
-                      ios={{ name: 'exclamationmark.triangle', pointSize: 18 }}
-                      androidIconName="ic_menu_report"
-                    />
-                  )}
-                  <Menu.ItemTitle>Report</Menu.ItemTitle>
-                  <CaretRightIcon size={16} color="$color10" />
-                </Menu.SubTrigger>
-
-                <Menu.Portal zIndex={200}>
-                  <Menu.SubContent
-                    enterStyle={{ scale: 0.9, opacity: 0, x: -5 }}
-                    exitStyle={{ scale: 0.95, opacity: 0, x: -3 }}
-                    transition="100ms ease-in-out"
-                    transformOrigin="left top"
-                    elevation="$3"
-                    minW={200}
-                    bg="$background"
-                    p="$1.5"
-                    borderWidth={1}
-                    borderColor="$borderColor"
-                  >
-                    {REPORT_REASONS.map((reason) => (
-                      <Menu.Item
-                        key={reason.value}
-                        onSelect={() => handleReportPost(reason.value)}
-                        textValue={reason.label}
-                      >
-                        <Menu.ItemTitle>{reason.label}</Menu.ItemTitle>
-                      </Menu.Item>
-                    ))}
-                  </Menu.SubContent>
-                </Menu.Portal>
-              </Menu.Sub>
-
-              <Menu.Separator />
-
               <Menu.Item
                 key="block"
                 onSelect={handleBlock}
@@ -217,9 +213,9 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
                   <XCircleIcon size={18} color="$red10" />
                 </Menu.ItemIcon>
               </Menu.Item>
+              <Menu.Separator />
             </>
           )}
-
           {isAdmin && (
             <Menu.Item
               key="admin-hide"

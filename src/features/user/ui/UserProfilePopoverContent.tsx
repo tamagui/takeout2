@@ -32,12 +32,7 @@ export const UserProfilePopoverContent = () => {
   return (
     <YStack p="$4" gap="$3" minW={320}>
       <Popover.Close asChild>
-        <Button
-          size="small"
-          onPress={() => logout()}
-          icon={DoorIcon}
-          self="flex-end"
-        >
+        <Button size="small" onPress={() => logout()} icon={DoorIcon} self="flex-end">
           Logout
         </Button>
       </Popover.Close>

@@ -121,12 +121,7 @@ export const SocialLinks = memo(({ links, size = 'medium' }: SocialLinksProps) =
 
         return (
           <View key={platform} ml={index > 0 ? -16 : 0}>
-            <Button
-              onPress={() => Linking.openURL(url)}
-              size="large"
-              circular
-              glass
-            >
+            <Button onPress={() => Linking.openURL(url)} size="large" circular glass>
               <Icon size={iconSize} />
             </Button>
           </View>

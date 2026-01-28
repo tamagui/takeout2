@@ -66,7 +66,9 @@ export const ProfileEditPage = () => {
         />
         <XStack justify="flex-end" gap="$2">
           <Button onPress={() => blocker.reset?.()}>Stay</Button>
-          <Button variant="action" onPress={handleDiscard}>Discard</Button>
+          <Button variant="action" onPress={handleDiscard}>
+            Discard
+          </Button>
         </XStack>
       </Dialog>
 

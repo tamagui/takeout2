@@ -213,10 +213,7 @@ export const Gallery = () => {
   )
 }
 
-const GalleryButton = ({
-  inactive,
-  ...props
-}: ButtonProps & { inactive?: boolean }) => {
+const GalleryButton = ({ inactive, ...props }: ButtonProps & { inactive?: boolean }) => {
   return (
     <Button
       size="large"

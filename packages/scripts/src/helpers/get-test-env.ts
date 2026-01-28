@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { loadEnv } from './env-load'
@@ -16,20 +17,34 @@ function getPortFromConnectionString(url: string | undefined): string | undefine
   }
 }
 
+// read ZERO_UPSTREAM_DB directly from .env.development file
+// (process.env may have production values if NODE_ENV=production)
+function getDevDbPort(): string | undefined {
+  try {
+    const envPath = join(process.cwd(), '.env.development')
+    const content = readFileSync(envPath, 'utf-8')
+    const match = content.match(/ZERO_UPSTREAM_DB=["']?([^"'\n]+)["']?/)
+    if (match?.[1]) {
+      return getPortFromConnectionString(match[1])
+    }
+  } catch {
+    // file doesn't exist or can't be read
+  }
+  return undefined
+}
+
 export async function getTestEnv() {
   const zeroVersion = getZeroVersion()
-  const devEnv = await loadEnv('development')
   const dockerHost = getDockerHost()
+  const devEnv = await loadEnv('development')
   const serverEnvFallback = await import(join(process.cwd(), 'src/server/env-server'))
 
   // determine db port from (in order of priority):
   // 1. DOCKER_DB_PORT env var
-  // 2. port from ZERO_UPSTREAM_DB in devEnv
+  // 2. port from ZERO_UPSTREAM_DB in .env.development file (read directly to avoid
+  //    bun auto-loading .env.production when NODE_ENV=production)
   // 3. default 5432
-  const dbPort =
-    process.env.DOCKER_DB_PORT ||
-    getPortFromConnectionString(devEnv.ZERO_UPSTREAM_DB as string) ||
-    '5432'
+  const dbPort = process.env.DOCKER_DB_PORT || getDevDbPort() || '5432'
 
   const dockerDbBase = `postgresql://user:password@127.0.0.1:${dbPort}`
 

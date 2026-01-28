@@ -21,7 +21,7 @@ void run(`bun ./scripts/ci/start-backend.ts`, {
 
 // Wait for postgres and zero to be ready
 console.info('Waiting for backend services...')
-await waitForPort(5432) // postgres
+await waitForPort(5433) // postgres (docker maps 5433 -> 5432 internally)
 await waitForPort(4848) // zero
 
 // Start frontend in dev mode

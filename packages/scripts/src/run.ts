@@ -335,7 +335,6 @@ const runScript = async (
           `\x1b[31mProcess "${prefixLabel}" failed with exit code ${code}\x1b[0m`
         )
 
-
         if (watch && restarts < MAX_RESTARTS) {
           const newRestarts = restarts + 1
           console.info(

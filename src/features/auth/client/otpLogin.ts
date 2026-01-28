@@ -61,6 +61,17 @@ async function validateLoginOtpCodeInfinite(
             },
           }
 
+        case 'TOO_MANY_REQUESTS':
+        case 'RATE_LIMIT_EXCEEDED':
+          return {
+            success: false,
+            error: {
+              code: 'RATE_LIMITED',
+              title: 'Too Many Attempts',
+              message: 'Please wait a minute before trying again.',
+            },
+          }
+
         default:
           return {
             success: false,
@@ -116,6 +127,17 @@ async function validateLoginOtpCodeInfinite(
               title: 'Invalid Phone Number',
               message:
                 'The phone number you entered is invalid. Please check the number and try again.',
+            },
+          }
+
+        case 'TOO_MANY_REQUESTS':
+        case 'RATE_LIMIT_EXCEEDED':
+          return {
+            success: false,
+            error: {
+              code: 'RATE_LIMITED',
+              title: 'Too Many Attempts',
+              message: 'Please wait a minute before trying again.',
             },
           }
 
@@ -205,6 +227,18 @@ export async function otpLogin(
           code,
           title: 'OTP Expired',
           message: `Your OTP has expired. Please request a new one.`,
+        },
+      }
+    }
+
+    case 'TOO_MANY_REQUESTS':
+    case 'RATE_LIMIT_EXCEEDED': {
+      return {
+        success: false,
+        error: {
+          code: 'RATE_LIMITED',
+          title: 'Too Many Attempts',
+          message: 'Please wait a minute before trying again.',
         },
       }
     }

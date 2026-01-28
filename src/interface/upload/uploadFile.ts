@@ -37,15 +37,16 @@ export function uploadFileData(
     }
 
     xhr.onload = () => {
-      if (xhr.status === 200) {
-        try {
-          const response: UploadResponse = JSON.parse(xhr.response)
+      try {
+        const response: UploadResponse = JSON.parse(xhr.response)
+        if (xhr.status === 200) {
           resolve(response)
-        } catch (e) {
-          reject(new Error('Failed to parse server response.', { cause: e }))
+        } else {
+          // parse error from response body (e.g., moderation failures return 400)
+          reject(new Error(response.error || `Upload failed with status: ${xhr.status}`))
         }
-      } else {
-        reject(new Error(`Upload failed with status: ${xhr.status}`))
+      } catch (e) {
+        reject(new Error('Failed to parse server response.', { cause: e }))
       }
     }
 

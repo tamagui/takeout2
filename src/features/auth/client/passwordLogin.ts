@@ -59,6 +59,17 @@ export async function passwordLogin(
         },
       }
 
+    case 'TOO_MANY_REQUESTS':
+    case 'RATE_LIMIT_EXCEEDED':
+      return {
+        success: false,
+        error: {
+          code: 'RATE_LIMITED',
+          title: 'Too Many Attempts',
+          message: 'Please wait a minute before trying again.',
+        },
+      }
+
     default: {
       return {
         success: false,

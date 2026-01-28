@@ -1,7 +1,6 @@
 #!/usr/bin/env bun
 
-import { parseArgs } from 'node:util'
-
+import { args } from '@take-out/scripts/helpers/args'
 import { $ } from 'bun'
 
 // Configuration
@@ -13,24 +12,7 @@ const PERFORMANCE_RETENTION_DAYS = 3
 const BILLING_ALARM_THRESHOLD = 50
 const LOG_INGESTION_ALARM_THRESHOLD_GB = 10 // Alert if more than 10GB/day
 
-const { values } = parseArgs({
-  args: process.argv.slice(2),
-  options: {
-    'clear-logs': {
-      type: 'boolean',
-      short: 'c',
-      default: false,
-    },
-    'dry-run': {
-      type: 'boolean',
-      short: 'd',
-      default: false,
-    },
-  },
-})
-
-const clearLogs = values['clear-logs']
-const dryRun = values['dry-run']
+const { clearLogs, dryRun } = args('--clear-logs boolean --dry-run boolean')
 
 async function getLogGroups() {
   const result =

@@ -5,17 +5,10 @@
  * @args --android, --ios
  */
 
-import { parseArgs } from 'node:util'
-
+import { args } from '@take-out/scripts/helpers/args'
 import { $ } from 'bun'
 
-const { values } = parseArgs({
-  args: process.argv.slice(2),
-  options: {
-    android: { type: 'boolean' },
-    ios: { type: 'boolean' },
-  },
-})
+const { android, ios } = args('--android boolean --ios boolean')
 
-const platform = values.android ? 'android' : values.ios ? 'ios' : 'all'
+const platform = android ? 'android' : ios ? 'ios' : 'all'
 await $`eas build --profile development --platform ${platform}`

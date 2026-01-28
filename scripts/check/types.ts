@@ -6,19 +6,14 @@
  */
 
 import { existsSync } from 'node:fs'
-import { parseArgs } from 'node:util'
 
+import { args } from '@take-out/scripts/helpers/args'
 import { $ } from 'bun'
 
-const { values } = parseArgs({
-  args: process.argv.slice(2),
-  options: {
-    watch: { type: 'boolean' },
-  },
-})
+const { watch } = args('--watch boolean')
 
 async function checkProjectTypes() {
-  if (values.watch) {
+  if (watch) {
     await $`LAZY_TYPECHECK=1 tko run typecheck --watch`
   } else {
     await $`tko run typecheck`

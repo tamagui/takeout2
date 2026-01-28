@@ -1,4 +1,4 @@
-import { AbortError, createEmitter, isEqualNever } from '@take-out/helpers'
+import { AbortError, createEmitter, isAppError, isEqualNever } from '@take-out/helpers'
 
 import { dialogEmit } from './shared'
 
@@ -39,7 +39,7 @@ export const dialogError = (props: DialogErrorProps) => {
   })
 }
 
-export const showError = (error: unknown, title: string = 'Error') => {
+export const showError = (error: unknown, title?: string) => {
   let description = 'An unexpected error occurred'
 
   if (error instanceof Error) {
@@ -50,8 +50,31 @@ export const showError = (error: unknown, title: string = 'Error') => {
     description = String(error.message)
   }
 
+  // derive title from error code if not provided
+  let finalTitle = title || 'Error'
+  if (!title && isAppError(error)) {
+    switch (error.code) {
+      case 'PROFANITY_DETECTED':
+      case 'CONTENT_POLICY_VIOLATION':
+        finalTitle = 'Content Not Allowed'
+        break
+      case 'NOT_AUTHENTICATED':
+        finalTitle = 'Please Sign In'
+        break
+      case 'NOT_AUTHORIZED':
+        finalTitle = 'Not Authorized'
+        break
+      case 'RATE_LIMITED':
+        finalTitle = 'Too Many Requests'
+        break
+      case 'NOT_FOUND':
+        finalTitle = 'Not Found'
+        break
+    }
+  }
+
   dialogError({
-    title,
+    title: finalTitle,
     description,
   })
 }

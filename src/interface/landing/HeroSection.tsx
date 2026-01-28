@@ -479,9 +479,6 @@ export function HeroSection() {
           position="relative"
           transition="bouncy"
         >
-          <HeroTerminal />
-
-          {/* phone demo - commented out for later
           <YStack
             maxW="100%"
             maxH="100%"
@@ -492,7 +489,7 @@ export function HeroSection() {
             <svg width="0" height="0" style={{ position: 'absolute' }}>
               <defs>
                 <clipPath id="iphone-screen-clip" clipPathUnits="objectBoundingBox">
-                  <path d="M0.28,0 L0.72,0 C0.87,0 0.935,0.01 0.967,0.045 C1,0.08 1,0.13 1,0.175 L1,0.825 C1,0.87 1,0.92 0.967,0.955 C0.935,0.99 0.87,1 0.72,1 L0.28,1 C0.13,1 0.065,0.99 0.033,0.955 C0,0.92 0,0.87 0,0.825 L0,0.175 C0,0.13 0,0.08 0.033,0.045 C0.065,0.01 0.13,0 0.28,0 Z" />
+                  <path d="M0.27,0 L0.73,0 C0.875,0 0.937,0.0095 0.9685,0.0425 C1,0.075 1,0.125 1,0.1675 L1,0.8325 C1,0.875 1,0.925 0.9685,0.9575 C0.937,0.9905 0.875,1 0.73,1 L0.27,1 C0.125,1 0.063,0.9905 0.0315,0.9575 C0,0.925 0,0.875 0,0.8325 L0,0.1675 C0,0.125 0,0.075 0.0315,0.0425 C0.063,0.0095 0.125,0 0.27,0 Z" />
                 </clipPath>
               </defs>
             </svg>
@@ -522,18 +519,19 @@ export function HeroSection() {
                   }}
                 >
                   <source
-                    src="https://pub-836fc09a8b0e484f900cd6aa05105026.r2.dev/videos/appdemo_h265.mp4"
+                    src="https://pub-836fc09a8b0e484f900cd6aa05105026.r2.dev/videos/appdemo2_h265.mp4"
                     type="video/mp4; codecs=hvc1"
                   />
                   <source
-                    src="https://pub-836fc09a8b0e484f900cd6aa05105026.r2.dev/videos/appdemo_h264.mp4"
+                    src="https://pub-836fc09a8b0e484f900cd6aa05105026.r2.dev/videos/appdemo2_h264.mp4"
                     type="video/mp4"
                   />
                 </video>
               </YStack>
             </YStack>
           </YStack>
-          */}
+
+          {/* <HeroTerminal /> */}
         </YStack>
       </XStack>
     </YStack>

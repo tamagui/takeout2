@@ -10,15 +10,15 @@ const BadgeContainer = styled(YStack, {
   borderWidth: 0.5,
   borderColor: '$color6',
   ml: '$2',
-  mr: -40,
+  mr: -42,
   mt: -2,
   opacity: 0.85,
 })
 
 const BadgeText = styled(Text, {
-  fontSize: 12,
-  fontWeight: '500',
-  letterSpacing: -1,
+  fontSize: 13,
+  fontWeight: '800',
+  letterSpacing: -0.25,
   color: '$color11',
   textTransform: 'lowercase',
   fontFamily: '$mono',

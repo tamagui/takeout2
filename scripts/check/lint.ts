@@ -5,18 +5,12 @@
  * @args --fix
  */
 
-import { parseArgs } from 'node:util'
-
+import { args } from '@take-out/scripts/helpers/args'
 import { $ } from 'bun'
 
-const { values } = parseArgs({
-  args: process.argv.slice(2),
-  options: {
-    fix: { type: 'boolean' },
-  },
-})
+const { fix } = args('--fix boolean')
 
-if (values.fix) {
+if (fix) {
   await $`oxfmt && oxlint --fix --fix-suggestions`
 } else {
   await $`oxlint`

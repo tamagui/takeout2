@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
 
 import { execSync } from 'node:child_process'
-import { parseArgs } from 'node:util'
+
+import { args } from '@take-out/scripts/helpers/args'
 
 interface ServiceStatus {
   name: string
@@ -67,18 +68,9 @@ let CLUSTER_NAME = ''
 let SERVICES_TO_CHECK: string[] = []
 let AURORA_CLUSTER_ID = ''
 
-// parse command line arguments
-const { values } = parseArgs({
-  args: process.argv.slice(2),
-  options: {
-    verbose: {
-      type: 'boolean',
-      default: false,
-    },
-  },
-})
+const { verbose } = args('--verbose boolean')
 
-const VERBOSE_MODE = values.verbose ?? false
+const VERBOSE_MODE = verbose
 
 function run(command: string): string {
   try {

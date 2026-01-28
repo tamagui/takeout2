@@ -1,4 +1,5 @@
 import { number, string, table } from '@rocicorp/zero'
+import { AppError } from '@take-out/helpers'
 import { mutations, serverWhere } from 'over-zero'
 
 import { checkProfanity } from '~/features/moderation/profanityFilter'
@@ -25,7 +26,13 @@ export const mutate = mutations(schema, permissions, {
       if (comment.content) {
         const profanityCheck = checkProfanity(comment.content)
         if (!profanityCheck.clean) {
-          throw new Error('Comment violates community guidelines')
+          throw new AppError(
+            'PROFANITY_DETECTED',
+            'Comment violates community guidelines',
+            {
+              flaggedWords: profanityCheck.flaggedWords,
+            }
+          )
         }
       }
     }

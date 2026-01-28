@@ -1,7 +1,6 @@
 #!/usr/bin/env bun
 
-import { parseArgs } from 'node:util'
-
+import { args } from '@take-out/scripts/helpers/args'
 import { $ } from 'bun'
 
 // Configuration
@@ -15,40 +14,19 @@ const AVAILABLE_PROFILES = {
   development: 'tamagui-dev',
 } as const
 
-const { values, positionals } = parseArgs({
-  args: process.argv.slice(2),
-  options: {
-    email: {
-      type: 'string',
-      short: 'e',
-    },
-    name: {
-      type: 'string',
-      short: 'n',
-    },
-    'display-name': {
-      type: 'string',
-      short: 'd',
-    },
-    profile: {
-      type: 'string',
-      short: 'p',
-      default: 'prod',
-    },
-    'permission-set': {
-      type: 'string',
-      short: 's',
-      default: 'AdministratorAccess',
-    },
-    'dry-run': {
-      type: 'boolean',
-      default: false,
-    },
-  },
-  allowPositionals: true,
-})
+const {
+  email,
+  name,
+  displayName,
+  profile = 'prod',
+  permissionSet = 'AdministratorAccess',
+  dryRun,
+  _,
+} = args(
+  '--email string --name string --display-name string --profile string --permission-set string --dry-run boolean'
+)
 
-const command = positionals[0]
+const command = _[0]
 
 // Helper functions
 async function getIdentityStoreId(profile: string) {
@@ -104,12 +82,11 @@ async function getPermissionSetName(arn: string, profile: string) {
 }
 
 async function listUsers() {
-  const profileName = (values.profile as string) || 'prod'
-  const awsProfile = AVAILABLE_PROFILES[profileName as keyof typeof AVAILABLE_PROFILES]
+  const awsProfile = AVAILABLE_PROFILES[profile as keyof typeof AVAILABLE_PROFILES]
 
   if (!awsProfile) {
     console.error(
-      `❌ Invalid profile: ${profileName}. Use: ${Object.keys(AVAILABLE_PROFILES).join(', ')}`
+      `❌ Invalid profile: ${profile}. Use: ${Object.keys(AVAILABLE_PROFILES).join(', ')}`
     )
     process.exit(1)
   }
@@ -132,15 +109,11 @@ async function listUsers() {
 }
 
 async function addUser() {
-  const email = values.email
-  const name = values.name
-  const displayName = values['display-name'] || name
-  const profileName = (values.profile as string) || 'prod'
-  const awsProfile = AVAILABLE_PROFILES[profileName as keyof typeof AVAILABLE_PROFILES]
+  const awsProfile = AVAILABLE_PROFILES[profile as keyof typeof AVAILABLE_PROFILES]
 
   if (!awsProfile) {
     console.error(
-      `❌ Invalid profile: ${profileName}. Use: ${Object.keys(AVAILABLE_PROFILES).join(', ')}`
+      `❌ Invalid profile: ${profile}. Use: ${Object.keys(AVAILABLE_PROFILES).join(', ')}`
     )
     process.exit(1)
   }
@@ -150,12 +123,14 @@ async function addUser() {
     process.exit(1)
   }
 
+  const userDisplayName = displayName || name
+
   // Parse name into first and last name
   const nameParts = name.trim().split(' ')
   const firstName = nameParts[0]
   const lastName = nameParts.slice(1).join(' ') || firstName
 
-  console.info(`🚀 Adding user: ${displayName} (${email}) to ${awsProfile}`)
+  console.info(`🚀 Adding user: ${userDisplayName} (${email}) to ${awsProfile}`)
 
   const identityStoreId = await getIdentityStoreId(awsProfile)
   const instanceArn = await getInstanceArn(awsProfile)
@@ -170,9 +145,9 @@ async function addUser() {
     // Create user
     console.info('  Creating user in IAM Identity Center...')
 
-    if (!values['dry-run']) {
+    if (!dryRun) {
       const result =
-        await $`aws --profile ${awsProfile} --region ${SSO_REGION} identitystore create-user --identity-store-id ${identityStoreId} --user-name ${email} --display-name "${displayName}" --name '{"GivenName":"${firstName}","FamilyName":"${lastName}"}' --emails '[{"Value":"${email}","Primary":true}]' --query 'UserId' --output text`.text()
+        await $`aws --profile ${awsProfile} --region ${SSO_REGION} identitystore create-user --identity-store-id ${identityStoreId} --user-name ${email} --display-name "${userDisplayName}" --name '{"GivenName":"${firstName}","FamilyName":"${lastName}"}' --emails '[{"Value":"${email}","Primary":true}]' --query 'UserId' --output text`.text()
       userId = result.trim()
       console.info(`  ✓ User created with ID: ${userId}`)
     } else {
@@ -182,7 +157,7 @@ async function addUser() {
   }
 
   // Get permission set
-  const permissionSetName = values['permission-set'] || 'AdministratorAccess'
+  const permissionSetName = permissionSet || 'AdministratorAccess'
   let permissionSetArn = await getPermissionSetArn(permissionSetName, awsProfile)
 
   if (!permissionSetArn) {
@@ -193,7 +168,7 @@ async function addUser() {
   // Assign to account
   console.info(`  Assigning to ${awsProfile} account...`)
 
-  if (!values['dry-run']) {
+  if (!dryRun) {
     try {
       await $`aws --profile ${awsProfile} --region ${SSO_REGION} sso-admin create-account-assignment --instance-arn ${instanceArn} --target-id ${accountId} --target-type AWS_ACCOUNT --permission-set-arn ${permissionSetArn} --principal-type USER --principal-id ${userId}`.quiet()
       console.info(`  ✓ Assigned to ${awsProfile}`)
@@ -215,13 +190,11 @@ async function addUser() {
 }
 
 async function removeUser() {
-  const email = values.email
-  const profileName = (values.profile as string) || 'prod'
-  const awsProfile = AVAILABLE_PROFILES[profileName as keyof typeof AVAILABLE_PROFILES]
+  const awsProfile = AVAILABLE_PROFILES[profile as keyof typeof AVAILABLE_PROFILES]
 
   if (!awsProfile) {
     console.error(
-      `❌ Invalid profile: ${profileName}. Use: ${Object.keys(AVAILABLE_PROFILES).join(', ')}`
+      `❌ Invalid profile: ${profile}. Use: ${Object.keys(AVAILABLE_PROFILES).join(', ')}`
     )
     process.exit(1)
   }
@@ -251,7 +224,7 @@ async function removeUser() {
       await $`aws --profile ${awsProfile} --region ${SSO_REGION} sso-admin list-account-assignments-for-principal --instance-arn ${instanceArn} --principal-id ${userId} --principal-type USER --account-id ${accountId} --query 'AccountAssignments[*].PermissionSetArn' --output json`.json()
 
     for (const permissionSetArn of assignments) {
-      if (!values['dry-run']) {
+      if (!dryRun) {
         await $`aws --profile ${awsProfile} --region ${SSO_REGION} sso-admin delete-account-assignment --instance-arn ${instanceArn} --target-id ${accountId} --target-type AWS_ACCOUNT --permission-set-arn ${permissionSetArn} --principal-type USER --principal-id ${userId}`.quiet()
         console.info(`  ✓ Removed assignment from ${awsProfile}`)
       } else {

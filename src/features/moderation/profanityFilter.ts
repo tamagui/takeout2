@@ -1,34 +1,17 @@
 // simple profanity filter for text content
 // this is a basic blocklist approach - can be enhanced with more sophisticated detection
 
-// common offensive words - keep this list minimal and focused on clearly offensive terms
+// offensive terms - focused on clearly harmful slurs only
+// avoid short words or words that appear in legitimate contexts
 const BLOCKED_WORDS = [
-  // slurs and hate speech (abbreviated to avoid false positives)
-  'n1gger',
-  'n1gga',
+  // slurs (full words only to avoid false positives)
   'nigger',
   'nigga',
-  'f4ggot',
   'faggot',
-  'fag',
-  'k1ke',
   'kike',
-  'sp1c',
-  'spic',
-  'ch1nk',
   'chink',
-  'tr4nny',
   'tranny',
-  // explicit sexual content
-  'c0ck',
-  'cock',
-  'd1ck',
-  'dick',
-  'p0rn',
-  'porn',
-  'xxx',
-  // violence
-  'k1ll yourself',
+  // violence/harassment
   'kill yourself',
   'kys',
 ]

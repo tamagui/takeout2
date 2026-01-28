@@ -45,7 +45,7 @@
     "migrate": "tko migrate",
     "native:prebuild": "one prebuild",
     "onboard": "tko onboard",
-    "one:dev": "bun tko ensure-port 8081 --auto-kill Onejs:dev && bun run one dev",
+    "one:dev": "bun ./scripts/one-dev.ts",
     "repl": "tko run repl",
     "run:dev": "bun env:dev bun",
     "run:prod": "NODE_ENV=production bun tko run exec-with-env production bun",

@@ -8,9 +8,9 @@ import { existsSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
-import { parseArgs } from 'node:util'
 
 import { sleep, time } from '@take-out/helpers'
+import { args } from '@take-out/scripts/helpers/args'
 import { checkPort } from '@take-out/scripts/helpers/check-port'
 import { getTestEnv } from '@take-out/scripts/helpers/get-test-env'
 import { handleProcessExit } from '@take-out/scripts/helpers/handleProcessExit'
@@ -39,55 +39,25 @@ const { exit } = handleProcessExit({
   },
 })
 
-const { values } = parseArgs({
-  args: process.argv.slice(2),
-  options: {
-    'skip-checks': {
-      type: 'boolean',
-      default: false,
-    },
-    'skip-tests': {
-      type: 'boolean',
-      default: false,
-    },
-    'skip-build': {
-      type: 'boolean',
-      default: false,
-    },
-    // avoid production build just run frontend in dev mdoe for faster testing
-    dev: {
-      type: 'boolean',
-      default: false,
-    },
-    'skip-web-build': {
-      type: 'boolean',
-      default: false,
-    },
-    'skip-deploy': {
-      type: 'boolean',
-      default: false,
-    },
-    'dry-run': {
-      type: 'boolean',
-      default: false,
-    },
-    redeploy: {
-      type: 'boolean',
-      default: false,
-    },
-  },
-})
+const opts = args(`
+  --skip-checks boolean
+  --skip-tests boolean
+  --skip-build boolean
+  --dev boolean
+  --skip-web-build boolean
+  --skip-deploy boolean
+  --dry-run boolean
+  --redeploy boolean
+`)
 
 // --dry-run is an alias for --skip-deploy
-if (values['dry-run']) {
-  values['skip-deploy'] = true
-}
-
-if (values.redeploy) {
-  values['skip-checks'] = true
-  values['skip-build'] = true
-  values['skip-tests'] = true
-}
+const skipDeploy = opts.skipDeploy || opts.dryRun
+const skipChecks = opts.skipChecks || opts.redeploy
+const skipBuild = opts.skipBuild || opts.redeploy
+const skipTests = opts.skipTests || opts.redeploy
+const skipWebBuild = opts.skipWebBuild
+const devMode = opts.dev
+const redeploy = opts.redeploy
 
 console.info('🏃 CI/CD')
 console.info(`Node version: ${process.version}`)
@@ -105,7 +75,7 @@ try {
   await runParallel([
     {
       name: 'checks',
-      condition: () => !values['skip-checks'],
+      condition: () => !skipChecks,
       async fn() {
         await run('bun check:all', {
           prefix: 'checks',
@@ -116,7 +86,7 @@ try {
     },
     {
       name: 'playwright-install',
-      condition: () => !values['skip-tests'],
+      condition: () => !skipTests,
       async fn() {
         await run('npx playwright install chromium', {
           prefix: 'playwright',
@@ -134,14 +104,14 @@ try {
     // TODO: re-enable database backup once backup script is available
     // {
     //   name: 'backup-database',
-    //   condition: () => !values['skip-deploy'],
+    //   condition: () => !skipDeploy,
     //   fn: async () => {
     //     await backupProductionDatabase()
     //   },
     // },
     {
       name: 'unit-tests',
-      condition: () => !values['skip-tests'],
+      condition: () => !skipTests,
       fn: async () => {
         await setupBackend()
         await runUnitTests()
@@ -149,15 +119,15 @@ try {
     },
     {
       name: 'build',
-      condition: () => !values['skip-build'],
+      condition: () => !skipBuild,
       fn: async () => {
         try {
-          if (values['dev']) {
+          if (devMode) {
             void run(`bun run ci frontend-dev`, {
               detached: true,
             })
             await sleep(4000)
-          } else if (!values['skip-web-build']) {
+          } else if (!skipWebBuild) {
             await run(`bun run web build`, {
               prefix: 'web-build',
               timeout: time.ms.minutes(5),
@@ -173,7 +143,7 @@ try {
     },
   ])
 
-  if (!values['skip-deploy']) {
+  if (!skipDeploy) {
     await printTiming('deploy to production', () => deployProduction())
   }
 
@@ -282,7 +252,7 @@ async function waitForBackend() {
 }
 
 async function runUnitTests() {
-  if (values['skip-tests']) {
+  if (skipTests) {
     return
   }
 
@@ -302,7 +272,7 @@ async function runUnitTests() {
 }
 
 async function runIntegrationTests() {
-  if (values['skip-tests']) {
+  if (skipTests) {
     return
   }
 
@@ -372,7 +342,7 @@ async function detectDeploymentPlatform(): Promise<'sst' | 'uncloud'> {
 
 async function deploySST() {
   // handle Docker image for ECR
-  if (values['skip-build']) {
+  if (skipBuild) {
     const lastImage = await sstDeploy.loadLastDockerImage()
     if (lastImage) {
       console.info(`\nUsing last Docker image from previous build: ${lastImage}`)

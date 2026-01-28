@@ -136,29 +136,18 @@ const newCommand = defineCommand({
  * @args --verbose, --dry-run
  */
 
-import { parseArgs } from 'node:util'
+import { args } from '@take-out/scripts/helpers/args'
 
-const { values } = parseArgs({
-  args: process.argv.slice(2),
-  options: {
-    verbose: {
-      type: 'boolean',
-      short: 'v',
-    },
-    'dry-run': {
-      type: 'boolean',
-    },
-  },
-})
+const { verbose, dryRun } = args('--verbose boolean --dry-run boolean')
 
 async function main() {
   console.info('Running ${basename(scriptPath)}...')
 
-  if (values.verbose) {
+  if (verbose) {
     console.info('Verbose mode enabled')
   }
 
-  if (values['dry-run']) {
+  if (dryRun) {
     console.info('Dry run mode - no changes will be made')
   }
 

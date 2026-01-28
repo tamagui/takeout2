@@ -6,20 +6,12 @@
  */
 
 import { execSync } from 'node:child_process'
-import { parseArgs } from 'node:util'
 
-const { values, positionals } = parseArgs({
-  args: process.argv.slice(2),
-  options: {
-    'auto-kill': {
-      type: 'string',
-      short: 'k',
-    },
-  },
-  allowPositionals: true,
-})
+import { args } from './helpers/args'
 
-const port = positionals[0]
+const { autoKill, _ } = args('--auto-kill string')
+
+const port = _[0]
 
 if (!port) {
   console.error('usage: bun tko ensure-port <port> [--auto-kill <prefix>]')
@@ -71,10 +63,8 @@ function killProcess(pid: number): boolean {
 const { pid, command } = getListeningProcess(portNum)
 
 if (pid) {
-  const autoKillPrefix = values['auto-kill']
-
   // check if we should auto-kill this process
-  if (autoKillPrefix && command?.startsWith(autoKillPrefix)) {
+  if (autoKill && command?.startsWith(autoKill)) {
     console.info(`killing ${command} (pid ${pid}) on port ${portNum}`)
     if (killProcess(pid)) {
       // give it a moment to release the port

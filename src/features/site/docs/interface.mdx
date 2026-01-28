@@ -1,0 +1,142 @@
+---
+title: Interface
+description: Polished UI primitives that work everywhere
+---
+
+<ProBadge size="large" /> Partial docs — work in progress.
+
+## Dialog
+
+Two-layer system for nested confirmations. Desktop shows a modal with glass
+blur, mobile web adapts to a bottom sheet automatically, native web adapts to
+the same sheet but integrates with many native libraries for excellent feel.
+
+```ts
+import {
+  dialogConfirm,
+  dialogError,
+  showError,
+} from '~/interface/dialogs/actions'
+
+const confirmed = await dialogConfirm({
+  title: 'Delete post?',
+  description: 'This cannot be undone.',
+})
+
+// extra confirmation: user must type "Confirm"
+await dialogConfirm({ extraConfirmation: true })
+
+// error dialog with smart titles from error codes
+showError(new AppError('NOT_AUTHENTICATED', 'Please sign in'))
+```
+
+Escape key only closes when you're not typing. Tooltips auto-close when dialogs
+open.
+
+## Tooltip
+
+Globally provided with scope to to de-dupe instances for performance, and
+provide easier cusomization and avoid conflicts with other components.
+
+```tsx
+<Tooltip label="Settings">
+  <Button icon={GearIcon} />
+</Tooltip>
+```
+
+Enables `animatePositionChange` for delightful UI. `closeOpenTooltips()` helper,
+automatically integrates with other dialogs, sheets, popovers to close when they
+open.
+
+## Sheet
+
+Off thread animations on web, modern scroll locking technique, works with plain
+CSS, reanimated, and motion drivers.
+
+Setup on native with `react-native-reanimated`, `react-native-gesture-handler`,
+`react-native-keyboard-controller`, and `react-native-teleport` for fully
+native-feeling Sheets, all without changing a single prop.
+
+## Toast
+
+Native toasts expand on drag — peek state shows title, drag down reveals full
+content. Spring animations with reanimated. Auto-hides, pauses while dragging.
+
+```ts
+import { showToast } from '~/interface/toast/helpers'
+
+showToast('Saved!', { type: 'success' })
+showToast('Something went wrong', {
+  type: 'error',
+  action: { label: 'Retry', onPress: retry },
+  expandedChild: <DetailedError />,
+})
+```
+
+Glass morphism on native. Swipe-to-dismiss on web.
+
+## Popover
+
+Tracks open state globally by name. Desktop popover, mobile sheet — same API.
+
+```tsx
+<PopoverMenu name="post-actions" items={menuItems}>
+  <Button icon={<DotsThreeIcon />} />
+</PopoverMenu>
+```
+
+Smart positioning with `stayInFrame` and `allowFlip`. Escape handling respects
+form field focus. Adapt to Sheet easily on mobile when needed without changing
+props, just using the `Adapt` component.
+
+## Menu
+
+Declarative menus with sub-menus, icons, themes and excellent keyboard control
+on web. Fully native menus on mobile via Zeego.
+
+```tsx
+const items = [
+  { icon: PencilIcon, label: 'Edit', onPress: edit },
+  { icon: TrashIcon, label: 'Delete', onPress: del, theme: 'red' },
+]
+
+<Menu items={items} />
+```
+
+Auto-closes on selection with a small delay for the animation.
+
+## Button
+
+Glass morphism, haptics, tooltips built in. Sizes from tiny to xl.
+
+```tsx
+<Button
+  theme="accent"
+  glass
+  haptic="medium"
+  tooltip="Send message"
+  icon={<PaperPlaneTiltIcon />}
+>
+  Send
+</Button>
+```
+
+## Select
+
+Dropdown on desktop, sheet on mobile. Gradient scroll indicators. Revised for
+Tamagui 2 to have much better performance and behavior on all platforms.
+
+```tsx
+<Select value={value} onValueChange={setValue}>
+  <Select.Item value="a">Option A</Select.Item>
+  <Select.Item value="b" icon={<StarIcon />}>
+    Option B
+  </Select.Item>
+</Select>
+```
+
+---
+
+Other highlights: `ListItem` with context menus and edit mode, `GlassView` for
+native blur effects, a variety of shape `Shimmer` components, `Image` with lazy
+loading and blurhash.

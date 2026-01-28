@@ -1,0 +1,109 @@
+---
+title: Scripts & Helpers
+description: Consistent, grouped, easy to author
+---
+
+<ProBadge size="large" /> Partial docs — work in progress.
+
+Run scripts via the `tko` CLI:
+
+```bash
+bun tko <category> <script>
+bun tko script list
+```
+
+## CI
+
+```bash
+bun tko ci logs                     # watch current CI run, show failures
+bun tko ci logs --failed            # only failed steps
+
+bun tko ci release --dry-run        # full pipeline without deploying
+bun tko ci release --dry-run --dev  # faster with dev server
+```
+
+## Checks
+
+```bash
+bun tko check types            # typecheck
+bun tko check types --watch
+bun tko check lint --fix       # oxlint
+bun tko check knip             # unused deps & exports
+bun tko check dependencies     # circular deps
+```
+
+## Database
+
+```bash
+bun tko db add-migration add_user_preferences
+bun tko db migrate-drizzle
+bun tko db generate-drizzle
+```
+
+## Web
+
+```bash
+bun tko web build
+bun tko web serve              # port 8081
+bun tko web build-analyze /    # lighthouse + bundle stats
+bun tko web build-docker -t myapp:latest
+```
+
+## Mobile
+
+```bash
+bun tko eas build-dev          # or build-preview, build-prod
+bun tko eas build-prod --ios
+
+bun tko hot-update ios         # OTA updates
+bun tko hot-update android --production
+```
+
+## Deployment
+
+```bash
+# uncloud (self-hosted)
+bun tko uncloud deploy-local   # multipass VM
+bun tko uncloud deploy-prod
+bun tko uncloud logs web -f
+bun tko uncloud cluster save   # encrypt config for team
+
+# aws
+bun tko aws health             # ECS + log ingestion
+bun tko aws configure          # cloudwatch, billing alarms
+```
+
+## Environment
+
+```bash
+bun tko env sync-to-github           # .env.production → github secrets
+bun tko env sync-to-github --ios     # include ios secrets
+```
+
+## Other
+
+```bash
+bun tko ios setup-release      # app store secrets
+bun tko icon add-phosphor Heart --weight=bold
+```
+
+---
+
+## Script Helpers
+
+For writing your own scripts:
+
+```ts
+import { run, runParallel } from '@take-out/scripts/helpers/run'
+import { args } from '@take-out/scripts/helpers/args'
+import { waitForPort } from '@take-out/scripts/helpers/wait-for-port'
+
+const { port, verbose } = args`--port number --verbose boolean`
+
+await run('bun build')
+await runParallel([
+  { name: 'build', cmd: 'bun build' },
+  { name: 'test', cmd: 'bun test' },
+])
+await waitForPort(3000, { timeout: 30000 })
+```

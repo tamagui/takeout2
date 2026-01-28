@@ -429,7 +429,8 @@ export function HeroSection() {
           <YStack gap="$1">
             <HeroTitle>
               The <Span $maxXL={{ display: 'none' }}>startup</Span> starter that{' '}
-              <em>actually</em> gives you an <HighlightText>edge.</HighlightText>
+              <em>actually</em> gives you an{' '}
+              <HighlightText fontWeight="300">edge.</HighlightText>
             </HeroTitle>
           </YStack>
 

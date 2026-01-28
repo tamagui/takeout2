@@ -431,8 +431,8 @@ export function HeroSection() {
             <Strong fontWeight="600" color="$color12">
               Most starter kits suck
             </Strong>
-            . Takeout sucks less: fun new tech, real-world experience, auto-CI/CD,
-            scalable&nbsp;IaC, and strapped-up for AI with{' '}
+            . Takeout sucks less: novel tech meets real-world experience, auto-CI/CD,
+            scalable&nbsp;IaC, strapped-up for AI, and{' '}
             <Link href="/docs/changelog">constant updates</Link> — it's&nbsp;what we use
             for ourselves, and our <Link href="https://addeven.com">clients</Link>.
           </HeroSubtitle>

@@ -25,10 +25,7 @@ export function HomeBackground() {
       <YStack
         className="grain-overlay"
         position="absolute"
-        t={0}
-        l={0}
-        r={0}
-        b={0}
+        inset={0}
         opacity={0.2}
         filter="invert(1)"
         z={0}
@@ -36,16 +33,7 @@ export function HomeBackground() {
       />
 
       {/* gradient orbs - absolute, scroll with page */}
-      <YStack
-        position="absolute"
-        t={0}
-        l={0}
-        r={0}
-        b={0}
-        z={0}
-        pointerEvents="none"
-        overflow="hidden"
-      >
+      <YStack position="absolute" inset={0} z={0} pointerEvents="none" overflow="hidden">
         <GradientOrb
           width={1200}
           height={1200}

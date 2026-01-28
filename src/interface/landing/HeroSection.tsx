@@ -12,11 +12,11 @@ import { Span, Strong } from '../text/Text'
 const HeroTitle = styled(H1, {
   letterSpacing: -1,
   color: '$color12',
-  size: '$11',
+  size: '$12',
   fontWeight: '800',
 
   $maxLG: {
-    size: '$9',
+    size: '$10',
     fontWeight: '800',
   },
 })
@@ -34,11 +34,11 @@ const HeroSubtitle = styled(Paragraph, {
 
 const HighlightText = styled(Text, {
   render: 'span',
+  backgroundImage: 'linear-gradient(20deg, $yellow9 0%, $red9 100%)',
+  color: 'transparent',
   '$platform-web': {
-    backgroundImage: 'linear-gradient(20deg, var(--yellow9) 0%, var(--red9) 100%)',
     backgroundClip: 'text',
     WebkitBackgroundClip: 'text',
-    color: 'transparent',
   },
 })
 
@@ -415,18 +415,21 @@ export function HeroSection() {
         <YStack
           gap="$5"
           flex={1}
-          minW={300}
+          minW={320}
           maxW={620}
           items="flex-start"
           scale={0.9}
           $heightLG={{
             scale: 1,
           }}
+          $maxLG={{
+            pt: '$5',
+          }}
         >
           <YStack gap="$1">
             <HeroTitle>
-              The <Span $maxXL={{ display: 'none' }}>startup</Span> stack that{' '}
-              <em>actually</em> <HighlightText>cares.</HighlightText>
+              The <Span $maxXL={{ display: 'none' }}>startup</Span> starter that{' '}
+              <em>actually</em> gives you an <HighlightText>edge.</HighlightText>
             </HeroTitle>
           </YStack>
 
@@ -457,12 +460,12 @@ export function HeroSection() {
             <CopyCommand />
           </XStack>
 
-          <Paragraph size="$6" color="$color10">
+          <Paragraph size="$6" $lg={{ size: '$7' }} color="$color9">
             Check the{' '}
             <Link href="https://tamagui.dev/takeout" target="_blank">
               <Span color="$color12">pro version</Span>
             </Link>{' '}
-            or{' '}
+            or the{' '}
             <Link href="https://github.com/tamagui/takeout-free" target="_blank">
               <Span color="$color12">free one</Span>
             </Link>
@@ -477,7 +480,7 @@ export function HeroSection() {
           maxW={480}
           x={0}
           items="center"
-          $md={{ x: 50 }}
+          // $md={{ x: 50 }}
           $lg={{ items: 'flex-end', x: 0 }}
           $sm={{
             mt: '$15',

@@ -64,7 +64,7 @@ export const ScrollHeader = ({ children }: { children: ReactNode }) => {
           />
 
           <YStack
-            opacity={0.85}
+            opacity={0.35}
             $md={{ opacity: isScrolled ? 0.85 : 0, rounded: '$10' }}
             position="absolute"
             inset={0}

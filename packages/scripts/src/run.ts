@@ -317,16 +317,6 @@ const runScript = async (
           `\x1b[31mProcess "${prefixLabel}" failed with exit code ${code}\x1b[0m`
         )
 
-        // Show the original error output without prefixes
-        if (stderrBuffer.trim()) {
-          console.error('\n\x1b[31mError output:\x1b[0m')
-          console.error('\x1b[90m' + '─'.repeat(80) + '\x1b[0m')
-          const cleanedStderr = stderrBuffer
-          console.error(cleanedStderr)
-          console.error('\x1b[90m' + '─'.repeat(80) + '\x1b[0m')
-        }
-
-        console.error('')
 
         if (watch && restarts < MAX_RESTARTS) {
           const newRestarts = restarts + 1

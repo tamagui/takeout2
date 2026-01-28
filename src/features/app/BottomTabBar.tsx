@@ -32,7 +32,7 @@ export function BottomTabBar() {
       bg="$background08"
       boxShadow="0 0 10px $shadow4"
       display="flex"
-      $lg={{ display: 'none' }}
+      $md={{ display: 'none' }}
       z={100}
       style={{
         backdropFilter: 'blur(16px)',

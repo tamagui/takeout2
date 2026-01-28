@@ -28,7 +28,7 @@ export const SimpleGridItem = styled(YStack, {
       3: {
         width: '100%',
         $sm: { width: 'calc(50% - 8px)' },
-        $lg: { width: 'calc(33.33% - 8px)' },
+        $md: { width: 'calc(33.33% - 8px)' },
       },
     },
   } as const,

@@ -15,7 +15,7 @@ const HeroTitle = styled(H1, {
   size: '$11',
   fontWeight: '800',
 
-  $maxLG: {
+  $maxMD: {
     size: '$9',
     fontWeight: '800',
   },
@@ -406,7 +406,7 @@ export function HeroSection() {
         maxW={1200}
         width="100%"
         pb="$14"
-        $lg={{ flexWrap: 'nowrap', gap: '$8' }}
+        $md={{ flexWrap: 'nowrap', gap: '$8' }}
       >
         {/* left side - hero content */}
         <YStack
@@ -422,7 +422,7 @@ export function HeroSection() {
         >
           <YStack gap="$1">
             <HeroTitle>
-              The <Span $maxXL={{ display: 'none' }}>startup</Span> starter that{' '}
+              The <Span $maxLG={{ display: 'none' }}>startup</Span> starter that{' '}
               <em>actually</em> gives you an <HighlightText>edge</HighlightText>.
             </HeroTitle>
           </YStack>
@@ -474,8 +474,8 @@ export function HeroSection() {
           maxW={480}
           x={0}
           items="center"
-          $md={{ x: 50 }}
-          $lg={{ items: 'flex-end', x: 0 }}
+          $sm={{ x: 50 }}
+          $md={{ items: 'flex-end', x: 0 }}
           position="relative"
           transition="bouncy"
         >

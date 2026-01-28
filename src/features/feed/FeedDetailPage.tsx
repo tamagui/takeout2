@@ -35,7 +35,7 @@ export const FeedDetailPage = memo(() => {
   const author = post?.user
   const isOwnProfile = post?.userId === currentUser?.id
   const media = useMedia()
-  const isWideScreen = media.lg
+  const isWideScreen = media.md
   const [isClosing, setIsClosing] = useState(false)
 
   const [content, setContent] = useState('')

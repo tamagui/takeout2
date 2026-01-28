@@ -43,14 +43,14 @@ export const MainHeader = () => {
               items="center"
               justify="center"
               display="none"
-              $lg={{ display: 'flex' }}
+              $md={{ display: 'flex' }}
             >
               <View pointerEvents="auto">
                 <NavigationTabs />
               </View>
             </XStack>
 
-            <XStack gap="$2.5" items="center" display="none" $md={{ display: 'flex' }}>
+            <XStack gap="$2.5" items="center" display="none" $sm={{ display: 'flex' }}>
               {user && (
                 <UserProfilePopover
                   trigger={
@@ -102,7 +102,7 @@ export const MainHeaderMenu = memo(() => {
         icon={<ListIcon size="$1" />}
         aria-label="Menu"
         onPress={() => setOpen(true)}
-        $md={{ display: 'none' }}
+        $sm={{ display: 'none' }}
       />
       <Sheet
         open={open}

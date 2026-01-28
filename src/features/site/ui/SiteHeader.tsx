@@ -23,8 +23,8 @@ export const SiteHeader = memo(() => {
     <ScrollHeader>
       <PageContainer>
         <YStack width="100%" py="$2">
-          <XStack position="relative" width="100%" items="center" $md={{ px: '$4' }}>
-            <XStack display="none" $lg={{ display: 'flex' }} gap="$2" items="center">
+          <XStack position="relative" width="100%" items="center" $sm={{ px: '$4' }}>
+            <XStack display="none" $md={{ display: 'flex' }} gap="$2" items="center">
               <SocialLinksRow />
               <PromoLinksRow />
             </XStack>
@@ -34,7 +34,7 @@ export const SiteHeader = memo(() => {
             <XStack
               position="absolute"
               l="$4"
-              $lg={{
+              $md={{
                 l: '50%',
                 t: '50%',
                 transform: 'translate(-50%, -50%)',
@@ -45,7 +45,7 @@ export const SiteHeader = memo(() => {
               </Link>
             </XStack>
 
-            <XStack gap="$2" items="center" display="none" $md={{ display: 'flex' }}>
+            <XStack gap="$2" items="center" display="none" $sm={{ display: 'flex' }}>
               <LoginButton />
 
               <Link href="/docs/introduction">
@@ -77,7 +77,7 @@ const SiteHeaderMenu = memo(() => {
         icon={<ListIcon size="$1" />}
         aria-label="Menu"
         onPress={() => setOpen(true)}
-        $md={{ display: 'none' }}
+        $sm={{ display: 'none' }}
       />
 
       <Sheet

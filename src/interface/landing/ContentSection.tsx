@@ -93,7 +93,7 @@ const ContentTitle = styled(H1, {
   color: '$color12',
   text: 'center',
 
-  $md: {
+  $sm: {
     size: '$12',
   },
 })

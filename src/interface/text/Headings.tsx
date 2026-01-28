@@ -55,7 +55,7 @@ export const SubHeading = styled(SizableText, {
   color: '$color10',
   fontWeight: '300',
 
-  $lg: {
+  $md: {
     size: '$6',
   },
 })

@@ -26,7 +26,7 @@ export const DocsQuickNav = ({ headings = [] }: { headings?: Heading[] }) => {
     <YStack
       render="aside"
       display="none"
-      $lg={{
+      $md={{
         display: 'flex',
         width: 220,
         shrink: 0,

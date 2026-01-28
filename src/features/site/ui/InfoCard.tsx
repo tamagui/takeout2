@@ -44,7 +44,7 @@ const CardContainer = styled(YStack, {
       2: {
         width: '100%',
 
-        $md: {
+        $sm: {
           width: 'calc(50% - 12px)',
           mb: '$4',
         },
@@ -53,12 +53,12 @@ const CardContainer = styled(YStack, {
       3: {
         width: '100%',
 
-        $md: {
+        $sm: {
           width: 'calc(50% - 12px)',
           mb: '$4',
         },
 
-        $xl: {
+        $lg: {
           width: 'calc(32% - 12px)',
           mb: '$4',
         },

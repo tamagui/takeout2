@@ -19,6 +19,25 @@ export const authServer = betterAuth({
 
   database,
 
+  rateLimit: {
+    enabled: true,
+    window: 60,
+    max: 30, // per minute per IP
+    customRules: {
+      // stricter limits on auth endpoints (better-auth paths)
+      '/sign-in/email': { window: 60, max: 5 },
+      '/sign-up/email': { window: 60, max: 3 },
+      '/email-otp/send-verification-otp': { window: 60, max: 3 },
+    },
+  },
+
+  // cloudflare IP header
+  advanced: {
+    ipAddress: {
+      ipAddressHeaders: ['cf-connecting-ip', 'x-forwarded-for'],
+    },
+  },
+
   session: {
     freshAge: time.minute.days(2),
     storeSessionInDatabase: true,

@@ -77,6 +77,7 @@ export const useProfileEdit = () => {
         name: name.trim(),
       }).server
 
+      setIsTouched(false)
       showToast('Profile updated', { type: 'success' })
       return true
     } catch (err: any) {

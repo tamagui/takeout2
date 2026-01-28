@@ -1,5 +1,5 @@
-import { ActivityIndicator, Text } from 'react-native'
-import { View } from 'tamagui'
+import { ActivityIndicator } from 'react-native'
+import { SizableText, View } from 'tamagui'
 
 import { useHotUpdater } from './useHotUpdater'
 
@@ -19,9 +19,9 @@ export function HotUpdaterSplash({ children }: HotUpdaterSplashProps) {
       <View flex={1} items="center" justify="center" bg="$background">
         <ActivityIndicator size="large" />
         {progress > 0 && (
-          <Text style={{ marginTop: 16, color: '#666' }}>
+          <SizableText mt={16} color="#666">
             Downloading update... {Math.round(progress)}%
-          </Text>
+          </SizableText>
         )}
       </View>
     )

@@ -3,13 +3,7 @@ import PagerView, {
   type PagerViewOnPageScrollEvent,
   type PagerViewOnPageSelectedEvent,
 } from 'react-native-pager-view'
-import Animated, {
-  Extrapolation,
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-  type SharedValue,
-} from 'react-native-reanimated'
+import { useSharedValue } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Theme, View, YStack, type ThemeName } from 'tamagui'
 
@@ -17,8 +11,6 @@ import { OnboardingActionButton } from './OnboardingActionButton'
 import { OnboardingPageIndicator } from './OnboardingPageIndicator'
 import { OnboardingSlide } from './OnboardingSlide'
 import { onboardingSlides } from './onboardingSlides'
-
-const TITLE_HEIGHT = 48
 
 export function Onboarding({ onComplete }: { onComplete?: () => void }) {
   const slides = onboardingSlides
@@ -69,8 +61,6 @@ export function Onboarding({ onComplete }: { onComplete?: () => void }) {
     <Theme name={currentTheme}>
       <View flex={1}>
         <YStack flex={1} bg="$color2" pt={safeAreaInsets.top}>
-          <TitleTicker slides={slides} scrollPosition={scrollPosition} />
-
           <PagerView
             ref={pagerRef}
             style={{ flex: 1 }}
@@ -106,49 +96,5 @@ export function Onboarding({ onComplete }: { onComplete?: () => void }) {
         </YStack>
       </View>
     </Theme>
-  )
-}
-
-interface TitleTickerProps {
-  slides: typeof onboardingSlides
-  scrollPosition: SharedValue<number>
-}
-
-function TitleTicker({ slides, scrollPosition }: TitleTickerProps) {
-  const animatedStyle = useAnimatedStyle(() => {
-    const translateY = interpolate(
-      scrollPosition.value,
-      [0, slides.length - 1],
-      [0, -(slides.length - 1) * TITLE_HEIGHT],
-      Extrapolation.CLAMP
-    )
-    return {
-      transform: [{ translateY }],
-    }
-  })
-
-  const opacityStyle = useAnimatedStyle(() => {
-    const offset = scrollPosition.value - Math.floor(scrollPosition.value)
-    const shouldAnimate = offset > 0.01 && offset < 0.99
-    const opacity = shouldAnimate
-      ? interpolate(offset, [0, 0.5, 0.99], [1, 0, 1], Extrapolation.CLAMP)
-      : 1
-    return { opacity }
-  })
-
-  return (
-    <Animated.View
-      style={[{ height: TITLE_HEIGHT, overflow: 'hidden', marginTop: 16 }, opacityStyle]}
-    >
-      <Animated.View style={animatedStyle}>
-        {slides.map((slide) => (
-          <View key={slide.id} style={{ height: TITLE_HEIGHT, justifyContent: 'center' }}>
-            {/* <H1 color="$color10" size="$12" fontWeight="300" lineHeight="$9" px="$5">
-              {slide.title}
-            </H1> */}
-          </View>
-        ))}
-      </Animated.View>
-    </Animated.View>
   )
 }

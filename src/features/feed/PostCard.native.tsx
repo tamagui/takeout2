@@ -83,7 +83,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
           width="100%"
           rounded={16}
           overflow="hidden"
-          style={[{ aspectRatio: Math.max(aspectRatio, 0.8) }]}
+          aspectRatio={Math.max(aspectRatio, 0.8)}
           cornerSmoothing={1}
         >
           <Animated.Image

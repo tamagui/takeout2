@@ -15,6 +15,7 @@ import { docsCommand } from './commands/docs'
 import { envSetupCommand } from './commands/env-setup'
 import { onboardCommand } from './commands/onboard'
 import { runCommand } from './commands/run'
+import { runAllCommand } from './commands/run-all'
 import { scriptCommand } from './commands/script'
 import { syncCommand } from './commands/sync'
 import { listAllScripts } from './utils/script-listing'
@@ -83,6 +84,7 @@ if (isShorthand) {
     'docs',
     'onboard',
     'run',
+    'run-all',
     'script',
     'env:setup',
     'sync',
@@ -130,6 +132,7 @@ const main = defineCommand({
     docs: docsCommand,
     'env:setup': envSetupCommand,
     run: runCommand,
+    'run-all': runAllCommand,
     script: scriptCommand,
     sync: syncCommand,
     changed: changedCommand,

@@ -28,7 +28,7 @@
     "clean": "tko run clean",
     "db:migrate-add": "tko db add-migration",
     "db": "tko db",
-    "dev": "tko run run watch one:dev",
+    "dev": "tko run-all --flags=last watch one:dev",
     "eas": "tko eas",
     "env:dev": "NODE_ENV=development dotenvx run -f .env .env.development --",
     "env:pull": "tko run env-pull",

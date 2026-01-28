@@ -44,11 +44,38 @@ const log = {
 const MAX_RESTARTS = 3
 
 // Separate command names from flags/arguments
+// Handles --flag=value and --flag value styles, excluding flag values from commands
 const args = process.argv.slice(2)
-const runCommands = args.filter((x) => !x.startsWith('--'))
+const ownFlags = ['--no-root', '--bun', '--watch', '--flags=last']
+const runCommands: string[] = []
+const forwardArgs: string[] = []
+
+for (let i = 0; i < args.length; i++) {
+  const arg = args[i]!
+
+  if (arg.startsWith('--')) {
+    // handle flags
+    if (ownFlags.includes(arg) || arg.startsWith('--stdin=')) {
+      continue
+    }
+    forwardArgs.push(arg)
+    // if next arg exists and doesn't start with --, treat it as this flag's value
+    const nextArg = args[i + 1]
+    if (nextArg && !nextArg.startsWith('--')) {
+      forwardArgs.push(nextArg)
+      i++ // skip the value in next iteration
+    }
+  } else {
+    // non-flag arg is a command name
+    runCommands.push(arg)
+  }
+}
+
 const noRoot = args.includes('--no-root')
 const runBun = args.includes('--bun')
 const watch = args.includes('--watch') // just attempts to restart a failed process up to MAX_RESTARTS times
+// --flags=last forwards args only to last script, default forwards to all
+const flagsLast = args.includes('--flags=last')
 
 // parse --stdin=<script-name> to specify which script receives keyboard input
 // if not specified, defaults to the last script in the list
@@ -56,16 +83,6 @@ const stdinArg = args.find((arg) => arg.startsWith('--stdin='))
 const stdinScript = stdinArg
   ? stdinArg.replace('--stdin=', '')
   : (runCommands[runCommands.length - 1] ?? null)
-
-// Collect additional flags and arguments to forward to sub-commands
-const forwardArgs = args.filter(
-  (arg) =>
-    arg.startsWith('--') &&
-    arg !== '--no-root' &&
-    arg !== '--bun' &&
-    arg !== '--watch' &&
-    !arg.startsWith('--stdin=')
-)
 
 // Get the list of scripts already being run by a parent process
 const parentRunningScripts = process.env.BUN_RUN_SCRIPTS
@@ -221,7 +238,8 @@ const runScript = async (
   name: string,
   cwd = '.',
   prefixLabel: string = name,
-  restarts = 0
+  restarts = 0,
+  extraArgs: string[] = []
 ) => {
   const colorIndex = processes.length % colors.length
   const color = colors[colorIndex]
@@ -231,7 +249,7 @@ const runScript = async (
 
   // Construct command with arguments to forward
   // --silent suppresses bun's "$ command" output
-  const runArgs = ['run', '--silent', runBun ? '--bun' : '', name, ...forwardArgs].filter(
+  const runArgs = ['run', '--silent', runBun ? '--bun' : '', name, ...extraArgs].filter(
     Boolean
   )
 
@@ -323,7 +341,7 @@ const runScript = async (
           console.info(
             `Restarting process ${name} (${newRestarts}/${MAX_RESTARTS} times)`
           )
-          runScript(name, cwd, prefixLabel, newRestarts)
+          runScript(name, cwd, prefixLabel, newRestarts, extraArgs)
         } else {
           exit(1)
         }
@@ -342,11 +360,18 @@ async function main() {
 
   try {
     if (runCommands.length > 0) {
+      const lastScript = runCommands[runCommands.length - 1]
+
       // Root package.json scripts first, if not disabled
       if (!noRoot) {
-        const scriptPromises = runCommands
-          .filter((name) => !parentRunningScripts.includes(name))
-          .map((name) => runScript(name))
+        const filteredCommands = runCommands.filter(
+          (name) => !parentRunningScripts.includes(name)
+        )
+        const scriptPromises = filteredCommands.map((name) => {
+          // --flags=last: only forward args to last script
+          const args = !flagsLast || name === lastScript ? forwardArgs : []
+          return runScript(name, '.', name, 0, args)
+        })
 
         await Promise.all(scriptPromises)
       }
@@ -354,11 +379,14 @@ async function main() {
       const workspaceScriptMap = await mapWorkspacesToScripts(runCommands)
 
       for (const [workspace, { scripts, packageName }] of workspaceScriptMap.entries()) {
-        const workspaceScriptPromises = scripts
-          .filter((scriptName) => !parentRunningScripts.includes(scriptName))
-          .map((scriptName) =>
-            runScript(scriptName, workspace, `${packageName} ${scriptName}`)
-          )
+        const filteredScripts = scripts.filter(
+          (scriptName) => !parentRunningScripts.includes(scriptName)
+        )
+        const workspaceScriptPromises = filteredScripts.map((scriptName) => {
+          // --flags=last: only forward args to last script
+          const args = !flagsLast || scriptName === lastScript ? forwardArgs : []
+          return runScript(scriptName, workspace, `${packageName} ${scriptName}`, 0, args)
+        })
 
         await Promise.all(workspaceScriptPromises)
       }

@@ -4,6 +4,7 @@
 
 import { randomId } from '@take-out/helpers'
 
+import { moderateImage } from '~/features/upload/moderateImage'
 import { s3Client } from '~/features/upload/s3client'
 import { defaultBucket, uploadToS3 } from '~/features/upload/upload'
 
@@ -23,9 +24,38 @@ export default async function handler(req: Request) {
   // console.info(`[Upload API] File received: ${file.name}, type: ${file.type}, size: ${file.size}`)
 
   try {
-    const key = `${folder}/${randomId()}-${file.name}`
+    // moderate images before upload
+    if (file.type.startsWith('image/')) {
+      const arrayBuffer = await file.arrayBuffer()
+      const imageBytes = new Uint8Array(arrayBuffer)
 
-    // console.info(`[Upload API] Non-video file, uploading to S3: ${key}`)
+      const moderation = await moderateImage(imageBytes)
+      if (!moderation.safe) {
+        const reasons = moderation.blockedLabels.map((l) => l.Name).join(', ')
+        console.info(`[Upload API] Image blocked by moderation: ${reasons}`)
+        return Response.json(
+          {
+            error: 'Image violates content policy',
+            code: 'CONTENT_POLICY_VIOLATION',
+          },
+          { status: 400 }
+        )
+      }
+
+      // upload from buffer since we already read the file
+      const key = `${folder}/${randomId()}-${file.name}`
+      const result = await uploadToS3(s3Client, {
+        bucket: defaultBucket,
+        key,
+        body: imageBytes,
+        contentType: file.type,
+      })
+
+      return Response.json({ message: 'File uploaded successfully', ...result })
+    }
+
+    // non-image files - upload directly
+    const key = `${folder}/${randomId()}-${file.name}`
     const result = await uploadToS3(s3Client, {
       bucket: defaultBucket,
       key,
@@ -33,18 +63,11 @@ export default async function handler(req: Request) {
       contentType: file.type,
     })
 
-    return new Response(
-      JSON.stringify({ message: 'File uploaded successfully', ...result }),
-      {
-        status: 200,
-      }
-    )
+    return Response.json({ message: 'File uploaded successfully', ...result })
   } catch (error) {
-    return new Response(
-      JSON.stringify({ error: 'Failed to upload file', details: `${error}` }),
-      {
-        status: 500,
-      }
+    return Response.json(
+      { error: 'Failed to upload file', details: `${error}` },
+      { status: 500 }
     )
   }
 }

@@ -1,6 +1,8 @@
 import { boolean, number, string, table } from '@rocicorp/zero'
 import { mutations, serverWhere } from 'over-zero'
 
+import { checkProfanity } from '~/features/moderation/profanityFilter'
+
 import type { Post } from '../types'
 
 export const schema = table('post')
@@ -24,6 +26,14 @@ const permissions = serverWhere('post', (_, auth) => {
 
 export const mutate = mutations(schema, permissions, {
   insert: async ({ tx, environment, server, authData }, post: Post) => {
+    // check caption for profanity on server
+    if (environment === 'server' && post.caption) {
+      const profanityCheck = checkProfanity(post.caption)
+      if (!profanityCheck.clean) {
+        throw new Error('Content violates community guidelines')
+      }
+    }
+
     await tx.mutate.post.insert(post)
 
     if (environment === 'server' && server && authData) {

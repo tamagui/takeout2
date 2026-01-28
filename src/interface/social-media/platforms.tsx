@@ -2,7 +2,7 @@ import { memo } from 'react'
 import { Linking } from 'react-native'
 import { View, XStack } from 'tamagui'
 
-import { ButtonSimple } from '../buttons/ButtonSimple'
+import { Button } from '../buttons/Button'
 import { DiscordLogo } from './DiscordLogo'
 import { FacebookLogo } from './FacebookLogo'
 import { InstagramLogo } from './InstagramLogo'
@@ -121,14 +121,14 @@ export const SocialLinks = memo(({ links, size = 'medium' }: SocialLinksProps) =
 
         return (
           <View key={platform} ml={index > 0 ? -16 : 0}>
-            <ButtonSimple
+            <Button
               onPress={() => Linking.openURL(url)}
               size="large"
               circular
               glass
             >
               <Icon size={iconSize} />
-            </ButtonSimple>
+            </Button>
           </View>
         )
       })}

@@ -4,7 +4,7 @@ import { useWindowDimensions } from 'react-native'
 import { AnimatePresence, Circle, Portal, styled, XStack, YStack } from 'tamagui'
 
 import { animationClamped } from '~/interface/animations/animationClamped'
-import { ButtonSimple, type ButtonSimpleProps } from '~/interface/buttons/ButtonSimple'
+import { Button, type ButtonProps } from '~/interface/buttons/Button'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { XIcon } from '~/interface/icons/phosphor/XIcon'
@@ -216,9 +216,9 @@ export const Gallery = () => {
 const GalleryButton = ({
   inactive,
   ...props
-}: ButtonSimpleProps & { inactive?: boolean }) => {
+}: ButtonProps & { inactive?: boolean }) => {
   return (
-    <ButtonSimple
+    <Button
       size="large"
       position="absolute"
       circular

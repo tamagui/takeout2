@@ -4,7 +4,7 @@ import { Paragraph, Progress, XStack, YStack } from 'tamagui'
 import { pickImageFromLibrary } from '~/helpers/media/imagePicker'
 
 import { Avatar } from '../avatars/Avatar'
-import { ButtonSimple } from '../buttons/ButtonSimple'
+import { Button } from '../buttons/Button'
 import { PencilSimpleIcon } from '../icons/phosphor/PencilSimpleIcon'
 import { useDropArea } from './DragDropFile'
 
@@ -67,7 +67,7 @@ export const AvatarUpload = ({
       <Avatar key={image} size={100} image={image} />
 
       <XStack gap="$2" position="absolute" b={0} r={0}>
-        <ButtonSimple
+        <Button
           glass
           circular
           active

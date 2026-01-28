@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { SizableText, XStack } from 'tamagui'
 
-import { ButtonSimple } from '../buttons/ButtonSimple'
+import { Button } from '../buttons/Button'
 import { CaretLeftIcon } from '../icons/phosphor/CaretLeftIcon'
 import { CaretRightIcon } from '../icons/phosphor/CaretRightIcon'
 
@@ -22,7 +22,7 @@ export const Pagination = memo(
 
     return (
       <XStack justify="center" items="center" gap="$4" py="$4">
-        <ButtonSimple
+        <Button
           size="small"
           glass
           disabled={!hasPrev}
@@ -30,13 +30,13 @@ export const Pagination = memo(
           icon={<CaretLeftIcon size={16} />}
         >
           Previous
-        </ButtonSimple>
+        </Button>
 
         <SizableText size="$3" color="$color10">
           Page {currentPage}
         </SizableText>
 
-        <ButtonSimple
+        <Button
           size="small"
           glass
           disabled={!hasMore}
@@ -45,7 +45,7 @@ export const Pagination = memo(
           iconAfter
         >
           Next
-        </ButtonSimple>
+        </Button>
       </XStack>
     )
   }

@@ -1,7 +1,7 @@
 import { Paragraph, Progress, XStack, YStack } from 'tamagui'
 
 import { Avatar } from '../avatars/Avatar'
-import { ButtonSimple } from '../buttons/ButtonSimple'
+import { Button } from '../buttons/Button'
 import { useDropArea } from './DragDropFile'
 
 export const AvatarUpload = ({
@@ -47,9 +47,9 @@ export const AvatarUpload = ({
             accept=".jpg,.jpeg,.png,.gif,.webp"
             onChange={handleFileChange}
           />
-          <ButtonSimple size="small" render="span" bg="$background">
+          <Button size="small" render="span" bg="$background">
             Pick
-          </ButtonSimple>
+          </Button>
         </label>
       </XStack>
       <YStack>

@@ -2,8 +2,7 @@ import { isWeb, useEmitterSelector } from '@take-out/helpers'
 import { useState } from 'react'
 import { useWindowDimensions, XStack, YStack } from 'tamagui'
 
-import { ButtonAction } from '../buttons/ButtonAction'
-import { ButtonSimple } from '../buttons/ButtonSimple'
+import { Button } from '../buttons/Button'
 import { Input } from '../forms/Input'
 import { confirmEmitter } from './actions'
 import { Dialog } from './Dialog'
@@ -50,16 +49,17 @@ export const DialogConfirm = () => {
 
       <XStack pointerEvents="box-none" justify="flex-end" gap="$2">
         <Dialog.Close asChild>
-          <ButtonSimple
+          <Button
             onPress={() => {
               close(false)
             }}
           >
             Cancel
-          </ButtonSimple>
+          </Button>
         </Dialog.Close>
 
-        <ButtonAction
+        <Button
+          variant="action"
           onPress={() => {
             if (state?.extraConfirm && extraConfirm !== 'Confirm') {
               return
@@ -68,7 +68,7 @@ export const DialogConfirm = () => {
           }}
         >
           Confirm
-        </ButtonAction>
+        </Button>
       </XStack>
     </Dialog>
   )

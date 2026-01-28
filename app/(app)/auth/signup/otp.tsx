@@ -5,7 +5,7 @@ import { SizableText, useEvent, YStack } from 'tamagui'
 
 import { otpLogin, validateLoginOtpCode } from '~/features/auth/client/otpLogin'
 import { OtpInput } from '~/features/auth/ui/OtpInput'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Button } from '~/interface/buttons/Button'
 import { showError } from '~/interface/dialogs/actions'
 import { PasswordIcon } from '~/interface/icons/phosphor/PasswordIcon'
 import { dismissKeyboard } from '~/interface/keyboard/dismissKeyboard'
@@ -102,7 +102,7 @@ export const OtpPage = () => {
       descriptionSecondLine={displayValue}
       bottom={
         <KeyboardStickyFooter openedOffset={-10}>
-          <ButtonSimple
+          <Button
             theme="accent"
             glass
             data-testid="verify-otp-button"
@@ -112,7 +112,7 @@ export const OtpPage = () => {
             opacity={isDisabled ? 0.5 : 1}
           >
             {loading ? 'Verifying...' : 'Next'}
-          </ButtonSimple>
+          </Button>
         </KeyboardStickyFooter>
       }
     >
@@ -132,9 +132,9 @@ export const OtpPage = () => {
             Resend Code in ({timerCount})
           </SizableText>
         ) : (
-          <ButtonSimple data-testid="resend-otp-button" onPress={handleResendOtp}>
+          <Button data-testid="resend-otp-button" onPress={handleResendOtp}>
             Resend
-          </ButtonSimple>
+          </Button>
         )}
       </YStack>
     </StepPageLayout>

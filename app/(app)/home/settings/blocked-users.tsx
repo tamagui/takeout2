@@ -6,7 +6,7 @@ import { ListItem, ScrollView, SizableText, Spinner, View, YStack } from 'tamagu
 
 import { useBlockedUsers } from '~/features/profile/useBlockedUsers'
 import { Avatar } from '~/interface/avatars/Avatar'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Button } from '~/interface/buttons/Button'
 import { dialogConfirm } from '~/interface/dialogs/actions'
 import { PageLayout } from '~/interface/pages/PageLayout'
 import { Text } from '~/interface/text/Text'
@@ -31,7 +31,7 @@ const BlockedUserItem = memo(
           </Text>
         </YStack>
 
-        <ButtonSimple
+        <Button
           size="small"
           bg="$color3"
           onPress={() => onUnblock(user)}
@@ -40,7 +40,7 @@ const BlockedUserItem = memo(
           py="$2"
         >
           Unblock
-        </ButtonSimple>
+        </Button>
       </ListItem>
     )
   }

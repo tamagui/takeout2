@@ -15,7 +15,7 @@ import { useAuth } from '~/features/auth/client/authClient'
 import { pickImageFromLibrary } from '~/helpers/media/imagePicker'
 import { zero } from '~/zero/client'
 
-import { ButtonSimple } from '../buttons/ButtonSimple'
+import { Button } from '../buttons/Button'
 import { Pressable } from '../buttons/Pressable'
 import { TextArea } from '../forms/TextArea'
 import { ImageIcon } from '../icons/phosphor/ImageIcon'
@@ -246,10 +246,10 @@ export const DialogCreatePost = () => {
       </YStack>
 
       <Dialog.Footer>
-        <ButtonSimple glass onPress={handleClose}>
+        <Button glass onPress={handleClose}>
           Cancel
-        </ButtonSimple>
-        <ButtonSimple
+        </Button>
+        <Button
           theme="accent"
           glass
           onPress={handlePost}
@@ -257,7 +257,7 @@ export const DialogCreatePost = () => {
           data-testid="create-post-submit"
         >
           {isPosting ? 'Posting...' : 'Post'}
-        </ButtonSimple>
+        </Button>
       </Dialog.Footer>
     </YStack>
   )

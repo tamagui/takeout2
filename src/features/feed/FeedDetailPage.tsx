@@ -20,7 +20,7 @@ import { PostActionMenu } from '~/features/feed/PostActionMenu'
 import { PostImage } from '~/features/feed/PostImage'
 import { HeadInfo } from '~/interface/app/HeadInfo'
 import { Avatar } from '~/interface/avatars/Avatar'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Button } from '~/interface/buttons/Button'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
 import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
@@ -177,7 +177,7 @@ export const FeedDetailPage = memo(() => {
                 width="100%"
                 gap="$4"
               >
-                <ButtonSimple
+                <Button
                   size="medium"
                   circular
                   theme="accent"
@@ -188,7 +188,7 @@ export const FeedDetailPage = memo(() => {
                   onPress={handleClose}
                 >
                   <XIcon size={24} color="$color12" />
-                </ButtonSimple>
+                </Button>
                 <YStack flex={1} bg="$color1">
                   <Pressable flex={1} onPress={openGallery}>
                     <PostImage

@@ -1,7 +1,7 @@
 import { router } from 'one'
 import { Circle, H5, isWeb, Spacer, XStack, YStack } from 'tamagui'
 
-import { ButtonSimple } from '../buttons/ButtonSimple'
+import { Button } from '../buttons/Button'
 import { CaretLeftIcon } from '../icons/phosphor/CaretLeftIcon'
 import { PageHeading } from '../text/PageHeading'
 import { BaseStepPageLayout } from './BaseStepPageLayout'
@@ -54,7 +54,7 @@ export const StepPageLayout = ({
       <YStack gap="$4">
         {!hideBackButton && !isWeb && (
           <XStack justify="space-between" items="center">
-            <ButtonSimple
+            <Button
               size="large"
               glass
               circular

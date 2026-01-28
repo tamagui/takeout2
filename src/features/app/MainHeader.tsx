@@ -6,7 +6,7 @@ import { useLogout } from '~/features/auth/useLogout'
 import { useUser } from '~/features/user/useUser'
 import { Logo } from '~/interface/app/Logo'
 import { Avatar } from '~/interface/avatars/Avatar'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Button } from '~/interface/buttons/Button'
 import { ScrollHeader } from '~/interface/headers/ScrollHeader'
 import { DoorIcon } from '~/interface/icons/phosphor/DoorIcon'
 import { GearIcon } from '~/interface/icons/phosphor/GearIcon'
@@ -54,19 +54,19 @@ export const MainHeader = () => {
               {user && (
                 <UserProfilePopover
                   trigger={
-                    <ButtonSimple size="medium" circular cursor="pointer">
+                    <Button size="medium" circular cursor="pointer">
                       <Avatar
                         size={28}
                         image={user.image}
                         name={user.name ?? user.username ?? 'User'}
                       />
-                    </ButtonSimple>
+                    </Button>
                   }
                 />
               )}
 
               <ThemeSwitch />
-              <ButtonSimple
+              <Button
                 size="medium"
                 circular
                 onPress={() => router.push('/home/settings')}
@@ -95,7 +95,7 @@ export const MainHeaderMenu = memo(() => {
   }
   return (
     <>
-      <ButtonSimple
+      <Button
         size="large"
         variant="transparent"
         circular

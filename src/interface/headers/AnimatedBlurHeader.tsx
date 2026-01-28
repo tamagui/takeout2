@@ -5,7 +5,7 @@ import { SizableText, XStack, View } from 'tamagui'
 
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 
-import { ButtonSimple } from '../buttons/ButtonSimple'
+import { Button } from '../buttons/Button'
 
 import type { ReactNode } from 'react'
 
@@ -46,7 +46,7 @@ export const AnimatedBlurHeader = memo(
 
       if (showBackButton) {
         return (
-          <ButtonSimple
+          <Button
             size="large"
             glass
             circular

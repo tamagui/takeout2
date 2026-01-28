@@ -1,11 +1,12 @@
 import { Link } from '~/interface/app/Link'
-import { ButtonAction } from '~/interface/buttons/ButtonAction'
+import { Button } from '~/interface/buttons/Button'
 import { EnvelopeSimpleIcon } from '~/interface/icons/phosphor/EnvelopeSimpleIcon'
 
 export const LoginEmailButton = () => {
   return (
     <Link href="/auth/signup/email" asChild>
-      <ButtonAction
+      <Button
+        theme="accent"
         size="large"
         variant="floating"
         haptic
@@ -13,7 +14,7 @@ export const LoginEmailButton = () => {
         icon={EnvelopeSimpleIcon}
       >
         Continue with Email
-      </ButtonAction>
+      </Button>
     </Link>
   )
 }

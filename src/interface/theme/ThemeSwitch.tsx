@@ -1,12 +1,12 @@
 import { useUserScheme } from '@vxrn/color-scheme'
 import { styled, View } from 'tamagui'
 
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Button } from '~/interface/buttons/Button'
 import { CircleHalfIcon } from '~/interface/icons/phosphor/CircleHalfIcon'
 import { MoonStarsIcon } from '~/interface/icons/phosphor/MoonStarsIcon'
 import { SunIcon } from '~/interface/icons/phosphor/SunIcon'
 
-import { TooltipSimple } from '../tooltip/TooltipSimple'
+import { Tooltip } from '../tooltip/Tooltip'
 
 import type { SizeTokens } from 'tamagui'
 
@@ -34,8 +34,8 @@ export function ThemeSwitch({ size = '$2' }: { size?: SizeTokens }) {
 
   return (
     <View items="center" gap="$1">
-      <TooltipSimple label={setting[0]?.toUpperCase() + setting.slice(1)}>
-        <ButtonSimple
+      <Tooltip label={setting[0]?.toUpperCase() + setting.slice(1)}>
+        <Button
           onPress={onPress}
           transition="medium"
           size="medium"
@@ -54,8 +54,8 @@ export function ThemeSwitch({ size = '$2' }: { size?: SizeTokens }) {
           <IconContainer active={setting === 'system'}>
             <CircleHalfIcon size={iconSize} />
           </IconContainer>
-        </ButtonSimple>
-      </TooltipSimple>
+        </Button>
+      </Tooltip>
     </View>
   )
 }

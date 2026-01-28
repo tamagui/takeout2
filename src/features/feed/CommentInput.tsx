@@ -1,7 +1,7 @@
 import { Keyboard } from 'react-native'
 import { isWeb, Spinner, XStack, YStack } from 'tamagui'
 
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Button } from '~/interface/buttons/Button'
 import { Input } from '~/interface/forms/Input'
 import { TextArea } from '~/interface/forms/TextArea'
 import { PaperPlaneTiltIcon } from '~/interface/icons/phosphor/PaperPlaneTiltIcon'
@@ -74,7 +74,7 @@ export function CommentInput({
               scale={hasContent ? 1 : 0.8}
               opacity={hasContent ? 1 : 0.4}
             >
-              <ButtonSimple
+              <Button
                 size="large"
                 circular
                 theme="accent"
@@ -86,7 +86,7 @@ export function CommentInput({
                 ) : (
                   <PaperPlaneTiltIcon size={18} color="$color" />
                 )}
-              </ButtonSimple>
+              </Button>
             </YStack>
           </YStack>
         </XStack>
@@ -114,7 +114,7 @@ export function CommentInput({
             />
 
             <YStack key="send-button">
-              <ButtonSimple
+              <Button
                 size="large"
                 circular
                 bg="$color6"
@@ -126,7 +126,7 @@ export function CommentInput({
                 ) : (
                   <PaperPlaneTiltIcon size={18} color="$color" />
                 )}
-              </ButtonSimple>
+              </Button>
             </YStack>
           </XStack>
         </MaybeKeyboardStickyFooter>

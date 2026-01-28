@@ -2,7 +2,7 @@ import { Separator, SizableText, Spinner, XStack, YStack } from 'tamagui'
 
 import { useLogout } from '~/features/auth/useLogout'
 import { useProfileEdit } from '~/features/user/useProfileEdit'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Button } from '~/interface/buttons/Button'
 import { Input } from '~/interface/forms/Input'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { DoorIcon } from '~/interface/icons/phosphor/DoorIcon'
@@ -32,14 +32,14 @@ export const UserProfilePopoverContent = () => {
   return (
     <YStack p="$4" gap="$3" minW={320}>
       <Popover.Close asChild>
-        <ButtonSimple
+        <Button
           size="small"
           onPress={() => logout()}
           icon={DoorIcon}
           self="flex-end"
         >
           Logout
-        </ButtonSimple>
+        </Button>
       </Popover.Close>
 
       <Separator />
@@ -123,7 +123,7 @@ export const UserProfilePopoverContent = () => {
 
       {/* Save Button */}
 
-      <ButtonSimple
+      <Button
         size="small"
         self="center"
         onPress={handleSave}
@@ -131,7 +131,7 @@ export const UserProfilePopoverContent = () => {
         bg="$background"
       >
         {isSaving ? 'Saving...' : 'Save Change'}
-      </ButtonSimple>
+      </Button>
     </YStack>
   )
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Paragraph, ScrollView, SizableText, View, XStack, YStack, styled } from 'tamagui'
 
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Button } from '~/interface/buttons/Button'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { CopyIcon } from '~/interface/icons/phosphor/CopyIcon'
 import { TerminalIcon } from '~/interface/icons/phosphor/TerminalIcon'
@@ -100,7 +100,7 @@ export function DocsCodeBlock({
       </Pre>
 
       <CopyButtonWrapper hasHeader={!!showHeader}>
-        <ButtonSimple
+        <Button
           aria-label="Copy code"
           size="small"
           circular

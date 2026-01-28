@@ -10,7 +10,7 @@ import {
   YStack,
 } from 'tamagui'
 
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Button } from '~/interface/buttons/Button'
 import { showError } from '~/interface/dialogs/actions'
 import { showToast } from '~/interface/toast/helpers'
 import { zero } from '~/zero/client'
@@ -140,9 +140,9 @@ export function ReportPostDialog({ postId, open, onOpenChange }: ReportPostDialo
 
             <XStack gap="$3" justify="flex-end">
               <Dialog.Close asChild>
-                <ButtonSimple bg="$color3">Cancel</ButtonSimple>
+                <Button bg="$color3">Cancel</Button>
               </Dialog.Close>
-              <ButtonSimple
+              <Button
                 onPress={handleSubmit}
                 theme="accent"
                 disabled={
@@ -150,7 +150,7 @@ export function ReportPostDialog({ postId, open, onOpenChange }: ReportPostDialo
                 }
               >
                 {isSubmitting ? 'Submitting...' : 'Submit Report'}
-              </ButtonSimple>
+              </Button>
             </XStack>
           </YStack>
         </Dialog.Content>

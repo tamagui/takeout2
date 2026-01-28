@@ -1,6 +1,6 @@
 import { Separator, SizableText, XStack } from 'tamagui'
 
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Button } from '~/interface/buttons/Button'
 import { AppleIcon } from '~/interface/icons/AppleIcon'
 import { GoogleIcon } from '~/interface/icons/GoogleIcon'
 import { showToast } from '~/interface/toast/helpers'
@@ -21,7 +21,7 @@ export const LoginSocialButtons = () => {
       </XStack>
 
       <XStack gap="$3">
-        <ButtonSimple
+        <Button
           flex={1}
           size="large"
           haptic
@@ -30,8 +30,8 @@ export const LoginSocialButtons = () => {
           icon={<GoogleIcon size={20} />}
         >
           Google
-        </ButtonSimple>
-        <ButtonSimple
+        </Button>
+        <Button
           flex={1}
           size="large"
           haptic
@@ -40,7 +40,7 @@ export const LoginSocialButtons = () => {
           icon={<AppleIcon size={22} />}
         >
           <SizableText fontWeight="600">Apple</SizableText>
-        </ButtonSimple>
+        </Button>
       </XStack>
     </>
   )

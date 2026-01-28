@@ -1,7 +1,7 @@
 import { useEmitterSelector } from '@take-out/helpers'
 import { isWeb, useWindowDimensions, XStack, YStack } from 'tamagui'
 
-import { ButtonAction } from '../buttons/ButtonAction'
+import { Button } from '../buttons/Button'
 import { Dialog } from './Dialog'
 import { closeDialogLayer2, dialogLayer2Emitter } from './shared'
 
@@ -40,7 +40,8 @@ export const DialogError = () => {
 
       <XStack pointerEvents="box-none" justify="flex-end" gap="$2" mt="$3">
         <Dialog.Close asChild>
-          <ButtonAction
+          <Button
+            variant="action"
             theme="red"
             size="medium"
             onPress={() => {
@@ -48,7 +49,7 @@ export const DialogError = () => {
             }}
           >
             {state?.dismissText || 'OK'}
-          </ButtonAction>
+          </Button>
         </Dialog.Close>
       </XStack>
     </Dialog>

@@ -165,7 +165,7 @@ After processing all commits:
 
 **Example 1: Upstream updates a component the user has heavily customized**
 ```
-⚠️  Decision needed: Upstream updated ButtonSimple component
+⚠️  Decision needed: Upstream updated Button component
 
 Upstream changes:
 - Added new 'variant' prop

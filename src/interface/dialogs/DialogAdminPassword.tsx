@@ -5,8 +5,7 @@ import { XStack, YStack } from 'tamagui'
 import { signInAsAdmin } from '~/features/auth/client/signInAsAdmin'
 import { useGoBackToHome } from '~/hooks/useGoBackToHome'
 
-import { ButtonAction } from '../buttons/ButtonAction'
-import { ButtonSimple } from '../buttons/ButtonSimple'
+import { Button } from '../buttons/Button'
 import { Input } from '../forms/Input'
 import { showToast } from '../toast/helpers'
 import { Dialog } from './Dialog'
@@ -37,10 +36,11 @@ export const DialogAdminPassword = () => {
 
       <XStack pointerEvents="box-none" justify="flex-end" gap="$2">
         <Dialog.Close asChild>
-          <ButtonSimple onPress={closeDialog}>Cancel</ButtonSimple>
+          <Button onPress={closeDialog}>Cancel</Button>
         </Dialog.Close>
 
-        <ButtonAction
+        <Button
+          variant="action"
           onPress={async () => {
             const res = await signInAsAdmin(password)
             if (res.success) {
@@ -54,7 +54,7 @@ export const DialogAdminPassword = () => {
           }}
         >
           Confirm
-        </ButtonAction>
+        </Button>
       </XStack>
     </Dialog>
   )

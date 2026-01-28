@@ -459,7 +459,7 @@ When building UI components, prefer these project-specific implementations over 
 
 ### Custom Components (in `src/interface`)
 
-- **Buttons:** Use `ButtonSimple` instead of Tamagui's `Button`
+- **Buttons:** Use `Button` from `~/interface/buttons/Button` instead of Tamagui's `Button`
 - **Select/Dropdown:** Use the custom `Select` component
 - **Tabs:** Use the custom `Tabs` component
 - **Popover:** Use the custom `Popover` component

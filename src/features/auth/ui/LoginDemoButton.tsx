@@ -3,7 +3,7 @@ import { Spinner } from 'tamagui'
 
 import { signInAsDemo } from '~/features/auth/client/signInAsDemo'
 import { isDemoMode } from '~/helpers/isDemoMode'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Button } from '~/interface/buttons/Button'
 import { showToast } from '~/interface/toast/helpers'
 
 export const LoginDemoButton = () => {
@@ -21,7 +21,7 @@ export const LoginDemoButton = () => {
   }
 
   return (
-    <ButtonSimple
+    <Button
       size="large"
       haptic
       onPress={handleLoginAsDemo}
@@ -33,6 +33,6 @@ export const LoginDemoButton = () => {
       enterStyle={{ opacity: 0, scale: 0.95 }}
     >
       {loading ? <Spinner size="small" /> : 'Login as Demo User'}
-    </ButtonSimple>
+    </Button>
   )
 }

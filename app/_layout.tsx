@@ -6,7 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { SiteRootLayout } from '~/features/site/ui/SiteRootLayout'
 import { HomeBackground } from '~/interface/landing/HomeBackground'
 import { PlatformSpecificRootProvider } from '~/interface/platform/PlatformSpecificRootProvider'
-import { GlobalTooltipProvider } from '~/interface/tooltip/TooltipSimple'
+import { GlobalTooltipProvider } from '~/interface/tooltip/Tooltip'
 import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
 
 export function Layout() {

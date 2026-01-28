@@ -8,7 +8,7 @@ import { DocsMenuContents } from '~/features/docs/DocsMenuContents'
 import { SocialLinksRow } from '~/features/site/ui/SocialLinksRow'
 import { Link } from '~/interface/app/Link'
 import { Logo } from '~/interface/app/Logo'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Button } from '~/interface/buttons/Button'
 import { ScrollHeader } from '~/interface/headers/ScrollHeader'
 import { FileIcon } from '~/interface/icons/phosphor/FileIcon'
 import { ListIcon } from '~/interface/icons/phosphor/ListIcon'
@@ -49,7 +49,7 @@ export const SiteHeader = memo(() => {
               <LoginButton />
 
               <Link href="/docs/introduction">
-                <ButtonSimple>Docs</ButtonSimple>
+                <Button>Docs</Button>
               </Link>
 
               <ThemeSwitch />
@@ -70,7 +70,7 @@ const SiteHeaderMenu = memo(() => {
 
   return (
     <>
-      <ButtonSimple
+      <Button
         size="large"
         variant="transparent"
         circular

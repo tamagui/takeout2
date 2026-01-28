@@ -6,7 +6,7 @@ import { ArrowRightIcon } from '~/interface/icons/phosphor/ArrowRightIcon'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { CopyIcon } from '~/interface/icons/phosphor/CopyIcon'
 
-import { ButtonSimple } from '../buttons/ButtonSimple'
+import { Button } from '../buttons/Button'
 import { Span, Strong } from '../text/Text'
 
 const HeroTitle = styled(H1, {
@@ -453,9 +453,9 @@ export function HeroSection() {
 
           <XStack maxW="100%" gap="$3" mt="$2" items="center">
             <Link href="/docs/introduction">
-              <ButtonSimple theme="accent" size="large" icon={ArrowRightIcon} iconAfter>
+              <Button theme="accent" size="large" icon={ArrowRightIcon} iconAfter>
                 Docs
-              </ButtonSimple>
+              </Button>
             </Link>
 
             <CopyCommand />

@@ -6,7 +6,7 @@ import { isWeb, SizableText, View, XStack, YStack } from 'tamagui'
 import { useAuth } from '~/features/auth/client/authClient'
 import { Link } from '~/interface/app/Link'
 import { Avatar } from '~/interface/avatars/Avatar'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Button } from '~/interface/buttons/Button'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { ChatCircleIcon } from '~/interface/icons/phosphor/ChatCircleIcon'
 import { DotIcon } from '~/interface/icons/phosphor/DotIcon'
@@ -115,17 +115,17 @@ export const PostCard = memo(({ post }: PostCardProps) => {
           </View>
           <XStack pt="$2" items="center" gap="$2">
             <Link href={`/home/feed/post/${post.id}?username=${username}`}>
-              <ButtonSimple
+              <Button
                 variant="transparent"
                 size="medium"
                 icon={<ChatCircleIcon size={22} color="$color11" />}
               >
                 {typeof post.commentCount === 'number' && post.commentCount > 0 && (
-                  <ButtonSimple.Text color="$color11" fontWeight="600">
+                  <Button.Text color="$color11" fontWeight="600">
                     {post.commentCount}
-                  </ButtonSimple.Text>
+                  </Button.Text>
                 )}
-              </ButtonSimple>
+              </Button>
             </Link>
             {post.comments?.[0] && (
               <Link href={`/home/feed/post/${post.id}?username=${username}`} flex={1}>

@@ -1,6 +1,6 @@
 import { XStack, isWeb } from 'tamagui'
 
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Button } from '~/interface/buttons/Button'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 
@@ -16,7 +16,7 @@ export function OnboardingActionButton({ onPrev, onNext }: OnboardingActionButto
         width: '100%',
       }}
     >
-      <ButtonSimple
+      <Button
         onPress={onPrev}
         circular
         size={isWeb ? 'medium' : 'xl'}
@@ -25,8 +25,8 @@ export function OnboardingActionButton({ onPrev, onNext }: OnboardingActionButto
         pressStyle={{ bg: '$color4' }}
       >
         <CaretLeftIcon size={18} color="$color11" />
-      </ButtonSimple>
-      <ButtonSimple
+      </Button>
+      <Button
         onPress={onNext}
         circular
         size={isWeb ? 'medium' : 'xl'}
@@ -35,7 +35,7 @@ export function OnboardingActionButton({ onPrev, onNext }: OnboardingActionButto
         pressStyle={{ bg: '$color4' }}
       >
         <CaretRightIcon size={18} color="white" />
-      </ButtonSimple>
+      </Button>
     </XStack>
   )
 }

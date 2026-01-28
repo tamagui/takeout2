@@ -12,7 +12,7 @@ import { SizableText, XStack, useTheme } from 'tamagui'
 
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 
-import { ButtonSimple } from '../buttons/ButtonSimple'
+import { Button } from '../buttons/Button'
 import { GlassView } from '../effects/GlassView'
 import { GradientBlurView } from '../effects/GradientBlurView'
 
@@ -68,7 +68,7 @@ export const AnimatedBlurHeader = memo(
 
       if (showBackButton) {
         return (
-          <ButtonSimple
+          <Button
             size="large"
             glass
             circular

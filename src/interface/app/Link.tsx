@@ -9,7 +9,7 @@ import { isWeb, SizableText, useDebounce, View, type SizableTextProps } from 'ta
 
 import { ArrowUpRightIcon } from '~/interface/icons/phosphor/ArrowUpRightIcon'
 
-import { wrapWithTooltip, type TooltipWrapperProps } from '../tooltip/TooltipSimple'
+import { wrapWithTooltip, type TooltipWrapperProps } from '../tooltip/Tooltip'
 
 type ResetStackConfig = {
   index?: number

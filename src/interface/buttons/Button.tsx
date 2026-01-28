@@ -52,7 +52,7 @@ type ButtonAdditionalProps = {
 type ButtonSizes = 'small' | 'medium' | 'large' | 'xl' | 'square' | 'tiny'
 
 type ButtonVariants =
-  | 'accent'
+  | 'action'
   | 'default'
   | 'transparent'
   | 'subtle'
@@ -148,6 +148,7 @@ const ButtonFrame = styled(XStack, {
     },
 
     variant: {
+      action: {},
       default: {},
       floating: {},
       outlined: {},
@@ -361,6 +362,9 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonProps>(
     }
     // avoid de-structuring which messes up style order from parents
     const variant = rest.variant
+    const isAction = variant === 'action'
+    // action variant defaults to accent theme, but can be overridden
+    const resolvedTheme = isAction && !theme ? 'accent' : theme
 
     // legacy icon support
     const iconElement = icon ? (
@@ -368,7 +372,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonProps>(
         icon={icon}
         iconSize={iconSizes[rest.size || 'medium']}
         scaleIcon={scaleIcon}
-        iconOpacity={theme === 'accent' ? 1 : 0.5}
+        iconOpacity={resolvedTheme === 'accent' ? 1 : 0.5}
         {...iconProps}
       />
     ) : null
@@ -392,8 +396,8 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonProps>(
       <ButtonFrame
         size="medium"
         ref={ref}
-        theme={theme}
-        isAccent={theme === 'accent'}
+        theme={resolvedTheme}
+        isAccent={resolvedTheme === 'accent'}
         disabled={disabled}
         className={glow ? 'path-glow' : ''}
         {...(disabled && {

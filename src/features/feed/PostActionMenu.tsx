@@ -4,7 +4,7 @@ import { router } from 'one'
 import { useIsTouchDevice } from 'tamagui'
 
 import { saveRemoteImage } from '~/helpers/media/saveImage'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Button } from '~/interface/buttons/Button'
 import { dialogConfirm, showError } from '~/interface/dialogs/actions'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
@@ -98,7 +98,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
   return (
     <Menu allowFlip placement="bottom-end" offset={8}>
       <Menu.Trigger render="span">
-        <ButtonSimple
+        <Button
           circular
           aria-label="Post actions"
           variant="floating"

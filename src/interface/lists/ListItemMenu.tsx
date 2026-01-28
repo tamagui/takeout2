@@ -4,7 +4,7 @@ import { YStack } from 'tamagui'
 import { DotsThreeVerticalIcon } from '~/interface/icons/phosphor/DotsThreeVerticalIcon'
 
 import { animationClamped } from '../animations/animationClamped'
-import { ButtonSimple } from '../buttons/ButtonSimple'
+import { Button } from '../buttons/Button'
 import { Menu } from '../menu/Menu'
 import { ListItemContext } from './ListItemContext'
 
@@ -36,7 +36,7 @@ export const ListItemMenu = ({ items }: ListItemMenuProps) => {
       }
     >
       <Menu.Trigger unstyled borderWidth={0} bg="transparent" p={0}>
-        <ButtonSimple
+        <Button
           variant="transparent"
           my={-12}
           size="small"
@@ -56,7 +56,7 @@ export const ListItemMenu = ({ items }: ListItemMenuProps) => {
           >
             <DotsThreeVerticalIcon size={12} />
           </YStack>
-        </ButtonSimple>
+        </Button>
       </Menu.Trigger>
     </Menu>
   )

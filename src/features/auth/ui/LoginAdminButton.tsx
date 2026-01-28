@@ -1,6 +1,6 @@
 import { router } from 'one'
 
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Button } from '~/interface/buttons/Button'
 import { dialogEmit } from '~/interface/dialogs/shared'
 
 export const LoginAdminButton = () => {
@@ -11,7 +11,7 @@ export const LoginAdminButton = () => {
   return (
     <>
       {window.location.search.includes('showAdmin') && (
-        <ButtonSimple
+        <Button
           variant="outlined"
           size="large"
           onPress={handleSignInAdmin}
@@ -24,7 +24,7 @@ export const LoginAdminButton = () => {
           enterStyle={{ opacity: 0, scale: 0.95 }}
         >
           Continue as admin (dev)
-        </ButtonSimple>
+        </Button>
       )}
     </>
   )

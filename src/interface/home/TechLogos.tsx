@@ -5,7 +5,7 @@ import { OneLogo } from '~/interface/icons/logos/OneLogo'
 import { TamaguiLogo } from '~/interface/icons/logos/TamaguiLogo'
 import { ZeroLogo } from '~/interface/icons/logos/ZeroLogo'
 
-import { TooltipSimple } from '../tooltip/TooltipSimple'
+import { Tooltip } from '../tooltip/Tooltip'
 
 const LOGO_SIZE = 32
 
@@ -31,7 +31,7 @@ export function TechLogos() {
   return (
     <XStack items="center" justify="center">
       {logos.map(({ name, href, Logo }) => (
-        <TooltipSimple key={name} groupId="tech-logos" label={name}>
+        <Tooltip key={name} groupId="tech-logos" label={name}>
           <Link href={href} target="_blank" hideExternalIcon>
             <View
               transition="quick"
@@ -44,7 +44,7 @@ export function TechLogos() {
               <Logo size={LOGO_SIZE} />
             </View>
           </Link>
-        </TooltipSimple>
+        </Tooltip>
       ))}
     </XStack>
   )

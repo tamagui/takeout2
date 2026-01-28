@@ -10,7 +10,7 @@ import {
   type InputProps,
 } from 'tamagui'
 
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Button } from '~/interface/buttons/Button'
 import { ClipboardIcon } from '~/interface/icons/phosphor/ClipboardIcon'
 
 import type { Input } from '~/interface/forms/Input'
@@ -174,7 +174,7 @@ export const OtpInput = memo(function OtpInput({
           })}
       </XStack>
 
-      <ButtonSimple
+      <Button
         variant="transparent"
         size="small"
         onPress={handlePaste}
@@ -185,8 +185,8 @@ export const OtpInput = memo(function OtpInput({
           disabled: true,
         })}
       >
-        <ButtonSimple.Text color="$color9">Paste code</ButtonSimple.Text>
-      </ButtonSimple>
+        <Button.Text color="$color9">Paste code</Button.Text>
+      </Button>
     </YStack>
   )
 })

@@ -3,7 +3,7 @@ import { memo, useLayoutEffect, useRef, useState } from 'react'
 import { isWeb, SizableText, useEvent, YStack } from 'tamagui'
 
 import { validateLoginOtpCode } from '~/features/auth/client/otpLogin'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Button } from '~/interface/buttons/Button'
 import { showError } from '~/interface/dialogs/actions'
 import { isSmallScreen } from '~/interface/dimensions'
 import { Input } from '~/interface/forms/Input'
@@ -100,7 +100,7 @@ export const SignupPage = memo(() => {
       disableScroll={!isSmallScreen}
       bottom={
         <KeyboardStickyFooter openedOffset={-10}>
-          <ButtonSimple
+          <Button
             theme="accent"
             glass
             data-testid="next-button"
@@ -114,7 +114,7 @@ export const SignupPage = memo(() => {
             opacity={isDisabled ? 0.5 : 1}
           >
             {loading ? 'Processing...' : 'Next'}
-          </ButtonSimple>
+          </Button>
         </KeyboardStickyFooter>
       }
     >

@@ -3,7 +3,7 @@ import { Toast, ToastViewport } from '@tamagui/toast'
 import { useState } from 'react'
 import { AnimatePresence, XStack, YStack } from 'tamagui'
 
-import { ButtonSimple } from '../buttons/ButtonSimple'
+import { Button } from '../buttons/Button'
 import { Z_INDICES } from '../constants'
 import Glint from '../effects/Glint'
 
@@ -190,7 +190,7 @@ const NotificationToast = ({
 
         <XStack gap="$2" self="flex-end">
           {action && (
-            <ButtonSimple
+            <Button
               size="small"
               onPress={() => {
                 action.onPress()
@@ -198,12 +198,12 @@ const NotificationToast = ({
               }}
             >
               {action.label}
-            </ButtonSimple>
+            </Button>
           )}
 
-          <ButtonSimple size="small" onPress={() => hideNotification(id)}>
+          <Button size="small" onPress={() => hideNotification(id)}>
             Close
-          </ButtonSimple>
+          </Button>
         </XStack>
       </YStack>
     </Toast>

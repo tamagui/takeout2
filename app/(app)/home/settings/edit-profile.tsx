@@ -3,8 +3,7 @@ import { Keyboard } from 'react-native'
 import { isWeb, Spinner, View, XStack, YStack } from 'tamagui'
 
 import { useProfileEdit } from '~/features/user/useProfileEdit'
-import { ButtonAction } from '~/interface/buttons/ButtonAction'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Button } from '~/interface/buttons/Button'
 import { Dialog } from '~/interface/dialogs/Dialog'
 import { Input } from '~/interface/forms/Input'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
@@ -66,8 +65,8 @@ export const ProfileEditPage = () => {
           description="You have unsaved changes. Are you sure you want to discard them?"
         />
         <XStack justify="flex-end" gap="$2">
-          <ButtonSimple onPress={() => blocker.reset?.()}>Stay</ButtonSimple>
-          <ButtonAction onPress={handleDiscard}>Discard</ButtonAction>
+          <Button onPress={() => blocker.reset?.()}>Stay</Button>
+          <Button variant="action" onPress={handleDiscard}>Discard</Button>
         </XStack>
       </Dialog>
 
@@ -159,7 +158,7 @@ export const ProfileEditPage = () => {
                 ) : null}
               </YStack>
               {isWeb && (
-                <ButtonSimple
+                <Button
                   glass
                   glassTint={!canSave ? 'transparent' : 'darkslateblue'}
                   size="large"
@@ -167,14 +166,14 @@ export const ProfileEditPage = () => {
                   disabled={!canSave}
                 >
                   {isSaving ? 'Saving...' : 'Save'}
-                </ButtonSimple>
+                </Button>
               )}
             </YStack>
           </KeyboardAwareScrollView>
 
           {!isWeb && (
             <KeyboardStickyFooter openedOffset={-10}>
-              <ButtonSimple
+              <Button
                 glass
                 glassTint={!canSave ? 'transparent' : 'darkslateblue'}
                 size="large"
@@ -182,7 +181,7 @@ export const ProfileEditPage = () => {
                 disabled={!canSave}
               >
                 {isSaving ? 'Saving...' : 'Save'}
-              </ButtonSimple>
+              </Button>
             </KeyboardStickyFooter>
           )}
         </View>

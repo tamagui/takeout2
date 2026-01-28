@@ -13,7 +13,7 @@ import { AnimatePresence, SizableText, Spinner, Square, View, YStack } from 'tam
 import { scrollToTopEmitter } from '~/features/app/scrollToTopEmitter'
 import { PostCard } from '~/features/feed/PostCard'
 import { usePostsPaginated } from '~/features/feed/usePosts'
-import { ButtonSimple } from '~/interface/buttons/ButtonSimple'
+import { Button } from '~/interface/buttons/Button'
 import { AnimatedHomeHeader } from '~/interface/headers/AnimatedHomeHeader'
 import { ArrowUpIcon } from '~/interface/icons/phosphor/ArrowUpIcon'
 import { PageLayout } from '~/interface/pages/PageLayout'
@@ -157,7 +157,7 @@ export const HomePage = memo(() => {
               enterStyle={{ scale: 0.5, y: 30 }}
               exitStyle={{ scale: 0.5, y: 30 }}
             >
-              <ButtonSimple
+              <Button
                 glass
                 size="large"
                 circular
@@ -166,7 +166,7 @@ export const HomePage = memo(() => {
                 }
               >
                 <ArrowUpIcon size={20} color="white" />
-              </ButtonSimple>
+              </Button>
             </YStack>
           )}
         </AnimatePresence>

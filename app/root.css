@@ -5,19 +5,19 @@
   scrollbar-color: #b1b1b1 transparent;
 }
 
-body {
+:root body {
   margin: 0;
   position: relative;
   max-width: 100vw;
   min-height: 100vh;
-  background-color: var(--background);
+  background-color: var(--color1);
 }
 
 html,
 body {
   max-width: 100vw;
   overflow-x: clip;
-  background: var(--background);
+  background: var(--color1);
   scrollbar-gutter: stable;
 }
 

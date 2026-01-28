@@ -10,6 +10,8 @@ import { GlobalTooltipProvider } from '~/interface/tooltip/TooltipSimple'
 import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
 
 export function Layout() {
+  // One lets you use html like this only in your root layout, and strips
+  // it out on native. it's an odd exception but we just found it useful
   return (
     <html lang="en-US">
       <head>

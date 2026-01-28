@@ -480,6 +480,60 @@ export function HeroSection() {
           transition="bouncy"
         >
           <HeroTerminal />
+
+          {/* phone demo - commented out for later
+          <YStack
+            maxW="100%"
+            maxH="100%"
+            items="center"
+            justify="center"
+            aspectRatio="588 / 1176"
+          >
+            <svg width="0" height="0" style={{ position: 'absolute' }}>
+              <defs>
+                <clipPath id="iphone-screen-clip" clipPathUnits="objectBoundingBox">
+                  <path d="M0.28,0 L0.72,0 C0.87,0 0.935,0.01 0.967,0.045 C1,0.08 1,0.13 1,0.175 L1,0.825 C1,0.87 1,0.92 0.967,0.955 C0.935,0.99 0.87,1 0.72,1 L0.28,1 C0.13,1 0.065,0.99 0.033,0.955 C0,0.92 0,0.87 0,0.825 L0,0.175 C0,0.13 0,0.08 0.033,0.045 C0.065,0.01 0.13,0 0.28,0 Z" />
+                </clipPath>
+              </defs>
+            </svg>
+            <YStack filter="drop-shadow(0 25px 50px rgba(0,0,0,0.8))">
+              <YStack
+                overflow="hidden"
+                position="relative"
+                style={{
+                  width: 290,
+                  height: 594,
+                  clipPath: 'url(#iphone-screen-clip)',
+                  WebkitClipPath: 'url(#iphone-screen-clip)',
+                }}
+              >
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  style={{
+                    position: 'absolute',
+                    top: -3,
+                    left: -4,
+                    width: 294 + 4,
+                    height: 588 + 12,
+                    objectFit: 'cover',
+                  }}
+                >
+                  <source
+                    src="https://pub-836fc09a8b0e484f900cd6aa05105026.r2.dev/videos/appdemo_h265.mp4"
+                    type="video/mp4; codecs=hvc1"
+                  />
+                  <source
+                    src="https://pub-836fc09a8b0e484f900cd6aa05105026.r2.dev/videos/appdemo_h264.mp4"
+                    type="video/mp4"
+                  />
+                </video>
+              </YStack>
+            </YStack>
+          </YStack>
+          */}
         </YStack>
       </XStack>
     </YStack>

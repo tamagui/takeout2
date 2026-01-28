@@ -3,6 +3,7 @@ import { YStack } from 'tamagui'
 import { HeadInfo } from '~/interface/app/HeadInfo'
 import { ContentSection } from '~/interface/landing/ContentSection'
 import { HeroSection } from '~/interface/landing/HeroSection'
+import { HomeBackground } from '~/interface/landing/HomeBackground'
 
 const ogImageUrl = `${process.env.ONE_SERVER_URL}/api/og?type=index`
 

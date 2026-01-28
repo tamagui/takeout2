@@ -29,16 +29,10 @@ export function HomeBackground() {
         l={0}
         r={0}
         b={0}
-        opacity={0.1}
-        $theme-light={{
-          opacity: 0.1,
-          filter: 'invert(1)',
-        }}
+        opacity={0.15}
+        filter="invert(1)"
         z={0}
         pointerEvents="none"
-        style={{
-          imageRendering: 'pixelated',
-        }}
       />
 
       {/* gradient orbs - absolute, scroll with page */}
@@ -59,7 +53,7 @@ export function HomeBackground() {
           l={-200}
           style={{
             background:
-              'radial-gradient(circle, rgba(230, 218, 193, 0.08) 0%, transparent 70%)',
+              'radial-gradient(circle, rgba(100, 100, 100, 0.08) 0%, transparent 70%)',
           }}
         />
         <GradientOrb
@@ -77,6 +71,7 @@ export function HomeBackground() {
           height={500}
           b={-100}
           l="40%"
+          opacity={0.25}
           style={{
             background:
               'radial-gradient(circle, rgba(230, 218, 193, 0.04) 0%, transparent 70%)',

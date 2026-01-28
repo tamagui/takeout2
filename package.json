@@ -93,7 +93,7 @@
     "@tamagui/helpers-icon": "2.0.0-1769588848304",
     "@tamagui/linear-gradient": "2.0.0-1769588848304",
     "@tamagui/menu": "2.0.0-1769588848304",
-    "@tamagui/native": "^2.0.0-1769256574467",
+    "@tamagui/native": "^2.0.0-1769588848304",
     "@tamagui/themes": "2.0.0-1769588848304",
     "@tamagui/toast": "2.0.0-1769588848304",
     "@tamagui/vite-plugin": "2.0.0-1769588848304",

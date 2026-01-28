@@ -24,7 +24,7 @@ export const UIScene: React.FC = () => {
     frame,
     fps,
     config: { damping: 20, stiffness: 200 },
-    durationInFrames: 25,
+    durationInFrames: 28,
   })
   const logoScale = interpolate(logoSpring, [0, 1], [0.2, 1])
   const logoOpacity = interpolate(logoSpring, [0, 1], [0, 1], {
@@ -34,10 +34,10 @@ export const UIScene: React.FC = () => {
 
   // title entrance
   const titleSpring = spring({
-    frame: Math.max(0, frame - 12),
+    frame: Math.max(0, frame - 16),
     fps,
     config: { damping: 20, stiffness: 200 },
-    durationInFrames: 20,
+    durationInFrames: 22,
   })
   const titleX = interpolate(titleSpring, [0, 1], [-60, 0])
   const titleOpacity = interpolate(titleSpring, [0, 1], [0, 1], {
@@ -46,33 +46,33 @@ export const UIScene: React.FC = () => {
 
   // version badge
   const badgeSpring = spring({
-    frame: Math.max(0, frame - 20),
+    frame: Math.max(0, frame - 26),
     fps,
     config: { damping: 15, stiffness: 200 },
-    durationInFrames: 15,
+    durationInFrames: 16,
   })
   const badgeScale = interpolate(badgeSpring, [0, 1], [0, 1])
 
   // subtitle
-  const subOpacity = interpolate(frame, [28, 40], [0, 1], {
+  const subOpacity = interpolate(frame, [36, 50], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: Easing.out(Easing.quad),
   })
-  const subY = interpolate(frame, [28, 40], [12, 0], {
+  const subY = interpolate(frame, [36, 50], [12, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: Easing.out(Easing.quad),
   })
 
   // background glow
-  const bgGlow = interpolate(frame, [0, 35], [0, 0.5], {
+  const bgGlow = interpolate(frame, [0, 40], [0, 0.5], {
     extrapolateRight: 'clamp',
     easing: Easing.out(Easing.quad),
   })
 
   // float
-  const floatY = frame > 25 ? Math.sin((frame - 25) * 0.025) * 3 : 0
+  const floatY = frame > 30 ? Math.sin((frame - 30) * 0.02) * 3 : 0
 
   return (
     <AbsoluteFill
@@ -100,7 +100,7 @@ export const UIScene: React.FC = () => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 18,
+          gap: 20,
           transform: `translateY(${floatY}px)`,
         }}
       >
@@ -112,7 +112,7 @@ export const UIScene: React.FC = () => {
             filter: `drop-shadow(0 0 20px ${COLOR}40)`,
           }}
         >
-          <TamaguiLogoWeb size={180} />
+          <TamaguiLogoWeb size={190} />
         </div>
 
         {/* title row */}
@@ -127,7 +127,7 @@ export const UIScene: React.FC = () => {
         >
           <span
             style={{
-              fontSize: 58,
+              fontSize: 62,
               fontFamily: FONT,
               fontWeight: 800,
               color: '#ffffff',
@@ -138,14 +138,14 @@ export const UIScene: React.FC = () => {
           </span>
           <span
             style={{
-              fontSize: 20,
+              fontSize: 22,
               fontFamily: FONT,
               fontWeight: 700,
               color: COLOR,
               background: `${COLOR}20`,
               border: `1px solid ${COLOR}50`,
               borderRadius: 8,
-              padding: '4px 12px',
+              padding: '4px 14px',
               transform: `scale(${badgeScale})`,
             }}
           >
@@ -156,7 +156,7 @@ export const UIScene: React.FC = () => {
         {/* subtitle */}
         <div
           style={{
-            fontSize: 24,
+            fontSize: 26,
             fontFamily: FONT,
             fontWeight: 400,
             color: '#a0a0a0',
@@ -170,14 +170,14 @@ export const UIScene: React.FC = () => {
         </div>
 
         {/* feature chips */}
-        <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+        <div style={{ display: 'flex', gap: 14, marginTop: 10 }}>
           {FEATURES.map((feature, i) => {
-            const chipDelay = 40 + i * 9
+            const chipDelay = 56 + i * 10
             const chipSpring = spring({
               frame: Math.max(0, frame - chipDelay),
               fps,
               config: { damping: 20, stiffness: 200 },
-              durationInFrames: 18,
+              durationInFrames: 20,
             })
             const chipScale = interpolate(chipSpring, [0, 1], [0.7, 1])
             const chipOpacity = interpolate(chipSpring, [0, 1], [0, 1], {
@@ -189,7 +189,7 @@ export const UIScene: React.FC = () => {
                 key={feature}
                 style={{
                   display: 'inline-flex',
-                  padding: '8px 20px',
+                  padding: '10px 22px',
                   borderRadius: 50,
                   background: `${COLOR}12`,
                   border: `1px solid ${COLOR}30`,
@@ -200,7 +200,7 @@ export const UIScene: React.FC = () => {
                 <span
                   style={{
                     color: COLOR,
-                    fontSize: 16,
+                    fontSize: 17,
                     fontWeight: 500,
                     fontFamily: FONT,
                     letterSpacing: 1,

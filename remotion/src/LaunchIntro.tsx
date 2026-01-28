@@ -1,6 +1,4 @@
 import { TransitionSeries, springTiming } from '@remotion/transitions'
-import { fade } from '@remotion/transitions/fade'
-import { slide } from '@remotion/transitions/slide'
 import { AbsoluteFill } from 'remotion'
 
 import { DataScene } from './scenes/DataScene'
@@ -8,17 +6,18 @@ import { FrameworkScene } from './scenes/FrameworkScene'
 import { IntoTheBoxScene } from './scenes/IntoTheBoxScene'
 import { OpeningScene } from './scenes/OpeningScene'
 import { UIScene } from './scenes/UIScene'
+import { glass } from './transitions/GlassTransition'
 
 const FPS = 60
 
-// scene durations (~9s total at 60fps)
-const OPENING_DURATION = Math.round(2 * FPS)
-const FRAMEWORK_DURATION = Math.round(2.5 * FPS)
-const UI_DURATION = Math.round(2 * FPS)
-const DATA_DURATION = Math.round(1.5 * FPS)
-const BOX_DURATION = Math.round(2.5 * FPS)
+// scene durations (~15s total at 60fps)
+const OPENING_DURATION = Math.round(4 * FPS)
+const FRAMEWORK_DURATION = Math.round(3.5 * FPS)
+const UI_DURATION = Math.round(3 * FPS)
+const DATA_DURATION = Math.round(3 * FPS)
+const BOX_DURATION = Math.round(4 * FPS)
 
-const T_DURATION = 25
+const T_DURATION = 35
 
 export const TOTAL_DURATION =
   OPENING_DURATION +
@@ -36,13 +35,13 @@ export const LaunchIntro: React.FC<LaunchIntroProps> = ({ tagline }) => {
   return (
     <AbsoluteFill style={{ backgroundColor: '#050505' }}>
       <TransitionSeries>
-        {/* beat 1: opening - floating logos + "three problems" */}
+        {/* beat 1: opening - "what if..." + floating logos */}
         <TransitionSeries.Sequence durationInFrames={OPENING_DURATION}>
           <OpeningScene />
         </TransitionSeries.Sequence>
 
         <TransitionSeries.Transition
-          presentation={slide({ direction: 'from-right' })}
+          presentation={glass()}
           timing={springTiming({
             config: { damping: 200 },
             durationInFrames: T_DURATION,
@@ -55,7 +54,7 @@ export const LaunchIntro: React.FC<LaunchIntroProps> = ({ tagline }) => {
         </TransitionSeries.Sequence>
 
         <TransitionSeries.Transition
-          presentation={slide({ direction: 'from-right' })}
+          presentation={glass()}
           timing={springTiming({
             config: { damping: 200 },
             durationInFrames: T_DURATION,
@@ -68,7 +67,7 @@ export const LaunchIntro: React.FC<LaunchIntroProps> = ({ tagline }) => {
         </TransitionSeries.Sequence>
 
         <TransitionSeries.Transition
-          presentation={slide({ direction: 'from-right' })}
+          presentation={glass()}
           timing={springTiming({
             config: { damping: 200 },
             durationInFrames: T_DURATION,
@@ -81,7 +80,7 @@ export const LaunchIntro: React.FC<LaunchIntroProps> = ({ tagline }) => {
         </TransitionSeries.Sequence>
 
         <TransitionSeries.Transition
-          presentation={fade()}
+          presentation={glass()}
           timing={springTiming({
             config: { damping: 200 },
             durationInFrames: T_DURATION,

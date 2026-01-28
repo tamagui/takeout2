@@ -24,7 +24,7 @@ export const FrameworkScene: React.FC = () => {
     frame,
     fps,
     config: { damping: 20, stiffness: 200 },
-    durationInFrames: 30,
+    durationInFrames: 35,
   })
   const heroScale = interpolate(heroSpring, [0, 1], [0.3, 1])
   const heroOpacity = interpolate(heroSpring, [0, 1], [0, 1], {
@@ -33,10 +33,10 @@ export const FrameworkScene: React.FC = () => {
 
   // title entrance
   const titleSpring = spring({
-    frame: Math.max(0, frame - 15),
+    frame: Math.max(0, frame - 20),
     fps,
     config: { damping: 20, stiffness: 200 },
-    durationInFrames: 20,
+    durationInFrames: 24,
   })
   const titleX = interpolate(titleSpring, [0, 1], [-80, 0])
   const titleOpacity = interpolate(titleSpring, [0, 1], [0, 1], {
@@ -45,33 +45,33 @@ export const FrameworkScene: React.FC = () => {
 
   // version badge
   const badgeSpring = spring({
-    frame: Math.max(0, frame - 25),
+    frame: Math.max(0, frame - 32),
     fps,
     config: { damping: 15, stiffness: 200 },
-    durationInFrames: 15,
+    durationInFrames: 18,
   })
   const badgeScale = interpolate(badgeSpring, [0, 1], [0, 1])
 
   // subtitle
-  const subOpacity = interpolate(frame, [35, 48], [0, 1], {
+  const subOpacity = interpolate(frame, [45, 60], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: Easing.out(Easing.quad),
   })
-  const subY = interpolate(frame, [35, 48], [15, 0], {
+  const subY = interpolate(frame, [45, 60], [15, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: Easing.out(Easing.quad),
   })
 
   // background glow
-  const bgGlow = interpolate(frame, [0, 40], [0, 0.6], {
+  const bgGlow = interpolate(frame, [0, 50], [0, 0.6], {
     extrapolateRight: 'clamp',
     easing: Easing.out(Easing.quad),
   })
 
   // gentle float after entrance
-  const floatY = frame > 30 ? Math.sin((frame - 30) * 0.025) * 3 : 0
+  const floatY = frame > 40 ? Math.sin((frame - 40) * 0.02) * 3 : 0
 
   return (
     <AbsoluteFill
@@ -99,7 +99,7 @@ export const FrameworkScene: React.FC = () => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 20,
+          gap: 22,
           transform: `translateY(${floatY}px)`,
         }}
       >
@@ -113,8 +113,8 @@ export const FrameworkScene: React.FC = () => {
           <Img
             src={staticFile('ball_circle.WEBP')}
             style={{
-              width: 220,
-              height: 220,
+              width: 240,
+              height: 240,
               objectFit: 'contain',
             }}
           />
@@ -132,7 +132,7 @@ export const FrameworkScene: React.FC = () => {
         >
           <span
             style={{
-              fontSize: 64,
+              fontSize: 68,
               fontFamily: FONT,
               fontWeight: 800,
               color: '#ffffff',
@@ -143,14 +143,14 @@ export const FrameworkScene: React.FC = () => {
           </span>
           <span
             style={{
-              fontSize: 20,
+              fontSize: 22,
               fontFamily: FONT,
               fontWeight: 700,
               color: COLOR,
               background: `${COLOR}20`,
               border: `1px solid ${COLOR}50`,
               borderRadius: 8,
-              padding: '4px 12px',
+              padding: '4px 14px',
               transform: `scale(${badgeScale})`,
             }}
           >
@@ -161,7 +161,7 @@ export const FrameworkScene: React.FC = () => {
         {/* subtitle */}
         <div
           style={{
-            fontSize: 24,
+            fontSize: 26,
             fontFamily: FONT,
             fontWeight: 400,
             color: '#a0a0a0',
@@ -178,17 +178,17 @@ export const FrameworkScene: React.FC = () => {
         <div
           style={{
             display: 'flex',
-            gap: 12,
-            marginTop: 8,
+            gap: 14,
+            marginTop: 10,
           }}
         >
           {FEATURES.map((feature, i) => {
-            const chipDelay = 50 + i * 10
+            const chipDelay = 70 + i * 12
             const chipSpring = spring({
               frame: Math.max(0, frame - chipDelay),
               fps,
               config: { damping: 20, stiffness: 200 },
-              durationInFrames: 18,
+              durationInFrames: 20,
             })
             const chipScale = interpolate(chipSpring, [0, 1], [0.7, 1])
             const chipOpacity = interpolate(chipSpring, [0, 1], [0, 1], {
@@ -200,7 +200,7 @@ export const FrameworkScene: React.FC = () => {
                 key={feature}
                 style={{
                   display: 'inline-flex',
-                  padding: '8px 20px',
+                  padding: '10px 22px',
                   borderRadius: 50,
                   background: `${COLOR}12`,
                   border: `1px solid ${COLOR}30`,
@@ -211,7 +211,7 @@ export const FrameworkScene: React.FC = () => {
                 <span
                   style={{
                     color: COLOR,
-                    fontSize: 16,
+                    fontSize: 17,
                     fontWeight: 500,
                     fontFamily: FONT,
                     letterSpacing: 1,

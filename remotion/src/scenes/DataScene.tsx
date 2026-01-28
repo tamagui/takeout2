@@ -22,7 +22,7 @@ export const DataScene: React.FC = () => {
     frame,
     fps,
     config: { damping: 20, stiffness: 200 },
-    durationInFrames: 25,
+    durationInFrames: 28,
   })
   const logoScale = interpolate(logoSpring, [0, 1], [0.2, 1])
   const logoOpacity = interpolate(logoSpring, [0, 1], [0, 1], {
@@ -32,10 +32,10 @@ export const DataScene: React.FC = () => {
 
   // title
   const titleSpring = spring({
-    frame: Math.max(0, frame - 10),
+    frame: Math.max(0, frame - 14),
     fps,
     config: { damping: 20, stiffness: 200 },
-    durationInFrames: 18,
+    durationInFrames: 20,
   })
   const titleScale = interpolate(titleSpring, [0, 1], [0.8, 1])
   const titleOpacity = interpolate(titleSpring, [0, 1], [0, 1], {
@@ -43,33 +43,32 @@ export const DataScene: React.FC = () => {
   })
 
   // subtitle
-  const subOpacity = interpolate(frame, [20, 32], [0, 1], {
+  const subOpacity = interpolate(frame, [28, 42], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: Easing.out(Easing.quad),
   })
-  const subY = interpolate(frame, [20, 32], [12, 0], {
+  const subY = interpolate(frame, [28, 42], [12, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: Easing.out(Easing.quad),
   })
 
   // feature line
-  const featOpacity = interpolate(frame, [35, 48], [0, 1], {
+  const featOpacity = interpolate(frame, [50, 65], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   })
 
   // background glow
-  const bgGlow = interpolate(frame, [0, 30], [0, 0.6], {
+  const bgGlow = interpolate(frame, [0, 35], [0, 0.6], {
     extrapolateRight: 'clamp',
     easing: Easing.out(Easing.quad),
   })
 
   // subtle sync pulse on logo
-  const pulse = frame > 25
-    ? 1 + Math.sin((frame - 25) * 0.08) * 0.03
-    : 1
+  const pulse =
+    frame > 30 ? 1 + Math.sin((frame - 30) * 0.06) * 0.03 : 1
 
   return (
     <AbsoluteFill
@@ -97,7 +96,7 @@ export const DataScene: React.FC = () => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 20,
+          gap: 22,
         }}
       >
         {/* logo */}
@@ -108,13 +107,13 @@ export const DataScene: React.FC = () => {
             filter: `drop-shadow(0 0 25px ${COLOR}50)`,
           }}
         >
-          <ZeroLogoWeb size={180} color={COLOR} />
+          <ZeroLogoWeb size={190} color={COLOR} />
         </div>
 
         {/* title */}
         <span
           style={{
-            fontSize: 64,
+            fontSize: 68,
             fontFamily: FONT,
             fontWeight: 800,
             color: '#ffffff',
@@ -129,7 +128,7 @@ export const DataScene: React.FC = () => {
         {/* subtitle */}
         <div
           style={{
-            fontSize: 24,
+            fontSize: 26,
             fontFamily: FONT,
             fontWeight: 400,
             color: '#a0a0a0',
@@ -145,14 +144,14 @@ export const DataScene: React.FC = () => {
         {/* feature line */}
         <div
           style={{
-            fontSize: 16,
+            fontSize: 17,
             fontFamily: FONT,
             fontWeight: 500,
             color: COLOR,
             letterSpacing: 3,
             textTransform: 'uppercase',
             opacity: featOpacity,
-            marginTop: 4,
+            marginTop: 6,
           }}
         >
           Relations · Permissions · Type-Safe

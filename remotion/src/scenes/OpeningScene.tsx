@@ -8,7 +8,7 @@ import {
 } from 'remotion'
 
 import { OneLogoWeb } from '../components/OneLogoWeb'
-import { RailsLogoWeb } from '../components/RailsLogoWeb'
+import { TakeoutGhostWeb } from '../components/TakeoutGhostWeb'
 import { TamaguiLogoWeb } from '../components/TamaguiLogoWeb'
 import { ZeroLogoWeb } from '../components/ZeroLogoWeb'
 
@@ -19,37 +19,96 @@ const COLOR_FRAMEWORK = '#F5CA05'
 const COLOR_UI = '#ECD20A'
 const COLOR_DATA = '#4ECDC4'
 
+// lissajous orbital paths - each logo gets unique frequency ratios
 const FLOATING_LOGOS = [
-  { Logo: RailsLogoWeb, baseX: -320, baseY: -160, speed: 0.015, phase: 0, amp: 30 },
-  { Logo: OneLogoWeb, baseX: 300, baseY: -130, speed: 0.012, phase: 1.5, amp: 25 },
-  { Logo: TamaguiLogoWeb, baseX: -280, baseY: 170, speed: 0.018, phase: 3, amp: 22 },
-  { Logo: ZeroLogoWeb, baseX: 260, baseY: 150, speed: 0.014, phase: 4.5, amp: 28 },
+  {
+    Logo: TakeoutGhostWeb,
+    baseX: -300,
+    baseY: -140,
+    freqA: 1,
+    freqB: 2,
+    phase: 0,
+    ampX: 40,
+    ampY: 30,
+    logoSize: 85,
+  },
+  {
+    Logo: OneLogoWeb,
+    baseX: 320,
+    baseY: -120,
+    freqA: 3,
+    freqB: 2,
+    phase: Math.PI / 3,
+    ampX: 35,
+    ampY: 28,
+    logoSize: 75,
+  },
+  {
+    Logo: TamaguiLogoWeb,
+    baseX: -260,
+    baseY: 160,
+    freqA: 2,
+    freqB: 3,
+    phase: Math.PI / 2,
+    ampX: 30,
+    ampY: 35,
+    logoSize: 75,
+  },
+  {
+    Logo: ZeroLogoWeb,
+    baseX: 280,
+    baseY: 150,
+    freqA: 1,
+    freqB: 3,
+    phase: Math.PI,
+    ampX: 38,
+    ampY: 25,
+    logoSize: 75,
+  },
 ]
 
 const WORDS = [
-  { text: 'framework.', color: COLOR_FRAMEWORK, delay: 50 },
-  { text: 'ui.', color: COLOR_UI, delay: 64 },
-  { text: 'data.', color: COLOR_DATA, delay: 78 },
+  { text: 'framework.', color: COLOR_FRAMEWORK, delay: 90 },
+  { text: 'ui.', color: COLOR_UI, delay: 115 },
+  { text: 'data.', color: COLOR_DATA, delay: 140 },
 ]
 
 export const OpeningScene: React.FC = () => {
   const frame = useCurrentFrame()
   const { fps } = useVideoConfig()
 
-  // main title entrance
-  const titleSpring = spring({
-    frame: Math.max(0, frame - 12),
-    fps,
-    config: { damping: 20, stiffness: 200 },
-    durationInFrames: 25,
-  })
-  const titleScale = interpolate(titleSpring, [0, 1], [1.3, 1])
-  const titleOpacity = interpolate(titleSpring, [0, 1], [0, 1], {
+  // "what if..." typewriter
+  const whatIfText = 'what if...'
+  const typeSpeed = 4 // frames per char
+  const typeStart = 15
+  const visibleChars = Math.min(
+    whatIfText.length,
+    Math.max(0, Math.floor((frame - typeStart) / typeSpeed))
+  )
+  const displayedWhatIf = whatIfText.slice(0, visibleChars)
+  const whatIfDone = visibleChars >= whatIfText.length
+
+  // "what if..." opacity
+  const whatIfOpacity = interpolate(frame, [typeStart, typeStart + 8], [0, 1], {
+    extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   })
 
-  // background pulse on text appearance
-  const bgPulse = interpolate(frame, [12, 30, 60], [0, 0.4, 0.15], {
+  // "just worked." entrance after the 3 words
+  const justWorkedDelay = 170
+  const justWorkedSpring = spring({
+    frame: Math.max(0, frame - justWorkedDelay),
+    fps,
+    config: { damping: 200 },
+    durationInFrames: 30,
+  })
+  const justWorkedY = interpolate(justWorkedSpring, [0, 1], [20, 0])
+  const justWorkedOpacity = interpolate(justWorkedSpring, [0, 1], [0, 1], {
+    extrapolateRight: 'clamp',
+  })
+
+  // background glow builds as words appear
+  const bgGlow = interpolate(frame, [90, 180], [0, 0.4], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: Easing.out(Easing.quad),
@@ -70,50 +129,76 @@ export const OpeningScene: React.FC = () => {
           width: '100%',
           height: '100%',
           background: `radial-gradient(ellipse 60% 50% at 50% 50%,
-            rgba(168, 85, 247, ${bgPulse * 0.15}) 0%,
-            rgba(78, 205, 196, ${bgPulse * 0.08}) 40%,
+            rgba(168, 85, 247, ${bgGlow * 0.12}) 0%,
+            rgba(78, 205, 196, ${bgGlow * 0.08}) 40%,
             transparent 70%)`,
         }}
       />
 
-      {/* floating logos layer */}
-      {FLOATING_LOGOS.map(({ Logo, baseX, baseY, speed, phase, amp }, i) => {
-        const floatX = Math.cos(frame * speed + phase) * amp
-        const floatY = Math.sin(frame * speed * 0.8 + phase) * amp * 0.7
+      {/* floating logos layer - lissajous curves */}
+      {FLOATING_LOGOS.map(
+        ({ Logo, baseX, baseY, freqA, freqB, phase, ampX, ampY, logoSize }, i) => {
+          const t = frame * 0.008 + phase
 
-        // logos fade in gently
-        const logoOpacity = interpolate(frame, [0, 20], [0, 0.18], {
-          extrapolateRight: 'clamp',
-        })
+          // lissajous orbital path
+          const floatX = Math.sin(freqA * t) * ampX
+          const floatY = Math.sin(freqB * t) * ampY
 
-        // brighten when corresponding word appears
-        const wordDelay = WORDS[i - 1]?.delay
-        let brightBoost = 0
-        if (wordDelay !== undefined) {
-          brightBoost = interpolate(
-            frame,
-            [wordDelay, wordDelay + 10, wordDelay + 30],
-            [0, 0.3, 0.05],
-            { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
+          // subtle rotation following path
+          const rotation = Math.sin(t * 0.5) * 6
+
+          // scale breathing
+          const scaleBreath = 1 + Math.sin(t * 0.3) * 0.06
+
+          // fade in gently
+          const logoFadeIn = interpolate(frame, [20 + i * 8, 50 + i * 8], [0, 0.2], {
+            extrapolateLeft: 'clamp',
+            extrapolateRight: 'clamp',
+          })
+
+          // brighten when corresponding word appears (logos 1-3 match words 0-2)
+          const wordDelay = WORDS[i - 1]?.delay
+          let brightBoost = 0
+          if (wordDelay !== undefined) {
+            brightBoost = interpolate(
+              frame,
+              [wordDelay, wordDelay + 12, wordDelay + 40],
+              [0, 0.35, 0.08],
+              { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
+            )
+          }
+
+          // first logo (takeout ghost) brightens with "what if..."
+          if (i === 0 && whatIfDone) {
+            brightBoost = Math.max(
+              brightBoost,
+              interpolate(frame, [55, 65, 85], [0, 0.25, 0.08], {
+                extrapolateLeft: 'clamp',
+                extrapolateRight: 'clamp',
+              })
+            )
+          }
+
+          return (
+            <div
+              key={i}
+              style={{
+                position: 'absolute',
+                left: '50%',
+                top: '50%',
+                transform: `translate(${baseX + floatX}px, ${baseY + floatY}px) translate(-50%, -50%) rotate(${rotation}deg) scale(${scaleBreath})`,
+                opacity: logoFadeIn + brightBoost,
+                filter:
+                  brightBoost > 0.05
+                    ? `drop-shadow(0 0 15px rgba(255,255,255,0.4)) grayscale(0.3)`
+                    : 'grayscale(1) brightness(1.5)',
+              }}
+            >
+              <Logo size={logoSize} />
+            </div>
           )
         }
-
-        return (
-          <div
-            key={i}
-            style={{
-              position: 'absolute',
-              left: '50%',
-              top: '50%',
-              transform: `translate(${baseX + floatX}px, ${baseY + floatY}px) translate(-50%, -50%)`,
-              opacity: logoOpacity + brightBoost,
-              filter: brightBoost > 0.05 ? `drop-shadow(0 0 12px rgba(255,255,255,0.3))` : 'none',
-            }}
-          >
-            <Logo size={80} />
-          </div>
-        )
-      })}
+      )}
 
       {/* text layer */}
       <div
@@ -121,43 +206,42 @@ export const OpeningScene: React.FC = () => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 24,
+          gap: 28,
           zIndex: 1,
         }}
       >
-        {/* "three problems." */}
+        {/* "what if..." */}
         <div
           style={{
-            fontSize: 72,
+            fontSize: 76,
             fontFamily: FONT,
-            fontWeight: 700,
+            fontWeight: 300,
             color: '#ffffff',
-            letterSpacing: -2,
-            transform: `scale(${titleScale})`,
-            opacity: titleOpacity,
+            letterSpacing: -1,
+            opacity: whatIfOpacity,
+            fontStyle: 'italic',
           }}
         >
-          three problems.
+          {displayedWhatIf}
         </div>
 
         {/* "framework. ui. data." */}
-        <div style={{ display: 'flex', gap: 32, alignItems: 'baseline' }}>
+        <div style={{ display: 'flex', gap: 36, alignItems: 'baseline' }}>
           {WORDS.map(({ text, color, delay }) => {
             const wordSpring = spring({
               frame: Math.max(0, frame - delay),
               fps,
               config: { damping: 20, stiffness: 200 },
-              durationInFrames: 20,
+              durationInFrames: 22,
             })
             const wordScale = interpolate(wordSpring, [0, 1], [0.8, 1])
             const wordOpacity = interpolate(wordSpring, [0, 1], [0, 1], {
               extrapolateRight: 'clamp',
             })
 
-            // glow pulse
             const glowIntensity = interpolate(
               frame,
-              [delay, delay + 8, delay + 25],
+              [delay, delay + 10, delay + 30],
               [0, 1, 0.3],
               { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
             )
@@ -166,20 +250,35 @@ export const OpeningScene: React.FC = () => {
               <span
                 key={text}
                 style={{
-                  fontSize: 40,
+                  fontSize: 42,
                   fontFamily: FONT,
                   fontWeight: 600,
                   color,
                   letterSpacing: 1,
                   transform: `scale(${wordScale})`,
                   opacity: wordOpacity,
-                  textShadow: `0 0 ${20 * glowIntensity}px ${color}80`,
+                  textShadow: `0 0 ${22 * glowIntensity}px ${color}80`,
                 }}
               >
                 {text}
               </span>
             )
           })}
+        </div>
+
+        {/* "just worked." */}
+        <div
+          style={{
+            fontSize: 58,
+            fontFamily: FONT,
+            fontWeight: 700,
+            color: '#ffffff',
+            letterSpacing: -1,
+            opacity: justWorkedOpacity,
+            transform: `translateY(${justWorkedY}px)`,
+          }}
+        >
+          just worked.
         </div>
       </div>
     </AbsoluteFill>

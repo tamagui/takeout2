@@ -11,48 +11,66 @@ system work together correctly, from the UI through the API to the database.
 
 ## Quick Start
 
-### Running Integration Tests Locally
+### Running All Tests (Recommended)
 
-For easy development integration testing, use the unified command:
+The easiest way to run the full test suite is through the CI command:
 
 ```bash
-# starts both dev web server and backend services in one command
-bun ci:start-dev
+# full pipeline: backend, unit tests, build, integration tests
+bun run ci release --dry-run
 
-# in another terminal, run all integration tests
+# faster: uses dev server instead of production build
+bun run ci release --dry-run --dev
+```
+
+This handles everything automatically - no manual setup needed.
+
+### Running Integration Tests Manually
+
+If you need to run integration tests separately:
+
+```bash
+# terminal 1: start backend (postgres, zero, minio)
+# optional: add backend:clean first if you have stale keys/data causing auth failures
+bun backend:clean && bun backend
+
+# terminal 2: start frontend (wait for backend migrations to complete)
+bun dev
+
+# terminal 3: run integration tests (requires port 8081 to be up)
 bun test:integration
 
 # or run a specific test file
-bun test:integration src/integration/search.test.ts
+cd src/test && bunx playwright test integration/basic.test.ts
 ```
 
-You can also run in production mode (like CI does) if you've run `bun web:build`
-first:
+### Production Mode Testing
+
+To test against a production build:
 
 ```bash
-bun web:build
-bun ci:start-prod
+# build first
+bun web build
 
-# in another terminal, run tests
+# then serve and test
+bun web serve &
 bun test:integration
 ```
 
 ### Important: Database State Management
 
-Always restart `bun ci:start-dev` between test runs to ensure a clean database
-state. This is critical because:
-
-- Tests may create data that persists between runs
-- Search tests in particular can fail if old test messages remain in the
-  database
-- The database accumulates test data with each run if not restarted
+For a clean database state between test runs:
 
 ```bash
-# if tests fail or behave unexpectedly:
-1. Stop ci:start-dev (Ctrl+C)
-2. Run `bun ci:start-dev` again to get a fresh database
-3. Run your tests
+# clean restart of backend (removes all data)
+bun backend:clean && bun backend
 ```
+
+This is important because:
+
+- Tests may create data that persists between runs
+- Search tests can fail if old test messages remain
+- The database accumulates test data with each run
 
 ## Architecture Overview
 
@@ -68,16 +86,16 @@ state. This is critical because:
 ### Directory Structure
 
 ```
-src/integration/
-├── .output/              # test results and traces
-├── global-setup.ts       # global test setup
-├── helpers.ts            # shared helper functions
-├── api.test.ts          # api integration tests
-├── basic.test.ts        # basic app functionality
-├── chat-api.test.ts     # chat api tests
-├── embeddings.test.ts   # embeddings and vector search
-├── search.test.ts       # search functionality
-└── private-chat-stats.test.ts
+src/test/
+├── unit/                 # vitest unit tests
+├── integration/          # playwright integration tests
+│   ├── .output/          # test results and traces
+│   ├── helpers.ts        # shared helper functions (loginAsDemo, etc.)
+│   ├── api.test.ts       # api integration tests
+│   ├── basic.test.ts     # basic app functionality
+│   └── *.test.ts         # other integration tests
+├── vitest.config.ts      # unit test config
+└── playwright.config.ts  # integration test config
 ```
 
 ## Test Infrastructure
@@ -325,16 +343,22 @@ end-to-end:
 
 ```bash
 # run the full CI setup except for deploying at the end
-bun run ci --skip-deploy
+bun run ci release --dry-run
+
+# or equivalently
+bun run ci release --skip-deploy
 ```
 
 ### Running Tests with Different Configurations
 
 ```bash
-# run with specific skips
-bun run ci --skip-tests --skip-deploy
+# skip tests, only run checks and build
+bun run ci release --skip-tests --dry-run
 
-# just run tests in CI mode
+# faster: use dev server instead of production build
+bun run ci release --dry-run --dev
+
+# just run integration tests in CI mode (requires backend + frontend already running)
 CI=true bun test:integration
 ```
 

@@ -71,9 +71,6 @@ export const UIScene: React.FC = () => {
     easing: Easing.out(Easing.quad),
   })
 
-  // float
-  const floatY = frame > 30 ? Math.sin((frame - 30) * 0.02) * 3 : 0
-
   return (
     <AbsoluteFill
       style={{
@@ -101,7 +98,7 @@ export const UIScene: React.FC = () => {
           flexDirection: 'column',
           alignItems: 'center',
           gap: 20,
-          transform: `translateY(${floatY}px)`,
+          transform: 'translateY(0px)',
         }}
       >
         {/* logo */}
@@ -176,10 +173,10 @@ export const UIScene: React.FC = () => {
             const chipSpring = spring({
               frame: Math.max(0, frame - chipDelay),
               fps,
-              config: { damping: 20, stiffness: 200 },
+              config: { damping: 200 },
               durationInFrames: 20,
             })
-            const chipScale = interpolate(chipSpring, [0, 1], [0.7, 1])
+            const chipY = interpolate(chipSpring, [0, 1], [12, 0])
             const chipOpacity = interpolate(chipSpring, [0, 1], [0, 1], {
               extrapolateRight: 'clamp',
             })
@@ -193,7 +190,7 @@ export const UIScene: React.FC = () => {
                   borderRadius: 50,
                   background: `${COLOR}12`,
                   border: `1px solid ${COLOR}30`,
-                  transform: `scale(${chipScale})`,
+                  transform: `translateY(${chipY}px)`,
                   opacity: chipOpacity,
                 }}
               >

@@ -257,7 +257,7 @@ export const FeedDetailPage = memo(() => {
 })
 
 const ModalOverlay = styled(Dialog.Overlay, {
-  transition: '250ms',
+  transition: '300ms',
   bg: '$shadow6',
   opacity: 1,
   backdropFilter: 'blur(8px)',
@@ -268,7 +268,7 @@ const ModalOverlay = styled(Dialog.Overlay, {
 const ModalContent = styled(Dialog.Content, {
   unstyled: true,
   z: 1_000_000,
-  transition: '250ms',
+  transition: '300ms',
   borderWidth: 0.5,
   borderColor: '$color3',
   rounded: '$6',

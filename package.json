@@ -63,10 +63,7 @@
     "zero": "tko zero"
   },
   "overrides": {
-    "@expo/fingerprint": "0.15.3",
-    "baseline-browser-mapping": "^2.9.15",
-    "framer-motion": "12.27.5",
-    "motion": "12.27.5"
+    "@expo/fingerprint": "0.15.3"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.709.0",

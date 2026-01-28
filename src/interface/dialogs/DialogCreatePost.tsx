@@ -236,7 +236,7 @@ export const DialogCreatePost = () => {
                 <SizableText size="$5" fontWeight="600">
                   Add Image
                 </SizableText>
-                <SizableText size="$3" color="$color6">
+                <SizableText size="$3" color="$color">
                   {isWeb ? 'Click to select' : 'Tap to select from library'}
                 </SizableText>
               </YStack>

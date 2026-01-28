@@ -42,9 +42,8 @@ export function DocsLayout() {
         {/* Sidebar */}
         <View
           width="100%"
-          bg="$background"
           borderRightWidth={1}
-          borderRightColor="$color2"
+          borderRightColor="$borderColor"
           $md={{
             position: 'sticky',
             t: 50,

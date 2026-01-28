@@ -14,6 +14,7 @@ v1:
 
 post  v1:
 
+- bun prod / bun dev symmetry
 - zero error/rollback handling
 - push notifications
 - job system

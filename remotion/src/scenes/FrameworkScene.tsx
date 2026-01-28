@@ -13,8 +13,6 @@ const FONT =
   "'Inter', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
 const COLOR = '#F5CA05'
 
-const FEATURES = ['Web + Native', 'Single Vite Plugin', 'Metro Mode']
-
 export const FrameworkScene: React.FC = () => {
   const frame = useCurrentFrame()
   const { fps } = useVideoConfig()
@@ -43,22 +41,13 @@ export const FrameworkScene: React.FC = () => {
     extrapolateRight: 'clamp',
   })
 
-  // version badge
-  const badgeSpring = spring({
-    frame: Math.max(0, frame - 32),
-    fps,
-    config: { damping: 15, stiffness: 200 },
-    durationInFrames: 18,
-  })
-  const badgeScale = interpolate(badgeSpring, [0, 1], [0, 1])
-
-  // subtitle
-  const subOpacity = interpolate(frame, [45, 60], [0, 1], {
+  // version text
+  const versionOpacity = interpolate(frame, [40, 55], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: Easing.out(Easing.quad),
   })
-  const subY = interpolate(frame, [45, 60], [15, 0], {
+  const versionY = interpolate(frame, [40, 55], [10, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: Easing.out(Easing.quad),
@@ -117,108 +106,34 @@ export const FrameworkScene: React.FC = () => {
           />
         </div>
 
-        {/* title row */}
-        <div
+        {/* title */}
+        <span
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 16,
+            fontSize: 68,
+            fontFamily: FONT,
+            fontWeight: 800,
+            color: '#ffffff',
+            letterSpacing: -1,
             transform: `translateX(${titleX}px)`,
             opacity: titleOpacity,
           }}
         >
-          <span
-            style={{
-              fontSize: 68,
-              fontFamily: FONT,
-              fontWeight: 800,
-              color: '#ffffff',
-              letterSpacing: -1,
-            }}
-          >
-            ONE
-          </span>
-          <span
-            style={{
-              fontSize: 22,
-              fontFamily: FONT,
-              fontWeight: 700,
-              color: COLOR,
-              background: `${COLOR}20`,
-              border: `1px solid ${COLOR}50`,
-              borderRadius: 8,
-              padding: '4px 14px',
-              transform: `scale(${badgeScale})`,
-            }}
-          >
-            v1
-          </span>
-        </div>
+          One
+        </span>
 
-        {/* subtitle */}
+        {/* version text */}
         <div
           style={{
-            fontSize: 26,
+            fontSize: 22,
             fontFamily: FONT,
-            fontWeight: 400,
-            color: '#a0a0a0',
+            fontWeight: 300,
+            color: '#ffffff',
             letterSpacing: 2,
-            textTransform: 'uppercase',
-            opacity: subOpacity,
-            transform: `translateY(${subY}px)`,
+            opacity: versionOpacity,
+            transform: `translateY(${versionY}px)`,
           }}
         >
-          The React Framework
-        </div>
-
-        {/* feature chips */}
-        <div
-          style={{
-            display: 'flex',
-            gap: 14,
-            marginTop: 10,
-          }}
-        >
-          {FEATURES.map((feature, i) => {
-            const chipDelay = 70 + i * 12
-            const chipSpring = spring({
-              frame: Math.max(0, frame - chipDelay),
-              fps,
-              config: { damping: 200 },
-              durationInFrames: 20,
-            })
-            const chipY = interpolate(chipSpring, [0, 1], [12, 0])
-            const chipOpacity = interpolate(chipSpring, [0, 1], [0, 1], {
-              extrapolateRight: 'clamp',
-            })
-
-            return (
-              <div
-                key={feature}
-                style={{
-                  display: 'inline-flex',
-                  padding: '10px 22px',
-                  borderRadius: 50,
-                  background: `${COLOR}12`,
-                  border: `1px solid ${COLOR}30`,
-                  transform: `translateY(${chipY}px)`,
-                  opacity: chipOpacity,
-                }}
-              >
-                <span
-                  style={{
-                    color: COLOR,
-                    fontSize: 17,
-                    fontWeight: 500,
-                    fontFamily: FONT,
-                    letterSpacing: 1,
-                  }}
-                >
-                  {feature}
-                </span>
-              </div>
-            )
-          })}
+          Version 1
         </div>
       </div>
     </AbsoluteFill>

@@ -42,24 +42,6 @@ export const DataScene: React.FC = () => {
     extrapolateRight: 'clamp',
   })
 
-  // subtitle
-  const subOpacity = interpolate(frame, [28, 42], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: Easing.out(Easing.quad),
-  })
-  const subY = interpolate(frame, [28, 42], [12, 0], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: Easing.out(Easing.quad),
-  })
-
-  // feature line
-  const featOpacity = interpolate(frame, [50, 65], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  })
-
   // background glow
   const bgGlow = interpolate(frame, [0, 35], [0, 0.6], {
     extrapolateRight: 'clamp',
@@ -122,40 +104,8 @@ export const DataScene: React.FC = () => {
             opacity: titleOpacity,
           }}
         >
-          ZERO
+          Zero
         </span>
-
-        {/* subtitle */}
-        <div
-          style={{
-            fontSize: 26,
-            fontFamily: FONT,
-            fontWeight: 400,
-            color: '#a0a0a0',
-            letterSpacing: 2,
-            textTransform: 'uppercase',
-            opacity: subOpacity,
-            transform: `translateY(${subY}px)`,
-          }}
-        >
-          Real-Time Sync Engine
-        </div>
-
-        {/* feature line */}
-        <div
-          style={{
-            fontSize: 17,
-            fontFamily: FONT,
-            fontWeight: 500,
-            color: COLOR,
-            letterSpacing: 3,
-            textTransform: 'uppercase',
-            opacity: featOpacity,
-            marginTop: 6,
-          }}
-        >
-          Relations · Permissions · Type-Safe
-        </div>
       </div>
     </AbsoluteFill>
   )

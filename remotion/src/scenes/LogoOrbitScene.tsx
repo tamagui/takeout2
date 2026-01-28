@@ -22,9 +22,9 @@ const COLOR_UI = '#ECD20A'
 const COLOR_DATA = '#4ECDC4'
 
 const WORDS = [
-  { text: 'framework.', color: COLOR_FRAMEWORK, delay: 80 },
-  { text: 'ui.', color: COLOR_UI, delay: 100 },
-  { text: 'data.', color: COLOR_DATA, delay: 120 },
+  { text: 'framework.', color: COLOR_FRAMEWORK, delay: 15 },
+  { text: 'ui.', color: COLOR_UI, delay: 30 },
+  { text: 'data.', color: COLOR_DATA, delay: 45 },
 ]
 
 // orbital logo definitions

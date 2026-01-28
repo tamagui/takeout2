@@ -13,8 +13,6 @@ const FONT =
   "'Inter', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
 const COLOR = '#ECD20A'
 
-const FEATURES = ['Optimizing Compiler', 'Motion Driver', '32% Smaller']
-
 export const UIScene: React.FC = () => {
   const frame = useCurrentFrame()
   const { fps } = useVideoConfig()
@@ -44,22 +42,13 @@ export const UIScene: React.FC = () => {
     extrapolateRight: 'clamp',
   })
 
-  // version badge
-  const badgeSpring = spring({
-    frame: Math.max(0, frame - 26),
-    fps,
-    config: { damping: 15, stiffness: 200 },
-    durationInFrames: 16,
-  })
-  const badgeScale = interpolate(badgeSpring, [0, 1], [0, 1])
-
-  // subtitle
-  const subOpacity = interpolate(frame, [36, 50], [0, 1], {
+  // version text
+  const versionOpacity = interpolate(frame, [36, 50], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: Easing.out(Easing.quad),
   })
-  const subY = interpolate(frame, [36, 50], [12, 0], {
+  const versionY = interpolate(frame, [36, 50], [10, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: Easing.out(Easing.quad),
@@ -112,102 +101,34 @@ export const UIScene: React.FC = () => {
           <TamaguiLogoWeb size={190} />
         </div>
 
-        {/* title row */}
-        <div
+        {/* title */}
+        <span
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 16,
+            fontSize: 62,
+            fontFamily: FONT,
+            fontWeight: 800,
+            color: '#ffffff',
+            letterSpacing: -1,
             transform: `translateX(${titleX}px)`,
             opacity: titleOpacity,
           }}
         >
-          <span
-            style={{
-              fontSize: 62,
-              fontFamily: FONT,
-              fontWeight: 800,
-              color: '#ffffff',
-              letterSpacing: -1,
-            }}
-          >
-            TAMAGUI
-          </span>
-          <span
-            style={{
-              fontSize: 22,
-              fontFamily: FONT,
-              fontWeight: 700,
-              color: COLOR,
-              background: `${COLOR}20`,
-              border: `1px solid ${COLOR}50`,
-              borderRadius: 8,
-              padding: '4px 14px',
-              transform: `scale(${badgeScale})`,
-            }}
-          >
-            v2
-          </span>
-        </div>
+          Tamagui
+        </span>
 
-        {/* subtitle */}
+        {/* version text */}
         <div
           style={{
-            fontSize: 26,
+            fontSize: 22,
             fontFamily: FONT,
-            fontWeight: 400,
-            color: '#a0a0a0',
+            fontWeight: 300,
+            color: '#ffffff',
             letterSpacing: 2,
-            textTransform: 'uppercase',
-            opacity: subOpacity,
-            transform: `translateY(${subY}px)`,
+            opacity: versionOpacity,
+            transform: `translateY(${versionY}px)`,
           }}
         >
-          Cross-Platform Styling
-        </div>
-
-        {/* feature chips */}
-        <div style={{ display: 'flex', gap: 14, marginTop: 10 }}>
-          {FEATURES.map((feature, i) => {
-            const chipDelay = 56 + i * 10
-            const chipSpring = spring({
-              frame: Math.max(0, frame - chipDelay),
-              fps,
-              config: { damping: 200 },
-              durationInFrames: 20,
-            })
-            const chipY = interpolate(chipSpring, [0, 1], [12, 0])
-            const chipOpacity = interpolate(chipSpring, [0, 1], [0, 1], {
-              extrapolateRight: 'clamp',
-            })
-
-            return (
-              <div
-                key={feature}
-                style={{
-                  display: 'inline-flex',
-                  padding: '10px 22px',
-                  borderRadius: 50,
-                  background: `${COLOR}12`,
-                  border: `1px solid ${COLOR}30`,
-                  transform: `translateY(${chipY}px)`,
-                  opacity: chipOpacity,
-                }}
-              >
-                <span
-                  style={{
-                    color: COLOR,
-                    fontSize: 17,
-                    fontWeight: 500,
-                    fontFamily: FONT,
-                    letterSpacing: 1,
-                  }}
-                >
-                  {feature}
-                </span>
-              </div>
-            )
-          })}
+          Version 2
         </div>
       </div>
     </AbsoluteFill>

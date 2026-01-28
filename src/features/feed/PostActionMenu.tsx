@@ -194,7 +194,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
               </Menu.Portal>
             </Menu.Sub>
           )}
-          
+
           {/* report and block options only for other users' posts */}
           {!isOwnPost && (
             <>

@@ -1,5 +1,6 @@
-import type { SizableTextProps } from 'tamagui'
 import { SizableText } from 'tamagui'
+
+import type { SizableTextProps } from 'tamagui'
 
 export function CodeInline({ children, ...props }: SizableTextProps) {
   // commit hashes get a cute tilt

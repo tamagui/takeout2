@@ -31,7 +31,7 @@ export const mutate = mutations(schema, permissions, {
       hasOnboarded: true,
     })
 
-    if (server) {
+    if (process.env.VITE_ENVIRONMENT === 'ssr' && server) {
       server.asyncTasks.push(async () => {
         await server.actions.analyticsActions().logEvent(authData.id, 'user_onboarded', {
           userId: authData.id,

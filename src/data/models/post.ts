@@ -27,16 +27,18 @@ const permissions = serverWhere('post', (_, auth) => {
 export const mutate = mutations(schema, permissions, {
   insert: async ({ tx, environment, server, authData }, post: Post) => {
     // check caption for profanity on server
-    if (environment === 'server' && post.caption) {
-      const profanityCheck = checkProfanity(post.caption)
-      if (!profanityCheck.clean) {
-        throw new Error('Content violates community guidelines')
+    if (process.env.VITE_ENVIRONMENT === 'ssr') {
+      if (post.caption) {
+        const profanityCheck = checkProfanity(post.caption)
+        if (!profanityCheck.clean) {
+          throw new Error('Content violates community guidelines')
+        }
       }
     }
 
     await tx.mutate.post.insert(post)
 
-    if (environment === 'server' && server && authData) {
+    if (process.env.VITE_ENVIRONMENT === 'ssr' && server && authData) {
       server.asyncTasks.push(() =>
         server.actions.analyticsActions().logEvent(authData.id, 'post_created', {
           postId: post.id,
@@ -49,7 +51,7 @@ export const mutate = mutations(schema, permissions, {
   delete: async ({ tx, environment, server, authData }, obj: { id: string }) => {
     await tx.mutate.post.delete({ id: obj.id })
 
-    if (environment === 'server' && server && authData) {
+    if (process.env.VITE_ENVIRONMENT === 'ssr' && server && authData) {
       const post = await (tx.query as any).post.where('id', obj.id).one().run()
 
       if (post) {

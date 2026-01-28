@@ -26,7 +26,7 @@ export const mutate = mutations(schema, permissions, {
       blockerId: authData.id,
     })
 
-    if (environment === 'server' && server) {
+    if (process.env.VITE_ENVIRONMENT === 'ssr' && server) {
       server.asyncTasks.push(() =>
         server.actions.analyticsActions().logEvent(authData.id, 'user_blocked', {
           targetUserId: data.blockedId,
@@ -45,7 +45,8 @@ export const mutate = mutations(schema, permissions, {
     await tx.mutate.block.delete({ id: data.id })
 
     const blockedUserId = data.blockedUserId
-    if (environment === 'server' && server && blockedUserId) {
+
+    if (process.env.VITE_ENVIRONMENT === 'ssr' && server && blockedUserId) {
       server.asyncTasks.push(() =>
         server.actions.analyticsActions().logEvent(authData.id, 'user_unblocked', {
           targetUserId: blockedUserId,

@@ -39,7 +39,6 @@ export const DocsMenuContents = () => {
 
   const [openSections, setOpenSections] = useState<string[]>(getAllSections)
 
-
   // get only visible items (items in sections that are open or have no title)
   const visibleItems = activeItems.filter((item) => {
     const sectionTitle = item.section.title || ''

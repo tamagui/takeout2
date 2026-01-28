@@ -142,7 +142,10 @@ function TitleTicker({ slides, scrollPosition }: TitleTickerProps) {
     >
       <Animated.View style={animatedStyle}>
         {slides.map((slide) => (
-          <View key={slide.id} style={{ height: TITLE_HEIGHT, justifyContent: 'center' }} />
+          <View
+            key={slide.id}
+            style={{ height: TITLE_HEIGHT, justifyContent: 'center' }}
+          />
         ))}
       </Animated.View>
     </Animated.View>

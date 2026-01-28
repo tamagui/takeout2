@@ -21,11 +21,12 @@ const permissions = serverWhere('comment', (_, auth) => {
 
 export const mutate = mutations(schema, permissions, {
   insert: async ({ tx, environment }, comment: Comment) => {
-    // check content for profanity on server
-    if (environment === 'server' && comment.content) {
-      const profanityCheck = checkProfanity(comment.content)
-      if (!profanityCheck.clean) {
-        throw new Error('Comment violates community guidelines')
+    if (process.env.VITE_ENVIRONMENT === 'ssr') {
+      if (comment.content) {
+        const profanityCheck = checkProfanity(comment.content)
+        if (!profanityCheck.clean) {
+          throw new Error('Comment violates community guidelines')
+        }
       }
     }
 

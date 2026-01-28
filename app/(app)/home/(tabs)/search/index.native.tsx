@@ -102,7 +102,7 @@ export const SearchPage = memo(() => {
           placeholder="Search posts..."
           value={searchText}
           onChangeText={setSearchText}
-          size="$4"
+          size="small"
         />
       </YStack>
       <View flex={1} px="$3">

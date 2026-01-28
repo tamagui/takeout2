@@ -1,0 +1,14 @@
+{
+  "name": "@take-out/native",
+  "version": "0.0.1",
+  "type": "module",
+  "exports": {
+    "./setup-crypto": {
+      "react-native": "./src/setup-crypto.native.ts",
+      "default": "./src/setup-crypto.ts"
+    }
+  },
+  "peerDependencies": {
+    "expo-crypto": "*"
+  }
+}

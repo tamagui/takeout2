@@ -14,8 +14,7 @@ place.
 ## Skills
 
 Skills are instruction sets that teach agents how to work in this codebase.
-There are 24 skills covering data patterns, routing, deployment, testing, and
-more. They live in `.claude/skills/` and point to detailed docs.
+They live in `.claude/skills/` and map to docs in `docs/` and `packages/docs/`.
 
 When an agent starts a session, it loads the core guidelines automatically. When
 working on a feature, it can pull in relevant skills—say, `takeout-zero` when
@@ -31,6 +30,34 @@ Each skill includes:
 
 This means agents don't guess at conventions. They look up the skill, follow the
 pattern, and produce code that fits.
+
+### Available Skills
+
+| Skill | Description | Tier |
+|-------|-------------|------|
+| `takeout-takeout` | General overview and getting started | Free |
+| `takeout-tamagui` | UI framework, tokens, themes, responsive design | Free |
+| `takeout-zero` | Data sync, queries, mutations, permissions | Free |
+| `takeout-one-routes` | File-based routing, SSG/SSR, loaders | Pro |
+| `takeout-one-hooks` | useRouter, useParams, useLoader, navigation | Pro |
+| `takeout-one-components` | Link, Head, SafeAreaView, layouts | Pro |
+| `takeout-database` | PostgreSQL, Drizzle ORM, migrations | Pro |
+| `takeout-aggregates` | Denormalized counts via triggers | Pro |
+| `takeout-triggers` | PostgreSQL trigger automation | Pro |
+| `takeout-emitters` | Event pub/sub for ephemeral UI state | Pro |
+| `takeout-testing-integration` | Playwright e2e tests | Pro |
+| `takeout-scripts` | tko CLI and automation | Pro |
+| `takeout-package-json` | Workspace and script configuration | Pro |
+| `takeout-sync-prompt` | Merging upstream Takeout changes | Pro |
+| `takeout-react-native-navigation-flow` | Mobile routing patterns | Pro |
+| `takeout-hot-updater` | OTA updates for React Native | Pro |
+| `takeout-native-hot-update` | Hot update splash and deployment | Pro |
+| `takeout-xcodebuild-mcp` | iOS debugging and simulator tools | Pro |
+| `takeout-cloudflare-dev-tunnel` | Expose local dev publicly | Pro |
+| `deploy` | Deployment infrastructure overview | Pro |
+| `deploy-uncloud` | Self-hosted production setup | Pro |
+| `add-icon` | Managing Phosphor icons | Pro |
+| `commit` | Git commit conventions | Pro |
 
 ## Over-Zero
 

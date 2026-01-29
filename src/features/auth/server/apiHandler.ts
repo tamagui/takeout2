@@ -64,6 +64,21 @@ export function authAPIHandler(method: 'GET' | 'POST') {
 
       return processedResponse
     } catch (err) {
+      // detect jwks decryption error (secret mismatch)
+      const isJwksError =
+        err instanceof Error && err.message?.includes('Failed to decrypt private key')
+
+      if (isJwksError) {
+        console.error(`
+╔═══════════════════════════════════════════════════════════════════════════╗
+║  BETTER_AUTH_SECRET mismatch - JWKS encrypted with different secret       ║
+╠═══════════════════════════════════════════════════════════════════════════╣
+║  Fix: run \`bun tko db clear-jwks\` then restart the dev server            ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+`)
+        return new Response('JWKS secret mismatch - run: bun tko db clear-jwks', { status: 500 })
+      }
+
       console.error(`[auth] Error in ${method} ${req.url}:`, err)
       if (err instanceof Error) {
         console.error('Error stack:', err.stack)

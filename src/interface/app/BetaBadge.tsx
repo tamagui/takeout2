@@ -1,6 +1,7 @@
 import { styled, Text, Theme, YStack, type YStackProps } from 'tamagui'
 
 const BadgeContainer = styled(YStack, {
+  tag: 'span',
   rotate: '8deg',
   px: '$1.5',
   py: 2,

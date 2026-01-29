@@ -49,7 +49,7 @@ type ButtonAdditionalProps = {
   scaleIcon?: number
 } & TooltipWrapperProps
 
-type ButtonSizes = 'small' | 'medium' | 'large' | 'xl' | 'square' | 'tiny'
+type ButtonSizes = 'small' | 'medium' | 'large' | 'xl' | 'xxl' | 'square' | 'tiny'
 
 type ButtonVariants =
   | 'action'
@@ -75,6 +75,7 @@ const buttonBorderRadius: Record<ButtonSizes, RadiusTokens> = {
   medium: isWeb ? '$5' : '$6',
   large: isWeb ? '$6' : '$7',
   xl: isWeb ? '$7' : '$8',
+  xxl: isWeb ? '$9' : '$8',
   tiny: isWeb ? '$3' : '$4',
   square: 0,
 }
@@ -82,9 +83,10 @@ const buttonBorderRadius: Record<ButtonSizes, RadiusTokens> = {
 // = minW and height
 const buttonSizes: Record<ButtonSizes, number> = {
   small: isWeb ? 30 : 40,
-  medium: isWeb ? 32 : 44,
+  medium: isWeb ? 44 : 44,
   large: isWeb ? 46 : 52,
   xl: isWeb ? 52 : 60,
+  xxl: isWeb ? 60 : 72,
   tiny: isWeb ? 16 : 32,
   square: isWeb ? 36 : 44,
 }
@@ -92,6 +94,7 @@ const buttonSizes: Record<ButtonSizes, number> = {
 const iconSizes: Record<ButtonSizes, number> = {
   large: 16,
   xl: 20,
+  xxl: 30,
   medium: 14,
   small: 12,
   tiny: 10,
@@ -177,6 +180,13 @@ const ButtonFrame = styled(XStack, {
         rounded: buttonBorderRadius.xl,
         gap: '$3.5',
         px: isWeb ? '$5' : '$6',
+      },
+      xxl: {
+        minH: buttonSizes.xxl,
+        minW: buttonSizes.xxl,
+        rounded: buttonBorderRadius.xxl,
+        gap: '$4',
+        px: isWeb ? '$6' : '$7',
       },
       medium: {
         minH: buttonSizes.medium,
@@ -316,7 +326,11 @@ const ButtonIcon = ({
   return iconElement
 }
 
-export type ButtonProps = GetProps<typeof ButtonFrame> & ButtonAdditionalProps
+export type ButtonProps = Omit<
+  GetProps<typeof ButtonFrame>,
+  keyof ButtonAdditionalProps
+> &
+  ButtonAdditionalProps
 
 const ButtonComponent = forwardRef<TamaguiElement, ButtonProps>(
   (

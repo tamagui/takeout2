@@ -87,7 +87,6 @@ export default {
             '/signup/**',
             '/profile-setup',
             '/avatar-setup',
-            '/waiting-list',
             '/settings/**',
           ],
         },

@@ -2,13 +2,6 @@ import type { SharedValue } from 'react-native-reanimated'
 import type { ThemeName } from 'tamagui'
 import type { IconComponent } from '~/interface/icons/types'
 
-export type OnboardingStep =
-  | 'waiting-list'
-  | 'profile-setup'
-  | 'avatar-setup'
-  | 'notifications'
-  | 'complete'
-
 export interface SlideFeature {
   Icon: IconComponent
   title: string

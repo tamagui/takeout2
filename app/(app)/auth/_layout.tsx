@@ -15,7 +15,6 @@ export function AuthAndOnboardingLayout() {
         <Stack.Screen name="login" />
         <Stack.Screen name="signup/[method]" />
         <Stack.Screen name="signup/otp" />
-        <Stack.Screen name="waiting-list" />
       </Stack>
     )
   }

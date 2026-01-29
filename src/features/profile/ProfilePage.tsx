@@ -1,7 +1,6 @@
 import { memo } from 'react'
-import { AnimatePresence, Spinner, YStack } from 'tamagui'
+import { Spinner, YStack } from 'tamagui'
 
-import { useHeaderHeightSafe } from '~/hooks/useHeaderHeightSafe'
 import { useUser } from '~/hooks/useUser'
 import { HeadInfo } from '~/interface/app/HeadInfo'
 import { Pressable } from '~/interface/buttons/Pressable'
@@ -9,7 +8,6 @@ import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
 import { Image } from '~/interface/image/Image'
 import { SimpleGrid, SimpleGridItem } from '~/interface/layout/SimpleGrid'
 import { Pagination } from '~/interface/navigation/Pagination'
-import { ProfileShimmer } from '~/interface/shimmer/ProfileShimmer'
 import { H5 } from '~/interface/text/Headings'
 
 import { ProfileHeader } from './ProfileHeader'
@@ -18,8 +16,6 @@ import { useProfilePosts } from './useProfilePosts'
 import type { ProfilePageProps } from './types'
 
 export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => {
-  const headerHeight = useHeaderHeightSafe()
-
   const [user] = useUser(userId)
   const { posts, isLoading, currentPage, hasMore, nextPage, prevPage } = useProfilePosts({
     userId,
@@ -55,36 +51,18 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
     <>
       <HeadInfo title={title} description={description} openGraph={ogImage} />
 
-      <AnimatePresence>
-        {isLoading && (
-          <YStack
-            key="studio-shimmer"
-            transition="200ms"
-            pt={headerHeight}
-            exitStyle={{
-              opacity: 0,
-            }}
-            opacity={1}
-            z={999}
-            position="absolute"
-            t={10}
-            l={0}
-            r={0}
-            b={0}
-          >
-            <ProfileShimmer />
-          </YStack>
-        )}
-      </AnimatePresence>
-
-      <YStack px="$4" pb="$10" maxW={760} mx="auto" z={10}>
+      <YStack px="$4" pb="$10" maxW={760} mx="auto">
         <ProfileHeader
           userInfo={user}
           isOwnProfile={isOwnProfile}
           postsCount={postsCount}
         />
 
-        {!isLoading && posts && posts.length === 0 ? (
+        {isLoading && !posts?.length ? (
+          <YStack p="$6" items="center" justify="center">
+            <Spinner size="small" color="$color10" />
+          </YStack>
+        ) : posts && posts.length === 0 ? (
           <YStack p="$4" items="center" justify="center" mt="$4">
             <H5 mt="$3">No posts yet</H5>
           </YStack>
@@ -108,7 +86,7 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
 
             {isLoading && (
               <YStack p="$4" items="center" justify="center">
-                <Spinner size="small" />
+                <Spinner size="small" color="$color10" />
               </YStack>
             )}
 

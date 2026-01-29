@@ -3,14 +3,12 @@ import { router } from 'one'
 import { memo, useCallback, useMemo, useRef } from 'react'
 import { RefreshControl } from 'react-native'
 import Animated from 'react-native-reanimated'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { AnimatePresence, Spinner, useWindowDimensions, YStack } from 'tamagui'
+import { Spinner, useWindowDimensions, YStack } from 'tamagui'
 
 import { sharedTransition } from '~/helpers/animation/sharedTransition'
 import { useUser } from '~/hooks/useUser'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { PageLayout } from '~/interface/pages/PageLayout'
-import { ProfileShimmer } from '~/interface/shimmer/ProfileShimmer'
 import { H5 } from '~/interface/text/Headings'
 
 import { usePostsByUserId } from '../feed/usePosts'
@@ -23,7 +21,6 @@ const NUM_COLUMNS = 2
 
 export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => {
   const listRef = useRef<LegendListRef>(null)
-  const insets = useSafeAreaInsets()
   const { width } = useWindowDimensions()
   const columnWidth = (width - 28 - COLUMN_GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS
 
@@ -130,31 +127,5 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
     />
   )
 
-  return (
-    <PageLayout>
-      <AnimatePresence>
-        {isLoading && (
-          <YStack
-            key="studio-shimmer"
-            transition="200ms"
-            pt={insets.top}
-            bg="$background"
-            exitStyle={{
-              opacity: 0,
-            }}
-            opacity={1}
-            z={999}
-            position="absolute"
-            t={0}
-            l={0}
-            r={0}
-            b={0}
-          >
-            <ProfileShimmer />
-          </YStack>
-        )}
-      </AnimatePresence>
-      {listContent}
-    </PageLayout>
-  )
+  return <PageLayout>{listContent}</PageLayout>
 })

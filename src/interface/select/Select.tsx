@@ -65,7 +65,7 @@ export function Select({
         </XStack>
       </TamaguiSelect.Trigger>
 
-      <Adapt when="maxMD" platform="touch">
+      <Adapt when="max-md" platform="touch">
         <Sheet
           native={!!props.native}
           modal

@@ -26,7 +26,7 @@ export const PopoverMenu = ({
     <Popover name={name} size="$5" placement={placement}>
       <Popover.Trigger>{trigger}</Popover.Trigger>
 
-      <Adapt when="maxMD" platform="touch">
+      <Adapt when="max-md" platform="touch">
         <Sheet
           transition="quickLessBouncy"
           modal

@@ -14,7 +14,7 @@ export const Logo = ({ height = 24 }: { height?: number }) => {
         lineHeight={Math.round(height * 0.65)}
         fontWeight="600"
         letterSpacing={0.5}
-        $maxMD={{ display: 'none' }}
+        $max-md={{ display: 'none' }}
       >
         Takeout
       </SizableText>

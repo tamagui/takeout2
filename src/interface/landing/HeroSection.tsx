@@ -17,7 +17,7 @@ const HeroTitle = styled(H1, {
   fontWeight: '800',
   maxW: 520,
 
-  $maxLG: {
+  '$max-lg': {
     size: '$10',
     fontWeight: '800',
   },
@@ -502,7 +502,7 @@ export function HeroSection() {
           minW={320}
           maxW={640}
           items="flex-start"
-          $maxSM={{
+          $max-sm={{
             maxW: '80%',
             self: 'center',
           }}
@@ -512,7 +512,7 @@ export function HeroSection() {
         >
           <YStack gap="$1">
             <HeroTitle>
-              The <Span $maxXL={{ display: 'none' }}>startup</Span> starter that{' '}
+              The <Span $max-xl={{ display: 'none' }}>startup</Span> starter that{' '}
               <HighlightText fontStyle="italic">actually</HighlightText> delivers.
             </HeroTitle>
           </YStack>

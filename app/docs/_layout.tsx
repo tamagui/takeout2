@@ -50,7 +50,7 @@ export function DocsLayout() {
             height: 'calc(100vh - 50px)',
             width: 225,
           }}
-          $maxMD={{
+          $max-md={{
             display: 'none',
           }}
         >

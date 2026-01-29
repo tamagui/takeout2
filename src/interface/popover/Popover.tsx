@@ -69,7 +69,6 @@ const PopoverContent = ({
   return (
     <TamaguiPopover.Content
       z={200_000}
-      contain="layout"
       unstyled={unstyled}
       {...(!unstyled && {
         transition: animationClamped('quickest'),

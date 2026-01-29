@@ -9,6 +9,7 @@ import { dialogConfirm, showError } from '~/interface/dialogs/actions'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { DotsThreeIcon } from '~/interface/icons/phosphor/DotsThreeIcon'
 import { DownloadSimpleIcon } from '~/interface/icons/phosphor/DownloadSimpleIcon'
+import { TrashIcon } from '~/interface/icons/phosphor/TrashIcon'
 import { UserCircleIcon } from '~/interface/icons/phosphor/UserCircleIcon'
 import { WarningCircleIcon } from '~/interface/icons/phosphor/WarningCircleIcon'
 import { XCircleIcon } from '~/interface/icons/phosphor/XCircleIcon'
@@ -95,6 +96,25 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
     }
   }
 
+  const handleDelete = async () => {
+    if (!post) return
+
+    const confirmed = await dialogConfirm({
+      title: 'Delete Post',
+      description: 'Are you sure you want to delete this post? This action cannot be undone.',
+    })
+
+    if (!confirmed) return
+
+    try {
+      zero.mutate.post.delete({ id: post.id })
+      showToast('Post deleted')
+      router.back()
+    } catch (error) {
+      showError(error, 'Delete Post')
+    }
+  }
+
   return (
     <Menu allowFlip placement="bottom-end" offset={8}>
       <Menu.Trigger render="span">
@@ -144,6 +164,24 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
                 androidIconName="ic_menu_myplaces"
               >
                 <UserCircleIcon size={18} color="$color10" />
+              </Menu.ItemIcon>
+            </Menu.Item>
+          )}
+
+          {isOwnPost && (
+            <Menu.Item
+              key="delete"
+              onSelect={handleDelete}
+              destructive
+              justify="space-between"
+              textValue="Delete Post"
+            >
+              <Menu.ItemTitle color="$red10">Delete Post</Menu.ItemTitle>
+              <Menu.ItemIcon
+                ios={{ name: 'trash', pointSize: 18 }}
+                androidIconName="ic_menu_delete"
+              >
+                <TrashIcon size={18} color="$red10" />
               </Menu.ItemIcon>
             </Menu.Item>
           )}

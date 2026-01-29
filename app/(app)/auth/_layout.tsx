@@ -20,7 +20,16 @@ export function AuthAndOnboardingLayout() {
   }
 
   return (
-    <XStack flex={1} flexBasis="auto" items="center" justify="center">
+    <XStack
+      minH="100vh"
+      flex={1}
+      flexBasis="auto"
+      items="center"
+      justify="center"
+      $platform-web={{
+        mt: -50,
+      }}
+    >
       <XStack
         width="100%"
         maxW={860}
@@ -30,7 +39,6 @@ export function AuthAndOnboardingLayout() {
         overflow="hidden"
         position="relative"
         boxShadow="0 12px 24px $shadow2"
-        mt="$6"
         $md={{ maxW: 860, minH: 550, mt: 0 }}
         $theme-dark={{
           borderWidth: 0.5,

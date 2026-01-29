@@ -17,20 +17,23 @@ function getPortFromConnectionString(url: string | undefined): string | undefine
   }
 }
 
-// read ZERO_UPSTREAM_DB directly from .env.development file
+// read a specific env var directly from .env.development file
 // (process.env may have production values if NODE_ENV=production)
-function getDevDbPort(): string | undefined {
+function getDevEnvVar(key: string): string | undefined {
   try {
     const envPath = join(process.cwd(), '.env.development')
     const content = readFileSync(envPath, 'utf-8')
-    const match = content.match(/ZERO_UPSTREAM_DB=["']?([^"'\n]+)["']?/)
-    if (match?.[1]) {
-      return getPortFromConnectionString(match[1])
-    }
+    const regex = new RegExp(`^${key}=["']?([^"'\\n]+)["']?`, 'm')
+    const match = content.match(regex)
+    return match?.[1]
   } catch {
-    // file doesn't exist or can't be read
+    return undefined
   }
-  return undefined
+}
+
+function getDevDbPort(): string | undefined {
+  const url = getDevEnvVar('ZERO_UPSTREAM_DB')
+  return url ? getPortFromConnectionString(url) : undefined
 }
 
 export async function getTestEnv() {
@@ -47,6 +50,10 @@ export async function getTestEnv() {
   const dbPort = process.env.DOCKER_DB_PORT || getDevDbPort() || '5432'
 
   const dockerDbBase = `postgresql://user:password@127.0.0.1:${dbPort}`
+
+  // use dev BETTER_AUTH_SECRET for CI/staging to match local dev database keys
+  // (better-auth encrypts JWKS private keys with this secret, so it must match)
+  const devAuthSecret = getDevEnvVar('BETTER_AUTH_SECRET')
 
   return {
     ...serverEnvFallback,
@@ -66,5 +73,7 @@ export async function getTestEnv() {
     CLOUDFLARE_R2_PUBLIC_URL: 'http://127.0.0.1:9200',
     CLOUDFLARE_R2_ACCESS_KEY: 'minio',
     CLOUDFLARE_R2_SECRET_KEY: 'minio_password',
+    // ensure auth secret matches dev db keys
+    ...(devAuthSecret && { BETTER_AUTH_SECRET: devAuthSecret }),
   }
 }

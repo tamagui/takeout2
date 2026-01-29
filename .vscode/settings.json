@@ -45,6 +45,8 @@
       "source.fixAll.oxc": "explicit"
     }
   },
+  "oxc.format.excludePatterns": ["**/generated/**"],
+  "oxc.format.configPath": ".oxfmtrc.jsonc",
   "[typescriptreact]": {
     "editor.defaultFormatter": "oxc.oxc-vscode",
     "editor.formatOnSave": true,

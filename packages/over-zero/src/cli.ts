@@ -522,10 +522,16 @@ import * as Queries from './groupedQueries'
             return `  ${q.name}: defineQuery(() => Queries.${file}.${q.name}()),`
           }
 
+          // indent the validator for proper formatting
+          const indentedValidator = validatorDef
+            .split('\n')
+            .map((line, i) => (i === 0 ? line : `    ${line}`))
+            .join('\n')
+
           // defineQuery with validator and args
           return `  ${q.name}: defineQuery(
-    ${validatorDef},
-    ({ args }) => Queries.${file}.${q.name}(args),
+    ${indentedValidator},
+    ({ args }) => Queries.${file}.${q.name}(args)
   ),`
         })
         .join('\n')

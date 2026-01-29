@@ -4,7 +4,6 @@
 
 import { randomId } from '@take-out/helpers'
 
-import { moderateImage } from '~/features/upload/moderateImage'
 import { s3Client } from '~/features/upload/s3client'
 import { defaultBucket, uploadToS3 } from '~/features/upload/upload'
 
@@ -24,26 +23,13 @@ export default async function handler(req: Request) {
   // console.info(`[Upload API] File received: ${file.name}, type: ${file.type}, size: ${file.size}`)
 
   try {
-    // moderate images before upload
+    const key = `${folder}/${randomId()}-${file.name}`
+
+    // for images, read into buffer first
     if (file.type.startsWith('image/')) {
       const arrayBuffer = await file.arrayBuffer()
       const imageBytes = new Uint8Array(arrayBuffer)
 
-      const moderation = await moderateImage(imageBytes)
-      if (!moderation.safe) {
-        const reasons = moderation.blockedLabels.map((l) => l.Name).join(', ')
-        console.info(`[Upload API] Image blocked by moderation: ${reasons}`)
-        return Response.json(
-          {
-            error: 'Image violates content policy',
-            code: 'CONTENT_POLICY_VIOLATION',
-          },
-          { status: 400 }
-        )
-      }
-
-      // upload from buffer since we already read the file
-      const key = `${folder}/${randomId()}-${file.name}`
       const result = await uploadToS3(s3Client, {
         bucket: defaultBucket,
         key,
@@ -55,7 +41,6 @@ export default async function handler(req: Request) {
     }
 
     // non-image files - upload directly
-    const key = `${folder}/${randomId()}-${file.name}`
     const result = await uploadToS3(s3Client, {
       bucket: defaultBucket,
       key,

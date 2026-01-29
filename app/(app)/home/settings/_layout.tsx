@@ -50,8 +50,7 @@ export const SettingLayout = () => {
         <View
           width={260}
           borderRightWidth={1}
-          borderRightColor="$color4"
-          bg="$background"
+          borderRightColor="$color2"
           position="sticky"
           t={50}
           height="calc(100vh - 50px)"

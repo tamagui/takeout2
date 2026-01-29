@@ -83,7 +83,7 @@ const buttonBorderRadius: Record<ButtonSizes, RadiusTokens> = {
 // = minW and height
 const buttonSizes: Record<ButtonSizes, number> = {
   small: isWeb ? 30 : 40,
-  medium: isWeb ? 44 : 44,
+  medium: isWeb ? 38 : 44,
   large: isWeb ? 46 : 52,
   xl: isWeb ? 52 : 60,
   xxl: isWeb ? 60 : 72,

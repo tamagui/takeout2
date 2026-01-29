@@ -31,6 +31,6 @@
     "@take-out/helpers": "workspace:*"
   },
   "devDependencies": {
-    "vxrn": "*1.2.95"
+    "vxrn": "*1.3.0"
   }
 }

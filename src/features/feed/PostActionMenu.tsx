@@ -131,7 +131,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
 
       <Menu.Portal zIndex={100}>
         <Menu.Content
-          transition="200ms"
+          transition="quickestLessBouncy"
           borderRadius="$4"
           enterStyle={{ scale: 0.9, opacity: 0, y: -5 }}
           exitStyle={{ scale: 0.95, opacity: 0, y: -3 }}
@@ -211,7 +211,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
                 <Menu.SubContent
                   enterStyle={{ scale: 0.9, opacity: 0, x: -5 }}
                   exitStyle={{ scale: 0.95, opacity: 0, x: -3 }}
-                  transition="200ms"
+                  transition="quickestLessBouncy"
                   transformOrigin="left top"
                   elevation="$3"
                   minW={200}

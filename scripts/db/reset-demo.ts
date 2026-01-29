@@ -126,7 +126,9 @@ async function resetDemo() {
 
   // reset demo user's posts count if they exist
   console.info('\nresetting demo user posts count...')
-  await pool.query(`UPDATE "userPublic" SET "postsCount" = 0 WHERE id = $1`, [DEMO_USER_ID])
+  await pool.query(`UPDATE "userPublic" SET "postsCount" = 0 WHERE id = $1`, [
+    DEMO_USER_ID,
+  ])
 
   // reset seed users' posts counts
   console.info('resetting seed user stats...')
@@ -136,7 +138,10 @@ async function resetDemo() {
       return postUserMap[i] === userId
     }).length
 
-    await pool.query(`UPDATE "userPublic" SET "postsCount" = $1 WHERE id = $2`, [postCount, userId])
+    await pool.query(`UPDATE "userPublic" SET "postsCount" = $1 WHERE id = $2`, [
+      postCount,
+      userId,
+    ])
   }
 
   // reset comment counts on seed posts
@@ -156,7 +161,10 @@ async function resetDemo() {
       return commentPostMap[i] === postId
     }).length
 
-    await pool.query(`UPDATE post SET "commentCount" = $1 WHERE id = $2`, [commentCount, postId])
+    await pool.query(`UPDATE post SET "commentCount" = $1 WHERE id = $2`, [
+      commentCount,
+      postId,
+    ])
   }
 
   console.info('\ndemo reset complete!')

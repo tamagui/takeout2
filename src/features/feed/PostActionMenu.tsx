@@ -101,7 +101,8 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
 
     const confirmed = await dialogConfirm({
       title: 'Delete Post',
-      description: 'Are you sure you want to delete this post? This action cannot be undone.',
+      description:
+        'Are you sure you want to delete this post? This action cannot be undone.',
     })
 
     if (!confirmed) return

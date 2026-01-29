@@ -13,7 +13,6 @@ export function AuthAndOnboardingLayout() {
         initialRouteName="login"
       >
         <Stack.Screen name="login" />
-        <Stack.Screen name="login/password" />
         <Stack.Screen name="signup/[method]" />
         <Stack.Screen name="signup/otp" />
         <Stack.Screen name="waiting-list" />

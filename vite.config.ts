@@ -194,6 +194,7 @@ export default {
 
     include: [
       'async-retry',
+
       // pre-bundle common web deps to avoid mid-navigation optimization in dev mode
       'better-auth/client',
       'better-auth/client/plugins',
@@ -217,6 +218,7 @@ export default {
       '@tamagui/animations-motion',
       '@tamagui/menu',
     ],
+
     // @hot-updater/cli-tools contains native .node binaries (oxc-transform)
     // that esbuild can't handle - exclude from optimization
     exclude: [

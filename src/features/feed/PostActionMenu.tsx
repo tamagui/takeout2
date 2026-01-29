@@ -211,7 +211,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
                 <Menu.SubContent
                   enterStyle={{ scale: 0.9, opacity: 0, x: -5 }}
                   exitStyle={{ scale: 0.95, opacity: 0, x: -3 }}
-                  transition="100ms ease-in-out"
+                  transition="200ms"
                   transformOrigin="left top"
                   elevation="$3"
                   minW={200}

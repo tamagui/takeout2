@@ -323,14 +323,7 @@ const runScript = async (
       log.error(`${color}${prefixLabel}${reset} Process exited with code ${code}`)
 
       if (code === 1) {
-        // Print a nicer error message with red header
-        console.error(
-          '\n\x1b[31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m'
-        )
         console.error('\x1b[31m❌ Run Failed\x1b[0m')
-        console.error(
-          '\x1b[31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m'
-        )
         console.error(
           `\x1b[31mProcess "${prefixLabel}" failed with exit code ${code}\x1b[0m`
         )

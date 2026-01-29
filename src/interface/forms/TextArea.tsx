@@ -2,6 +2,7 @@ import { TextArea as TamaguiTextArea, styled } from 'tamagui'
 
 export const TextArea = styled(TamaguiTextArea, {
   name: 'TextArea',
+  background: '$color1',
   borderWidth: 0.5,
   borderColor: '$borderColor',
   placeholderTextColor: '$color8',

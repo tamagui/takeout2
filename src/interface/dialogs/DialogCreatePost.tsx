@@ -137,10 +137,10 @@ export const DialogCreatePost = () => {
   const canPost = caption.trim() && uploadedUrl && !isUploading && !isPosting
 
   const content = (
-    <YStack p="$1" gap="$4">
+    <YStack p="$2" gap="$4">
       <Dialog.Header title="Create Post" />
 
-      <YStack gap="$2">
+      <YStack gap="$4">
         <TextArea
           verticalAlign="top"
           maxLength={6000}
@@ -220,7 +220,7 @@ export const DialogCreatePost = () => {
           >
             <YStack
               borderWidth={2}
-              borderColor="$borderColor"
+              borderColor="$color2"
               borderStyle="dashed"
               rounded="$6"
               p="$6"

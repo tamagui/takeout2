@@ -1,5 +1,15 @@
 import { memo, useEffect, useRef, useState } from 'react'
-import { Em, H1, Paragraph, Text, XStack, YStack, styled } from 'tamagui'
+import {
+  Em,
+  EnsureFlexed,
+  H1,
+  Paragraph,
+  Text,
+  View,
+  XStack,
+  YStack,
+  styled,
+} from 'tamagui'
 
 import { Link } from '~/interface/app/Link'
 import { ArrowRightIcon } from '~/interface/icons/phosphor/ArrowRightIcon'
@@ -15,6 +25,7 @@ const HeroTitle = styled(H1, {
   color: '$color12',
   size: '$12',
   fontWeight: '800',
+  maxW: 520,
 
   $maxLG: {
     size: '$10',
@@ -25,6 +36,7 @@ const HeroTitle = styled(H1, {
 const HeroSubtitle = styled(Paragraph, {
   color: '$color9',
   size: '$6',
+  maxW: 490,
   $xl: {
     size: '$7',
   },
@@ -77,7 +89,7 @@ const TerminalContainer = styled(YStack, {
   borderWidth: 1,
   borderColor: 'rgba(255,255,255,0.1)',
   width: '100%',
-  maxW: 500,
+  maxW: 520,
   shadowColor: '#000',
   shadowRadius: 40,
   shadowOffset: { width: 0, height: 20 },
@@ -288,7 +300,7 @@ function HeroTerminal() {
   }, [currentStep])
 
   return (
-    <TerminalContainer position="absolute" z={-1} x={-60} y={200} scale={0.8}>
+    <TerminalContainer>
       <TerminalHeader>
         <TerminalDots />
         <Paragraph
@@ -368,9 +380,9 @@ function PhoneMockup() {
       justify="center"
       self="center"
       aspectRatio="588 / 1176"
-      y={-50}
       $lg={{
         x: 0,
+        y: 20,
       }}
     >
       <svg width="0" height="0" style={{ position: 'absolute' }}>
@@ -472,35 +484,37 @@ function CopyCommand() {
 export function HeroSection() {
   return (
     <YStack
-      items="center"
-      gap="$8"
-      px="$4"
-      minH="calc(min(90vh, 900px))"
-      justify="center"
+      $md={{
+        flex: 1,
+        items: 'center',
+        gap: '$8',
+        px: '$4',
+        minH: 'calc(min(90vh, 900px))',
+        justify: 'center',
+      }}
     >
-      <XStack
+      <View
         gap="$2"
         items="center"
-        justify="center"
-        flexWrap="wrap"
+        justify="space-between"
         maxW={1200}
         width="100%"
         pb="$14"
-        $lg={{ flexWrap: 'nowrap', gap: '$8' }}
+        $md={{
+          flexDirection: 'row',
+        }}
       >
         {/* left side - hero content */}
         <YStack
+          scale={0.95}
+          transition="medium"
           gap="$5"
-          flex={1}
           minW={320}
-          maxW={620}
+          maxW={640}
           items="flex-start"
-          scale={0.9}
-          $heightLG={{
-            scale: 1,
-          }}
-          $maxLG={{
-            pt: '$5',
+          $maxSM={{
+            maxW: '80%',
+            self: 'center',
           }}
         >
           <YStack gap="$1">
@@ -511,13 +525,14 @@ export function HeroSection() {
           </YStack>
 
           <HeroSubtitle>
-            <Strong color="$color12">
+            <Strong color="$color11">
               Most starter kits <HighlightText fontWeight="700">suck</HighlightText>
             </Strong>
-            . <Span color="$color11">Takeout sucks less:</Span> novel&nbsp;tech&nbsp;🤝
-            real-world experience, real CI/CD, IaC, lots of "agent" stuff, and{' '}
-            <Link href="/docs/changelog">constant updates</Link> — it's&nbsp;what we use
-            for ourselves, and our <Link href="https://addeven.com">clients</Link>.
+            . <Strong color="$color11">Takeout sucks less.</Strong> We&nbsp;took
+            novel&nbsp;tech, made it work well, then&nbsp;added CI/CD, IaC, UI, lots of
+            “agent” stuff, and <Link href="/docs/changelog">a changelog</Link> —
+            it's&nbsp;what we use for ourselves, and our{' '}
+            <Link href="https://addeven.com">clients</Link>.
           </HeroSubtitle>
 
           <HeroSubtitle>
@@ -553,19 +568,30 @@ export function HeroSection() {
 
         {/* right side */}
         <YStack
-          flex={1}
+          my="$12"
           minW={300}
           maxW={480}
           x={0}
           items="center"
-          mt="$15"
-          position="relative"
           transition="bouncy"
+          position="relative"
+          height={600}
+          $sm={{
+            scale: 0.9,
+            x: 0,
+            y: 20,
+          }}
+          $xl={{
+            y: 40,
+            x: -50,
+          }}
         >
           <PhoneMockup />
-          <HeroTerminal />
+          <YStack position="absolute" z={-1} x={-200} y={200} scale={0.8}>
+            <HeroTerminal />
+          </YStack>
         </YStack>
-      </XStack>
+      </View>
     </YStack>
   )
 }

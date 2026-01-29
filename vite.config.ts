@@ -29,13 +29,13 @@ export default {
   },
 
   plugins: [
-    tamaguiPlugin({
-      optimize: true,
-      disableExtraction: process.env.NODE_ENV !== 'production',
-      components: ['tamagui'],
-      config: './src/tamagui/tamagui.config.ts',
-      outputCSS: './src/tamagui/tamagui.css',
-    }),
+    tamaguiPlugin(
+      // see tamagui.build.ts
+      // enables us to run:
+      //   - bun tamagui check
+      //   - bun tamagui generate-css
+      //   - bun tamagui generate-promtp
+    ),
 
     one({
       setupFile: {

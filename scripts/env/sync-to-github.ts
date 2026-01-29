@@ -152,12 +152,34 @@ async function main() {
     if (currentKey) saveCurrentKey()
   }
 
+  // detect repo for gh commands (handles multiple remotes)
+  let repoFlag = ''
+  try {
+    const repoResult =
+      await Bun.$`gh repo view --json nameWithOwner -q .nameWithOwner`.quiet()
+    repoFlag = `-R ${repoResult.text().trim()}`
+  } catch {
+    // fallback - let gh pick default
+  }
+
+  // fetch existing github secrets to compare
+  let existingSecrets: Set<string> = new Set()
+  try {
+    const result =
+      await Bun.$`gh secret list --json name ${repoFlag ? repoFlag.split(' ') : []}`.quiet()
+    const secrets = JSON.parse(result.text()) as Array<{ name: string }>
+    existingSecrets = new Set(secrets.map((s) => s.name))
+  } catch (e) {
+    console.info(pc.dim(`  (couldn't fetch existing secrets: ${e})`))
+  }
+
   // collect vars to sync
   const varsToSync: Array<{
     key: string
     value: string
     isSensitive: boolean
     source: string
+    isNew: boolean
   }> = []
   const skippedVars: Array<{ key: string; reason: string }> = []
 
@@ -207,7 +229,8 @@ async function main() {
       const isSensitive =
         /SECRET|KEY|PASSWORD|TOKEN|PRIVATE/i.test(key) || key === 'DEPLOY_SSH_KEY'
 
-      varsToSync.push({ key, value, isSensitive, source: '.env.production' })
+      const isNew = !existingSecrets.has(key)
+      varsToSync.push({ key, value, isSensitive, source: '.env.production', isNew })
     }
   }
 
@@ -217,7 +240,8 @@ async function main() {
       if (!value || value === '') continue
 
       const isSensitive = /SECRET|KEY|PASSWORD|TOKEN|PRIVATE|PASSPHRASE/i.test(key)
-      varsToSync.push({ key, value, isSensitive, source: '.env.ios' })
+      const isNew = !existingSecrets.has(key)
+      varsToSync.push({ key, value, isSensitive, source: '.env.ios', isNew })
     }
   }
 
@@ -265,57 +289,95 @@ async function main() {
     return
   }
 
-  // show what will be synced, grouped by source
+  // separate new vs existing
+  const newVars = filteredVars.filter((v) => v.isNew)
+  const existingVars = filteredVars.filter((v) => !v.isNew)
+
+  // show what will be synced, grouped by new/existing
   console.info('')
-  console.info(pc.bold('Variables to sync:'))
 
-  const productionVars = filteredVars.filter((v) => v.source === '.env.production')
-  const iosVars = filteredVars.filter((v) => v.source === '.env.ios')
-
-  if (productionVars.length > 0) {
-    console.info('')
-    console.info(pc.gray('  From .env.production:'))
-    for (const { key, value, isSensitive } of productionVars) {
+  if (newVars.length > 0) {
+    console.info(pc.bold(pc.green(`New secrets (${newVars.length}):`)))
+    for (const { key, value, isSensitive, source } of newVars) {
       const displayValue = isSensitive
         ? pc.gray(`${'*'.repeat(Math.min(value.length, 40))}`)
         : pc.gray(value.length > 50 ? value.substring(0, 47) + '...' : value)
-      console.info(`    ${pc.cyan(key.padEnd(40))} ${displayValue}`)
+      const sourceTag = source === '.env.ios' ? pc.yellow(' [ios]') : ''
+      console.info(
+        `  ${pc.green('+')} ${pc.cyan(key.padEnd(38))} ${displayValue}${sourceTag}`
+      )
     }
+    console.info('')
   }
 
-  if (iosVars.length > 0) {
-    console.info('')
-    console.info(pc.gray('  From .env.ios:'))
-    for (const { key, value, isSensitive } of iosVars) {
-      const displayValue = isSensitive
-        ? pc.gray(`${'*'.repeat(Math.min(value.length, 40))}`)
-        : pc.gray(value.length > 50 ? value.substring(0, 47) + '...' : value)
-      console.info(`    ${pc.cyan(key.padEnd(40))} ${displayValue}`)
+  if (existingVars.length > 0) {
+    console.info(pc.bold(pc.dim(`Already in GitHub (${existingVars.length}):`)))
+    for (const { key, source } of existingVars) {
+      const sourceTag = source === '.env.ios' ? pc.yellow(' [ios]') : ''
+      console.info(pc.dim(`    ${key}${sourceTag}`))
     }
+    console.info('')
   }
 
   if (skippedVars.length > 0) {
+    console.info(pc.dim(`Skipped (${skippedVars.length}): using default values`))
     console.info('')
-    console.info(pc.gray('Skipped variables:'))
-    for (const { key, reason } of skippedVars) {
-      console.info(pc.gray(`  ${key.padEnd(30)} (${reason})`))
-    }
   }
 
-  console.info('')
-  console.info(pc.gray(`Total: ${filteredVars.length} variables will be synced`))
-
   if (dryRun) {
-    console.info('')
     clack.outro(pc.yellow('Dry run - no changes made'))
     return
   }
 
-  // confirm
-  if (!yes) {
+  // interactive selection unless --yes or specific vars provided
+  let selectedVars = filteredVars
+  if (!yes && onlyVars.length === 0) {
+    const selectNew = args.includes('--new')
+    const selectAll = args.includes('--all')
+
+    if (selectNew) {
+      // only sync new vars
+      selectedVars = newVars
+      if (selectedVars.length === 0) {
+        clack.outro(pc.green('All secrets already synced to GitHub'))
+        return
+      }
+    } else if (!selectAll) {
+      // interactive mode - let user pick
+      const choices = filteredVars.map((v) => ({
+        value: v.key,
+        label: v.key,
+        hint: v.isNew ? pc.green('new') : pc.dim('exists'),
+      }))
+
+      // pre-select new vars by default
+      const initialValues = newVars.map((v) => v.key)
+
+      const selected = await clack.multiselect({
+        message: 'Select variables to sync (space to toggle, enter to confirm)',
+        options: choices,
+        initialValues,
+        required: false,
+      })
+
+      if (clack.isCancel(selected)) {
+        clack.cancel('Sync cancelled')
+        return
+      }
+
+      if (!selected || (selected as string[]).length === 0) {
+        clack.outro(pc.yellow('No variables selected'))
+        return
+      }
+
+      const selectedKeys = new Set(selected as string[])
+      selectedVars = filteredVars.filter((v) => selectedKeys.has(v.key))
+    }
+
+    // final confirmation
     console.info('')
     const confirm = await clack.confirm({
-      message: `Sync ${filteredVars.length} variables to GitHub secrets?`,
+      message: `Sync ${selectedVars.length} variable${selectedVars.length === 1 ? '' : 's'} to GitHub?`,
       initialValue: true,
     })
 
@@ -331,12 +393,12 @@ async function main() {
 
   const results: Array<{ key: string; success: boolean; error?: string }> = []
 
-  for (const { key, value } of filteredVars) {
+  for (const { key, value } of selectedVars) {
     try {
       // write to temp file to preserve multiline values (esp SSH keys)
       const tmpFile = join(tmpdir(), `gh-secret-${key}-${Date.now()}`)
       await Bun.write(tmpFile, value)
-      await Bun.$`gh secret set ${key} < ${tmpFile}`.quiet()
+      await Bun.$`gh secret set ${key} ${repoFlag ? repoFlag.split(' ') : []} < ${tmpFile}`.quiet()
       // cross-platform file removal
       const { unlink } = await import('node:fs/promises')
       await unlink(tmpFile).catch(() => {})

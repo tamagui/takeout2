@@ -226,7 +226,12 @@
     "VITE_PUBLIC_ZERO_SERVER": "",
     "WEB_DOMAIN": "",
     "ZERO_DOMAIN": "",
-    "ZERO_VERSION": "0.25.11"
+    "ZERO_VERSION": "0.25.11",
+    "ZERO_NUM_SYNC_WORKERS": "2",
+    "ZERO_CVR_MAX_CONNS": "4",
+    "ZERO_UPSTREAM_MAX_CONNS": "8",
+    "ZERO_PER_USER_MUTATION_LIMIT_MAX": "30",
+    "ZERO_PER_USER_MUTATION_LIMIT_WINDOW_MS": "60000"
   },
   "publishConfig": {
     "access": "public"

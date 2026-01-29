@@ -20,13 +20,13 @@ const SectionHeading = styled(H2, {
 })
 
 const ContentParagraph = styled(Paragraph, {
-  size: '$6',
+  size: '$7',
   color: '$color10',
 })
 
 const GoalTitle = styled(H4, {
-  size: '$6',
-  fontWeight: '700',
+  size: '$9',
+  fontWeight: '200',
 })
 
 const TechTitle = styled(H3, {
@@ -61,6 +61,7 @@ const GoalItem = styled(YStack, {
   gap: '$2',
   pl: '$4',
   borderLeftWidth: 2,
+  ml: -2,
   borderLeftColor: '$color5',
 })
 
@@ -258,20 +259,17 @@ export function ContentSection() {
           </XStack>
 
           <ContentParagraph>
-            Vite simply mogs any other bundler for web, we love how fast and flexible it
-            is. One ported Expo Router to Vite, then added a ton of stuff needed for high
-            performance web - loaders, render modes, smart preloading and prefetching, and
-            bundle size improvements. SSR or statically generate some pages, keep others
-            client-only, easy. Plus, API routes, great type generation, and a Hono
-            production server included.
+            Vite is the best bundler for web. One ported Expo Router to Vite, then added a
+            lot of stuff needed for high performance web: loaders, render modes, smart
+            preloading and prefetching, and bundle size improvements. And a whole bunch
+            more than that.
           </ContentParagraph>
 
           <ContentParagraph>
-            With the new <Strong>Metro-mode</Strong>, you get Vite's simplicity for web
-            while optionally running Metro for native. One is now stable for production
-            use, and{' '}
+            The new <Strong>Metro-mode</Strong> gives you Vite's simplicity for web, and
+            Metro's maturity on native. One is stable for production use, and{' '}
             <Link href="https://onestack.dev/blog/version-one-rc1" hideExternalIcon>
-              <InlineLink fontWeight="600">we just released v1 RC1</InlineLink>
+              <InlineLink fontWeight="600">read our v1 RC1 releae post here</InlineLink>
             </Link>
             .
           </ContentParagraph>
@@ -288,10 +286,18 @@ export function ContentSection() {
           </XStack>
 
           <ContentParagraph>
-            Tamagui has the best balance of performance on web <Em>and</Em> native, the
-            largest featureset of any universal style library, and is amazing with LLMs.
-            It's typed and mergable inline styles, robust UI kit, theme system, and
-            ecosystem make us incredible productive.
+            Tamagui just gives you{' '}
+            <Strong color="$color11">
+              so much good stuff in a vertically integrated package
+            </Strong>
+            , it's hard to beat. With version two, a lot of hard work is finally paying
+            off.
+          </ContentParagraph>
+
+          <ContentParagraph>
+            Native feels amazing, and web catches up with all the latest styling features.
+            It's also <Strong color="$color11">great for LLMs</Strong>, and generates
+            customized skills.
           </ContentParagraph>
 
           <ContentParagraph>
@@ -302,8 +308,7 @@ export function ContentSection() {
             >
               <InlineLink fontWeight="600">Version 2 RC1 is out now</InlineLink>
             </Link>{' '}
-            with stability improvements, more tests, docs, and release guardrails, plus a
-            few new components and features.
+            with too much to list.
           </ContentParagraph>
         </TechCard>
 
@@ -318,9 +323,11 @@ export function ContentSection() {
           </XStack>
 
           <ContentParagraph>
-            Zero is the biggest step-change in frontend since React itself. It solves the
-            worst area of frontend development today: data. Getting it to the client,
-            keeping it in sync, and mutating it instantly. It's{' '}
+            <Strong color="$color12">
+              Zero solves the worst area of frontend development today
+            </Strong>
+            : getting data to the client, keeping it in sync, and mutating it instantly.
+            It's{' '}
             <Strong>
               like Firebase, but open source, on Postgres, with relations, types, and
               optimistic mutations built in
@@ -329,35 +336,35 @@ export function ContentSection() {
           </ContentParagraph>
 
           <ContentParagraph>
-            Our{' '}
-            <Link
-              href="https://github.com/tamagui/takeout2/blob/main/packages/over-zero/readme.md"
+            Our <CodeInline>over-zero</CodeInline>
+            {/* <Link
+              href="https://github.com/tamagui/takeout-free/blob/main/packages/over-zero/readme.md"
               target="_blank"
               hideExternalIcon
             >
               <InlineLink fontWeight="600">over-zero</InlineLink>
-            </Link>{' '}
-            library makes it even easier to use, and can generate some of the boilerplatey
-            parts for you, if you like.
+            </Link>{' '} */}{' '}
+            library (repo coming) makes it feel like Rails, and auto generating
+            boilerplate, gluing things together, giving you simple CRUD and permissions,
+            and more.
           </ContentParagraph>
         </TechCard>
 
         <TechCard>
-          <TechTitle>And a lot of glue</TechTitle>
+          <TechTitle>And a bunch of things we use</TechTitle>
           <ContentParagraph>
-            Years of helpers, libraries, scripts, hooks, etc. Bun for install and
-            scripting. <Strong>Better Auth</Strong> for auth. Some top-tier{' '}
-            <Strong>native dependencies</Strong> for UI and functionality. And the choice
-            to deploy with either <Strong>Uncloud</Strong> or <Strong>SST</Strong>{' '}
-            infra-as-code out of the box.
+            This isn't just some thrown together starter, it's extracted from the stack
+            we've always wanted, and we use it ourselves to start new projects.{' '}
+            <Strong color="$color12">There's 50+ interface folders alone</Strong>. Plus
+            the best libraries we can find, like{' '}
+            <Strong color="$color12">Better Auth</Strong> for auth, or{' '}
+            <Strong>Uncloud</Strong> and <Strong>SST</Strong> options for production.
           </ContentParagraph>
         </TechCard>
       </YStack>
 
       {/* fin section */}
       <SectionDivider>
-        <DividerLine />
-        <SectionHeading>Fin</SectionHeading>
         <DividerLine />
       </SectionDivider>
 

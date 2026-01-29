@@ -10,9 +10,10 @@ export const Logo = ({ height = 24 }: { height?: number }) => {
       <SizableText
         select="none"
         fontFamily="$mono"
-        fontSize={Math.round(height * 0.75)}
+        fontSize={Math.round(height * 0.65)}
         lineHeight={Math.round(height * 0.65)}
         fontWeight="600"
+        letterSpacing={0.5}
         $maxMD={{ display: 'none' }}
       >
         Takeout

@@ -24,6 +24,8 @@ post  v1:
 
 # backlog
 
+- responsive first skill / refactor
+
 - "Customize web server port"
   - i can't find a way to make the native app default to a different port
     shockingly so this is sort of bad, i'd love to keep it though else we should

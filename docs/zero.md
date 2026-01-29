@@ -376,9 +376,58 @@ bun tko zero generate
 
 `bun dev` watches and regenerates automatically.
 
-## resources
+## Production Tuning
 
-- zero docs: https://zero.rocicorp.dev
+Scale Zero sync workers and connection pools for traffic surges.
+
+### Environment Variables
+
+Add to `.env.production`:
+
+```bash
+# Zero performance tuning
+ZERO_NUM_SYNC_WORKERS=6        # Up to 1 per CPU core
+ZERO_CVR_MAX_CONNS=12          # CVR db connections
+ZERO_UPSTREAM_MAX_CONNS=24     # Main db connections
+
+# Rate limiting (mutations per user per window)
+ZERO_PER_USER_MUTATION_LIMIT_MAX=50
+ZERO_PER_USER_MUTATION_LIMIT_WINDOW_MS=60000
+```
+
+### Database Connection Limits
+
+Total Zero connections = `UPSTREAM_MAX_CONNS + CVR_MAX_CONNS + ~10 buffer`
+
+- Supabase Free: 60 max → keep total under 40
+- Supabase Pro: 100 max → can go to 60
+- Dedicated Postgres: check `max_connections` setting
+
+### Deploying Changes
+
+After updating `.env.production`, sync and deploy without rebuilding:
+
+```bash
+# Sync new env vars to GitHub secrets
+bun scripts/env/sync-to-github.ts
+
+# Deploy config-only changes (no build)
+bun tko uncloud deploy-prod --skip-build --skip-docker
+```
+
+### Monitoring
+
+Check Zero resource usage:
+
+```bash
+ssh root@YOUR_SERVER_IP "docker stats --no-stream"
+```
+
+Zero memory usage should increase with more workers (~50-100MB per worker).
+
+## Resources
+
+- Zero docs: https://zero.rocicorp.dev
 - over-zero: packages/over-zero/readme.md
-- models: src/data/models/
-- queries: src/data/queries/
+- Models: src/data/models/
+- Queries: src/data/queries/

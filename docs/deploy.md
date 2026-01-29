@@ -35,9 +35,16 @@ complete overview of the e2e deployment system built for takeout.
 
 - `bun scripts/env/sync-to-github.ts` - interactive sync tool
 - reads only `.env.production` (not .env or .env.local)
-- shows preview before syncing
+- compares against existing GitHub secrets
+- shows new vs already-synced variables
+- interactive multi-select picker (new vars pre-selected)
 - masks sensitive values
-- `--dry-run` and `--yes` flags
+
+flags:
+- `--dry-run` - preview what would sync
+- `--new` - only sync new variables (skip interactive)
+- `--all` - sync all without prompts
+- `-y` / `--yes` - sync all without prompts
 
 ### 2. deployment platform abstraction
 

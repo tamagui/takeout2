@@ -26,7 +26,7 @@ export const MainHeader = () => {
   return (
     <ScrollHeader>
       <PageContainer>
-        <YStack width="100%" py="$2.5">
+        <YStack width="100%" py="$2">
           <XStack position="relative" width="100%" px="$2" items="center">
             <XStack gap="$2" items="center">
               <Link href="/" aria-label="Home">

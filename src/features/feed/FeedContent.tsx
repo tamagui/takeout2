@@ -62,6 +62,7 @@ export const FeedContent = memo(() => {
           opacity: 0,
         }}
         position="relative"
+        flex={1}
         flexBasis="auto"
         bg="$background"
         width="100vw"

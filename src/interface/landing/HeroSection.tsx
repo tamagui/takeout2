@@ -82,6 +82,10 @@ const TerminalContainer = styled(YStack, {
   shadowRadius: 40,
   shadowOffset: { width: 0, height: 20 },
   shadowOpacity: 0.4,
+  display: 'none',
+  $md: {
+    display: 'flex',
+  },
 })
 
 const TerminalHeader = styled(XStack, {
@@ -365,8 +369,8 @@ function PhoneMockup() {
       self="center"
       aspectRatio="588 / 1176"
       y={-50}
-      $maxXL={{
-        x: 100,
+      $lg={{
+        x: 0,
       }}
     >
       <svg width="0" height="0" style={{ position: 'absolute' }}>
@@ -554,9 +558,7 @@ export function HeroSection() {
           maxW={480}
           x={0}
           items="center"
-          $sm={{
-            mt: '$15',
-          }}
+          mt="$15"
           position="relative"
           transition="bouncy"
         >

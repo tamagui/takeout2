@@ -226,7 +226,7 @@
     "VITE_PUBLIC_ZERO_SERVER": "",
     "WEB_DOMAIN": "",
     "ZERO_DOMAIN": "",
-    "ZERO_VERSION": ""
+    "ZERO_VERSION": "0.25.9"
   },
   "publishConfig": {
     "access": "public"

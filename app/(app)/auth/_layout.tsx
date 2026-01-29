@@ -30,7 +30,7 @@ export function AuthAndOnboardingLayout() {
         rounded="$10"
         overflow="hidden"
         position="relative"
-        boxShadow="0 4px 24px $shadow4"
+        boxShadow="0 12px 24px $shadow2"
         mt="$6"
         $md={{ maxW: 860, minH: 550, mt: 0 }}
         $theme-dark={{

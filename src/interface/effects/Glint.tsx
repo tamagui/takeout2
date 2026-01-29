@@ -30,7 +30,7 @@ const Glint = styled(YStack, {
         '$theme-dark': {
           shadowRadius: 2,
           shadowOffset: { height: 2, width: 0 },
-          shadowColor: '$shadow6',
+          shadowColor: '$shadow4',
         },
 
         '$theme-light': {

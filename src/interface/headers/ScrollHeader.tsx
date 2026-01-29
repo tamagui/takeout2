@@ -45,7 +45,7 @@ export const ScrollHeader = ({ children }: { children: ReactNode }) => {
             shadowColor: 'transparent',
             ...(isScrolled && {
               y: 6,
-              shadowColor: '$shadow4',
+              shadowColor: '$shadow3',
               shadowRadius: 8,
               shadowOffset: { height: 2, width: 0 },
             }),

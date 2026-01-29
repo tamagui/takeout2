@@ -1,7 +1,6 @@
-import { styled, Text, Theme, YStack } from 'tamagui'
+import { styled, Text, Theme, YStack, type YStackProps } from 'tamagui'
 
 const BadgeContainer = styled(YStack, {
-  position: 'relative',
   rotate: '8deg',
   px: '$1.5',
   py: 2,
@@ -9,14 +8,11 @@ const BadgeContainer = styled(YStack, {
   rounded: '$2',
   borderWidth: 0.5,
   borderColor: '$color6',
-  ml: '$2',
-  mr: -42,
-  mt: -2,
-  opacity: 0.85,
 })
 
 const BadgeText = styled(Text, {
   fontSize: 13,
+  lineHeight: 22,
   fontWeight: '800',
   letterSpacing: -0.25,
   color: '$color11',
@@ -24,12 +20,10 @@ const BadgeText = styled(Text, {
   fontFamily: '$mono',
 })
 
-export const BetaBadge = () => {
+export const BetaBadge = (props: YStackProps) => {
   return (
-    <Theme name="pink">
-      <BadgeContainer>
-        <BadgeText>beta</BadgeText>
-      </BadgeContainer>
-    </Theme>
+    <BadgeContainer theme="pink" {...props}>
+      <BadgeText>beta</BadgeText>
+    </BadgeContainer>
   )
 }

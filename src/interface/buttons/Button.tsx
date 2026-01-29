@@ -589,7 +589,7 @@ const ButtonBackground = styled(View, {
       floating: {
         opacity: 1,
         bg: '$color4',
-        shadowColor: '$shadow2',
+        shadowColor: '$shadow1',
         shadowRadius: 5,
         shadowOffset: { height: 2, width: 0 },
 

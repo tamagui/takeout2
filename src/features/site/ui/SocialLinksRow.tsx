@@ -53,12 +53,11 @@ const SubTitle = styled(SizableText, {
   self: 'center',
 })
 
-const HoverableLinkStyled = styled(SizableText, {
+const HoverableLinkFrame = styled(SizableText, {
   render: 'a',
   cursor: 'pointer',
   p: '$2',
-  px: '$3',
-  opacity: 0.66,
+  opacity: 0.85,
   textDecorationColor: 'transparent',
   items: 'center',
   justify: 'center',
@@ -72,5 +71,5 @@ const HoverableLinkStyled = styled(SizableText, {
 const HoverableLink = (props: SizableTextProps & LinkProps) => {
   const linkProps = useLinkTo({ href: props.href as any, replace: props.replace })
 
-  return <HoverableLinkStyled {...linkProps} {...props} />
+  return <HoverableLinkFrame {...linkProps} {...props} />
 }

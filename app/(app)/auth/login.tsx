@@ -1,6 +1,6 @@
+import { Spacer } from 'tamagui'
 import { Circle, XStack, YStack } from 'tamagui'
 
-import { APP_NAME } from '~/constants/app'
 import { LoginAdminButton } from '~/features/auth/ui/LoginAdminButton'
 import { LoginDemoButton } from '~/features/auth/ui/LoginDemoButton'
 import { LoginEmailButton } from '~/features/auth/ui/LoginEmailButton'
@@ -13,9 +13,16 @@ export const LoginPage = () => {
   return (
     <XStack flex={1} flexBasis="auto" position="relative">
       <YStack flex={1} justify="center" items="center">
-        <Circle size={72} transition="medium" enterStyle={{ scale: 0.95, opacity: 0 }}>
+        <Circle
+          size={72}
+          background="$color1"
+          transition="medium"
+          enterStyle={{ scale: 0.95, opacity: 0 }}
+        >
           <LogoIcon size={38} />
         </Circle>
+
+        <Spacer flex={1} />
 
         <YStack
           gap="$4"
@@ -23,10 +30,12 @@ export const LoginPage = () => {
           items="center"
           bg="$background"
           rounded="$8"
-          p="$4"
+          p="$2"
           $md={{ p: '$6' }}
         >
-          <H2 text="center">Login to {APP_NAME}</H2>
+          <H2 size="$7" text="center">
+            Login
+          </H2>
 
           <YStack
             key="welcome-content"

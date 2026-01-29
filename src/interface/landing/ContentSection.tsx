@@ -100,8 +100,13 @@ const ContentTitle = styled(H1, {
 
 const GradientText = styled(Text, {
   fontWeight: '800',
-  color: '$color10',
   render: 'span',
+  backgroundImage: 'linear-gradient(90deg, $red10 0%, $orange11 100%)',
+  color: 'transparent',
+  '$platform-web': {
+    backgroundClip: 'text',
+    WebkitBackgroundClip: 'text',
+  },
 })
 
 export function ContentSection() {

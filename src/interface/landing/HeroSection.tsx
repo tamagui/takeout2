@@ -1,11 +1,12 @@
 import { memo, useEffect, useRef, useState } from 'react'
-import { H1, Paragraph, Text, XStack, YStack, styled } from 'tamagui'
+import { Em, H1, Paragraph, Text, XStack, YStack, styled } from 'tamagui'
 
 import { Link } from '~/interface/app/Link'
 import { ArrowRightIcon } from '~/interface/icons/phosphor/ArrowRightIcon'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { CopyIcon } from '~/interface/icons/phosphor/CopyIcon'
 
+import { BetaBadge } from '../app/BetaBadge'
 import { Button } from '../buttons/Button'
 import { Span, Strong } from '../text/Text'
 
@@ -22,7 +23,7 @@ const HeroTitle = styled(H1, {
 })
 
 const HeroSubtitle = styled(Paragraph, {
-  color: '$color10',
+  color: '$color9',
   size: '$6',
   $xl: {
     size: '$7',
@@ -34,7 +35,7 @@ const HeroSubtitle = styled(Paragraph, {
 
 const HighlightText = styled(Text, {
   render: 'span',
-  backgroundImage: 'linear-gradient(20deg, $yellow9 0%, $red9 100%)',
+  backgroundImage: 'linear-gradient(90deg, $red10 0%, $orange11 100%)',
   color: 'transparent',
   '$platform-web': {
     backgroundClip: 'text',
@@ -60,7 +61,7 @@ const CommandBox = styled(XStack, {
   },
 
   hoverStyle: {
-    bg: '$color4',
+    bg: '$backgroundHover',
     borderColor: '$color6',
   },
 
@@ -76,7 +77,7 @@ const TerminalContainer = styled(YStack, {
   borderWidth: 1,
   borderColor: 'rgba(255,255,255,0.1)',
   width: '100%',
-  maxW: 560,
+  maxW: 500,
   shadowColor: '#000',
   shadowRadius: 40,
   shadowOffset: { width: 0, height: 20 },
@@ -265,13 +266,13 @@ function HeroTerminal() {
                   if (cancelled) return
                   setHistory([])
                   setCurrentStep(0)
-                }, 2000)
+                }, 2800)
               }
-            }, 800)
+            }, 1500)
           }
-        }, 120)
+        }, 250)
       }
-    }, 50)
+    }, 120)
 
     return () => {
       cancelled = true
@@ -283,7 +284,7 @@ function HeroTerminal() {
   }, [currentStep])
 
   return (
-    <TerminalContainer>
+    <TerminalContainer position="absolute" z={-1} x={-60} y={200} scale={0.8}>
       <TerminalHeader>
         <TerminalDots />
         <Paragraph
@@ -353,6 +354,78 @@ function HeroTerminal() {
 }
 
 const INSTALL_COMMAND = 'bun create takeout'
+
+function PhoneMockup() {
+  return (
+    <YStack
+      maxW="100%"
+      maxH="100%"
+      items="center"
+      justify="center"
+      self="center"
+      aspectRatio="588 / 1176"
+      y={-50}
+      $maxXL={{
+        x: 100,
+      }}
+    >
+      <svg width="0" height="0" style={{ position: 'absolute' }}>
+        <defs>
+          <clipPath id="iphone-screen-clip-1" clipPathUnits="objectBoundingBox">
+            <rect x="0" y="0" width="1" height="1" rx="0.19" ry="0.081" />
+          </clipPath>
+          <clipPath
+            id="iphone-screen-clip"
+            clipPathUnits="objectBoundingBox"
+            clipPath="url(#iphone-screen-clip-1)"
+          >
+            <rect x="0" y="0" width="1" height="1" rx="0.17" ry="0.088" />
+          </clipPath>
+        </defs>
+      </svg>
+      <YStack filter="drop-shadow(0 35px 50px rgba(0,0,0,0.6))">
+        <YStack
+          overflow="hidden"
+          position="relative"
+          style={{
+            width: 286,
+            height: 593,
+            clipPath: 'url(#iphone-screen-clip)',
+            WebkitClipPath: 'url(#iphone-screen-clip)',
+          }}
+        >
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            poster="/iphone-frame.webp"
+            ref={(el) => {
+              if (el) el.playbackRate = 1.3
+            }}
+            style={{
+              position: 'absolute',
+              top: -3,
+              left: -6,
+              width: 294 + 4,
+              height: 588 + 12,
+              objectFit: 'cover',
+            }}
+          >
+            <source
+              src="https://pub-836fc09a8b0e484f900cd6aa05105026.r2.dev/videos/appdemo2_h265.mp4"
+              type="video/mp4; codecs=hvc1"
+            />
+            <source
+              src="https://pub-836fc09a8b0e484f900cd6aa05105026.r2.dev/videos/appdemo2_h264.mp4"
+              type="video/mp4"
+            />
+          </video>
+        </YStack>
+      </YStack>
+    </YStack>
+  )
+}
 
 function CopyCommand() {
   const [copied, setCopied] = useState(false)
@@ -429,26 +502,26 @@ export function HeroSection() {
           <YStack gap="$1">
             <HeroTitle>
               The <Span $maxXL={{ display: 'none' }}>startup</Span> starter that{' '}
-              <em>actually</em> gives you an{' '}
-              <HighlightText fontWeight="300">edge.</HighlightText>
+              <HighlightText fontStyle="italic">actually</HighlightText> delivers.
             </HeroTitle>
           </YStack>
 
           <HeroSubtitle>
-            <Strong fontWeight="600" color="$color12">
-              Most starter kits suck
+            <Strong color="$color12">
+              Most starter kits <HighlightText fontWeight="700">suck</HighlightText>
             </Strong>
-            . Takeout sucks less: novel&nbsp;tech 🤝 real-world experience, actual CI/CD
-            with IaC, lots of "agent" stuff, and{' '}
+            . <Span color="$color11">Takeout sucks less:</Span> novel&nbsp;tech&nbsp;🤝
+            real-world experience, real CI/CD, IaC, lots of "agent" stuff, and{' '}
             <Link href="/docs/changelog">constant updates</Link> — it's&nbsp;what we use
             for ourselves, and our <Link href="https://addeven.com">clients</Link>.
           </HeroSubtitle>
+
           <HeroSubtitle>
             It's the{' '}
             <Strong fontWeight="600" color="$color11">
-              fast way to build a startup
+              fastest way to build something&nbsp;great
             </Strong>{' '}
-            on both React Native and web.
+            on both React Native and web. <BetaBadge x={9} display="inline-flex" />
           </HeroSubtitle>
 
           <XStack maxW="100%" gap="$3" mt="$2" items="center">
@@ -474,75 +547,21 @@ export function HeroSection() {
           </Paragraph>
         </YStack>
 
-        {/* right side - terminal */}
+        {/* right side */}
         <YStack
           flex={1}
           minW={300}
           maxW={480}
           x={0}
           items="center"
-          // $md={{ x: 50 }}
-          $lg={{ items: 'flex-end', x: 0 }}
           $sm={{
             mt: '$15',
           }}
           position="relative"
           transition="bouncy"
         >
-          <YStack
-            maxW="100%"
-            maxH="100%"
-            items="center"
-            justify="center"
-            self="center"
-            aspectRatio="588 / 1176"
-          >
-            <svg width="0" height="0" style={{ position: 'absolute' }}>
-              <defs>
-                <clipPath id="iphone-screen-clip" clipPathUnits="objectBoundingBox">
-                  <path d="M0.27,0 L0.73,0 C0.875,0 0.937,0.0095 0.9685,0.0425 C1,0.075 1,0.125 1,0.1675 L1,0.8325 C1,0.875 1,0.925 0.9685,0.9575 C0.937,0.9905 0.875,1 0.73,1 L0.27,1 C0.125,1 0.063,0.9905 0.0315,0.9575 C0,0.925 0,0.875 0,0.8325 L0,0.1675 C0,0.125 0,0.075 0.0315,0.0425 C0.063,0.0095 0.125,0 0.27,0 Z" />
-                </clipPath>
-              </defs>
-            </svg>
-            <YStack filter="drop-shadow(0 25px 50px rgba(0,0,0,0.8))">
-              <YStack
-                overflow="hidden"
-                position="relative"
-                style={{
-                  width: 290,
-                  height: 594,
-                  clipPath: 'url(#iphone-screen-clip)',
-                  WebkitClipPath: 'url(#iphone-screen-clip)',
-                }}
-              >
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  style={{
-                    position: 'absolute',
-                    top: -1,
-                    left: -3.5,
-                    width: 294 + 4,
-                    height: 588 + 12,
-                    objectFit: 'cover',
-                  }}
-                >
-                  <source
-                    src="https://pub-836fc09a8b0e484f900cd6aa05105026.r2.dev/videos/appdemo2_h265.mp4"
-                    type="video/mp4; codecs=hvc1"
-                  />
-                  <source
-                    src="https://pub-836fc09a8b0e484f900cd6aa05105026.r2.dev/videos/appdemo2_h264.mp4"
-                    type="video/mp4"
-                  />
-                </video>
-              </YStack>
-            </YStack>
-          </YStack>
-
-          {/* <HeroTerminal /> */}
+          <PhoneMockup />
+          <HeroTerminal />
         </YStack>
       </XStack>
     </YStack>

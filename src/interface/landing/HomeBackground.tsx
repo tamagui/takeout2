@@ -26,8 +26,10 @@ export function HomeBackground() {
         className="grain-overlay"
         position="absolute"
         inset={0}
-        opacity={0.2}
-        filter="invert(1)"
+        opacity={0.3}
+        $theme-dark={{
+          filter: 'invert(1)',
+        }}
         z={0}
         pointerEvents="none"
       />

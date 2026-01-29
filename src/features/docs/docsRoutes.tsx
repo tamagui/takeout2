@@ -47,7 +47,7 @@ export const docsRoutes: DocsSection[] = [
 
   {
     title: 'Use Cases',
-    pages: [{ title: 'Static Websites', route: '/docs/static-websites', pro: true }],
+    pages: [{ title: 'Static Starter', route: '/docs/static-starter', pro: true }],
   },
 
   {

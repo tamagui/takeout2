@@ -1,15 +1,5 @@
 import { memo, useEffect, useRef, useState } from 'react'
-import {
-  Em,
-  EnsureFlexed,
-  H1,
-  Paragraph,
-  Text,
-  View,
-  XStack,
-  YStack,
-  styled,
-} from 'tamagui'
+import { H1, Paragraph, Text, View, XStack, YStack, styled } from 'tamagui'
 
 import { Link } from '~/interface/app/Link'
 import { ArrowRightIcon } from '~/interface/icons/phosphor/ArrowRightIcon'
@@ -385,7 +375,6 @@ function PhoneMockup() {
         y: 20,
       }}
     >
-      <style dangerouslySetInnerHTML={{ __html: liquidFillStyles }} />
       <svg width="0" height="0" style={{ position: 'absolute' }}>
         <defs>
           <clipPath id="iphone-screen-clip-1" clipPathUnits="objectBoundingBox">
@@ -411,7 +400,7 @@ function PhoneMockup() {
             WebkitClipPath: 'url(#iphone-screen-clip)',
           }}
         >
-<video
+          <video
             autoPlay
             loop
             muted

@@ -123,7 +123,7 @@ try {
       fn: async () => {
         try {
           if (devMode) {
-            void run(`bun run ci frontend-dev`, {
+            void run(`bun run ci start-frontend-dev`, {
               detached: true,
             })
             await sleep(4000)
@@ -281,9 +281,12 @@ async function runIntegrationTests() {
   try {
     await waitForRun('playwright install')
 
-    void run(`bun run ci start-frontend`, {
-      detached: true,
-    })
+    // in dev mode, frontend is already running from the build task
+    if (!devMode) {
+      void run(`bun run ci start-frontend`, {
+        detached: true,
+      })
+    }
 
     await waitForPort(8081)
 

@@ -14,7 +14,6 @@ import { ListItemBackground } from './ListItemBackground'
 import { ListItemFrame } from './ListItemFrame'
 import { ListItemIcon } from './ListItemIcon'
 import { ListItemInput } from './ListItemInput'
-import { ListItemMenu } from './ListItemMenu'
 import { ListItemText, ProvideTriggerListItemEditing } from './ListItemText'
 
 import type { ContextMenuItem } from '../menu/types'
@@ -54,28 +53,6 @@ const ListItemComponent = ({
       <ProvideTriggerListItemEditing value={startEdit}>
         {children}
       </ProvideTriggerListItemEditing>
-
-      {contextMenu && (
-        <ListItemAfter>
-          {aboveMenuIcon && (
-            <YStack
-              position="absolute"
-              t={0}
-              b={0}
-              items="center"
-              justify="center"
-              r={11}
-              $group-item-hover={{
-                opacity: 0,
-              }}
-            >
-              {aboveMenuIcon}
-            </YStack>
-          )}
-          <ListItemMenu items={contextMenu} />
-        </ListItemAfter>
-      )}
-
       <ListItemBackground />
     </ListItemFrame>
   )

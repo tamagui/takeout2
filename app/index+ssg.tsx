@@ -4,7 +4,7 @@ import { HeadInfo } from '~/interface/app/HeadInfo'
 import { ContentSection } from '~/interface/landing/ContentSection'
 import { HeroSection } from '~/interface/landing/HeroSection'
 
-const ogImageUrl = `${process.env.ONE_SERVER_URL}/takeout.png`
+const ogImageUrl = `${process.env.ONE_SERVER_URL}/take-og.png`
 
 export function IndexPage() {
   return (

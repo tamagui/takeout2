@@ -3,9 +3,8 @@ import { YStack } from 'tamagui'
 import { HeadInfo } from '~/interface/app/HeadInfo'
 import { ContentSection } from '~/interface/landing/ContentSection'
 import { HeroSection } from '~/interface/landing/HeroSection'
-import { HomeBackground } from '~/interface/landing/HomeBackground'
 
-const ogImageUrl = `${process.env.ONE_SERVER_URL}/og.jpg`
+const ogImageUrl = `${process.env.ONE_SERVER_URL}/takeout.png`
 
 export function IndexPage() {
   return (
@@ -14,6 +13,7 @@ export function IndexPage() {
         title="Takeout"
         description="The production-ready starter for building real-time, cross-platform apps with React and React Native."
         openGraph={{
+          url: process.env.ONE_SERVER_URL,
           images: [{ url: ogImageUrl, width: 1200, height: 630 }],
         }}
       />

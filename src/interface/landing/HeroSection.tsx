@@ -385,6 +385,7 @@ function PhoneMockup() {
         y: 20,
       }}
     >
+      <style dangerouslySetInnerHTML={{ __html: liquidFillStyles }} />
       <svg width="0" height="0" style={{ position: 'absolute' }}>
         <defs>
           <clipPath id="iphone-screen-clip-1" clipPathUnits="objectBoundingBox">
@@ -410,7 +411,7 @@ function PhoneMockup() {
             WebkitClipPath: 'url(#iphone-screen-clip)',
           }}
         >
-          <video
+<video
             autoPlay
             loop
             muted
@@ -516,6 +517,9 @@ export function HeroSection() {
             maxW: '80%',
             self: 'center',
           }}
+          $lg={{
+            scale: 1,
+          }}
         >
           <YStack gap="$1">
             <HeroTitle>
@@ -573,16 +577,17 @@ export function HeroSection() {
           maxW={480}
           x={0}
           items="center"
-          transition="bouncy"
+          transition="medium"
           position="relative"
           height={600}
           $sm={{
             scale: 0.9,
-            x: 0,
+            x: 20,
             y: 20,
           }}
-          $xl={{
-            y: 40,
+          $lg={{
+            scale: 1,
+            y: 20,
             x: -50,
           }}
         >

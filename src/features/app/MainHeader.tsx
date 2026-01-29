@@ -30,7 +30,7 @@ export const MainHeader = () => {
           <XStack position="relative" width="100%" px="$2" items="center">
             <XStack gap="$2" items="center">
               <Link href="/" aria-label="Home">
-                <Logo height={20} />
+                <Logo />
               </Link>
             </XStack>
 
@@ -123,7 +123,7 @@ export const MainHeaderMenu = memo(() => {
           <YStack flex={1} gap="$2">
             <XStack p="$4" pb="$3" justify="space-between" items="center">
               <XStack gap="$3" items="center">
-                <Logo height={32} />
+                <Logo />
               </XStack>
               <ThemeSwitch />
             </XStack>

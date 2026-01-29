@@ -41,7 +41,7 @@ export const SiteHeader = memo(() => {
               }}
             >
               <Link href="/" aria-label="Home">
-                <Logo height={20} />
+                <Logo />
               </Link>
             </XStack>
 
@@ -99,7 +99,7 @@ const SiteHeaderMenu = memo(() => {
         <Sheet.Frame bg="$color2" boxShadow="0 0 10px $shadow3">
           <YStack flex={1} flexBasis="auto" gap="$2">
             <XStack p="$4" pb="$3" justify="space-between" items="center">
-              <Logo height={32} />
+              <Logo />
               <XStack gap="$2" items="center">
                 <PromoLinksRow />
                 <ThemeSwitch />

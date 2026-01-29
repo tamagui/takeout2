@@ -8,17 +8,19 @@ export type PageLayoutProps = {
   children: ReactNode
   useImage?: boolean
   bottomOffset?: number
+  useInsets?: boolean
 }
 
 export const PageLayout = ({
   children,
   useImage = false,
   bottomOffset,
+  useInsets = false,
 }: PageLayoutProps) => {
   if (!isWeb) {
     return (
       <GradientBackground
-        useInsets={false}
+        useInsets={useInsets}
         useImage={useImage}
         bottomOffset={bottomOffset}
       >

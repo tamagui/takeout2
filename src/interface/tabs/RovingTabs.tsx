@@ -187,6 +187,7 @@ function RovingTabsIndicator({
   return (
     <View
       position="absolute"
+      bg={active ? '$color10' : '$color6'}
       opacity={active ? 1 : 0.5}
       rounded={isUnderline ? '$2' : '$4'}
       transition={animationClamped('quickerLessBouncy')}

@@ -76,7 +76,9 @@ export function authAPIHandler(method: 'GET' | 'POST') {
 ║  Fix: run \`bun tko db clear-jwks\` then restart the dev server            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
 `)
-        return new Response('JWKS secret mismatch - run: bun tko db clear-jwks', { status: 500 })
+        return new Response('JWKS secret mismatch - run: bun tko db clear-jwks', {
+          status: 500,
+        })
       }
 
       console.error(`[auth] Error in ${method} ${req.url}:`, err)

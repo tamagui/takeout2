@@ -5,6 +5,7 @@
  */
 
 import { readFileSync, writeFileSync } from 'node:fs'
+
 import { $ } from 'bun'
 
 // "tko" wont work until this runs so referencing it directly:
@@ -18,7 +19,9 @@ const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'))
 const zeroVersion = packageJson.dependencies?.['@rocicorp/zero']
 
 if (zeroVersion && packageJson.env?.ZERO_VERSION !== zeroVersion) {
-  console.info(`Syncing ZERO_VERSION: ${packageJson.env?.ZERO_VERSION || '(empty)'} → ${zeroVersion}`)
+  console.info(
+    `Syncing ZERO_VERSION: ${packageJson.env?.ZERO_VERSION || '(empty)'} → ${zeroVersion}`
+  )
   packageJson.env.ZERO_VERSION = zeroVersion
   writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n', 'utf-8')
   // run env:update to propagate to ci.yml, env-server.ts, etc

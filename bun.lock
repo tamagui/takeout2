@@ -21,7 +21,7 @@
         "@react-native-menu/menu": "^2.0.0",
         "@react-navigation/bottom-tabs": "^7.10.1",
         "@resvg/resvg-js": "^2.6.2",
-        "@rocicorp/zero": "0.25.9",
+        "@rocicorp/zero": "0.25.11",
         "@take-out/better-auth-utils": "workspace:*",
         "@take-out/helpers": "workspace:*",
         "@take-out/native-hot-update": "workspace:*",
@@ -126,7 +126,7 @@
     },
     "packages/better-auth-utils": {
       "name": "@take-out/better-auth-utils",
-      "version": "0.0.52",
+      "version": "0.0.53",
       "dependencies": {
         "@take-out/helpers": "workspace:*",
         "better-auth": "^1.3.28",
@@ -145,7 +145,7 @@
     },
     "packages/cli": {
       "name": "@take-out/cli",
-      "version": "0.0.52",
+      "version": "0.0.53",
       "bin": {
         "takeout": "./cli.mjs",
         "tko": "./cli.mjs",
@@ -173,7 +173,7 @@
     },
     "packages/create-takeout": {
       "name": "create-takeout",
-      "version": "0.0.52",
+      "version": "0.0.53",
       "bin": "./run.js",
       "dependencies": {
         "citty": "^0.1.6",
@@ -188,11 +188,11 @@
     },
     "packages/docs": {
       "name": "@take-out/docs",
-      "version": "0.0.52",
+      "version": "0.0.53",
     },
     "packages/helpers": {
       "name": "@take-out/helpers",
-      "version": "0.0.52",
+      "version": "0.0.53",
       "dependencies": {
         "@tamagui/constants": "2.0.0-1769665879528",
         "dequal": "^2.0.3",
@@ -207,7 +207,7 @@
         "react-native": "*",
       },
       "peerDependencies": {
-        "@rocicorp/zero": "^0.25.9",
+        "@rocicorp/zero": "^0.25.11",
         "expo-clipboard": "*",
         "react": "*",
         "react-native": "*",
@@ -215,7 +215,7 @@
     },
     "packages/hooks": {
       "name": "@take-out/hooks",
-      "version": "0.0.52",
+      "version": "0.0.53",
       "dependencies": {
         "@take-out/helpers": "workspace:*",
         "react": "*",
@@ -232,14 +232,14 @@
     },
     "packages/native": {
       "name": "@take-out/native",
-      "version": "0.0.1",
+      "version": "0.0.53",
       "peerDependencies": {
         "expo-crypto": "*",
       },
     },
     "packages/native-hot-update": {
       "name": "@take-out/native-hot-update",
-      "version": "0.0.52",
+      "version": "0.0.53",
       "dependencies": {
         "@hot-updater/react-native": "0.25.6",
       },
@@ -259,14 +259,14 @@
     },
     "packages/over-zero": {
       "name": "over-zero",
-      "version": "0.0.52",
+      "version": "0.0.53",
       "bin": {
         "over-zero": "./cli.cjs",
       },
       "dependencies": {
         "@sinclair/typebox": "^0.34.41",
         "@sinclair/typebox-codegen": "^0.11.1",
-        "@take-out/helpers": "0.0.52",
+        "@take-out/helpers": "0.0.53",
         "chokidar": "^4.0.3",
         "citty": "^0.1.6",
         "pg": "^8.13.1",
@@ -280,14 +280,14 @@
         "react-native": "*",
       },
       "peerDependencies": {
-        "@rocicorp/zero": "^0.25.9",
+        "@rocicorp/zero": "^0.25.11",
         "react": "*",
         "react-native": "*",
       },
     },
     "packages/postgres": {
       "name": "@take-out/postgres",
-      "version": "0.0.52",
+      "version": "0.0.53",
       "bin": {
         "postgres": "./cli.cjs",
       },
@@ -311,7 +311,7 @@
     },
     "packages/scripts": {
       "name": "@take-out/scripts",
-      "version": "0.0.52",
+      "version": "0.0.53",
       "dependencies": {
         "@take-out/helpers": "workspace:*",
       },
@@ -1523,7 +1523,7 @@
 
     "@rocicorp/resolver": ["@rocicorp/resolver@1.0.2", "", {}, "sha512-TfjMTQp9cNNqNtHFfa+XHEGdA7NnmDRu+ZJH4YF3dso0Xk/b9DMhg/sl+b6CR4ThFZArXXDsG1j8Mwl34wcOZQ=="],
 
-    "@rocicorp/zero": ["@rocicorp/zero@0.25.9", "", { "dependencies": { "@badrap/valita": "0.3.11", "@databases/escape-identifier": "^1.0.3", "@databases/sql": "^3.3.0", "@dotenvx/dotenvx": "^1.39.0", "@drdgvhbh/postgres-error-codes": "^0.0.6", "@fastify/cors": "^10.0.0", "@fastify/websocket": "^11.0.0", "@google-cloud/precise-date": "^4.0.0", "@opentelemetry/api": "^1.9.0", "@opentelemetry/api-logs": "^0.203.0", "@opentelemetry/auto-instrumentations-node": "^0.62.0", "@opentelemetry/exporter-metrics-otlp-http": "^0.203.0", "@opentelemetry/resources": "^2.0.1", "@opentelemetry/sdk-metrics": "^2.0.1", "@opentelemetry/sdk-node": "^0.203.0", "@opentelemetry/sdk-trace-node": "^2.0.1", "@postgresql-typed/oids": "^0.2.0", "@rocicorp/lock": "^1.0.4", "@rocicorp/logger": "^5.4.0", "@rocicorp/resolver": "^1.0.2", "@rocicorp/zero-sqlite3": "^1.0.12", "@standard-schema/spec": "^1.0.0", "@types/basic-auth": "^1.1.8", "basic-auth": "^2.0.1", "chalk": "^5.3.0", "chalk-template": "^1.1.0", "chokidar": "^4.0.1", "cloudevents": "^10.0.0", "command-line-args": "^6.0.1", "command-line-usage": "^7.0.3", "compare-utf8": "^0.1.1", "defu": "^6.1.4", "eventemitter3": "^5.0.1", "fastify": "^5.0.0", "is-in-subnet": "^4.0.1", "jose": "^5.9.3", "js-xxhash": "^4.0.0", "json-custom-numbers": "^3.1.1", "kasi": "^1.1.0", "nanoid": "^5.1.2", "parse-prometheus-text-format": "^1.1.1", "pg-format": "npm:pg-format-fix@^1.0.5", "postgres": "^3.4.4", "prettier": "^3.5.3", "semver": "^7.5.4", "tsx": "^4.19.1", "url-pattern": "^1.0.3", "urlpattern-polyfill": "^10.1.0", "ws": "^8.18.1" }, "peerDependencies": { "@op-engineering/op-sqlite": ">=15", "expo-sqlite": ">=15" }, "optionalPeers": ["@op-engineering/op-sqlite", "expo-sqlite"], "bin": { "zero-out": "out/zero/src/zero-out.js", "ast-to-zql": "out/zero/src/ast-to-zql.js", "zero-cache": "out/zero/src/cli.js", "analyze-query": "out/zero/src/analyze-query.js", "zero-cache-dev": "out/zero/src/zero-cache-dev.js", "transform-query": "out/zero/src/transform-query.js", "zero-build-schema": "out/zero/src/build-schema.js", "zero-deploy-permissions": "out/zero/src/deploy-permissions.js" } }, "sha512-bn9IcFYfh3IXUIO6LEYhv/wPtbfpba6/jA0L+/nB7hEOGPPIeeBGDPLEf5KtDrnB+a6k/1EbQkUSVoIw9bjN5A=="],
+    "@rocicorp/zero": ["@rocicorp/zero@0.25.11", "", { "dependencies": { "@badrap/valita": "0.3.11", "@databases/escape-identifier": "^1.0.3", "@databases/sql": "^3.3.0", "@dotenvx/dotenvx": "^1.39.0", "@drdgvhbh/postgres-error-codes": "^0.0.6", "@fastify/cors": "^10.0.0", "@fastify/websocket": "^11.0.0", "@google-cloud/precise-date": "^4.0.0", "@opentelemetry/api": "^1.9.0", "@opentelemetry/api-logs": "^0.203.0", "@opentelemetry/auto-instrumentations-node": "^0.62.0", "@opentelemetry/exporter-metrics-otlp-http": "^0.203.0", "@opentelemetry/resources": "^2.0.1", "@opentelemetry/sdk-metrics": "^2.0.1", "@opentelemetry/sdk-node": "^0.203.0", "@opentelemetry/sdk-trace-node": "^2.0.1", "@postgresql-typed/oids": "^0.2.0", "@rocicorp/lock": "^1.0.4", "@rocicorp/logger": "^5.4.0", "@rocicorp/resolver": "^1.0.2", "@rocicorp/zero-sqlite3": "^1.0.12", "@standard-schema/spec": "^1.0.0", "@types/basic-auth": "^1.1.8", "basic-auth": "^2.0.1", "chalk": "^5.3.0", "chalk-template": "^1.1.0", "chokidar": "^4.0.1", "cloudevents": "^10.0.0", "command-line-args": "^6.0.1", "command-line-usage": "^7.0.3", "compare-utf8": "^0.1.1", "defu": "^6.1.4", "eventemitter3": "^5.0.1", "fastify": "^5.0.0", "is-in-subnet": "^4.0.1", "jose": "^5.9.3", "js-xxhash": "^4.0.0", "json-custom-numbers": "^3.1.1", "kasi": "^1.1.0", "nanoid": "^5.1.2", "parse-prometheus-text-format": "^1.1.1", "pg-format": "npm:pg-format-fix@^1.0.5", "postgres": "3.4.7", "prettier": "^3.5.3", "semver": "^7.5.4", "tsx": "^4.19.1", "url-pattern": "^1.0.3", "urlpattern-polyfill": "^10.1.0", "ws": "^8.18.1" }, "peerDependencies": { "@op-engineering/op-sqlite": ">=15", "expo-sqlite": ">=15" }, "optionalPeers": ["@op-engineering/op-sqlite", "expo-sqlite"], "bin": { "zero-out": "out/zero/src/zero-out.js", "ast-to-zql": "out/zero/src/ast-to-zql.js", "zero-cache": "out/zero/src/cli.js", "analyze-query": "out/zero/src/analyze-query.js", "zero-cache-dev": "out/zero/src/zero-cache-dev.js", "transform-query": "out/zero/src/transform-query.js", "zero-build-schema": "out/zero/src/build-schema.js", "zero-deploy-permissions": "out/zero/src/deploy-permissions.js" } }, "sha512-TCdQBtjPkCzerOiPcmPjU3IuxVsA9rW7lpUT053gUOKF6Rf0lDKhO89U9Z2ons0Ghc0KtRIe6163xdxLsFl97A=="],
 
     "@rocicorp/zero-sqlite3": ["@rocicorp/zero-sqlite3@1.0.13", "", { "dependencies": { "bindings": "^1.5.0", "prebuild-install": "^7.1.1" }, "bin": { "zero-sqlite3": "shell.ps1" } }, "sha512-WZ2UlM8kdW3DyHwsRTsaQFxvV/gz+sZNKwNnw9FkxBJNwLUd1/JoiGTdQqAJdd5fEd226huVEh/Nv9hkGgVWyg=="],
 

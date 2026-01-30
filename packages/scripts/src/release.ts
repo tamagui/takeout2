@@ -127,7 +127,8 @@ async function main() {
 
       if (!skipTest) {
         await run(`bun lint`)
-        await run(`bun check`)
+        await run(`bun check:all`)
+        // only in packages
         // await run(`bun test`)
       }
     }
@@ -180,6 +181,8 @@ async function main() {
 
     if (!finish) {
       const tmpDir = `/tmp/one-publish`
+      // clean up from previous runs
+      await fs.remove(tmpDir)
       await ensureDir(tmpDir)
 
       await pMap(
@@ -216,14 +219,27 @@ async function main() {
 
           const filename = `${name.replace('/', '_')}-package.tmp.tgz`
           const absolutePath = `${tmpDir}/${filename}`
-          // use --swap-exports to swap types ./src/*.ts -> ./types/*.d.ts during pack
-          await run(
-            `bunx tamagui-build --swap-exports -- npm pack --pack-destination ${tmpDir}`,
-            {
-              cwd: tmpPackageDir,
-              silent: true,
+
+          // swap exports.types from ./src/*.ts to ./types/*.d.ts for publishing
+          if (pkgJson.exports) {
+            const swapTypes = (obj: any) => {
+              for (const key in obj) {
+                const val = obj[key]
+                if (typeof val === 'object' && val !== null) {
+                  swapTypes(val)
+                } else if (key === 'types' && typeof val === 'string' && val.includes('/src/')) {
+                  obj[key] = val.replace('/src/', '/types/').replace('.ts', '.d.ts')
+                }
+              }
             }
-          )
+            swapTypes(pkgJson.exports)
+            await writeJSON(pkgJsonPath, pkgJson, { spaces: 2 })
+          }
+
+          await run(`npm pack --pack-destination ${tmpDir}`, {
+            cwd: tmpPackageDir,
+            silent: true,
+          })
 
           // rename npm's output to our expected filename
           const npmFilename = `${name.replace('@', '').replace('/', '-')}-${nextVersion}.tgz`

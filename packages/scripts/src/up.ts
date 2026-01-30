@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * @description Update dependencies across workspace packages
+ * @description Upgrade packages by name (takeout, tamagui, one, zero, better-auth)
  */
 
 import { existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
@@ -14,7 +14,13 @@ const packagePatterns: string[] = []
 
 const args = process.argv.slice(2)
 
-for (const arg of args) {
+// check if first arg is a named upgrade set
+const rootDir = process.cwd()
+const rootPackageJson = JSON.parse(readFileSync(join(rootDir, 'package.json'), 'utf-8'))
+const upgradeSets: Record<string, string[]> = rootPackageJson.upgradeSets || {}
+
+for (let i = 0; i < args.length; i++) {
+  const arg = args[i]
   if (arg.startsWith('--tag=')) {
     const tagValue = arg.split('=')[1]
     if (tagValue) {
@@ -26,21 +32,33 @@ for (const arg of args) {
   } else if (arg === '--tag') {
     console.error('Error: --tag option requires a value and must use = syntax.')
     console.error('Correct usage: --tag=canary')
-    console.error('Example: bun update-deps.ts --tag=canary react react-dom')
+    console.error('Example: bun tko up --tag=canary react react-dom')
     process.exit(1)
   } else if (arg === '--canary') {
     globalTag = 'canary'
   } else if (arg === '--rc') {
     globalTag = 'rc'
+  } else if (arg in upgradeSets) {
+    // expand named upgrade set to its patterns
+    packagePatterns.push(...upgradeSets[arg])
   } else {
     packagePatterns.push(arg)
   }
 }
 
 if (packagePatterns.length === 0) {
-  console.error('Please provide at least one package pattern to update.')
-  console.error('Example: bun update-deps.ts @vxrn/* vxrn')
-  console.error('Or with a tag: bun update-deps.ts --tag=canary @vxrn/* vxrn')
+  const setNames = Object.keys(upgradeSets)
+  if (setNames.length > 0) {
+    console.info('Usage: bun tko up <target|pattern> [options]')
+    console.info(`\nAvailable upgrade sets: ${setNames.join(', ')}`)
+    console.info('\nOr provide package patterns directly:')
+    console.info('  bun tko up @vxrn/* vxrn')
+    console.info('  bun tko up --tag=canary react react-dom')
+  } else {
+    console.error('Please provide at least one package pattern to update.')
+    console.error('Example: bun tko up @vxrn/* vxrn')
+    console.error('Or with a tag: bun tko up --tag=canary @vxrn/* vxrn')
+  }
   process.exit(1)
 }
 
@@ -58,7 +76,7 @@ function findPackageJsonFiles(dir: string): string[] {
     results.push(join(dir, 'package.json'))
   }
 
-  // Check if it's a monorepo with workspaces
+  // check if it's a monorepo with workspaces
   try {
     const packageJson = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf-8'))
     if (packageJson.workspaces) {
@@ -86,7 +104,7 @@ function findPackageJsonFiles(dir: string): string[] {
       }
     }
   } catch (_error) {
-    // Ignore errors parsing package.json
+    // ignore errors parsing package.json
   }
 
   return results
@@ -258,7 +276,6 @@ function getWorkspaceName(packageJsonPath: string, rootDir: string): string {
 }
 
 async function main() {
-  const rootDir = process.cwd()
   const packageJsonFiles = findPackageJsonFiles(rootDir)
   console.info(`Found ${packageJsonFiles.length} package.json files`)
 
@@ -325,6 +342,12 @@ async function main() {
   }
 
   await updatePackages(packagesByWorkspace, rootDir, packageJsonFiles)
+
+  // special handling for zero - update ZERO_VERSION in .env
+  if (packagePatterns.includes('@rocicorp/zero')) {
+    console.info('\n🔄 Updating local env for Zero...')
+    await $`bun tko run update-local-env`
+  }
 
   console.info('\n🎉 Dependency update complete!')
 }

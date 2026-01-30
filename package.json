@@ -53,7 +53,6 @@
     "test:integration": "bun run env:dev bun --cwd=./src/test playwright test",
     "test:unit": "bun run:dev vitest run -c ./src/test/vitest.config.ts",
     "test": "tko run test:unit test:integration",
-    "up-dep": "tko update-deps",
     "up": "tko up",
     "watch:types": "tko run typecheck --watch",
     "watch:zero:generate": "bun zero:generate --watch",
@@ -238,5 +237,12 @@
   },
   "takeout": {
     "onboarded": false
+  },
+  "upgradeSets": {
+    "takeout": ["@take-out/*", "over-zero"],
+    "tamagui": ["tamagui", "@tamagui/*"],
+    "one": ["one", "vxrn", "@vxrn/*"],
+    "zero": ["@rocicorp/zero"],
+    "better-auth": ["better-auth", "@better-auth/*"]
   }
 }

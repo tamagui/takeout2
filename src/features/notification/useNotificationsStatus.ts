@@ -16,7 +16,7 @@ export const useNotificationStatus = () => {
       onGranted: () => void,
       options: { onDenied?: () => void; isForSetting?: boolean } = {}
     ) => {
-      const { onDenied, isForSetting } = options
+      const { onDenied: _onDenied, isForSetting: _isForSetting } = options
       if (!isToggleActive) {
         const status = await requestPermissionsAsync()
         if (status.granted) {

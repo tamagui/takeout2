@@ -10,5 +10,8 @@
   },
   "peerDependencies": {
     "expo-crypto": "*"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -227,7 +227,11 @@ async function main() {
                 const val = obj[key]
                 if (typeof val === 'object' && val !== null) {
                   swapTypes(val)
-                } else if (key === 'types' && typeof val === 'string' && val.includes('/src/')) {
+                } else if (
+                  key === 'types' &&
+                  typeof val === 'string' &&
+                  val.includes('/src/')
+                ) {
                   obj[key] = val.replace('/src/', '/types/').replace('.ts', '.d.ts')
                 }
               }

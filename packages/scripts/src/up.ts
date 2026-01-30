@@ -89,16 +89,54 @@ function findPackageJsonFiles(dir: string): string[] {
       }
 
       for (const workspace of workspacePaths) {
-        const workspaceDir = workspace.replace(/\/\*$/, '')
-        if (existsSync(join(dir, workspaceDir))) {
-          const subdirs = readdirSync(join(dir, workspaceDir), { withFileTypes: true })
-            .filter((dirent) => dirent.isDirectory())
-            .map((dirent) => join(dir, workspaceDir, dirent.name))
+        // handle glob patterns like "packages/*", "code/**/*", "./code/ui/**/*"
+        const normalizedWorkspace = workspace.replace(/^\.\//, '')
 
-          for (const subdir of subdirs) {
-            if (existsSync(join(subdir, 'package.json'))) {
-              results.push(join(subdir, 'package.json'))
+        if (normalizedWorkspace.includes('**')) {
+          // nested glob pattern - use glob to find all package.json files
+          const baseDir = normalizedWorkspace.split('**')[0].replace(/\/$/, '')
+          const basePath = join(dir, baseDir)
+
+          if (existsSync(basePath)) {
+            const findPackages = (searchDir: string) => {
+              try {
+                const entries = readdirSync(searchDir, { withFileTypes: true })
+                for (const entry of entries) {
+                  if (entry.isDirectory()) {
+                    const subPath = join(searchDir, entry.name)
+                    const pkgPath = join(subPath, 'package.json')
+                    if (existsSync(pkgPath)) {
+                      results.push(pkgPath)
+                    }
+                    // recurse into subdirectories
+                    findPackages(subPath)
+                  }
+                }
+              } catch (_e) {
+                // ignore permission errors
+              }
             }
+            findPackages(basePath)
+          }
+        } else if (normalizedWorkspace.includes('*')) {
+          // simple glob pattern like "packages/*"
+          const workspaceDir = normalizedWorkspace.replace(/\/\*$/, '')
+          if (existsSync(join(dir, workspaceDir))) {
+            const subdirs = readdirSync(join(dir, workspaceDir), { withFileTypes: true })
+              .filter((dirent) => dirent.isDirectory())
+              .map((dirent) => join(dir, workspaceDir, dirent.name))
+
+            for (const subdir of subdirs) {
+              if (existsSync(join(subdir, 'package.json'))) {
+                results.push(join(subdir, 'package.json'))
+              }
+            }
+          }
+        } else {
+          // exact path like "code/tamagui.dev" or "./code/sandbox"
+          const pkgPath = join(dir, normalizedWorkspace, 'package.json')
+          if (existsSync(pkgPath)) {
+            results.push(pkgPath)
           }
         }
       }

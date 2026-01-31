@@ -102,7 +102,7 @@ function findPackageJsonFiles(dir: string): string[] {
               try {
                 const entries = readdirSync(searchDir, { withFileTypes: true })
                 for (const entry of entries) {
-                  if (entry.isDirectory()) {
+                  if (entry.isDirectory() && entry.name !== 'node_modules') {
                     const subPath = join(searchDir, entry.name)
                     const pkgPath = join(subPath, 'package.json')
                     if (existsSync(pkgPath)) {

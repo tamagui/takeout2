@@ -29,13 +29,13 @@ export default {
   },
 
   plugins: [
-    tamaguiPlugin(
-      // see tamagui.build.ts
-      // enables us to run:
-      //   - bun tamagui check
-      //   - bun tamagui generate-css
-      //   - bun tamagui generate-promtp
-    ),
+    tamaguiPlugin({
+      optimize: true,
+      disableExtraction: process.env.NODE_ENV !== 'production',
+      components: ['tamagui'],
+      config: './src/tamagui/tamagui.config.ts',
+      outputCSS: './src/tamagui/tamagui.css',
+    }),
 
     one({
       setupFile: {
@@ -110,58 +110,9 @@ export default {
             }),
           ]
         : []),
+
       deps: {
         pg: true,
-
-        // fix RNGH crash on RN 0.81+ new architecture
-        // getShadowNodeFromRef crashes when findHostInstance_DEPRECATED returns null
-        'react-native-gesture-handler': {
-          'lib/module/getShadowNodeFromRef.js': (contents) => {
-            return contents?.replace(
-              `return getInternalInstanceHandleFromPublicInstance(findHostInstance_DEPRECATED(ref)).stateNode.node;`,
-              `const hostInstance = findHostInstance_DEPRECATED(ref);
-  if (hostInstance === null || hostInstance === undefined) {
-    return null;
-  }
-  const internalHandle = getInternalInstanceHandleFromPublicInstance(hostInstance);
-  if (internalHandle === null || internalHandle === undefined) {
-    return null;
-  }
-  return internalHandle.stateNode?.node ?? null;`
-            )
-          },
-          'lib/commonjs/getShadowNodeFromRef.js': (contents) => {
-            return contents?.replace(
-              `return getInternalInstanceHandleFromPublicInstance(findHostInstance_DEPRECATED(ref)).stateNode.node;`,
-              `const hostInstance = findHostInstance_DEPRECATED(ref);
-  if (hostInstance === null || hostInstance === undefined) {
-    return null;
-  }
-  const internalHandle = getInternalInstanceHandleFromPublicInstance(hostInstance);
-  if (internalHandle === null || internalHandle === undefined) {
-    return null;
-  }
-  return internalHandle.stateNode?.node ?? null;`
-            )
-          },
-          // metro uses src/ directly via "react-native" field in package.json
-          'src/getShadowNodeFromRef.ts': (contents) => {
-            return contents?.replace(
-              `return getInternalInstanceHandleFromPublicInstance(
-    findHostInstance_DEPRECATED(ref)
-  ).stateNode.node;`,
-              `const hostInstance = findHostInstance_DEPRECATED(ref);
-  if (hostInstance === null || hostInstance === undefined) {
-    return null;
-  }
-  const internalHandle = getInternalInstanceHandleFromPublicInstance(hostInstance);
-  if (internalHandle === null || internalHandle === undefined) {
-    return null;
-  }
-  return internalHandle.stateNode?.node ?? null;`
-            )
-          },
-        },
       },
 
       build: {

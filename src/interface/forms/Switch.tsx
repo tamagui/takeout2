@@ -1,8 +1,8 @@
 import { memo } from 'react'
 import {
-  composeEventHandlers,
   Switch as TamaguiSwitch,
   useControllableState,
+  useEvent,
   type SwitchProps,
 } from 'tamagui'
 
@@ -13,6 +13,11 @@ export const Switch = memo((props: SwitchProps) => {
     defaultProp: props.checked,
     prop: props.checked,
     strategy: 'prop-wins',
+  })
+
+  const setCheckedFn = useEvent((val: boolean) => {
+    setChecked(val)
+    props.onCheckedChange?.(val)
   })
 
   return (
@@ -27,7 +32,7 @@ export const Switch = memo((props: SwitchProps) => {
       borderColor="$color6"
       {...props}
       checked={checked}
-      onCheckedChange={composeEventHandlers(setChecked, props.onCheckedChange)}
+      onCheckedChange={setCheckedFn}
     >
       <TamaguiSwitch.Thumb transition={animationClamped('quickestLessBouncy')} />
     </TamaguiSwitch>

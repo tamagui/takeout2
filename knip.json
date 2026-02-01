@@ -53,11 +53,6 @@
     "packages/native-hot-update": {
       "project": ["src/**/*.ts"]
     },
-    "packages/over-zero": {
-      "entry": ["src/cli.ts"],
-      "project": ["src/**/*.ts"],
-      "ignoreDependencies": ["@sinclair/typebox", "valibot"]
-    },
     "packages/scripts": {
       "entry": ["src/*.ts", "src/helpers/*.ts"],
       "project": ["src/**/*.ts"],

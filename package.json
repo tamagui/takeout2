@@ -58,7 +58,7 @@
     "watch:zero:generate": "bun zero:generate --watch",
     "watch": "tko run watch watch:types watch:zero:generate",
     "web": "tko web",
-    "zero:generate": "over-zero generate --after 'bun lint:fix'",
+    "zero:generate": "on-zero generate --after 'bun lint:fix'",
     "zero": "tko zero"
   },
   "overrides": {
@@ -125,7 +125,7 @@
     "jsonwebtoken": "^9.0.2",
     "motion": "^12.29.0",
     "one": "^1.4.8",
-    "over-zero": "^0.0.67",
+    "on-zero": "0.0.1",
     "pg": "^8.16.3",
     "posthog-js": "^1.252.0",
     "posthog-node": "^5.5.1",
@@ -242,7 +242,7 @@
   "upgradeSets": {
     "takeout": [
       "@take-out/*",
-      "over-zero"
+      "on-zero"
     ],
     "tamagui": [
       "tamagui",

@@ -1,4 +1,4 @@
-import { zql } from 'over-zero'
+import { zql } from 'on-zero'
 
 import { notBlockedByViewer } from '~/data/where/notBlockedByViewer'
 

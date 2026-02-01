@@ -10,7 +10,7 @@ queries are plain exported functions in `src/data/queries/` that use the global
 
 ```ts
 // src/data/queries/post.ts
-import { serverWhere, zql } from 'over-zero'
+import { serverWhere, zql } from 'on-zero'
 
 const permission = serverWhere('post', () => true)
 
@@ -144,7 +144,7 @@ models in `src/data/models/` define schema, permissions, and mutations:
 ```ts
 // src/data/models/post.ts
 import { boolean, number, string, table } from '@rocicorp/zero'
-import { mutations, serverWhere } from 'over-zero'
+import { mutations, serverWhere } from 'on-zero'
 
 export const schema = table('post')
   .columns({
@@ -428,6 +428,6 @@ Zero memory usage should increase with more workers (~50-100MB per worker).
 ## Resources
 
 - Zero docs: https://zero.rocicorp.dev
-- over-zero: packages/over-zero/readme.md
+- on-zero: packages/on-zero/readme.md
 - Models: src/data/models/
 - Queries: src/data/queries/

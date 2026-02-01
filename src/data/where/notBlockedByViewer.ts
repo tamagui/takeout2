@@ -1,4 +1,4 @@
-import { serverWhere } from 'over-zero'
+import { serverWhere } from 'on-zero'
 
 // filters out posts whose author is blocked by the authenticated user
 // on server: uses not(exists()) to filter - blocked posts never sync to client

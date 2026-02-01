@@ -2,7 +2,7 @@ import { getJWTRequestCookie } from './getJWTRequestCookie'
 import { InvalidTokenError, validateToken } from './validateToken'
 
 import type { JWTPayload } from '../types'
-import type { AuthData } from 'over-zero'
+import type { AuthData } from 'on-zero'
 
 export async function validateAuthHeader(req: Request) {
   const payload = await getAuthHeader(req)

@@ -13,8 +13,8 @@ place.
 
 ## Skills
 
-Skills are instruction sets that teach agents how to work in this codebase.
-They live in `.claude/skills/` and map to docs in `docs/` and `packages/docs/`.
+Skills are instruction sets that teach agents how to work in this codebase. They
+live in `.claude/skills/` and map to docs in `docs/` and `packages/docs/`.
 
 When an agent starts a session, it loads the core guidelines automatically. When
 working on a feature, it can pull in relevant skills—say, `takeout-zero` when
@@ -33,36 +33,36 @@ pattern, and produce code that fits.
 
 ### Available Skills
 
-| Skill | Description | Tier |
-|-------|-------------|------|
-| `takeout-takeout` | General overview and getting started | Free |
-| `takeout-tamagui` | UI framework, tokens, themes, responsive design | Free |
-| `takeout-zero` | Data sync, queries, mutations, permissions | Free |
-| `takeout-one-routes` | File-based routing, SSG/SSR, loaders | Pro |
-| `takeout-one-hooks` | useRouter, useParams, useLoader, navigation | Pro |
-| `takeout-one-components` | Link, Head, SafeAreaView, layouts | Pro |
-| `takeout-database` | PostgreSQL, Drizzle ORM, migrations | Pro |
-| `takeout-aggregates` | Denormalized counts via triggers | Pro |
-| `takeout-triggers` | PostgreSQL trigger automation | Pro |
-| `takeout-emitters` | Event pub/sub for ephemeral UI state | Pro |
-| `takeout-testing-integration` | Playwright e2e tests | Pro |
-| `takeout-scripts` | tko CLI and automation | Pro |
-| `takeout-package-json` | Workspace and script configuration | Pro |
-| `takeout-sync-prompt` | Merging upstream Takeout changes | Pro |
-| `takeout-react-native-navigation-flow` | Mobile routing patterns | Pro |
-| `takeout-hot-updater` | OTA updates for React Native | Pro |
-| `takeout-native-hot-update` | Hot update splash and deployment | Pro |
-| `takeout-xcodebuild-mcp` | iOS debugging and simulator tools | Pro |
-| `takeout-cloudflare-dev-tunnel` | Expose local dev publicly | Pro |
-| `deploy` | Deployment infrastructure overview | Pro |
-| `deploy-uncloud` | Self-hosted production setup | Pro |
-| `add-icon` | Managing Phosphor icons | Pro |
-| `commit` | Git commit conventions | Pro |
+| Skill                                  | Description                                     | Tier |
+| -------------------------------------- | ----------------------------------------------- | ---- |
+| `takeout-takeout`                      | General overview and getting started            | Free |
+| `takeout-tamagui`                      | UI framework, tokens, themes, responsive design | Free |
+| `takeout-zero`                         | Data sync, queries, mutations, permissions      | Free |
+| `takeout-one-routes`                   | File-based routing, SSG/SSR, loaders            | Pro  |
+| `takeout-one-hooks`                    | useRouter, useParams, useLoader, navigation     | Pro  |
+| `takeout-one-components`               | Link, Head, SafeAreaView, layouts               | Pro  |
+| `takeout-database`                     | PostgreSQL, Drizzle ORM, migrations             | Pro  |
+| `takeout-aggregates`                   | Denormalized counts via triggers                | Pro  |
+| `takeout-triggers`                     | PostgreSQL trigger automation                   | Pro  |
+| `takeout-emitters`                     | Event pub/sub for ephemeral UI state            | Pro  |
+| `takeout-testing-integration`          | Playwright e2e tests                            | Pro  |
+| `takeout-scripts`                      | tko CLI and automation                          | Pro  |
+| `takeout-package-json`                 | Workspace and script configuration              | Pro  |
+| `takeout-sync-prompt`                  | Merging upstream Takeout changes                | Pro  |
+| `takeout-react-native-navigation-flow` | Mobile routing patterns                         | Pro  |
+| `takeout-hot-updater`                  | OTA updates for React Native                    | Pro  |
+| `takeout-native-hot-update`            | Hot update splash and deployment                | Pro  |
+| `takeout-xcodebuild-mcp`               | iOS debugging and simulator tools               | Pro  |
+| `takeout-cloudflare-dev-tunnel`        | Expose local dev publicly                       | Pro  |
+| `deploy`                               | Deployment infrastructure overview              | Pro  |
+| `deploy-uncloud`                       | Self-hosted production setup                    | Pro  |
+| `add-icon`                             | Managing Phosphor icons                         | Pro  |
+| `commit`                               | Git commit conventions                          | Pro  |
 
-## Over-Zero
+## On-zero
 
-The [over-zero](https://github.com/tamagui/over-zero) package structures your
-data layer in a way that's easy for both humans and agents to understand. Models
+The [on-zero](https://github.com/onejs/on-zero) package structures your data
+layer in a way that's easy for both humans and agents to understand. Models
 define schema, permissions, and mutations together. Queries are plain functions
 that become synced automatically.
 
@@ -97,7 +97,8 @@ find the right tool without asking.
 
 Session hooks ensure agents know to verify their work. The core guidelines load
 automatically and include explicit verification steps—run `bun check:all` for
-quick checks, `bun run ci --dry-run` for the full pipeline (see [Releasing](/docs/releasing) for details).
+quick checks, `bun run ci --dry-run` for the full pipeline (see
+[Releasing](/docs/releasing) for details).
 
 ```bash
 bun check:all        # types, lint, tests

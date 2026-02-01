@@ -1,4 +1,4 @@
-import { serverWhere, zql } from 'over-zero'
+import { serverWhere, zql } from 'on-zero'
 
 const permission = serverWhere('userPublic', () => {
   return true

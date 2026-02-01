@@ -82,7 +82,7 @@ export default {
     // @rocicorp/zero and @rocicorp/zero/server - they share queryInternalsTag
     // Symbol that must be the same instance for query transforms to work
     external: [
-      'over-zero',
+      'on-zero',
       '@vxrn/mdx',
       '@rocicorp/zero',
       'retext',

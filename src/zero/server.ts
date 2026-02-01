@@ -1,5 +1,5 @@
 import { assertString } from '@take-out/helpers'
-import { createZeroServer } from 'over-zero/server'
+import { createZeroServer } from 'on-zero/server'
 
 import { models } from '~/data/generated/models'
 import { queries } from '~/data/generated/syncedQueries'

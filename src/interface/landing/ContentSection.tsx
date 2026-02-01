@@ -336,13 +336,13 @@ export function ContentSection() {
           </ContentParagraph>
 
           <ContentParagraph>
-            Our <CodeInline>over-zero</CodeInline>
+            Our <CodeInline>on-zero</CodeInline>
             {/* <Link
-              href="https://github.com/tamagui/takeout-free/blob/main/packages/over-zero/readme.md"
+              href="https://github.com/tamagui/takeout-free/blob/main/packages/on-zero/readme.md"
               target="_blank"
               hideExternalIcon
             >
-              <InlineLink fontWeight="600">over-zero</InlineLink>
+              <InlineLink fontWeight="600">on-zero</InlineLink>
             </Link>{' '} */}{' '}
             library (repo coming) makes it feel like Rails, and auto generating
             boilerplate, gluing things together, giving you simple CRUD and permissions,

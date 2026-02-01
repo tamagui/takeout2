@@ -1,7 +1,7 @@
 import { dropAllDatabases } from '@rocicorp/zero'
 import { useZero } from '@rocicorp/zero/react'
 import { isBrowser } from '@tamagui/constants'
-import { createZeroClient } from 'over-zero'
+import { createZeroClient } from 'on-zero'
 import { memo, useEffect, useMemo, type ReactNode } from 'react'
 
 import { ZERO_SERVER_URL } from '~/constants/urls'
@@ -28,7 +28,7 @@ export const {
 })
 
 // re-export global run for convenience
-export { run } from 'over-zero'
+export { run } from 'on-zero'
 
 export const ProvideZero = ({ children }: { children: ReactNode }) => {
   const auth = useAuth()

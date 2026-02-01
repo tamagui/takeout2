@@ -12,7 +12,7 @@ const { watch } = args('--watch boolean')
 const afterCmd = 'bunx oxfmt src/data/generated'
 
 if (watch) {
-  await $`bun over-zero generate --watch --after ${afterCmd}`
+  await $`bun on-zero generate --watch --after ${afterCmd}`
 } else {
-  await $`bun over-zero generate --after ${afterCmd}`
+  await $`bun on-zero generate --after ${afterCmd}`
 }

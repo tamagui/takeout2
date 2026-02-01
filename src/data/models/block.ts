@@ -1,5 +1,5 @@
 import { number, string, table } from '@rocicorp/zero'
-import { ensureLoggedIn, mutations, serverWhere } from 'over-zero'
+import { ensureLoggedIn, mutations, serverWhere } from 'on-zero'
 
 export const schema = table('block')
   .columns({

@@ -4,7 +4,7 @@ import type { AuthData } from '~/features/auth/types'
 
 type Schema = typeof schema
 
-declare module 'over-zero' {
+declare module 'on-zero' {
   interface Config {
     schema: Schema
     authData: AuthData

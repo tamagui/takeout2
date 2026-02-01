@@ -1,6 +1,6 @@
 import { boolean, number, string, table } from '@rocicorp/zero'
 import { AppError } from '@take-out/helpers'
-import { mutations, serverWhere } from 'over-zero'
+import { mutations, serverWhere } from 'on-zero'
 
 import { checkProfanity } from '~/features/moderation/profanityFilter'
 

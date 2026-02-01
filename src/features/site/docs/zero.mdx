@@ -1,12 +1,12 @@
 ---
 title: Zero
 description:
-  Client-first sync with Zero and over-zero - instant UI, offline support,
+  Client-first sync with Zero and on-zero - instant UI, offline support,
   real-time updates
 ---
 
 Takeout uses [Zero](https://zero.rocicorp.dev) for data sync, wrapped with
-[over-zero](https://github.com/tamagui/over-zero) for a streamlined developer
+[on-zero](https://github.com/tamagui/on-zero) for a streamlined developer
 experience. Zero is a sync engine that keeps a client-side replica of your data,
 enabling instant queries and optimistic mutations. The
 [Zero documentation](https://zero.rocicorp.dev) covers the core concepts in
@@ -25,42 +25,65 @@ to Postgres. Changes from other clients stream in automatically.
 
 The data layer lives in `src/data/`:
 
-<RouteTree routes={[
-  { name: 'src/data/', children: [
-    { name: 'models/', description: 'table schemas + write permissions + mutations', children: [
-      { name: 'post.ts' },
-      { name: 'user.ts' },
-      { name: 'comment.ts' },
-    ]},
-    { name: 'queries/', description: 'query functions + read permissions', children: [
-      { name: 'post.ts' },
-      { name: 'user.ts' },
-      { name: 'comment.ts' },
-    ]},
-    { name: 'server/', description: 'server-only code', children: [
-      { name: 'createServerActions.ts' },
-      { name: 'actions/' },
-    ]},
-    { name: 'generated/', description: 'auto-generated (don\'t edit)', children: [
-      { name: 'types.ts' },
-      { name: 'tables.ts' },
-      { name: 'models.ts' },
-      { name: 'groupedQueries.ts' },
-      { name: 'syncedQueries.ts' },
-    ]},
-    { name: 'relationships.ts', description: 'table relationships' },
-    { name: 'schema.ts', description: 'schema assembly' },
-    { name: 'types.ts', description: 'type exports' },
-  ]},
-]} />
+<RouteTree
+  routes={[
+    {
+      name: 'src/data/',
+      children: [
+        {
+          name: 'models/',
+          description: 'table schemas + write permissions + mutations',
+          children: [
+            { name: 'post.ts' },
+            { name: 'user.ts' },
+            { name: 'comment.ts' },
+          ],
+        },
+        {
+          name: 'queries/',
+          description: 'query functions + read permissions',
+          children: [
+            { name: 'post.ts' },
+            { name: 'user.ts' },
+            { name: 'comment.ts' },
+          ],
+        },
+        {
+          name: 'server/',
+          description: 'server-only code',
+          children: [{ name: 'createServerActions.ts' }, { name: 'actions/' }],
+        },
+        {
+          name: 'generated/',
+          description: "auto-generated (don't edit)",
+          children: [
+            { name: 'types.ts' },
+            { name: 'tables.ts' },
+            { name: 'models.ts' },
+            { name: 'groupedQueries.ts' },
+            { name: 'syncedQueries.ts' },
+          ],
+        },
+        { name: 'relationships.ts', description: 'table relationships' },
+        { name: 'schema.ts', description: 'schema assembly' },
+        { name: 'types.ts', description: 'type exports' },
+      ],
+    },
+  ]}
+/>
 
-<RouteTree routes={[
-  { name: 'src/zero/', children: [
-    { name: 'client.tsx', description: 'client setup' },
-    { name: 'server.ts', description: 'server setup' },
-    { name: 'types.ts', description: 'type augmentation' },
-  ]},
-]} />
+<RouteTree
+  routes={[
+    {
+      name: 'src/zero/',
+      children: [
+        { name: 'client.tsx', description: 'client setup' },
+        { name: 'server.ts', description: 'server setup' },
+        { name: 'types.ts', description: 'type augmentation' },
+      ],
+    },
+  ]}
+/>
 
 ## Models
 
@@ -70,7 +93,7 @@ its own file in `src/data/models/`:
 ```ts
 // src/data/models/post.ts
 import { boolean, number, string, table } from '@rocicorp/zero'
-import { mutations, serverWhere } from 'over-zero'
+import { mutations, serverWhere } from 'on-zero'
 import type { Post } from '../types'
 
 export const schema = table('post')
@@ -108,7 +131,7 @@ export const mutate = mutations(schema, permissions, {
 ```
 
 The `mutations()` function takes the schema and permissions, then auto-generates
-CRUD operations. This is an optional but helpful feature that `over-zero`
+CRUD operations. This is an optional but helpful feature that `on-zero`
 provides:
 
 ```tsx
@@ -263,7 +286,7 @@ builder:
 
 ```ts
 // src/data/queries/post.ts
-import { serverWhere, zql } from 'over-zero'
+import { serverWhere, zql } from 'on-zero'
 
 const permission = serverWhere('post', () => true)
 
@@ -438,7 +461,7 @@ export const postWithComments = (props: { postId: string }) => {
 ## Permissions
 
 Zero permissions are flexible—you can use plain functions or whatever technique
-you choose. `over-zero` provides a `serverWhere()` helper that makes "query-based"
+you choose. `on-zero` provides a `serverWhere()` helper that makes "query-based"
 permissions easy. These run on the server but always pass on the client.
 
 **Read permissions** go in query files:
@@ -515,13 +538,14 @@ if (ctx.server) {
 
 Async tasks run after the transaction commits.
 
-In general, you _always want to do any long-running work (non-Zero-mutation-related)
-inside an asyncTask_. Zero keeps the transaction open until your mutator resolves
-on the server, which will slow your database down.
+In general, you _always want to do any long-running work
+(non-Zero-mutation-related) inside an asyncTask_. Zero keeps the transaction
+open until your mutator resolves on the server, which will slow your database
+down.
 
 ## Code Generation
 
-Your `bun dev` automatically watches and re-generates `over-zero` glue code for
+Your `bun dev` automatically watches and re-generates `on-zero` glue code for
 you.
 
 To run manually:
@@ -548,7 +572,7 @@ import type { Post, PostUpdate, User } from '~/data/types'
 The client is configured in `src/zero/client.tsx`:
 
 ```tsx
-import { createZeroClient } from 'over-zero'
+import { createZeroClient } from 'on-zero'
 import * as groupedQueries from '~/data/generated/groupedQueries'
 import { models } from '~/data/generated/models'
 import { schema } from '~/data/schema'
@@ -590,7 +614,7 @@ Storage backends:
 The server is configured in `src/zero/server.ts`:
 
 ```ts
-import { createZeroServer } from 'over-zero/server'
+import { createZeroServer } from 'on-zero/server'
 import { models } from '~/data/generated/models'
 import { queries } from '~/data/generated/syncedQueries'
 import { schema } from '~/data/schema'
@@ -616,7 +640,7 @@ import type { schema } from '~/data/schema'
 import type { AuthData } from '~/features/auth/types'
 import type { ServerActions } from '~/data/server/createServerActions'
 
-declare module 'over-zero' {
+declare module 'on-zero' {
   interface Config {
     schema: typeof schema
     authData: AuthData
@@ -640,5 +664,5 @@ Common issues:
 ## Learn More
 
 - [Zero Documentation](https://zero.rocicorp.dev) - Core concepts, API reference
-- [over-zero Package](/packages/over-zero) - Helper library details
+- [on-zero Package](/packages/on-zero) - Helper library details
 - [Rocicorp GitHub](https://github.com/rocicorp/mono) - Source and examples

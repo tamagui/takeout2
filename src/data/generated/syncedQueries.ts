@@ -11,7 +11,7 @@ const block = {
       userId: v.string(),
       limit: v.optional(v.number()),
     }),
-    ({ args }) => Queries.block.blockedByUser(args)
+    ({ args }) => Queries.block.blockedByUser(args as { userId: string; limit?: number })
   ),
 }
 
@@ -21,7 +21,8 @@ const comment = {
       postId: v.string(),
       limit: v.optional(v.number()),
     }),
-    ({ args }) => Queries.comment.commentsByPostId(args)
+    ({ args }) =>
+      Queries.comment.commentsByPostId(args as { postId: string; limit?: number })
   ),
 }
 
@@ -39,26 +40,32 @@ const post = {
         ])
       ),
     }),
-    ({ args }) => Queries.post.feedPosts(args)
+    ({ args }) =>
+      Queries.post.feedPosts(
+        args as {
+          pageSize: number
+          cursor?: { id: string; createdAt: number } | null
+        }
+      )
   ),
   postById: defineQuery(
     v.object({
       postId: v.string(),
     }),
-    ({ args }) => Queries.post.postById(args)
+    ({ args }) => Queries.post.postById(args as { postId: string })
   ),
   postDetail: defineQuery(
     v.object({
       postId: v.string(),
     }),
-    ({ args }) => Queries.post.postDetail(args)
+    ({ args }) => Queries.post.postDetail(args as { postId: string })
   ),
   postsByUserId: defineQuery(
     v.object({
       userId: v.string(),
       limit: v.optional(v.number()),
     }),
-    ({ args }) => Queries.post.postsByUserId(args)
+    ({ args }) => Queries.post.postsByUserId(args as { userId: string; limit?: number })
   ),
   postsPaginated: defineQuery(
     v.object({
@@ -74,7 +81,14 @@ const post = {
         ])
       ),
     }),
-    ({ args }) => Queries.post.postsPaginated(args)
+    ({ args }) =>
+      Queries.post.postsPaginated(
+        args as {
+          userId?: string
+          pageSize: number
+          cursor?: { id: string; createdAt: number } | null
+        }
+      )
   ),
   searchPosts: defineQuery(
     v.object({
@@ -90,7 +104,14 @@ const post = {
         ])
       ),
     }),
-    ({ args }) => Queries.post.searchPosts(args)
+    ({ args }) =>
+      Queries.post.searchPosts(
+        args as {
+          searchText: string
+          pageSize: number
+          cursor?: { id: string; createdAt: number } | null
+        }
+      )
   ),
 }
 
@@ -99,19 +120,19 @@ const user = {
     v.object({
       userId: v.string(),
     }),
-    ({ args }) => Queries.user.userById(args)
+    ({ args }) => Queries.user.userById(args as { userId: string })
   ),
   userByUsername: defineQuery(
     v.object({
       username: v.string(),
     }),
-    ({ args }) => Queries.user.userByUsername(args)
+    ({ args }) => Queries.user.userByUsername(args as { username: string })
   ),
   userWithState: defineQuery(
     v.object({
       userId: v.string(),
     }),
-    ({ args }) => Queries.user.userWithState(args)
+    ({ args }) => Queries.user.userWithState(args as { userId: string })
   ),
 }
 

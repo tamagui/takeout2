@@ -64,7 +64,7 @@
         "jsonwebtoken": "^9.0.2",
         "motion": "^12.29.0",
         "one": "^1.4.7",
-        "over-zero": "^0.0.64",
+        "over-zero": "^0.0.65",
         "pg": "^8.16.3",
         "posthog-js": "^1.252.0",
         "posthog-node": "^5.5.1",
@@ -3528,7 +3528,7 @@
 
     "outdent": ["outdent@0.8.0", "", {}, "sha512-KiOAIsdpUTcAXuykya5fnVVT+/5uS0Q1mrkRHcF89tpieSmY33O/tmc54CqwA+bfhbtEfZUNLHaPUiB9X3jt1A=="],
 
-    "over-zero": ["over-zero@0.0.64", "", { "dependencies": { "@take-out/helpers": "^0.0.61" }, "peerDependencies": { "@rocicorp/zero": ">=0.17", "pg": ">=8.0.0", "react": "*", "react-native": "*" }, "optionalPeers": ["pg", "react-native"], "bin": { "over-zero": "cli.cjs" } }, "sha512-D0waGgamg6SrJgLJ4gntnOly+wEcyRZXqW12NJ0l27X8kbGMaKiM11zbgVgK68LK58RkjAuaTAjZOWd0yG7Wew=="],
+    "over-zero": ["over-zero@0.0.65", "", { "dependencies": { "@take-out/helpers": "^0.0.61" }, "peerDependencies": { "@rocicorp/zero": ">=0.17", "pg": ">=8.0.0", "react": "*", "react-native": "*" }, "optionalPeers": ["pg", "react-native"], "bin": { "over-zero": "cli.cjs" } }, "sha512-atIQFHPGyoG2+L/Yuxw4nEezZRsNRQ4auHQacChGPD1SmTXir3tN3tz1QY6mi05+bMLpoSLxBnn733yzd/+pwQ=="],
 
     "oxc-parser": ["oxc-parser@0.107.0", "", { "dependencies": { "@oxc-project/types": "^0.107.0" }, "optionalDependencies": { "@oxc-parser/binding-android-arm-eabi": "0.107.0", "@oxc-parser/binding-android-arm64": "0.107.0", "@oxc-parser/binding-darwin-arm64": "0.107.0", "@oxc-parser/binding-darwin-x64": "0.107.0", "@oxc-parser/binding-freebsd-x64": "0.107.0", "@oxc-parser/binding-linux-arm-gnueabihf": "0.107.0", "@oxc-parser/binding-linux-arm-musleabihf": "0.107.0", "@oxc-parser/binding-linux-arm64-gnu": "0.107.0", "@oxc-parser/binding-linux-arm64-musl": "0.107.0", "@oxc-parser/binding-linux-ppc64-gnu": "0.107.0", "@oxc-parser/binding-linux-riscv64-gnu": "0.107.0", "@oxc-parser/binding-linux-riscv64-musl": "0.107.0", "@oxc-parser/binding-linux-s390x-gnu": "0.107.0", "@oxc-parser/binding-linux-x64-gnu": "0.107.0", "@oxc-parser/binding-linux-x64-musl": "0.107.0", "@oxc-parser/binding-openharmony-arm64": "0.107.0", "@oxc-parser/binding-wasm32-wasi": "0.107.0", "@oxc-parser/binding-win32-arm64-msvc": "0.107.0", "@oxc-parser/binding-win32-ia32-msvc": "0.107.0", "@oxc-parser/binding-win32-x64-msvc": "0.107.0" } }, "sha512-3HuDitM2UIEDbCjEhXyLAC8LuQvneDq/0eioczXZFeY4f4ee91tUcavZ9U7s4ZIFZOoHmNtOyOCB6kOM4OAtOA=="],
 

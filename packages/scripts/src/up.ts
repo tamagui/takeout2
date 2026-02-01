@@ -302,22 +302,20 @@ async function updatePackages(
     await $`bun install`
     console.info('✅ Done!')
   } catch (error: any) {
-    const errorMessage = error.message?.split('\n')[0] || ''
+    const stderr = error.stderr?.toString() || error.message || ''
     // check if it's a version resolution error (common after new publish)
-    if (
-      errorMessage.includes('No version matching') ||
-      errorMessage.includes('failed to resolve')
-    ) {
-      console.info(`⚠️ Version not in cache, retrying with --force...`)
+    if (stderr.includes('No version matching') || stderr.includes('failed to resolve')) {
+      console.info(`⚠️ Version not in cache, clearing cache and retrying...`)
       try {
-        await $`bun install --force`
+        await $`bun pm cache rm`.quiet()
+        await $`bun install`
         console.info('✅ Done!')
       } catch (retryError: any) {
-        const retryMessage = retryError.message?.split('\n')[0]
-        console.error(`🚨 'bun install --force' failed: ${retryMessage}`)
+        const retryStderr = retryError.stderr?.toString() || retryError.message || ''
+        console.error(`🚨 'bun install' failed after cache clear: ${retryStderr.split('\n')[0]}`)
       }
     } else {
-      console.error(`🚨 'bun install' failed: ${errorMessage}`)
+      console.error(`🚨 'bun install' failed: ${stderr.split('\n')[0]}`)
     }
   }
 }

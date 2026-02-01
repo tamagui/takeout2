@@ -312,7 +312,9 @@ async function updatePackages(
         console.info('✅ Done!')
       } catch (retryError: any) {
         const retryStderr = retryError.stderr?.toString() || retryError.message || ''
-        console.error(`🚨 'bun install' failed after cache clear: ${retryStderr.split('\n')[0]}`)
+        console.error(
+          `🚨 'bun install' failed after cache clear: ${retryStderr.split('\n')[0]}`
+        )
       }
     } else {
       console.error(`🚨 'bun install' failed: ${stderr.split('\n')[0]}`)

@@ -3,7 +3,6 @@ import { Slot, Stack } from 'one'
 import { HeaderBackButton } from '~/interface/buttons/HeaderBackButton'
 
 export function HomeLayout() {
-
   if (process.env.VITE_NATIVE) {
     return (
       <Stack

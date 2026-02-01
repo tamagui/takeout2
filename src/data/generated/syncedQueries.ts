@@ -2,13 +2,14 @@
 // server-side query definitions with validators
 import { defineQuery, defineQueries } from '@rocicorp/zero'
 import * as v from 'valibot'
+
 import * as Queries from './groupedQueries'
 
 const block = {
   blockedByUser: defineQuery(
     v.object({
       userId: v.string(),
-      limit: v.optional(v.number())
+      limit: v.optional(v.number()),
     }),
     ({ args }) => Queries.block.blockedByUser(args)
   ),
@@ -18,7 +19,7 @@ const comment = {
   commentsByPostId: defineQuery(
     v.object({
       postId: v.string(),
-      limit: v.optional(v.number())
+      limit: v.optional(v.number()),
     }),
     ({ args }) => Queries.comment.commentsByPostId(args)
   ),
@@ -32,30 +33,30 @@ const post = {
         v.union([
           v.object({
             id: v.string(),
-            createdAt: v.number()
+            createdAt: v.number(),
           }),
-          v.null()
+          v.null(),
         ])
-      )
+      ),
     }),
     ({ args }) => Queries.post.feedPosts(args)
   ),
   postById: defineQuery(
     v.object({
-      postId: v.string()
+      postId: v.string(),
     }),
     ({ args }) => Queries.post.postById(args)
   ),
   postDetail: defineQuery(
     v.object({
-      postId: v.string()
+      postId: v.string(),
     }),
     ({ args }) => Queries.post.postDetail(args)
   ),
   postsByUserId: defineQuery(
     v.object({
       userId: v.string(),
-      limit: v.optional(v.number())
+      limit: v.optional(v.number()),
     }),
     ({ args }) => Queries.post.postsByUserId(args)
   ),
@@ -67,11 +68,11 @@ const post = {
         v.union([
           v.object({
             id: v.string(),
-            createdAt: v.number()
+            createdAt: v.number(),
           }),
-          v.null()
+          v.null(),
         ])
-      )
+      ),
     }),
     ({ args }) => Queries.post.postsPaginated(args)
   ),
@@ -83,11 +84,11 @@ const post = {
         v.union([
           v.object({
             id: v.string(),
-            createdAt: v.number()
+            createdAt: v.number(),
           }),
-          v.null()
+          v.null(),
         ])
-      )
+      ),
     }),
     ({ args }) => Queries.post.searchPosts(args)
   ),
@@ -96,19 +97,19 @@ const post = {
 const user = {
   userById: defineQuery(
     v.object({
-      userId: v.string()
+      userId: v.string(),
     }),
     ({ args }) => Queries.user.userById(args)
   ),
   userByUsername: defineQuery(
     v.object({
-      username: v.string()
+      username: v.string(),
     }),
     ({ args }) => Queries.user.userByUsername(args)
   ),
   userWithState: defineQuery(
     v.object({
-      userId: v.string()
+      userId: v.string(),
     }),
     ({ args }) => Queries.user.userWithState(args)
   ),

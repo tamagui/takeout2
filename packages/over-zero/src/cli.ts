@@ -517,8 +517,8 @@ import * as Queries from './groupedQueries'
             validatorDef = schemaLines.join('\n')
           }
 
-          // for void queries, no validator and no args
-          if (!validatorDef) {
+          // for void queries, use the no-validator overload
+          if (q.params === 'void' || !validatorDef) {
             return `  ${q.name}: defineQuery(() => Queries.${file}.${q.name}()),`
           }
 

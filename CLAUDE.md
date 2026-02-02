@@ -15,6 +15,7 @@ even if you're just exploring for info, many of our skills with takeout-* are ju
 - never turn a type to "any" just to make it work
 - never skip a test just to make it work
 - never disable some feature just to make it work
+- NEVER delete bun.lock - it's critical for reproducible builds
 
 ## verification
 
@@ -36,9 +37,29 @@ bun run ci release --dry-run --dev # faster: uses dev server instead of build
 integration tests require the full backend (docker) + frontend on port 8081.
 the CI command handles all setup automatically - it's the easiest way to run everything.
 
-to run integration tests manually:
-1. `bun backend` (wait for migrations)
-2. `bun dev` or `bun web serve` (port 8081)
+**faster iteration: long-running backend + dev server**
+
+for rapid test iteration, keep backend and dev server running in background:
+
+```bash
+# terminal 1: start backend (one time, leave running)
+bun backend:clean && bun backend   # clean is important after CI runs
+
+# terminal 2: start dev server (one time, leave running)
+bun dev
+
+# terminal 3: run specific tests as needed
+cd src/test
+bunx playwright test integration/auth.test.ts      # specific file
+bunx playwright test --grep "login"                # by test name
+bunx playwright test integration/*.test.ts         # pattern match
+```
+
+**important**: after running CI, always do `bun backend:clean` before `bun backend` since CI may have changed auth keys/secrets.
+
+to run integration tests manually (full setup):
+1. `bun backend:clean && bun backend` (wait for migrations)
+2. `bun dev` (port 8081)
 3. `cd src/test && bunx playwright test`
 
 ## code style

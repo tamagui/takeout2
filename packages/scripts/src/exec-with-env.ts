@@ -1,5 +1,7 @@
 #!/usr/bin/env bun
 
+import { spawnSync } from 'node:child_process'
+
 import { ensureExists } from '@take-out/helpers'
 import { loadEnv } from '@take-out/scripts/helpers/env-load'
 
@@ -40,10 +42,9 @@ export async function execWithEnvironment(
     }),
   } as any as Record<string, string>
 
-  return Bun.spawnSync(command.split(' '), {
-    stdin: 'ignore',
-    stdout: 'inherit',
-    stderr: 'inherit',
+  const parts = command.split(' ')
+  return spawnSync(parts[0]!, parts.slice(1), {
+    stdio: ['ignore', 'inherit', 'inherit'],
     env,
   })
 }
@@ -53,5 +54,5 @@ if (import.meta.main) {
     (process.env.NODE_ENV as 'development' | 'production') || 'development',
     process.argv.slice(3).join(' ')
   )
-  process.exit(result.exitCode)
+  process.exit(result.status ?? 1)
 }

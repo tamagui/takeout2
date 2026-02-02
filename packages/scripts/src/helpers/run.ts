@@ -1,9 +1,9 @@
+import { spawn, type ChildProcess } from 'node:child_process'
 import { cpus } from 'node:os'
 
 import type { Timer } from '@take-out/helpers'
-import type { ChildProcess } from 'node:child_process'
 
-export type ProcessType = ChildProcess | Bun.Subprocess
+export type ProcessType = ChildProcess
 export type ProcessHandler = (process: ProcessType) => void
 
 // track if we're in cleanup state (another process failed)
@@ -94,11 +94,11 @@ export async function run(
     let didTimeOut = false
 
     try {
-      const shell = Bun.spawn(['bash', '-c', command], {
+      const shell = spawn('bash', ['-c', command], {
         env: { ...process.env, ...env },
         cwd,
-        stdout: 'pipe',
-        stderr: 'pipe', // always pipe stderr so we can capture it for error messages
+        stdio: ['ignore', 'pipe', 'pipe'],
+        detached: detached ?? false,
       })
 
       if (detached) {
@@ -128,27 +128,26 @@ export async function run(
         }
       }
 
-      const processStream = async (
-        stream: ReadableStream<Uint8Array> | undefined,
+      const processStream = (
+        stream: NodeJS.ReadableStream | null,
         isStderr: boolean
       ): Promise<string> => {
-        if (effectiveSilent && !captureOutput) {
-          return ''
-        }
+        return new Promise((resolve) => {
+          if (effectiveSilent && !captureOutput) {
+            resolve('')
+            return
+          }
 
-        if (!stream) return ''
+          if (!stream) {
+            resolve('')
+            return
+          }
 
-        let buffer = ''
-        let captured = ''
-        const decoder = new TextDecoder()
-        const reader = stream.getReader()
+          let buffer = ''
+          let captured = ''
 
-        try {
-          while (true) {
-            const { done, value } = await reader.read()
-            if (done) break
-
-            const text = buffer + decoder.decode(value, { stream: true })
+          stream.on('data', (chunk: Buffer) => {
+            const text = buffer + chunk.toString()
             const lines = text.split('\n')
 
             // keep last partial line in buffer
@@ -164,31 +163,34 @@ export async function run(
                 writeOutput(line + '\n', isStderr)
               }
             }
-          }
+          })
 
-          // output any remaining buffer
-          if (buffer) {
-            captured += buffer
-            if (!captureOutput || prefix) {
-              writeOutput(buffer + '\n', isStderr)
+          stream.on('end', () => {
+            // output any remaining buffer
+            if (buffer) {
+              captured += buffer
+              if (!captureOutput || prefix) {
+                writeOutput(buffer + '\n', isStderr)
+              }
             }
-          }
-        } catch (err) {
-          console.error(`Error reading stream!`, err)
-        } finally {
-          reader.releaseLock()
-        }
+            resolve(captured)
+          })
 
-        return captured
+          stream.on('error', (err) => {
+            console.error(`Error reading stream!`, err)
+            resolve(captured)
+          })
+        })
       }
 
-      // always process both streams
-      const [stdout, stderr] = await Promise.all([
+      // process both streams and wait for exit
+      const [stdout, stderr, exitCode] = await Promise.all([
         processStream(shell.stdout, false),
         processStream(shell.stderr, true),
+        new Promise<number | null>((resolve) => {
+          shell.on('close', (code) => resolve(code))
+        }),
       ])
-
-      const exitCode = await shell.exited
 
       if (timeoutId) {
         clearTimeout(timeoutId)

@@ -1,6 +1,8 @@
 #!/usr/bin/env bun
 
-const netstat = Bun.spawnSync(`netstat -rn`.split(' ')).stdout
+import { spawnSync } from 'node:child_process'
+
+const netstat = spawnSync('netstat', ['-rn'], { encoding: 'utf-8' }).stdout || ''
 const isTunnelActive = netstat.includes(`10.0.8/22`)
 
 if (!isTunnelActive) {

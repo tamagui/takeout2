@@ -6,8 +6,6 @@
 
 import { $ } from 'bun'
 
-console.info('building migrations...')
-
 // generate drizzle SQL from schema
 await $`bun drizzle-kit generate --config ./src/database/drizzle.config.ts`
 

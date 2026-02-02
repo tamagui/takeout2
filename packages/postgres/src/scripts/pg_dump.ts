@@ -1,3 +1,5 @@
+import { spawnSync } from 'node:child_process'
+
 export type PgDumpOptions = {
   connectionString?: string
   host?: string
@@ -35,12 +37,10 @@ export function runPgDump(options: PgDumpOptions = {}) {
 
   console.info(`Running pg_dump on postgres ${env.PGHOST}/${env.PGDATABASE}`)
 
-  const result = Bun.spawnSync(['pg_dump', ...args], {
-    stdin: 'ignore',
-    stdout: 'inherit',
-    stderr: 'inherit',
+  const result = spawnSync('pg_dump', args, {
+    stdio: ['ignore', 'inherit', 'inherit'],
     env,
   })
 
-  return result.exitCode
+  return result.status
 }

@@ -1,18 +1,21 @@
 #!/usr/bin/env bun
 
+import { spawnSync } from 'node:child_process'
+
 export function getEnvironment(resourceName: string) {
   if (!resourceName) {
     console.error(`No resouce name given:
-      
+
       bun scripts/get-environment.ts [resourceName]
   `)
     process.exit(1)
   }
 
   console.info(`Getting environment for ${resourceName}...`)
-  const state = JSON.parse(
-    Bun.spawnSync(`bun sst state export --stage production`.split(' ')).stdout.toString()
-  )
+  const result = spawnSync('bun', ['sst', 'state', 'export', '--stage', 'production'], {
+    encoding: 'utf-8',
+  })
+  const state = JSON.parse(result.stdout || '{}')
 
   const resource = state.latest.resources.find(
     (x: any) => x.outputs?._dev?.title === resourceName

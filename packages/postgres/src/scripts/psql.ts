@@ -1,3 +1,5 @@
+import { spawnSync } from 'node:child_process'
+
 export type PsqlOptions = {
   connectionString?: string
   host?: string
@@ -40,12 +42,10 @@ export function runPsql(options: PsqlOptions = {}) {
 
   console.info(`Connecting to postgres ${env.PGHOST}/${env.PGDATABASE}`)
 
-  const result = Bun.spawnSync(['psql', ...args], {
-    stdin: 'ignore',
-    stdout: 'inherit',
-    stderr: 'inherit',
+  const result = spawnSync('psql', args, {
+    stdio: ['ignore', 'inherit', 'inherit'],
     env,
   })
 
-  return result.exitCode
+  return result.status
 }

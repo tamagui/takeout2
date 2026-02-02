@@ -190,10 +190,13 @@ async function main() {
           // pack with bun (properly converts workspace:* to versions)
           // use swap-exports for packages with build scripts, otherwise just pack
           if (json.scripts?.build) {
-            await run(`bun run build --swap-exports -- bun pm pack --filename ${tgzPath}`, {
-              cwd,
-              silent: true,
-            })
+            await run(
+              `bun run build --swap-exports -- bun pm pack --filename ${tgzPath}`,
+              {
+                cwd,
+                silent: true,
+              }
+            )
           } else {
             await run(`bun pm pack --filename ${tgzPath}`, {
               cwd,

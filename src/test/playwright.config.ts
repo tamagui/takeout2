@@ -9,7 +9,8 @@ export default defineConfig({
   },
   fullyParallel: false,
   retries: process.env.CI ? 1 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  // workers: process.env.CI ? '50%' : undefined,
+  maxFailures: 1,
   reporter: 'list',
   use: {
     baseURL: 'http://localhost:8081',

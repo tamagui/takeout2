@@ -474,24 +474,27 @@ const skillsCommand = defineCommand({
         // symlink it directly
         const relativePath = relative(skillDir, doc.path)
 
-        // check if symlink already exists and points to same target
-        if (existsSync(skillFile)) {
-          try {
-            const stat = lstatSync(skillFile)
-            if (stat.isSymbolicLink()) {
-              const existingTarget = readFileSync(skillFile, 'utf-8')
-              // symlink exists, check if content matches (via symlink)
-              if (existingTarget === content) {
-                unchanged++
-                continue
-              }
+        // check if something exists at the skill path (including broken symlinks)
+        let shouldCreate = true
+        try {
+          const stat = lstatSync(skillFile)
+          if (stat.isSymbolicLink() && existsSync(skillFile)) {
+            // valid symlink - check if content matches
+            const existingContent = readFileSync(skillFile, 'utf-8')
+            if (existingContent === content) {
+              unchanged++
+              shouldCreate = false
             }
+          }
+          if (shouldCreate) {
             // remove existing file/symlink to recreate
             unlinkSync(skillFile)
-          } catch {
-            // ignore errors, will recreate
           }
+        } catch {
+          // nothing exists at the path
         }
+
+        if (!shouldCreate) continue
 
         symlinkSync(relativePath, skillFile)
         symlinked++
@@ -526,22 +529,24 @@ ${content}
 `
 
         // check if skill already exists and is identical
-        if (existsSync(skillFile)) {
-          try {
-            const stat = lstatSync(skillFile)
-            if (stat.isSymbolicLink()) {
-              unlinkSync(skillFile)
-            } else {
-              const existing = readFileSync(skillFile, 'utf-8')
-              if (existing === skillContent) {
-                unchanged++
-                continue
-              }
+        let shouldWrite = true
+        try {
+          const stat = lstatSync(skillFile)
+          if (stat.isSymbolicLink()) {
+            // remove symlink to replace with generated file
+            unlinkSync(skillFile)
+          } else {
+            const existing = readFileSync(skillFile, 'utf-8')
+            if (existing === skillContent) {
+              unchanged++
+              shouldWrite = false
             }
-          } catch {
-            // ignore errors
           }
+        } catch {
+          // nothing exists at the path
         }
+
+        if (!shouldWrite) continue
 
         writeFileSync(skillFile, skillContent)
         generated++

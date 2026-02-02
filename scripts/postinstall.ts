@@ -32,4 +32,6 @@ await Promise.all([
   //
   $`bun tko run update-local-env`,
   $`bun run one patch`,
+  // regenerate claude code skills from docs (skills dir is gitignored)
+  $`bun tko docs skills`,
 ])

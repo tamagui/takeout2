@@ -1,6 +1,6 @@
 import { Link } from 'one'
 import { memo } from 'react'
-import { Linking } from 'react-native'
+import { Linking, Switch } from 'react-native'
 import { isWeb, ScrollView, SizableText, styled, View, XStack, YStack } from 'tamagui'
 
 import { APP_NAME_LOWERCASE, DOMAIN } from '~/constants/app'
@@ -11,6 +11,23 @@ import { SepHeading } from '~/interface/text/Headings'
 
 const SettingRow = memo(({ item }: { item: SettingItem }) => {
   const Icon = item.icon
+
+  // toggle item with switch
+  if (item.toggle) {
+    return (
+      <SettingRowFrame>
+        <XStack gap="$3" items="center" flex={1}>
+          {Icon && (
+            <View width={24} items="center" justify="center">
+              <Icon size={20} color="$color11" />
+            </View>
+          )}
+          <SizableText size="$5">{item.title}</SizableText>
+        </XStack>
+        <Switch value={item.toggle.value} onValueChange={item.toggle.onValueChange} />
+      </SettingRowFrame>
+    )
+  }
 
   const content = (
     <SettingRowFrame {...(item.onPress && { onPress: item.onPress })}>
@@ -97,8 +114,8 @@ const LogoAndVersion = memo(() => (
 
 const SettingRowFrame = styled(XStack, {
   cursor: 'pointer',
-  height: 56,
   px: '$4',
+  py: '$4',
   items: 'center',
   justify: 'space-between',
   hoverStyle: { bg: '$color2' },

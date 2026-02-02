@@ -1,46 +1,57 @@
 import { getPermissionsAsync, requestPermissionsAsync } from 'expo-notifications'
 import { useCallback, useEffect, useState } from 'react'
-import { Alert, AppState } from 'react-native'
+import { Alert, AppState, Linking } from 'react-native'
 
 export const useNotificationStatus = () => {
-  const [isToggleActive, setIsToggleActive] = useState<boolean>(true)
+  const [isToggleActive, setIsToggleActive] = useState<boolean>(false)
+  const [canAskAgain, setCanAskAgain] = useState<boolean>(true)
 
   const checkNotificationPermissions = useCallback(async () => {
     const status = await getPermissionsAsync()
-    const shouldBeActive = status.granted
-    setIsToggleActive(shouldBeActive)
+    setIsToggleActive(status.granted)
+    setCanAskAgain(status.canAskAgain)
   }, [])
 
-  const handleToggle = useCallback(
-    async (
-      onGranted: () => void,
-      options: { onDenied?: () => void; isForSetting?: boolean } = {}
-    ) => {
-      const { onDenied: _onDenied, isForSetting: _isForSetting } = options
-      if (!isToggleActive) {
-        const status = await requestPermissionsAsync()
-        if (status.granted) {
-          onGranted()
-          setIsToggleActive(true)
-        } else {
-          Alert.alert(
-            'Notification Permission',
-            'Notifications are not enabled. You can enable them in your device settings.',
-            [
-              {
-                text: 'OK',
-                style: 'cancel',
-              },
-            ]
-          )
-        }
-      } else {
-        setIsToggleActive(!isToggleActive)
-        onGranted()
-      }
-    },
-    [isToggleActive]
-  )
+  const openSettings = useCallback(() => {
+    Linking.openSettings()
+  }, [])
+
+  const handleToggle = useCallback(async () => {
+    if (isToggleActive) {
+      // user wants to disable - send them to settings
+      Alert.alert(
+        'Disable Notifications',
+        'To disable notifications, please go to your device settings.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open Settings', onPress: openSettings },
+        ]
+      )
+      return
+    }
+
+    // user wants to enable
+    if (!canAskAgain) {
+      // previously denied - must go to settings
+      Alert.alert(
+        'Enable Notifications',
+        'Notifications were previously disabled. Please enable them in your device settings.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open Settings', onPress: openSettings },
+        ]
+      )
+      return
+    }
+
+    // can request permission
+    const status = await requestPermissionsAsync()
+    if (status.granted) {
+      setIsToggleActive(true)
+    } else {
+      setCanAskAgain(status.canAskAgain)
+    }
+  }, [isToggleActive, canAskAgain, openSettings])
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {

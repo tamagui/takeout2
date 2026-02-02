@@ -1,5 +1,7 @@
 import { useLogout } from '~/features/auth/useLogout'
+import { useNotificationStatus } from '~/features/notification/useNotificationsStatus'
 import { dialogConfirm } from '~/interface/dialogs/actions'
+import { BellIcon } from '~/interface/icons/phosphor/BellIcon'
 import { BookmarkIcon } from '~/interface/icons/phosphor/BookmarkIcon'
 import { ChatCircleIcon } from '~/interface/icons/phosphor/ChatCircleIcon'
 import { DoorIcon } from '~/interface/icons/phosphor/DoorIcon'
@@ -19,6 +21,10 @@ export interface SettingItem {
   onPress?: () => void
   href?: Href
   external?: boolean
+  toggle?: {
+    value: boolean
+    onValueChange: () => void
+  }
 }
 
 export interface SettingSection {
@@ -33,6 +39,8 @@ export function useSettingsData() {
     Icon: ThemeIcon,
     setting: themeSetting,
   } = useToggleTheme()
+  const { isToggleActive: notificationsEnabled, handleToggle: toggleNotifications } =
+    useNotificationStatus()
   const themeLabel = themeSetting[0]?.toUpperCase() + themeSetting.slice(1)
 
   const handleDeleteAccount = async () => {
@@ -51,6 +59,15 @@ export function useSettingsData() {
           title: `Theme: ${themeLabel}`,
           icon: ThemeIcon,
           onPress: toggleTheme,
+        },
+        {
+          id: 'notifications',
+          title: 'Push Notifications',
+          icon: BellIcon,
+          toggle: {
+            value: notificationsEnabled,
+            onValueChange: toggleNotifications,
+          },
         },
         {
           id: 'profile',

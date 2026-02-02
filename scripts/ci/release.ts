@@ -288,7 +288,7 @@ async function runIntegrationTests() {
       })
     }
 
-    await waitForPort(+(process.env.PORT_WEB || 8081))
+    await waitForPort(+(process.env.VITE_PORT_WEB || 8081))
 
     const testEnv = await getTestEnv()
 
@@ -475,7 +475,7 @@ aws_secret_access_key=${process.env.AWS_SECRET_ACCESS_KEY}`
 // ----------- helpers -----------
 
 async function ensurePortClear() {
-  const port = +(process.env.PORT_WEB || 8081)
+  const port = +(process.env.VITE_PORT_WEB || 8081)
   const isPortTaken = await checkPort(port)
   if (isPortTaken) {
     console.error(

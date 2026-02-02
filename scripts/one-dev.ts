@@ -3,7 +3,7 @@
 import { args } from '@take-out/scripts/helpers/args'
 import { $ } from 'bun'
 
-const defaultPort = +(process.env.PORT_WEB || 8081)
+const defaultPort = +(process.env.VITE_PORT_WEB || 8081)
 const { port = defaultPort, _ } = args('--port number')
 
 await $`bun tko ensure-port ${port} --auto-kill Onejs:dev`

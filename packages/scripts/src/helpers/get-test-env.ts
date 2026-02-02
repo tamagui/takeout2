@@ -53,10 +53,10 @@ export async function getTestEnv() {
   const devEnv = await loadEnv('development')
   const serverEnvFallback = await import(join(process.cwd(), 'src/server/env-server'))
 
-  // read ports from .env.development (or env vars) to support per-project configuration
-  const dbPort = process.env.DOCKER_DB_PORT || getDevDbPort() || '5432'
-  const appPort = getPortFromUrl(getDevEnvVar('ONE_SERVER_URL')) || '8081'
-  const minioPort = getPortFromUrl(getDevEnvVar('CLOUDFLARE_R2_ENDPOINT')) || '9200'
+  // read ports from PORT_* env vars (set in .env.development) to support per-project configuration
+  const dbPort = process.env.PORT_POSTGRES || getDevEnvVar('PORT_POSTGRES') || '5433'
+  const appPort = process.env.PORT_WEB || getDevEnvVar('PORT_WEB') || '8081'
+  const minioPort = process.env.PORT_MINIO || getDevEnvVar('PORT_MINIO') || '9200'
 
   const dockerDbBase = `postgresql://user:password@127.0.0.1:${dbPort}`
 

@@ -9,7 +9,7 @@ services:
       timeout: 5s
       retries: 10
     ports:
-      - 5433:5432
+      - "${PORT_POSTGRES:-5433}:5432"
     environment:
       POSTGRES_USER: user
       POSTGRES_DB: postgres
@@ -76,7 +76,7 @@ services:
       - ZERO_CVR_MAX_CONNS=16
       - ZERO_UPSTREAM_MAX_CONNS=32
     ports:
-      - "4848:4848"
+      - "${PORT_ZERO:-4848}:4848"
 
   minio:
     image: minio/minio
@@ -88,8 +88,8 @@ services:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio_password
     ports:
-      - 9200:9000
-      - 9201:9001
+      - "${PORT_MINIO:-9200}:9000"
+      - "${PORT_MINIO_CONSOLE:-9201}:9001"
     volumes:
       - ./.docker/minio:/data
     healthcheck:

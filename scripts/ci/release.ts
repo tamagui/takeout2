@@ -69,8 +69,8 @@ const failures: Array<{ task: string; error: any }> = []
 const SEPARATOR = '\n' + '='.repeat(80)
 
 try {
-  // clear port 8081 before starting
-  await ensurePort8081Clear()
+  // clear web port before starting
+  await ensurePortClear()
 
   await runParallel([
     {
@@ -288,7 +288,7 @@ async function runIntegrationTests() {
       })
     }
 
-    await waitForPort(8081)
+    await waitForPort(+(process.env.PORT_WEB || 8081))
 
     const testEnv = await getTestEnv()
 
@@ -474,11 +474,12 @@ aws_secret_access_key=${process.env.AWS_SECRET_ACCESS_KEY}`
 
 // ----------- helpers -----------
 
-async function ensurePort8081Clear() {
-  const isPortTaken = await checkPort(8081)
+async function ensurePortClear() {
+  const port = +(process.env.PORT_WEB || 8081)
+  const isPortTaken = await checkPort(port)
   if (isPortTaken) {
     console.error(
-      '❌ Port 8081 is already in use. Please stop the existing server before running CI.'
+      `❌ Port ${port} is already in use. Please stop the existing server before running CI.`
     )
     process.exit(1)
   }

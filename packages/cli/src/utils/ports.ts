@@ -46,11 +46,11 @@ function isPortInUse(port: number): { inUse: boolean; pid?: number } {
 }
 
 export const TAKEOUT_PORTS = {
-  postgres: 5432,
-  zero: 4848,
-  web: 8081,
-  minio: 9090,
-  minioConsole: 9091,
+  postgres: +(process.env.PORT_POSTGRES || 5433),
+  zero: +(process.env.PORT_ZERO || 4848),
+  web: +(process.env.PORT_WEB || 8081),
+  minio: +(process.env.PORT_MINIO || 9200),
+  minioConsole: +(process.env.PORT_MINIO_CONSOLE || 9201),
 } as const
 
 export function checkPort(port: number, name: string): PortCheck {

@@ -2,7 +2,7 @@ import { run } from '@take-out/scripts/helpers/run'
 
 export async function buildMigrations(): Promise<void> {
   console.info('\n🔧 building migrations...\n')
-  await run('bun tko migrate build')
+  await run('bun tko db build')
   console.info('✅ migrations built')
 }
 

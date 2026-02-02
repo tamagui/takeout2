@@ -36,18 +36,27 @@ function getDevDbPort(): string | undefined {
   return url ? getPortFromConnectionString(url) : undefined
 }
 
+// extract port from a URL like http://localhost:8081
+function getPortFromUrl(url: string | undefined): string | undefined {
+  if (!url) return undefined
+  try {
+    const parsed = new URL(url)
+    return parsed.port || undefined
+  } catch {
+    return undefined
+  }
+}
+
 export async function getTestEnv() {
   const zeroVersion = getZeroVersion()
   const dockerHost = getDockerHost()
   const devEnv = await loadEnv('development')
   const serverEnvFallback = await import(join(process.cwd(), 'src/server/env-server'))
 
-  // determine db port from (in order of priority):
-  // 1. DOCKER_DB_PORT env var
-  // 2. port from ZERO_UPSTREAM_DB in .env.development file (read directly to avoid
-  //    bun auto-loading .env.production when NODE_ENV=production)
-  // 3. default 5432
+  // read ports from .env.development (or env vars) to support per-project configuration
   const dbPort = process.env.DOCKER_DB_PORT || getDevDbPort() || '5432'
+  const appPort = getPortFromUrl(getDevEnvVar('ONE_SERVER_URL')) || '8081'
+  const minioPort = getPortFromUrl(getDevEnvVar('CLOUDFLARE_R2_ENDPOINT')) || '9200'
 
   const dockerDbBase = `postgresql://user:password@127.0.0.1:${dbPort}`
 
@@ -64,13 +73,13 @@ export async function getTestEnv() {
     }),
     DO_NOT_TRACK: '1',
     ZERO_VERSION: zeroVersion,
-    ZERO_MUTATE_URL: `http://${dockerHost}:8081/api/zero/push`,
-    ZERO_QUERY_URL: `http://${dockerHost}:8081/api/zero/pull`,
+    ZERO_MUTATE_URL: `http://${dockerHost}:${appPort}/api/zero/push`,
+    ZERO_QUERY_URL: `http://${dockerHost}:${appPort}/api/zero/pull`,
     ZERO_UPSTREAM_DB: `${dockerDbBase}/postgres`,
     ZERO_CVR_DB: `${dockerDbBase}/zero_cvr`,
     ZERO_CHANGE_DB: `${dockerDbBase}/zero_cdb`,
-    CLOUDFLARE_R2_ENDPOINT: 'http://127.0.0.1:9200',
-    CLOUDFLARE_R2_PUBLIC_URL: 'http://127.0.0.1:9200',
+    CLOUDFLARE_R2_ENDPOINT: `http://127.0.0.1:${minioPort}`,
+    CLOUDFLARE_R2_PUBLIC_URL: `http://127.0.0.1:${minioPort}`,
     CLOUDFLARE_R2_ACCESS_KEY: 'minio',
     CLOUDFLARE_R2_SECRET_KEY: 'minio_password',
     // ensure auth secret matches dev db keys

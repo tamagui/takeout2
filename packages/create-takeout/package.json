@@ -1,6 +1,6 @@
 {
   "name": "create-takeout",
-  "version": "0.0.62",
+  "version": "0.0.63",
   "description": "Create a new Takeout app",
   "bin": "./run.js",
   "main": "dist/index.js",
@@ -18,7 +18,7 @@
     "yocto-spinner": "^0.1.0"
   },
   "devDependencies": {
-    "@tamagui/build": "2.0.0-rc.0-1769885482630",
+    "@tamagui/build": "2.0.0-rc.0-1769998500160",
     "@types/prompts": "^2.4.9",
     "typescript": "^5.0.0"
   },

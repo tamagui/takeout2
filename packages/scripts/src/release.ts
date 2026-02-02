@@ -1,10 +1,11 @@
+import { tmpdir } from 'node:os'
 import path, { join } from 'node:path'
 
 // note! this is an helper script used by tamagui team for publishing the takeout packages
 // you can delete this from your own app
 
 import { run } from '@take-out/scripts/helpers/run'
-import fs, { ensureDir, writeJSON } from 'fs-extra'
+import fs, { writeJSON } from 'fs-extra'
 import pMap from 'p-map'
 
 // avoid emitter error
@@ -170,104 +171,59 @@ async function main() {
       )
     }
 
-    if (!finish && dryRun) {
-      console.info(`Dry run, exiting before publish`)
-      return
-    }
-
     if (!finish && !rePublish) {
       await run(`git diff`)
     }
 
     if (!finish) {
-      const tmpDir = `/tmp/one-publish`
-      // clean up from previous runs
-      await fs.remove(tmpDir)
-      await ensureDir(tmpDir)
+      const packDir = join(tmpdir(), `takeout-release-${nextVersion}`)
+      await fs.ensureDir(packDir)
 
       await pMap(
         packageJsons,
-        async ({ name, cwd }) => {
-          const publishOptions = [canary && `--tag canary`].filter(Boolean).join(' ')
+        async ({ name, cwd, json }) => {
+          const publishOptions = [canary && `--tag canary`, dryRun && `--dry-run`]
+            .filter(Boolean)
+            .join(' ')
+          const tgzPath = join(packDir, `${name.replace('/', '-')}.tgz`)
 
-          // pack with workspace:* converted to versions
-          const tmpPackageDir = join(tmpDir, name.replace('/', '_'))
-          await fs.copy(cwd, tmpPackageDir, {
-            filter: (src) => {
-              // exclude node_modules to avoid symlink issues
-              return !src.includes('node_modules')
-            },
-          })
-
-          // replace workspace:* with version
-          const pkgJsonPath = join(tmpPackageDir, 'package.json')
-          const pkgJson = await fs.readJSON(pkgJsonPath)
-          for (const field of [
-            'dependencies',
-            'devDependencies',
-            'optionalDependencies',
-            'peerDependencies',
-          ]) {
-            if (!pkgJson[field]) continue
-            for (const depName in pkgJson[field]) {
-              if (pkgJson[field][depName].startsWith('workspace:')) {
-                pkgJson[field][depName] = nextVersion
-              }
-            }
-          }
-          await writeJSON(pkgJsonPath, pkgJson, { spaces: 2 })
-
-          const filename = `${name.replace('/', '_')}-package.tmp.tgz`
-          const absolutePath = `${tmpDir}/${filename}`
-
-          // swap exports.types from ./src/*.ts to ./types/*.d.ts for publishing
-          if (pkgJson.exports) {
-            const swapTypes = (obj: any) => {
-              for (const key in obj) {
-                const val = obj[key]
-                if (typeof val === 'object' && val !== null) {
-                  swapTypes(val)
-                } else if (
-                  key === 'types' &&
-                  typeof val === 'string' &&
-                  val.includes('/src/')
-                ) {
-                  obj[key] = val.replace('/src/', '/types/').replace('.ts', '.d.ts')
-                }
-              }
-            }
-            swapTypes(pkgJson.exports)
-            await writeJSON(pkgJsonPath, pkgJson, { spaces: 2 })
+          // pack with bun (properly converts workspace:* to versions)
+          // use swap-exports for packages with build scripts, otherwise just pack
+          if (json.scripts?.build) {
+            await run(`bun run build --swap-exports -- bun pm pack --filename ${tgzPath}`, {
+              cwd,
+              silent: true,
+            })
+          } else {
+            await run(`bun pm pack --filename ${tgzPath}`, {
+              cwd,
+              silent: true,
+            })
           }
 
-          await run(`npm pack --pack-destination ${tmpDir}`, {
-            cwd: tmpPackageDir,
+          // publish the tgz directly
+          await run(`npm publish ${tgzPath} ${publishOptions}`.trim(), {
+            cwd: packDir,
             silent: true,
           })
 
-          // rename npm's output to our expected filename
-          const npmFilename = `${name.replace('@', '').replace('/', '-')}-${nextVersion}.tgz`
-          await fs.rename(join(tmpDir, npmFilename), absolutePath)
-
-          const publishCommand = ['npm publish', absolutePath, publishOptions]
-            .filter(Boolean)
-            .join(' ')
-
-          console.info(`Publishing ${name}: ${publishCommand}`)
-
-          await run(publishCommand, {
-            cwd: tmpDir,
-          }).catch((err) => console.error(err))
+          console.info(`${dryRun ? '[dry-run] ' : ''}Published ${name}`)
         },
         {
           concurrency: 15,
         }
       )
 
-      console.info(`✅ Published\n`)
+      console.info(`✅ ${dryRun ? '[dry-run] ' : ''}Published\n`)
+
+      // revert version changes after dry-run
+      if (dryRun) {
+        await run(`git checkout -- packages/*/package.json`, { silent: true })
+        console.info('Reverted version changes\n')
+      }
     }
 
-    if (!skipFinish) {
+    if (!skipFinish && !dryRun) {
       // then git tag, commit, push
       if (!finish) {
         await run(`bun install`)

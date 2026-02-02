@@ -1,6 +1,6 @@
 {
   "name": "@take-out/cli",
-  "version": "0.0.62",
+  "version": "0.0.63",
   "description": "CLI tools for Takeout starter kit - interactive onboarding and project setup",
   "type": "module",
   "sideEffects": false,
@@ -64,7 +64,7 @@
     }
   },
   "devDependencies": {
-    "@tamagui/build": "2.0.0-rc.0-1769885482630",
+    "@tamagui/build": "2.0.0-rc.0-1769998500160",
     "@types/node": "24.0.3",
     "bun-types": "latest",
     "oxfmt": "^0.16.0",

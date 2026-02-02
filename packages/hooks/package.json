@@ -1,6 +1,6 @@
 {
   "name": "@take-out/hooks",
-  "version": "0.0.62",
+  "version": "0.0.63",
   "sideEffects": false,
   "source": "src/index.ts",
   "type": "module",
@@ -43,7 +43,7 @@
     "react-native": "*"
   },
   "devDependencies": {
-    "@tamagui/build": "2.0.0-rc.0-1769885482630",
+    "@tamagui/build": "2.0.0-rc.0-1769998500160",
     "react": "*",
     "react-native": "*"
   },

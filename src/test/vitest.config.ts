@@ -32,9 +32,7 @@ export default defineConfig({
 
   plugins: [
     tamaguiPlugin({
-      optimize: false,
-      disableExtraction: true,
-      disableInitialBuild: true,
+      disable: true,
       useReactNativeWebLite: true,
       components: ['tamagui'],
       config: join(rootDir, 'tamagui/tamagui.config.ts'),

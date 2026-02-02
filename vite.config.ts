@@ -43,6 +43,7 @@ export default {
       // vite optimizes deps dynamically as it finds them on client side nav
       // problem is it hard-reloads the app, and that makes for a slow/bad initial DX
       // so we are just telling it to optimize deps that almost always need it here:
+      // NOTE - this is specific to this app, specific to the pages that load in dev / deps
       'better-auth/client',
       'better-auth/client/plugins',
       '@tamagui/toast',

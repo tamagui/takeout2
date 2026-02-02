@@ -55,8 +55,7 @@ export const IsometricChip: React.FC<IsometricChipProps> = ({
           width: width + depth,
           height: depth,
           clipPath: `polygon(0px 0px, ${width}px 0px, ${width + depth}px ${depth}px, ${depth}px ${depth}px)`,
-          backgroundColor:
-            edgeColor === '#111111' ? '#0d0d0d' : edgeColor,
+          backgroundColor: edgeColor === '#111111' ? '#0d0d0d' : edgeColor,
           borderRadius: `0 0 ${radius}px ${radius}px`,
         }}
       />
@@ -89,8 +88,7 @@ export const IsometricChip: React.FC<IsometricChipProps> = ({
               fontSize: 11,
               fontWeight: 600,
               letterSpacing: 1.5,
-              fontFamily:
-                "'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif",
+              fontFamily: "'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif",
               textTransform: 'uppercase',
             }}
           >

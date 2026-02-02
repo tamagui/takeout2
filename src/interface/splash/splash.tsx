@@ -6,9 +6,11 @@ import Animated, {
   useSharedValue,
   withDelay,
   withSequence,
-  withSpring,
   withTiming,
 } from 'react-native-reanimated'
+import { Confetti } from './Confetti'
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 type SplashProps = {
   isReady: boolean
@@ -17,21 +19,32 @@ type SplashProps = {
 
 export const Splash = memo(({ onAnimationEnd, isReady }: SplashProps) => {
   const translateY = useSharedValue(0)
-  const rotateY = useSharedValue(0)
+  const rotateZ = useSharedValue(0)
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
-        { perspective: 1000 },
         { translateY: translateY.value },
-        { rotateY: `${rotateY.value}deg` },
+        { rotateZ: `${rotateZ.value}deg` },
       ],
     }
   })
 
   useEffect(() => {
     if (isReady) {
-      rotateY.set(withDelay(500, withSpring(360, { damping: 12, stiffness: 80 })))
+      rotateZ.set(
+        withDelay(
+          500,
+          withSequence(
+            withTiming(-15, { duration: 80 }),
+            withTiming(15, { duration: 80 }),
+            withTiming(-10, { duration: 70 }),
+            withTiming(10, { duration: 70 }),
+            withTiming(-5, { duration: 60 }),
+            withTiming(0, { duration: 60 })
+          )
+        )
+      )
       translateY.set(
         withDelay(
           1000,
@@ -42,7 +55,7 @@ export const Splash = memo(({ onAnimationEnd, isReady }: SplashProps) => {
     setTimeout(() => {
       onAnimationEnd()
     }, 1850)
-  }, [rotateY, translateY, isReady, onAnimationEnd])
+  }, [rotateZ, translateY, isReady, onAnimationEnd])
 
   return (
     <Animated.View
@@ -57,6 +70,7 @@ export const Splash = memo(({ onAnimationEnd, isReady }: SplashProps) => {
         },
       ]}
     >
+      <Confetti trigger={isReady} originX={SCREEN_WIDTH / 2} originY={SCREEN_HEIGHT / 2 - 40} />
       <Animated.Image
         source={require('../../../assets/logo.png')}
         style={[{ width: 80, height: 80 }, animatedStyle]}

@@ -1,12 +1,6 @@
-import {
-  AbsoluteFill,
-  Easing,
-  interpolate,
-  useCurrentFrame,
-} from 'remotion'
+import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from 'remotion'
 
-const FONT =
-  "'Inter', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
+const FONT = "'Inter', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
 
 export const URLScene: React.FC = () => {
   const frame = useCurrentFrame()

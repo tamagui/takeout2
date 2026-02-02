@@ -3,12 +3,7 @@ import type React from 'react'
 export const TakeoutGhostWeb: React.FC<{ size?: number }> = ({ size = 120 }) => {
   const scale = size / 100
   return (
-    <svg
-      width={100 * scale}
-      height={120 * scale}
-      viewBox="0 0 100 120"
-      fill="none"
-    >
+    <svg width={100 * scale} height={120 * scale} viewBox="0 0 100 120" fill="none">
       {/* wire handle arc */}
       <path
         d="M32,38 C32,14 68,14 68,38"
@@ -38,34 +33,11 @@ export const TakeoutGhostWeb: React.FC<{ size?: number }> = ({ size = 120 }) => 
       />
 
       {/* fold crease */}
-      <line
-        x1="20"
-        y1="40"
-        x2="80"
-        y2="40"
-        stroke="#D8D7D1"
-        strokeWidth="1"
-      />
+      <line x1="20" y1="40" x2="80" y2="40" stroke="#D8D7D1" strokeWidth="1" />
 
       {/* red accent stripes */}
-      <rect
-        x="35"
-        y="65"
-        width="30"
-        height="4"
-        rx="2"
-        fill="#D4342B"
-        opacity="0.5"
-      />
-      <rect
-        x="38"
-        y="74"
-        width="24"
-        height="3"
-        rx="1.5"
-        fill="#D4342B"
-        opacity="0.3"
-      />
+      <rect x="35" y="65" width="30" height="4" rx="2" fill="#D4342B" opacity="0.5" />
+      <rect x="38" y="74" width="24" height="3" rx="1.5" fill="#D4342B" opacity="0.3" />
 
       {/* subtle left shadow */}
       <polygon points="20,40 28,112 28,40" fill="#000" opacity="0.03" />

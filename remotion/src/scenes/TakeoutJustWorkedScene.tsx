@@ -30,17 +30,13 @@ export const TakeoutJustWorkedScene: React.FC = () => {
   return (
     <AbsoluteFill
       style={{
-        background:
-          'linear-gradient(180deg, #050505 0%, #0e0e0e 40%, #0a0a0a 100%)',
+        background: 'linear-gradient(180deg, #050505 0%, #0e0e0e 40%, #0a0a0a 100%)',
         justifyContent: 'center',
         alignItems: 'center',
       }}
     >
       {/* grain */}
-      <svg
-        style={{ position: 'absolute', width: 0, height: 0 }}
-        aria-hidden="true"
-      >
+      <svg style={{ position: 'absolute', width: 0, height: 0 }} aria-hidden="true">
         <defs>
           <filter id="grain-justworked">
             <feTurbulence

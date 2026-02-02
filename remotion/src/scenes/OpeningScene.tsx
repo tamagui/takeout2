@@ -200,17 +200,13 @@ export const OpeningScene: React.FC = () => {
   return (
     <AbsoluteFill
       style={{
-        background:
-          'linear-gradient(180deg, #050505 0%, #0e0e0e 40%, #0a0a0a 100%)',
+        background: 'linear-gradient(180deg, #050505 0%, #0e0e0e 40%, #0a0a0a 100%)',
         justifyContent: 'center',
         alignItems: 'center',
       }}
     >
       {/* grain texture overlay */}
-      <svg
-        style={{ position: 'absolute', width: 0, height: 0 }}
-        aria-hidden="true"
-      >
+      <svg style={{ position: 'absolute', width: 0, height: 0 }} aria-hidden="true">
         <defs>
           <filter id="grain-filter">
             <feTurbulence
@@ -289,12 +285,10 @@ export const OpeningScene: React.FC = () => {
         const scaleBreath = 1 + Math.sin(t * 0.3) * 0.06
 
         // staggered fade in
-        const fadeIn = interpolate(
-          frame,
-          [10 + i * 6, 40 + i * 6],
-          [0, 0.2],
-          { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
-        )
+        const fadeIn = interpolate(frame, [10 + i * 6, 40 + i * 6], [0, 0.2], {
+          extrapolateLeft: 'clamp',
+          extrapolateRight: 'clamp',
+        })
 
         // brighten when word appears
         let brightBoost = 0

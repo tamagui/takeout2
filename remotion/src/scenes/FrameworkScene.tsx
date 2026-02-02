@@ -9,8 +9,7 @@ import {
   useVideoConfig,
 } from 'remotion'
 
-const FONT =
-  "'Inter', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
+const FONT = "'Inter', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
 const COLOR = '#F5CA05'
 
 export const FrameworkScene: React.FC = () => {
@@ -74,7 +73,9 @@ export const FrameworkScene: React.FC = () => {
           width: '100%',
           height: '100%',
           background: `radial-gradient(ellipse 50% 50% at 50% 45%,
-            ${COLOR}${Math.round(bgGlow * 12).toString(16).padStart(2, '0')} 0%,
+            ${COLOR}${Math.round(bgGlow * 12)
+              .toString(16)
+              .padStart(2, '0')} 0%,
             transparent 70%)`,
         }}
       />

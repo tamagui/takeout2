@@ -9,8 +9,7 @@ import {
 
 import { ZeroLogoWeb } from '../components/ZeroLogoWeb'
 
-const FONT =
-  "'Inter', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
+const FONT = "'Inter', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
 const COLOR = '#4ECDC4'
 
 export const DataScene: React.FC = () => {
@@ -49,8 +48,7 @@ export const DataScene: React.FC = () => {
   })
 
   // subtle sync pulse on logo
-  const pulse =
-    frame > 30 ? 1 + Math.sin((frame - 30) * 0.06) * 0.03 : 1
+  const pulse = frame > 30 ? 1 + Math.sin((frame - 30) * 0.06) * 0.03 : 1
 
   return (
     <AbsoluteFill
@@ -67,7 +65,9 @@ export const DataScene: React.FC = () => {
           width: '100%',
           height: '100%',
           background: `radial-gradient(ellipse 50% 50% at 50% 45%,
-            ${COLOR}${Math.round(bgGlow * 15).toString(16).padStart(2, '0')} 0%,
+            ${COLOR}${Math.round(bgGlow * 15)
+              .toString(16)
+              .padStart(2, '0')} 0%,
             transparent 70%)`,
         }}
       />

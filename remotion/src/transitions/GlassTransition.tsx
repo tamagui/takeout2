@@ -1,5 +1,9 @@
-import type { TransitionPresentation, TransitionPresentationComponentProps } from '@remotion/transitions'
 import { AbsoluteFill, interpolate } from 'remotion'
+
+import type {
+  TransitionPresentation,
+  TransitionPresentationComponentProps,
+} from '@remotion/transitions'
 
 const GlassComponent: React.FC<
   TransitionPresentationComponentProps<Record<string, never>>

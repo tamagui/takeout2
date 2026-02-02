@@ -9,8 +9,7 @@ import {
   useVideoConfig,
 } from 'remotion'
 
-const FONT =
-  "'Inter', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
+const FONT = "'Inter', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
 
 export const Takeout2Scene: React.FC = () => {
   const frame = useCurrentFrame()

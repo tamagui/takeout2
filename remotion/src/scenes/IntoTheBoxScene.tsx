@@ -14,8 +14,7 @@ import { TakeoutLogoWeb } from '../components/TakeoutLogoWeb'
 import { TamaguiLogoWeb } from '../components/TamaguiLogoWeb'
 import { ZeroLogoWeb } from '../components/ZeroLogoWeb'
 
-const FONT =
-  "'Inter', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
+const FONT = "'Inter', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
 
 const LOGOS = [
   { Logo: OneLogoWeb, startX: -220, color: '#F5CA05' },
@@ -151,11 +150,7 @@ export const IntoTheBoxScene: React.FC<{ tagline: string }> = ({ tagline }) => {
           {LOGOS.map(({ Logo, startX, color }, i) => {
             const currentX = interpolate(convergeProgress, [0, 1], [startX, 0])
             const currentScale = interpolate(convergeProgress, [0, 1], [1, 0.15])
-            const currentOpacity = interpolate(
-              convergeProgress,
-              [0, 0.8, 1],
-              [1, 0.6, 0]
-            )
+            const currentOpacity = interpolate(convergeProgress, [0, 0.8, 1], [1, 0.6, 0])
 
             const entryScale = interpolate(rowEntrance, [0, 1], [0.5, 1])
             const entryOpacity = interpolate(rowEntrance, [0, 1], [0, 1], {
@@ -238,9 +233,7 @@ export const IntoTheBoxScene: React.FC<{ tagline: string }> = ({ tagline }) => {
           }}
         >
           {displayedTagline}
-          {cursorVisible && (
-            <span style={{ color: '#4ECDC4', marginLeft: 2 }}>|</span>
-          )}
+          {cursorVisible && <span style={{ color: '#4ECDC4', marginLeft: 2 }}>|</span>}
         </div>
       </div>
     </AbsoluteFill>

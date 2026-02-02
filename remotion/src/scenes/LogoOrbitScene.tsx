@@ -110,36 +110,24 @@ export const LogoOrbitScene: React.FC = () => {
   const gridDrift = frame * 0.08
 
   // convergence factor — logos drift toward center
-  const convergeFactor = interpolate(
-    frame,
-    [CONVERGE_START, CONVERGE_END],
-    [1, 0.08],
-    {
-      extrapolateLeft: 'clamp',
-      extrapolateRight: 'clamp',
-      easing: Easing.inOut(Easing.quad),
-    }
-  )
+  const convergeFactor = interpolate(frame, [CONVERGE_START, CONVERGE_END], [1, 0.08], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: Easing.inOut(Easing.quad),
+  })
 
   // logos shrink as they converge
-  const convergeScale = interpolate(
-    frame,
-    [CONVERGE_START, CONVERGE_END],
-    [1, 0.5],
-    {
-      extrapolateLeft: 'clamp',
-      extrapolateRight: 'clamp',
-      easing: Easing.inOut(Easing.quad),
-    }
-  )
+  const convergeScale = interpolate(frame, [CONVERGE_START, CONVERGE_END], [1, 0.5], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: Easing.inOut(Easing.quad),
+  })
 
   // logos fade after convergence
-  const logosFade = interpolate(
-    frame,
-    [CONVERGE_END - 10, CONVERGE_END + 10],
-    [1, 0],
-    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
-  )
+  const logosFade = interpolate(frame, [CONVERGE_END - 10, CONVERGE_END + 10], [1, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
 
   // "just worked." text
   const justWorkedSpring = spring({
@@ -153,27 +141,21 @@ export const LogoOrbitScene: React.FC = () => {
   const justWorkedBlur = interpolate(justWorkedSpring, [0, 1], [5, 0])
 
   // "framework. ui. data." fade out before "just worked."
-  const wordsFade = interpolate(
-    frame,
-    [CONVERGE_START, CONVERGE_START + 25],
-    [1, 0],
-    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
-  )
+  const wordsFade = interpolate(frame, [CONVERGE_START, CONVERGE_START + 25], [1, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
 
   return (
     <AbsoluteFill
       style={{
-        background:
-          'linear-gradient(180deg, #050505 0%, #0e0e0e 40%, #0a0a0a 100%)',
+        background: 'linear-gradient(180deg, #050505 0%, #0e0e0e 40%, #0a0a0a 100%)',
         justifyContent: 'center',
         alignItems: 'center',
       }}
     >
       {/* grain */}
-      <svg
-        style={{ position: 'absolute', width: 0, height: 0 }}
-        aria-hidden="true"
-      >
+      <svg style={{ position: 'absolute', width: 0, height: 0 }} aria-hidden="true">
         <defs>
           <filter id="grain-orbit">
             <feTurbulence
@@ -258,9 +240,7 @@ export const LogoOrbitScene: React.FC = () => {
         const dimOpacity = 0.15
         const litOpacity = 0.8
         const currentOpacity =
-          interpolate(lightUp, [0, 0.6], [dimOpacity, litOpacity]) *
-          entrance *
-          logosFade
+          interpolate(lightUp, [0, 0.6], [dimOpacity, litOpacity]) * entrance * logosFade
 
         // filter: dim = grayscale+bright, lit = colorful with glow
         const isLit = lightUp > 0.1

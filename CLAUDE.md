@@ -66,11 +66,17 @@ bun db:migrate               # build + run migrations
 ```
 
 workflow:
+
+updating schema, just:
 1. edit schema in `src/database/schema*.ts`
-2. run `bun db:add-migration <name>`
-3. run `bun db:migrate`
+2. run `bun db:migrate`
+
+if you need to do something outside schema (rarely!):
+1. run `bun db:add-migration <name>`
+2. run `bun db:migrate`
 
 rules:
 - never write migrations for zero - it manages its own tables automatically
-- never write raw SQL migrations - drizzle generates them from schema changes
-- never create migration files manually - always use `db:add-migration` for consistent naming
+- never write the migration and drizzle schema, we auto-generate that
+- always use `db:add-migration` to add a new one-off migration
+- rarely use one-off migrations, they are for things like deep custom triggers etc

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * @description Run drizzle database migration
+ * @description Run better-auth database migrations
  * @args --dry-run
  */
 

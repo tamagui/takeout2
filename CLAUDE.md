@@ -57,3 +57,20 @@ never modify `/src/server/env-server.ts` - it's auto-generated. to add env vars:
 1. add to `env` section in `package.json`
 2. run `bun env:update`
 3. optionally add example to `.env.development`
+
+## database migrations
+
+```bash
+bun db:add-migration <name>  # create new migration file
+bun db:migrate               # build + run migrations
+```
+
+workflow:
+1. edit schema in `src/database/schema*.ts`
+2. run `bun db:add-migration <name>`
+3. run `bun db:migrate`
+
+rules:
+- never write migrations for zero - it manages its own tables automatically
+- never write raw SQL migrations - drizzle generates them from schema changes
+- never create migration files manually - always use `db:add-migration` for consistent naming

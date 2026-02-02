@@ -1,10 +1,10 @@
 #!/usr/bin/env bun
 
 /**
- * @description Build and run migrations
+ * @description Build and run database migrations
  */
 
 import { $ } from 'bun'
 
-await $`bun tko migrate build`
+await $`bun tko db build`
 await $`RUN=1 bun ./src/database/migrate-dist.js`

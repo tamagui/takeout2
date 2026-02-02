@@ -1,6 +1,6 @@
 {
-  "id": "51f1fcdb-6846-43cc-84e8-a27c25cda797",
-  "prevId": "af336d5c-8101-4a3f-b63f-4f839fd3bb7d",
+  "id": "c35337f6-f49c-4744-87d8-68c202a5e8ea",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -820,6 +820,18 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "imageWidth": {
+          "name": "imageWidth",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "imageHeight": {
+          "name": "imageHeight",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
         },
         "caption": {
           "name": "caption",

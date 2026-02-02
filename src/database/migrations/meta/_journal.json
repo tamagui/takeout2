@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1762358772377,
-      "tag": "0001_tricky_steel_serpent",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1765903247172,
-      "tag": "0001_loose_randall_flagg",
+      "when": 1770008752206,
+      "tag": "0001_initial_schema",
       "breakpoints": true
     }
   ]

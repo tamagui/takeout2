@@ -52,14 +52,6 @@ async function resetDemo() {
   )
   console.info(`  deleted ${commentsResult.rowCount} comments`)
 
-  // delete non-seed likes
-  console.info('deleting user-created likes...')
-  const likesResult = await pool.query(
-    `DELETE FROM "like" WHERE "postId" != ALL($1::text[]) RETURNING "postId"`,
-    [SEED_POST_IDS]
-  )
-  console.info(`  deleted ${likesResult.rowCount} likes`)
-
   // delete non-seed posts
   console.info('deleting user-created posts...')
   const postsResult = await pool.query(
@@ -72,16 +64,6 @@ async function resetDemo() {
   console.info('deleting reports...')
   const reportsResult = await pool.query(`DELETE FROM report RETURNING id`)
   console.info(`  deleted ${reportsResult.rowCount} reports`)
-
-  // delete follows
-  console.info('deleting follows...')
-  const followsResult = await pool.query(`DELETE FROM follow RETURNING "followerId"`)
-  console.info(`  deleted ${followsResult.rowCount} follows`)
-
-  // delete notifications
-  console.info('deleting notifications...')
-  const notificationsResult = await pool.query(`DELETE FROM notification RETURNING id`)
-  console.info(`  deleted ${notificationsResult.rowCount} notifications`)
 
   // delete user state for non-seed users (except demo user)
   console.info('deleting user states...')

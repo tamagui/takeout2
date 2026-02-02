@@ -35,6 +35,8 @@ export const post = pgTable(
     id: text('id').primaryKey(),
     userId: text('userId').notNull(),
     image: text('image').notNull(),
+    imageWidth: integer('imageWidth'),
+    imageHeight: integer('imageHeight'),
     caption: text('caption'),
     hiddenByAdmin: boolean('hiddenByAdmin').notNull().default(false),
     commentCount: integer('commentCount').notNull().default(0),

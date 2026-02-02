@@ -7,6 +7,7 @@ import { DocsCodeBlock } from './DocsCodeBlock'
 import { ProBadge } from './ProBadge'
 import { RouteTree } from './RouteTree'
 import { SimpleTable } from './SimpleTable'
+import { WIPBadge } from './WIPBadge'
 
 const BaseParagraph = styled(Paragraph, {
   size: '$5',
@@ -149,6 +150,7 @@ const components = {
   ProBadge,
   RouteTree,
   SimpleTable,
+  WIPBadge,
 }
 
 export { components }

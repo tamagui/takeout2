@@ -1,0 +1,140 @@
+#!/usr/bin/env bun
+
+/**
+ * @description Reset migrations to a fresh state from current schema files
+ *
+ * Use this after modifying schema-public.ts or schema-private.ts to regenerate
+ * migrations from scratch. This is useful for forkers who want a clean slate.
+ *
+ * WARNING: This deletes all existing migrations! Only use on a fresh database.
+ */
+
+import { spawnSync } from 'node:child_process'
+import {
+  existsSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+  readFileSync,
+  renameSync,
+} from 'node:fs'
+import { join, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const rootDir = join(__dirname, '../..')
+const migrationsDir = join(rootDir, 'src/database/migrations')
+
+async function main() {
+  console.info('\n⚠️  WARNING: This will delete all existing migrations!')
+  console.info('Only use this if you have modified the schema and want a fresh start.')
+  console.info(
+    'Your database should be empty or you should drop/recreate it after this.\n'
+  )
+
+  // prompt for confirmation
+  const rl = await import('node:readline')
+  const readline = rl.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  })
+
+  const answer = await new Promise<string>((resolve) => {
+    readline.question('Continue? (y/N): ', resolve)
+  })
+  readline.close()
+
+  if (answer.toLowerCase() !== 'y') {
+    console.info('Cancelled.')
+    process.exit(0)
+  }
+
+  console.info('\n1. Clearing existing migrations...')
+
+  // delete all files in migrations dir except meta folder initially
+  if (existsSync(migrationsDir)) {
+    const files = readdirSync(migrationsDir)
+    for (const file of files) {
+      const filePath = join(migrationsDir, file)
+      rmSync(filePath, { recursive: true })
+    }
+  }
+
+  console.info('2. Generating fresh migration from schema...')
+
+  const result = spawnSync(
+    'bunx',
+    ['drizzle-kit', 'generate', '--config=src/database/drizzle.config.ts'],
+    {
+      cwd: rootDir,
+      stdio: 'inherit',
+    }
+  )
+
+  if (result.status !== 0) {
+    console.error('Failed to generate migration')
+    process.exit(1)
+  }
+
+  console.info('3. Renaming to 0001_initial_schema...')
+
+  // find the generated file (drizzle uses 0000_random_name.sql)
+  const newFiles = readdirSync(migrationsDir).filter((f) => f.endsWith('.sql'))
+  if (newFiles.length !== 1) {
+    console.error('Expected exactly one SQL file, found:', newFiles)
+    process.exit(1)
+  }
+
+  const generatedFile = newFiles[0]!
+  const newSqlPath = join(migrationsDir, '0001_initial_schema.sql')
+
+  renameSync(join(migrationsDir, generatedFile), newSqlPath)
+
+  // update the journal
+  const journalPath = join(migrationsDir, 'meta/_journal.json')
+  if (existsSync(journalPath)) {
+    const journal = JSON.parse(readFileSync(journalPath, 'utf-8'))
+    if (journal.entries?.[0]) {
+      journal.entries[0].tag = '0001_initial_schema'
+    }
+    writeFileSync(journalPath, JSON.stringify(journal, null, 2))
+  }
+
+  // rename snapshot
+  const metaDir = join(migrationsDir, 'meta')
+  const snapshots = readdirSync(metaDir).filter((f) => f.endsWith('_snapshot.json'))
+  if (snapshots.length === 1) {
+    renameSync(join(metaDir, snapshots[0]!), join(metaDir, '0001_snapshot.json'))
+  }
+
+  // create TS wrapper using ?raw import for bundling
+  console.info('4. Creating TypeScript wrapper...')
+
+  const tsWrapper = `import sql from './0001_initial_schema.sql?raw'
+
+import type { PoolClient } from 'pg'
+
+export async function up(client: PoolClient) {
+  const statements = sql.split('--> statement-breakpoint')
+  for (const statement of statements) {
+    const trimmed = statement.trim()
+    if (trimmed) {
+      await client.query(trimmed)
+    }
+  }
+}
+`
+
+  writeFileSync(join(migrationsDir, '0001_initial_schema.ts'), tsWrapper)
+
+  console.info('\n✅ Done! Your migrations have been reset.')
+  console.info('\nNext steps:')
+  console.info('  1. If you have custom triggers or functions, add them to the .sql file')
+  console.info('  2. Drop and recreate your database (or use a fresh one)')
+  console.info('  3. Run: bun db:migrate')
+}
+
+main().catch((err) => {
+  console.error('Error:', err)
+  process.exit(1)
+})

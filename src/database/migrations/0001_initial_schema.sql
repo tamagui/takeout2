@@ -75,6 +75,14 @@ CREATE TABLE "block" (
 	CONSTRAINT "block_blocker_blocked_unique" UNIQUE("blockerId","blockedId")
 );
 --> statement-breakpoint
+CREATE TABLE "comment" (
+	"id" text PRIMARY KEY NOT NULL,
+	"postId" text NOT NULL,
+	"userId" text NOT NULL,
+	"content" text NOT NULL,
+	"createdAt" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "device" (
 	"id" text PRIMARY KEY NOT NULL,
 	"userId" text NOT NULL,
@@ -108,8 +116,11 @@ CREATE TABLE "post" (
 	"id" text PRIMARY KEY NOT NULL,
 	"userId" text NOT NULL,
 	"image" text NOT NULL,
+	"imageWidth" integer,
+	"imageHeight" integer,
 	"caption" text,
 	"hiddenByAdmin" boolean DEFAULT false NOT NULL,
+	"commentCount" integer DEFAULT 0 NOT NULL,
 	"createdAt" timestamp DEFAULT now() NOT NULL,
 	"updatedAt" timestamp
 );
@@ -152,6 +163,8 @@ ALTER TABLE "account" ADD CONSTRAINT "account_userId_user_id_fk" FOREIGN KEY ("u
 ALTER TABLE "session" ADD CONSTRAINT "session_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "block_blockerId_idx" ON "block" USING btree ("blockerId");--> statement-breakpoint
 CREATE INDEX "block_blockedId_idx" ON "block" USING btree ("blockedId");--> statement-breakpoint
+CREATE INDEX "comment_postId_idx" ON "comment" USING btree ("postId");--> statement-breakpoint
+CREATE INDEX "comment_userId_idx" ON "comment" USING btree ("userId");--> statement-breakpoint
 CREATE INDEX "device_userId_idx" ON "device" USING btree ("userId");--> statement-breakpoint
 CREATE INDEX "device_pushToken_idx" ON "device" USING btree ("pushToken");--> statement-breakpoint
 CREATE INDEX "invite_email_idx" ON "invite" USING btree ("email");--> statement-breakpoint
@@ -160,4 +173,27 @@ CREATE INDEX "post_createdAt_idx" ON "post" USING btree ("createdAt");--> statem
 CREATE INDEX "report_reporterId_idx" ON "report" USING btree ("reporterId");--> statement-breakpoint
 CREATE INDEX "report_reportedUserId_idx" ON "report" USING btree ("reportedUserId");--> statement-breakpoint
 CREATE INDEX "report_reportedPostId_idx" ON "report" USING btree ("reportedPostId");--> statement-breakpoint
-CREATE INDEX "report_status_idx" ON "report" USING btree ("status");
+CREATE INDEX "report_status_idx" ON "report" USING btree ("status");--> statement-breakpoint
+CREATE OR REPLACE FUNCTION update_post_comment_count()
+RETURNS TRIGGER AS $$
+DECLARE
+  target_post_id text;
+  new_count integer;
+BEGIN
+  IF TG_OP = 'DELETE' THEN
+    target_post_id := OLD."postId";
+  ELSE
+    target_post_id := NEW."postId";
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM "post" WHERE "id" = target_post_id) THEN
+    RETURN NULL;
+  END IF;
+  SELECT COUNT(*) INTO new_count FROM "comment" WHERE "postId" = target_post_id;
+  UPDATE "post" SET "commentCount" = new_count WHERE "id" = target_post_id;
+  RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;--> statement-breakpoint
+CREATE TRIGGER post_comment_count_trigger
+AFTER INSERT OR DELETE ON "comment"
+FOR EACH ROW
+EXECUTE FUNCTION update_post_comment_count();

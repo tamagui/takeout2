@@ -129,8 +129,8 @@ export function discoverScripts(
       const stat = statSync(fullPath)
 
       if (stat.isDirectory()) {
-        // skip helpers directories and limit depth to maxDepth
-        if (entry === 'helpers' || depth >= maxDepth) {
+        // skip helpers/internal directories and limit depth to maxDepth
+        if (entry === 'helpers' || entry === 'internal' || depth >= maxDepth) {
           continue
         }
         // recursively discover in subdirectories

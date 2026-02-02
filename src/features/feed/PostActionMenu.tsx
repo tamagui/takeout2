@@ -209,10 +209,9 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
 
               <Menu.Portal zIndex={200}>
                 <Menu.SubContent
-                  enterStyle={{ scale: 0.9, opacity: 0, x: -5 }}
-                  exitStyle={{ scale: 0.95, opacity: 0, x: -3 }}
+                  enterStyle={{ scale: 0.95, opacity: 0 }}
+                  exitStyle={{ scale: 0.95, opacity: 0 }}
                   transition="quickestLessBouncy"
-                  transformOrigin="left top"
                   elevation="$3"
                   minW={200}
                   bg="$background"

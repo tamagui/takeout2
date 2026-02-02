@@ -1,16 +1,22 @@
 import { Slot, Stack } from 'one'
 
-export function AppLayout() {
+import { notificationPromptStorage } from '~/features/notification/notificationPromptStorage'
+
+export const AppLayout = () => {
+  // check if user has seen the notification prompt (sync read from MMKV)
+  const hasSeenNotificationPrompt = notificationPromptStorage.get() === true
+
   return (
     <>
       {!process.env.VITE_NATIVE ? (
         <Slot />
       ) : (
-        // We need Stack here for transition animation to work on native
+        // show notification prompt on first login, otherwise show tabs
         <Stack
           screenOptions={{
             headerShown: false,
           }}
+          initialRouteName={hasSeenNotificationPrompt ? '(tabs)' : 'notification'}
         >
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="settings" />

@@ -3,13 +3,14 @@ import { useEffect, useState } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { AnimatePresence, H5, View, YStack } from 'tamagui'
 
+import { notificationPromptStorage } from '~/features/notification/notificationPromptStorage'
+import { registerForPushNotificationsAsync } from '~/features/notification/registerForPushNotificationsAsync'
+import { Button } from '~/interface/buttons/Button'
 import {
   NOTIFICATION_CARD_GAP,
   NOTIFICATION_CARD_HEIGHT,
   NotificationCard,
-} from '~/features/notification/NotificationCard'
-import { registerForPushNotificationsAsync } from '~/features/notification/registerForPushNotificationsAsync'
-import { Button } from '~/interface/buttons/Button'
+} from '~/interface/notification/NotificationCard'
 import { PageLayout } from '~/interface/pages/PageLayout'
 
 import type { NotificationItem } from '~/features/notification/types'
@@ -67,7 +68,9 @@ export const NotificationPage = () => {
     }
   }, [])
 
-  const navigateToHome = () => {
+  const completeAndNavigate = () => {
+    // mark as seen so we don't show again
+    notificationPromptStorage.set(true)
     router.replace('/home')
   }
 
@@ -78,11 +81,11 @@ export const NotificationPage = () => {
     } else {
       console.info('notification registration failed:', result.error)
     }
-    navigateToHome()
+    completeAndNavigate()
   }
 
   const handleSkip = () => {
-    navigateToHome()
+    completeAndNavigate()
   }
 
   return (

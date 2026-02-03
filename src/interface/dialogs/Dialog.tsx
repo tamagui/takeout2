@@ -89,6 +89,9 @@ const DialogComponent = ({
               transition="medium"
               enterStyle={{ opacity: 0 }}
               exitStyle={{ opacity: 0 }}
+              onPress={() => {
+                props.onOpenChange?.(false)
+              }}
             />
             <Sheet.Frame
               theme="surface2"

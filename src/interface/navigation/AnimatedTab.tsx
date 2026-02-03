@@ -9,7 +9,7 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated'
 
-import { Pressable } from '~/interface/buttons/Pressable'
+import { Button } from '../buttons/Button'
 
 import type { IconComponent } from '~/interface/icons/types'
 
@@ -59,20 +59,22 @@ export const AnimatedTab = memo(
     })
 
     return (
-      <Pressable
+      <Button
+        unstyled
+        variant="transparent"
         onPress={onPress}
         onLongPress={onLongPress}
         flex={1}
         items="center"
         justify="center"
         rounded={100}
-        m={5}
+        haptic
         position="relative"
       >
         <Animated.View style={animatedIconStyle}>
           <Icon size={24} color={isFocused ? '$color' : '$color10'} />
         </Animated.View>
-      </Pressable>
+      </Button>
     )
   }
 )

@@ -3,7 +3,9 @@
   "permissions": {
     "allow": [
       "Bash(bunx remotion studio:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(bunx remotion add:*)",
+      "Bash(bun add:*)"
     ],
     "deny": []
   },

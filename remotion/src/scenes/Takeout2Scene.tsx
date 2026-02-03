@@ -15,39 +15,50 @@ export const Takeout2Scene: React.FC = () => {
   const frame = useCurrentFrame()
   const { fps } = useVideoConfig()
 
-  // logo entrance
+  // logo entrance - starts from bottom like the previous scene's text
+  // this creates visual continuity with the ShipFasterScene
   const logoSpring = spring({
-    frame: Math.max(0, frame - 10),
+    frame: Math.max(0, frame - 5),
     fps,
-    config: { damping: 20, stiffness: 200 },
-    durationInFrames: 30,
+    config: { damping: 12, stiffness: 80, mass: 1.2 },
+    durationInFrames: 45,
   })
-  const logoScale = interpolate(logoSpring, [0, 1], [0.6, 1])
-  const logoOpacity = interpolate(logoSpring, [0, 1], [0, 1], {
+  const logoY = interpolate(logoSpring, [0, 1], [60, 0])
+  const logoScale = interpolate(logoSpring, [0, 1], [0.7, 1])
+  const logoOpacity = interpolate(logoSpring, [0, 0.3], [0, 1], {
     extrapolateRight: 'clamp',
   })
+  // slight rotation for organic feel
+  const logoRotation = interpolate(logoSpring, [0, 1], [-8, 0])
 
-  // title entrance
+  // title entrance - follows logo with matching motion
   const titleSpring = spring({
-    frame: Math.max(0, frame - 30),
+    frame: Math.max(0, frame - 25),
     fps,
-    config: { damping: 20, stiffness: 180 },
-    durationInFrames: 25,
+    config: { damping: 14, stiffness: 90, mass: 1 },
+    durationInFrames: 40,
   })
-  const titleY = interpolate(titleSpring, [0, 1], [20, 0])
-  const titleOpacity = interpolate(titleSpring, [0, 1], [0, 1], {
+  const titleY = interpolate(titleSpring, [0, 1], [35, 0])
+  const titleOpacity = interpolate(titleSpring, [0, 0.35], [0, 1], {
     extrapolateRight: 'clamp',
   })
+  const titleScale = interpolate(titleSpring, [0, 1], [0.9, 1])
 
-  // background glow
-  const bgGlow = interpolate(frame, [10, 60], [0, 0.5], {
+  // background glow - starts earlier and more dramatic
+  const bgGlow = interpolate(frame, [0, 50], [0, 0.6], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: Easing.out(Easing.quad),
   })
 
   // subtle float for logo only, starts after animations settle
-  const floatY = frame > 70 ? Math.sin((frame - 70) * 0.018) * 2 : 0
+  const floatStart = 65
+  const floatProgress = Math.max(0, frame - floatStart)
+  const floatY = floatProgress > 0 ? Math.sin(floatProgress * 0.02) * 4 : 0
+  const floatRotate = floatProgress > 0 ? Math.sin(floatProgress * 0.015) * 1 : 0
+
+  // breathing scale for the whole container
+  const breatheScale = floatProgress > 0 ? 1 + Math.sin(floatProgress * 0.025) * 0.006 : 1
 
   return (
     <AbsoluteFill
@@ -63,10 +74,10 @@ export const Takeout2Scene: React.FC = () => {
           position: 'absolute',
           width: '100%',
           height: '100%',
-          background: `radial-gradient(ellipse 50% 50% at 50% 45%,
-            rgba(78, 205, 196, ${bgGlow * 0.12}) 0%,
-            rgba(168, 85, 247, ${bgGlow * 0.06}) 40%,
-            transparent 70%)`,
+          background: `radial-gradient(ellipse 55% 55% at 50% 45%,
+            rgba(78, 205, 196, ${bgGlow * 0.14}) 0%,
+            rgba(168, 85, 247, ${bgGlow * 0.08}) 45%,
+            transparent 75%)`,
         }}
       />
 
@@ -76,13 +87,18 @@ export const Takeout2Scene: React.FC = () => {
           flexDirection: 'column',
           alignItems: 'center',
           gap: 24,
+          transform: `scale(${breatheScale})`,
         }}
       >
         {/* logo with float */}
         <div
           style={{
             opacity: logoOpacity,
-            transform: `scale(${logoScale}) translateY(${floatY}px)`,
+            transform: `
+              translateY(${logoY + floatY}px)
+              scale(${logoScale})
+              rotate(${logoRotation + floatRotate}deg)
+            `,
           }}
         >
           <Img
@@ -95,7 +111,7 @@ export const Takeout2Scene: React.FC = () => {
           />
         </div>
 
-        {/* takeout 2 text - no float, stable */}
+        {/* takeout 2 text */}
         <div
           style={{
             fontSize: 56,
@@ -104,7 +120,7 @@ export const Takeout2Scene: React.FC = () => {
             color: '#ffffff',
             letterSpacing: -1,
             opacity: titleOpacity,
-            transform: `translateY(${titleY}px)`,
+            transform: `translateY(${titleY}px) scale(${titleScale})`,
           }}
         >
           Takeout 2

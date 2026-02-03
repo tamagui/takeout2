@@ -42,7 +42,7 @@ const FEATURES = [
 ]
 
 const FPS = 60
-const FRAMES_PER_WORD = 10 // slower - ~0.17s per word
+const FRAMES_PER_WORD = 10
 const INTRO_DELAY = 10
 const CYCLE_FRAMES = FEATURES.length * FRAMES_PER_WORD
 const OUTRO_START = INTRO_DELAY + CYCLE_FRAMES
@@ -68,71 +68,108 @@ export const FeatureFlash: React.FC = () => {
 
   const currentFeature = FEATURES[wordIndex]
 
-  // current word animation - smoother, no harsh transitions
-  const wordScale = interpolate(wordProgress, [0, 0.2, 0.8, 1], [0.85, 1.02, 1.02, 0.85], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: Easing.out(Easing.quad),
-  })
+  // word animation - organic spring-like feel using bezier curves
+  // entry: quick snap in with slight overshoot
+  // exit: smooth fade out with upward drift
+  const wordScale = interpolate(
+    wordProgress,
+    [0, 0.15, 0.25, 0.75, 1],
+    [0.7, 1.06, 1, 1, 0.92],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: Easing.bezier(0.34, 1.56, 0.64, 1),
+    }
+  )
 
-  const wordOpacity = interpolate(wordProgress, [0, 0.12, 0.88, 1], [0, 1, 1, 0], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  })
+  // opacity with smooth bezier curve - faster in, gradual out
+  const wordOpacity = interpolate(
+    wordProgress,
+    [0, 0.1, 0.7, 1],
+    [0, 1, 1, 0],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: Easing.bezier(0.22, 1, 0.36, 1),
+    }
+  )
 
-  const wordY = interpolate(wordProgress, [0, 0.2, 0.8, 1], [35, 0, 0, -35], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: Easing.out(Easing.quad),
-  })
+  // Y motion - spring up, settle, drift up on exit
+  const wordY = interpolate(
+    wordProgress,
+    [0, 0.12, 0.22, 0.75, 1],
+    [50, -8, 0, 0, -40],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: Easing.bezier(0.22, 1, 0.36, 1),
+    }
+  )
 
-  // subtle blur only at edges
-  const wordBlur = interpolate(wordProgress, [0, 0.15, 0.85, 1], [4, 0, 0, 4], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  })
+  // subtle rotation for organic feel
+  const wordRotation = interpolate(
+    wordProgress,
+    [0, 0.15, 0.3, 0.85, 1],
+    [-2, 1, 0, 0, 1.5],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    }
+  )
 
-  // glow intensity based on word progress
-  const glowIntensity = interpolate(wordProgress, [0, 0.3, 0.7, 1], [0.1, 0.4, 0.4, 0.1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  })
+  // blur transitions - sharper in middle
+  const wordBlur = interpolate(
+    wordProgress,
+    [0, 0.12, 0.8, 1],
+    [6, 0, 0, 5],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    }
+  )
+
+  // glow intensity - pulses with word
+  const glowIntensity = interpolate(
+    wordProgress,
+    [0, 0.2, 0.5, 0.8, 1],
+    [0.05, 0.5, 0.35, 0.3, 0.05],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    }
+  )
 
   // outro animations
   const outroFrame = Math.max(0, frame - OUTRO_START)
 
-  // logo uses same spring config as title for consistent appearance
+  // logo fades in with subtle rotation - no scale
   const logoSpring = spring({
     frame: outroFrame,
     fps,
-    config: { damping: 18, stiffness: 150 },
-    durationInFrames: 30,
+    config: { damping: 14, stiffness: 100 },
+    durationInFrames: 40,
+  })
+  const logoOpacity = interpolate(logoSpring, [0, 0.4], [0, 1], {
+    extrapolateRight: 'clamp',
+  })
+  const logoRotation = interpolate(logoSpring, [0, 1], [-10, 0])
+
+  // title and url just fade in - no movement
+  const titleOpacity = interpolate(outroFrame, [5, 25], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: Easing.out(Easing.quad),
   })
 
-  const logoY = interpolate(logoSpring, [0, 1], [40, 0])
-  const logoOpacity = logoSpring
-
-  const titleSpring = spring({
-    frame: outroFrame,
-    fps,
-    config: { damping: 18, stiffness: 150 },
-    durationInFrames: 30,
+  const urlOpacity = interpolate(outroFrame, [20, 40], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: Easing.out(Easing.quad),
   })
-  const titleY = interpolate(titleSpring, [0, 1], [40, 0])
-  const titleOpacity = titleSpring
-
-  const urlSpring = spring({
-    frame: Math.max(0, outroFrame - 28),
-    fps,
-    config: { damping: 200 },
-    durationInFrames: 25,
-  })
-  const urlY = interpolate(urlSpring, [0, 1], [25, 0])
-  const urlOpacity = urlSpring
 
   // background glow during outro
   const bgGlow = isOutro
-    ? interpolate(outroFrame, [0, 50], [0, 0.5], {
+    ? interpolate(outroFrame, [0, 40], [0, 0.6], {
         extrapolateRight: 'clamp',
         easing: Easing.out(Easing.quad),
       })
@@ -140,12 +177,18 @@ export const FeatureFlash: React.FC = () => {
 
   // shimmer on title
   const shimmerX = isOutro
-    ? interpolate(outroFrame, [30, 70], [-300, 500], {
+    ? interpolate(outroFrame, [20, 60], [-300, 500], {
         extrapolateLeft: 'clamp',
         extrapolateRight: 'clamp',
         easing: Easing.inOut(Easing.quad),
       })
     : -300
+
+  // subtle float for logo only after settle
+  const floatStart = 60
+  const floatProgress = Math.max(0, outroFrame - floatStart)
+  const floatY = floatProgress > 0 ? Math.sin(floatProgress * 0.025) * 4 : 0
+  const floatRotate = floatProgress > 0 ? Math.sin(floatProgress * 0.02) * 0.8 : 0
 
   return (
     <AbsoluteFill
@@ -201,12 +244,12 @@ export const FeatureFlash: React.FC = () => {
             color: '#fff',
             letterSpacing: -3,
             opacity: wordOpacity,
-            transform: `translateY(${wordY}px) scale(${wordScale})`,
+            transform: `translateY(${wordY}px) scale(${wordScale}) rotate(${wordRotation}deg)`,
             filter: `blur(${wordBlur}px)`,
             textShadow: `
-              0 0 ${40 * glowIntensity}px ${currentFeature.color},
-              0 0 ${80 * glowIntensity}px ${currentFeature.color}60,
-              0 0 ${120 * glowIntensity}px ${currentFeature.color}30
+              0 0 ${50 * glowIntensity}px ${currentFeature.color},
+              0 0 ${100 * glowIntensity}px ${currentFeature.color}70,
+              0 0 ${150 * glowIntensity}px ${currentFeature.color}40
             `,
           }}
         >
@@ -221,25 +264,24 @@ export const FeatureFlash: React.FC = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: 28,
+            gap: 24,
           }}
         >
-          {/* 3D logo - same animation style as title */}
+          {/* 3D logo - fades in with rotation, floats after */}
           <div
             style={{
               opacity: logoOpacity,
-              transform: `translateY(${logoY}px)`,
+              transform: `translateY(${floatY}px) rotate(${logoRotation + floatRotate}deg)`,
             }}
           >
             <TakeoutBox3DCanvas width={400} height={400} rotationSpeed={0.03} />
           </div>
 
-          {/* title with shimmer */}
+          {/* title with shimmer - static position */}
           <div
             style={{
               position: 'relative',
               opacity: titleOpacity,
-              transform: `translateY(${titleY}px)`,
               overflow: 'hidden',
             }}
           >
@@ -268,11 +310,10 @@ export const FeatureFlash: React.FC = () => {
             />
           </div>
 
-          {/* url */}
+          {/* url - static position */}
           <div
             style={{
               opacity: urlOpacity,
-              transform: `translateY(${urlY}px)`,
             }}
           >
             <div

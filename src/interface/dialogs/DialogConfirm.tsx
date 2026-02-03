@@ -35,7 +35,7 @@ export const DialogConfirm = () => {
         }
       }}
     >
-      <YStack pointerEvents="box-none" gap="$2" $md={{ flex: 1 }}>
+      <YStack pointerEvents="box-none" gap="$2" mb="$4" $md={{ flex: 1 }}>
         <Dialog.Header title={state?.title} description={state?.description} />
 
         {state?.extraConfirm && (
@@ -48,15 +48,13 @@ export const DialogConfirm = () => {
       </YStack>
 
       <XStack pointerEvents="box-none" justify="flex-end" gap="$2">
-        <Dialog.Close asChild>
-          <Button
-            onPress={() => {
-              close(false)
-            }}
-          >
-            Cancel
-          </Button>
-        </Dialog.Close>
+        <Button
+          onPress={() => {
+            close(false)
+          }}
+        >
+          Cancel
+        </Button>
 
         <Button
           variant="action"

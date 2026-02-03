@@ -18,7 +18,7 @@ const IS_DEV = APP_VARIANT === 'development'
 const getBundleId = () => {
   // use tamagui bundle ids for production/preview, takeout for dev
   if (APP_VARIANT === 'development') {
-    return 'com.takeout.app.dev'
+    return 'dev.tamagui.takeout.dev'
   } else if (APP_VARIANT === 'preview') {
     return 'dev.tamagui.takeout.preview'
   }

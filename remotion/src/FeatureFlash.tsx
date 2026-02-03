@@ -1,15 +1,19 @@
+import { loadFont } from '@remotion/google-fonts/InterTight'
 import {
   AbsoluteFill,
   Easing,
-  Img,
   interpolate,
   spring,
-  staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion'
 
-const FONT = "'Inter', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
+import { TakeoutBox3DCanvas } from './components/TakeoutBox3D'
+
+const { fontFamily } = loadFont('normal', {
+  weights: ['500', '700', '900'],
+  subsets: ['latin'],
+})
 
 // all the features - rapid fire with accent colors
 const FEATURES = [
@@ -38,7 +42,7 @@ const FEATURES = [
 ]
 
 const FPS = 60
-const FRAMES_PER_WORD = 6 // super fast - 0.1s per word
+const FRAMES_PER_WORD = 10 // slower - ~0.17s per word
 const INTRO_DELAY = 10
 const CYCLE_FRAMES = FEATURES.length * FRAMES_PER_WORD
 const OUTRO_START = INTRO_DELAY + CYCLE_FRAMES
@@ -97,21 +101,19 @@ export const FeatureFlash: React.FC = () => {
   // outro animations
   const outroFrame = Math.max(0, frame - OUTRO_START)
 
+  // logo uses same spring config as title for consistent appearance
   const logoSpring = spring({
     frame: outroFrame,
     fps,
-    config: { damping: 14, stiffness: 120 },
-    durationInFrames: 35,
+    config: { damping: 18, stiffness: 150 },
+    durationInFrames: 30,
   })
 
-  const logoScale = interpolate(logoSpring, [0, 1], [0.2, 1])
-  const logoOpacity = interpolate(logoSpring, [0, 0.4], [0, 1], {
-    extrapolateRight: 'clamp',
-  })
-  const logoRotate = interpolate(logoSpring, [0, 1], [-20, 0])
+  const logoY = interpolate(logoSpring, [0, 1], [40, 0])
+  const logoOpacity = logoSpring
 
   const titleSpring = spring({
-    frame: Math.max(0, outroFrame - 12),
+    frame: outroFrame,
     fps,
     config: { damping: 18, stiffness: 150 },
     durationInFrames: 30,
@@ -144,9 +146,6 @@ export const FeatureFlash: React.FC = () => {
         easing: Easing.inOut(Easing.quad),
       })
     : -300
-
-  // subtle float after settle
-  const floatY = outroFrame > 70 ? Math.sin((outroFrame - 70) * 0.025) * 4 : 0
 
   return (
     <AbsoluteFill
@@ -197,10 +196,10 @@ export const FeatureFlash: React.FC = () => {
         <div
           style={{
             fontSize: 160,
-            fontFamily: FONT,
-            fontWeight: 900,
+            fontFamily,
+            fontWeight: 700,
             color: '#fff',
-            letterSpacing: -4,
+            letterSpacing: -3,
             opacity: wordOpacity,
             transform: `translateY(${wordY}px) scale(${wordScale})`,
             filter: `blur(${wordBlur}px)`,
@@ -209,7 +208,6 @@ export const FeatureFlash: React.FC = () => {
               0 0 ${80 * glowIntensity}px ${currentFeature.color}60,
               0 0 ${120 * glowIntensity}px ${currentFeature.color}30
             `,
-            textTransform: 'uppercase',
           }}
         >
           {currentFeature.text}
@@ -226,22 +224,14 @@ export const FeatureFlash: React.FC = () => {
             gap: 28,
           }}
         >
-          {/* logo - only the logo floats */}
+          {/* 3D logo - same animation style as title */}
           <div
             style={{
               opacity: logoOpacity,
-              transform: `scale(${logoScale}) rotate(${logoRotate}deg) translateY(${floatY}px)`,
-              filter: `drop-shadow(0 0 40px rgba(236, 208, 10, 0.5))`,
+              transform: `translateY(${logoY}px)`,
             }}
           >
-            <Img
-              src={staticFile('logo.png')}
-              style={{
-                width: 200,
-                height: 200,
-                objectFit: 'contain',
-              }}
-            />
+            <TakeoutBox3DCanvas width={400} height={400} rotationSpeed={0.03} />
           </div>
 
           {/* title with shimmer */}
@@ -256,8 +246,8 @@ export const FeatureFlash: React.FC = () => {
             <div
               style={{
                 fontSize: 88,
-                fontFamily: FONT,
-                fontWeight: 800,
+                fontFamily,
+                fontWeight: 700,
                 color: '#fff',
                 letterSpacing: -2,
               }}
@@ -288,10 +278,10 @@ export const FeatureFlash: React.FC = () => {
             <div
               style={{
                 fontSize: 36,
-                fontFamily: FONT,
+                fontFamily,
                 fontWeight: 500,
                 color: 'rgba(255,255,255,0.7)',
-                letterSpacing: 2,
+                letterSpacing: 1,
               }}
             >
               takeout.tamagui.dev

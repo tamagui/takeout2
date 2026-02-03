@@ -7,11 +7,14 @@
     "studio": "remotion studio src/index.ts",
     "render": "remotion render src/index.ts LaunchIntro out/launch-intro.mp4",
     "render:rapid": "remotion render src/index.ts RapidIntro out/rapid-intro.mp4",
-    "render:flash": "remotion render src/index.ts FeatureFlash out/feature-flash.mp4",
+    "render:flash": "remotion render src/index.ts FeatureFlash out/feature-flash.mp4 --gl=angle",
     "preview": "remotion preview src/index.ts"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.7",
     "@remotion/fonts": "4.0.410",
+    "@remotion/google-fonts": "4.0.410",
+    "@remotion/three": "4.0.410",
     "@remotion/transitions": "4.0.410",
     "@remotion/zod-types": "4.0.410",
     "react": "19.1.0",

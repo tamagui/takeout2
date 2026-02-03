@@ -154,7 +154,7 @@ const DialogContent = styled(TamaguiDialog.Content, {
   unstyled: true,
   z: 1000000,
   transition: '200ms',
-  bg: 'transparent',
+  bg: '$background08',
   borderWidth: 0.5,
   rounded: CONTENT_RADIUS,
   borderColor: '$color3',

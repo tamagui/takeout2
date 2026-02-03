@@ -6,6 +6,8 @@
   "scripts": {
     "studio": "remotion studio src/index.ts",
     "render": "remotion render src/index.ts LaunchIntro out/launch-intro.mp4",
+    "render:rapid": "remotion render src/index.ts RapidIntro out/rapid-intro.mp4",
+    "render:flash": "remotion render src/index.ts FeatureFlash out/feature-flash.mp4",
     "preview": "remotion preview src/index.ts"
   },
   "dependencies": {

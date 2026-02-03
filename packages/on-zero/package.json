@@ -1,0 +1,104 @@
+{
+  "name": "on-zero",
+  "version": "0.0.67",
+  "description": "A typed layer over @rocicorp/zero with queries, mutations, and permissions",
+  "sideEffects": false,
+  "source": "src/index.ts",
+  "main": "dist/cjs",
+  "module": "dist/esm",
+  "type": "module",
+  "types": "./types/index.d.ts",
+  "bin": {
+    "on-zero": "./cli.cjs"
+  },
+  "files": [
+    "src",
+    "types",
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onejs/on-zero.git"
+  },
+  "homepage": "https://github.com/onejs/on-zero#readme",
+  "bugs": {
+    "url": "https://github.com/onejs/on-zero/issues"
+  },
+  "keywords": [
+    "zero",
+    "rocicorp",
+    "sync",
+    "mutations",
+    "permissions",
+    "react"
+  ],
+  "author": "Nate Wienert",
+  "license": "MIT",
+  "scripts": {
+    "build": "tamagui-build",
+    "watch": "tamagui-build --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "tamagui-build clean",
+    "clean:build": "tamagui-build clean:build",
+    "prepublishOnly": "bun run build",
+    "release": "bun ./scripts/release.ts",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "lint": "oxlint --import-plugin",
+    "lint:fix": "oxfmt && oxlint --import-plugin --fix --fix-suggestions"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "react-native": {
+        "import": "./dist/esm/index.native.js",
+        "require": "./dist/cjs/index.native.js"
+      },
+      "types": "./types/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs",
+      "default": "./dist/esm/index.mjs"
+    },
+    "./server": {
+      "types": "./types/server.d.ts",
+      "import": "./dist/esm/server.mjs",
+      "require": "./dist/cjs/server.cjs"
+    }
+  },
+  "dependencies": {
+    "@take-out/helpers": "workspace:*",
+    "@sinclair/typebox": "^0.34.41",
+    "@sinclair/typebox-codegen": "^0.11.1",
+    "chokidar": "^4.0.3",
+    "citty": "^0.1.6"
+  },
+  "peerDependencies": {
+    "pg": ">=8.0.0",
+    "@rocicorp/zero": ">=0.17",
+    "react": "*",
+    "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native": {
+      "optional": true
+    },
+    "pg": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@tamagui/build": "2.0.0-rc.0-1770084657117",
+    "@types/node": "25.2.0",
+    "@types/pg": "^8.11.10",
+    "@types/react": "^19.0.0",
+    "oxfmt": "^0.16.0",
+    "oxlint": "^1.31.0",
+    "react": "^19.0.0",
+    "react-native": "*",
+    "typescript": "^5.9.3",
+    "valibot": "^1.1.0"
+  }
+}

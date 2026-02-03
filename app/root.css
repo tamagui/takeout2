@@ -11,6 +11,9 @@
   max-width: 100vw;
   min-height: 100vh;
   background-color: var(--color1);
+  /* ensure body is flex, we wrap lots of inner display: contents; elements */
+  /* if block ends up causing whatever div inside that is flex to not display */
+  display: flex;
 }
 
 html,

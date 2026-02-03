@@ -61,7 +61,7 @@ export const useNotificationStatus = () => {
     })
     checkNotificationPermissions()
 
-    return () => subscription.remove()
+    return () => subscription?.remove?.()
   }, [checkNotificationPermissions])
 
   return {

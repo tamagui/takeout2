@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { StyleSheet } from 'react-native'
 import Animated, {
   Extrapolation,
   interpolate,
@@ -7,6 +7,9 @@ import Animated, {
   withSpring,
   type SharedValue,
 } from 'react-native-reanimated'
+import { SizableText, styled, View } from 'tamagui'
+
+import { Pressable } from '../buttons/Pressable'
 
 import type { ExpandedMenuItemType } from '../../features/app/TabBar'
 
@@ -24,6 +27,15 @@ interface ExpandedMenuItemProps {
   isSelected: boolean
   onPress: () => void
 }
+
+const MenuPressable = styled(Pressable, {
+  flexDirection: 'row',
+  items: 'center',
+  py: '$3',
+  px: '$4',
+  rounded: 99,
+  position: 'relative',
+})
 
 export const ExpandedMenuItem = memo(
   ({ item, index, animationProgress, isSelected, onPress }: ExpandedMenuItemProps) => {
@@ -80,9 +92,8 @@ export const ExpandedMenuItem = memo(
 
     return (
       <Animated.View style={animatedStyle}>
-        <Pressable
+        <MenuPressable
           onPress={onPress}
-          style={styles.menuItem}
           accessible={true}
           accessibilityRole="button"
           accessibilityLabel={item.label}
@@ -91,47 +102,26 @@ export const ExpandedMenuItem = memo(
           <Animated.View
             style={[
               StyleSheet.absoluteFillObject,
-              styles.menuItemBackground,
+              { backgroundColor: '#FFFFFF', borderRadius: 99 },
+
               animatedSelectionStyle,
             ]}
           />
 
-          <View style={styles.menuIconContainer}>
-            <Icon size={20} color={isSelected ? 'white' : '$color10'} />
+          <View width={28} height={28} items="center" justify="center" mr="$3">
+            <Icon size={20} color={isSelected ? '$color12' : '$color10'} />
           </View>
 
-          <Text style={[styles.menuLabel, { color: isSelected ? '#FFFFFF' : '#ccc' }]}>
+          <SizableText
+            size="$3"
+            flex={1}
+            color={isSelected ? '$color12' : '$color10'}
+            fontWeight={isSelected ? 'bold' : '600'}
+          >
             {item.label}
-          </Text>
-        </Pressable>
+          </SizableText>
+        </MenuPressable>
       </Animated.View>
     )
   }
 )
-
-const styles = StyleSheet.create({
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 99,
-    position: 'relative',
-  },
-  menuItemBackground: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 100,
-  },
-  menuIconContainer: {
-    width: 28,
-    height: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  menuLabel: {
-    fontSize: 15,
-    fontWeight: '600',
-    flex: 1,
-  },
-})

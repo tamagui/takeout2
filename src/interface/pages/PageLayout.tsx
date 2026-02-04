@@ -2,14 +2,7 @@ import { isWeb } from 'tamagui'
 
 import { GradientBackground } from '../backgrounds/GradientBackground'
 
-import type { ReactNode } from 'react'
-
-export type PageLayoutProps = {
-  children: ReactNode
-  useImage?: boolean
-  bottomOffset?: number
-  useInsets?: boolean
-}
+import type { PageLayoutProps } from './PageLayoutProps'
 
 export const PageLayout = ({
   children,

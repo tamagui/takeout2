@@ -35,7 +35,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
   const isOwnProfile = authorId === user?.id
 
   const handleImagePress = () => {
-    router.push(`/home/feed/post/${post.id}?username=${username}`)
+    router.push(`/home/feed/post/${post.id}`)
   }
 
   return (
@@ -62,7 +62,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
 
         <YStack flex={1}>
           <SizableText size="$4" fontWeight="700" color="$color12">
-            {username}
+            {username || 'No name'}
           </SizableText>
           <SizableText size="$3" color="$color9">
             {formatDistanceToNow(post.createdAt)}
@@ -107,7 +107,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
       </Pressable>
 
       <XStack items="center" gap="$3" p="$2">
-        <Link href={`/home/feed/post/${post.id}?username=${username}`}>
+        <Link href={`/home/feed/post/${post.id}`}>
           <XStack items="center" gap="$2">
             <ChatCircleDotsIcon size={26} color="$color" />
             {typeof post.commentCount === 'number' && post.commentCount > 0 && (
@@ -118,7 +118,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
           </XStack>
         </Link>
         {post.comments?.[0] && (
-          <Link href={`/home/feed/post/${post.id}?username=${username}`} flex={1}>
+          <Link href={`/home/feed/post/${post.id}`} flex={1}>
             <PostCommentPreview comment={post.comments[0]} />
           </Link>
         )}

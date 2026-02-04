@@ -58,7 +58,6 @@ export async function getAuthDataFromRequest(
   // try session-based auth first (web - cookies forwarded by zero)
   try {
     const session = await authServer.api.getSession({ headers: newHeaders })
-    console.info(`session?`, session)
     if (session?.user) {
       return {
         id: session.user.id,

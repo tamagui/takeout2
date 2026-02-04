@@ -35,9 +35,7 @@ test.describe('Comment Flow', () => {
 
     // wait for sync then navigate fresh to verify persistence
     await page.waitForTimeout(1000)
-    const postUrl = page.url()
-    console.info('navigating fresh to:', postUrl)
-    await page.goto(postUrl, { waitUntil: 'networkidle' })
+    await page.goto(page.url(), { waitUntil: 'networkidle' })
 
     // verify comment persisted (proves auth worked for mutation)
     const persistedComment = page

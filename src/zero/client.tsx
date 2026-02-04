@@ -31,11 +31,11 @@ export const ProvideZero = ({ children }: { children: ReactNode }) => {
   return (
     <ProvideZeroWithoutAuth
       userID={auth.user?.id || 'anon'}
-      auth={auth.authClient.getCookie()}
+      // TODO simplify this conditional - on web it breaks with it, on native breaks without
+      auth={process.env.VITE_NATIVE ? auth.authClient.getCookie() : undefined}
       kvStore={kvStore}
       authData={auth.authData}
       cacheURL={ZERO_SERVER_URL}
-      logLevel="debug"
     >
       {children}
       <ZeroDevTools />

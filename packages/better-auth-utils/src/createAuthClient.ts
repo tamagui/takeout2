@@ -240,16 +240,6 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
         ...sessionUpdate,
       })
 
-      console.info(
-        `??`,
-        JSON.stringify({
-          useJWT,
-          session: data?.session,
-          isNewSession,
-          val: authState.value,
-        })
-      )
-
       // fetch JWT token when useJWT is enabled (for native/tauri apps)
       if (useJWT && data?.session && (isNewSession || !authState.value.token)) {
         if (isNewSession && authState.value.token) {

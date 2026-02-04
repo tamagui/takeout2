@@ -15,7 +15,9 @@ export function CommentSection({ comments }: CommentSectionProps) {
 
   return (
     <YStack pt="$4">
-      {process.env.VITE_NATIVE && <Separator mt="$1" mb="$4" borderColor="$color4" />}
+      {process.env.VITE_NATIVE ? (
+        <Separator mt="$1" mb="$4" borderColor="$color4" />
+      ) : null}
 
       {count > 0 && (
         <SizableText size="$3" fontWeight="600" pb="$2" color="$color7">

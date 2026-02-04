@@ -14,7 +14,6 @@ import type { AuthData } from 'on-zero'
 type AppUser = User & { role?: 'admin' }
 
 const betterAuthClient = createBetterAuthClient({
-  useJWT: process.env.VITE_NATIVE === '1',
   baseURL: SERVER_URL,
   plugins,
   createUser: (user) => user as AppUser,

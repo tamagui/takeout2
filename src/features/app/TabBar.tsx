@@ -368,6 +368,7 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
               <GlassView
                 intensity={90}
                 glassEffectStyle="regular"
+                borderRadius={50}
                 containerStyle={{
                   flex: 1,
                   width: '100%',

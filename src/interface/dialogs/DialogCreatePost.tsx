@@ -140,7 +140,7 @@ export const DialogCreatePost = () => {
     <YStack p="$2" gap="$4">
       <Dialog.Header title="Create Post" />
 
-      <YStack gap="$4">
+      <YStack gap="$4" mb="$4">
         <TextArea
           verticalAlign="top"
           maxLength={6000}

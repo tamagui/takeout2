@@ -353,7 +353,7 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
         ]}
       >
         <GestureDetector gesture={composedGesture}>
-          <Animated.View>
+          <View>
             <Animated.View
               style={[
                 {
@@ -368,7 +368,7 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
               <GlassView
                 intensity={90}
                 glassEffectStyle="regular"
-                borderRadius={50}
+                borderRadius={32}
                 containerStyle={{
                   flex: 1,
                   width: '100%',
@@ -450,7 +450,7 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
                 </Animated.View>
               </GlassView>
             </Animated.View>
-          </Animated.View>
+          </View>
         </GestureDetector>
       </Animated.View>
     </>

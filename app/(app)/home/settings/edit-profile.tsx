@@ -176,11 +176,12 @@ export const ProfileEditPage = () => {
           {!isWeb && (
             <KeyboardStickyFooter openedOffset={-10}>
               <Button
+                theme="accent"
                 glass
-                glassTint={!canSave ? 'transparent' : 'darkslateblue'}
                 size="large"
                 onPress={handleSave}
                 disabled={!canSave}
+                opacity={!canSave ? 0.5 : 1}
               >
                 {isSaving ? 'Saving...' : 'Save'}
               </Button>

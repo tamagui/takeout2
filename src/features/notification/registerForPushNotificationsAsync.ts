@@ -1,13 +1,14 @@
-import * as Application from 'expo-application'
+import { isAndroid } from '@tamagui/constants'
+import Constants from 'expo-constants'
 import * as Device from 'expo-device'
 import * as Notifications from 'expo-notifications'
 
 type PushNotificationsRegistrationResult =
   | {
       success: true
-      appBundleId: string
-      type: 'ios' | 'android'
-      deviceToken: string
+      platform: 'ios' | 'android'
+      expoPushToken: string // ExponentPushToken[...] for Expo Push API
+      nativePushToken: string // APNs/FCM token for other services
       permissionStatus: Notifications.PermissionStatus
     }
   | {
@@ -19,18 +20,30 @@ type PushNotificationsRegistrationResult =
 
 export const registerForPushNotificationsAsync =
   async (): Promise<PushNotificationsRegistrationResult> => {
-    // if (Platform.OS === 'android') {
-    //   await Notifications.setNotificationChannelAsync('myNotificationChannel', {
-    //     name: 'A channel is needed for the permissions prompt to appear',
-    //     importance: Notifications.AndroidImportance.MAX,
-    //     vibrationPattern: [0, 250, 250, 250],
-    //     lightColor: '#FF231F7C',
-    //   });
-    // }
+    // android requires notification channel
+    if (isAndroid) {
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'Default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      })
+    }
 
+    // check if running on physical device
+    if (!Device.isDevice) {
+      return {
+        success: false,
+        permissionStatus: Notifications.PermissionStatus.UNDETERMINED,
+        error: 'unsupported-device',
+        errorMessage: 'Push notifications require a physical device.',
+      }
+    }
+
+    // request permission
     const { status: existingStatus } = await Notifications.getPermissionsAsync()
-
     let finalStatus = existingStatus
+
     if (existingStatus !== 'granted') {
       const { status } = await Notifications.requestPermissionsAsync()
       finalStatus = status
@@ -44,33 +57,28 @@ export const registerForPushNotificationsAsync =
       }
     }
 
-    if (!Device.isDevice) {
-      return {
-        success: false,
-        permissionStatus: Notifications.PermissionStatus.UNDETERMINED,
-        error: 'unsupported-device',
-        errorMessage: 'Push notifications is not supported on simulators/emulators.',
-      }
-    }
-
     try {
-      const tokenData = await Notifications.getDevicePushTokenAsync()
-      const bundleId = Application.applicationId || ''
-
-      if (tokenData.type !== 'ios' && tokenData.type !== 'android') {
+      const projectId = Constants.expoConfig?.extra?.eas?.projectId
+      if (!projectId) {
         return {
           success: false,
-          error: 'unsupported-device',
+          error: 'unknown',
           permissionStatus: finalStatus,
-          errorMessage: `Unsupported push token type: ${tokenData.type}`,
+          errorMessage: 'Missing EAS projectId in app.config.ts',
         }
       }
 
+      // get both tokens in parallel
+      const [expoTokenData, nativeTokenData] = await Promise.all([
+        Notifications.getExpoPushTokenAsync({ projectId }),
+        Notifications.getDevicePushTokenAsync(),
+      ])
+
       return {
         success: true,
-        appBundleId: bundleId,
-        type: tokenData.type,
-        deviceToken: tokenData.data,
+        platform: isAndroid ? 'android' : 'ios',
+        expoPushToken: expoTokenData.data, // ExponentPushToken[...]
+        nativePushToken: nativeTokenData.data, // APNs/FCM token
         permissionStatus: finalStatus,
       }
     } catch (error) {

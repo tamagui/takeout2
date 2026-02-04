@@ -2,6 +2,7 @@
 import * as block from '../models/block'
 import * as comment from '../models/comment'
 import * as device from '../models/device'
+import * as notification from '../models/notification'
 import * as post from '../models/post'
 import * as report from '../models/report'
 import * as userPublic from '../models/user'
@@ -11,6 +12,7 @@ export const models = {
   block,
   comment,
   device,
+  notification,
   post,
   report,
   userPublic,

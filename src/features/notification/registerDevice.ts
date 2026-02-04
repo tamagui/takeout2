@@ -8,6 +8,10 @@ type RegisterDeviceResult =
 
 // register device and save expo push token to database via zero mutations
 export const registerDevice = async (userId: string): Promise<RegisterDeviceResult> => {
+  if (!userId) {
+    return { success: false, error: 'user-id-required' }
+  }
+
   const result = await registerForPushNotificationsAsync()
 
   if (!result.success) {
@@ -17,20 +21,20 @@ export const registerDevice = async (userId: string): Promise<RegisterDeviceResu
   const deviceId = `${userId}_${result.platform}`
 
   try {
-    // upsert device with both push tokens (zero handles permissions)
     await zero.mutate.device.upsert({
       id: deviceId,
       userId,
       platform: result.platform,
-      pushToken: result.expoPushToken, // ExponentPushToken[...] for Expo Push API
+      pushToken: result.expoPushToken,
       pushEnabled: true,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     })
+    console.info('[registerDevice] device upserted:', deviceId)
 
     return { success: true, deviceId }
   } catch (error) {
-    console.error('[registerDevice] upsert failed:', error)
+    console.error('[registerDevice] failed:', error)
     return { success: false, error: 'database-error' }
   }
 }

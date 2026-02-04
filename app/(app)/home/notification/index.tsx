@@ -3,8 +3,9 @@ import { useEffect, useState } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { AnimatePresence, H5, View, YStack } from 'tamagui'
 
+import { useAuth } from '~/features/auth/client/authClient'
+import { registerDevice } from '~/features/notification'
 import { notificationPromptStorage } from '~/features/notification/notificationPromptStorage'
-import { registerForPushNotificationsAsync } from '~/features/notification/registerForPushNotificationsAsync'
 import { Button } from '~/interface/buttons/Button'
 import {
   NOTIFICATION_CARD_GAP,
@@ -55,6 +56,8 @@ const notificationData: NotificationItem[] = [
 
 export const NotificationPage = () => {
   const { top } = useSafeAreaInsets()
+  const { user } = useAuth()
+
   const [showCards, setShowCards] = useState(false)
   const [isSpread, setIsSpread] = useState(false)
 
@@ -75,9 +78,9 @@ export const NotificationPage = () => {
   }
 
   const handleAllowNotifications = async () => {
-    const result = await registerForPushNotificationsAsync()
+    const result = await registerDevice(user?.id ?? '')
     if (result.success) {
-      console.info('push token registered:', result.expoPushToken)
+      console.info('push token registered:', result.success)
     } else {
       console.info('notification registration failed:', result.error)
     }

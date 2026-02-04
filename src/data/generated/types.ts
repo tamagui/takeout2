@@ -10,6 +10,9 @@ export type CommentUpdate = TableUpdateRow<typeof schema.comment>
 export type Device = TableInsertRow<typeof schema.device>
 export type DeviceUpdate = TableUpdateRow<typeof schema.device>
 
+export type Notification = TableInsertRow<typeof schema.notification>
+export type NotificationUpdate = TableUpdateRow<typeof schema.notification>
+
 export type Post = TableInsertRow<typeof schema.post>
 export type PostUpdate = TableUpdateRow<typeof schema.post>
 

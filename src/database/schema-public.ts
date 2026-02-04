@@ -141,3 +141,23 @@ export const invite = pgTable(
     index('invite_email_idx').on(table.email),
   ]
 )
+
+export const notification = pgTable(
+  'notification',
+  {
+    id: text('id').primaryKey(),
+    userId: text('userId').notNull(),
+    actorId: text('actorId'), // user who triggered the notification
+    type: text('type').notNull(), // 'comment' | 'system'
+    title: text('title'),
+    body: text('body'),
+    data: text('data'), // json string
+    read: boolean('read').notNull().default(false),
+    createdAt: timestamp('createdAt', { mode: 'string' }).defaultNow().notNull(),
+  },
+  (table) => [
+    index('notification_userId_idx').on(table.userId),
+    index('notification_userId_read_idx').on(table.userId, table.read),
+    index('notification_createdAt_idx').on(table.createdAt),
+  ]
+)

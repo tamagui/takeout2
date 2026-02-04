@@ -112,6 +112,18 @@ CREATE TABLE "invite" (
 	CONSTRAINT "invite_code_idx" UNIQUE("code")
 );
 --> statement-breakpoint
+CREATE TABLE "notification" (
+	"id" text PRIMARY KEY NOT NULL,
+	"userId" text NOT NULL,
+	"actorId" text,
+	"type" text NOT NULL,
+	"title" text,
+	"body" text,
+	"data" text,
+	"read" boolean DEFAULT false NOT NULL,
+	"createdAt" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "post" (
 	"id" text PRIMARY KEY NOT NULL,
 	"userId" text NOT NULL,
@@ -168,6 +180,9 @@ CREATE INDEX "comment_userId_idx" ON "comment" USING btree ("userId");--> statem
 CREATE INDEX "device_userId_idx" ON "device" USING btree ("userId");--> statement-breakpoint
 CREATE INDEX "device_pushToken_idx" ON "device" USING btree ("pushToken");--> statement-breakpoint
 CREATE INDEX "invite_email_idx" ON "invite" USING btree ("email");--> statement-breakpoint
+CREATE INDEX "notification_userId_idx" ON "notification" USING btree ("userId");--> statement-breakpoint
+CREATE INDEX "notification_userId_read_idx" ON "notification" USING btree ("userId","read");--> statement-breakpoint
+CREATE INDEX "notification_createdAt_idx" ON "notification" USING btree ("createdAt");--> statement-breakpoint
 CREATE INDEX "post_userId_idx" ON "post" USING btree ("userId");--> statement-breakpoint
 CREATE INDEX "post_createdAt_idx" ON "post" USING btree ("createdAt");--> statement-breakpoint
 CREATE INDEX "report_reporterId_idx" ON "report" USING btree ("reporterId");--> statement-breakpoint

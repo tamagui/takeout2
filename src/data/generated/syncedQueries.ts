@@ -25,6 +25,28 @@ const comment = {
   ),
 }
 
+const notification = {
+  unreadNotificationCount: defineQuery(
+    v.object({
+      userId: v.string(),
+    }),
+    ({ args }) => Queries.notification.unreadNotificationCount(args)
+  ),
+  unreadNotifications: defineQuery(
+    v.object({
+      userId: v.string(),
+    }),
+    ({ args }) => Queries.notification.unreadNotifications(args)
+  ),
+  userNotifications: defineQuery(
+    v.object({
+      userId: v.string(),
+      limit: v.optional(v.number()),
+    }),
+    ({ args }) => Queries.notification.userNotifications(args)
+  ),
+}
+
 const post = {
   feedPosts: defineQuery(
     v.object({
@@ -118,6 +140,7 @@ const user = {
 export const queries = defineQueries({
   block,
   comment,
+  notification,
   post,
   user,
 })

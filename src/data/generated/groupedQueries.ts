@@ -7,5 +7,6 @@
  */
 export * as block from '../queries/block'
 export * as comment from '../queries/comment'
+export * as notification from '../queries/notification'
 export * as post from '../queries/post'
 export * as user from '../queries/user'

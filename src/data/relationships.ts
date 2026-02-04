@@ -119,6 +119,22 @@ export const commentRelationships = relationships(tables.comment, ({ one }) => (
   }),
 }))
 
+export const notificationRelationships = relationships(
+  tables.notification,
+  ({ one }) => ({
+    user: one({
+      sourceField: ['userId'],
+      destSchema: tables.userPublic,
+      destField: ['id'],
+    }),
+    actor: one({
+      sourceField: ['actorId'],
+      destSchema: tables.userPublic,
+      destField: ['id'],
+    }),
+  })
+)
+
 export const allRelationships = [
   userRelationships,
   postRelationships,
@@ -127,4 +143,5 @@ export const allRelationships = [
   deviceRelationships,
   userStateRelationships,
   commentRelationships,
+  notificationRelationships,
 ]

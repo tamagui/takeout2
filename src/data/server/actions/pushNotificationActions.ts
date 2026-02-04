@@ -1,93 +1,203 @@
-// import type { TX } from '../types'
-// import type { Notification } from '~/data/types'
-// import { sendApnsNotification } from '~/features/push-notifications/server/sendApnsNotification'
+import { and, eq, ne } from 'drizzle-orm'
 
-// export async function sendPushNotificationToUser(tx: TX, notification: Notification) {
-//   try {
-//     // Get all iOS devices for the user
-//     const devices = await tx.query.device
-//       .where('userId', notification.userId)
-//       .where('type', 'ios')
-//       .run({ type: 'complete' })
+import { getDb } from '~/database'
+import { device, notification, post, userPublic } from '~/database/schema-public'
 
-//     if (devices.length === 0) {
-//       return
-//     }
+const EXPO_PUSH_URL = 'https://exp.host/--/api/v2/push/send'
 
-//     // Get message content if this is a message notification
-//     let title = 'New notification'
-//     let body = 'You have a new notification'
+export type NotificationType = 'comment' | 'system'
 
-//     if (notification.type === 'message' && notification.messageId) {
-//       try {
-//         const messagePromise = tx.query.message
-//           .where('id', notification.messageId)
-//           .related('creator')
-//           .related('channel')
-//           .one()
-//           .run({ type: 'complete' })
+type CreateNotificationParams = {
+  userId: string // recipient
+  actorId?: string // user who triggered
+  type: NotificationType
+  title: string
+  body?: string
+  data?: Record<string, unknown> // postId, commentId, etc
+}
 
-//         const message = await Promise.race([
-//           messagePromise,
-//           new Promise((_, reject) =>
-//             // TODO: messagePromise actually never resolves, and this timeout always triggers. Maybe because we are in a transaction that creates that message?
-//             setTimeout(() => reject(new Error('query timeout')), 5000)
-//           ),
-//         ])
+type ExpoPushMessage = {
+  to: string
+  title: string
+  body?: string
+  data?: Record<string, unknown>
+  sound?: 'default' | null
+  badge?: number
+  channelId?: string
+}
 
-//         if (message) {
-//           title = (message as any).channel?.name
-//             ? `#${(message as any).channel.name}`
-//             : 'New message'
-//           if ((message as any).creator?.name) {
-//             title = `${(message as any).creator.name} in ${title}`
-//           }
-//           body = (message as any).content || 'Sent a message'
-//         } else {
-//           title = 'New message'
-//           body = 'You have a new message'
-//         }
-//       } catch (error) {
-//         console.error('Failed to fetch message details for notification:', error)
-//       }
-//     }
+type ExpoPushTicket =
+  | { status: 'ok'; id: string }
+  | { status: 'error'; message: string; details?: { error: string } }
 
-//     const payload = {
-//       aps: {
-//         alert: {
-//           title,
-//           body,
-//         },
-//       },
-//     }
+// create in-app notification and send push to native devices
+export const createNotification = async (params: CreateNotificationParams) => {
+  const { userId, actorId, type, title, body, data } = params
+  const db = getDb()
 
-//     // Send push notification to each device
-//     const promises = devices.map(async (device) => {
-//       try {
-//         const result = await sendApnsNotification(
-//           device.appBundleId,
-//           device.deviceToken,
-//           payload
-//         )
+  const notificationId = crypto.randomUUID()
 
-//         if (result.ok) {
-//           console.info(`Push notification sent successfully to device ${device.id}`)
-//         } else {
-//           console.error(`Failed to send push notification to device ${device.id}:`, {
-//             status: result.status,
-//             body: await result.text(),
-//           })
-//         }
-//       } catch (error) {
-//         console.error(`Error sending push notification to device ${device.id}:`, error)
-//       }
-//     })
+  // insert notification into database (zero will sync to all clients)
+  await db.insert(notification).values({
+    id: notificationId,
+    userId,
+    actorId,
+    type,
+    title,
+    body,
+    data: data ? JSON.stringify(data) : undefined,
+    read: false,
+    createdAt: new Date().toISOString(),
+  })
 
-//     await Promise.all(promises)
-//     console.info(
-//       `Sent push notifications to ${devices.length} devices for user ${notification.userId}`
-//     )
-//   } catch (error) {
-//     console.error('Failed to send push notifications:', error)
-//   }
-// }
+  // send push notification to native devices only (ios/android)
+  await sendPushToUser(userId, title, body, {
+    notificationId,
+    type,
+    ...data,
+  })
+
+  return notificationId
+}
+
+// send expo push notification to all native devices for a user
+export const sendPushToUser = async (
+  userId: string,
+  title: string,
+  body?: string,
+  data?: Record<string, unknown>
+) => {
+  const db = getDb()
+
+  // get all devices with push enabled, excluding web
+  const devices = await db
+    .select({ pushToken: device.pushToken, platform: device.platform })
+    .from(device)
+    .where(
+      and(
+        eq(device.userId, userId),
+        eq(device.pushEnabled, true),
+        ne(device.platform, 'web')
+      )
+    )
+
+  const tokens = devices.filter((d) => d.pushToken).map((d) => d.pushToken as string)
+
+  if (tokens.length === 0) {
+    return { sent: 0, tickets: [] }
+  }
+
+  return sendExpoPush(tokens, title, body, data)
+}
+
+// send push notifications via expo push api
+export const sendExpoPush = async (
+  pushTokens: string[],
+  title: string,
+  body?: string,
+  data?: Record<string, unknown>
+): Promise<{ sent: number; tickets: ExpoPushTicket[] }> => {
+  if (pushTokens.length === 0) {
+    return { sent: 0, tickets: [] }
+  }
+
+  const messages: ExpoPushMessage[] = pushTokens.map((token) => ({
+    to: token,
+    title,
+    body,
+    data,
+    sound: 'default',
+  }))
+
+  try {
+    const response = await fetch(EXPO_PUSH_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify(messages),
+    })
+
+    if (!response.ok) {
+      console.error('expo push api error:', response.status, await response.text())
+      return { sent: 0, tickets: [] }
+    }
+
+    const result = (await response.json()) as { data: ExpoPushTicket[] }
+    const successCount = result.data.filter((t) => t.status === 'ok').length
+
+    console.info(`sent ${successCount}/${pushTokens.length} push notifications`)
+
+    return { sent: successCount, tickets: result.data }
+  } catch (error) {
+    console.error('failed to send expo push:', error)
+    return { sent: 0, tickets: [] }
+  }
+}
+
+// mark notification as read
+export const markNotificationRead = async (notificationId: string, userId: string) => {
+  const db = getDb()
+  await db
+    .update(notification)
+    .set({ read: true })
+    .where(and(eq(notification.id, notificationId), eq(notification.userId, userId)))
+}
+
+// mark all notifications as read for a user
+export const markAllNotificationsRead = async (userId: string) => {
+  const db = getDb()
+  await db
+    .update(notification)
+    .set({ read: true })
+    .where(and(eq(notification.userId, userId), eq(notification.read, false)))
+}
+
+export const notifyCommentOnPost = async (params: {
+  postId: string
+  commentId: string
+  commenterId: string
+  commentContent: string
+}) => {
+  const { postId, commentId, commenterId, commentContent } = params
+  const db = getDb()
+
+  const [postRow] = await db
+    .select({ userId: post.userId })
+    .from(post)
+    .where(eq(post.id, postId))
+
+  if (!postRow) return
+
+  const postOwnerId = postRow.userId
+
+  if (postOwnerId === commenterId) return
+
+  const [commenter] = await db
+    .select({ name: userPublic.name, username: userPublic.username })
+    .from(userPublic)
+    .where(eq(userPublic.id, commenterId))
+
+  const commenterName = commenter?.name || commenter?.username || 'Someone'
+  const truncatedContent =
+    commentContent.length > 100 ? `${commentContent.slice(0, 100)}...` : commentContent
+
+  await createNotification({
+    userId: postOwnerId,
+    actorId: commenterId,
+    type: 'comment',
+    title: commenterName,
+    body: `${commenterName} commented: ${truncatedContent}`,
+    data: { postId, commentId },
+  })
+}
+
+export const pushNotificationActions = () => ({
+  createNotification,
+  notifyCommentOnPost,
+  sendPushToUser,
+  sendExpoPush,
+  markNotificationRead,
+  markAllNotificationsRead,
+})

@@ -200,11 +200,16 @@ function updatePackageJsonVersions(
       if (pkg in depsObject && !depsObject[pkg].startsWith('workspace:')) {
         const newVersion = versionMap.get(pkg)
         if (newVersion) {
-          const currentVersion = depsObject[pkg]
-          // preserve version prefix (^, ~, >=, etc) or use exact if none
-          const prefixMatch = currentVersion.match(/^([^\d]*)/)
-          const prefix = prefixMatch?.[1] || ''
-          depsObject[pkg] = `${prefix}${newVersion}`
+          // for tagged versions (canary, rc, etc), use exact version (no prefix)
+          // otherwise preserve version prefix (^, ~, >=, etc)
+          if (globalTag) {
+            depsObject[pkg] = newVersion
+          } else {
+            const currentVersion = depsObject[pkg]
+            const prefixMatch = currentVersion.match(/^([^\d]*)/)
+            const prefix = prefixMatch?.[1] || ''
+            depsObject[pkg] = `${prefix}${newVersion}`
+          }
           updatedCount++
         }
       }

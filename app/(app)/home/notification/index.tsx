@@ -77,7 +77,7 @@ export const NotificationPage = () => {
   const handleAllowNotifications = async () => {
     const result = await registerForPushNotificationsAsync()
     if (result.success) {
-      console.info('push token registered:', result.deviceToken)
+      console.info('push token registered:', result.expoPushToken)
     } else {
       console.info('notification registration failed:', result.error)
     }

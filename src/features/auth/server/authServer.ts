@@ -1,5 +1,4 @@
 import { expo } from '@better-auth/expo'
-// import { emailHarmony, phoneHarmony } from 'better-auth-harmony'
 import { time } from '@take-out/helpers'
 import { betterAuth } from 'better-auth'
 import { admin, bearer, emailOTP, jwt, magicLink, phoneNumber } from 'better-auth/plugins'
@@ -50,7 +49,8 @@ export const authServer = betterAuth({
   trustedOrigins: [
     // match dev, prod, tauri
     `https://${DOMAIN}`,
-    'http://localhost:8081',
+    `http://localhost:${process.env.VITE_PORT_WEB || '8081'}`,
+    `http://host.docker.internal:${process.env.VITE_PORT_WEB || '8081'}`,
     `${APP_SCHEME}://`,
   ],
 
@@ -58,6 +58,7 @@ export const authServer = betterAuth({
     user: {
       create: {
         async after(user) {
+          // how we nicely move private user => public user for zero:
           await afterCreateUser(user)
         },
       },
@@ -65,6 +66,7 @@ export const authServer = betterAuth({
   },
 
   plugins: [
+    // for use with react-native, tauri, etc
     jwt({
       jwt: {
         expirationTime: '3y',
@@ -88,11 +90,6 @@ export const authServer = betterAuth({
     }),
 
     admin(),
-
-    // avoid spam or duplicate emails and phone numbers
-    // https://github.com/gekorm/better-auth-harmony
-    // emailHarmony(),
-    // phoneHarmony(),
 
     emailOTP({
       async sendVerificationOTP({ email, otp, type }) {
@@ -121,13 +118,6 @@ export const authServer = betterAuth({
       },
     }),
   ],
-
-  logger: {
-    level: 'debug',
-    log(level, message, ...args) {
-      console.info(level, message, ...args)
-    },
-  },
 
   account: {
     accountLinking: {

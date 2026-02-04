@@ -1,8 +1,8 @@
-import type { BetterAuthClientPlugin } from 'better-auth'
+import { expoClient } from '@better-auth/expo/client'
 
 export function platformClient() {
   // nothing on web
   return {
     id: `platform`,
-  } satisfies BetterAuthClientPlugin
+  } as any as ReturnType<typeof expoClient>
 }

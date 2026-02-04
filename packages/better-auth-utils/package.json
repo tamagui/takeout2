@@ -32,11 +32,18 @@
       "import": "./dist/esm/index.mjs",
       "require": "./dist/cjs/index.cjs",
       "default": "./dist/esm/index.mjs"
+    },
+    "./server": {
+      "types": "./src/server.ts",
+      "import": "./dist/esm/server.mjs",
+      "require": "./dist/cjs/server.cjs",
+      "default": "./dist/esm/server.mjs"
     }
   },
   "dependencies": {
     "@take-out/helpers": "workspace:*",
-    "better-auth": "^1.3.28"
+    "better-auth": "^1.3.28",
+    "jose": "^6.0.10"
   },
   "peerDependencies": {
     "react": "*"

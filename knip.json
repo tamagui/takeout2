@@ -21,7 +21,6 @@
       "ignore": ["src/data/generated/**", "**/*.d.ts"],
       "ignoreDependencies": [
         "@types/*",
-        "@nandorojo/galeria",
         "@react-native-menu/menu",
         "jsonwebtoken",
         "motion",
@@ -49,6 +48,11 @@
     },
     "packages/better-auth-utils": {
       "project": ["src/**/*.ts"]
+    },
+    "packages/on-zero": {
+      "entry": ["src/index.ts", "src/cli.ts", "src/server.ts"],
+      "project": ["src/**/*.ts"],
+      "ignoreDependencies": ["valibot", "@sinclair/typebox"]
     },
     "packages/native-hot-update": {
       "project": ["src/**/*.ts"]

@@ -2,11 +2,10 @@
  * Better-auth helpers for React / React Native applications
  *
  * Features:
- *  - JWT support (for Zero, Tauri, React Native)
  *  - Session persistence in local storage
- *  - Token validation and refresh
  *  - State management with emitters
  *  - Automatic retry on errors
+ *  - Optional JWT support (for Tauri, React Native)
  */
 
 import {
@@ -29,6 +28,7 @@ export type AuthState<U extends User = User> = {
   state: 'loading' | 'logged-in' | 'logged-out'
   session: Session | null
   user: U | null
+  /** JWT token - only populated when useJWT is enabled */
   token: string | null
 }
 
@@ -37,33 +37,45 @@ export interface BetterAuthClientProps<
 > extends BetterAuthClientOptions {
   /**
    * Callback to transform and type the user object
-   * This allows you to add app-specific fields and ensure proper typing
    * @default (user) => user
    */
   createUser?: (user: User) => TUser
+
   /**
    * Optional callback when authentication state changes
    */
   onAuthStateChange?: (state: AuthState<TUser>) => void
+
   /**
    * Optional callback for handling auth errors
    */
   onAuthError?: (error: any) => void
+
   /**
    * Storage key prefix for local storage
    * @default 'auth'
    */
   storagePrefix?: string
+
   /**
    * Retry delay in milliseconds after auth errors
    * @default 4000
    */
   retryDelay?: number
+
   /**
-   * Custom token validation endpoint
-   * @default '/api/auth/validateToken'
+   * Enable JWT token management for native apps (Tauri, React Native)
+   * When false (default), auth uses session cookies forwarded by the server
+   * When true, fetches and manages JWT tokens for Authorization header auth
+   * @default false
    */
-  tokenValidationEndpoint?: string
+  useJWT?: boolean
+
+  /**
+   * Cookie names to clear on auth invalidation
+   * @default ['better-auth.jwt', 'better-auth.session_token']
+   */
+  authCookieNames?: string[]
 }
 
 export interface BetterAuthClientReturn<U extends User = User, TClient = any> {
@@ -72,6 +84,7 @@ export interface BetterAuthClientReturn<U extends User = User, TClient = any> {
   authClient: TClient
   setAuthClientToken: (props: { token: string; session: string }) => Promise<void>
   clearAuthClientToken: () => void
+  clearAllAuth: () => void
   useAuth: () => AuthState<U>
   getAuth: () => AuthState<U> & { loggedIn: boolean }
   getValidToken: () => Promise<string | undefined>
@@ -95,7 +108,8 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
     createUser,
     storagePrefix = 'auth',
     retryDelay = 4000,
-    tokenValidationEndpoint = '/api/auth/validateToken',
+    useJWT = false,
+    authCookieNames = ['better-auth.jwt', 'better-auth.session_token'],
     ...authClientOptions
   } = options
 
@@ -106,33 +120,33 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
     token: null,
   }
 
+  const keysStorage = createStorageValue<StorageKeys>(`${storagePrefix}-keys`)
+  const stateStorage = createStorageValue<AuthState<TUser>>(`${storagePrefix}-state`)
+
   const createAuthClientWithSession = (session: string) => {
     return createAuthClient({
       ...authClientOptions,
       fetchOptions: {
-        headers: {
-          Authorization: `Bearer ${session}`,
-        },
+        credentials: 'include',
+        headers: useJWT ? { Authorization: `Bearer ${session}` } : undefined,
       },
     })
   }
-
-  const keysStorage = createStorageValue<StorageKeys>(`${storagePrefix}-keys`)
-  const stateStorage = createStorageValue<AuthState<TUser>>(`${storagePrefix}-state`)
 
   let authClient = (() => {
     const existingSession = keysStorage.get()?.session
     return existingSession
       ? createAuthClientWithSession(existingSession)
-      : createAuthClient(authClientOptions as Opts)
+      : createAuthClient({
+          ...authClientOptions,
+          fetchOptions: { credentials: 'include' },
+        } as Opts)
   })()
 
   const authState = createEmitter<AuthState<TUser>>(
     'authState',
     stateStorage.get() || empty,
-    {
-      comparator: isEqualDeepLite,
-    }
+    { comparator: isEqualDeepLite }
   )
 
   const authClientVersion = createEmitter<number>('authClientVersion', 0)
@@ -149,14 +163,15 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
         token: next.token,
         session: next.session.token,
       })
-    } else {
+    } else if (next.session) {
       keysStorage.set({
         token: '',
-        session: '',
+        session: next.session.token,
       })
+    } else {
+      keysStorage.set({ token: '', session: '' })
     }
 
-    // call optional callback
     onAuthStateChange?.(next)
   }
 
@@ -182,7 +197,6 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
 
       if (error) {
         onAuthError?.(error)
-        // retry by re-subscribing after a delay to recover from transient errors
         scheduleAuthRetry(retryDelay)
         return
       }
@@ -195,8 +209,6 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
           }
 
       // if we have a persisted session but server hasn't confirmed yet, stay loading
-      // this prevents redirect race on direct navigation while session is being validated
-      // note: data === null means server confirmed no session, data === undefined means still loading
       const hasPersistedSession = !!keysStorage.get()?.session
       const nextState = isPending
         ? 'loading'
@@ -206,8 +218,7 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
             ? 'loading'
             : 'logged-out'
 
-      // only update session/user when we have definitive data (not during pending state)
-      // this prevents clearing persisted data during the loading phase
+      // only update session/user when we have definitive data
       const sessionUpdate =
         nextState === 'loading'
           ? {}
@@ -216,13 +227,35 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
               user: data?.user ? (createUser ? createUser(data.user) : data.user) : null,
             }
 
+      // detect new session
+      const previousSession = authState.value?.session
+      const isNewSession =
+        data?.session &&
+        (!previousSession ||
+          previousSession.id !== data.session.id ||
+          previousSession.userId !== data.session.userId)
+
       setState({
         state: nextState,
         ...sessionUpdate,
       })
 
-      // get token on creating a new session (for native + tauri)
-      if (data?.session && !authState.value.token) {
+      console.info(
+        `??`,
+        JSON.stringify({
+          useJWT,
+          session: data?.session,
+          isNewSession,
+          val: authState.value,
+        })
+      )
+
+      // fetch JWT token when useJWT is enabled (for native/tauri apps)
+      if (useJWT && data?.session && (isNewSession || !authState.value.token)) {
+        if (isNewSession && authState.value.token) {
+          setState({ token: null })
+        }
+
         getValidToken().then((token) => {
           if (token) {
             setState({ token })
@@ -233,9 +266,7 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
   }
 
   function scheduleAuthRetry(delayMs: number) {
-    if (retryTimer) {
-      clearTimeout(retryTimer)
-    }
+    if (retryTimer) clearTimeout(retryTimer)
     retryTimer = setTimeout(() => {
       retryTimer = null
       subscribeToAuthEffect()
@@ -243,47 +274,39 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
   }
 
   async function getValidToken(): Promise<string | undefined> {
-    const existing = keysStorage.get()?.token
-
-    if (existing) {
-      try {
-        const response = await fetch(tokenValidationEndpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            token: existing,
-          }),
-        }).then((res) => res.json())
-
-        if (response?.valid) {
-          return existing
-        }
-      } catch (error) {
-        console.error('Error validating token:', error)
-      }
-    }
-
     const res = await authClient.$fetch('/token')
     if (res.error) {
       console.error(`Error fetching token: ${res.error.statusText}`)
       return undefined
     }
-    const data = res.data as any
-    return data?.token as string | undefined
+    return (res.data as any)?.token as string | undefined
   }
 
   const clearAuthClientToken = () => {
     keysStorage.remove()
   }
 
+  function clearAuthCookies() {
+    if (typeof document === 'undefined') return
+
+    for (const cookieName of authCookieNames) {
+      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`
+      const domain = window.location.hostname
+      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${domain}`
+      if (domain.startsWith('.')) {
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${domain.slice(1)}`
+      }
+    }
+  }
+
+  function clearAllAuth() {
+    clearAuthCookies()
+    clearState()
+  }
+
   const getAuth = () => {
     const state = authState?.value || empty
-    return {
-      ...state,
-      loggedIn: !!state.session,
-    }
+    return { ...state, loggedIn: !!state.session }
   }
 
   const useAuth = () => {
@@ -296,16 +319,12 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
     setState(empty)
   }
 
-  // initialize subscription
   subscribeToAuthEffect()
 
-  // cleanup on unmount
   if (typeof window !== 'undefined' && window.addEventListener) {
     const cleanup = () => {
       dispose?.()
-      if (retryTimer) {
-        clearTimeout(retryTimer)
-      }
+      if (retryTimer) clearTimeout(retryTimer)
     }
     window.addEventListener('beforeunload', cleanup)
   }
@@ -315,19 +334,13 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
       if (key === 'signOut') {
         return () => {
           clearState()
-
-          // don't await - better-auth has fetch issues on react native
-          // attempting to await causes "method uppercase not a func" error
-          // @ts-expect-error better-auth type issue, signOut does exist
+          // @ts-expect-error better-auth type issue
           authClient.signOut?.()
-
-          // force refresh to clear any remaining state
           if (typeof window !== 'undefined') {
             window.location?.reload?.()
           }
         }
       }
-      // ensure always latest authClient after login
       return Reflect.get(authClient, key)
     },
   }) as ReturnType<typeof createAuthClient<Opts>>
@@ -339,6 +352,7 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
     authClient: proxiedAuthClient,
     setAuthClientToken,
     clearAuthClientToken,
+    clearAllAuth,
     useAuth,
     getAuth,
     getValidToken,

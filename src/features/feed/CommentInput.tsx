@@ -65,6 +65,7 @@ export function CommentInput({
               placeholder="Write your comments here..."
               value={content}
               onChange={(e) => setContent((e.target as HTMLInputElement).value)}
+              data-testid="comment-input"
             />
             <YStack
               position="absolute"
@@ -80,6 +81,7 @@ export function CommentInput({
                 theme="accent"
                 disabled={!content.trim() || isSubmitting}
                 onPress={handleSubmit}
+                data-testid="comment-submit"
               >
                 {isSubmitting ? (
                   <Spinner size="small" color="$color" />

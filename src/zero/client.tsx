@@ -2,17 +2,14 @@ import { dropAllDatabases } from '@rocicorp/zero'
 import { useZero } from '@rocicorp/zero/react'
 import { isBrowser } from '@tamagui/constants'
 import { createZeroClient } from 'on-zero'
-import { memo, useEffect, useMemo, type ReactNode } from 'react'
+import { memo, useEffect, type ReactNode } from 'react'
 
 import { ZERO_SERVER_URL } from '~/constants/urls'
 import * as groupedQueries from '~/data/generated/groupedQueries'
 import { models } from '~/data/generated/models'
 import { schema } from '~/data/schema'
 import { useAuth } from '~/features/auth/client/authClient'
-import { DEBUG_LEVEL } from '~/features/devtools/constants'
 import { setDevGlobal } from '~/features/devtools/devGlobal'
-
-import type { AuthData } from '~/features/auth/types'
 
 export const {
   usePermission,
@@ -27,46 +24,45 @@ export const {
   groupedQueries,
 })
 
-// re-export global run for convenience
-export { run } from 'on-zero'
-
 export const ProvideZero = ({ children }: { children: ReactNode }) => {
   const auth = useAuth()
-  const userId = auth?.user?.id || 'anon'
-  const jwtToken = auth?.token || ''
-  const role = auth.user?.role
-
-  // memoize authData to prevent unnecessary re-renders
-  const authData = useMemo((): AuthData | null => {
-    if (userId === 'anon') {
-      return null
-    }
-
-    return {
-      id: userId,
-      role: role,
-    }
-  }, [userId, role])
-
-  const kvStore = isBrowser && userId ? 'idb' : 'mem'
-
-  if (DEBUG_LEVEL > 1) {
-    console.info(`[zero]`, { auth, jwtToken, userId, ZERO_SERVER_URL })
-  }
+  const kvStore = isBrowser && auth ? 'idb' : 'mem'
 
   return (
     <ProvideZeroWithoutAuth
-      userID={userId}
-      auth={jwtToken}
+      userID={auth.user?.id || 'anon'}
+      auth={auth.authClient.getCookie()}
       kvStore={kvStore}
-      authData={authData}
+      authData={auth.authData}
       cacheURL={ZERO_SERVER_URL}
+      logLevel="debug"
     >
       {children}
       <ZeroDevTools />
+      <ZeroErrorHandler />
     </ProvideZeroWithoutAuth>
   )
 }
+
+const ZeroErrorHandler = memo(() => {
+  useEffect(() => {
+    return zeroEvents.listen((event) => {
+      if (!event) return
+      if (event.type === 'error' && event.message) {
+        console.warn('[zero] Error:', event.message)
+        // TODO is have a better system to avoid spamming / sending before recovery tried
+        // example, sometimes zero can error a lot / recover so not enabled:
+        // clearAllAuth()
+        // showNotification(`Invalid login`, {
+        //   display: 'error',
+        //   description: `Please refresh your browser to log in again.`,
+        // })
+      }
+    })
+  }, [])
+
+  return null
+})
 
 const ZeroDevTools = memo(() => {
   const zero = useZero()

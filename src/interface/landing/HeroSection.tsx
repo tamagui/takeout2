@@ -479,7 +479,8 @@ export function HeroSection() {
         items: 'center',
         gap: '$8',
         px: '$4',
-        minH: 'calc(min(90vh, 900px))',
+        minH: 'calc(max(90vh, 850px))',
+        maxH: 1000,
         justify: 'center',
       }}
     >
@@ -568,7 +569,7 @@ export function HeroSection() {
           items="center"
           transition="medium"
           position="relative"
-          height={600}
+          minH={600}
           $sm={{
             scale: 0.9,
             x: 20,

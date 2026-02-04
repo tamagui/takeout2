@@ -42,7 +42,7 @@ services:
     command: node migrate-dist.js
 
   zero:
-    image: "rocicorp/zero:${ZERO_VERSION}"
+    image: "rocicorp/zero:${ZERO_VERSION:-0.25.11}"
     depends_on:
       - migrate
       - pgdb
@@ -55,7 +55,7 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       - ZERO_ADMIN_PASSWORD=dev-mode
-      - ZERO_LOG_LEVEL=${ZERO_LOG_LEVEL:-info}
+      - ZERO_LOG_LEVEL=${ZERO_LOG_LEVEL:-debug}
       # These URLs are provided via environment variables
       # In CI, they'll be overridden with the correct Docker host IP
       - ZERO_MUTATE_URL=${ZERO_MUTATE_URL:-http://host.docker.internal:8081/api/zero/push}

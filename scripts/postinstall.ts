@@ -24,6 +24,21 @@ if (zeroVersion && packageJson.env?.ZERO_VERSION !== zeroVersion) {
   )
   packageJson.env.ZERO_VERSION = zeroVersion
   writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n', 'utf-8')
+
+  // update docker-compose fallback versions
+  const dockerComposePaths = ['docker-compose.yml', 'src/uncloud/docker-compose.yml']
+  for (const dockerComposePath of dockerComposePaths) {
+    const dockerCompose = readFileSync(dockerComposePath, 'utf-8')
+    const updatedDockerCompose = dockerCompose.replace(
+      /image: "rocicorp\/zero:\$\{ZERO_VERSION:-[^}]*\}"/,
+      `image: "rocicorp/zero:\${ZERO_VERSION:-${zeroVersion}}"`
+    )
+    if (updatedDockerCompose !== dockerCompose) {
+      writeFileSync(dockerComposePath, updatedDockerCompose, 'utf-8')
+      console.info(`Updated ${dockerComposePath} fallback to ${zeroVersion}`)
+    }
+  }
+
   // run env:update to propagate to ci.yml, env-server.ts, etc
   await $`bun tko run env-update`
 }

@@ -5,11 +5,9 @@ import { createStorage } from '@take-out/helpers'
 
 import { APP_SCHEME } from '../constants'
 
-import type { BetterAuthClientPlugin } from 'better-auth'
-
 const expoStorage = createStorage('expo-auth-client')
 
-export function platformClient(): BetterAuthClientPlugin {
+export function platformClient() {
   return expoClient({
     scheme: APP_SCHEME,
     storagePrefix: APP_SCHEME,

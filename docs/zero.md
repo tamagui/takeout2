@@ -261,7 +261,7 @@ const [posts] = useQuery(postsByUserId, { userId: user?.id || '' })
 **good - immediate:**
 
 ```tsx
-const { user } = useAuth()  // available immediately from jwt
+const { user } = useAuth()  // available immediately
 const [posts] = useQuery(postsByUserId, { userId: user?.id || '' })
 ```
 

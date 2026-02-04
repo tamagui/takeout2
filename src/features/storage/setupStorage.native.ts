@@ -1,7 +1,7 @@
 import { setStorageDriver } from '@take-out/helpers'
 import { MMKV } from 'react-native-mmkv'
 
-const mmkv = new MMKV({ id: 'app-storage' })
+const mmkv = new MMKV({ id: 'app-storage-2' })
 
 setStorageDriver({
   getItem: (key) => mmkv.getString(key) ?? null,

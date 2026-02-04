@@ -595,7 +595,6 @@ Wrap your app with the provider:
 <ProvideZeroWithoutAuth
   server={ZERO_SERVER_URL}
   userID={userId}
-  auth={jwtToken}
   authData={{ id: userId, role }}
   kvStore={isWeb ? 'idb' : 'mem'}
 >

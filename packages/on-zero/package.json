@@ -69,6 +69,7 @@
     }
   },
   "dependencies": {
+    "valibot": "^1.1.0",
     "@take-out/helpers": "workspace:*",
     "@sinclair/typebox": "^0.34.41",
     "@sinclair/typebox-codegen": "^0.11.1",
@@ -98,7 +99,6 @@
     "oxlint": "^1.31.0",
     "react": "^19.0.0",
     "react-native": "*",
-    "typescript": "^5.9.3",
-    "valibot": "^1.1.0"
+    "typescript": "^5.9.3"
   }
 }

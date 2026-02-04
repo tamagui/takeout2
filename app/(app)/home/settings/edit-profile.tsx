@@ -76,9 +76,6 @@ export const ProfileEditPage = () => {
         <View
           flex={1}
           flexBasis="auto"
-          transition="200ms"
-          enterStyle={{ opacity: 0, y: 10 }}
-          exitStyle={{ opacity: 0, y: -10 }}
           $platform-native={{
             px: '$4',
           }}

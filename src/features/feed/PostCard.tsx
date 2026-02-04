@@ -99,11 +99,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
             {post.caption}
           </Text>
           <View width="100%" position="relative" mt="$2">
-            <Pressable
-              onPress={() =>
-                router.push(`/home/feed/post/${post.id}?username=${username}`)
-              }
-            >
+            <Pressable onPress={() => router.push(`/home/feed/post/${post.id}`)}>
               <PostImage
                 postId={post.id}
                 image={post.image}
@@ -114,7 +110,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
             </Pressable>
           </View>
           <XStack pt="$2" items="center" gap="$2">
-            <Link href={`/home/feed/post/${post.id}?username=${username}`}>
+            <Link href={`/home/feed/post/${post.id}`}>
               <Button
                 variant="transparent"
                 size="medium"
@@ -128,7 +124,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
               </Button>
             </Link>
             {post.comments?.[0] && (
-              <Link href={`/home/feed/post/${post.id}?username=${username}`} flex={1}>
+              <Link href={`/home/feed/post/${post.id}`} flex={1}>
                 <PostCommentPreview comment={post.comments[0]} />
               </Link>
             )}

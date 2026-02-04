@@ -2,7 +2,13 @@ import { Slot, Stack } from 'one'
 
 import { HeaderBackButton } from '~/interface/buttons/HeaderBackButton'
 
-export function HomeLayout() {
+import type { ReactNode } from 'react'
+
+/**
+ * Feed layout for navigation stack.
+ * Intercepting routes handled via @modal parallel route slot.
+ */
+export const FeedLayout = ({ modal }: { modal?: ReactNode }) => {
   if (process.env.VITE_NATIVE) {
     return (
       <Stack
@@ -36,6 +42,10 @@ export function HomeLayout() {
     )
   }
 
-  // on web, just use Slot for standard page transitions
-  return <Slot />
+  return (
+    <>
+      <Slot />
+      {modal}
+    </>
+  )
 }

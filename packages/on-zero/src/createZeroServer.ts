@@ -37,7 +37,6 @@ export function createZeroServer<
   schema,
   models,
   queries,
-  requireAuth = true,
 }: {
   /**
    * The DB connection string, same as ZERO_UPSTREAM_DB
@@ -47,7 +46,6 @@ export function createZeroServer<
   models: Models
   createServerActions: () => ServerActions
   queries?: AnyQueryRegistry
-  requireAuth?: boolean
 }) {
   setSchema(schema)
 
@@ -150,10 +148,6 @@ export function createZeroServer<
     authData?: Pick<AuthData, 'email' | 'id'> & Partial<AuthData>
   ) => {
     const asyncTasks: Array<() => Promise<void>> = []
-
-    if (requireAuth && !authData) {
-      throw new Error(`Must be logged in to mutate`)
-    }
 
     const mutators = createMutators({
       models,

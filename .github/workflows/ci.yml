@@ -4,13 +4,6 @@ on:
   push:
     branches:
       - '**'
-  workflow_dispatch:
-    inputs:
-      reset_zero:
-        description: 'Reset Zero volume (needed when schema adds new tables)'
-        required: false
-        type: boolean
-        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -63,7 +56,6 @@ jobs:
         run: bun run ci release ${{ github.ref != 'refs/heads/main' && '--skip-deploy' || '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RESET_ZERO: ${{ inputs.reset_zero }}
           # origin ca certs for cloudflare ssl (base64 encoded)
           ORIGIN_CA_CERT_B64: ${{ secrets.ORIGIN_CA_CERT_B64 }}
           ORIGIN_CA_KEY_B64: ${{ secrets.ORIGIN_CA_KEY_B64 }}
@@ -95,8 +87,8 @@ jobs:
           VITE_PUBLIC_ZERO_SERVER: ${{ secrets.VITE_PUBLIC_ZERO_SERVER }}
           WEB_DOMAIN: ${{ secrets.WEB_DOMAIN }}
           ZERO_DOMAIN: ${{ secrets.ZERO_DOMAIN }}
-          ZERO_QUERY_FORWARD_COOKIES: ${{ secrets.ZERO_QUERY_FORWARD_COOKIES }}
-          ZERO_MUTATE_FORWARD_COOKIES: ${{ secrets.ZERO_MUTATE_FORWARD_COOKIES }}
+          ZERO_QUERY_FORWARD_COOKIES : ${{ secrets.ZERO_QUERY_FORWARD_COOKIES  }}
+          ZERO_MUTATE_FORWARD_COOKIES : ${{ secrets.ZERO_MUTATE_FORWARD_COOKIES  }}
           ZERO_VERSION: ${{ secrets.ZERO_VERSION }}
           ZERO_NUM_SYNC_WORKERS: ${{ secrets.ZERO_NUM_SYNC_WORKERS }}
           ZERO_CVR_MAX_CONNS: ${{ secrets.ZERO_CVR_MAX_CONNS }}

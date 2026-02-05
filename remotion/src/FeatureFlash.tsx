@@ -15,30 +15,30 @@ const { fontFamily } = loadFont('normal', {
   subsets: ['latin'],
 })
 
-// all the features - rapid fire with accent colors
+// all the features - rapid fire (lowercase, clean style)
 const FEATURES = [
-  { text: 'One', color: '#F5CA05' },
-  { text: 'Tamagui', color: '#ECD20A' },
-  { text: 'Zero', color: '#4ECDC4' },
-  { text: 'Uncloud', color: '#A855F7' },
-  { text: 'SST', color: '#FF6B6B' },
-  { text: 'AWS', color: '#FF9900' },
-  { text: 'Better Auth', color: '#10B981' },
-  { text: 'Bun', color: '#FBF0DF' },
-  { text: 'Oxlint', color: '#6366F1' },
-  { text: 'Drizzle', color: '#C5F74F' },
-  { text: 'Expo', color: '#4630EB' },
-  { text: 'TypeScript', color: '#3178C6' },
-  { text: 'React Native', color: '#61DAFB' },
-  { text: 'Vite', color: '#646CFF' },
-  { text: 'PostgreSQL', color: '#336791' },
-  { text: 'Reanimated', color: '#FF4154' },
-  { text: 'Framer Motion', color: '#FF0055' },
-  { text: 'Playwright', color: '#45BA4B' },
-  { text: 'Vitest', color: '#6E9F18' },
-  { text: 'PostHog', color: '#F9BD2B' },
-  { text: 'Hono', color: '#FF5B11' },
-  { text: 'Biome', color: '#60A5FA' },
+  'one',
+  'tamagui',
+  'zero',
+  'uncloud',
+  'sst',
+  'aws',
+  'better auth',
+  'bun',
+  'oxlint',
+  'drizzle',
+  'expo',
+  'typescript',
+  'react native',
+  'vite',
+  'postgresql',
+  'reanimated',
+  'framer motion',
+  'playwright',
+  'vitest',
+  'posthog',
+  'hono',
+  'biome',
 ]
 
 const FPS = 60
@@ -69,8 +69,6 @@ export const FeatureFlash: React.FC = () => {
   const currentFeature = FEATURES[wordIndex]
 
   // word animation - organic spring-like feel using bezier curves
-  // entry: quick snap in with slight overshoot
-  // exit: smooth fade out with upward drift
   const wordScale = interpolate(
     wordProgress,
     [0, 0.15, 0.25, 0.75, 1],
@@ -82,7 +80,7 @@ export const FeatureFlash: React.FC = () => {
     }
   )
 
-  // opacity with smooth bezier curve - faster in, gradual out
+  // opacity with smooth bezier curve
   const wordOpacity = interpolate(
     wordProgress,
     [0, 0.1, 0.7, 1],
@@ -122,17 +120,6 @@ export const FeatureFlash: React.FC = () => {
     wordProgress,
     [0, 0.12, 0.8, 1],
     [6, 0, 0, 5],
-    {
-      extrapolateLeft: 'clamp',
-      extrapolateRight: 'clamp',
-    }
-  )
-
-  // glow intensity - pulses with word
-  const glowIntensity = interpolate(
-    wordProgress,
-    [0, 0.2, 0.5, 0.8, 1],
-    [0.05, 0.5, 0.35, 0.3, 0.05],
     {
       extrapolateLeft: 'clamp',
       extrapolateRight: 'clamp',
@@ -198,20 +185,6 @@ export const FeatureFlash: React.FC = () => {
         alignItems: 'center',
       }}
     >
-      {/* colored background glow during cycling */}
-      {isCycling && (
-        <div
-          style={{
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            background: `radial-gradient(ellipse 60% 50% at 50% 50%,
-              ${currentFeature.color}${Math.round(glowIntensity * 40).toString(16).padStart(2, '0')} 0%,
-              transparent 60%)`,
-          }}
-        />
-      )}
-
       {/* outro background glow */}
       {isOutro && (
         <div
@@ -234,26 +207,24 @@ export const FeatureFlash: React.FC = () => {
         />
       )}
 
-      {/* cycling words */}
+      {/* cycling words - gradient from light gray to white */}
       {isCycling && (
         <div
           style={{
             fontSize: 160,
             fontFamily,
             fontWeight: 700,
-            color: '#fff',
             letterSpacing: -3,
             opacity: wordOpacity,
             transform: `translateY(${wordY}px) scale(${wordScale}) rotate(${wordRotation}deg)`,
             filter: `blur(${wordBlur}px)`,
-            textShadow: `
-              0 0 ${50 * glowIntensity}px ${currentFeature.color},
-              0 0 ${100 * glowIntensity}px ${currentFeature.color}70,
-              0 0 ${150 * glowIntensity}px ${currentFeature.color}40
-            `,
+            background: 'linear-gradient(to bottom, #9ca3af, #ffffff)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
           }}
         >
-          {currentFeature.text}
+          {currentFeature}
         </div>
       )}
 
@@ -287,14 +258,17 @@ export const FeatureFlash: React.FC = () => {
           >
             <div
               style={{
-                fontSize: 88,
+                fontSize: 120,
                 fontFamily,
                 fontWeight: 700,
-                color: '#fff',
-                letterSpacing: -2,
+                letterSpacing: -3,
+                background: 'linear-gradient(to bottom, #9ca3af, #ffffff)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
               }}
             >
-              Takeout
+              takeout
             </div>
             <div
               style={{

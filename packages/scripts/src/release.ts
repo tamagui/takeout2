@@ -305,17 +305,33 @@ async function syncOnZero() {
 
 async function syncOnZeroIn() {
   if (!(await fs.pathExists(onZeroGithub))) return
-  console.info('  ← on-zero: syncing in from github')
+
+  // check if there are commits after the last sync commit
+  const log = (await $`git -C ${onZeroGithub} log --oneline --format=%s`.text()).trim()
+  const commits = log.split('\n')
+  const lastSyncIdx = commits.findIndex((c) => c.startsWith('sync: from takeout'))
+
+  // no commits before sync, or first commit is a sync = nothing to pull in
+  if (lastSyncIdx <= 0) {
+    console.info('  ← on-zero: no new github commits to sync in')
+    return
+  }
+
+  const newCommits = commits.slice(0, lastSyncIdx).filter((c) => !c.match(/^v\d+\.\d+\.\d+/))
+  if (!newCommits.length) {
+    console.info('  ← on-zero: no new github commits to sync in')
+    return
+  }
+
+  console.info(`  ← on-zero: syncing ${newCommits.length} commits from github`)
+  for (const c of newCommits) console.info(`      ${c}`)
 
   if (dryRun) {
     console.info('    [dry-run] would copy src from github')
     return
   }
 
-  // copy src files from github to takeout (github is source of truth for direct edits)
-  await fs.copy(join(onZeroGithub, 'src'), join(onZeroTakeout, 'src'), {
-    overwrite: true,
-  })
+  await fs.copy(join(onZeroGithub, 'src'), join(onZeroTakeout, 'src'), { overwrite: true })
 
   const status = (await $`git status --porcelain`.text()).trim()
   if (status) {

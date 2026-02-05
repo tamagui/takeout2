@@ -19,3 +19,12 @@ export const unreadNotifications = (props: { userId: string }) => {
 export const unreadNotificationCount = (props: { userId: string }) => {
   return zql.notification.where('userId', props.userId).where('read', false)
 }
+
+export const newNotificationsSince = (props: { userId: string; sinceTime: number }) => {
+  return zql.notification
+    .where('userId', props.userId)
+    .where('read', false)
+    .where('createdAt', '>', props.sinceTime)
+    .orderBy('createdAt', 'desc')
+    .limit(5)
+}

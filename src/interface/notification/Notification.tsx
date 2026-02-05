@@ -1,73 +1,34 @@
-import { createEmitter, useEmitter } from '@take-out/helpers'
+import { useEmitter } from '@take-out/helpers'
 import { Toast, ToastViewport } from '@tamagui/toast'
 import { useState } from 'react'
 import { AnimatePresence, XStack, YStack } from 'tamagui'
+
+import {
+  hideNotification,
+  notificationEmitter,
+  showNotification,
+  type NotificationAction,
+  type NotificationDisplay,
+  type NotificationI,
+} from '~/features/notification/notificationEmitter'
+import { useNotificationListener } from '~/features/notification/useNotificationListener'
 
 import { Button } from '../buttons/Button'
 import { Z_INDICES } from '../constants'
 import Glint from '../effects/Glint'
 
-import type { ToastShowOptions } from '../toast/types'
+export {
+  hideNotification,
+  showNotification,
+  type NotificationAction,
+  type NotificationDisplay,
+}
 
 const MESSAGE_LIST_BOTTOM_PAD = 92
 
-export type NotificationDisplay = 'error' | 'warn' | 'info'
-
-export type NotificationAction = {
-  label: string
-  onPress: () => void | Promise<void>
-}
-
-type NotificationI = {
-  id: string
-  title: string
-  description?: string
-  exclusiveKey?: string
-  display: NotificationDisplay
-  action?: NotificationAction
-  toastOptions?: ToastShowOptions
-  // progress?: number
-}
-
-const notificationEmitter = createEmitter<
-  | ({
-      type: 'show'
-    } & Omit<NotificationI, 'id'>)
-  | { type: 'hide'; id: string }
-  | { type: 'hide_all' }
->('notification', {
-  type: 'hide_all',
-})
-
-export const showNotification = (
-  title: string,
-  { display = 'info', ...options }: Omit<NotificationI, 'title' | 'id'> = {
-    display: 'info',
-  }
-) => {
-  notificationEmitter.emit({
-    type: 'show',
-    title,
-    display,
-    ...options,
-    toastOptions: {
-      ...options.toastOptions,
-      viewportName: 'notifications',
-    },
-  })
-}
-
-export const hideNotification = (id: string) => {
-  notificationEmitter.emit({ type: 'hide', id })
-}
-
-// TODO: we likely want to use either zero or jotai for this and have the list stored in a store
-
-// export const updateNotification = (id: string, update: Partial<NotificationI>) => {
-//   notificationEmitter.emit
-// }
-
 export const NotificationProvider = ({ children }: { children: any }) => {
+  useNotificationListener()
+
   return (
     <>
       <NotificationDisplay />
@@ -151,7 +112,7 @@ const NotificationToast = ({
       z={position}
     >
       <YStack
-        transition="quick"
+        transition="200ms"
         enterStyle={{ opacity: 0, scale: 1, y: -10 }}
         exitStyle={{ opacity: 0, scale: 1, y: -10 }}
         width={280}
@@ -177,7 +138,7 @@ const NotificationToast = ({
         <Glint borderTopLeftRadius="$5" borderTopRightRadius="$5" />
 
         <YStack gap="$1.5">
-          <Toast.Title size="$4" color="$color12">
+          <Toast.Title size="$4" color="$color12" fontWeight="600">
             {title}
           </Toast.Title>
 
@@ -188,8 +149,8 @@ const NotificationToast = ({
           )}
         </YStack>
 
-        <XStack gap="$2" self="flex-end">
-          {action && (
+        {action && (
+          <XStack gap="$2" self="flex-end">
             <Button
               size="small"
               onPress={() => {
@@ -199,12 +160,8 @@ const NotificationToast = ({
             >
               {action.label}
             </Button>
-          )}
-
-          <Button size="small" onPress={() => hideNotification(id)}>
-            Close
-          </Button>
-        </XStack>
+          </XStack>
+        )}
       </YStack>
     </Toast>
   )

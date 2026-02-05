@@ -26,6 +26,13 @@ const comment = {
 }
 
 const notification = {
+  newNotificationsSince: defineQuery(
+    v.object({
+      userId: v.string(),
+      sinceTime: v.number(),
+    }),
+    ({ args }) => Queries.notification.newNotificationsSince(args)
+  ),
   unreadNotificationCount: defineQuery(
     v.object({
       userId: v.string(),
@@ -41,7 +48,7 @@ const notification = {
   userNotifications: defineQuery(
     v.object({
       userId: v.string(),
-      limit: v.optional(v.number()),
+      pageSize: v.optional(v.number()),
     }),
     ({ args }) => Queries.notification.userNotifications(args)
   ),

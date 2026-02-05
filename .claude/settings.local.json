@@ -11,16 +11,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cat docs/agent.md"
-          }
-        ]
-      },
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun tko"
+            "command": "bunx tko"
           }
         ]
       }

@@ -1,12 +1,11 @@
-import * as Application from 'expo-application'
-import { useEffect, useRef, useState } from 'react'
-import { Alert } from 'react-native'
-
 import {
   HotUpdater,
   useHotUpdaterStore,
   type HotUpdaterResolver,
 } from '@hot-updater/react-native'
+import * as Application from 'expo-application'
+import { useEffect, useRef, useState } from 'react'
+import { Alert } from 'react-native'
 
 import type { HotUpdaterConfig, HotUpdaterInstance, UpdateInfo } from './types'
 

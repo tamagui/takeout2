@@ -317,7 +317,9 @@ async function syncOnZeroIn() {
     return
   }
 
-  const newCommits = commits.slice(0, lastSyncIdx).filter((c) => !c.match(/^v\d+\.\d+\.\d+/))
+  const newCommits = commits
+    .slice(0, lastSyncIdx)
+    .filter((c) => !c.match(/^v\d+\.\d+\.\d+/))
   if (!newCommits.length) {
     console.info('  ← on-zero: no new github commits to sync in')
     return
@@ -331,7 +333,9 @@ async function syncOnZeroIn() {
     return
   }
 
-  await fs.copy(join(onZeroGithub, 'src'), join(onZeroTakeout, 'src'), { overwrite: true })
+  await fs.copy(join(onZeroGithub, 'src'), join(onZeroTakeout, 'src'), {
+    overwrite: true,
+  })
 
   const status = (await $`git status --porcelain`.text()).trim()
   if (status) {
@@ -344,7 +348,9 @@ async function syncOnZeroOut(version: string) {
   if (!(await fs.pathExists(onZeroGithub))) return
 
   // copy src files from takeout to github
-  await fs.copy(join(onZeroTakeout, 'src'), join(onZeroGithub, 'src'), { overwrite: true })
+  await fs.copy(join(onZeroTakeout, 'src'), join(onZeroGithub, 'src'), {
+    overwrite: true,
+  })
   await fs.copy(join(onZeroTakeout, 'cli.cjs'), join(onZeroGithub, 'cli.cjs'))
   await fs.copy(join(onZeroTakeout, 'tsconfig.json'), join(onZeroGithub, 'tsconfig.json'))
 
@@ -353,7 +359,10 @@ async function syncOnZeroOut(version: string) {
   const githubPkg = await fs.readJSON(join(onZeroGithub, 'package.json'))
   const convertDeps = (deps: Record<string, string>) =>
     Object.fromEntries(
-      Object.entries(deps || {}).map(([k, v]) => [k, v.startsWith('workspace:') ? `^${version}` : v])
+      Object.entries(deps || {}).map(([k, v]) => [
+        k,
+        v.startsWith('workspace:') ? `^${version}` : v,
+      ])
     )
   await fs.writeJSON(
     join(onZeroGithub, 'package.json'),

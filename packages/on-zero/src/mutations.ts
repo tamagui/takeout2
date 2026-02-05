@@ -1,5 +1,4 @@
 import { getDidRunPermissionCheck } from './helpers/didRunPermissionCheck'
-import { setMutationsPermissions } from './modelRegistry'
 
 import type {
   MutatorContext,
@@ -122,16 +121,11 @@ export function mutations<
       upsert: createCRUDMutation('upsert'),
     }
 
-    const finalMutations = Object.freeze({
+    return Object.freeze({
       ...mutations,
       // overwrite regular mutations but call them if they are defined by user
       ...crudMutations,
-      // expose permissions for usePermission hook
     }) as any as Mutations
-
-    setMutationsPermissions(tableName, permissions)
-
-    return finalMutations
   }
 
   // no schema/permissions don't add CRUD

@@ -62,7 +62,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
 
         <YStack flex={1}>
           <SizableText size="$4" fontWeight="700" color="$color12">
-            {username || 'No name'}
+            {username || 'Unknown'}
           </SizableText>
           <SizableText size="$3" color="$color9">
             {formatDistanceToNow(post.createdAt)}
@@ -107,7 +107,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
       </Pressable>
 
       <XStack items="center" gap="$3" p="$2">
-        <Link href={`/home/feed/post/${post.id}`}>
+        <Link href={`/home/feed/post/${post.id}`} asChild>
           <XStack items="center" gap="$2">
             <ChatCircleDotsIcon size={26} color="$color" />
             {typeof post.commentCount === 'number' && post.commentCount > 0 && (

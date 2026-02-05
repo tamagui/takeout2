@@ -161,7 +161,7 @@ export const FeedDetailPage = memo(() => {
           <Avatar gradient image={author.image as string} size={32} />
           <YStack flex={1}>
             <SizableText size="$4" fontWeight="700" color="$color12">
-              {author.username || 'No name'}
+              {author.username || 'Unknown'}
             </SizableText>
             <SizableText size="$2" color="$color10">
               {formatDistanceToNow(post.createdAt)}

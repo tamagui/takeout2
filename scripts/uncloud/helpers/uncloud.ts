@@ -150,3 +150,26 @@ export async function stopService(service?: string): Promise<void> {
     throw new Error(`failed to stop ${target}`)
   }
 }
+
+export async function resetZeroVolume(): Promise<void> {
+  console.info('\n🔄 resetting zero volume to pick up new schema...\n')
+
+  try {
+    // stop zero service first
+    console.info('   stopping zero service...')
+    await run('uc service rm zero', { silent: true }).catch(() => {
+      // service might not exist yet, ignore
+    })
+
+    // remove zero_data volume
+    console.info('   removing zero_data volume...')
+    await run('uc volume rm zero_data', { silent: true }).catch(() => {
+      // volume might not exist yet, ignore
+    })
+
+    console.info('✅ zero volume reset - will be recreated on next deploy')
+  } catch (err) {
+    console.warn(`⚠️  failed to reset zero volume: ${err instanceof Error ? err.message : err}`)
+    console.warn('   zero may still have cached schema - manual reset may be needed')
+  }
+}

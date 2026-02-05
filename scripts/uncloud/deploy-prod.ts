@@ -20,6 +20,7 @@ import {
   pushImage,
   deployStack,
   showStatus,
+  resetZeroVolume,
 } from './helpers/uncloud'
 
 function getZeroVersion(): string {
@@ -31,6 +32,7 @@ function getZeroVersion(): string {
 const args = process.argv.slice(2)
 const skipBuild = args.includes('--skip-build')
 const skipDocker = args.includes('--skip-docker')
+const resetZero = args.includes('--reset-zero') || process.env.RESET_ZERO === 'true'
 
 // load .env.production if it exists (for local use)
 const envPath = resolve(process.cwd(), '.env.production')
@@ -160,6 +162,11 @@ async function main(): Promise<void> {
     ZERO_VERSION: zeroVersion,
   })
 
+  // reset zero volume if requested (needed when schema changes add new tables)
+  if (resetZero) {
+    await resetZeroVolume()
+  }
+
   // deploy without pgdb profile since using external database
   await deployStack(processedCompose)
 
@@ -180,6 +187,8 @@ async function main(): Promise<void> {
   console.info(`  ssh ${DEPLOY_USER}@${DEPLOY_HOST}  # ssh to server`)
   console.info('\nto skip builds on redeploy:')
   console.info('  bun scripts/uncloud/deploy-prod.ts --skip-build --skip-docker')
+  console.info('\nto reset zero schema cache (after adding new tables):')
+  console.info('  bun scripts/uncloud/deploy-prod.ts --reset-zero')
 }
 
 async function uploadOriginCACerts(host: string, sshKey: string): Promise<void> {

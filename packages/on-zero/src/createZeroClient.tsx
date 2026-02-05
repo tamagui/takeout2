@@ -20,6 +20,7 @@ import { createPermissions } from './createPermissions'
 import { createUseQuery } from './createUseQuery'
 import { createMutators } from './helpers/createMutators'
 import { prettyFormatZeroQuery } from './helpers/prettyFormatZeroQuery'
+import { getMutationsPermissions } from './modelRegistry'
 import { registerQuery } from './queryRegistry'
 import { resolveQuery, type PlainQueryFn } from './resolveQuery'
 import { setCustomQueries } from './run'
@@ -47,7 +48,9 @@ export function createZeroClient<
 }) {
   type ZeroMutators = GetZeroMutators<Models>
   type ZeroInstance = Zero<Schema, ZeroMutators>
-  type TableName = keyof ZeroInstance['query']
+  type TableName = keyof ZeroInstance['query'] extends string
+    ? keyof ZeroInstance['query']
+    : never
 
   setSchema(schema)
 
@@ -76,11 +79,6 @@ export function createZeroClient<
   setCustomQueries(customQueries)
 
   const DisabledContext = createContext(false)
-
-  const modelWritePermissions = mapObject(models, (val) => val.permissions) as Record<
-    TableName,
-    Where<any, any> | undefined
-  >
 
   let latestZeroInstance: ZeroInstance | null = null
 
@@ -129,7 +127,7 @@ export function createZeroClient<
     const disabled = use(DisabledContext)
     // const cacheVal = permissionCache.get(key) ?? permissionCache.get(keyBase)
     const authData = useAuthData()
-    const permission = modelWritePermissions[table]
+    const permission = getMutationsPermissions(table)
 
     const query = (() => {
       let baseQuery = (zero.query as any)[table].one()

@@ -1,4 +1,3 @@
-import { $ } from 'bun'
 import { homedir, tmpdir } from 'node:os'
 import path, { join } from 'node:path'
 
@@ -6,6 +5,7 @@ import path, { join } from 'node:path'
 // you can delete this from your own app
 
 import { run } from '@take-out/scripts/helpers/run'
+import { $ } from 'bun'
 import fs, { writeJSON } from 'fs-extra'
 import pMap from 'p-map'
 
@@ -313,7 +313,9 @@ async function syncOnZeroIn() {
   }
 
   // copy src files from github to takeout (github is source of truth for direct edits)
-  await fs.copy(join(onZeroGithub, 'src'), join(onZeroTakeout, 'src'), { overwrite: true })
+  await fs.copy(join(onZeroGithub, 'src'), join(onZeroTakeout, 'src'), {
+    overwrite: true,
+  })
 
   const status = (await $`git status --porcelain`.text()).trim()
   if (status) {
@@ -327,7 +329,9 @@ async function syncOnZeroOut(version: string) {
   console.info('  → on-zero: syncing out to github')
 
   // copy src files from takeout to github
-  await fs.copy(join(onZeroTakeout, 'src'), join(onZeroGithub, 'src'), { overwrite: true })
+  await fs.copy(join(onZeroTakeout, 'src'), join(onZeroGithub, 'src'), {
+    overwrite: true,
+  })
   await fs.copy(join(onZeroTakeout, 'cli.cjs'), join(onZeroGithub, 'cli.cjs'))
   await fs.copy(join(onZeroTakeout, 'tsconfig.json'), join(onZeroGithub, 'tsconfig.json'))
 
@@ -336,7 +340,10 @@ async function syncOnZeroOut(version: string) {
   const githubPkg = await fs.readJSON(join(onZeroGithub, 'package.json'))
   const convertDeps = (deps: Record<string, string>) =>
     Object.fromEntries(
-      Object.entries(deps || {}).map(([k, v]) => [k, v.startsWith('workspace:') ? `^${version}` : v])
+      Object.entries(deps || {}).map(([k, v]) => [
+        k,
+        v.startsWith('workspace:') ? `^${version}` : v,
+      ])
     )
   await fs.writeJSON(
     join(onZeroGithub, 'package.json'),

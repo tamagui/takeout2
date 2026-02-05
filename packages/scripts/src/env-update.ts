@@ -148,9 +148,7 @@ function updateDockerCompose() {
 
   const envLines = Object.keys(envVars)
     .map((key) =>
-      isMap
-        ? `${indent}${key}: \${${key}:-}`
-        : `${indent}- ${key}=\${${key}:-}`
+      isMap ? `${indent}${key}: \${${key}:-}` : `${indent}- ${key}=\${${key}:-}`
     )
     .join('\n')
 

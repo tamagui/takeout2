@@ -144,8 +144,9 @@ const generate = defineCommand({
     const generatedDir = resolve(baseDir, 'generated')
     const queriesDir = resolve(baseDir, 'queries')
 
-    const runGenerate = async (options?: { silent?: boolean }) => {
+    const runGenerate = async (options?: { silent?: boolean; runAfter?: boolean }) => {
       const silent = options?.silent ?? false
+      const runAfter = options?.runAfter ?? !silent
       // ensure generated dir exists
       if (!existsSync(generatedDir)) {
         mkdirSync(generatedDir, { recursive: true })
@@ -302,11 +303,14 @@ const generate = defineCommand({
           )
         }
 
-        // run after command only if files changed and not silent
-        if (totalFilesChanged > 0 && !silent && args.after) {
+        // run after command only if files changed
+        if (totalFilesChanged > 0 && runAfter && args.after) {
           try {
             const { execSync } = await import('node:child_process')
-            execSync(args.after, { stdio: 'inherit' })
+            execSync(args.after, {
+              stdio: 'inherit',
+              env: { ...process.env, ON_ZERO_GENERATED_DIR: generatedDir },
+            })
           } catch (err) {
             console.error(`Error running after command: ${err}`)
           }
@@ -318,11 +322,14 @@ const generate = defineCommand({
           )
         }
 
-        // run after command only if files changed and not silent
-        if (filesChanged > 0 && !silent && args.after) {
+        // run after command only if files changed
+        if (filesChanged > 0 && runAfter && args.after) {
           try {
             const { execSync } = await import('node:child_process')
-            execSync(args.after, { stdio: 'inherit' })
+            execSync(args.after, {
+              stdio: 'inherit',
+              env: { ...process.env, ON_ZERO_GENERATED_DIR: generatedDir },
+            })
           } catch (err) {
             console.error(`Error running after command: ${err}`)
           }
@@ -331,7 +338,7 @@ const generate = defineCommand({
     }
 
     // run once (silent in watch mode for clean startup)
-    await runGenerate({ silent: args.watch })
+    await runGenerate({ silent: args.watch, runAfter: true })
 
     // watch mode
     if (args.watch) {
@@ -355,6 +362,7 @@ const generate = defineCommand({
       const watcher = chokidar.watch([modelsDir, queriesDir], {
         persistent: true,
         ignoreInitial: true,
+        ignored: [generatedDir],
       })
 
       watcher.on('change', (path) => debouncedRegenerate(path, '📝'))

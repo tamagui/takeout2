@@ -56,7 +56,7 @@
     "watch:zero:generate": "bun zero:generate --watch",
     "watch": "tko run watch watch:types watch:zero:generate",
     "web": "tko web",
-    "zero:generate": "on-zero generate --after 'bun lint:fix'",
+    "zero:generate": "on-zero generate --after 'oxfmt src/data/generated'",
     "zero": "tko zero"
   },
   "overrides": {

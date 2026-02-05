@@ -4,6 +4,7 @@ import { Linking, Switch } from 'react-native'
 import { isWeb, ScrollView, SizableText, styled, View, XStack, YStack } from 'tamagui'
 
 import { APP_NAME_LOWERCASE, DOMAIN } from '~/constants/app'
+import { HotUpdaterDebugInfo } from '~/features/hot-updater/HotUpdaterDebugInfo'
 import { useSettingsData, type SettingItem } from '~/features/settings/useSettingsData'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
 import { PageLayout } from '~/interface/pages/PageLayout'
@@ -100,15 +101,13 @@ export const ProfileSettingsPage = () => {
 }
 
 const LogoAndVersion = memo(() => (
-  <YStack items="center" pb={100} pt="$4">
+  <YStack items="center" pb={100} pt="$4" gap="$3">
     <XStack items="center" gap="$2">
       <SizableText color="$color10" fontWeight="bold">
         {APP_NAME_LOWERCASE}
       </SizableText>
     </XStack>
-    <SizableText size="$1" color="$color10" mt="$2">
-      v1.0.0
-    </SizableText>
+    <HotUpdaterDebugInfo />
   </YStack>
 ))
 

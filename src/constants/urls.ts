@@ -31,9 +31,8 @@ export const ZERO_SERVER_URL = (() => {
   return import.meta.env.VITE_PUBLIC_ZERO_SERVER || 'http://localhost:4848'
 })()
 
-// TODO
 export const DEFAULT_HOT_UPDATE_SERVER_URL =
-  'https://pckjvzbtdczlpkgujgkb.supabase.co/functions/v1/update-server'
+  'https://huosdtejcaqhwgpdubyd.supabase.co/functions/v1/update-server'
 
 export const API_URL = `${SERVER_URL}/api`
 export const AUTH_URL = `${SERVER_URL}/api/auth`

@@ -1,11 +1,12 @@
+import * as Application from 'expo-application'
+import { useEffect, useRef, useState } from 'react'
+import { Alert } from 'react-native'
+
 import {
   HotUpdater,
   useHotUpdaterStore,
   type HotUpdaterResolver,
 } from '@hot-updater/react-native'
-import * as Application from 'expo-application'
-import React, { useEffect, useRef, useState } from 'react'
-import { Alert } from 'react-native'
 
 import type { HotUpdaterConfig, HotUpdaterInstance, UpdateInfo } from './types'
 
@@ -13,13 +14,16 @@ const INITIAL_OTA_ID = '00000000-0000-0000-0000-000000000000'
 const BUNDLE_ID_KEY_PREFIX = 'hotUpdater.bundleId'
 const PRE_RELEASE_BUNDLE_ID_KEY = 'hotUpdater.preReleaseBundleId'
 
+/**
+ * Creates a HotUpdater instance with custom hooks and helpers.
+ * NOTE: Requires HotUpdater.wrap() to be called first (e.g., in HotUpdaterSplash).
+ */
 export function createHotUpdater(config: HotUpdaterConfig): HotUpdaterInstance {
   const { serverUrl, storage, updateStrategy = 'appVersion' } = config
 
-  // Create a resolver that uses the configured serverUrl
+  // Create a custom resolver for advanced use cases
   const createResolver = (): HotUpdaterResolver => ({
     checkUpdate: async (params) => {
-      // Use POST request with all params in body (more flexible than URL path)
       const response = await fetch(`${serverUrl}/check`, {
         method: 'POST',
         headers: {
@@ -56,7 +60,7 @@ export function createHotUpdater(config: HotUpdaterConfig): HotUpdaterInstance {
 
   const getShortOtaId = (): string | null => {
     const fullId = getAppliedOta()
-    return fullId ? fullId.slice(24) : null
+    return fullId ? fullId.slice(-12) : null
   }
 
   const getIsUpdatePending = (): boolean => {
@@ -85,6 +89,10 @@ export function createHotUpdater(config: HotUpdaterConfig): HotUpdaterInstance {
     isUpdatePending = true
   }
 
+  /**
+   * Hook that checks for OTA updates with timeout protection.
+   * Returns userClearedForAccess which controls when to show the app.
+   */
   const useOtaUpdater = (
     options: {
       enabled?: boolean
@@ -140,7 +148,6 @@ export function createHotUpdater(config: HotUpdaterConfig): HotUpdaterInstance {
 
           if (!shouldContinue) return
 
-          // Check for update using the configured strategy
           const updateInfo = await HotUpdater.checkForUpdate({
             updateStrategy,
           })
@@ -226,12 +233,14 @@ export function createHotUpdater(config: HotUpdaterConfig): HotUpdaterInstance {
     }
   }
 
+  /**
+   * Manually check for updates (for debug/testing).
+   */
   const checkForUpdate = async (
     options: { channel?: string; isPreRelease?: boolean } = {}
   ) => {
     const { channel, isPreRelease = false } = options
 
-    // Check for update with optional request headers for channel
     const requestHeaders: Record<string, string> = {}
     if (channel) {
       requestHeaders['X-Channel'] = channel
@@ -258,7 +267,7 @@ export function createHotUpdater(config: HotUpdaterConfig): HotUpdaterInstance {
   }
 
   return {
-    createResolver, // Export resolver for use with HotUpdater.wrap()
+    createResolver,
     useOtaUpdater,
     checkForUpdate,
     getAppliedOta,

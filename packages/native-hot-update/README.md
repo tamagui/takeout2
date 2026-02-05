@@ -26,7 +26,6 @@ bun add @take-out/native-hot-update react-native-mmkv
 import { MMKV } from 'react-native-mmkv'
 import { createHotUpdater } from '@take-out/native-hot-update'
 import { createMMKVStorage } from '@take-out/native-hot-update/mmkv'
-import { HotUpdater } from '@hot-updater/react-native'
 
 const mmkv = new MMKV({ id: 'hot-updater' })
 
@@ -36,9 +35,8 @@ const hotUpdaterInstance = createHotUpdater({
   updateStrategy: 'appVersion',
 })
 
-// Export the hook and resolver
+// Export the hook and instance
 export const useOtaUpdater = hotUpdaterInstance.useOtaUpdater
-export const hotUpdaterResolver = hotUpdaterInstance.createResolver()
 export const hotUpdater = hotUpdaterInstance
 ```
 
@@ -46,20 +44,22 @@ export const hotUpdater = hotUpdaterInstance
 
 ```tsx
 // app/index.tsx or App.tsx
-import { HotUpdater } from '@hot-updater/react-native'
-import { hotUpdaterResolver } from './hotUpdater'
+import { HotUpdater } from '@take-out/native-hot-update'
 
 function App() {
   // Your app component
   return <YourApp />
 }
 
-// IMPORTANT: You must wrap your app with HotUpdater.wrap
+// IMPORTANT: wrap() initializes HotUpdater config - required for checkForUpdate
 export default HotUpdater.wrap({
-  resolver: hotUpdaterResolver,
+  baseURL: 'https://your-update-server.com',
   updateMode: 'manual', // Use manual mode with custom hooks
 })(App)
 ```
+
+> **Note**: For custom server implementations, you can use `resolver` instead of
+> `baseURL`. See advanced usage below.
 
 ### 3. Use in Your App
 

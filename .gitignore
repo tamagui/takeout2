@@ -24,6 +24,7 @@ dist
 
 .env
 .env.production
+.env.hotupdater
 
 # local env files
 .env.local
@@ -59,3 +60,5 @@ src/uncloud/certs/origin.*
 
 # Custom Caddyfile (generated during onboard if custom domains configured)
 src/uncloud/Caddyfile
+# hot-updater
+.hot-updater/output

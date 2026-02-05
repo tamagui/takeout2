@@ -87,8 +87,8 @@ jobs:
           VITE_PUBLIC_ZERO_SERVER: ${{ secrets.VITE_PUBLIC_ZERO_SERVER }}
           WEB_DOMAIN: ${{ secrets.WEB_DOMAIN }}
           ZERO_DOMAIN: ${{ secrets.ZERO_DOMAIN }}
-          ZERO_QUERY_FORWARD_COOKIES : ${{ secrets.ZERO_QUERY_FORWARD_COOKIES  }}
-          ZERO_MUTATE_FORWARD_COOKIES : ${{ secrets.ZERO_MUTATE_FORWARD_COOKIES  }}
+          ZERO_QUERY_FORWARD_COOKIES: ${{ secrets.ZERO_QUERY_FORWARD_COOKIES }}
+          ZERO_MUTATE_FORWARD_COOKIES: ${{ secrets.ZERO_MUTATE_FORWARD_COOKIES }}
           ZERO_VERSION: ${{ secrets.ZERO_VERSION }}
           ZERO_NUM_SYNC_WORKERS: ${{ secrets.ZERO_NUM_SYNC_WORKERS }}
           ZERO_CVR_MAX_CONNS: ${{ secrets.ZERO_CVR_MAX_CONNS }}

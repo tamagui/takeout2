@@ -137,9 +137,21 @@ function updateDockerCompose() {
     return
   }
 
-  const indent = '      '
+  // detect indent from the marker line
+  const markerMatch = dockerCompose.match(new RegExp(`^(\\s*)${yamlStartMarker}`, 'm'))
+  const indent = markerMatch?.[1] || '      '
+
+  // detect format: if markers are under an x- anchor block, use map syntax (KEY: val)
+  // otherwise use list syntax (- KEY=val)
+  const beforeMarker = dockerCompose.slice(0, dockerCompose.indexOf(yamlStartMarker))
+  const isMap = /x-[\w-]+:.*&[\w-]+/s.test(beforeMarker)
+
   const envLines = Object.keys(envVars)
-    .map((key) => `${indent}- ${key}=\${${key}:-}`)
+    .map((key) =>
+      isMap
+        ? `${indent}${key}: \${${key}:-}`
+        : `${indent}- ${key}=\${${key}:-}`
+    )
     .join('\n')
 
   const newDockerCompose = replaceYamlSection(dockerCompose, envLines, { indent })

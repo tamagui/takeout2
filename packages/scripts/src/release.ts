@@ -1,4 +1,5 @@
-import { tmpdir } from 'node:os'
+import { $ } from 'bun'
+import { homedir, tmpdir } from 'node:os'
 import path, { join } from 'node:path'
 
 // note! this is an helper script used by tamagui team for publishing the takeout packages
@@ -12,6 +13,10 @@ import pMap from 'p-map'
 process.setMaxListeners(50)
 process.stderr.setMaxListeners(50)
 process.stdout.setMaxListeners(50)
+
+// on-zero sync paths
+const onZeroGithub = join(homedir(), 'github', 'on-zero')
+const onZeroTakeout = join(process.cwd(), 'packages', 'on-zero')
 
 // for failed publishes that need to re-run
 const reRun = process.argv.includes('--rerun')
@@ -33,44 +38,61 @@ const skipTest =
 const skipBuild = finish || rePublish || process.argv.includes('--skip-build')
 const dryRun = process.argv.includes('--dry-run')
 const tamaguiGitUser = process.argv.includes('--tamagui-git-user')
+const syncOnZeroOnly = process.argv.includes('--sync-on-zero')
+const skipOnZeroSync = process.argv.includes('--skip-on-zero-sync')
 
-const curVersion = fs.readJSONSync('./packages/helpers/package.json').version
-
-// must specify version (unless republishing):
-if (!rePublish && !skipVersion && !shouldPatch && !shouldMinor && !shouldMajor) {
-  console.error(`Must specify one of --patch, --minor, or --major`)
-  process.exit(1)
+// handle --sync-on-zero standalone mode
+if (syncOnZeroOnly) {
+  syncOnZero().catch((err) => {
+    console.error('sync failed:', err)
+    process.exit(1)
+  })
+} else {
+  mainRelease()
 }
 
-const nextVersion = (() => {
-  if (rePublish || skipVersion) {
-    return curVersion
+async function mainRelease() {
+  const curVersion = fs.readJSONSync('./packages/helpers/package.json').version
+
+  // must specify version (unless republishing):
+  if (!rePublish && !skipVersion && !shouldPatch && !shouldMinor && !shouldMajor) {
+    console.error(`Must specify one of --patch, --minor, or --major`)
+    process.exit(1)
   }
 
-  if (canary) {
-    return `${curVersion.replace(/(-\d+)+$/, '')}-${Date.now()}`
+  const nextVersion = (() => {
+    if (rePublish || skipVersion) {
+      return curVersion
+    }
+
+    if (canary) {
+      return `${curVersion.replace(/(-\d+)+$/, '')}-${Date.now()}`
+    }
+
+    const curMajor = +curVersion.split('.')[0] || 0
+    const curMinor = +curVersion.split('.')[1] || 0
+    const patchAndCanary = curVersion.split('.')[2]
+    const [curPatch] = patchAndCanary.split('-')
+    const patchVersion = shouldPatch ? +curPatch + 1 : 0
+    const minorVersion = curMinor + (shouldMinor ? 1 : 0)
+    const majorVersion = curMajor + (shouldMajor ? 1 : 0)
+    const next = `${majorVersion}.${minorVersion}.${patchVersion}`
+
+    return next
+  })()
+
+  if (!skipVersion) {
+    console.info(` 🚀 Releasing:`)
+    console.info('  Current:', curVersion)
+    console.info(`  Next: ${nextVersion}`)
   }
 
-  const curMajor = +curVersion.split('.')[0] || 0
-  const curMinor = +curVersion.split('.')[1] || 0
-  const patchAndCanary = curVersion.split('.')[2]
-  const [curPatch] = patchAndCanary.split('-')
-  const patchVersion = shouldPatch ? +curPatch + 1 : 0
-  const minorVersion = curMinor + (shouldMinor ? 1 : 0)
-  const majorVersion = curMajor + (shouldMajor ? 1 : 0)
-  const next = `${majorVersion}.${minorVersion}.${patchVersion}`
-
-  return next
-})()
-
-if (!skipVersion) {
-  console.info(` 🚀 Releasing:`)
-  console.info('  Current:', curVersion)
-  console.info(`  Next: ${nextVersion}`)
-}
-
-async function main() {
   try {
+    // sync on-zero IN (before release)
+    if (!skipOnZeroSync && !finish && !rePublish) {
+      await syncOnZeroIn()
+    }
+
     // ensure we are up to date
     // ensure we are on main
     if (!canary) {
@@ -259,6 +281,11 @@ async function main() {
           console.info(`✅ Pushed and versioned\n`)
         }
       }
+
+      // sync on-zero OUT (after release)
+      if (!skipOnZeroSync) {
+        await syncOnZeroOut(nextVersion)
+      }
     }
 
     console.info(`✅ Done\n`)
@@ -266,6 +293,78 @@ async function main() {
     console.info('\nError:\n', err)
     process.exit(1)
   }
+}
+
+// sync on-zero: copy src from github to takeout, then takeout to github after release
+async function syncOnZero() {
+  if (!(await fs.pathExists(onZeroGithub))) return
+  const pkg = await fs.readJSON(join(onZeroTakeout, 'package.json'))
+  await syncOnZeroIn()
+  await syncOnZeroOut(pkg.version)
+}
+
+async function syncOnZeroIn() {
+  if (!(await fs.pathExists(onZeroGithub))) return
+  console.info('  ← on-zero: syncing in from github')
+
+  if (dryRun) {
+    console.info('    [dry-run] would copy src from github')
+    return
+  }
+
+  // copy src files from github to takeout (github is source of truth for direct edits)
+  await fs.copy(join(onZeroGithub, 'src'), join(onZeroTakeout, 'src'), { overwrite: true })
+
+  const status = (await $`git status --porcelain`.text()).trim()
+  if (status) {
+    await $`git add packages/on-zero`
+    await $`git commit -m "on-zero: sync from github"`
+  }
+}
+
+async function syncOnZeroOut(version: string) {
+  if (!(await fs.pathExists(onZeroGithub))) return
+  console.info('  → on-zero: syncing out to github')
+
+  // copy src files from takeout to github
+  await fs.copy(join(onZeroTakeout, 'src'), join(onZeroGithub, 'src'), { overwrite: true })
+  await fs.copy(join(onZeroTakeout, 'cli.cjs'), join(onZeroGithub, 'cli.cjs'))
+  await fs.copy(join(onZeroTakeout, 'tsconfig.json'), join(onZeroGithub, 'tsconfig.json'))
+
+  // update package.json preserving github-specific fields
+  const takeoutPkg = await fs.readJSON(join(onZeroTakeout, 'package.json'))
+  const githubPkg = await fs.readJSON(join(onZeroGithub, 'package.json'))
+  const convertDeps = (deps: Record<string, string>) =>
+    Object.fromEntries(
+      Object.entries(deps || {}).map(([k, v]) => [k, v.startsWith('workspace:') ? `^${version}` : v])
+    )
+  await fs.writeJSON(
+    join(onZeroGithub, 'package.json'),
+    {
+      ...takeoutPkg,
+      files: githubPkg.files,
+      repository: githubPkg.repository,
+      homepage: githubPkg.homepage,
+      bugs: githubPkg.bugs,
+      dependencies: convertDeps(takeoutPkg.dependencies),
+      devDependencies: convertDeps(takeoutPkg.devDependencies),
+    },
+    { spaces: 2 }
+  )
+
+  // commit and push
+  const status = (await $`git -C ${onZeroGithub} status --porcelain`.text()).trim()
+  if (!status) return
+
+  if (dryRun) {
+    console.info(`    [dry-run] would push: sync: from takeout v${version}`)
+    await $`git -C ${onZeroGithub} checkout -- .`
+    return
+  }
+
+  await $`git -C ${onZeroGithub} add -A`
+  await $`git -C ${onZeroGithub} commit -m ${'sync: from takeout v' + version}`
+  await $`git -C ${onZeroGithub} push origin main`
 }
 
 async function getWorkspacePackages() {
@@ -332,5 +431,3 @@ async function loadPackageJsons(packagePaths: { name: string; location: string }
 
   return { allPackageJsons, publishablePackages }
 }
-
-main()

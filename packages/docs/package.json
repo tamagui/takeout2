@@ -1,6 +1,6 @@
 {
   "name": "@take-out/docs",
-  "version": "0.0.73",
+  "version": "0.0.74",
   "description": "Documentation files for Takeout starter kit",
   "type": "module",
   "files": [

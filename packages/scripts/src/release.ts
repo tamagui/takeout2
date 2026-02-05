@@ -342,12 +342,9 @@ async function syncOnZeroIn() {
 
 async function syncOnZeroOut(version: string) {
   if (!(await fs.pathExists(onZeroGithub))) return
-  console.info('  → on-zero: syncing out to github')
 
   // copy src files from takeout to github
-  await fs.copy(join(onZeroTakeout, 'src'), join(onZeroGithub, 'src'), {
-    overwrite: true,
-  })
+  await fs.copy(join(onZeroTakeout, 'src'), join(onZeroGithub, 'src'), { overwrite: true })
   await fs.copy(join(onZeroTakeout, 'cli.cjs'), join(onZeroGithub, 'cli.cjs'))
   await fs.copy(join(onZeroTakeout, 'tsconfig.json'), join(onZeroGithub, 'tsconfig.json'))
 
@@ -356,10 +353,7 @@ async function syncOnZeroOut(version: string) {
   const githubPkg = await fs.readJSON(join(onZeroGithub, 'package.json'))
   const convertDeps = (deps: Record<string, string>) =>
     Object.fromEntries(
-      Object.entries(deps || {}).map(([k, v]) => [
-        k,
-        v.startsWith('workspace:') ? `^${version}` : v,
-      ])
+      Object.entries(deps || {}).map(([k, v]) => [k, v.startsWith('workspace:') ? `^${version}` : v])
     )
   await fs.writeJSON(
     join(onZeroGithub, 'package.json'),
@@ -375,9 +369,11 @@ async function syncOnZeroOut(version: string) {
     { spaces: 2 }
   )
 
-  // commit and push
+  // only commit if there are actual changes
   const status = (await $`git -C ${onZeroGithub} status --porcelain`.text()).trim()
   if (!status) return
+
+  console.info('  → on-zero: syncing out to github')
 
   if (dryRun) {
     console.info(`    [dry-run] would push: sync: from takeout v${version}`)

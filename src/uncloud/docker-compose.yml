@@ -82,7 +82,7 @@ services:
     command: ["node", "/app/src/database/migrate-dist.js"]
 
   zero:
-    image: "rocicorp/zero:${ZERO_VERSION:-latest}"
+    image: "rocicorp/zero:${ZERO_VERSION:-0.25.12}"
     restart: always
     depends_on:
       - migrate

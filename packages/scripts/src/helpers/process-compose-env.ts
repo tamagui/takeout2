@@ -1,11 +1,27 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 
-// collapse multi-line values (like PEM keys) to single line for yaml compatibility
+// make values safe for yaml map syntax (KEY: value)
+// handles multi-line values, special chars that break yaml parsing
 function yamlSafe(value: string): string {
-  if (value.includes('\n')) {
-    return value.replace(/\n/g, '\\n')
-  }
-  return value
+  const needsQuoting =
+    value.includes('\n') ||
+    value.includes(':') ||
+    value.includes('#') ||
+    value.startsWith('-') ||
+    value.startsWith('{') ||
+    value.startsWith('[') ||
+    value.startsWith('"') ||
+    value.startsWith("'")
+
+  if (!needsQuoting) return value
+
+  // escape backslashes and double quotes, collapse newlines
+  const escaped = value
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, '\\n')
+
+  return `"${escaped}"`
 }
 
 /**

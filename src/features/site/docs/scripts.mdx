@@ -12,14 +12,14 @@ bun tko <category> <script>
 bun tko script list
 ```
 
-## CI
+## Ops
 
 ```bash
-bun tko ci logs                     # watch current CI run, show failures
-bun tko ci logs --failed            # only failed steps
+bun tko ops github-tail             # watch current CI run, show failures
+bun tko ops github-tail --failed    # only failed steps
 
-bun tko ci release --dry-run        # full pipeline without deploying
-bun tko ci release --dry-run --dev  # faster with dev server
+bun ops ci --dry-run                # full pipeline without deploying
+bun ops ci --dry-run --dev          # faster with dev server
 ```
 
 ## Checks

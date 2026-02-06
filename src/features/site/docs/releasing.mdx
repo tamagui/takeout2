@@ -8,7 +8,7 @@ deploys, and monitors—all in one command. It's highly parallel and typically
 finishes a full end-to-end release in 5-10 minutes.
 
 ```bash
-bun run ci
+bun ops ci
 ```
 
 This runs the full pipeline: type checking, linting, unit tests, web build,
@@ -47,7 +47,7 @@ Skip parts of the pipeline when you need to:
 **Test locally before pushing:**
 
 ```bash
-bun run ci --dry-run
+bun ops ci --dry-run
 ```
 
 Runs the full pipeline without deploying. Catches issues before they hit CI.
@@ -55,7 +55,7 @@ Runs the full pipeline without deploying. Catches issues before they hit CI.
 **Quick redeploy after config change:**
 
 ```bash
-bun run ci --redeploy
+bun ops ci --redeploy
 ```
 
 Skips everything and just deploys. Useful when you've only changed environment
@@ -64,7 +64,7 @@ variables or infrastructure config.
 **Fast iteration on tests:**
 
 ```bash
-bun run ci --skip-checks --dev
+bun ops ci --skip-checks --dev
 ```
 
 Skips type checking and uses the dev server instead of a production build.

@@ -52,14 +52,14 @@ auto-scaling. SST deployment is currently a work in progress.
 ## Deploying
 
 `bun onboard` walks you through choosing a platform and configuring your
-environment. Once set up, `bun run ci release` handles everything—building,
+environment. Once set up, `bun ops ci` handles everything—building,
 testing, and deploying.
 
 ```bash
-bun run ci release
+bun ops ci
 ```
 
-There are individual scripts for each step if you need them, but the ci command
+There are individual scripts for each step if you need them, but the ops ci command
 does it all.
 
 ## Environment Configuration
@@ -142,7 +142,7 @@ View logs after deployment:
 bun tko uncloud logs
 
 # SST
-bun tko ci logs
+bun tko ops github-tail
 ```
 
 Health checks run automatically after each deploy, verifying:

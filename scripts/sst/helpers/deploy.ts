@@ -166,11 +166,14 @@ export async function deploy() {
 
 export async function runHealthCheck() {
   console.info('\nChecking deployment health...')
-  await run('bun ./scripts/ci/check-deployment.ts', {
-    prefix: 'health',
-    timeout: time.ms.minutes(10),
-    timing: 'deployment health check',
+  const url = process.env.ONE_SERVER_URL || 'https://api.takeout.com'
+  const response = await fetch(`${url}/health`, {
+    signal: AbortSignal.timeout(time.ms.seconds(30)),
   })
+  if (!response.ok) {
+    throw new Error(`Health check failed with status ${response.status}`)
+  }
+  console.info('✅ Health check passed')
 }
 
 // ----------- helpers -----------

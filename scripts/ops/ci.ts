@@ -123,7 +123,7 @@ try {
       fn: async () => {
         try {
           if (devMode) {
-            void run(`bun run ci start-frontend-dev`, {
+            void run(`bun ops run-frontend-dev`, {
               detached: true,
             })
             await sleep(4000)
@@ -180,7 +180,7 @@ async function setupBackend() {
     await run(`docker compose down`, {
       env: await getTestEnv(),
     })
-    void run(`bun run ci start-backend`, {
+    void run(`bun ops run-backend`, {
       detached: true,
     })
     await waitForBackend()
@@ -290,7 +290,7 @@ async function runIntegrationTests() {
 
     // in dev mode, frontend is already running from the build task
     if (!devMode) {
-      void run(`bun run ci start-frontend`, {
+      void run(`bun ops run-frontend`, {
         detached: true,
       })
     }

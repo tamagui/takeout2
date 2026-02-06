@@ -17,10 +17,10 @@ The easiest way to run the full test suite is through the CI command:
 
 ```bash
 # full pipeline: backend, unit tests, build, integration tests
-bun run ci release --dry-run
+bun ops ci --dry-run
 
 # faster: uses dev server instead of production build
-bun run ci release --dry-run --dev
+bun ops ci --dry-run --dev
 ```
 
 This handles everything automatically - no manual setup needed.
@@ -217,7 +217,7 @@ docker compose up -d
 bun db:migrate
 
 # or simply restart the development environment
-bun ci:start-dev
+bun ops start-all-dev
 ```
 
 ### Test Data Isolation
@@ -315,10 +315,10 @@ Integration tests run automatically in CI:
   run: bunx playwright install --with-deps chromium
 
 - name: Start backend services
-  run: bun ci:backend &
+  run: bun ops run-backend &
 
 - name: Start frontend (production)
-  run: bun ci:frontend &
+  run: bun ops run-frontend &
 
 - name: Wait for server
   run: bun wait-for-server
@@ -343,20 +343,20 @@ end-to-end:
 
 ```bash
 # run the full CI setup except for deploying at the end
-bun run ci release --dry-run
+bun ops ci --dry-run
 
 # or equivalently
-bun run ci release --skip-deploy
+bun ops ci --skip-deploy
 ```
 
 ### Running Tests with Different Configurations
 
 ```bash
 # skip tests, only run checks and build
-bun run ci release --skip-tests --dry-run
+bun ops ci --skip-tests --dry-run
 
 # faster: use dev server instead of production build
-bun run ci release --dry-run --dev
+bun ops ci --dry-run --dev
 
 # just run integration tests in CI mode (requires backend + frontend already running)
 CI=true bun test:integration
@@ -374,7 +374,7 @@ Solution:
 
 ```bash
 # restart services to regenerate keys
-bun ci:start-dev
+bun ops start-all-dev
 
 # clear browser storage if the issue persists
 ```
@@ -386,8 +386,8 @@ Problem: Old test data affecting new runs
 Solution:
 
 ```bash
-Ctrl+C  # stop ci:start-dev
-bun ci:start-dev  # fresh start
+Ctrl+C  # stop ops start-all-dev
+bun ops start-all-dev  # fresh start
 bun test:integration
 ```
 

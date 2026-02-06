@@ -13,8 +13,8 @@ with dedicated QA resources.
 The easiest way to run the full test suite:
 
 ```bash
-bun run ci release --dry-run       # full pipeline without deploying
-bun run ci release --dry-run --dev # faster: uses dev server instead of build
+bun ops ci --dry-run       # full pipeline without deploying
+bun ops ci --dry-run --dev # faster: uses dev server instead of build
 ```
 
 This starts backend, runs unit tests, builds/serves frontend, and runs
@@ -103,10 +103,10 @@ bun test:unit packages/hooks/src/useDeepMemoizedObject.test.ts
 
 ## CI Integration
 
-Tests run automatically in CI via `bun run ci release`. The full pipeline:
+Tests run automatically in CI via `bun ops ci`. The full pipeline:
 
 ```bash
-bun run ci release --dry-run  # run locally without deploying
+bun ops ci --dry-run  # run locally without deploying
 ```
 
 CI uses single-worker mode with one retry for consistency.

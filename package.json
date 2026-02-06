@@ -24,7 +24,7 @@
     "build": "tko run build",
     "check:all": "tko check --all",
     "check": "tko check",
-    "ci": "CI=true NODE_ENV=production bun tko ci",
+    "ops": "CI=true NODE_ENV=production bun tko ops",
     "clean": "tko run clean",
     "db:add-migration": "tko db add-migration",
     "db:migrate": "tko db migrate",

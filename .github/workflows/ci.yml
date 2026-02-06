@@ -53,7 +53,7 @@ jobs:
           ORIGIN_CA_KEY_B64: ${{ secrets.ORIGIN_CA_KEY_B64 }}
 
       - name: CI/CD
-        run: bun run ci release ${{ github.ref != 'refs/heads/main' && '--skip-deploy' || '' }}
+        run: bun ops ci ${{ github.ref != 'refs/heads/main' && '--skip-deploy' || '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # origin ca certs for cloudflare ssl (base64 encoded)

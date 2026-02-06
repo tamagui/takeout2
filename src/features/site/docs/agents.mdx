@@ -90,19 +90,19 @@ bun tko check types  # run type checking
 bun tko web build    # build for web
 ```
 
-Scripts are organized by category—`check/`, `ci/`, `web/`, `db/`—so agents can
+Scripts are organized by category—`check/`, `ops/`, `web/`, `db/`—so agents can
 find the right tool without asking.
 
 ## Verification
 
 Session hooks ensure agents know to verify their work. The core guidelines load
 automatically and include explicit verification steps—run `bun check:all` for
-quick checks, `bun run ci --dry-run` for the full pipeline (see
+quick checks, `bun ops ci --dry-run` for the full pipeline (see
 [Releasing](/docs/releasing) for details).
 
 ```bash
 bun check:all        # types, lint, tests
-bun run ci --dry-run # full CI pipeline locally
+bun ops ci --dry-run # full CI pipeline locally
 ```
 
 This catches issues early. When an agent says "done," you can trust the tests

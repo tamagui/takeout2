@@ -125,7 +125,7 @@ bun migrate run              # Build and run migrations
 bun db:migrate-add <name>    # Create one-off migrations
 
 # Deployment
-bun ci                       # Full CI/CD pipeline
+bun ops ci                   # Full CI/CD pipeline
 bun tko sst deploy production  # Deploy to AWS production
 ```
 
@@ -235,8 +235,8 @@ bun test:integration
 The easiest way to run everything correctly is through CI:
 
 ```bash
-bun run ci release --dry-run    # full pipeline without deploying
-bun run ci release --skip-deploy # same thing
+bun ops ci --dry-run    # full pipeline without deploying
+bun ops ci --skip-deploy # same thing
 ```
 
 This handles all the setup automatically:
@@ -249,7 +249,7 @@ This handles all the setup automatically:
 Use `--dev` for faster iteration (runs frontend in dev mode instead of building):
 
 ```bash
-bun run ci release --dry-run --dev
+bun ops ci --dry-run --dev
 ```
 
 ## Database

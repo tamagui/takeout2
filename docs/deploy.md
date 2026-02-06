@@ -48,7 +48,7 @@ flags:
 
 ### 2. deployment platform abstraction
 
-**auto-detection** (scripts/ci/release.ts:380-403)
+**auto-detection** (scripts/ops/ci.ts)
 
 ```typescript
 async function detectDeploymentPlatform(): Promise<'sst' | 'uncloud'> {
@@ -66,7 +66,7 @@ async function detectDeploymentPlatform(): Promise<'sst' | 'uncloud'> {
 
 ### 3. uncloud deployment
 
-**modular helpers** (scripts/ci/helpers/uncloud.ts)
+**modular helpers** (scripts/uncloud/helpers/deploy.ts)
 
 - `checkUncloudConfigured()` - validate env vars
 - `installUncloudCLI()` - auto-install if missing
@@ -165,7 +165,7 @@ bun onboard
 **inline help:**
 
 - onboarding shows scaling commands
-- ci/release shows missing config instructions
+- ops/ci shows missing config instructions
 - all scripts have helpful error messages
 
 ## user journey
@@ -252,8 +252,8 @@ uc scale web 3    # 3 replicas across cluster
 package.json                                  # env section
 .github/workflows/ci.yml                      # auto-generated env vars
 src/server/env-server.ts                      # auto-generated validation
-scripts/ci/release.ts                         # deployment orchestration
-scripts/ci/helpers/uncloud.ts                 # uncloud-specific logic (NEW)
+scripts/ops/ci.ts                             # deployment orchestration
+scripts/uncloud/helpers/deploy.ts             # uncloud-specific logic
 scripts/env/sync-to-github.ts                 # github secrets sync (NEW)
 scripts/uncloud/deploy-prod.ts                # load from env vars
 scripts/uncloud/helpers/build.ts              # arm64 platform
@@ -275,7 +275,7 @@ github secrets
     ↓
 github actions environment
     ↓
-scripts/ci/release.ts
+scripts/ops/ci.ts
     ↓
 scripts/uncloud/deploy-prod.ts
     ↓

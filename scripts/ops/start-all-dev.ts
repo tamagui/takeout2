@@ -14,7 +14,7 @@ handleProcessExit()
 const testEnv = await getTestEnv()
 
 // Start backend in background
-void run(`bun ./scripts/ci/start-backend.ts`, {
+void run(`bun ./scripts/ops/run-backend.ts`, {
   detached: true,
   env: testEnv,
 })
@@ -25,6 +25,6 @@ await waitForPort(+(process.env.VITE_PORT_POSTGRES || 5433))
 await waitForPort(+(process.env.VITE_PORT_ZERO || 4848))
 
 // Start frontend in dev mode
-await run(`bun ./scripts/ci/start-frontend-dev.ts`, {
+await run(`bun ./scripts/ops/run-frontend-dev.ts`, {
   env: testEnv,
 })

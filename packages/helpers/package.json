@@ -58,10 +58,17 @@
     "dequal": "^2.0.3"
   },
   "peerDependencies": {
-    "@rocicorp/zero": "^0.25.12",
     "expo-clipboard": "*",
     "react": "*",
     "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo-clipboard": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@tamagui/build": "2.0.0-rc.5-1770352331483",

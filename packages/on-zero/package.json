@@ -64,12 +64,11 @@
     }
   },
   "dependencies": {
-    "valibot": "^1.1.0",
     "@take-out/helpers": "workspace:*",
-    "@sinclair/typebox": "^0.34.41",
     "@sinclair/typebox-codegen": "^0.11.1",
     "chokidar": "^4.0.3",
-    "citty": "^0.1.6"
+    "citty": "^0.1.6",
+    "valibot": "^1.1.0"
   },
   "peerDependencies": {
     "pg": ">=8.0.0",

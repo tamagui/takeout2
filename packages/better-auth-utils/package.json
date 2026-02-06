@@ -42,10 +42,10 @@
   },
   "dependencies": {
     "@take-out/helpers": "workspace:*",
-    "better-auth": "^1.3.28",
     "jose": "^6.0.10"
   },
   "peerDependencies": {
+    "better-auth": "^1.3.28",
     "react": "*"
   },
   "devDependencies": {

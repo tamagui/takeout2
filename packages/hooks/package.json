@@ -35,12 +35,16 @@
     }
   },
   "dependencies": {
-    "@take-out/helpers": "workspace:*",
-    "react": "*"
+    "@take-out/helpers": "workspace:*"
   },
   "peerDependencies": {
     "react": "*",
     "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@tamagui/build": "2.0.0-rc.5-1770352331483",

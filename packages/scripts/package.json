@@ -30,6 +30,14 @@
   "dependencies": {
     "@take-out/helpers": "workspace:*"
   },
+  "peerDependencies": {
+    "vxrn": "*"
+  },
+  "peerDependenciesMeta": {
+    "vxrn": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "vxrn": "1.4.10-1770207233041"
   }

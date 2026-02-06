@@ -15,6 +15,79 @@ interface PackageJson {
   env?: Record<string, string | boolean>
 }
 
+/**
+ * parse a .env file, handling multi-line quoted values (PEM keys etc)
+ */
+function parseEnvFile(
+  content: string,
+  options?: { allowedKeys?: string[] },
+): Record<string, string> {
+  const result: Record<string, string> = {}
+  const lines = content.split('\n')
+  let currentKey: string | null = null
+  let currentValue: string[] = []
+  let inMultiline = false
+
+  const save = () => {
+    if (!currentKey) return
+    if (options?.allowedKeys && !options.allowedKeys.includes(currentKey)) {
+      currentKey = null
+      currentValue = []
+      inMultiline = false
+      return
+    }
+    let value = currentValue.join('\n')
+    // remove surrounding quotes
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1)
+    }
+    value = value.replace(/\\"/g, '"')
+    result[currentKey] = value
+    currentKey = null
+    currentValue = []
+    inMultiline = false
+  }
+
+  for (const line of lines) {
+    if (inMultiline) {
+      currentValue.push(line)
+      if (line.trim().endsWith('"') || line.trim().endsWith("'")) {
+        save()
+      }
+      continue
+    }
+
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith('#')) continue
+
+    const match = trimmed.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/)
+    if (match && match[1]) {
+      if (currentKey) save()
+
+      currentKey = match[1]
+      const valueStart = match[2] || ''
+
+      // check if value starts with quote and doesn't end with it (multiline)
+      if (
+        (valueStart.startsWith('"') && !valueStart.endsWith('"')) ||
+        (valueStart.startsWith("'") && !valueStart.endsWith("'"))
+      ) {
+        inMultiline = true
+        currentValue = [valueStart]
+      } else {
+        currentValue = [valueStart]
+        save()
+      }
+    }
+  }
+  if (currentKey) save()
+
+  return result
+}
+
 // iOS secrets that should be synced from .env.ios
 const IOS_SECRETS = [
   'APP_STORE_CONNECT_API_KEY_ID',
@@ -59,97 +132,21 @@ async function main() {
     process.exit(1)
   }
 
-  // manually parse .env.production to avoid dotenv loading .env or .env.local
+  // parse .env.production (supports multi-line values like PEM keys)
   if (!iosOnly && existsSync(envPath)) {
     const envContent = readFileSync(envPath, 'utf-8')
-    for (const line of envContent.split('\n')) {
-      const trimmed = line.trim()
-      if (!trimmed || trimmed.startsWith('#')) continue
-
-      const match = trimmed.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/)
-      if (match && match[1] && match[2] !== undefined) {
-        const key = match[1]
-        const value = match[2]
-        // remove quotes if present
-        const cleanValue = value.replace(/^["'](.*)["']$/, '$1')
-        process.env[key] = cleanValue
-      }
+    const parsed = parseEnvFile(envContent)
+    for (const [key, value] of Object.entries(parsed)) {
+      process.env[key] = value
     }
   }
 
   // load .env.ios for iOS secrets
   const iosEnvPath = resolve(cwd, '.env.ios')
-  const iosSecrets: Record<string, string> = {}
+  let iosSecrets: Record<string, string> = {}
   if (existsSync(iosEnvPath)) {
     const iosContent = readFileSync(iosEnvPath, 'utf-8')
-    const lines = iosContent.split('\n')
-    let currentKey: string | null = null
-    let currentValue: string[] = []
-    let inMultiline = false
-
-    const saveCurrentKey = () => {
-      if (currentKey && IOS_SECRETS.includes(currentKey)) {
-        let value = currentValue.join('\n')
-        // remove surrounding quotes if present
-        if (
-          (value.startsWith('"') && value.endsWith('"')) ||
-          (value.startsWith("'") && value.endsWith("'"))
-        ) {
-          value = value.slice(1, -1)
-        }
-        // unescape quotes
-        value = value.replace(/\\"/g, '"')
-        iosSecrets[currentKey] = value
-      }
-      currentKey = null
-      currentValue = []
-      inMultiline = false
-    }
-
-    for (const line of lines) {
-      if (inMultiline) {
-        currentValue.push(line)
-        // check if this line ends the multiline value
-        if (line.includes('-----END') && line.includes('KEY-----')) {
-          // look for closing quote on next line or same line
-          const trimmed = line.trim()
-          if (trimmed.endsWith('"') || trimmed.endsWith("'")) {
-            saveCurrentKey()
-          }
-        } else if (line.trim().endsWith('"') || line.trim().endsWith("'")) {
-          saveCurrentKey()
-        }
-        continue
-      }
-
-      const trimmed = line.trim()
-      if (!trimmed || trimmed.startsWith('#')) continue
-
-      // match KEY=value or KEY="value
-      const match = trimmed.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/)
-      if (match && match[1]) {
-        // save any previous key
-        if (currentKey) saveCurrentKey()
-
-        currentKey = match[1]
-        const valueStart = match[2] || ''
-
-        // check if value starts with quote and doesn't end with it (multiline)
-        if (
-          (valueStart.startsWith('"') && !valueStart.endsWith('"')) ||
-          (valueStart.startsWith("'") && !valueStart.endsWith("'"))
-        ) {
-          inMultiline = true
-          currentValue = [valueStart]
-        } else {
-          // single line value
-          currentValue = [valueStart]
-          saveCurrentKey()
-        }
-      }
-    }
-    // handle any remaining key
-    if (currentKey) saveCurrentKey()
+    iosSecrets = parseEnvFile(iosContent, { allowedKeys: IOS_SECRETS })
   }
 
   // detect repo for gh commands (handles multiple remotes)

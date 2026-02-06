@@ -10,16 +10,6 @@ import { join } from 'node:path'
 
 import { defineCommand, runMain } from 'citty'
 
-import { changedCommand } from './commands/changed'
-import { docsCommand } from './commands/docs'
-import { envSetupCommand } from './commands/env-setup'
-import { onboardCommand } from './commands/onboard'
-import { runCommand } from './commands/run'
-import { runAllCommand } from './commands/run-all'
-import { scriptCommand } from './commands/script'
-import { syncCommand } from './commands/sync'
-import { listAllScripts } from './utils/script-listing'
-
 // check if a directory exists in scripts folder (lazy check)
 function isScriptCategory(name: string): boolean {
   const scriptsDir = join(process.cwd(), 'scripts')
@@ -128,20 +118,19 @@ const main = defineCommand({
     description: 'CLI tools for Takeout starter kit',
   },
   subCommands: {
-    onboard: onboardCommand,
-    docs: docsCommand,
-    'env:setup': envSetupCommand,
-    run: runCommand,
-    'run-all': runAllCommand,
-    script: scriptCommand,
-    sync: syncCommand,
-    changed: changedCommand,
+    onboard: () => import('./commands/onboard').then((m) => m.onboardCommand),
+    docs: () => import('./commands/docs').then((m) => m.docsCommand),
+    'env:setup': () => import('./commands/env-setup').then((m) => m.envSetupCommand),
+    run: () => import('./commands/run').then((m) => m.runCommand),
+    'run-all': () => import('./commands/run-all').then((m) => m.runAllCommand),
+    script: () => import('./commands/script').then((m) => m.scriptCommand),
+    sync: () => import('./commands/sync').then((m) => m.syncCommand),
+    changed: () => import('./commands/changed').then((m) => m.changedCommand),
   },
-  run() {
-    // only show available scripts when running tko with truly no arguments
-    // check if process.argv has any arguments after the command name
+  async run() {
     const hasArgs = process.argv.length > 2
     if (!hasArgs) {
+      const { listAllScripts } = await import('./utils/script-listing')
       listAllScripts()
     }
   },

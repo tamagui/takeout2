@@ -206,6 +206,10 @@ function updatePackageJsonVersions(
             depsObject[pkg] = newVersion
           } else {
             const currentVersion = depsObject[pkg]
+            // skip wildcard ranges like "*" - they should stay as-is
+            if (currentVersion === '*') {
+              continue
+            }
             const prefixMatch = currentVersion.match(/^([^\d]*)/)
             const prefix = prefixMatch?.[1] || ''
             depsObject[pkg] = `${prefix}${newVersion}`

@@ -206,8 +206,10 @@ function updatePackageJsonVersions(
             depsObject[pkg] = newVersion
           } else {
             const currentVersion = depsObject[pkg]
-            // skip wildcard ranges like "*" - they should stay as-is
+            // wildcard "*" means newly added placeholder, use ^ prefix
             if (currentVersion === '*') {
+              depsObject[pkg] = `^${newVersion}`
+              updatedCount++
               continue
             }
             const prefixMatch = currentVersion.match(/^([^\d]*)/)
@@ -389,14 +391,46 @@ async function main() {
     }
   }
 
-  console.info(
-    `Found ${allMatchingDeps.size} dependencies matching patterns: ${packagePatterns.join(', ')}`
-  )
-  console.info(`Found matches in ${packagesByWorkspace.size} workspace(s)`)
-
   if (allMatchingDeps.size === 0) {
-    console.info('No matching packages found to update.')
-    return
+    // no existing deps matched, but exact patterns (no wildcards) can be added fresh
+    const exactPatterns = packagePatterns.filter((p) => !p.includes('*'))
+    if (exactPatterns.length === 0) {
+      console.info(
+        `Found 0 dependencies matching patterns: ${packagePatterns.join(', ')}`
+      )
+      console.info('No matching packages found to update.')
+      return
+    }
+
+    // add as new dependencies to the root package.json
+    console.info(`No existing deps found, adding to root: ${exactPatterns.join(', ')}`)
+    const rootPkgPath = join(rootDir, 'package.json')
+
+    for (const pkg of exactPatterns) {
+      allMatchingDeps.add(pkg)
+    }
+
+    packagesByWorkspace.set('root', {
+      dir: rootDir,
+      packages: exactPatterns,
+    })
+
+    // insert placeholder so updatePackageJsonVersions can set the real version
+    const rootPkg = JSON.parse(readFileSync(rootPkgPath, 'utf-8'))
+    if (!rootPkg.dependencies) {
+      rootPkg.dependencies = {}
+    }
+    for (const pkg of exactPatterns) {
+      if (!rootPkg.dependencies[pkg] && !rootPkg.devDependencies?.[pkg]) {
+        rootPkg.dependencies[pkg] = '*'
+      }
+    }
+    writeFileSync(rootPkgPath, JSON.stringify(rootPkg, null, 2) + '\n')
+  } else {
+    console.info(
+      `Found ${allMatchingDeps.size} dependencies matching patterns: ${packagePatterns.join(', ')}`
+    )
+    console.info(`Found matches in ${packagesByWorkspace.size} workspace(s)`)
   }
 
   if (globalTag) {

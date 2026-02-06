@@ -59,10 +59,10 @@ async function main() {
   const sshKey = getVMSSHKey()
 
   initUncloud(host, sshKey, { noDNS: true, noCaddy: true })
-  pushImage()
+  pushImage('takeout-web:latest')
 
   // deploy with self-hosted database profile
-  deployStack('src/uncloud/docker-compose.yml', 'self-hosted-db')
+  deployStack('src/uncloud/docker-compose.yml', { profile: 'self-hosted-db' })
 
   setupPortForward()
   showStatus()

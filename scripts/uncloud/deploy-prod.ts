@@ -142,7 +142,7 @@ async function main(): Promise<void> {
   // upload origin ca certs AFTER init (cluster reset creates fresh caddy volume)
   await uploadOriginCACerts(host, DEPLOY_SSH_KEY)
 
-  await pushImage()
+  await pushImage('takeout-web:latest')
 
   // process environment variables in compose file
   // spreads process.env so all vars are available, only derived db urls need explicit override

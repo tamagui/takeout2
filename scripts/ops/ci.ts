@@ -232,7 +232,7 @@ async function waitForBackend() {
         if (status.ExitCode === 0) {
           console.info('✅ Migrations completed successfully!')
           // seed demo data for tests
-          await run('bun scripts/internal/seed-demo.ts', {
+          await run('bun scripts/db/seed-demo.ts', {
             env: testEnv,
             prefix: 'seed',
             timeout: time.ms.minutes(1),

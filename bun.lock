@@ -64,7 +64,6 @@
         "motion": "^12.29.0",
         "on-zero": "workspace:*",
         "one": "1.4.15",
-        "oxc-parser": "^0.112.0",
         "pg": "^8.16.3",
         "posthog-js": "^1.252.0",
         "posthog-node": "^5.5.1",

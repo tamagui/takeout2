@@ -88,12 +88,12 @@ function parseConventionalCommit(
     'build',
     'style',
   ]
-  if (!validTypes.includes(type)) return null
+  if (!type || !validTypes.includes(type)) return null
 
   return {
     type,
     scope,
-    message: msg,
+    message: msg || message,
     breaking: !!breaking || message.toLowerCase().includes('breaking'),
   }
 }
@@ -132,7 +132,7 @@ function getCommitsBetween(fromSha: string, toRef: string): CommitInfo[] {
     const lines = result.trim().split('\n').filter(Boolean)
 
     for (const line of lines) {
-      const [hash, date, ...messageParts] = line.split('|')
+      const [hash = '', date = '', ...messageParts] = line.split('|')
       const message = messageParts.join('|')
 
       const parsed = parseConventionalCommit(message)

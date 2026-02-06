@@ -462,7 +462,7 @@ const skillsCommand = defineCommand({
         const nameMatch = content.match(/^---\s*\nname:\s*([^\n]+)/m)
         if (!nameMatch) continue
 
-        const skillName = nameMatch[1].trim()
+        const skillName = nameMatch[1]!.trim()
         const skillDir = join(skillsDir, skillName)
         const skillFile = join(skillDir, 'SKILL.md')
 

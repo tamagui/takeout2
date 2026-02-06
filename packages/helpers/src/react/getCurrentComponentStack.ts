@@ -2,10 +2,9 @@ import React from 'react'
 
 export const getCurrentComponentStack = (format?: 'short'): string => {
   if (process.env.NODE_ENV === 'development') {
-    const stack =
-      React[
-        '__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE'
-      ].getCurrentStack()
+    const stack = (React as Record<string, any>)[
+      '__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE'
+    ].getCurrentStack()
 
     if (format === 'short') {
       return formatStackToShort(stack)

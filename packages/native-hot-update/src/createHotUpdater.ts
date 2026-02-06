@@ -122,6 +122,7 @@ export function createHotUpdater(config: HotUpdaterConfig): HotUpdaterInstance {
         }, 5000)
         return () => clearTimeout(timer)
       }
+      return undefined
     }, [isUpdating])
 
     // 20s hard timeout

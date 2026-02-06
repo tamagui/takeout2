@@ -16,10 +16,7 @@ function yamlSafe(value: string): string {
   if (!needsQuoting) return value
 
   // escape backslashes and double quotes, collapse newlines
-  const escaped = value
-    .replace(/\\/g, '\\\\')
-    .replace(/"/g, '\\"')
-    .replace(/\n/g, '\\n')
+  const escaped = value.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')
 
   return `"${escaped}"`
 }

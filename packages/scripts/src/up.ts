@@ -20,7 +20,7 @@ const rootPackageJson = JSON.parse(readFileSync(join(rootDir, 'package.json'), '
 const upgradeSets: Record<string, string[]> = rootPackageJson.upgradeSets || {}
 
 for (let i = 0; i < args.length; i++) {
-  const arg = args[i]
+  const arg = args[i]!
   if (arg.startsWith('--tag=')) {
     const tagValue = arg.split('=')[1]
     if (tagValue) {
@@ -40,7 +40,7 @@ for (let i = 0; i < args.length; i++) {
     globalTag = 'rc'
   } else if (arg in upgradeSets) {
     // expand named upgrade set to its patterns
-    packagePatterns.push(...upgradeSets[arg])
+    packagePatterns.push(...upgradeSets[arg]!)
   } else {
     packagePatterns.push(arg)
   }
@@ -94,7 +94,7 @@ function findPackageJsonFiles(dir: string): string[] {
 
         if (normalizedWorkspace.includes('**')) {
           // nested glob pattern - use glob to find all package.json files
-          const baseDir = normalizedWorkspace.split('**')[0].replace(/\/$/, '')
+          const baseDir = normalizedWorkspace.split('**')[0]!.replace(/\/$/, '')
           const basePath = join(dir, baseDir)
 
           if (existsSync(basePath)) {
@@ -197,7 +197,8 @@ function updatePackageJsonVersions(
   const updateDeps = (depsObject: Record<string, string> | undefined) => {
     if (!depsObject) return
     for (const pkg of packagesToUpdate) {
-      if (pkg in depsObject && !depsObject[pkg].startsWith('workspace:')) {
+      const current = depsObject[pkg]
+      if (current && !current.startsWith('workspace:')) {
         const newVersion = versionMap.get(pkg)
         if (newVersion) {
           // for tagged versions (canary, rc, etc), use exact version (no prefix)
@@ -205,14 +206,13 @@ function updatePackageJsonVersions(
           if (globalTag) {
             depsObject[pkg] = newVersion
           } else {
-            const currentVersion = depsObject[pkg]
             // wildcard "*" means newly added placeholder, use ^ prefix
-            if (currentVersion === '*') {
+            if (current === '*') {
               depsObject[pkg] = `^${newVersion}`
               updatedCount++
               continue
             }
-            const prefixMatch = currentVersion.match(/^([^\d]*)/)
+            const prefixMatch = current.match(/^([^\d]*)/)
             const prefix = prefixMatch?.[1] || ''
             depsObject[pkg] = `${prefix}${newVersion}`
           }

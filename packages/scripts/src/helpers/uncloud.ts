@@ -34,7 +34,8 @@ function ensureUncloudContext(host: string, sshKey: string, contextName: string)
   // check if config already has context pointing to correct host
   if (existsSync(configPath)) {
     const existing = readFileSync(configPath, 'utf-8')
-    if (existing.includes(`${contextName}:`) && existing.includes(host.split('@')[1])) {
+    const hostname = host.split('@')[1]
+    if (hostname && existing.includes(`${contextName}:`) && existing.includes(hostname)) {
       console.info(`✅ uncloud config already has ${contextName} context for ${host}`)
       return
     }

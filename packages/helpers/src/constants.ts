@@ -1,7 +1,6 @@
 import { isWeb } from '@tamagui/constants'
 
-export const isTauri: boolean =
-  typeof window !== 'undefined' && window['__TAURI__'] !== undefined
+export const isTauri: boolean = typeof window !== 'undefined' && '__TAURI__' in window
 
 export const isNative: boolean = !isWeb && !isTauri
 

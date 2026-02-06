@@ -270,6 +270,7 @@ async function setupVariable(
           if (variable.required && !val) {
             return 'This field is required'
           }
+          return undefined
         },
       })
       if (!clack.isCancel(result)) {

@@ -1,11 +1,6 @@
 import { defineQueries, defineQuery } from '@rocicorp/zero'
-import {
-  useConnectionState,
-  useZero,
-  ZeroProvider,
-  useQuery as zeroUseQuery,
-} from '@rocicorp/zero/react'
-import { createEmitter, mapObject } from '@take-out/helpers'
+import { useConnectionState, useZero, ZeroProvider } from '@rocicorp/zero/react'
+import { createEmitter } from '@take-out/helpers'
 import {
   createContext,
   memo,
@@ -19,15 +14,16 @@ import {
 import { createPermissions } from './createPermissions'
 import { createUseQuery } from './createUseQuery'
 import { createMutators } from './helpers/createMutators'
-import { prettyFormatZeroQuery } from './helpers/prettyFormatZeroQuery'
+import { getQueryOrMutatorAuthData } from './helpers/getQueryOrMutatorAuthData'
 import { getMutationsPermissions } from './modelRegistry'
 import { registerQuery } from './queryRegistry'
 import { resolveQuery, type PlainQueryFn } from './resolveQuery'
 import { setCustomQueries } from './run'
 import { setAuthData, setSchema } from './state'
 import { setRunner } from './zeroRunner'
+import { zql } from './zql'
 
-import type { AuthData, GenericModels, GetZeroMutators, Where, ZeroEvent } from './types'
+import type { AuthData, GenericModels, GetZeroMutators, ZeroEvent } from './types'
 import type { Query, Row, Zero, ZeroOptions, Schema as ZeroSchema } from '@rocicorp/zero'
 
 type PreloadOptions = { ttl?: 'always' | 'never' | number | undefined }
@@ -54,6 +50,11 @@ export function createZeroClient<
 
   setSchema(schema)
 
+  const permissionsHelpers = createPermissions<Schema>({
+    schema,
+    environment: 'client',
+  })
+
   // build query registry from grouped queries
   // this creates ONE shared defineQueries registry that matches the server's structure
   const wrappedNamespaces: Record<
@@ -70,6 +71,39 @@ export function createZeroClient<
         fn(args)
       )
     }
+  }
+
+  // register permission.check synced query
+  // client: serverWhere is no-op so this just checks row existence (optimistic)
+  // server: evaluates real permission condition
+  const permissionCheckFn = (args: {
+    table: string
+    objOrId: string | Record<string, any>
+  }) => {
+    const perm = getMutationsPermissions(args.table)
+    const base = (zql as any)[args.table]
+
+    // when objOrId is missing, return a query that matches nothing
+    if (!args.objOrId) {
+      return base.where((eb: any) => eb.cmpLit(true, '=', false)).one()
+    }
+
+    return base
+      .where((eb: any) => {
+        return permissionsHelpers.buildPermissionQuery(
+          getQueryOrMutatorAuthData(),
+          eb,
+          perm || ((e: any) => e.and()),
+          args.objOrId,
+          args.table
+        )
+      })
+      .one()
+  }
+
+  registerQuery(permissionCheckFn, 'permission.check')
+  wrappedNamespaces['permission'] = {
+    check: defineQuery(({ args }: any) => permissionCheckFn(args)),
   }
 
   // create the single shared CustomQuery registry
@@ -95,29 +129,17 @@ export function createZeroClient<
     },
   })
 
-  const permissionsHelpers = createPermissions<Schema>({
-    schema,
-    environment: 'client',
-  })
-
-  // const permissionCache = createLocalStorage<string, boolean>('permissions-cache', {
-  //   storageLimit: 24,
-  // })
-
   const zeroEvents = createEmitter<ZeroEvent | null>('zero', null)
 
   const AuthDataContext = createContext<AuthData>({} as AuthData)
-  const useAuthData = () => use(AuthDataContext)
 
   const useQuery = createUseQuery<Schema>({
     DisabledContext,
     customQueries,
   })
 
-  // we don't want flickers as you move around and these queries are re-run
-  // and things generally aren't changing with permissions rapidly, so lets
-  // cache the last results and use that when first rendering, they will
-  // always update once the query resolves
+  // permission check uses a synced query so server is authoritative
+  // client is optimistic (serverWhere is no-op), server evaluates real condition
   function usePermission<K extends TableName>(
     table: K,
     objOrId: string | Partial<Row<any>> | undefined,
@@ -125,49 +147,23 @@ export function createZeroClient<
     debug = false
   ): boolean | null {
     const disabled = use(DisabledContext)
-    // const cacheVal = permissionCache.get(key) ?? permissionCache.get(keyBase)
-    const authData = useAuthData()
-    const permission = getMutationsPermissions(table)
 
-    const query = (() => {
-      let baseQuery = (zero.query as any)[table].one()
-
-      if (disabled || !enabled || !permission) {
-        return baseQuery
-      }
-
-      return baseQuery.where((eb) => {
-        return permissionsHelpers.buildPermissionQuery(
-          authData,
-          eb,
-          permission,
-          objOrId as any
-        )
-      })
-    })()
-
-    // usePermission is internal and uses inline queries directly via zeroUseQuery
-    const [data, status] = zeroUseQuery(query, {
-      enabled: Boolean(enabled && permission && authData && objOrId),
-    })
+    const [data, status] = useQuery(
+      permissionCheckFn as any,
+      { table: table as string, objOrId: objOrId as any },
+      { enabled: Boolean(!disabled && enabled && objOrId) }
+    )
 
     if (debug) {
-      console.info(
-        `usePermission()`,
-        { data, status, authData, permission },
-        prettyFormatZeroQuery(query)
-      )
+      console.info(`usePermission()`, { table, objOrId, data, status })
     }
 
-    const result = data
+    if (!objOrId) return false
 
-    const allowed = Boolean(result)
+    // null while loading, then server's authoritative answer
+    if (status.type === 'unknown') return null
 
-    if (!objOrId) {
-      return false
-    }
-
-    return allowed
+    return Boolean(data)
   }
 
   const ProvideZero = ({

@@ -8,8 +8,9 @@ import { Pool } from 'pg'
 import { createPermissions } from './createPermissions'
 import { createMutators } from './helpers/createMutators'
 import { isInZeroMutation, mutatorContext } from './helpers/mutatorContext'
+import { getMutationsPermissions } from './modelRegistry'
 import { setCustomQueries } from './run'
-import { setAuthData, setSchema } from './state'
+import { getZQL, setAuthData, setSchema } from './state'
 import { setRunner } from './zeroRunner'
 
 import type {
@@ -131,6 +132,23 @@ export function createZeroServer<
 
     const response = await zeroHandleQueryRequest(
       (name, args) => {
+        // permission.check is registered by on-zero at runtime, not in the user's query registry
+        if (name === 'permission.check') {
+          const { table, objOrId } = args as {
+            table: string
+            objOrId: string | Record<string, any>
+          }
+          const perm = getMutationsPermissions(table)
+          if (!perm) {
+            throw new Error(`[permission] no permission defined for table: ${table}`)
+          }
+          return (getZQL() as any)[table]
+            .where((eb: any) => {
+              return permissions.buildPermissionQuery(authData, eb, perm, objOrId, table)
+            })
+            .one()
+        }
+
         const query = (mustGetQuery as any)(queries, name)
         return query.fn({ args, ctx: authData })
       },

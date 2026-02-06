@@ -33,9 +33,10 @@ export function createPermissions<Schema extends ZeroSchema>({
     eb: ExpressionBuilder<any, any>,
     permissionWhere: PermissionWhere,
     // TODO until i can get a working PickPrimaryKeys<'message'>
-    objOrId: Record<string, any> | string
+    objOrId: Record<string, any> | string,
+    tableNameOverride?: TableName
   ) {
-    const tableName = getWhereTableName(permissionWhere)
+    const tableName = tableNameOverride || getWhereTableName(permissionWhere)
 
     if (!tableName) {
       throw new Error(`Must use PermissionWhere for buildPermissionQuery`)

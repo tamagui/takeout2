@@ -2,9 +2,11 @@ import React from 'react'
 
 export const getCurrentComponentStack = (format?: 'short'): string => {
   if (process.env.NODE_ENV === 'development') {
-    const stack = (React as Record<string, any>)[
-      '__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE'
-    ].getCurrentStack()
+    // react 19.1+ exposes captureOwnerStack as a public api
+    const captureOwnerStack = (React as Record<string, any>).captureOwnerStack
+    const stack = typeof captureOwnerStack === 'function' ? captureOwnerStack() : null
+
+    if (!stack) return ''
 
     if (format === 'short') {
       return formatStackToShort(stack)

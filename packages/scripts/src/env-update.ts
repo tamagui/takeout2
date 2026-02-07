@@ -62,13 +62,20 @@ function updateDeployYml() {
 }
 
 function updateEnvServerTs() {
-  const envServerPath = 'src/server/env-server.ts'
-
+  const candidates = ['src/constants/env-server.ts', 'src/server/env-server.ts']
+  let envServerPath = ''
   let envServer = ''
-  try {
-    envServer = readFileSync(envServerPath, 'utf-8')
-  } catch (_error) {
-    throw new Error(`File ${envServerPath} not found`)
+
+  for (const path of candidates) {
+    try {
+      envServer = readFileSync(path, 'utf-8')
+      envServerPath = path
+      break
+    } catch {}
+  }
+
+  if (!envServerPath) {
+    throw new Error(`env-server.ts not found at ${candidates.join(' or ')}`)
   }
 
   if (!envServer.includes(jsStartMarker) || !envServer.includes(jsEndMarker)) {

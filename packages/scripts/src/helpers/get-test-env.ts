@@ -9,9 +9,11 @@ export async function getTestEnv() {
   const zeroVersion = getZeroVersion()
   const dockerHost = getDockerHost()
   const devEnv = await loadEnv('development')
-  const envPath = ['src/constants/env-server', 'src/server/env-server']
-    .map((p) => join(process.cwd(), p))
-    .find((p) => existsSync(p + '.ts')) || join(process.cwd(), 'src/constants/env-server')
+  const envPath =
+    ['src/constants/env-server', 'src/server/env-server']
+      .map((p) => join(process.cwd(), p))
+      .find((p) => existsSync(p + '.ts')) ||
+    join(process.cwd(), 'src/constants/env-server')
   const serverEnvFallback = await import(envPath)
 
   // ports come from VITE_PORT_* in .env.development (loaded by loadEnv)

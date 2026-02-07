@@ -54,6 +54,24 @@ function extractMetadata(filePath: string): ScriptMetadata {
       }
     }
 
+    // also parse cmd() style metadata
+    const joined = lines.join('\n')
+    if (!metadata.description) {
+      const cmdMatch = joined.match(/cmd\(\s*[`'"](.+?)[`'"]\s*\)/)
+      if (cmdMatch?.[1]) {
+        metadata.description = cmdMatch[1]
+      }
+    }
+    if (!metadata.args) {
+      const cmdArgsMatch = joined.match(/\.args\(\s*[`'"](.+?)[`'"]\s*\)/)
+      if (cmdArgsMatch?.[1]) {
+        const flags = [...cmdArgsMatch[1].matchAll(/--?([a-z-]+)/gi)]
+        if (flags.length > 0) {
+          metadata.args = flags.map((m) => `--${m[1]}`)
+        }
+      }
+    }
+
     // add file modification time
     const stat = statSync(filePath)
     metadata.mtime = stat.mtimeMs

@@ -52,7 +52,7 @@ type ParseFlags<S extends string> =
 // flatten intersection into single object for nice hover display
 type Prettify<T> = { [K in keyof T]: T[K] } & {}
 
-type Args<S extends string> = Prettify<ParseFlags<S> & { _: string[] }>
+export type Args<S extends string> = Prettify<ParseFlags<S> & { _: string[] }>
 
 export function args<const S extends string>(spec: S): Args<S>
 export function args<const S extends string>(strings: TemplateStringsArray | S): Args<S> {

@@ -28,7 +28,9 @@
     "access": "public"
   },
   "dependencies": {
-    "@take-out/helpers": "workspace:*"
+    "@clack/prompts": "^0.8.2",
+    "@take-out/helpers": "workspace:*",
+    "picocolors": "^1.1.1"
   },
   "peerDependencies": {
     "vxrn": "^1.4.15"

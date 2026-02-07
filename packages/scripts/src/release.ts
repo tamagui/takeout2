@@ -167,7 +167,12 @@ async function mainRelease() {
     const workspaceDeps = new Map<string, Record<string, Record<string, string>>>()
     for (const { json, path } of allPackageJsons) {
       const deps: Record<string, Record<string, string>> = {}
-      for (const field of ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies']) {
+      for (const field of [
+        'dependencies',
+        'devDependencies',
+        'optionalDependencies',
+        'peerDependencies',
+      ]) {
         if (!json[field]) continue
         for (const depName in json[field]) {
           if (json[field][depName].startsWith('workspace:')) {

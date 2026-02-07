@@ -119,38 +119,6 @@ bun tko docs skills --clean
 
 skills are gitignored by default (`.claude/skills`).
 
-### Programmatic Usage
-
-Import utilities for use in custom scripts:
-
-```typescript
-import {
-  checkAllPrerequisites,
-  checkAllPorts,
-  generateSecret,
-  updateEnvVariable,
-  displayWelcome,
-} from '@take-out/cli'
-
-// Check prerequisites
-const checks = checkAllPrerequisites()
-console.log(checks)
-
-// Check port conflicts
-const ports = checkAllPorts()
-console.log(ports)
-
-// Generate auth secret
-const secret = generateSecret()
-console.log(secret)
-
-// Update environment variable
-updateEnvVariable(process.cwd(), 'BETTER_AUTH_SECRET', secret)
-
-// Display welcome message
-displayWelcome('My App')
-```
-
 ## API
 
 ### Prerequisites

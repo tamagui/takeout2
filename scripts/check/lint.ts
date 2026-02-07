@@ -1,17 +1,13 @@
 #!/usr/bin/env bun
 
-/**
- * @description Run oxlint linter
- * @args --fix
- */
+import { cmd } from '@take-out/cli'
 
-import { args } from '@take-out/scripts/helpers/args'
-import { $ } from 'bun'
-
-const { fix } = args('--fix boolean')
-
-if (fix) {
-  await $`oxfmt && oxlint --fix --fix-suggestions`
-} else {
-  await $`oxlint`
-}
+await cmd(`Run oxlint linter`)
+  .args('--fix boolean')
+  .run(async ({ fix, $ }) => {
+    if (fix) {
+      await $`oxfmt && oxlint --fix --fix-suggestions`
+    } else {
+      await $`oxlint`
+    }
+  })

@@ -4,6 +4,14 @@ import { getQueryOrMutatorAuthData } from './helpers/getQueryOrMutatorAuthData'
 import type { TableName, Where } from './types'
 import type { Condition, ExpressionBuilder } from '@rocicorp/zero'
 
+// when true, serverWhere bypasses the client no-op so nested serverWhere
+// calls inside permission builders actually evaluate on the client
+let _evaluatingPermission = false
+
+export function setEvaluatingPermission(value: boolean) {
+  _evaluatingPermission = value
+}
+
 export function where<Table extends TableName, Builder extends Where<Table>>(
   tableName: Table,
   builder: Builder,
@@ -25,7 +33,7 @@ export function where<Table extends TableName, Builder extends Where<Table>>(
     a: ExpressionBuilder<any, any>,
     b = getQueryOrMutatorAuthData()
   ) => {
-    if (!isServer && isServerOnly) {
+    if (!isServer && isServerOnly && !_evaluatingPermission) {
       // on client (web or native) where conditions always pass
       return a.and()
     }

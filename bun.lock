@@ -298,6 +298,24 @@
         "react-native",
       ],
     },
+    "packages/payments": {
+      "name": "@take-out/payments",
+      "version": "0.0.76",
+      "dependencies": {
+        "stripe": "^20.3.1",
+      },
+      "devDependencies": {
+        "@tamagui/build": "2.0.0-rc.5-1770352331483",
+        "@types/node": "24.0.3",
+        "@types/react": "^19.0.8",
+        "oxfmt": "^0.16.0",
+        "oxlint": "^1.31.0",
+        "react": "*",
+      },
+      "peerDependencies": {
+        "react": "*",
+      },
+    },
     "packages/postgres": {
       "name": "@take-out/postgres",
       "version": "0.0.79",
@@ -1785,6 +1803,8 @@
     "@take-out/native": ["@take-out/native@workspace:packages/native"],
 
     "@take-out/native-hot-update": ["@take-out/native-hot-update@workspace:packages/native-hot-update"],
+
+    "@take-out/payments": ["@take-out/payments@workspace:packages/payments"],
 
     "@take-out/postgres": ["@take-out/postgres@workspace:packages/postgres"],
 
@@ -4162,6 +4182,8 @@
 
     "strip-json-comments": ["strip-json-comments@5.0.3", "", {}, "sha512-1tB5mhVo7U+ETBKNf92xT4hrQa3pm0MZ0PQvuDnWgAAGHDsfp4lPSpiS6psrSiet87wyGPh9ft6wmhOMQ0hDiw=="],
 
+    "stripe": ["stripe@20.3.1", "", { "peerDependencies": { "@types/node": ">=16" }, "optionalPeers": ["@types/node"] }, "sha512-k990yOT5G5rhX3XluRPw5Y8RLdJDW4dzQ29wWT66piHrbnM2KyamJ1dKgPsw4HzGHRWjDiSSdcI2WdxQUPV3aQ=="],
+
     "strnum": ["strnum@2.1.1", "", {}, "sha512-7ZvoFTiCnGxBtDqJ//Cu6fWtZtc7Y3x+QOirG15wztbdngGSkht27o2pyGWrVy0b4WAy3jbKmnoK6g5VlVNUUw=="],
 
     "structured-headers": ["structured-headers@0.4.1", "", {}, "sha512-0MP/Cxx5SzeeZ10p/bZI0S6MpgD+yxAhi1BOQ34jgnMXsCq3j1t6tQnZu+KdlL7dvJTLT3g9xN8tl10TqgFMcg=="],
@@ -4865,6 +4887,8 @@
     "@take-out/native-hot-update/@hot-updater/react-native": ["@hot-updater/react-native@0.25.6", "", { "dependencies": { "@hot-updater/cli-tools": "0.25.6", "@hot-updater/core": "0.25.6", "@hot-updater/js": "0.25.6", "@hot-updater/plugin-core": "0.25.6", "use-sync-external-store": "1.5.0" }, "peerDependencies": { "expo": ">=50.0.0", "hot-updater": "*", "react": "*", "react-native": "*" }, "optionalPeers": ["expo", "hot-updater"] }, "sha512-PDpTPvzXlGHD52yem1VW27ZUWq07N+VnXVoqfiQu3h40Q8KB1Q2rAVcqQ2FfSIaTsfLepoavm9lTrUZ34E2Z2Q=="],
 
     "@take-out/native-hot-update/@types/react": ["@types/react@18.3.26", "", { "dependencies": { "@types/prop-types": "*", "csstype": "^3.0.2" } }, "sha512-RFA/bURkcKzx/X9oumPG9Vp3D3JUgus/d0b67KB0t5S/raciymilkOa66olh78MUI92QLbEJevO7rvqU/kjwKA=="],
+
+    "@take-out/payments/@types/react": ["@types/react@19.2.2", "", { "dependencies": { "csstype": "^3.0.2" } }, "sha512-6mDvHUFSjyT2B2yeNx2nUgMxh9LtOWvkhIU3uePn2I2oyNymUAX1NIsdgviM4CH+JSrp2D2hsMvJOkxY+0wNRA=="],
 
     "@tamagui/build/@babel/preset-typescript": ["@babel/preset-typescript@7.28.5", "", { "dependencies": { "@babel/helper-plugin-utils": "^7.27.1", "@babel/helper-validator-option": "^7.27.1", "@babel/plugin-syntax-jsx": "^7.27.1", "@babel/plugin-transform-modules-commonjs": "^7.27.1", "@babel/plugin-transform-typescript": "^7.28.5" }, "peerDependencies": { "@babel/core": "^7.0.0-0" } }, "sha512-+bQy5WOI2V6LJZpPVxY+yp66XdZ2yifu0Mc1aP5CQKgjn4QM5IN2i5fAZ4xKop47pr8rpVhiAeu+nDQa12C8+g=="],
 

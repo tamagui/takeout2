@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { loadEnv as vxrnLoadEnv } from 'vxrn/loadEnv'
@@ -9,9 +10,9 @@ export async function loadEnv(
   // loads env into process.env
   await vxrnLoadEnv(environment)
 
-  const Environment = await import(
-    options?.envPath || join(process.cwd(), 'src/server/env-server.ts')
-  )
+  const envPath = options?.envPath || resolveEnvServerPath()
+
+  const Environment = await import(envPath)
 
   // validate
   for (const key in Environment) {
@@ -24,4 +25,16 @@ export async function loadEnv(
   }
 
   return Environment
+}
+
+function resolveEnvServerPath(): string {
+  const candidates = ['src/constants/env-server.ts', 'src/server/env-server.ts']
+  for (const candidate of candidates) {
+    const full = join(process.cwd(), candidate)
+    if (existsSync(full)) {
+      return full
+    }
+  }
+  // fall back to first candidate for error message
+  return join(process.cwd(), 'src/constants/env-server.ts')
 }

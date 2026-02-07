@@ -89,15 +89,17 @@ export async function migrate(options: MigrateOptions) {
 
   try {
     await client.query('BEGIN')
+    // use public schema explicitly - pg_dump restores into public, and if a schema
+    // matching the db user exists (e.g. startchat), unqualified names resolve there first
     await client.query(`
-      CREATE TABLE IF NOT EXISTS migrations (
+      CREATE TABLE IF NOT EXISTS public.migrations (
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         run_on TIMESTAMP NOT NULL DEFAULT NOW()
       )
     `)
 
-    const appliedMigrations = await client.query('SELECT name FROM migrations')
+    const appliedMigrations = await client.query('SELECT name FROM public.migrations')
     const appliedMigrationNames = new Set(appliedMigrations.rows.map((row) => row.name))
 
     // get TypeScript migrations
@@ -145,7 +147,7 @@ export async function migrate(options: MigrateOptions) {
           await migration.up(client)
         }
 
-        await client.query('INSERT INTO migrations (name) VALUES ($1)', [migration.name])
+        await client.query('INSERT INTO public.migrations (name) VALUES ($1)', [migration.name])
         console.info(`Successfully applied migration: ${migration.name}`)
       }
 

@@ -15,12 +15,12 @@ import { createPermissions } from './createPermissions'
 import { createUseQuery } from './createUseQuery'
 import { createMutators } from './helpers/createMutators'
 import { getQueryOrMutatorAuthData } from './helpers/getQueryOrMutatorAuthData'
-import { getMutationsPermissions } from './modelRegistry'
+import { getAllMutationsPermissions, getMutationsPermissions } from './modelRegistry'
 import { registerQuery } from './queryRegistry'
 import { resolveQuery, type PlainQueryFn } from './resolveQuery'
 import { setCustomQueries } from './run'
 import { setAuthData, setSchema } from './state'
-import { getRawWhere } from './where'
+import { getRawWhere, setEvaluatingPermission } from './where'
 import { setRunner } from './zeroRunner'
 import { zql } from './zql'
 
@@ -31,6 +31,12 @@ type PreloadOptions = { ttl?: 'always' | 'never' | number | undefined }
 
 export type GroupedQueries = Record<string, Record<string, (...args: any[]) => any>>
 
+// controls how usePermission behaves before the server responds:
+//  - 'optimistic': evaluate the permission query on the client (default)
+//  - 'optimistic-deny': return false until server confirms
+//  - 'optimistic-allow': return true until server confirms
+export type PermissionStrategy = 'optimistic' | 'optimistic-deny' | 'optimistic-allow'
+
 export function createZeroClient<
   Schema extends ZeroSchema,
   Models extends GenericModels,
@@ -38,10 +44,12 @@ export function createZeroClient<
   schema,
   models,
   groupedQueries,
+  permissionStrategy = 'optimistic',
 }: {
   schema: Schema
   models: Models
   groupedQueries: GroupedQueries
+  permissionStrategy?: PermissionStrategy
 }) {
   type ZeroMutators = GetZeroMutators<Models>
   type ZeroInstance = Zero<Schema, ZeroMutators>
@@ -74,41 +82,74 @@ export function createZeroClient<
     }
   }
 
-  // register permission.check synced query
-  // client: evaluates raw permission condition for optimistic result (zero caches via materialization)
+  // register per-model permission queries so each table gets its own materialized view
+  // client: evaluates raw permission condition for optimistic result
   // server: evaluates real permission condition authoritatively
-  const permissionCheckFn = (args: {
-    table: string
-    objOrId: string | Record<string, any>
-  }) => {
-    const perm = getMutationsPermissions(args.table)
-    const base = (zql as any)[args.table]
+  const permissionCheckFns: Record<
+    string,
+    (args: { objOrId: string | Record<string, any> }) => any
+  > = {}
 
-    // when objOrId is missing, return a query that matches nothing
-    if (!args.objOrId) {
-      return base.where((eb: any) => eb.cmpLit(true, '=', false)).one()
+  const createPermissionCheckFn = (table: string) => {
+    const fn = (args: { objOrId: string | Record<string, any> }) => {
+      const perm = getMutationsPermissions(table)
+      const base = (zql as any)[table]
+
+      if (!args.objOrId) {
+        return base.where((eb: any) => eb.cmpLit(true, '=', false)).one()
+      }
+
+      if (permissionStrategy === 'optimistic') {
+        // unwrap serverWhere so conditions actually evaluate on client
+        // set flag so nested serverWhere calls also bypass the client no-op
+        const rawPerm = perm ? getRawWhere(perm) || perm : perm
+        return base
+          .where((eb: any) => {
+            setEvaluatingPermission(true)
+            try {
+              return permissionsHelpers.buildPermissionQuery(
+                getQueryOrMutatorAuthData(),
+                eb,
+                rawPerm || ((e: any) => e.and()),
+                args.objOrId,
+                table
+              )
+            } finally {
+              setEvaluatingPermission(false)
+            }
+          })
+          .one()
+      }
+
+      if (permissionStrategy === 'optimistic-deny') {
+        // client query always returns false, server corrects authoritatively
+        return base.where((eb: any) => eb.cmpLit(true, '=', false)).one()
+      }
+
+      // optimistic-allow: pass wrapped perm directly
+      // serverWhere is a no-op on client → eb.and() → always true → row exists check
+      // server evaluates real condition and corrects authoritatively
+      return base
+        .where((eb: any) => {
+          return permissionsHelpers.buildPermissionQuery(
+            getQueryOrMutatorAuthData(),
+            eb,
+            perm || ((e: any) => e.and()),
+            args.objOrId,
+            table
+          )
+        })
+        .one()
     }
-
-    // use the raw (unwrapped) builder so serverWhere conditions actually evaluate on client
-    // this gives us optimistic permission results — zero caches via its materialized views
-    const rawPerm = perm ? getRawWhere(perm) || perm : perm
-
-    return base
-      .where((eb: any) => {
-        return permissionsHelpers.buildPermissionQuery(
-          getQueryOrMutatorAuthData(),
-          eb,
-          rawPerm || ((e: any) => e.and()),
-          args.objOrId,
-          args.table
-        )
-      })
-      .one()
+    permissionCheckFns[table] = fn
+    registerQuery(fn, `permission.${table}`)
+    return fn
   }
 
-  registerQuery(permissionCheckFn, 'permission.check')
-  wrappedNamespaces['permission'] = {
-    check: defineQuery(({ args }: any) => permissionCheckFn(args)),
+  wrappedNamespaces['permission'] = {}
+  for (const [table] of getAllMutationsPermissions()) {
+    const fn = createPermissionCheckFn(table)
+    wrappedNamespaces['permission'][table] = defineQuery(({ args }: any) => fn(args))
   }
 
   // create the single shared CustomQuery registry
@@ -143,8 +184,8 @@ export function createZeroClient<
     customQueries,
   })
 
-  // permission check uses a synced query so server is authoritative
-  // client is optimistic (serverWhere is no-op), server evaluates real condition
+  // permission check uses a per-model synced query so server is authoritative
+  // permissionStrategy controls client behavior before server responds
   function usePermission(
     table: TableName | (string & {}),
     objOrId: string | Partial<Row<any>> | undefined,
@@ -152,11 +193,13 @@ export function createZeroClient<
     debug = false
   ): boolean | null {
     const disabled = use(DisabledContext)
+    const tableStr = table as string
+    const checkFn = permissionCheckFns[tableStr]
 
     const [data, status] = useQuery(
-      permissionCheckFn as any,
-      { table: table as string, objOrId: objOrId as any },
-      { enabled: Boolean(!disabled && enabled && objOrId) }
+      checkFn as any,
+      { objOrId: objOrId as any },
+      { enabled: Boolean(!disabled && enabled && objOrId && checkFn) }
     )
 
     if (debug) {

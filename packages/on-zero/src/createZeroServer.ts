@@ -132,10 +132,10 @@ export function createZeroServer<
 
     const response = await zeroHandleQueryRequest(
       (name, args) => {
-        // permission.check is registered by on-zero at runtime, not in the user's query registry
-        if (name === 'permission.check') {
-          const { table, objOrId } = args as {
-            table: string
+        // per-model permission queries registered by on-zero at runtime
+        if (name.startsWith('permission.')) {
+          const table = name.slice('permission.'.length)
+          const { objOrId } = args as {
             objOrId: string | Record<string, any>
           }
           const perm = getMutationsPermissions(table)

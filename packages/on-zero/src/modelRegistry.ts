@@ -9,3 +9,7 @@ export function setMutationsPermissions(tableName: string, permissions: Where) {
 export function getMutationsPermissions(tableName: string): Where | undefined {
   return mutationsToPermissionsRegistry.get(tableName)
 }
+
+export function getAllMutationsPermissions(): Map<string, Where> {
+  return mutationsToPermissionsRegistry
+}

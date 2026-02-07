@@ -1,0 +1,61 @@
+{
+  "name": "@take-out/payments",
+  "version": "0.0.76",
+  "description": "Stripe payment processing, checkout sessions, subscriptions, and webhook handling",
+  "sideEffects": false,
+  "type": "module",
+  "source": "src/index.ts",
+  "main": "dist/cjs",
+  "module": "dist/esm",
+  "types": "./src/index.ts",
+  "files": [
+    "src",
+    "types",
+    "dist"
+  ],
+  "scripts": {
+    "build": "tamagui-build --skip-types",
+    "watch": "tamagui-build --skip-types --watch",
+    "typecheck": "tko run typecheck",
+    "lint": "oxlint src",
+    "lint:fix": "oxfmt src && oxlint --fix --fix-suggestions src",
+    "clean": "tamagui-build clean",
+    "clean:build": "tamagui-build clean:build"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "react-native": {
+        "import": "./dist/esm/index.native.js",
+        "require": "./dist/cjs/index.native.js"
+      },
+      "types": "./src/index.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs",
+      "default": "./dist/esm/index.mjs"
+    },
+    "./server": {
+      "types": "./src/server.ts",
+      "import": "./dist/esm/server.mjs",
+      "require": "./dist/cjs/server.cjs",
+      "default": "./dist/esm/server.mjs"
+    }
+  },
+  "dependencies": {
+    "stripe": "^20.3.1"
+  },
+  "peerDependencies": {
+    "react": "*"
+  },
+  "devDependencies": {
+    "@tamagui/build": "2.0.0-rc.5-1770352331483",
+    "@types/node": "24.0.3",
+    "@types/react": "^19.0.8",
+    "oxfmt": "^0.16.0",
+    "oxlint": "^1.31.0",
+    "react": "*"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

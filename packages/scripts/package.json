@@ -1,6 +1,6 @@
 {
   "name": "@take-out/scripts",
-  "version": "0.0.92",
+  "version": "0.0.93",
   "type": "module",
   "main": "./src/run.ts",
   "sideEffects": false,
@@ -28,7 +28,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@take-out/helpers": "workspace:*"
+    "@take-out/helpers": "0.0.93"
   },
   "peerDependencies": {
     "vxrn": "^1.4.15"

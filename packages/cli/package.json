@@ -1,6 +1,6 @@
 {
   "name": "@take-out/cli",
-  "version": "0.0.92",
+  "version": "0.0.93",
   "description": "CLI tools for Takeout starter kit - interactive onboarding and project setup",
   "type": "module",
   "sideEffects": false,
@@ -50,8 +50,8 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.8.2",
-    "@take-out/docs": "workspace:*",
-    "@take-out/scripts": "workspace:*",
+    "@take-out/docs": "0.0.93",
+    "@take-out/scripts": "0.0.93",
     "citty": "^0.1.6",
     "picocolors": "^1.1.1"
   },

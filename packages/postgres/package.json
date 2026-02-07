@@ -1,6 +1,6 @@
 {
   "name": "@take-out/postgres",
-  "version": "0.0.93",
+  "version": "0.0.94",
   "sideEffects": false,
   "source": "src/index.ts",
   "main": "dist/cjs",

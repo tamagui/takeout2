@@ -41,7 +41,7 @@
     }
   },
   "dependencies": {
-    "@take-out/helpers": "0.0.93",
+    "@take-out/helpers": "workspace:*",
     "jose": "^6.0.10"
   },
   "peerDependencies": {

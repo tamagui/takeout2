@@ -50,8 +50,8 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.8.2",
-    "@take-out/docs": "0.0.93",
-    "@take-out/scripts": "0.0.93",
+    "@take-out/docs": "workspace:*",
+    "@take-out/scripts": "workspace:*",
     "citty": "^0.1.6",
     "picocolors": "^1.1.1"
   },

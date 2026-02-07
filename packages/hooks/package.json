@@ -35,7 +35,7 @@
     }
   },
   "dependencies": {
-    "@take-out/helpers": "0.0.93"
+    "@take-out/helpers": "workspace:*"
   },
   "peerDependencies": {
     "react": "*",

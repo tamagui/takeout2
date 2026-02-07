@@ -163,6 +163,22 @@ async function mainRelease() {
       }
     }
 
+    // snapshot workspace:* deps before mutation (shallow copy mutates originals)
+    const workspaceDeps = new Map<string, Record<string, Record<string, string>>>()
+    for (const { json, path } of allPackageJsons) {
+      const deps: Record<string, Record<string, string>> = {}
+      for (const field of ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies']) {
+        if (!json[field]) continue
+        for (const depName in json[field]) {
+          if (json[field][depName].startsWith('workspace:')) {
+            deps[field] ??= {}
+            deps[field][depName] = json[field][depName]
+          }
+        }
+      }
+      if (Object.keys(deps).length) workspaceDeps.set(path, deps)
+    }
+
     if (!skipVersion && !finish) {
       await Promise.all(
         allPackageJsons.map(async ({ json, path }) => {
@@ -241,21 +257,14 @@ async function mainRelease() {
       // restore workspace:* protocols after publishing
       if (!dryRun) {
         await Promise.all(
-          allPackageJsons.map(async ({ json, path }) => {
+          allPackageJsons.map(async ({ path }) => {
+            const saved = workspaceDeps.get(path)
+            if (!saved) return
             const current = await fs.readJSON(path)
-            for (const field of [
-              'dependencies',
-              'devDependencies',
-              'optionalDependencies',
-              'peerDependencies',
-            ]) {
-              const origDeps = json[field]
-              const currentDeps = current[field]
-              if (!origDeps || !currentDeps) continue
-              for (const depName in origDeps) {
-                if (origDeps[depName].startsWith('workspace:') && currentDeps[depName]) {
-                  currentDeps[depName] = origDeps[depName]
-                }
+            for (const field in saved) {
+              if (!current[field]) continue
+              for (const depName in saved[field]) {
+                current[field][depName] = saved[field][depName]
               }
             }
             await writeJSON(path, current, { spaces: 2 })

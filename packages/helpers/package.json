@@ -63,10 +63,16 @@
     "react-native": "*"
   },
   "peerDependenciesMeta": {
-    "expo-clipboard": {
+    "react": {
       "optional": true
     },
     "react-native": {
+      "optional": true
+    },
+    "expo-clipboard": {
+      "optional": true
+    },
+    "@rocicorp/zero": {
       "optional": true
     }
   },

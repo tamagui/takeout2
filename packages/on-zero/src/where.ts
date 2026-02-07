@@ -41,6 +41,9 @@ export function where<Table extends TableName, Builder extends Where<Table>>(
     return result
   }) as Builder
 
+  // store the raw (unwrapped) builder so permission checks can evaluate it on client
+  WhereRawBuilderMap.set(wrappedWhereFn, whereFn)
+
   if (b) {
     WhereTableNameMap.set(wrappedWhereFn, a as Table)
   }
@@ -51,7 +54,13 @@ export function where<Table extends TableName, Builder extends Where<Table>>(
 // permissions where:
 
 const WhereTableNameMap = new WeakMap<Where, TableName>()
+const WhereRawBuilderMap = new WeakMap<Where, Where>()
 
 export function getWhereTableName(where: Where) {
   return WhereTableNameMap.get(where)
+}
+
+// returns the raw builder that always evaluates (bypasses serverWhere client no-op)
+export function getRawWhere(where: Where): Where | undefined {
+  return WhereRawBuilderMap.get(where)
 }

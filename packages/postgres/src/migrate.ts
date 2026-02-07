@@ -147,7 +147,9 @@ export async function migrate(options: MigrateOptions) {
           await migration.up(client)
         }
 
-        await client.query('INSERT INTO public.migrations (name) VALUES ($1)', [migration.name])
+        await client.query('INSERT INTO public.migrations (name) VALUES ($1)', [
+          migration.name,
+        ])
         console.info(`Successfully applied migration: ${migration.name}`)
       }
 

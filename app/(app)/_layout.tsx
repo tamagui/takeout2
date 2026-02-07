@@ -2,6 +2,7 @@ import { Protected, Redirect, Slot, Stack, usePathname } from 'one'
 import { Configuration, isWeb, SizableText } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
+import { ZeroTestUI } from '~/features/devtools/ZeroTestUI'
 import { Dialogs } from '~/interface/dialogs/Dialogs'
 import { Gallery } from '~/interface/gallery/Gallery'
 import { NotificationProvider } from '~/interface/notification/Notification'
@@ -63,6 +64,7 @@ export function AppLayout() {
           </NotificationProvider>
           <Dialogs />
         </ToastProvider>
+        <ZeroTestUI />
       </ProvideZero>
     </Configuration>
   )

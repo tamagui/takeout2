@@ -20,6 +20,7 @@ import { registerQuery } from './queryRegistry'
 import { resolveQuery, type PlainQueryFn } from './resolveQuery'
 import { setCustomQueries } from './run'
 import { setAuthData, setSchema } from './state'
+import { getRawWhere } from './where'
 import { setRunner } from './zeroRunner'
 import { zql } from './zql'
 
@@ -74,8 +75,8 @@ export function createZeroClient<
   }
 
   // register permission.check synced query
-  // client: serverWhere is no-op so this just checks row existence (optimistic)
-  // server: evaluates real permission condition
+  // client: evaluates raw permission condition for optimistic result (zero caches via materialization)
+  // server: evaluates real permission condition authoritatively
   const permissionCheckFn = (args: {
     table: string
     objOrId: string | Record<string, any>
@@ -88,12 +89,16 @@ export function createZeroClient<
       return base.where((eb: any) => eb.cmpLit(true, '=', false)).one()
     }
 
+    // use the raw (unwrapped) builder so serverWhere conditions actually evaluate on client
+    // this gives us optimistic permission results — zero caches via its materialized views
+    const rawPerm = perm ? getRawWhere(perm) || perm : perm
+
     return base
       .where((eb: any) => {
         return permissionsHelpers.buildPermissionQuery(
           getQueryOrMutatorAuthData(),
           eb,
-          perm || ((e: any) => e.and()),
+          rawPerm || ((e: any) => e.and()),
           args.objOrId,
           args.table
         )
@@ -140,8 +145,8 @@ export function createZeroClient<
 
   // permission check uses a synced query so server is authoritative
   // client is optimistic (serverWhere is no-op), server evaluates real condition
-  function usePermission<K extends TableName>(
-    table: K,
+  function usePermission(
+    table: TableName | (string & {}),
     objOrId: string | Partial<Row<any>> | undefined,
     enabled = typeof objOrId !== 'undefined',
     debug = false

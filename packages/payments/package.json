@@ -45,15 +45,26 @@
     "stripe": "^20.3.1"
   },
   "peerDependencies": {
-    "react": "*"
+    "expo-web-browser": "*",
+    "react": "*",
+    "react-native": "*",
+    "tamagui": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo-web-browser": { "optional": true },
+    "react-native": { "optional": true },
+    "tamagui": { "optional": true }
   },
   "devDependencies": {
     "@tamagui/build": "2.0.0-rc.5-1770352331483",
     "@types/node": "24.0.3",
     "@types/react": "^19.0.8",
+    "expo-web-browser": "*",
     "oxfmt": "^0.16.0",
     "oxlint": "^1.31.0",
-    "react": "*"
+    "react": "*",
+    "react-native": "*",
+    "tamagui": "*"
   },
   "publishConfig": {
     "access": "public"

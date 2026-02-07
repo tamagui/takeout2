@@ -126,7 +126,8 @@ if (isShorthand) {
     // bypass citty for --help on scripts so the script handles it itself
     const hasHelp = process.argv.includes('--help') || process.argv.includes('-h')
     if (resolvedScriptName && hasHelp) {
-      const scriptPath = findLocalScript(resolvedScriptName) || findBuiltInScript(resolvedScriptName)
+      const scriptPath =
+        findLocalScript(resolvedScriptName) || findBuiltInScript(resolvedScriptName)
       if (scriptPath) {
         const flagArgs = process.argv.slice(3).filter((a) => a !== resolvedScriptName)
         const result = spawnSync('bun', [scriptPath, ...flagArgs], {

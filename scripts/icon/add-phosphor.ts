@@ -3,8 +3,8 @@
 import { cmd } from '@take-out/cli'
 
 await cmd`Add a Phosphor icon to the project`.run(async ({ fs, path }) => {
-
-  const PHOSPHOR_BASE = 'https://raw.githubusercontent.com/phosphor-icons/core/main/assets'
+  const PHOSPHOR_BASE =
+    'https://raw.githubusercontent.com/phosphor-icons/core/main/assets'
 
   type Weight = 'regular' | 'bold' | 'duotone' | 'fill' | 'light' | 'thin'
 

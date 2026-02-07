@@ -131,10 +131,13 @@ await cmd`set up cloudflare dev tunnel for local development`
     // get the public url in the background
     setTimeout(async () => {
       try {
-        const { stdout } = await run(`cloudflared tunnel info ${tunnelId} --output json`, {
-          captureOutput: true,
-          silent: true,
-        })
+        const { stdout } = await run(
+          `cloudflared tunnel info ${tunnelId} --output json`,
+          {
+            captureOutput: true,
+            silent: true,
+          }
+        )
 
         try {
           const info = JSON.parse(stdout)

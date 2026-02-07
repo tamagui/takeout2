@@ -3,7 +3,6 @@
 import { cmd } from '@take-out/cli'
 
 await cmd`Check deployment health`.run(async ({ $, fs }) => {
-
   const TIMEOUT = 5 * 60 * 1000 // 5 minutes
   const CHECK_INTERVAL = 10000 // 10 seconds
   const PROGRESS_UPDATE_INTERVAL = 30000 // 30 seconds for progress updates
@@ -219,7 +218,11 @@ Monitors the deployment and exits when all services are healthy or on timeout.
       } else if (statusCode === 302) {
         return { healthy: true, status: statusCode, message: 'Redirect (auth working)' }
       } else if (statusCode === 404) {
-        return { healthy: true, status: statusCode, message: 'Not found (server running)' }
+        return {
+          healthy: true,
+          status: statusCode,
+          message: 'Not found (server running)',
+        }
       } else if (statusCode >= 500) {
         return { healthy: false, status: statusCode, message: 'Server error' }
       }
@@ -259,7 +262,11 @@ Monitors the deployment and exits when all services are healthy or on timeout.
   function formatServiceStatus(state: ServiceState): string {
     const healthIcon = state.healthy ? '✅' : state.status === 'running' ? '⏳' : '❌'
     const status =
-      state.status === 'running' ? (state.healthy ? 'healthy' : 'unhealthy') : state.status
+      state.status === 'running'
+        ? state.healthy
+          ? 'healthy'
+          : 'unhealthy'
+        : state.status
     return `  ${healthIcon} ${state.name}: ${status}`
   }
 
@@ -356,7 +363,9 @@ Monitors the deployment and exits when all services are healthy or on timeout.
 
         if (container?.id) {
           state.healthy = await checkContainerHealth(container.id)
-          console.info(`  ${serviceName}: ${state.healthy ? '✅ healthy' : '⏳ checking'}`)
+          console.info(
+            `  ${serviceName}: ${state.healthy ? '✅ healthy' : '⏳ checking'}`
+          )
 
           // in verbose mode, show why service is unhealthy
           if (verbose && !state.healthy && state.status === 'running') {
@@ -412,7 +421,9 @@ Monitors the deployment and exits when all services are healthy or on timeout.
       // Check for success with stability verification
       if (allHealthy) {
         consecutiveHealthyChecks++
-        console.info(`  ✅ all healthy (${consecutiveHealthyChecks}/2 consecutive checks)`)
+        console.info(
+          `  ✅ all healthy (${consecutiveHealthyChecks}/2 consecutive checks)`
+        )
 
         // Require 2 consecutive healthy checks for stability
         if (consecutiveHealthyChecks >= 2 && !allHealthyDetected) {

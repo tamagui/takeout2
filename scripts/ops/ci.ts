@@ -11,10 +11,10 @@ await cmd`Run full CI/CD pipeline with builds, tests, and deployment`
     const { sleep, time } = await import('@take-out/helpers')
     const { checkPort } = await import('@take-out/scripts/helpers/check-port')
     const { getTestEnv } = await import('@take-out/scripts/helpers/get-test-env')
-    const { handleProcessExit } = await import('@take-out/scripts/helpers/handleProcessExit')
-    const { printTiming, runInline, runParallel, waitForRun } = await import(
-      '@take-out/scripts/helpers/run'
-    )
+    const { handleProcessExit } =
+      await import('@take-out/scripts/helpers/handleProcessExit')
+    const { printTiming, runInline, runParallel, waitForRun } =
+      await import('@take-out/scripts/helpers/run')
     const { waitForPort } = await import('@take-out/scripts/helpers/wait-for-port')
 
     const sstDeploy = await import('../sst/helpers/deploy')
@@ -96,14 +96,11 @@ await cmd`Run full CI/CD pipeline with builds, tests, and deployment`
       for (let i = 0; i < 120; i++) {
         await sleep(2000)
 
-        const { stdout } = await run(
-          `docker compose ps --all --format json migrate`,
-          {
-            env: testEnv,
-            silent: true,
-            captureOutput: true,
-          }
-        )
+        const { stdout } = await run(`docker compose ps --all --format json migrate`, {
+          env: testEnv,
+          silent: true,
+          captureOutput: true,
+        })
 
         try {
           const status = JSON.parse(stdout)

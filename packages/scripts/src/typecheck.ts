@@ -14,12 +14,8 @@ await cmd`run typescript type checking`.run(async ({ run }) => {
   }
 
   if (useTsgo) {
-    await run(
-      `bun tsgo --project ./tsconfig.json --noEmit --preserveWatchOutput ${args}`
-    )
+    await run(`bun tsgo --project ./tsconfig.json --noEmit --preserveWatchOutput ${args}`)
   } else {
-    await run(
-      `bun tsc --project ./tsconfig.json --noEmit --preserveWatchOutput ${args}`
-    )
+    await run(`bun tsc --project ./tsconfig.json --noEmit --preserveWatchOutput ${args}`)
   }
 })

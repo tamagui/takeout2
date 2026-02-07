@@ -37,7 +37,9 @@ await cmd`AWS health monitoring`.run(async ({ $ }) => {
   async function findActiveClusters(): Promise<string[]> {
     try {
       // get all clusters
-      const clustersJson = run(`aws ecs list-clusters --region ${AWS_REGION} --output json`)
+      const clustersJson = run(
+        `aws ecs list-clusters --region ${AWS_REGION} --output json`
+      )
       const clustersData = parseJson<any>(clustersJson)
 
       if (!clustersData?.clusterArns) return []
@@ -201,7 +203,10 @@ await cmd`AWS health monitoring`.run(async ({ $ }) => {
 
         if (logGroupsData?.logGroups) {
           for (const lg of logGroupsData.logGroups) {
-            if (lg.logGroupName.includes('/WebApp/') || lg.logGroupName.includes('/Zero')) {
+            if (
+              lg.logGroupName.includes('/WebApp/') ||
+              lg.logGroupName.includes('/Zero')
+            ) {
               criticalLogGroups.push(lg.logGroupName)
             }
           }

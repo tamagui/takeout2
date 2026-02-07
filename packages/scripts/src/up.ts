@@ -21,7 +21,9 @@ await cmd`upgrade packages by name or pattern`
 
     const packagePatterns: string[] = []
     const rootDir = process.cwd()
-    const rootPackageJson = JSON.parse(readFileSync(path.join(rootDir, 'package.json'), 'utf-8'))
+    const rootPackageJson = JSON.parse(
+      readFileSync(path.join(rootDir, 'package.json'), 'utf-8')
+    )
     const upgradeSets: Record<string, string[]> = rootPackageJson.upgradeSets || {}
 
     for (const arg of args.rest) {
@@ -273,7 +275,8 @@ await cmd`upgrade packages by name or pattern`
 
       for (const packageJsonPath of packageJsonFiles) {
         const packagesInWorkspace =
-          packagesByWorkspace.get(getWorkspaceName(packageJsonPath, rootDir))?.packages || []
+          packagesByWorkspace.get(getWorkspaceName(packageJsonPath, rootDir))?.packages ||
+          []
 
         if (packagesInWorkspace.length > 0) {
           const updates = updatePackageJsonVersions(
@@ -299,7 +302,10 @@ await cmd`upgrade packages by name or pattern`
       } catch (error: any) {
         const stderr = error.stderr?.toString() || error.message || ''
         // check if it's a version resolution error (common after new publish)
-        if (stderr.includes('No version matching') || stderr.includes('failed to resolve')) {
+        if (
+          stderr.includes('No version matching') ||
+          stderr.includes('failed to resolve')
+        ) {
           console.info(`⚠️ Version not in cache, clearing cache and retrying...`)
           try {
             await $`bun pm cache rm`.quiet()

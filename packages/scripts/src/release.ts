@@ -36,10 +36,7 @@ await cmd`publish takeout packages to npm`
     const shouldPatch = args.patch
     const dirty = finish || args.dirty
     const skipTest =
-      finish ||
-      rePublish ||
-      args.skipTest ||
-      process.argv.includes('--skip-tests')
+      finish || rePublish || args.skipTest || process.argv.includes('--skip-tests')
     const skipBuild = finish || rePublish || args.skipBuild
     const dryRun = args.dryRun
     const tamaguiGitUser = args.tamaguiGitUser
@@ -50,7 +47,9 @@ await cmd`publish takeout packages to npm`
       if (!(await fs.pathExists(onZeroGithub))) return
 
       // check if there are commits after the last sync commit
-      const log = (await $`git -C ${onZeroGithub} log --oneline --format=%s`.text()).trim()
+      const log = (
+        await $`git -C ${onZeroGithub} log --oneline --format=%s`.text()
+      ).trim()
       const commits = log.split('\n')
       const lastSyncIdx = commits.findIndex((c) => c.startsWith('sync: from takeout'))
 
@@ -94,7 +93,10 @@ await cmd`publish takeout packages to npm`
       await fs.copy(path.join(onZeroTakeout, 'src'), path.join(onZeroGithub, 'src'), {
         overwrite: true,
       })
-      await fs.copy(path.join(onZeroTakeout, 'cli.cjs'), path.join(onZeroGithub, 'cli.cjs'))
+      await fs.copy(
+        path.join(onZeroTakeout, 'cli.cjs'),
+        path.join(onZeroGithub, 'cli.cjs')
+      )
       await fs.copy(
         path.join(onZeroTakeout, 'tsconfig.json'),
         path.join(onZeroGithub, 'tsconfig.json')

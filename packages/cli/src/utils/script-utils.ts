@@ -34,10 +34,14 @@ export async function getAllScriptMetadata(
     try {
       const head = readFileSync(path, 'utf-8').slice(0, 200)
       if (!head.includes('cmd')) continue
-    } catch { continue }
+    } catch {
+      continue
+    }
 
     currentName = name
-    try { await import(path) } catch {}
+    try {
+      await import(path)
+    } catch {}
   }
 
   const results = new Map<string, ScriptMetadata>()
@@ -79,13 +83,19 @@ export function discoverScripts(dir: string, baseDir: string = dir): Map<string,
         const subEntries = readdirSync(fullPath)
         for (const subEntry of subEntries) {
           const subPath = join(fullPath, subEntry)
-          if (statSync(subPath).isFile() && (subEntry.endsWith('.ts') || subEntry.endsWith('.js'))) {
+          if (
+            statSync(subPath).isFile() &&
+            (subEntry.endsWith('.ts') || subEntry.endsWith('.js'))
+          ) {
             const relativePath = relative(baseDir, subPath).split('\\').join('/')
             const scriptName = relativePath.replace(/\.(ts|js)$/, '')
             scripts.set(scriptName, subPath)
           }
         }
-      } else if ((entry.endsWith('.ts') || entry.endsWith('.js')) && !skipFiles.includes(entry)) {
+      } else if (
+        (entry.endsWith('.ts') || entry.endsWith('.js')) &&
+        !skipFiles.includes(entry)
+      ) {
         const relativePath = relative(baseDir, fullPath).split('\\').join('/')
         const scriptName = relativePath.replace(/\.(ts|js)$/, '')
         scripts.set(scriptName, fullPath)

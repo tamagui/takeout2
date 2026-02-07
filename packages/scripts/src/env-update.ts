@@ -117,10 +117,7 @@ await cmd`sync environment variables from package.json to CI and server configs`
 
       // detect format: if markers are under an x- anchor block, use map syntax (KEY: val)
       // otherwise use list syntax (- KEY=val)
-      const beforeMarker = dockerCompose.slice(
-        0,
-        dockerCompose.indexOf(yamlStartMarker)
-      )
+      const beforeMarker = dockerCompose.slice(0, dockerCompose.indexOf(yamlStartMarker))
       const isMap = /x-[\w-]+:.*&[\w-]+/s.test(beforeMarker)
 
       const envLines = Object.keys(envVars)

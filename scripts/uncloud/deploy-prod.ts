@@ -9,13 +9,8 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
   const { buildMigrations, buildWeb, buildDockerImage } = await import('./helpers/build')
   const { processComposeEnv } = await import('./helpers/processEnv')
   const { checkSSHKey, testSSHConnection } = await import('./helpers/ssh')
-  const {
-    checkUncloudCLI,
-    initUncloud,
-    pushImage,
-    deployStack,
-    showStatus,
-  } = await import('./helpers/uncloud')
+  const { checkUncloudCLI, initUncloud, pushImage, deployStack, showStatus } =
+    await import('./helpers/uncloud')
 
   async function getZeroVersion(): Promise<string> {
     const packageJson = JSON.parse(await fs.readFile('package.json', 'utf-8'))
@@ -81,15 +76,21 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
       console.warn(
         colors.yellow(`⚠️  ZERO_UPSTREAM_DB in env has different host than DEPLOY_DB`)
       )
-      console.warn(colors.yellow(`   env: ${getHost(envUpstream)}, deploy_db: ${deployDbHost}`))
+      console.warn(
+        colors.yellow(`   env: ${getHost(envUpstream)}, deploy_db: ${deployDbHost}`)
+      )
       console.warn(colors.yellow(`   using derived value from DEPLOY_DB`))
     }
     if (envCvr && getHost(envCvr) !== deployDbHost) {
-      console.warn(colors.yellow(`⚠️  ZERO_CVR_DB in env has different host than DEPLOY_DB`))
+      console.warn(
+        colors.yellow(`⚠️  ZERO_CVR_DB in env has different host than DEPLOY_DB`)
+      )
       console.warn(colors.yellow(`   using derived value from DEPLOY_DB`))
     }
     if (envChange && getHost(envChange) !== deployDbHost) {
-      console.warn(colors.yellow(`⚠️  ZERO_CHANGE_DB in env has different host than DEPLOY_DB`))
+      console.warn(
+        colors.yellow(`⚠️  ZERO_CHANGE_DB in env has different host than DEPLOY_DB`)
+      )
       console.warn(colors.yellow(`   using derived value from DEPLOY_DB`))
     }
 
@@ -165,7 +166,9 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
       )
 
       console.info(colors.green('✓ origin ca certificates uploaded'))
-      console.info(colors.gray('  certs available at /config/certs inside caddy container'))
+      console.info(
+        colors.gray('  certs available at /config/certs inside caddy container')
+      )
     } catch (err) {
       console.warn(colors.yellow('⚠️  failed to upload origin ca certs'))
       console.warn(colors.gray(`   ${err instanceof Error ? err.message : err}`))
@@ -187,7 +190,9 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
     const domains = [webDomain, zeroDomain].filter(Boolean)
 
     if (domains.length === 0) {
-      console.warn(colors.yellow('⚠️  no custom domains configured (WEB_DOMAIN, ZERO_DOMAIN)'))
+      console.warn(
+        colors.yellow('⚠️  no custom domains configured (WEB_DOMAIN, ZERO_DOMAIN)')
+      )
       console.warn(colors.gray("   caddy will use let's encrypt for tls"))
       return
     }
@@ -224,7 +229,9 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
       console.warn(colors.yellow('⚠️  failed to deploy caddy with custom config'))
       console.warn(colors.gray(`   ${err instanceof Error ? err.message : err}`))
       console.warn(
-        colors.gray('   you may need to run: uc caddy deploy --caddyfile src/uncloud/Caddyfile')
+        colors.gray(
+          '   you may need to run: uc caddy deploy --caddyfile src/uncloud/Caddyfile'
+        )
       )
     }
   }

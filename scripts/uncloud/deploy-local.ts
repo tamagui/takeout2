@@ -13,13 +13,8 @@ await cmd`Deploy to local Multipass VM`.run(async () => {
     setupPortForward,
     showLocalStatus,
   } = await import('./helpers/multipass')
-  const {
-    checkUncloudCLI,
-    initUncloud,
-    pushImage,
-    deployStack,
-    showStatus,
-  } = await import('./helpers/uncloud')
+  const { checkUncloudCLI, initUncloud, pushImage, deployStack, showStatus } =
+    await import('./helpers/uncloud')
 
   // parse args
   const args = process.argv.slice(2)

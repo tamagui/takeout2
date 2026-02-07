@@ -18,7 +18,9 @@ type RunFn<S extends string> = (
 
 let _interceptCmd: ((info: { description: string; args?: string }) => void) | undefined
 
-export function setInterceptCmd(fn: ((info: { description: string; args?: string }) => void) | undefined) {
+export function setInterceptCmd(
+  fn: ((info: { description: string; args?: string }) => void) | undefined
+) {
   _interceptCmd = fn
 }
 
@@ -48,15 +50,16 @@ function createCmd(description: string) {
         process.exit(0)
       }
 
-      const [{ $ }, prompt, { run }, { args: parseArgs }, fs, path, os] = await Promise.all([
-        import(`bun`),
-        import(`@clack/prompts`),
-        import(`./helpers/run`),
-        import(`./helpers/args`),
-        import(`node:fs/promises`),
-        import(`node:path`),
-        import(`node:os`),
-      ])
+      const [{ $ }, prompt, { run }, { args: parseArgs }, fs, path, os] =
+        await Promise.all([
+          import(`bun`),
+          import(`@clack/prompts`),
+          import(`./helpers/run`),
+          import(`./helpers/args`),
+          import(`node:fs/promises`),
+          import(`node:path`),
+          import(`node:os`),
+        ])
 
       const args = spec ? parseArgs(spec) : ({ rest: [] } as Args<S>)
       await fn({ args, $, colors, prompt, run, fs, path, os } as Prettify<

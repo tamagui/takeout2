@@ -18,7 +18,11 @@ await cmd`npm postinstall tasks`.run(async ({ $, fs }) => {
       `Syncing ZERO_VERSION: ${packageJson.env?.ZERO_VERSION || '(empty)'} → ${zeroVersion}`
     )
     packageJson.env.ZERO_VERSION = zeroVersion
-    await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n', 'utf-8')
+    await fs.writeFile(
+      packageJsonPath,
+      JSON.stringify(packageJson, null, 2) + '\n',
+      'utf-8'
+    )
 
     // update docker-compose fallback versions
     const dockerComposePaths = ['docker-compose.yml', 'src/uncloud/docker-compose.yml']

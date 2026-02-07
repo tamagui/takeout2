@@ -17,6 +17,7 @@ export const docsRoutes: DocsSection[] = [
       { title: 'Highlights', route: '/docs/highlights' },
       { title: 'Get Started', route: '/docs/get-started' },
       { title: 'Changelog', route: '/docs/changelog' },
+      { title: 'Roadmap', route: '/docs/roadmap' },
     ],
   },
 

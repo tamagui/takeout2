@@ -1,0 +1,66 @@
+---
+title: Roadmap
+description: What we're working on, what's coming next
+---
+
+## Now
+
+**Notifications** — push notification infrastructure is built (Expo Push, device
+registration, in-app notifications). Finishing up.
+
+**OTA Updates** — hot update system via `@take-out/native-hot-update` is
+working, emerging soon with deploy scripts and CI integration.
+
+**SST** — ported from a working production stack, needs end-to-end testing and
+cleanup for the starter kit context.
+
+**Uncloud** — improving rolling restarts, internal database lifecycle, zero
+restart speed, and overall deploy performance.
+
+## Next
+
+**Responsive refactor** — responsive-first pass across key screens.
+
+**Zero improvements** — error handling, rollback, migrations cleanup.
+
+**Bun prod/dev symmetry** — unify dev and production server behavior.
+
+**Port configuration** — native app port is hardcoded to 8081, needs to be
+configurable with fewer touch points.
+
+**OTP flow** — server-side countdown storage, auto-submit on paste.
+
+**CI/CD** — app store build actions for iOS and Android, EAS and self-hosted
+options.
+
+**Database backups** — automated backups on releases and before deploys.
+
+**Job system** — async background job runner (currently commented out in SST).
+
+## Later
+
+**Checkout and SaaS** — Stripe integration, subscription management, billing
+portal.
+
+**AI integration** — multi-model streaming, bot system (from start.chat).
+
+**Command palette** — HUD / Cmd+K for power-user actions (from start.chat).
+
+**Search** — full-text and vector/semantic search (from start.chat).
+
+**File sharing** — drag-drop uploads, image galleries, video (from start.chat).
+
+**Devtools** — permission testing, data explorer, user simulation (from
+start.chat).
+
+## Potential
+
+**Extensibility platform** — webhooks, slash commands, custom apps.
+
+**Desktop app** — Tauri with auto-updates, system tray, deep links.
+
+**Richer permissions** — roles, channel-level access, read-only modes.
+
+**Advanced deploys** — blue-green, canary, Prometheus metrics.
+
+**Onboarding** — custom domain configuration in setup wizard.

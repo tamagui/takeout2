@@ -179,11 +179,8 @@ async function mainRelease() {
             const nextDeps = next[field]
             if (!nextDeps) continue
             for (const depName in nextDeps) {
-              // only update non-workspace internal dependencies
-              if (!nextDeps[depName].startsWith('workspace:')) {
-                if (allPackageJsons.some((p) => p.name === depName)) {
-                  nextDeps[depName] = nextVersion
-                }
+              if (allPackageJsons.some((p) => p.name === depName)) {
+                nextDeps[depName] = nextVersion
               }
             }
           }
@@ -240,6 +237,31 @@ async function mainRelease() {
       )
 
       console.info(`✅ ${dryRun ? '[dry-run] ' : ''}Published\n`)
+
+      // restore workspace:* protocols after publishing
+      if (!dryRun) {
+        await Promise.all(
+          allPackageJsons.map(async ({ json, path }) => {
+            const current = await fs.readJSON(path)
+            for (const field of [
+              'dependencies',
+              'devDependencies',
+              'optionalDependencies',
+              'peerDependencies',
+            ]) {
+              const origDeps = json[field]
+              const currentDeps = current[field]
+              if (!origDeps || !currentDeps) continue
+              for (const depName in origDeps) {
+                if (origDeps[depName].startsWith('workspace:') && currentDeps[depName]) {
+                  currentDeps[depName] = origDeps[depName]
+                }
+              }
+            }
+            await writeJSON(path, current, { spaces: 2 })
+          })
+        )
+      }
 
       // revert version changes after dry-run
       if (dryRun) {

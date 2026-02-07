@@ -210,7 +210,7 @@ export function createZeroServer<
     cb: (q: Transaction['query']) => Query<any, Schema, R>
   ): Promise<HumanReadable<R>> {
     return transaction(async (tx) => {
-      return cb(tx.query)
+      return tx.run(cb(tx.query))
     }) as any
   }
 

@@ -1,9 +1,7 @@
 #!/usr/bin/env bun
 
-/**
- * @description Build production profile for all platforms
- */
+import { cmd } from '@take-out/cli'
 
-import { $ } from 'bun'
-
-await $`eas build --profile production --platform all`
+await cmd`Build production profile for all platforms`.run(async ({ $ }) => {
+  await $`eas build --profile production --platform all`
+})

@@ -1,29 +1,25 @@
 #!/usr/bin/env bun
 
-/**
- * @description Run TypeScript type checking
- * @args --watch
- */
+import { cmd } from '@take-out/cli'
 
-import { existsSync } from 'node:fs'
+await cmd`Run TypeScript type checking`
+  .args('--watch boolean')
+  .run(async ({ args, $ }) => {
+    const { existsSync } = await import('node:fs')
 
-import { args } from '@take-out/scripts/helpers/args'
-import { $ } from 'bun'
+    async function checkProjectTypes() {
+      if (args.watch) {
+        await $`LAZY_TYPECHECK=1 tko run typecheck --watch`
+      } else {
+        await $`tko run typecheck`
+      }
+    }
 
-const { watch } = args('--watch boolean')
+    async function checkPackagesTypes() {
+      if (existsSync('./packages')) {
+        await $`bun tko run --no-root typecheck`
+      }
+    }
 
-async function checkProjectTypes() {
-  if (watch) {
-    await $`LAZY_TYPECHECK=1 tko run typecheck --watch`
-  } else {
-    await $`tko run typecheck`
-  }
-}
-
-async function checkPackagesTypes() {
-  if (existsSync('./packages')) {
-    await $`bun tko run --no-root typecheck`
-  }
-}
-
-await Promise.all([checkProjectTypes(), checkPackagesTypes()])
+    await Promise.all([checkProjectTypes(), checkPackagesTypes()])
+  })

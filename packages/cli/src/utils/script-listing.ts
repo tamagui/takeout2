@@ -8,13 +8,17 @@ import { fileURLToPath } from 'node:url'
 
 import pc from 'picocolors'
 
-import { discoverScripts, getLocalScriptsDir, getScriptMetadata } from './script-utils'
+import {
+  type ScriptMetadata,
+  discoverScripts,
+  getAllScriptMetadata,
+  getLocalScriptsDir,
+} from './script-utils'
 
 // find scripts package root using import.meta.resolve
 function findScriptsPackageRoot(): string | null {
   try {
     const resolved = import.meta.resolve('@take-out/scripts/package.json')
-    // use fileURLToPath for proper cross-platform handling
     const packageJsonPath = fileURLToPath(new URL(resolved))
     const packageRoot = join(packageJsonPath, '..')
     const srcPath = join(packageRoot, 'src')
@@ -22,18 +26,18 @@ function findScriptsPackageRoot(): string | null {
     if (existsSync(srcPath)) {
       return srcPath
     }
-  } catch (err) {
-    // scripts package not found, that's ok for hybrid mode
+  } catch {
+    // scripts package not found
   }
 
   return null
 }
 
-// format script listing
-export function formatScriptList(
+// format script listing with pre-fetched metadata
+function formatScriptList(
   title: string,
   scripts: Map<string, string>,
-  showDescriptions: boolean = false
+  metadata: Map<string, ScriptMetadata>
 ): void {
   if (scripts.size === 0) return
 
@@ -41,65 +45,48 @@ export function formatScriptList(
   console.info(pc.bold(pc.cyan(title)))
   console.info()
 
-  // group by category
   const categories = new Map<string, Array<[string, string]>>()
   const rootScripts: Array<[string, string]> = []
 
   for (const [name, path] of scripts) {
     if (name.includes('/')) {
-      const parts = name.split('/')
-      if (parts.length > 0 && parts[0]) {
-        const category = parts[0]
-        if (!categories.has(category)) {
-          categories.set(category, [])
-        }
-        categories.get(category)!.push([name, path])
+      const category = name.split('/')[0]!
+      if (!categories.has(category)) {
+        categories.set(category, [])
       }
+      categories.get(category)!.push([name, path])
     } else {
       rootScripts.push([name, path])
     }
   }
 
-  // display root scripts
-  for (const [name, path] of rootScripts) {
+  for (const [name] of rootScripts) {
     let line = `  ${pc.green(name)}`
-
-    if (showDescriptions) {
-      const metadata = getScriptMetadata(path)
-      if (metadata.description) {
-        line += pc.dim(` - ${metadata.description}`)
-      }
+    const meta = metadata.get(name)
+    if (meta?.description) {
+      line += pc.dim(` - ${meta.description}`)
     }
-
     console.info(line)
   }
 
-  // display categorized scripts
   for (const [category, categoryScripts] of categories) {
     console.info()
     console.info(`  ${pc.yellow(category)}/`)
 
-    for (const [name, path] of categoryScripts) {
-      const shortName = name.startsWith(`${category}/`)
-        ? name.substring(category.length + 1)
-        : name
+    for (const [name] of categoryScripts) {
+      const shortName = name.substring(category.length + 1)
       let line = `    ${pc.green(shortName)}`
-
-      if (showDescriptions) {
-        const metadata = getScriptMetadata(path)
-        if (metadata.description) {
-          line += pc.dim(` - ${metadata.description}`)
-        }
+      const meta = metadata.get(name)
+      if (meta?.description) {
+        line += pc.dim(` - ${meta.description}`)
       }
-
       console.info(line)
     }
   }
 }
 
-// list all available scripts (local and built-in)
-export function listAllScripts(includeCommands = true): void {
-  // show header with description
+// list all available scripts
+export async function listAllScripts(includeCommands = true) {
   console.info()
   console.info(pc.bold(pc.cyan('Takeout CLI - Project Scripts & Commands')))
   console.info()
@@ -107,8 +94,7 @@ export function listAllScripts(includeCommands = true): void {
   console.info()
 
   if (includeCommands) {
-    // Show built-in CLI commands
-    console.info(pc.bold(pc.cyan('🛠️  Built-in Commands')))
+    console.info(pc.bold(pc.cyan('Built-in Commands')))
     console.info()
     console.info(`  ${pc.green('onboard')} - Setup wizard for new projects`)
     console.info(`  ${pc.green('docs')} - View documentation`)
@@ -124,70 +110,60 @@ export function listAllScripts(includeCommands = true): void {
   const builtInDir = findScriptsPackageRoot()
   const builtInScripts = builtInDir ? discoverScripts(builtInDir) : new Map()
 
+  const allScripts = new Map([...localScripts, ...builtInScripts])
+  const metadata = await getAllScriptMetadata(allScripts)
+
   if (localScripts.size > 0) {
-    formatScriptList('📁 Local Scripts', localScripts, true)
+    formatScriptList('Local Scripts', localScripts, metadata)
   }
 
   if (builtInScripts.size > 0) {
-    formatScriptList('📦 Built-in Scripts', builtInScripts, true)
+    formatScriptList('Built-in Scripts', builtInScripts, metadata)
   }
 
   if (localScripts.size === 0 && builtInScripts.size === 0) {
     console.info()
     console.info(pc.yellow('No scripts found'))
     console.info()
-    console.info(
-      pc.dim(`Create scripts in ${relative(process.cwd(), getLocalScriptsDir())}/`)
-    )
+    console.info(pc.dim(`Create scripts in ${relative(process.cwd(), getLocalScriptsDir())}/`))
     console.info(pc.dim(`Or install @take-out/scripts package for built-in scripts`))
   }
 
   console.info()
   console.info(pc.bold('Usage:'))
-  console.info(
-    `  ${pc.cyan('tko <command>')}           ${pc.dim('Run a built-in command')}`
-  )
-  console.info(
-    `  ${pc.cyan('tko <script-name>')}       ${pc.dim('Execute direct script (e.g., tko onboard)')}`
-  )
-  console.info(
-    `  ${pc.cyan('tko <group-name> <script-name>')}       ${pc.dim('Execute nested script (e.g., tko web build)')}`
-  )
+  console.info(`  ${pc.cyan('tko <command>')}           ${pc.dim('Run a built-in command')}`)
+  console.info(`  ${pc.cyan('tko <script-name>')}       ${pc.dim('Execute direct script')}`)
+  console.info(`  ${pc.cyan('tko <group> <script>')}    ${pc.dim('Execute nested script')}`)
   console.info(`  ${pc.cyan('tko script new <path>')}   ${pc.dim('Create a new script')}`)
-  console.info()
-  console.info(pc.bold('Examples:'))
-  console.info(`  ${pc.cyan('tko web build')}           ${pc.dim('Build web platform')}`)
-  console.info(
-    `  ${pc.cyan('tko check types')}         ${pc.dim('Run TypeScript type checking')}`
-  )
   console.info()
 }
 
 // check if a name is a category and list its scripts
-export function listCategoryScripts(categoryName: string): boolean {
+export async function listCategoryScripts(categoryName: string): Promise<boolean> {
   const localDir = getLocalScriptsDir()
   const categoryPath = join(localDir, categoryName)
 
   if (existsSync(categoryPath) && statSync(categoryPath).isDirectory()) {
-    // list scripts in this category
     const categoryScripts = discoverScripts(categoryPath)
 
     if (categoryScripts.size > 0) {
+      const metadata = await getAllScriptMetadata(categoryScripts)
+
       console.info()
-      console.info(pc.bold(pc.cyan(`📁 ${categoryName} Scripts`)))
+      console.info(pc.bold(pc.cyan(`${categoryName} Scripts`)))
       console.info()
 
-      for (const [name, path] of categoryScripts) {
+      for (const [name] of categoryScripts) {
         const shortName = name.replace(`${categoryName}/`, '')
-        const metadata = getScriptMetadata(path)
+        const meta = metadata.get(name)
         let line = `  ${pc.green(shortName)}`
 
-        if (metadata.description) {
-          line += pc.dim(` - ${metadata.description}`)
+        if (meta?.description) {
+          line += pc.dim(` - ${meta.description}`)
         }
 
-        if (metadata.args && metadata.args.length > 0) {
-          line += pc.dim(` [${metadata.args.join(', ')}]`)
+        if (meta?.args && meta.args.length > 0) {
+          line += pc.dim(` [${meta.args.join(', ')}]`)
         }
 
         console.info(line)

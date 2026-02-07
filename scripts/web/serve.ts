@@ -1,9 +1,7 @@
 #!/usr/bin/env bun
 
-/**
- * @description Serve web in production mode
- */
+import { cmd } from '@take-out/cli'
 
-import { $ } from 'bun'
-
-await $`bun one serve --port 8081`
+await cmd`Serve web in production mode`.run(async ({ $ }) => {
+  await $`bun one serve --port 8081`
+})

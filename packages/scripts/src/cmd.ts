@@ -1,24 +1,37 @@
-import { args as parseArgs, type Args } from './helpers/args'
-import { run } from './helpers/run'
-
 type Prettify<T> = { [K in keyof T]: T[K] } & {}
 
 type CmdContext = {
   $: typeof import('bun').$
   colors: typeof import('picocolors')
   prompt: typeof import('@clack/prompts')
-  run: typeof run
+  run: typeof import('./helpers/run').run
+  fs: typeof import('node:fs/promises')
+  path: typeof import('node:path')
+  os: typeof import('node:os')
 }
 
+type Args<S extends string> = import('./helpers/args').Args<S>
+
 type RunFn<S extends string> = (
-  fn: (ctx: Prettify<Args<S> & CmdContext>) => Promise<void> | void
+  fn: (ctx: Prettify<{ args: Args<S> } & CmdContext>) => Promise<void> | void
 ) => Promise<void>
 
-export function cmd(description: string) {
+let _interceptCmd: ((info: { description: string; args?: string }) => void) | undefined
+
+export function setInterceptCmd(fn: ((info: { description: string; args?: string }) => void) | undefined) {
+  _interceptCmd = fn
+}
+
+function createCmd(description: string) {
   let argsSpec: string | undefined
 
   function makeRun<S extends string>(spec: S): RunFn<S> {
     return async (fn) => {
+      if (_interceptCmd) {
+        _interceptCmd({ description, args: argsSpec })
+        return
+      }
+
       const colors = (await import(`picocolors`)).default
 
       if (process.argv.includes(`--help`) || process.argv.includes(`-h`)) {
@@ -35,10 +48,20 @@ export function cmd(description: string) {
         process.exit(0)
       }
 
-      const { $ } = await import(`bun`)
-      const prompt = await import(`@clack/prompts`)
-      const parsed = spec ? parseArgs(spec) : ({ _: [] } as Args<S>)
-      await fn({ ...parsed, $, colors, prompt, run } as Prettify<Args<S> & CmdContext>)
+      const [{ $ }, prompt, { run }, { args: parseArgs }, fs, path, os] = await Promise.all([
+        import(`bun`),
+        import(`@clack/prompts`),
+        import(`./helpers/run`),
+        import(`./helpers/args`),
+        import(`node:fs/promises`),
+        import(`node:path`),
+        import(`node:os`),
+      ])
+
+      const args = spec ? parseArgs(spec) : ({ rest: [] } as Args<S>)
+      await fn({ args, $, colors, prompt, run, fs, path, os } as Prettify<
+        { args: Args<S> } & CmdContext
+      >)
     }
   }
 
@@ -49,4 +72,11 @@ export function cmd(description: string) {
     },
     run: makeRun(`` as ``),
   }
+}
+
+export function cmd(description: string): ReturnType<typeof createCmd>
+export function cmd(strings: TemplateStringsArray): ReturnType<typeof createCmd>
+export function cmd(input: string | TemplateStringsArray) {
+  const description = typeof input === `string` ? input : input[0] || ``
+  return createCmd(description)
 }

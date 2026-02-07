@@ -74,11 +74,7 @@ export function findScript(name: string): string | null {
   return null
 }
 
-export {
-  formatScriptList,
-  listAllScripts,
-  listCategoryScripts,
-} from '../utils/script-listing'
+export { listAllScripts, listCategoryScripts } from '../utils/script-listing'
 
 // run a script
 async function runScript(scriptPath: string, args: string[]): Promise<void> {
@@ -372,12 +368,12 @@ export const scriptCommand = defineCommand({
 
     // if no name provided, list all available scripts
     if (!scriptName) {
-      listAllScripts(false) // don't show built-in commands in script listing
+      await listAllScripts(false)
       return
     }
 
-    // check if this is a category listing (e.g., "takeout script ci")
-    if (listCategoryScripts(scriptName)) {
+    // check if this is a category listing
+    if (await listCategoryScripts(scriptName)) {
       return
     }
 

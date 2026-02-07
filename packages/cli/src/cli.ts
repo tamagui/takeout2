@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
 /**
  * Takeout CLI
@@ -71,9 +71,8 @@ function isBuiltInScript(name: string): boolean {
   return findBuiltInScript(name) !== null
 }
 
-// detect if running as tko (shorthand mode)
-const isShorthand =
-  process.argv[1]?.endsWith('tko') || process.argv[1]?.includes('/.bin/tko')
+// always enable shorthand mode — both tko and takeout resolve to this file
+const isShorthand = true
 
 if (isShorthand) {
   // in shorthand mode, treat first arg as potential script command
@@ -160,7 +159,7 @@ const main = defineCommand({
     const hasArgs = process.argv.length > 2
     if (!hasArgs) {
       const { listAllScripts } = await import('./utils/script-listing')
-      listAllScripts()
+      await listAllScripts()
     }
   },
 })

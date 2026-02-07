@@ -1,13 +1,15 @@
 #!/usr/bin/env bun
 
-import fs from 'node:fs/promises'
-import path from 'node:path'
+import { cmd } from './cmd'
 
 function getCurrentNodeVersion() {
   return process.version
 }
 
 async function getRequiredNodeVersion() {
+  const fs = await import('node:fs/promises')
+  const path = await import('node:path')
+
   // try .node-version file first
   try {
     const nodeVersionContent = await fs.readFile(
@@ -42,8 +44,10 @@ export async function checkNodeVersion() {
 }
 
 if (import.meta.main) {
-  checkNodeVersion().catch((e: any) => {
-    console.error(e.message)
-    process.exit(1)
+  await cmd`verify node version matches project requirements`.run(async () => {
+    checkNodeVersion().catch((e: any) => {
+      console.error(e.message)
+      process.exit(1)
+    })
   })
 }

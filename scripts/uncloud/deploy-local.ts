@@ -1,33 +1,31 @@
 #!/usr/bin/env bun
 
-/**
- * @description Deploy locally to Multipass VM with self-hosted database
- */
+import { cmd } from '@take-out/cli'
 
-import { buildWeb, buildDockerImage } from './helpers/build'
-import {
-  checkMultipass,
-  createVM,
-  setupVMSSH,
-  getVMIP,
-  getVMSSHKey,
-  setupPortForward,
-  showLocalStatus,
-} from './helpers/multipass'
-import {
-  checkUncloudCLI,
-  initUncloud,
-  pushImage,
-  deployStack,
-  showStatus,
-} from './helpers/uncloud'
+await cmd`Deploy to local Multipass VM`.run(async () => {
+  const { buildWeb, buildDockerImage } = await import('./helpers/build')
+  const {
+    checkMultipass,
+    createVM,
+    setupVMSSH,
+    getVMIP,
+    getVMSSHKey,
+    setupPortForward,
+    showLocalStatus,
+  } = await import('./helpers/multipass')
+  const {
+    checkUncloudCLI,
+    initUncloud,
+    pushImage,
+    deployStack,
+    showStatus,
+  } = await import('./helpers/uncloud')
 
-// parse args
-const args = process.argv.slice(2)
-const skipBuild = args.includes('--skip-build')
-const skipDocker = args.includes('--skip-docker')
+  // parse args
+  const args = process.argv.slice(2)
+  const skipBuild = args.includes('--skip-build')
+  const skipDocker = args.includes('--skip-docker')
 
-async function main() {
   console.info('🎯 deploying takeout to local multipass vm\n')
 
   checkMultipass()
@@ -67,9 +65,4 @@ async function main() {
   setupPortForward()
   showStatus()
   showLocalStatus()
-}
-
-main().catch((error) => {
-  console.error('\n💥 deployment failed:', error.message)
-  process.exit(1)
 })

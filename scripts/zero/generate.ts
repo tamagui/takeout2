@@ -1,18 +1,15 @@
 #!/usr/bin/env bun
 
-/**
- * @description Generate Zero sync code
- */
+import { cmd } from '@take-out/cli'
 
-import { args } from '@take-out/scripts/helpers/args'
-import { $ } from 'bun'
+await cmd`Generate Zero sync code`
+  .args('--watch boolean')
+  .run(async ({ args, $ }) => {
+    const afterCmd = 'bunx oxfmt src/data/generated'
 
-const { watch } = args('--watch boolean')
-
-const afterCmd = 'bunx oxfmt src/data/generated'
-
-if (watch) {
-  await $`bun on-zero generate --watch --after ${afterCmd}`
-} else {
-  await $`bun on-zero generate --after ${afterCmd}`
-}
+    if (args.watch) {
+      await $`bun on-zero generate --watch --after ${afterCmd}`
+    } else {
+      await $`bun on-zero generate --after ${afterCmd}`
+    }
+  })

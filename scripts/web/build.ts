@@ -1,9 +1,7 @@
 #!/usr/bin/env bun
 
-/**
- * @description Build web platform
- */
+import { cmd } from '@take-out/cli'
 
-import { $ } from 'bun'
-
-await $`bun run:prod one build --platform=web`
+await cmd`Build web platform`.run(async ({ $ }) => {
+  await $`bun run:prod one build --platform=web`
+})

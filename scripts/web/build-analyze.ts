@@ -3,38 +3,39 @@
 // Usage: bun tko web build-analyze [route]
 // Example: bun tko web build-analyze /
 
-import { $ } from 'bun'
+import { cmd } from '@take-out/cli'
 
-// find route arg - must start with / but not be a file path, default to /
-const route =
-  process.argv.find((a) => a.startsWith('/') && !a.includes('.') && a.length < 50) || '/'
-const port = 9000 + Math.floor(Math.random() * 1000)
-const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
-const dir = 'dist/report'
-const lhBase = `${dir}/lighthouse-${ts}`
-const bundle = `${dir}/bundle-stats-${ts}.html`
+await cmd`Build with analyzer, run Lighthouse, open reports and site`.run(async ({ $ }) => {
+  // find route arg - must start with / but not be a file path, default to /
+  const route =
+    process.argv.find((a) => a.startsWith('/') && !a.includes('.') && a.length < 50) || '/'
+  const port = 9000 + Math.floor(Math.random() * 1000)
+  const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
+  const dir = 'dist/report'
+  const lhBase = `${dir}/lighthouse-${ts}`
+  const bundle = `${dir}/bundle-stats-${ts}.html`
 
-console.info(`\n🔨 building with ANALYZE...\n`)
-await $`rm -rf dist`
-await $`ANALYZE=1 bun run web build`
-await $`mkdir -p ${dir}`
-await $`mv dist/client/bundle_stats.html ${bundle}`.nothrow()
+  console.info(`\n🔨 building with ANALYZE...\n`)
+  await $`rm -rf dist`
+  await $`ANALYZE=1 bun run web build`
+  await $`mkdir -p ${dir}`
+  await $`mv dist/client/bundle_stats.html ${bundle}`.nothrow()
 
-console.info(`\n🚀 starting server on port ${port}...\n`)
-const server = Bun.spawn(['bun', 'one', 'serve', '--port', String(port)], {
-  env: process.env,
-  stdout: 'inherit',
-  stderr: 'inherit',
-})
-await Bun.sleep(5000)
+  console.info(`\n🚀 starting server on port ${port}...\n`)
+  const server = Bun.spawn(['bun', 'one', 'serve', '--port', String(port)], {
+    env: process.env,
+    stdout: 'inherit',
+    stderr: 'inherit',
+  })
+  await Bun.sleep(5000)
 
-console.info(`\n📊 running lighthouse...\n`)
-await $`npx lighthouse http://localhost:${port} --output=html,json --output-path=${lhBase} --chrome-flags="--headless --no-sandbox" --form-factor=mobile --throttling.cpuSlowdownMultiplier=4`.nothrow()
+  console.info(`\n📊 running lighthouse...\n`)
+  await $`npx lighthouse http://localhost:${port} --output=html,json --output-path=${lhBase} --chrome-flags="--headless --no-sandbox" --form-factor=mobile --throttling.cpuSlowdownMultiplier=4`.nothrow()
 
-const r = await Bun.file(`${lhBase}.report.json`).json()
-const s = (k: string) => Math.round(r.categories[k].score * 100)
+  const r = await Bun.file(`${lhBase}.report.json`).json()
+  const s = (k: string) => Math.round(r.categories[k].score * 100)
 
-console.info(`
+  console.info(`
 📈 Lighthouse Scores:
    Performance:    ${s('performance')}
    Accessibility:  ${s('accessibility')}
@@ -45,17 +46,18 @@ console.info(`
 🌐 Site: http://localhost:${port}
 `)
 
-await Promise.all([$`open ${bundle}`.nothrow(), $`open ${lhBase}.report.html`.nothrow()])
+  await Promise.all([$`open ${bundle}`.nothrow(), $`open ${lhBase}.report.html`.nothrow()])
 
-// per-route JS analysis if route provided
-if (route) {
-  console.info(`\n📦 Analyzing JS for route: ${route}\n`)
-  await analyzeRoute(route, port)
-}
+  // per-route JS analysis if route provided
+  if (route) {
+    console.info(`\n📦 Analyzing JS for route: ${route}\n`)
+    await analyzeRoute(route, port)
+  }
 
-console.info(`✅ Done! Server running at http://localhost:${port} (ctrl+c to stop)\n`)
+  console.info(`✅ Done! Server running at http://localhost:${port} (ctrl+c to stop)\n`)
 
-await server.exited
+  await server.exited
+})
 
 async function analyzeRoute(targetRoute: string, serverPort: number) {
   const { chromium } = await import('playwright')

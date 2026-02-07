@@ -1,9 +1,7 @@
 #!/usr/bin/env bun
 
-/**
- * @description Run better-auth database migrations
- * @args --dry-run
- */
+import { cmd } from '@take-out/cli'
 
-import { $ } from 'bun'
-await $`bunx better-auth/cli migrate ${process.argv.slice(2)}`
+await cmd`Run better-auth database migrations`.run(async ({ $ }) => {
+  await $`bunx better-auth/cli migrate ${process.argv.slice(2)}`
+})

@@ -1,15 +1,15 @@
 #!/usr/bin/env bun
 
-/**
- * @description Build migrations for production (generates SQL + bundles for docker)
- */
+import { cmd } from '@take-out/cli'
 
-import { $ } from 'bun'
+await cmd`Build migrations for production (generates SQL + bundles for docker)`.run(
+  async ({ $ }) => {
+    // generate drizzle SQL from schema
+    await $`bun drizzle-kit generate --config ./src/database/drizzle.config.ts`
 
-// generate drizzle SQL from schema
-await $`bun drizzle-kit generate --config ./src/database/drizzle.config.ts`
+    // bundle migrate.ts for production use
+    await $`cd src/database && bun vite build`
 
-// bundle migrate.ts for production use
-await $`cd src/database && bun vite build`
-
-console.info('✅ migrations built')
+    console.info('✅ migrations built')
+  }
+)

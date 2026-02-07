@@ -1,9 +1,7 @@
 #!/usr/bin/env bun
 
-/**
- * @description Build preview profile for all platforms
- */
+import { cmd } from '@take-out/cli'
 
-import { $ } from 'bun'
-
-await $`eas build --profile preview --platform all`
+await cmd`Build preview profile for all platforms`.run(async ({ $ }) => {
+  await $`eas build --profile preview --platform all`
+})

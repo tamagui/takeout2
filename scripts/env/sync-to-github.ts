@@ -1,45 +1,42 @@
 #!/usr/bin/env bun
 
-/**
- * @description Sync .env.production and .env.ios-release variables to GitHub repository secrets
- */
+import { cmd } from '@take-out/cli'
 
-import { existsSync, readFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import { join, resolve } from 'node:path'
+await cmd`Sync env variables to GitHub repository secrets`.run(async ({ prompt, colors, fs, os, path }) => {
+  const { existsSync } = await import('node:fs')
+  const { parseEnvFile } = await import('@take-out/scripts/helpers/parse-env-file')
 
-import * as clack from '@clack/prompts'
-import { parseEnvFile } from '@take-out/scripts/helpers/parse-env-file'
-import pc from 'picocolors'
+  const pc = colors
 
-interface PackageJson {
-  env?: Record<string, string | boolean>
-}
+  interface PackageJson {
+    env?: Record<string, string | boolean>
+  }
 
-// iOS secrets that should be synced from .env.ios
-const IOS_SECRETS = [
-  'APP_STORE_CONNECT_API_KEY_ID',
-  'APP_STORE_CONNECT_API_KEY_ISSUER_ID',
-  'APP_STORE_CONNECT_API_KEY_P8',
-  'APPLE_CODE_SIGNING_GIT_URL',
-  'APPLE_CODE_SIGNING_GIT_SSH_KEY',
-  'APPLE_CODE_SIGNING_GIT_PASSPHRASE',
-  'APPLE_DEVELOPER_TEAM_ID',
-  'IOS_BUNDLE_ID_PREVIEW',
-  'IOS_BUNDLE_ID_PRODUCTION',
-]
+  // iOS secrets that should be synced from .env.ios
+  const IOS_SECRETS = [
+    'APP_STORE_CONNECT_API_KEY_ID',
+    'APP_STORE_CONNECT_API_KEY_ISSUER_ID',
+    'APP_STORE_CONNECT_API_KEY_P8',
+    'APPLE_CODE_SIGNING_GIT_URL',
+    'APPLE_CODE_SIGNING_GIT_SSH_KEY',
+    'APPLE_CODE_SIGNING_GIT_PASSPHRASE',
+    'APPLE_DEVELOPER_TEAM_ID',
+    'IOS_BUNDLE_ID_PREVIEW',
+    'IOS_BUNDLE_ID_PRODUCTION',
+  ]
 
-async function main() {
+  const clack = prompt
+
   const cwd = process.cwd()
-  const args = process.argv.slice(2)
-  const dryRun = args.includes('--dry-run')
-  const yes = args.includes('--yes') || args.includes('-y')
+  const cliArgs = process.argv.slice(2)
+  const dryRun = cliArgs.includes('--dry-run')
+  const yes = cliArgs.includes('--yes') || cliArgs.includes('-y')
 
-  const iosOnly = args.includes('--ios')
-  const skipIos = args.includes('--no-ios')
+  const iosOnly = cliArgs.includes('--ios')
+  const skipIos = cliArgs.includes('--no-ios')
 
   // filter to specific env vars (non-flag args)
-  const onlyVars = args
+  const onlyVars = cliArgs
     .filter((a) => !a.startsWith('--') && !a.startsWith('-'))
     .map((a) => a.toUpperCase())
 
@@ -54,7 +51,7 @@ async function main() {
   }
 
   // load .env.production (unless --ios only)
-  const envPath = resolve(cwd, '.env.production')
+  const envPath = path.resolve(cwd, '.env.production')
   if (!iosOnly && !existsSync(envPath)) {
     clack.cancel('.env.production not found. Run: bun tko onboard')
     process.exit(1)
@@ -62,7 +59,7 @@ async function main() {
 
   // parse .env.production (supports multi-line values like PEM keys)
   if (!iosOnly && existsSync(envPath)) {
-    const envContent = readFileSync(envPath, 'utf-8')
+    const envContent = await fs.readFile(envPath, 'utf-8')
     const parsed = parseEnvFile(envContent)
     for (const [key, value] of Object.entries(parsed)) {
       process.env[key] = value
@@ -70,10 +67,10 @@ async function main() {
   }
 
   // load .env.ios for iOS secrets
-  const iosEnvPath = resolve(cwd, '.env.ios')
+  const iosEnvPath = path.resolve(cwd, '.env.ios')
   let iosSecrets: Record<string, string> = {}
   if (existsSync(iosEnvPath)) {
-    const iosContent = readFileSync(iosEnvPath, 'utf-8')
+    const iosContent = await fs.readFile(iosEnvPath, 'utf-8')
     iosSecrets = parseEnvFile(iosContent, { allowedKeys: IOS_SECRETS })
   }
 
@@ -110,8 +107,8 @@ async function main() {
 
   // load package.json env section (for .env.production vars)
   if (!iosOnly) {
-    const packagePath = resolve(cwd, 'package.json')
-    const packageJson: PackageJson = JSON.parse(readFileSync(packagePath, 'utf-8'))
+    const packagePath = path.resolve(cwd, 'package.json')
+    const packageJson: PackageJson = JSON.parse(await fs.readFile(packagePath, 'utf-8'))
 
     if (!packageJson.env) {
       clack.cancel('No env section found in package.json')
@@ -138,7 +135,7 @@ async function main() {
       // for DEPLOY_SSH_KEY, read the file content if it's a path
       if (key === 'DEPLOY_SSH_KEY' && value.startsWith('/')) {
         try {
-          const keyContent = readFileSync(value, 'utf-8')
+          const keyContent = await fs.readFile(value, 'utf-8')
           value = keyContent
           console.info(pc.gray(`  reading ssh key from: ${process.env[key]}`))
         } catch (error) {
@@ -175,7 +172,7 @@ async function main() {
     onlyVars.length > 0 ? varsToSync.filter((v) => onlyVars.includes(v.key)) : varsToSync
 
   // check for placeholder values
-  const forceYes = args.includes('--force')
+  const forceYes = cliArgs.includes('--force')
   const placeholderVars = filteredVars.filter(
     (v) => v.value.includes('your-') || v.value.includes('your_')
   )
@@ -257,8 +254,8 @@ async function main() {
   // interactive selection unless --yes or specific vars provided
   let selectedVars = filteredVars
   if (!yes && onlyVars.length === 0) {
-    const selectNew = args.includes('--new')
-    const selectAll = args.includes('--all')
+    const selectNew = cliArgs.includes('--new')
+    const selectAll = cliArgs.includes('--all')
 
     if (selectNew) {
       // only sync new vars
@@ -321,12 +318,11 @@ async function main() {
   for (const { key, value } of selectedVars) {
     try {
       // write to temp file to preserve multiline values (esp SSH keys)
-      const tmpFile = join(tmpdir(), `gh-secret-${key}-${Date.now()}`)
+      const tmpFile = path.join(os.tmpdir(), `gh-secret-${key}-${Date.now()}`)
       await Bun.write(tmpFile, value)
       await Bun.$`gh secret set ${key} ${repoFlag ? repoFlag.split(' ') : []} < ${tmpFile}`.quiet()
       // cross-platform file removal
-      const { unlink } = await import('node:fs/promises')
-      await unlink(tmpFile).catch(() => {})
+      await fs.unlink(tmpFile).catch(() => {})
       results.push({ key, success: true })
     } catch (error) {
       results.push({
@@ -373,9 +369,4 @@ async function main() {
     console.info('')
     console.info(pc.gray('Check the errors above and try again'))
   }
-}
-
-main().catch((error) => {
-  console.error(pc.red('\n✗ Unexpected error:'), error.message)
-  process.exit(1)
 })

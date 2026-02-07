@@ -30,5 +30,9 @@ export function getEnvironment(resourceName: string) {
 }
 
 if (import.meta.main) {
-  console.info(getEnvironment(process.argv[2] || ''))
+  const { cmd } = await import('./cmd')
+
+  await cmd`get environment variables from SST production state`.run(async () => {
+    console.info(getEnvironment(process.argv[2] || ''))
+  })
 }

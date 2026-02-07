@@ -1,3 +1,3 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
-import './dist/esm/cli.mjs'
+import './src/cli.ts'

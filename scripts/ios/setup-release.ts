@@ -1,98 +1,82 @@
 #!/usr/bin/env bun
 
-/**
- * @description Setup iOS release secrets for App Store deployment
- *
- * this script helps onboard team members for iOS release capabilities
- * and syncs apple-specific secrets to github for ci/cd
- *
- * required secrets:
- *   - APP_STORE_CONNECT_API_KEY_ID: api key id from app store connect
- *   - APP_STORE_CONNECT_API_KEY_ISSUER_ID: issuer id from app store connect
- *   - APP_STORE_CONNECT_API_KEY_P8: p8 private key content
- *   - APPLE_CODE_SIGNING_GIT_URL: git url for fastlane match repo
- *   - APPLE_CODE_SIGNING_GIT_SSH_KEY: ssh key for match repo access
- *   - APPLE_CODE_SIGNING_GIT_PASSPHRASE: passphrase for match encryption
- *   - APPLE_DEVELOPER_TEAM_ID: apple developer team id
- */
+import { cmd } from '@take-out/cli'
 
-import { existsSync, readFileSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import { join, resolve } from 'node:path'
+await cmd`Setup iOS release secrets for App Store deployment`.run(async ({ prompt, colors, fs, os, path }) => {
+  const { existsSync } = await import('node:fs')
 
-import * as clack from '@clack/prompts'
-import pc from 'picocolors'
+  const clack = prompt
+  const pc = colors
 
-interface AppleSecret {
-  key: string
-  description: string
-  sensitive: boolean
-  multiline?: boolean
-}
+  interface AppleSecret {
+    key: string
+    description: string
+    sensitive: boolean
+    multiline?: boolean
+  }
 
-const APPLE_SECRETS: AppleSecret[] = [
-  {
-    key: 'APP_STORE_CONNECT_API_KEY_ID',
-    description: 'API Key ID from App Store Connect',
-    sensitive: true,
-  },
-  {
-    key: 'APP_STORE_CONNECT_API_KEY_ISSUER_ID',
-    description: 'Issuer ID from App Store Connect',
-    sensitive: true,
-  },
-  {
-    key: 'APP_STORE_CONNECT_API_KEY_P8',
-    description: 'P8 private key content (paste the full key)',
-    sensitive: true,
-    multiline: true,
-  },
-  {
-    key: 'APPLE_CODE_SIGNING_GIT_URL',
-    description: 'Git URL for fastlane match certificates repo',
-    sensitive: false,
-  },
-  {
-    key: 'APPLE_CODE_SIGNING_GIT_SSH_KEY',
-    description: 'SSH private key for match repo access',
-    sensitive: true,
-    multiline: true,
-  },
-  {
-    key: 'APPLE_CODE_SIGNING_GIT_PASSPHRASE',
-    description: 'Passphrase for match repo encryption',
-    sensitive: true,
-  },
-  {
-    key: 'APPLE_DEVELOPER_TEAM_ID',
-    description: 'Apple Developer Team ID (10 character string)',
-    sensitive: false,
-  },
-  {
-    key: 'IOS_BUNDLE_ID_PREVIEW',
-    description: 'iOS bundle ID for preview/staging builds (e.g., com.example.app.preview)',
-    sensitive: false,
-  },
-  {
-    key: 'IOS_BUNDLE_ID_PRODUCTION',
-    description: 'iOS bundle ID for production builds (e.g., com.example.app)',
-    sensitive: false,
-  },
-]
+  const APPLE_SECRETS: AppleSecret[] = [
+    {
+      key: 'APP_STORE_CONNECT_API_KEY_ID',
+      description: 'API Key ID from App Store Connect',
+      sensitive: true,
+    },
+    {
+      key: 'APP_STORE_CONNECT_API_KEY_ISSUER_ID',
+      description: 'Issuer ID from App Store Connect',
+      sensitive: true,
+    },
+    {
+      key: 'APP_STORE_CONNECT_API_KEY_P8',
+      description: 'P8 private key content (paste the full key)',
+      sensitive: true,
+      multiline: true,
+    },
+    {
+      key: 'APPLE_CODE_SIGNING_GIT_URL',
+      description: 'Git URL for fastlane match certificates repo',
+      sensitive: false,
+    },
+    {
+      key: 'APPLE_CODE_SIGNING_GIT_SSH_KEY',
+      description: 'SSH private key for match repo access',
+      sensitive: true,
+      multiline: true,
+    },
+    {
+      key: 'APPLE_CODE_SIGNING_GIT_PASSPHRASE',
+      description: 'Passphrase for match repo encryption',
+      sensitive: true,
+    },
+    {
+      key: 'APPLE_DEVELOPER_TEAM_ID',
+      description: 'Apple Developer Team ID (10 character string)',
+      sensitive: false,
+    },
+    {
+      key: 'IOS_BUNDLE_ID_PREVIEW',
+      description: 'iOS bundle ID for preview/staging builds (e.g., com.example.app.preview)',
+      sensitive: false,
+    },
+    {
+      key: 'IOS_BUNDLE_ID_PRODUCTION',
+      description: 'iOS bundle ID for production builds (e.g., com.example.app)',
+      sensitive: false,
+    },
+  ]
 
-interface SecretValue {
-  key: string
-  value: string
-}
+  interface SecretValue {
+    key: string
+    value: string
+  }
 
-async function main() {
   const cwd = process.cwd()
-  const args = process.argv.slice(2)
-  const dryRun = args.includes('--dry-run')
-  const yes = args.includes('--yes') || args.includes('-y')
-  const showHelp = args.includes('--help') || args.includes('-h')
-  const syncOnly = args.includes('--sync')
-  const checkOnly = args.includes('--check')
+  const cliArgs = process.argv.slice(2)
+  const dryRun = cliArgs.includes('--dry-run')
+  const yes = cliArgs.includes('--yes') || cliArgs.includes('-y')
+  const showHelp = cliArgs.includes('--help') || cliArgs.includes('-h')
+  const syncOnly = cliArgs.includes('--sync')
+  const checkOnly = cliArgs.includes('--check')
 
   if (showHelp) {
     console.info(`
@@ -186,7 +170,7 @@ ${pc.bold('Getting credentials:')}
     )
   }
 
-  const secretsFilePath = resolve(cwd, '.env.ios')
+  const secretsFilePath = path.resolve(cwd, '.env.ios')
 
   // check mode
   if (checkOnly) {
@@ -195,7 +179,7 @@ ${pc.bold('Getting credentials:')}
   }
 
   // load existing secrets from file
-  const existingSecrets = loadSecretsFile(secretsFilePath)
+  const existingSecrets = await loadSecretsFile(secretsFilePath)
 
   if (syncOnly) {
     if (Object.keys(existingSecrets).length === 0) {
@@ -314,11 +298,11 @@ ${pc.yellow('Note:')} Add .env.ios to .gitignore (it contains sensitive data)`,
     return `${key}=${value}`
   }).join('\n')
 
-  writeFileSync(secretsFilePath, envContent + '\n')
+  await fs.writeFile(secretsFilePath, envContent + '\n')
   spinner.stop('Secrets saved to .env.ios')
 
   // ensure gitignore
-  ensureGitignore(cwd, '.env.ios')
+  await ensureGitignore(cwd, '.env.ios')
 
   // offer to sync to github
   console.info()
@@ -344,257 +328,251 @@ ${pc.yellow('Note:')} Add .env.ios to .gitignore (it contains sensitive data)`,
     console.info(pc.gray('To sync to GitHub later, run:'))
     console.info(pc.cyan('  bun tko ios setup-release --sync'))
   }
-}
 
-function loadSecretsFile(filePath: string): Record<string, string> {
-  if (!existsSync(filePath)) {
-    return {}
-  }
-
-  const content = readFileSync(filePath, 'utf-8')
-  const secrets: Record<string, string> = {}
-  const lines = content.split('\n')
-  let currentKey: string | null = null
-  let currentValue: string[] = []
-  let inMultiline = false
-
-  const saveCurrentKey = () => {
-    if (currentKey) {
-      let value = currentValue.join('\n')
-      // remove surrounding quotes if present
-      if ((value.startsWith('"') && value.endsWith('"')) ||
-          (value.startsWith("'") && value.endsWith("'"))) {
-        value = value.slice(1, -1)
-      }
-      // unescape quotes
-      value = value.replace(/\\"/g, '"')
-      secrets[currentKey] = value
+  async function loadSecretsFile(filePath: string): Promise<Record<string, string>> {
+    if (!existsSync(filePath)) {
+      return {}
     }
-    currentKey = null
-    currentValue = []
-    inMultiline = false
-  }
 
-  for (const line of lines) {
-    if (inMultiline) {
-      currentValue.push(line)
-      // check if this line ends the multiline value
-      if (line.includes('-----END') && line.includes('KEY-----')) {
-        const trimmed = line.trim()
-        if (trimmed.endsWith('"') || trimmed.endsWith("'")) {
+    const content = await fs.readFile(filePath, 'utf-8')
+    const secrets: Record<string, string> = {}
+    const lines = content.split('\n')
+    let currentKey: string | null = null
+    let currentValue: string[] = []
+    let inMultiline = false
+
+    const saveCurrentKey = () => {
+      if (currentKey) {
+        let value = currentValue.join('\n')
+        // remove surrounding quotes if present
+        if ((value.startsWith('"') && value.endsWith('"')) ||
+            (value.startsWith("'") && value.endsWith("'"))) {
+          value = value.slice(1, -1)
+        }
+        // unescape quotes
+        value = value.replace(/\\"/g, '"')
+        secrets[currentKey] = value
+      }
+      currentKey = null
+      currentValue = []
+      inMultiline = false
+    }
+
+    for (const line of lines) {
+      if (inMultiline) {
+        currentValue.push(line)
+        // check if this line ends the multiline value
+        if (line.includes('-----END') && line.includes('KEY-----')) {
+          const trimmed = line.trim()
+          if (trimmed.endsWith('"') || trimmed.endsWith("'")) {
+            saveCurrentKey()
+          }
+        } else if (line.trim().endsWith('"') || line.trim().endsWith("'")) {
           saveCurrentKey()
         }
-      } else if (line.trim().endsWith('"') || line.trim().endsWith("'")) {
-        saveCurrentKey()
+        continue
       }
-      continue
-    }
 
-    const trimmed = line.trim()
-    if (!trimmed || trimmed.startsWith('#')) continue
+      const trimmed = line.trim()
+      if (!trimmed || trimmed.startsWith('#')) continue
 
-    // match KEY=value or KEY="value
-    const match = trimmed.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/)
-    if (match && match[1]) {
-      // save any previous key
-      if (currentKey) saveCurrentKey()
+      // match KEY=value or KEY="value
+      const match = trimmed.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/)
+      if (match && match[1]) {
+        // save any previous key
+        if (currentKey) saveCurrentKey()
 
-      currentKey = match[1]
-      const valueStart = match[2] || ''
+        currentKey = match[1]
+        const valueStart = match[2] || ''
 
-      // check if value starts with quote and doesn't end with it (multiline)
-      if ((valueStart.startsWith('"') && !valueStart.endsWith('"')) ||
-          (valueStart.startsWith("'") && !valueStart.endsWith("'"))) {
-        inMultiline = true
-        currentValue = [valueStart]
-      } else {
-        // single line value
-        currentValue = [valueStart]
-        saveCurrentKey()
+        // check if value starts with quote and doesn't end with it (multiline)
+        if ((valueStart.startsWith('"') && !valueStart.endsWith('"')) ||
+            (valueStart.startsWith("'") && !valueStart.endsWith("'"))) {
+          inMultiline = true
+          currentValue = [valueStart]
+        } else {
+          // single line value
+          currentValue = [valueStart]
+          saveCurrentKey()
+        }
       }
     }
-  }
-  // handle any remaining key
-  if (currentKey) saveCurrentKey()
+    // handle any remaining key
+    if (currentKey) saveCurrentKey()
 
-  return secrets
-}
-
-async function syncToGitHub(
-  secrets: Record<string, string>,
-  dryRun: boolean,
-  skipConfirm: boolean
-) {
-  const varsToSync = Object.entries(secrets).filter(([_, value]) => value && value.length > 0)
-
-  if (varsToSync.length === 0) {
-    clack.outro(pc.yellow('No secrets to sync'))
-    return
+    return secrets
   }
 
-  console.info()
-  console.info(pc.bold('Secrets to sync to GitHub:'))
-  console.info()
+  async function syncToGitHub(
+    secrets: Record<string, string>,
+    dryRun: boolean,
+    skipConfirm: boolean
+  ) {
+    const varsToSync = Object.entries(secrets).filter(([_, value]) => value && value.length > 0)
 
-  for (const [key, value] of varsToSync) {
-    const isSensitive = /KEY|SECRET|PASSWORD|PASSPHRASE|PRIVATE/i.test(key)
-    const displayValue = isSensitive
-      ? pc.gray(`${'*'.repeat(Math.min(value.length, 30))}`)
-      : pc.gray(value.length > 50 ? value.substring(0, 47) + '...' : value)
-
-    console.info(`  ${pc.cyan(key.padEnd(40))} ${displayValue}`)
-  }
-
-  console.info()
-  console.info(pc.gray(`Total: ${varsToSync.length} secrets`))
-
-  if (dryRun) {
-    console.info()
-    clack.outro(pc.yellow('Dry run - no changes made'))
-    return
-  }
-
-  if (!skipConfirm) {
-    console.info()
-    const confirm = await clack.confirm({
-      message: `Sync ${varsToSync.length} secrets to GitHub?`,
-      initialValue: true,
-    })
-
-    if (clack.isCancel(confirm) || !confirm) {
-      clack.cancel('Sync cancelled')
+    if (varsToSync.length === 0) {
+      clack.outro(pc.yellow('No secrets to sync'))
       return
     }
-  }
 
-  const spinner = clack.spinner()
-  spinner.start('Syncing to GitHub...')
+    console.info()
+    console.info(pc.bold('Secrets to sync to GitHub:'))
+    console.info()
 
-  const results: Array<{ key: string; success: boolean; error?: string }> = []
+    for (const [key, value] of varsToSync) {
+      const isSensitive = /KEY|SECRET|PASSWORD|PASSPHRASE|PRIVATE/i.test(key)
+      const displayValue = isSensitive
+        ? pc.gray(`${'*'.repeat(Math.min(value.length, 30))}`)
+        : pc.gray(value.length > 50 ? value.substring(0, 47) + '...' : value)
 
-  for (const [key, value] of varsToSync) {
-    try {
-      // write to temp file to preserve multiline values (esp SSH keys)
-      const tmpFile = join(tmpdir(), `gh-secret-${key}-${Date.now()}`)
-      await Bun.write(tmpFile, value)
-      await Bun.$`gh secret set ${key} < ${tmpFile}`.quiet()
-      // cross-platform file removal
-      const { unlink } = await import('node:fs/promises')
-      await unlink(tmpFile).catch(() => {})
-      results.push({ key, success: true })
-    } catch (error) {
-      results.push({
-        key,
-        success: false,
-        error: error instanceof Error ? error.message : String(error),
+      console.info(`  ${pc.cyan(key.padEnd(40))} ${displayValue}`)
+    }
+
+    console.info()
+    console.info(pc.gray(`Total: ${varsToSync.length} secrets`))
+
+    if (dryRun) {
+      console.info()
+      clack.outro(pc.yellow('Dry run - no changes made'))
+      return
+    }
+
+    if (!skipConfirm) {
+      console.info()
+      const confirm = await clack.confirm({
+        message: `Sync ${varsToSync.length} secrets to GitHub?`,
+        initialValue: true,
       })
+
+      if (clack.isCancel(confirm) || !confirm) {
+        clack.cancel('Sync cancelled')
+        return
+      }
     }
-  }
 
-  spinner.stop('Sync complete')
+    const spinner = clack.spinner()
+    spinner.start('Syncing to GitHub...')
 
-  const successful = results.filter((r) => r.success)
-  const failed = results.filter((r) => !r.success)
+    const results: Array<{ key: string; success: boolean; error?: string }> = []
 
-  console.info()
-  if (successful.length > 0) {
-    console.info(pc.green(`✓ Successfully synced ${successful.length} secrets:`))
-    for (const { key } of successful) {
-      console.info(pc.gray(`  ${key}`))
+    for (const [key, value] of varsToSync) {
+      try {
+        // write to temp file to preserve multiline values (esp SSH keys)
+        const tmpFile = path.join(os.tmpdir(), `gh-secret-${key}-${Date.now()}`)
+        await Bun.write(tmpFile, value)
+        await Bun.$`gh secret set ${key} < ${tmpFile}`.quiet()
+        // cross-platform file removal
+        await fs.unlink(tmpFile).catch(() => {})
+        results.push({ key, success: true })
+      } catch (error) {
+        results.push({
+          key,
+          success: false,
+          error: error instanceof Error ? error.message : String(error),
+        })
+      }
     }
-  }
 
-  if (failed.length > 0) {
+    spinner.stop('Sync complete')
+
+    const successful = results.filter((r) => r.success)
+    const failed = results.filter((r) => !r.success)
+
     console.info()
-    console.info(pc.red(`✗ Failed to sync ${failed.length} secrets:`))
-    for (const { key, error } of failed) {
-      console.info(pc.gray(`  ${key}: ${error}`))
+    if (successful.length > 0) {
+      console.info(pc.green(`✓ Successfully synced ${successful.length} secrets:`))
+      for (const { key } of successful) {
+        console.info(pc.gray(`  ${key}`))
+      }
     }
-  }
 
-  console.info()
+    if (failed.length > 0) {
+      console.info()
+      console.info(pc.red(`✗ Failed to sync ${failed.length} secrets:`))
+      for (const { key, error } of failed) {
+        console.info(pc.gray(`  ${key}: ${error}`))
+      }
+    }
 
-  if (failed.length === 0) {
-    clack.outro(pc.green('All secrets synced to GitHub!'))
     console.info()
-    console.info(pc.gray('Your GitHub Actions can now:'))
-    console.info(pc.gray('  - Sign iOS apps with fastlane match'))
-    console.info(pc.gray('  - Upload to TestFlight automatically'))
-    console.info()
-    console.info(pc.gray('To trigger a release, push a commit with "native:" prefix'))
-  } else {
-    clack.outro(pc.yellow('Sync completed with errors'))
-  }
-}
 
-async function checkSecrets() {
-  console.info()
-  console.info(pc.bold('Checking GitHub secrets status...'))
-  console.info()
-
-  const spinner = clack.spinner()
-  spinner.start('Fetching secrets from GitHub...')
-
-  let existingSecrets: string[] = []
-  try {
-    const result = await Bun.$`gh secret list --json name -q '.[].name'`.text()
-    existingSecrets = result.trim().split('\n').filter(Boolean)
-  } catch {
-    spinner.stop('Failed to fetch secrets')
-    clack.cancel('Could not fetch GitHub secrets. Check your permissions.')
-    return
-  }
-
-  spinner.stop('Secrets fetched')
-
-  console.info()
-  console.info(pc.bold('iOS Release Secrets:'))
-  console.info()
-
-  let configured = 0
-  let missing = 0
-
-  for (const secret of APPLE_SECRETS) {
-    const hasSecret = existingSecrets.includes(secret.key)
-    const icon = hasSecret ? pc.green('✓') : pc.red('✗')
-    const status = hasSecret ? pc.green('configured') : pc.red('missing')
-
-    console.info(`  ${icon} ${pc.cyan(secret.key.padEnd(40))} ${status}`)
-
-    if (hasSecret) {
-      configured++
+    if (failed.length === 0) {
+      clack.outro(pc.green('All secrets synced to GitHub!'))
+      console.info()
+      console.info(pc.gray('Your GitHub Actions can now:'))
+      console.info(pc.gray('  - Sign iOS apps with fastlane match'))
+      console.info(pc.gray('  - Upload to TestFlight automatically'))
+      console.info()
+      console.info(pc.gray('To trigger a release, push a commit with "native:" prefix'))
     } else {
-      missing++
+      clack.outro(pc.yellow('Sync completed with errors'))
     }
   }
 
-  console.info()
-  console.info(pc.gray(`Configured: ${configured}/${APPLE_SECRETS.length}`))
-
-  if (missing > 0) {
+  async function checkSecrets() {
     console.info()
-    console.info(pc.yellow(`Run ${pc.cyan('bun tko ios setup-release')} to configure missing secrets`))
+    console.info(pc.bold('Checking GitHub secrets status...'))
+    console.info()
+
+    const spinner = clack.spinner()
+    spinner.start('Fetching secrets from GitHub...')
+
+    let existingSecrets: string[] = []
+    try {
+      const result = await Bun.$`gh secret list --json name -q '.[].name'`.text()
+      existingSecrets = result.trim().split('\n').filter(Boolean)
+    } catch {
+      spinner.stop('Failed to fetch secrets')
+      clack.cancel('Could not fetch GitHub secrets. Check your permissions.')
+      return
+    }
+
+    spinner.stop('Secrets fetched')
+
+    console.info()
+    console.info(pc.bold('iOS Release Secrets:'))
+    console.info()
+
+    let configured = 0
+    let missing = 0
+
+    for (const secret of APPLE_SECRETS) {
+      const hasSecret = existingSecrets.includes(secret.key)
+      const icon = hasSecret ? pc.green('✓') : pc.red('✗')
+      const status = hasSecret ? pc.green('configured') : pc.red('missing')
+
+      console.info(`  ${icon} ${pc.cyan(secret.key.padEnd(40))} ${status}`)
+
+      if (hasSecret) {
+        configured++
+      } else {
+        missing++
+      }
+    }
+
+    console.info()
+    console.info(pc.gray(`Configured: ${configured}/${APPLE_SECRETS.length}`))
+
+    if (missing > 0) {
+      console.info()
+      console.info(pc.yellow(`Run ${pc.cyan('bun tko ios setup-release')} to configure missing secrets`))
+    }
+
+    clack.outro(missing === 0 ? pc.green('All secrets configured!') : pc.yellow(`${missing} secrets missing`))
   }
 
-  clack.outro(missing === 0 ? pc.green('All secrets configured!') : pc.yellow(`${missing} secrets missing`))
-}
+  async function ensureGitignore(cwd: string, filename: string) {
+    const gitignorePath = path.resolve(cwd, '.gitignore')
 
-function ensureGitignore(cwd: string, filename: string) {
-  const gitignorePath = resolve(cwd, '.gitignore')
+    if (!existsSync(gitignorePath)) {
+      return
+    }
 
-  if (!existsSync(gitignorePath)) {
-    return
+    const content = await fs.readFile(gitignorePath, 'utf-8')
+
+    if (!content.includes(filename)) {
+      await fs.writeFile(gitignorePath, content.trimEnd() + '\n' + filename + '\n')
+      clack.log.info(`Added ${filename} to .gitignore`)
+    }
   }
-
-  const content = readFileSync(gitignorePath, 'utf-8')
-
-  if (!content.includes(filename)) {
-    writeFileSync(gitignorePath, content.trimEnd() + '\n' + filename + '\n')
-    clack.log.info(`Added ${filename} to .gitignore`)
-  }
-}
-
-main().catch((error) => {
-  console.error(pc.red('\n✗ Unexpected error:'), error.message)
-  process.exit(1)
 })

@@ -1,119 +1,234 @@
 #!/usr/bin/env bun
 
-/**
- * @description Deploy to production droplet with managed database
- */
+import { cmd } from '@take-out/cli'
 
-import { existsSync, readFileSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
+  const { existsSync } = await import('node:fs')
+  const { config } = await import('dotenv')
 
-import { run } from '@take-out/scripts/helpers/run'
-import { config } from 'dotenv'
-import pc from 'picocolors'
+  const { buildMigrations, buildWeb, buildDockerImage } = await import('./helpers/build')
+  const { processComposeEnv } = await import('./helpers/processEnv')
+  const { checkSSHKey, testSSHConnection } = await import('./helpers/ssh')
+  const {
+    checkUncloudCLI,
+    initUncloud,
+    pushImage,
+    deployStack,
+    showStatus,
+  } = await import('./helpers/uncloud')
 
-import { buildMigrations, buildWeb, buildDockerImage } from './helpers/build'
-import { processComposeEnv } from './helpers/processEnv'
-import { checkSSHKey, testSSHConnection } from './helpers/ssh'
-import {
-  checkUncloudCLI,
-  initUncloud,
-  pushImage,
-  deployStack,
-  showStatus,
-} from './helpers/uncloud'
+  async function getZeroVersion(): Promise<string> {
+    const packageJson = JSON.parse(await fs.readFile('package.json', 'utf-8'))
+    return packageJson.dependencies?.['@rocicorp/zero']?.replace(/^[\^~]/, '') || ''
+  }
 
-function getZeroVersion(): string {
-  const packageJson = JSON.parse(readFileSync('package.json', 'utf-8'))
-  return packageJson.dependencies?.['@rocicorp/zero']?.replace(/^[\^~]/, '') || ''
-}
+  // parse args
+  const args = process.argv.slice(2)
+  const skipBuild = args.includes('--skip-build')
+  const skipDocker = args.includes('--skip-docker')
 
-// parse args
-const args = process.argv.slice(2)
-const skipBuild = args.includes('--skip-build')
-const skipDocker = args.includes('--skip-docker')
+  // load .env.production if it exists (for local use)
+  const envPath = path.resolve(process.cwd(), '.env.production')
+  if (existsSync(envPath)) {
+    config({ path: envPath, override: false })
+  }
 
-// load .env.production if it exists (for local use)
-const envPath = resolve(process.cwd(), '.env.production')
-if (existsSync(envPath)) {
-  config({ path: envPath, override: false })
-}
+  const DEPLOY_HOST = process.env.DEPLOY_HOST
+  const DEPLOY_USER = process.env.DEPLOY_USER || 'root'
+  // default to uncloud_deploy (set by CI), fall back to id_rsa locally
+  const DEPLOY_SSH_KEY =
+    process.env.DEPLOY_SSH_KEY || `${process.env.HOME}/.ssh/uncloud_deploy`
 
-const DEPLOY_HOST = process.env.DEPLOY_HOST
-const DEPLOY_USER = process.env.DEPLOY_USER || 'root'
-// default to uncloud_deploy (set by CI), fall back to id_rsa locally
-const DEPLOY_SSH_KEY =
-  process.env.DEPLOY_SSH_KEY || `${process.env.HOME}/.ssh/uncloud_deploy`
+  async function checkPrerequisites(): Promise<{
+    ZERO_UPSTREAM_DB: string
+    ZERO_CVR_DB: string
+    ZERO_CHANGE_DB: string
+  }> {
+    console.info('📋 checking prerequisites...\n')
 
-async function checkPrerequisites(): Promise<{
-  ZERO_UPSTREAM_DB: string
-  ZERO_CVR_DB: string
-  ZERO_CHANGE_DB: string
-}> {
-  console.info('📋 checking prerequisites...\n')
+    if (!DEPLOY_HOST) {
+      throw new Error(
+        'DEPLOY_HOST not set\n\nFor local use, run: bun tko onboard\nFor CI, ensure DEPLOY_HOST is in GitHub secrets'
+      )
+    }
 
-  if (!DEPLOY_HOST) {
-    throw new Error(
-      'DEPLOY_HOST not set\n\nFor local use, run: bun tko onboard\nFor CI, ensure DEPLOY_HOST is in GitHub secrets'
+    // derive zero database URLs from DEPLOY_DB (like sst.config.ts does)
+    const deployDb = process.env.DEPLOY_DB
+    if (!deployDb) {
+      throw new Error(
+        'DEPLOY_DB not set\n\nFor uncloud deployment, set DEPLOY_DB in .env.production\nExample: postgresql://user:pass@host:port/dbname?sslmode=require\n\nRun: bun tko onboard to configure'
+      )
+    }
+
+    // extract base connection string (everything before the database name)
+    const dbUrlParts = deployDb.split('/')
+    const baseUrl = dbUrlParts.slice(0, -1).join('/')
+    const queryParams = deployDb.includes('?') ? '?' + deployDb.split('?')[1] : ''
+
+    const ZERO_UPSTREAM_DB = deployDb
+    const ZERO_CVR_DB = `${baseUrl}/zero_cvr${queryParams}`
+    const ZERO_CHANGE_DB = `${baseUrl}/zero_cdb${queryParams}`
+
+    // verify env vars match DEPLOY_DB (warn if stale values exist)
+    const envUpstream = process.env.ZERO_UPSTREAM_DB
+    const envCvr = process.env.ZERO_CVR_DB
+    const envChange = process.env.ZERO_CHANGE_DB
+
+    const getHost = (url: string): string | null => url.match(/@([^:/]+)/)?.[1] || null
+    const deployDbHost = getHost(deployDb)
+
+    if (envUpstream && getHost(envUpstream) !== deployDbHost) {
+      console.warn(
+        colors.yellow(`⚠️  ZERO_UPSTREAM_DB in env has different host than DEPLOY_DB`)
+      )
+      console.warn(colors.yellow(`   env: ${getHost(envUpstream)}, deploy_db: ${deployDbHost}`))
+      console.warn(colors.yellow(`   using derived value from DEPLOY_DB`))
+    }
+    if (envCvr && getHost(envCvr) !== deployDbHost) {
+      console.warn(colors.yellow(`⚠️  ZERO_CVR_DB in env has different host than DEPLOY_DB`))
+      console.warn(colors.yellow(`   using derived value from DEPLOY_DB`))
+    }
+    if (envChange && getHost(envChange) !== deployDbHost) {
+      console.warn(colors.yellow(`⚠️  ZERO_CHANGE_DB in env has different host than DEPLOY_DB`))
+      console.warn(colors.yellow(`   using derived value from DEPLOY_DB`))
+    }
+
+    console.info(`✅ zero databases configured`)
+    console.info(
+      colors.gray(`   upstream: ${deployDb.split('@')[1]?.split('/')[0] || 'configured'}`)
     )
+
+    console.info(`✅ deploy host: ${DEPLOY_HOST}`)
+    console.info(`✅ deploy user: ${DEPLOY_USER}`)
+    console.info(`✅ using external managed database`)
+
+    await checkUncloudCLI()
+    await checkSSHKey(DEPLOY_SSH_KEY)
+
+    return { ZERO_UPSTREAM_DB, ZERO_CVR_DB, ZERO_CHANGE_DB }
   }
 
-  // derive zero database URLs from DEPLOY_DB (like sst.config.ts does)
-  const deployDb = process.env.DEPLOY_DB
-  if (!deployDb) {
-    throw new Error(
-      'DEPLOY_DB not set\n\nFor uncloud deployment, set DEPLOY_DB in .env.production\nExample: postgresql://user:pass@host:port/dbname?sslmode=require\n\nRun: bun tko onboard to configure'
-    )
+  async function uploadOriginCACerts(host: string, sshKey: string): Promise<void> {
+    const certPath = process.env.ORIGIN_CA_CERT
+    const keyPath = process.env.ORIGIN_CA_KEY
+
+    if (!certPath || !keyPath) {
+      return // not configured, use default ACME
+    }
+
+    // resolve paths relative to cwd
+    const resolvedCert = path.resolve(process.cwd(), certPath)
+    const resolvedKey = path.resolve(process.cwd(), keyPath)
+
+    if (!existsSync(resolvedCert)) {
+      console.warn(colors.yellow(`⚠️  origin ca cert not found: ${resolvedCert}`))
+      console.warn(colors.gray("   falling back to let's encrypt"))
+      return
+    }
+
+    if (!existsSync(resolvedKey)) {
+      console.warn(colors.yellow(`⚠️  origin ca key not found: ${resolvedKey}`))
+      console.warn(colors.gray("   falling back to let's encrypt"))
+      return
+    }
+
+    console.info('\n🔐 uploading origin ca certificates...')
+
+    const sshCmd = `ssh -i ${sshKey} -o StrictHostKeyChecking=no ${host}`
+
+    try {
+      // create certs directories on server
+      await run(`${sshCmd} "mkdir -p /etc/uncloud/certs /var/lib/uncloud/caddy/certs"`, {
+        silent: true,
+      })
+
+      // upload certificates to /etc/uncloud/certs
+      await run(
+        `scp -i ${sshKey} -o StrictHostKeyChecking=no ${resolvedCert} ${host}:/etc/uncloud/certs/origin.pem`
+      )
+      await run(
+        `scp -i ${sshKey} -o StrictHostKeyChecking=no ${resolvedKey} ${host}:/etc/uncloud/certs/origin.key`
+      )
+
+      // copy to caddy volume mount path (accessible at /config/certs inside container)
+      await run(
+        `${sshCmd} "cp /etc/uncloud/certs/origin.* /var/lib/uncloud/caddy/certs/"`,
+        {
+          silent: true,
+        }
+      )
+
+      // set permissions
+      await run(
+        `${sshCmd} "chmod 600 /etc/uncloud/certs/origin.key /var/lib/uncloud/caddy/certs/origin.key"`,
+        { silent: true }
+      )
+
+      console.info(colors.green('✓ origin ca certificates uploaded'))
+      console.info(colors.gray('  certs available at /config/certs inside caddy container'))
+    } catch (err) {
+      console.warn(colors.yellow('⚠️  failed to upload origin ca certs'))
+      console.warn(colors.gray(`   ${err instanceof Error ? err.message : err}`))
+      console.warn(colors.gray("   falling back to let's encrypt"))
+    }
   }
 
-  // extract base connection string (everything before the database name)
-  const dbUrlParts = deployDb.split('/')
-  const baseUrl = dbUrlParts.slice(0, -1).join('/')
-  const queryParams = deployDb.includes('?') ? '?' + deployDb.split('?')[1] : ''
+  async function deployCaddyWithTLS(host: string, sshKey: string): Promise<void> {
+    const certPath = process.env.ORIGIN_CA_CERT
+    const keyPath = process.env.ORIGIN_CA_KEY
 
-  const ZERO_UPSTREAM_DB = deployDb
-  const ZERO_CVR_DB = `${baseUrl}/zero_cvr${queryParams}`
-  const ZERO_CHANGE_DB = `${baseUrl}/zero_cdb${queryParams}`
+    if (!certPath || !keyPath) {
+      return // not using origin ca, caddy will use default acme
+    }
 
-  // verify env vars match DEPLOY_DB (warn if stale values exist)
-  const envUpstream = process.env.ZERO_UPSTREAM_DB
-  const envCvr = process.env.ZERO_CVR_DB
-  const envChange = process.env.ZERO_CHANGE_DB
+    // get custom domains from env vars
+    const webDomain = process.env.WEB_DOMAIN
+    const zeroDomain = process.env.ZERO_DOMAIN
+    const domains = [webDomain, zeroDomain].filter(Boolean)
 
-  const getHost = (url: string): string | null => url.match(/@([^:/]+)/)?.[1] || null
-  const deployDbHost = getHost(deployDb)
+    if (domains.length === 0) {
+      console.warn(colors.yellow('⚠️  no custom domains configured (WEB_DOMAIN, ZERO_DOMAIN)'))
+      console.warn(colors.gray("   caddy will use let's encrypt for tls"))
+      return
+    }
 
-  if (envUpstream && getHost(envUpstream) !== deployDbHost) {
-    console.warn(
-      pc.yellow(`⚠️  ZERO_UPSTREAM_DB in env has different host than DEPLOY_DB`)
-    )
-    console.warn(pc.yellow(`   env: ${getHost(envUpstream)}, deploy_db: ${deployDbHost}`))
-    console.warn(pc.yellow(`   using derived value from DEPLOY_DB`))
+    // generate caddyfile dynamically from env vars
+    const caddyfilePath = path.resolve(process.cwd(), 'src/uncloud/Caddyfile')
+    const caddyConfig = [
+      '# origin ca certificates for cloudflare proxied domains',
+      '# auto-generated during deploy from WEB_DOMAIN/ZERO_DOMAIN env vars',
+      '',
+      ...domains.map(
+        (domain) =>
+          `${domain} {\n\ttls /config/certs/origin.pem /config/certs/origin.key\n}`
+      ),
+      '',
+    ].join('\n')
+
+    await fs.writeFile(caddyfilePath, caddyConfig)
+    console.info(colors.gray(`   generated caddyfile for: ${domains.join(', ')}`))
+
+    console.info('\n🔄 deploying caddy with custom tls config...')
+
+    const sshCmd = `ssh -i ${sshKey} -o StrictHostKeyChecking=no ${host}`
+
+    try {
+      await run(`echo "y" | uc caddy deploy --caddyfile ${caddyfilePath}`)
+
+      // restart caddy to ensure tls certs are loaded from volume
+      await run(`${sshCmd} "docker restart \\$(docker ps -qf name=caddy)"`, {
+        silent: true,
+      })
+      console.info(colors.green('✓ caddy deployed with origin ca certificates'))
+    } catch (err) {
+      console.warn(colors.yellow('⚠️  failed to deploy caddy with custom config'))
+      console.warn(colors.gray(`   ${err instanceof Error ? err.message : err}`))
+      console.warn(
+        colors.gray('   you may need to run: uc caddy deploy --caddyfile src/uncloud/Caddyfile')
+      )
+    }
   }
-  if (envCvr && getHost(envCvr) !== deployDbHost) {
-    console.warn(pc.yellow(`⚠️  ZERO_CVR_DB in env has different host than DEPLOY_DB`))
-    console.warn(pc.yellow(`   using derived value from DEPLOY_DB`))
-  }
-  if (envChange && getHost(envChange) !== deployDbHost) {
-    console.warn(pc.yellow(`⚠️  ZERO_CHANGE_DB in env has different host than DEPLOY_DB`))
-    console.warn(pc.yellow(`   using derived value from DEPLOY_DB`))
-  }
 
-  console.info(`✅ zero databases configured`)
-  console.info(
-    pc.gray(`   upstream: ${deployDb.split('@')[1]?.split('/')[0] || 'configured'}`)
-  )
-
-  console.info(`✅ deploy host: ${DEPLOY_HOST}`)
-  console.info(`✅ deploy user: ${DEPLOY_USER}`)
-  console.info(`✅ using external managed database`)
-
-  await checkUncloudCLI()
-  await checkSSHKey(DEPLOY_SSH_KEY)
-
-  return { ZERO_UPSTREAM_DB, ZERO_CVR_DB, ZERO_CHANGE_DB }
-}
-
-async function main(): Promise<void> {
   console.info('🎯 deploying takeout to production\n')
 
   // derive database URLs from DEPLOY_DB
@@ -148,8 +263,8 @@ async function main(): Promise<void> {
   // spreads process.env so all vars are available, only derived db urls need explicit override
   console.info('\n📝 processing compose file with production env...\n')
   const processedCompose = 'src/uncloud/docker-compose.processed.yml'
-  const zeroVersion = getZeroVersion()
-  console.info(pc.gray(`   zero version: ${zeroVersion}`))
+  const zeroVersion = await getZeroVersion()
+  console.info(colors.gray(`   zero version: ${zeroVersion}`))
   processComposeEnv('src/uncloud/docker-compose.yml', processedCompose, {
     ...(process.env as Record<string, string | undefined>),
     // derived zero database urls from DEPLOY_DB
@@ -180,130 +295,4 @@ async function main(): Promise<void> {
   console.info(`  ssh ${DEPLOY_USER}@${DEPLOY_HOST}  # ssh to server`)
   console.info('\nto skip builds on redeploy:')
   console.info('  bun scripts/uncloud/deploy-prod.ts --skip-build --skip-docker')
-}
-
-async function uploadOriginCACerts(host: string, sshKey: string): Promise<void> {
-  const certPath = process.env.ORIGIN_CA_CERT
-  const keyPath = process.env.ORIGIN_CA_KEY
-
-  if (!certPath || !keyPath) {
-    return // not configured, use default ACME
-  }
-
-  // resolve paths relative to cwd
-  const resolvedCert = resolve(process.cwd(), certPath)
-  const resolvedKey = resolve(process.cwd(), keyPath)
-
-  if (!existsSync(resolvedCert)) {
-    console.warn(pc.yellow(`⚠️  origin ca cert not found: ${resolvedCert}`))
-    console.warn(pc.gray("   falling back to let's encrypt"))
-    return
-  }
-
-  if (!existsSync(resolvedKey)) {
-    console.warn(pc.yellow(`⚠️  origin ca key not found: ${resolvedKey}`))
-    console.warn(pc.gray("   falling back to let's encrypt"))
-    return
-  }
-
-  console.info('\n🔐 uploading origin ca certificates...')
-
-  const sshCmd = `ssh -i ${sshKey} -o StrictHostKeyChecking=no ${host}`
-
-  try {
-    // create certs directories on server
-    await run(`${sshCmd} "mkdir -p /etc/uncloud/certs /var/lib/uncloud/caddy/certs"`, {
-      silent: true,
-    })
-
-    // upload certificates to /etc/uncloud/certs
-    await run(
-      `scp -i ${sshKey} -o StrictHostKeyChecking=no ${resolvedCert} ${host}:/etc/uncloud/certs/origin.pem`
-    )
-    await run(
-      `scp -i ${sshKey} -o StrictHostKeyChecking=no ${resolvedKey} ${host}:/etc/uncloud/certs/origin.key`
-    )
-
-    // copy to caddy volume mount path (accessible at /config/certs inside container)
-    await run(
-      `${sshCmd} "cp /etc/uncloud/certs/origin.* /var/lib/uncloud/caddy/certs/"`,
-      {
-        silent: true,
-      }
-    )
-
-    // set permissions
-    await run(
-      `${sshCmd} "chmod 600 /etc/uncloud/certs/origin.key /var/lib/uncloud/caddy/certs/origin.key"`,
-      { silent: true }
-    )
-
-    console.info(pc.green('✓ origin ca certificates uploaded'))
-    console.info(pc.gray('  certs available at /config/certs inside caddy container'))
-  } catch (err) {
-    console.warn(pc.yellow('⚠️  failed to upload origin ca certs'))
-    console.warn(pc.gray(`   ${err instanceof Error ? err.message : err}`))
-    console.warn(pc.gray("   falling back to let's encrypt"))
-  }
-}
-
-async function deployCaddyWithTLS(host: string, sshKey: string): Promise<void> {
-  const certPath = process.env.ORIGIN_CA_CERT
-  const keyPath = process.env.ORIGIN_CA_KEY
-
-  if (!certPath || !keyPath) {
-    return // not using origin ca, caddy will use default acme
-  }
-
-  // get custom domains from env vars
-  const webDomain = process.env.WEB_DOMAIN
-  const zeroDomain = process.env.ZERO_DOMAIN
-  const domains = [webDomain, zeroDomain].filter(Boolean)
-
-  if (domains.length === 0) {
-    console.warn(pc.yellow('⚠️  no custom domains configured (WEB_DOMAIN, ZERO_DOMAIN)'))
-    console.warn(pc.gray("   caddy will use let's encrypt for tls"))
-    return
-  }
-
-  // generate caddyfile dynamically from env vars
-  const caddyfilePath = resolve(process.cwd(), 'src/uncloud/Caddyfile')
-  const caddyConfig = [
-    '# origin ca certificates for cloudflare proxied domains',
-    '# auto-generated during deploy from WEB_DOMAIN/ZERO_DOMAIN env vars',
-    '',
-    ...domains.map(
-      (domain) =>
-        `${domain} {\n\ttls /config/certs/origin.pem /config/certs/origin.key\n}`
-    ),
-    '',
-  ].join('\n')
-
-  writeFileSync(caddyfilePath, caddyConfig)
-  console.info(pc.gray(`   generated caddyfile for: ${domains.join(', ')}`))
-
-  console.info('\n🔄 deploying caddy with custom tls config...')
-
-  const sshCmd = `ssh -i ${sshKey} -o StrictHostKeyChecking=no ${host}`
-
-  try {
-    await run(`echo "y" | uc caddy deploy --caddyfile ${caddyfilePath}`)
-
-    // restart caddy to ensure tls certs are loaded from volume
-    await run(`${sshCmd} "docker restart \\$(docker ps -qf name=caddy)"`, {
-      silent: true,
-    })
-    console.info(pc.green('✓ caddy deployed with origin ca certificates'))
-  } catch (err) {
-    console.warn(pc.yellow('⚠️  failed to deploy caddy with custom config'))
-    console.warn(pc.gray(`   ${err instanceof Error ? err.message : err}`))
-    console.warn(
-      pc.gray('   you may need to run: uc caddy deploy --caddyfile src/uncloud/Caddyfile')
-    )
-  }
-}
-
-main().catch((error) => {
-  console.error('\n💥 deployment failed:', error.message)
-  process.exit(1)
 })

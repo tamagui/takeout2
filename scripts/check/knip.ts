@@ -1,9 +1,7 @@
 #!/usr/bin/env bun
 
-/**
- * @description Run knip to find unused dependencies and exports
- */
+import { cmd } from '@take-out/cli'
 
-import { $ } from 'bun'
-
-await $`bunx knip`
+await cmd`Run knip to find unused dependencies and exports`.run(async ({ $ }) => {
+  await $`bunx knip`.nothrow()
+})

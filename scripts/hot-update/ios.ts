@@ -1,9 +1,7 @@
 #!/usr/bin/env bun
 
-/**
- * @description Deploy hot update for iOS
- * @args --production
- */
+import { cmd } from '@take-out/cli'
 
-import { $ } from 'bun'
-await $`bunx hot-updater deploy --platform ios ${process.argv.slice(2)}`
+await cmd`Deploy hot update for iOS`.run(async ({ $ }) => {
+  await $`bunx hot-updater deploy --platform ios ${process.argv.slice(2)}`
+})

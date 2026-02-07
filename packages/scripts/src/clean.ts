@@ -1,29 +1,29 @@
 #!/usr/bin/env bun
 
-/**
- * @description Clean build artifacts and temporary files
- */
+import { cmd } from './cmd'
 
-import { $ } from 'bun'
+await cmd`clean build artifacts and temporary files`
+  .args('--full boolean --modules boolean --native boolean')
+  .run(async ({ args, $ }) => {
+    const full = args.full
+    const modules = full || args.modules
+    const native = full || args.native
 
-const full = process.argv.includes('--full')
-const modules = full || process.argv.includes('--modules')
-const native = full || process.argv.includes('--native')
+    await $`rm -rf dist types .tamagui .vite node_modules/.cache`
 
-await $`rm -rf dist types .tamagui .vite node_modules/.cache`
+    if (modules) {
+      console.info('removing all node_modules...')
+      await $`find . -name 'node_modules' -type d -prune -exec rm -rf {} +`
+    }
 
-if (modules) {
-  console.info('removing all node_modules...')
-  await $`find . -name 'node_modules' -type d -prune -exec rm -rf {} +`
-}
+    if (native) {
+      console.info('removing ios and android folders...')
+      await $`rm -rf ios android`
+    }
 
-if (native) {
-  console.info('removing ios and android folders...')
-  await $`rm -rf ios android`
-}
+    console.info('cleanup complete!')
 
-console.info('cleanup complete!')
-
-if (!full) {
-  console.info('use --modules, --native, or --full for deeper cleaning')
-}
+    if (!full) {
+      console.info('use --modules, --native, or --full for deeper cleaning')
+    }
+  })

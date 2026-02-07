@@ -59,7 +59,7 @@ export const runCommand = defineCommand({
         }
 
         // Lazy load script functions only when needed
-        const { discoverScripts, getScriptMetadata } =
+        const { discoverScripts, getAllScriptMetadata } =
           await import('../utils/script-utils')
         const pc = (await import('picocolors')).default
 
@@ -67,21 +67,23 @@ export const runCommand = defineCommand({
         const categoryScripts = discoverScripts(categoryPath)
 
         if (categoryScripts.size > 0) {
+          const metadata = await getAllScriptMetadata(categoryScripts)
+
           console.info()
-          console.info(pc.bold(pc.cyan(`📁 ${firstArg} Scripts`)))
+          console.info(pc.bold(pc.cyan(`${firstArg} Scripts`)))
           console.info()
 
-          for (const [name, path] of categoryScripts) {
+          for (const [name] of categoryScripts) {
             const shortName = name.replace(`${firstArg}/`, '')
-            const metadata = getScriptMetadata(path)
+            const meta = metadata.get(name)
             let line = `  ${pc.green(shortName)}`
 
-            if (metadata.description) {
-              line += pc.dim(` - ${metadata.description}`)
+            if (meta?.description) {
+              line += pc.dim(` - ${meta.description}`)
             }
 
-            if (metadata.args && metadata.args.length > 0) {
-              line += pc.dim(` [${metadata.args.join(', ')}]`)
+            if (meta?.args && meta.args.length > 0) {
+              line += pc.dim(` [${meta.args.join(', ')}]`)
             }
 
             console.info(line)

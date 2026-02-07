@@ -1,18 +1,15 @@
 #!/usr/bin/env bun
+import { cmd } from '@take-out/cli'
 
-/**
- * @description Start frontend in production mode for CI
- */
+await cmd`Start frontend in production mode for CI`.run(async ({ run }) => {
+  const { getTestEnv } = await import('@take-out/scripts/helpers/get-test-env')
+  const testEnv = await getTestEnv()
 
-import { getTestEnv } from '@take-out/scripts/helpers/get-test-env'
-import { run } from '@take-out/scripts/helpers/run'
-
-const testEnv = await getTestEnv()
-
-await run(`bun run web serve`, {
-  prefix: 'web-serve',
-  env: {
-    ...testEnv,
-    IS_TESTING: '1',
-  },
+  await run(`bun run web serve`, {
+    prefix: 'web-serve',
+    env: {
+      ...testEnv,
+      IS_TESTING: '1',
+    },
+  })
 })

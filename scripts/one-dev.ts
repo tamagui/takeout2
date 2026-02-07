@@ -1,10 +1,13 @@
 #!/usr/bin/env bun
 
-import { args } from '@take-out/scripts/helpers/args'
-import { $ } from 'bun'
+import { cmd } from '@take-out/cli'
 
-const defaultPort = +(process.env.VITE_PORT_WEB || 8081)
-const { port = defaultPort, _ } = args('--port number')
+await cmd`Start One framework dev server`
+  .args('--port number')
+  .run(async ({ args, $ }) => {
+    const defaultPort = +(process.env.VITE_PORT_WEB || 8081)
+    const actualPort = args.port ?? defaultPort
 
-// await $`bun tko ensure-port ${port} --auto-kill Onejs:dev`
-await $`bun run one dev --port ${port} ${_}`
+    // await $`bun tko ensure-port ${actualPort} --auto-kill Onejs:dev`
+    await $`bun run one dev --port ${actualPort} ${args.rest}`
+  })

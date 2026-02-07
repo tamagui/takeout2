@@ -1,15 +1,11 @@
 #!/usr/bin/env bun
 
-/**
- * @description Add a new database migration
- * @args [name]
- */
+import { cmd } from '@take-out/cli'
 
-import { join } from 'node:path'
+await cmd`Add a new database migration`.run(async ({ path }) => {
+  const { addMigration } = await import('@take-out/postgres/scripts/migration-add')
 
-import { addMigration } from '@take-out/postgres/scripts/migration-add'
-
-const name = process.argv[2]
-const migrationsDir = join(process.cwd(), 'src/database/migrations')
-
-addMigration({ migrationsDir, name })
+  const name = process.argv[2]
+  const migrationsDir = path.join(process.cwd(), 'src/database/migrations')
+  addMigration({ migrationsDir, name })
+})

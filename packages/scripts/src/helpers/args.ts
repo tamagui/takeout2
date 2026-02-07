@@ -2,10 +2,10 @@
  * ultra simple typed arg parsing
  *
  * @example
- * const { port, verbose, _ } = args`--port number --verbose boolean`
+ * const { port, verbose, rest } = args`--port number --verbose boolean`
  * // port: number | undefined
  * // verbose: boolean
- * // _: string[]
+ * // rest: string[] - positional args that don't match any flag
  */
 
 type ParseType<T extends string> = T extends 'number'
@@ -52,7 +52,7 @@ type ParseFlags<S extends string> =
 // flatten intersection into single object for nice hover display
 type Prettify<T> = { [K in keyof T]: T[K] } & {}
 
-export type Args<S extends string> = Prettify<ParseFlags<S> & { _: string[] }>
+export type Args<S extends string> = Prettify<ParseFlags<S> & { rest: string[] }>
 
 export function args<const S extends string>(spec: S): Args<S>
 export function args<const S extends string>(strings: TemplateStringsArray | S): Args<S> {
@@ -91,5 +91,5 @@ export function args<const S extends string>(strings: TemplateStringsArray | S):
     }
   }
 
-  return { ...result, _: rest } as Args<S>
+  return { ...result, rest } as Args<S>
 }

@@ -1,61 +1,56 @@
 #!/usr/bin/env bun
 
-/**
- * @description Update changelog.mdx with recent git commits using Claude Code
- *
- * outputs a prompt for claude code to investigate commits and update changelog
- * run: bun tko update-changelog
- */
+import { cmd } from './cmd'
 
-import { execSync } from 'node:child_process'
-import { existsSync, readFileSync } from 'node:fs'
-import { join } from 'node:path'
+await cmd`update changelog with recent git commits`.run(async ({ path }) => {
+  const { execSync } = await import('node:child_process')
+  const { existsSync, readFileSync } = await import('node:fs')
 
-const CHANGELOG_PATH = join(process.cwd(), 'src/features/site/docs/changelog.mdx')
+  const CHANGELOG_PATH = path.join(process.cwd(), 'src/features/site/docs/changelog.mdx')
 
-function getLastSha(): string | null {
-  if (!existsSync(CHANGELOG_PATH)) return null
+  function getLastSha(): string | null {
+    if (!existsSync(CHANGELOG_PATH)) return null
 
-  try {
-    const content = readFileSync(CHANGELOG_PATH, 'utf-8')
-    const match = content.match(/\{\/\* last updated: ([a-f0-9]+) \*\/\}/)
-    return match?.[1] || null
-  } catch {
-    return null
+    try {
+      const content = readFileSync(CHANGELOG_PATH, 'utf-8')
+      const match = content.match(/\{\/\* last updated: ([a-f0-9]+) \*\/\}/)
+      return match?.[1] || null
+    } catch {
+      return null
+    }
   }
-}
 
-function getLatestSha(): string {
-  return execSync('git rev-parse --short HEAD', { encoding: 'utf-8' }).trim()
-}
-
-function getCommitCount(fromSha: string, toSha: string): number {
-  try {
-    const result = execSync(`git rev-list --count ${fromSha}..${toSha} --no-merges`, {
-      encoding: 'utf-8',
-    })
-    return parseInt(result.trim(), 10)
-  } catch {
-    return 0
+  function getLatestSha(): string {
+    return execSync('git rev-parse --short HEAD', { encoding: 'utf-8' }).trim()
   }
-}
 
-const lastSha = getLastSha()
-const latestSha = getLatestSha()
+  function getCommitCount(fromSha: string, toSha: string): number {
+    try {
+      const result = execSync(`git rev-list --count ${fromSha}..${toSha} --no-merges`, {
+        encoding: 'utf-8',
+      })
+      return parseInt(result.trim(), 10)
+    } catch {
+      return 0
+    }
+  }
 
-if (!lastSha) {
-  console.info(`no last sha found in changelog, defaulting to 4 weeks ago`)
-}
+  const lastSha = getLastSha()
+  const latestSha = getLatestSha()
 
-const fromRef = lastSha || '$(git log --since="4 weeks ago" --format="%H" | tail -1)'
-const commitCount = lastSha ? getCommitCount(lastSha, latestSha) : '~30'
+  if (!lastSha) {
+    console.info(`no last sha found in changelog, defaulting to 4 weeks ago`)
+  }
 
-if (commitCount === 0) {
-  console.info('no new commits since last update')
-  process.exit(0)
-}
+  const fromRef = lastSha || '$(git log --since="4 weeks ago" --format="%H" | tail -1)'
+  const commitCount = lastSha ? getCommitCount(lastSha, latestSha) : '~30'
 
-console.info(`
+  if (commitCount === 0) {
+    console.info('no new commits since last update')
+    process.exit(0)
+  }
+
+  console.info(`
 Update the changelog at: ${CHANGELOG_PATH}
 
 Commit range: ${fromRef}..${latestSha} (${commitCount} commits)
@@ -77,3 +72,4 @@ Archiving old entries:
 - when over 10 weeks, move oldest entries to changelog-YYYY.mdx (by year, e.g. changelog-2025.mdx)
 - add a link at the bottom of changelog.mdx: "See [2025 changes](/docs/changelog-2025)" etc (use absolute path)
 `)
+})

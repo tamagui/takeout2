@@ -1,20 +1,22 @@
 #!/usr/bin/env bun
 
-import { spawnSync } from 'node:child_process'
-
 import { ensureExists } from '@take-out/helpers'
-import { loadEnv } from '@take-out/scripts/helpers/env-load'
+
+import { cmd } from './cmd'
 
 export async function execWithEnvironment(
   environment: 'development' | 'production',
   command: string
 ) {
+  const { spawnSync } = await import('node:child_process')
+  const { loadEnv } = await import('./helpers/env-load')
+
   const { USE_LOCAL_SERVER } = process.env
 
   let envFileEnv: Record<string, string>
 
   if (process.env.REMOTE) {
-    await import('@take-out/scripts/ensure-tunnel')
+    await import('./ensure-tunnel')
     const { getEnvironment } = await import('./sst-get-environment')
     envFileEnv = getEnvironment(process.env.REMOTE)
     ensureExists(envFileEnv)
@@ -36,9 +38,6 @@ export async function execWithEnvironment(
       ONE_SERVER_URL: devEnv?.ONE_SERVER_URL,
       // vite reads from .env.production for us unless defined into process.env
       VITE_PUBLIC_ZERO_SERVER: 'https://start.chat',
-      // actually we need to use prod better auth but allow localhost trusted origin, may need other env though
-      // BETTER_AUTH_SECRET: devEnv?.BETTER_AUTH_SECRET,
-      // BETTER_AUTH_URL: devEnv?.BETTER_AUTH_URL,
     }),
   } as any as Record<string, string>
 
@@ -50,9 +49,13 @@ export async function execWithEnvironment(
 }
 
 if (import.meta.main) {
-  const result = await execWithEnvironment(
-    (process.env.NODE_ENV as 'development' | 'production') || 'development',
-    process.argv.slice(3).join(' ')
+  await cmd`execute command with environment variables loaded from local or remote`.run(
+    async () => {
+      const result = await execWithEnvironment(
+        (process.env.NODE_ENV as 'development' | 'production') || 'development',
+        process.argv.slice(3).join(' ')
+      )
+      process.exit(result.status ?? 1)
+    }
   )
-  process.exit(result.status ?? 1)
 }

@@ -1,6 +1,6 @@
 import { boolean, number, string, table } from '@rocicorp/zero'
 import { AppError } from '@take-out/helpers'
-import { mutations, serverWhere } from 'on-zero'
+import { mutations, serverWhere, zql } from 'on-zero'
 
 import { checkProfanity } from '~/features/moderation/profanityFilter'
 
@@ -59,7 +59,7 @@ export const mutate = mutations(schema, permissions, {
     await tx.mutate.post.delete({ id: obj.id })
 
     if (process.env.VITE_ENVIRONMENT === 'ssr' && server && authData) {
-      const post = await (tx.query as any).post.where('id', obj.id).one().run()
+      const post = await tx.run(zql.post.where('id', obj.id).one())
 
       if (post) {
         server.asyncTasks.push(() =>

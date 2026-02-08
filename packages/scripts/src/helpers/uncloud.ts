@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import fs from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 
@@ -27,13 +27,13 @@ function ensureUncloudContext(host: string, sshKey: string, contextName: string)
   const configDir = join(homedir(), '.config', 'uncloud')
   const configPath = join(configDir, 'config.yaml')
 
-  if (!existsSync(configDir)) {
-    mkdirSync(configDir, { recursive: true })
+  if (!fs.existsSync(configDir)) {
+    fs.mkdirSync(configDir, { recursive: true })
   }
 
   // check if config already has context pointing to correct host
-  if (existsSync(configPath)) {
-    const existing = readFileSync(configPath, 'utf-8')
+  if (fs.existsSync(configPath)) {
+    const existing = fs.readFileSync(configPath, 'utf-8')
     const hostname = host.split('@')[1]
     if (hostname && existing.includes(`${contextName}:`) && existing.includes(hostname)) {
       console.info(`✅ uncloud config already has ${contextName} context for ${host}`)
@@ -43,7 +43,7 @@ function ensureUncloudContext(host: string, sshKey: string, contextName: string)
 
   // only create config if it doesn't exist - don't overwrite existing config
   // which may have other contexts
-  if (!existsSync(configPath)) {
+  if (!fs.existsSync(configPath)) {
     const config = `current_context: ${contextName}
 contexts:
   ${contextName}:
@@ -51,7 +51,7 @@ contexts:
       - ssh: ${host}
         ssh_key_file: ${sshKey}
 `
-    writeFileSync(configPath, config)
+    fs.writeFileSync(configPath, config)
     console.info(`✅ created uncloud config at ${configPath}`)
   } else {
     console.info(`✅ using existing uncloud config (context: ${contextName})`)

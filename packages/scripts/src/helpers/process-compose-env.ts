@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'node:fs'
+import fs from 'node:fs'
 
 // make values safe for yaml map syntax (KEY: value)
 // handles multi-line values, special chars that break yaml parsing
@@ -30,7 +30,7 @@ export function processComposeEnv(
   outputFile: string,
   envVars: Record<string, string | undefined>
 ): void {
-  let content = readFileSync(composeFile, 'utf-8')
+  let content = fs.readFileSync(composeFile, 'utf-8')
 
   // replace all ${VAR:-default} patterns with actual env values
   content = content.replace(
@@ -52,6 +52,6 @@ export function processComposeEnv(
     return value ? yamlSafe(value) : _match
   })
 
-  writeFileSync(outputFile, content)
+  fs.writeFileSync(outputFile, content)
   console.info(`✅ processed compose file: ${outputFile}`)
 }

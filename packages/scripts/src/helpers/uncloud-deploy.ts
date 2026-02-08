@@ -2,8 +2,7 @@
  * generic uncloud deployment helpers for ci/cd
  */
 
-import { existsSync } from 'node:fs'
-import { mkdir, writeFile } from 'node:fs/promises'
+import fs from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 
@@ -91,7 +90,7 @@ export async function setupSSHKey() {
   const sshKeyValue = process.env.DEPLOY_SSH_KEY
 
   // check if it's a path to an existing file (local usage) or key content (CI usage)
-  if (existsSync(sshKeyValue)) {
+  if (fs.existsSync(sshKeyValue)) {
     console.info(`  using ssh key from: ${sshKeyValue}`)
     return
   }
@@ -101,8 +100,8 @@ export async function setupSSHKey() {
   const sshDir = join(homedir(), '.ssh')
   const keyPath = join(sshDir, 'uncloud_deploy')
 
-  if (!existsSync(sshDir)) {
-    await mkdir(sshDir, { recursive: true })
+  if (!fs.existsSync(sshDir)) {
+    await fs.promises.mkdir(sshDir, { recursive: true })
   }
 
   // decode base64-encoded keys (github secrets often store keys as base64)
@@ -120,7 +119,7 @@ export async function setupSSHKey() {
     keyContent += '\n'
   }
 
-  await writeFile(keyPath, keyContent, { mode: 0o600 })
+  await fs.promises.writeFile(keyPath, keyContent, { mode: 0o600 })
 
   // add host to known_hosts
   if (process.env.DEPLOY_HOST) {

@@ -1,4 +1,4 @@
-import { writeFileSync } from 'node:fs'
+import fs from 'node:fs'
 
 import { sleep } from '@take-out/helpers'
 
@@ -66,7 +66,7 @@ packages:
 `
 
   const cloudInitPath = `${process.cwd()}/.cloud-init.yml`
-  writeFileSync(cloudInitPath, cloudInit)
+  fs.writeFileSync(cloudInitPath, cloudInit)
 
   try {
     await run(

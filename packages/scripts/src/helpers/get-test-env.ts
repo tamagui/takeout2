@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs'
+import fs from 'node:fs'
 import { join } from 'node:path'
 
 import { loadEnv } from './env-load'
@@ -12,7 +12,7 @@ export async function getTestEnv() {
   const envPath =
     ['src/constants/env-server', 'src/server/env-server']
       .map((p) => join(process.cwd(), p))
-      .find((p) => existsSync(p + '.ts')) ||
+      .find((p) => fs.existsSync(p + '.ts')) ||
     join(process.cwd(), 'src/constants/env-server')
   const serverEnvFallback = await import(envPath)
 

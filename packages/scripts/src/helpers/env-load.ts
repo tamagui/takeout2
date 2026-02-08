@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs'
+import fs from 'node:fs'
 import { join } from 'node:path'
 
 import { loadEnv as vxrnLoadEnv } from 'vxrn/loadEnv'
@@ -31,7 +31,7 @@ function resolveEnvServerPath(): string {
   const candidates = ['src/constants/env-server.ts', 'src/server/env-server.ts']
   for (const candidate of candidates) {
     const full = join(process.cwd(), candidate)
-    if (existsSync(full)) {
+    if (fs.existsSync(full)) {
       return full
     }
   }

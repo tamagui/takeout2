@@ -1,11 +1,12 @@
 import { dropAllDatabases } from '@rocicorp/zero'
 import { useZero } from '@rocicorp/zero/react'
 import { isBrowser } from '@tamagui/constants'
-import { createZeroClient } from 'on-zero'
+import { createZeroClient, query } from 'on-zero'
 import { memo, useEffect, type ReactNode } from 'react'
 
 import { ZERO_SERVER_URL } from '~/constants/urls'
 import * as groupedQueries from '~/data/generated/groupedQueries'
+import { userByUsername } from '~/data/queries/user'
 import { models } from '~/data/generated/models'
 import { schema } from '~/data/schema'
 import { useAuth } from '~/features/auth/client/authClient'
@@ -69,6 +70,8 @@ const ZeroDevTools = memo(() => {
 
   useEffect(() => {
     setDevGlobal(zero, 'zero')
+    setDevGlobal(query, 'query')
+    setDevGlobal(userByUsername, 'userByUsername')
     setDevGlobal(dropAllDatabases, 'dropAllDatabases')
   }, [zero])
 

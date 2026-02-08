@@ -1,5 +1,5 @@
 import { resolveQuery, type PlainQueryFn } from './resolveQuery'
-import { getRunner, type RunOptions } from './zeroRunner'
+import { getRunner } from './zeroRunner'
 
 import type {
   AnyQueryRegistry,
@@ -23,8 +23,9 @@ function getCustomQueries(): AnyQueryRegistry {
   return customQueriesRef
 }
 
-// run a query once and return results (non-reactive)
-export function run<
+// execute a query once (non-reactive counterpart to useQuery)
+// defaults to 'complete' (fetches from server), pass 'cached' for local-only
+export function query<
   Schema extends ZeroSchema,
   TArg,
   TTable extends keyof Schema['tables'] & string,
@@ -32,31 +33,32 @@ export function run<
 >(
   fn: PlainQueryFn<TArg, Query<TTable, Schema, TReturn>>,
   params: TArg,
-  options?: RunOptions
+  mode?: 'cached'
 ): Promise<HumanReadable<TReturn>>
 
-export function run<
+export function query<
   Schema extends ZeroSchema,
   TTable extends keyof Schema['tables'] & string,
   TReturn,
 >(
   fn: PlainQueryFn<void, Query<TTable, Schema, TReturn>>,
-  options?: RunOptions
+  mode?: 'cached'
 ): Promise<HumanReadable<TReturn>>
 
-export function run(
-  fnArg: any,
-  paramsOrOptions?: any,
-  optionsArg?: RunOptions
-): Promise<any> {
-  const hasParams =
-    optionsArg !== undefined || (paramsOrOptions && !('type' in paramsOrOptions))
-  const params = hasParams ? paramsOrOptions : undefined
-  const options = hasParams ? optionsArg : paramsOrOptions
+export function query(fnArg: any, paramsOrMode?: any, modeArg?: 'cached'): Promise<any> {
+  const hasParams = modeArg !== undefined || (paramsOrMode && paramsOrMode !== 'cached')
+  const params = hasParams ? paramsOrMode : undefined
+  const mode = hasParams ? modeArg : paramsOrMode
 
   const customQueries = getCustomQueries()
   const queryRequest = resolveQuery({ customQueries, fn: fnArg, params })
   const runner = getRunner()
 
-  return runner(queryRequest as any, options)
+  const out = runner(queryRequest as any, {
+    type: mode === 'cached' ? 'unknown' : 'complete',
+  })
+
+  console.log('wtf', runner, out, queryRequest, customQueries, fnArg)
+
+  return out
 }

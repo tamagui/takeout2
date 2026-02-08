@@ -24,8 +24,8 @@ function getCustomQueries(): AnyQueryRegistry {
 }
 
 // execute a query once (non-reactive counterpart to useQuery)
-// defaults to 'complete' (fetches from server), pass 'cached' for local-only
-export function query<
+// defaults to 'complete' (fetches from server), pass 'complete' to have client fetch from server
+export function run<
   Schema extends ZeroSchema,
   TArg,
   TTable extends keyof Schema['tables'] & string,
@@ -33,20 +33,20 @@ export function query<
 >(
   fn: PlainQueryFn<TArg, Query<TTable, Schema, TReturn>>,
   params: TArg,
-  mode?: 'cached'
+  mode?: 'complete'
 ): Promise<HumanReadable<TReturn>>
 
-export function query<
+export function run<
   Schema extends ZeroSchema,
   TTable extends keyof Schema['tables'] & string,
   TReturn,
 >(
   fn: PlainQueryFn<void, Query<TTable, Schema, TReturn>>,
-  mode?: 'cached'
+  mode?: 'complete'
 ): Promise<HumanReadable<TReturn>>
 
-export function query(fnArg: any, paramsOrMode?: any, modeArg?: 'cached'): Promise<any> {
-  const hasParams = modeArg !== undefined || (paramsOrMode && paramsOrMode !== 'cached')
+export function run(fnArg: any, paramsOrMode?: any, modeArg?: 'complete'): Promise<any> {
+  const hasParams = modeArg !== undefined || (paramsOrMode && paramsOrMode !== 'complete')
   const params = hasParams ? paramsOrMode : undefined
   const mode = hasParams ? modeArg : paramsOrMode
 
@@ -54,11 +54,14 @@ export function query(fnArg: any, paramsOrMode?: any, modeArg?: 'cached'): Promi
   const queryRequest = resolveQuery({ customQueries, fn: fnArg, params })
   const runner = getRunner()
 
-  const out = runner(queryRequest as any, {
-    type: mode === 'cached' ? 'unknown' : 'complete',
-  })
-
-  console.log('wtf', runner, out, queryRequest, customQueries, fnArg)
+  const out = runner(
+    queryRequest as any,
+    mode === 'complete'
+      ? {
+          type: 'complete',
+        }
+      : undefined
+  )
 
   return out
 }

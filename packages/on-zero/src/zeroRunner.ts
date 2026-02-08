@@ -1,3 +1,5 @@
+import { isInZeroMutation, mutatorContext } from './helpers/mutatorContext'
+
 import type {
   HumanReadable,
   Query,
@@ -19,10 +21,15 @@ export function setRunner(r: ZeroRunner) {
 }
 
 export function getRunner(): ZeroRunner {
+  if (isInZeroMutation()) {
+    return mutatorContext().tx.run
+  }
+
   if (!runner) {
     throw new Error(
       'Zero runner not initialized. Ensure ProvideZero is mounted (client) or createZeroServer is called (server).'
     )
   }
+
   return runner
 }

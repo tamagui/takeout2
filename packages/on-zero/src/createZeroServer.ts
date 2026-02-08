@@ -9,7 +9,7 @@ import { createPermissions } from './createPermissions'
 import { createMutators } from './helpers/createMutators'
 import { isInZeroMutation, mutatorContext } from './helpers/mutatorContext'
 import { getMutationsPermissions } from './modelRegistry'
-import { setCustomQueries } from './query'
+import { setCustomQueries } from './run'
 import { getZQL, setAuthData, setSchema } from './state'
 import { setRunner } from './zeroRunner'
 

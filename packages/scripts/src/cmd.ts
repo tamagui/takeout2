@@ -5,7 +5,7 @@ type CmdContext = {
   colors: typeof import('picocolors')
   prompt: typeof import('@clack/prompts')
   run: typeof import('./helpers/run').run
-  fs: typeof import('node:fs/promises')
+  fs: typeof import('node:fs')
   path: typeof import('node:path')
   os: typeof import('node:os')
 }
@@ -56,7 +56,7 @@ function createCmd(description: string) {
           import(`@clack/prompts`),
           import(`./helpers/run`),
           import(`./helpers/args`),
-          import(`node:fs/promises`),
+          import(`node:fs`),
           import(`node:path`),
           import(`node:os`),
         ])

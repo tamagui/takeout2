@@ -108,7 +108,9 @@ await cmd`Sync env variables to GitHub repository secrets`.run(
     // load package.json env section (for .env.production vars)
     if (!iosOnly) {
       const packagePath = path.resolve(cwd, 'package.json')
-      const packageJson: PackageJson = JSON.parse(await fs.promises.readFile(packagePath, 'utf-8'))
+      const packageJson: PackageJson = JSON.parse(
+        await fs.promises.readFile(packagePath, 'utf-8')
+      )
 
       if (!packageJson.env) {
         clack.cancel('No env section found in package.json')

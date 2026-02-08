@@ -103,9 +103,10 @@ await cmd`upgrade packages by name or pattern`
               // simple glob pattern like "packages/*"
               const workspaceDir = normalizedWorkspace.replace(/\/\*$/, '')
               if (fs.existsSync(path.join(dir, workspaceDir))) {
-                const subdirs = fs.readdirSync(path.join(dir, workspaceDir), {
-                  withFileTypes: true,
-                })
+                const subdirs = fs
+                  .readdirSync(path.join(dir, workspaceDir), {
+                    withFileTypes: true,
+                  })
                   .filter((dirent) => dirent.isDirectory())
                   .map((dirent) => path.join(dir, workspaceDir, dirent.name))
 

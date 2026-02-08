@@ -64,7 +64,9 @@ await cmd`Reset migrations to a fresh state from current schema files`.run(
     console.info('3. Renaming to 0001_initial_schema...')
 
     // find the generated file (drizzle uses 0000_random_name.sql)
-    const newFiles = (await fs.promises.readdir(migrationsDir)).filter((f) => f.endsWith('.sql'))
+    const newFiles = (await fs.promises.readdir(migrationsDir)).filter((f) =>
+      f.endsWith('.sql')
+    )
     if (newFiles.length !== 1) {
       console.error('Expected exactly one SQL file, found:', newFiles)
       process.exit(1)
@@ -115,7 +117,10 @@ export async function up(client: PoolClient) {
 }
 `
 
-    await fs.promises.writeFile(path.join(migrationsDir, '0001_initial_schema.ts'), tsWrapper)
+    await fs.promises.writeFile(
+      path.join(migrationsDir, '0001_initial_schema.ts'),
+      tsWrapper
+    )
 
     console.info('\n✅ Done! Your migrations have been reset.')
     console.info('\nNext steps:')

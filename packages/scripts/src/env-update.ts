@@ -6,7 +6,6 @@ import { cmd } from './cmd'
 
 await cmd`sync environment variables from package.json to CI and server configs`.run(
   async () => {
-
     const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf-8'))
     const envVars = packageJson.env as Record<string, boolean | string>
 

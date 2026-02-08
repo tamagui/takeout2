@@ -120,13 +120,13 @@ ${pathsCode}
       const componentCode = generateIconComponent(iconData)
 
       const iconsDir = path.join(process.cwd(), 'src/interface/icons/phosphor')
-      await fs.mkdir(iconsDir, { recursive: true })
+      await fs.promises.mkdir(iconsDir, { recursive: true })
 
       const pascalName = name.charAt(0).toUpperCase() + name.slice(1)
       const filename = `${pascalName}Icon.tsx`
       const filepath = path.join(iconsDir, filename)
 
-      await fs.writeFile(filepath, componentCode, 'utf-8')
+      await fs.promises.writeFile(filepath, componentCode, 'utf-8')
 
       console.info(`✓ Created ${filename}`)
       console.info(

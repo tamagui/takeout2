@@ -3,8 +3,6 @@
 import { cmd } from '@take-out/cli'
 
 await cmd`Setup iOS release secrets for App Store deployment`.run(async ({ prompt, colors, fs, os, path }) => {
-  const { existsSync } = await import('node:fs')
-
   const clack = prompt
   const pc = colors
 
@@ -298,7 +296,7 @@ ${pc.yellow('Note:')} Add .env.ios to .gitignore (it contains sensitive data)`,
     return `${key}=${value}`
   }).join('\n')
 
-  await fs.writeFile(secretsFilePath, envContent + '\n')
+  await fs.promises.writeFile(secretsFilePath, envContent + '\n')
   spinner.stop('Secrets saved to .env.ios')
 
   // ensure gitignore
@@ -330,11 +328,11 @@ ${pc.yellow('Note:')} Add .env.ios to .gitignore (it contains sensitive data)`,
   }
 
   async function loadSecretsFile(filePath: string): Promise<Record<string, string>> {
-    if (!existsSync(filePath)) {
+    if (!fs.existsSync(filePath)) {
       return {}
     }
 
-    const content = await fs.readFile(filePath, 'utf-8')
+    const content = await fs.promises.readFile(filePath, 'utf-8')
     const secrets: Record<string, string> = {}
     const lines = content.split('\n')
     let currentKey: string | null = null
@@ -462,7 +460,7 @@ ${pc.yellow('Note:')} Add .env.ios to .gitignore (it contains sensitive data)`,
         await Bun.write(tmpFile, value)
         await Bun.$`gh secret set ${key} < ${tmpFile}`.quiet()
         // cross-platform file removal
-        await fs.unlink(tmpFile).catch(() => {})
+        await fs.promises.unlink(tmpFile).catch(() => {})
         results.push({ key, success: true })
       } catch (error) {
         results.push({
@@ -564,14 +562,14 @@ ${pc.yellow('Note:')} Add .env.ios to .gitignore (it contains sensitive data)`,
   async function ensureGitignore(cwd: string, filename: string) {
     const gitignorePath = path.resolve(cwd, '.gitignore')
 
-    if (!existsSync(gitignorePath)) {
+    if (!fs.existsSync(gitignorePath)) {
       return
     }
 
-    const content = await fs.readFile(gitignorePath, 'utf-8')
+    const content = await fs.promises.readFile(gitignorePath, 'utf-8')
 
     if (!content.includes(filename)) {
-      await fs.writeFile(gitignorePath, content.trimEnd() + '\n' + filename + '\n')
+      await fs.promises.writeFile(gitignorePath, content.trimEnd() + '\n' + filename + '\n')
       clack.log.info(`Added ${filename} to .gitignore`)
     }
   }

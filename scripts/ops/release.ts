@@ -7,7 +7,6 @@ await cmd`Run full CI/CD pipeline with builds, tests, and deployment`
     '--skip-checks boolean --skip-tests boolean --skip-build boolean --dev boolean --skip-web-build boolean --skip-deploy boolean --dry-run boolean --redeploy boolean'
   )
   .run(async ({ args, run, fs, os, path }) => {
-    const { existsSync } = await import('node:fs')
     const { sleep, time } = await import('@take-out/helpers')
     const { checkPort } = await import('@take-out/scripts/helpers/check-port')
     const { getTestEnv } = await import('@take-out/scripts/helpers/get-test-env')
@@ -340,14 +339,14 @@ await cmd`Run full CI/CD pipeline with builds, tests, and deployment`
 
     async function ensureAwsCredentials() {
       const awsDir = path.join(os.homedir(), '.aws')
-      if (!existsSync(awsDir)) {
-        await fs.mkdir(awsDir, { recursive: true })
-        await fs.writeFile(
+      if (!fs.existsSync(awsDir)) {
+        await fs.promises.mkdir(awsDir, { recursive: true })
+        await fs.promises.writeFile(
           path.join(awsDir, 'config'),
           `[profile tamagui-prod]
 region = us-west-1`
         )
-        await fs.writeFile(
+        await fs.promises.writeFile(
           path.join(awsDir, 'credentials'),
           `[tamagui-prod]
 aws_access_key_id=${process.env.AWS_ACCESS_KEY_ID}

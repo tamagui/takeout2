@@ -4,7 +4,6 @@ import { cmd } from '@take-out/cli'
 
 await cmd`Sync env variables to GitHub repository secrets`.run(
   async ({ prompt, colors, fs, os, path }) => {
-    const { existsSync } = await import('node:fs')
     const { parseEnvFile } = await import('@take-out/scripts/helpers/parse-env-file')
 
     const pc = colors
@@ -53,14 +52,14 @@ await cmd`Sync env variables to GitHub repository secrets`.run(
 
     // load .env.production (unless --ios only)
     const envPath = path.resolve(cwd, '.env.production')
-    if (!iosOnly && !existsSync(envPath)) {
+    if (!iosOnly && !fs.existsSync(envPath)) {
       clack.cancel('.env.production not found. Run: bun tko onboard')
       process.exit(1)
     }
 
     // parse .env.production (supports multi-line values like PEM keys)
-    if (!iosOnly && existsSync(envPath)) {
-      const envContent = await fs.readFile(envPath, 'utf-8')
+    if (!iosOnly && fs.existsSync(envPath)) {
+      const envContent = await fs.promises.readFile(envPath, 'utf-8')
       const parsed = parseEnvFile(envContent)
       for (const [key, value] of Object.entries(parsed)) {
         process.env[key] = value
@@ -70,8 +69,8 @@ await cmd`Sync env variables to GitHub repository secrets`.run(
     // load .env.ios for iOS secrets
     const iosEnvPath = path.resolve(cwd, '.env.ios')
     let iosSecrets: Record<string, string> = {}
-    if (existsSync(iosEnvPath)) {
-      const iosContent = await fs.readFile(iosEnvPath, 'utf-8')
+    if (fs.existsSync(iosEnvPath)) {
+      const iosContent = await fs.promises.readFile(iosEnvPath, 'utf-8')
       iosSecrets = parseEnvFile(iosContent, { allowedKeys: IOS_SECRETS })
     }
 
@@ -109,7 +108,7 @@ await cmd`Sync env variables to GitHub repository secrets`.run(
     // load package.json env section (for .env.production vars)
     if (!iosOnly) {
       const packagePath = path.resolve(cwd, 'package.json')
-      const packageJson: PackageJson = JSON.parse(await fs.readFile(packagePath, 'utf-8'))
+      const packageJson: PackageJson = JSON.parse(await fs.promises.readFile(packagePath, 'utf-8'))
 
       if (!packageJson.env) {
         clack.cancel('No env section found in package.json')
@@ -136,7 +135,7 @@ await cmd`Sync env variables to GitHub repository secrets`.run(
         // for DEPLOY_SSH_KEY, read the file content if it's a path
         if (key === 'DEPLOY_SSH_KEY' && value.startsWith('/')) {
           try {
-            const keyContent = await fs.readFile(value, 'utf-8')
+            const keyContent = await fs.promises.readFile(value, 'utf-8')
             value = keyContent
             console.info(pc.gray(`  reading ssh key from: ${process.env[key]}`))
           } catch (error) {
@@ -325,7 +324,7 @@ await cmd`Sync env variables to GitHub repository secrets`.run(
         await Bun.write(tmpFile, value)
         await Bun.$`gh secret set ${key} ${repoFlag ? repoFlag.split(' ') : []} < ${tmpFile}`.quiet()
         // cross-platform file removal
-        await fs.unlink(tmpFile).catch(() => {})
+        await fs.promises.unlink(tmpFile).catch(() => {})
         results.push({ key, success: true })
       } catch (error) {
         results.push({

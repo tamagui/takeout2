@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "chrome": {
+      "command": "./node_modules/.bin/chrome-devtools-mcp"
+    },
+    "XcodeBuildMCP": {
+      "command": "./node_modules/.bin/xcodebuildmcp"
+    }
+  }
+}

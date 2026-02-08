@@ -18,6 +18,7 @@ import type {
   AuthData,
   GenericModels,
   GetZeroMutators,
+  QueryBuilder,
   Transaction,
 } from './types'
 import type {
@@ -207,10 +208,10 @@ export function createZeroServer<
   }
 
   function query<R>(
-    cb: (q: Transaction['query']) => Query<any, Schema, R>
+    cb: (q: QueryBuilder) => Query<any, Schema, R>
   ): Promise<HumanReadable<R>> {
     return transaction(async (tx) => {
-      return tx.run(cb(tx.query))
+      return tx.run(cb(getZQL()))
     }) as any
   }
 

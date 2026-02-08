@@ -17,10 +17,10 @@ The easiest way to run the full test suite is through the CI command:
 
 ```bash
 # full pipeline: backend, unit tests, build, integration tests
-bun ops ci --dry-run
+bun ops release --dry-run
 
 # faster: uses dev server instead of production build
-bun ops ci --dry-run --dev
+bun ops release --dry-run --dev
 ```
 
 This handles everything automatically - no manual setup needed.
@@ -343,20 +343,20 @@ end-to-end:
 
 ```bash
 # run the full CI setup except for deploying at the end
-bun ops ci --dry-run
+bun ops release --dry-run
 
 # or equivalently
-bun ops ci --skip-deploy
+bun ops release --skip-deploy
 ```
 
 ### Running Tests with Different Configurations
 
 ```bash
 # skip tests, only run checks and build
-bun ops ci --skip-tests --dry-run
+bun ops release --skip-tests --dry-run
 
 # faster: use dev server instead of production build
-bun ops ci --dry-run --dev
+bun ops release --dry-run --dev
 
 # just run integration tests in CI mode (requires backend + frontend already running)
 CI=true bun test:integration

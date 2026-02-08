@@ -1,3 +1,5 @@
+import { globalValue } from '@take-out/helpers'
+
 import { isServer } from './constants'
 import { getQueryOrMutatorAuthData } from './helpers/getQueryOrMutatorAuthData'
 
@@ -61,8 +63,15 @@ export function where<Table extends TableName, Builder extends Where<Table>>(
 
 // permissions where:
 
-const WhereTableNameMap = new WeakMap<Where, TableName>()
-const WhereRawBuilderMap = new WeakMap<Where, Where>()
+const WhereTableNameMap = globalValue(
+  `on-zero:where-name`,
+  () => new WeakMap<Where, TableName>()
+)
+
+const WhereRawBuilderMap = globalValue(
+  `on-zero:where-raw`,
+  () => new WeakMap<Where, Where>()
+)
 
 export function getWhereTableName(where: Where) {
   return WhereTableNameMap.get(where)

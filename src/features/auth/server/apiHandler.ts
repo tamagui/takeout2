@@ -15,8 +15,6 @@ export function authAPIHandler(method: 'GET' | 'POST') {
 
       // user already exists, auto sign-in instead
       if (res.status === 422) {
-        console.info(`Sign-up attempt for existing email: ${body.email}`)
-
         const signInUrl = url.toString().replace('/sign-up/email', '/sign-in/email')
         const signInReq = new Request(signInUrl, {
           method: 'POST',
@@ -28,19 +26,12 @@ export function authAPIHandler(method: 'GET' | 'POST') {
         })
 
         const signInRes = await authServer.handler(signInReq)
-        console.info(
-          `[auth] Auto sign-in for existing user ${signInRes.status}`,
-          signInUrl
-        )
-
         if (process.env.DEBUG || signInRes.status >= 400) {
           prettyPrintResponse(signInRes)
         }
 
         return signInRes
       }
-
-      console.info(`[auth] ${method} ${res.status}`, req.url)
 
       if (process.env.DEBUG || res.status >= 400) {
         prettyPrintResponse(res)

@@ -3,51 +3,61 @@ title: Conventions
 description: Code conventions and patterns used in this codebase
 ---
 
-This guide covers the conventions and patterns used in this codebase to keep things consistent and maintainable.
+This guide covers the conventions and patterns used in this codebase to keep
+things consistent and maintainable.
 
 ## Feature Directory Structure
 
-Features live in `src/features/` and follow a flat-first approach. Only add subfolders when navigating becomes painful.
+Features live in `src/features/` and follow a flat-first approach. Only add
+subfolders when navigating becomes painful.
 
 ### Guidelines
 
-| File Count | Structure |
-|------------|-----------|
-| ≤ 8 files | Keep flat |
+| File Count | Structure                                      |
+| ---------- | ---------------------------------------------- |
+| ≤ 8 files  | Keep flat                                      |
 | 9-15 files | Consider subfolders if natural groupings exist |
-| > 15 files | Likely needs `ui/`, `hooks/`, `server/`, etc. |
+| > 15 files | Likely needs `ui/`, `hooks/`, `server/`, etc.  |
 
 ### When to Add Subfolders
 
 Add structure only when you have clear logical groupings:
 
-<RouteTree routes={[
-  { name: 'features/auth/', children: [
-    { name: 'client/', description: 'client-side utilities' },
-    { name: 'server/', description: 'server-side logic' },
-    { name: 'ui/', description: 'React components' },
-    { name: 'constants.ts' },
-    { name: 'types.ts' },
-    { name: 'useLogout.ts' },
-  ]},
-]} />
+<RouteTree
+  routes={[
+    {
+      name: 'features/auth/',
+      children: [
+        { name: 'client/', description: 'client-side utilities' },
+        { name: 'server/', description: 'server-side logic' },
+        { name: 'ui/', description: 'React components' },
+        { name: 'constants.ts' },
+        { name: 'types.ts' },
+        { name: 'useLogout.ts' },
+      ],
+    },
+  ]}
+/>
 
 Small features stay flat:
 
-<RouteTree routes={[
-  { name: 'features/theme/', children: [
-    { name: 'useIsDark.ts' },
-  ]},
-]} />
+<RouteTree
+  routes={[{ name: 'features/theme/', children: [{ name: 'useIsDark.ts' }] }]}
+/>
 
-<RouteTree routes={[
-  { name: 'features/upload/', children: [
-    { name: 'upload.ts' },
-    { name: 'uploadDataUrl.ts' },
-    { name: 's3client.ts' },
-    { name: 'types.ts' },
-  ]},
-]} />
+<RouteTree
+  routes={[
+    {
+      name: 'features/upload/',
+      children: [
+        { name: 'upload.ts' },
+        { name: 'uploadDataUrl.ts' },
+        { name: 's3client.ts' },
+        { name: 'types.ts' },
+      ],
+    },
+  ]}
+/>
 
 ## Code Style
 
@@ -106,8 +116,8 @@ const users = await db.query.users.findMany()
 ### Exports
 
 Prefer named exports over default exports, especially in routes. React Refresh
-doesn't support default exports, so named exports ensure HMR works properly.
-One uses the last export of a file as the page component when there's no default
+doesn't support default exports, so named exports ensure HMR works properly. One
+uses the last export of a file as the page component when there's no default
 export:
 
 ```tsx
@@ -133,4 +143,4 @@ To add new environment variables:
 After making changes, verify your work:
 
 - **Small changes:** `bun check:all`
-- **Larger changes:** `bun ops ci --dry-run`
+- **Larger changes:** `bun ops release --dry-run`

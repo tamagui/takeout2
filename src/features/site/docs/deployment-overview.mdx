@@ -41,8 +41,8 @@ defaults.
 
 ### Uncloud
 
-Self-hosted deployment to any VPS (DigitalOcean, Hetzner, etc.). Uses Docker
-and Caddy for zero-config SSL.
+Self-hosted deployment to any VPS (DigitalOcean, Hetzner, etc.). Uses Docker and
+Caddy for zero-config SSL.
 
 ### SST <ProBadge /> <WIPBadge />
 
@@ -52,15 +52,15 @@ auto-scaling. SST deployment is currently a work in progress.
 ## Deploying
 
 `bun onboard` walks you through choosing a platform and configuring your
-environment. Once set up, `bun ops ci` handles everything—building,
+environment. Once set up, `bun ops release` handles everything—building,
 testing, and deploying.
 
 ```bash
-bun ops ci
+bun ops release
 ```
 
-There are individual scripts for each step if you need them, but the ops ci command
-does it all.
+There are individual scripts for each step if you need them, but the ops release
+command does it all.
 
 ## Environment Configuration
 

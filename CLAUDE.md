@@ -22,7 +22,7 @@ even if you're just exploring for info, many of our skills with takeout-* are ju
 after completing work:
 
 - small changes: `bun check:all`
-- larger changes: `bun ops ci --dry-run`
+- larger changes: `bun ops release --dry-run`
 
 ## testing
 
@@ -30,8 +30,8 @@ two test types - unit (vitest) and integration (playwright):
 
 ```bash
 bun test:unit                      # unit tests only (fast, no backend needed)
-bun ops ci --dry-run       # full test suite with backend setup
-bun ops ci --dry-run --dev # faster: uses dev server instead of build
+bun ops release --dry-run       # full test suite with backend setup
+bun ops release --dry-run --dev # faster: uses dev server instead of build
 ```
 
 integration tests require the full backend (docker) + frontend on port 8081.

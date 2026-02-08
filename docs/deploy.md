@@ -48,7 +48,7 @@ flags:
 
 ### 2. deployment platform abstraction
 
-**auto-detection** (scripts/ops/ci.ts)
+**auto-detection** (scripts/ops/release.ts)
 
 ```typescript
 async function detectDeploymentPlatform(): Promise<'sst' | 'uncloud'> {
@@ -252,7 +252,7 @@ uc scale web 3    # 3 replicas across cluster
 package.json                                  # env section
 .github/workflows/ci.yml                      # auto-generated env vars
 src/server/env-server.ts                      # auto-generated validation
-scripts/ops/ci.ts                             # deployment orchestration
+scripts/ops/release.ts                             # deployment orchestration
 scripts/uncloud/helpers/deploy.ts             # uncloud-specific logic
 scripts/env/sync-to-github.ts                 # github secrets sync (NEW)
 scripts/uncloud/deploy-prod.ts                # load from env vars
@@ -275,7 +275,7 @@ github secrets
     ↓
 github actions environment
     ↓
-scripts/ops/ci.ts
+scripts/ops/release.ts
     ↓
 scripts/uncloud/deploy-prod.ts
     ↓

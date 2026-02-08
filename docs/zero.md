@@ -44,6 +44,29 @@ useQuery(queryFn, { param1, param2 }, { enabled: true })
 const [data] = useQuery(userById, { userId }, { enabled: Boolean(userId) })
 ```
 
+### query() - non-reactive
+
+`query()` executes a query once and returns a promise (non-reactive counterpart
+to `useQuery`). defaults to `'complete'` which fetches from the server. pass
+`'cached'` for local-only:
+
+```ts
+import { query } from 'on-zero'
+import { allPosts } from '~/data/queries/post'
+
+// fetch from server (default)
+const posts = await query(allPosts, { limit: 10 })
+
+// local cache only
+const cached = await query(allPosts, { limit: 10 }, 'cached')
+
+// no params
+const posts = await query(allPosts)
+
+// no params, cached
+const posts = await query(allPosts, 'cached')
+```
+
 ## permissions
 
 permissions only execute server-side. use `serverWhere` for query permissions:
@@ -428,6 +451,6 @@ Zero memory usage should increase with more workers (~50-100MB per worker).
 ## Resources
 
 - Zero docs: https://zero.rocicorp.dev
-- on-zero: packages/on-zero/readme.md
+- on-zero: packages/on-zero/
 - Models: src/data/models/
 - Queries: src/data/queries/

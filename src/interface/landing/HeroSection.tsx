@@ -194,7 +194,7 @@ const steps: CommandStep[] = [
     ],
   },
   {
-    command: 'bun ops ci',
+    command: 'bun ops release',
     output: [
       '  Building for production...',
       '  Running migrations...',

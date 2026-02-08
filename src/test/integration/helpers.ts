@@ -78,18 +78,3 @@ export async function loginAsAdmin(page: Page, pathname = '/') {
     })
   }
 }
-
-export async function waitForZeroSync(page: Page, timeout = 5000) {
-  // wait for zero to be connected and synced
-  await page
-    .waitForFunction(
-      () => {
-        const statusEl = document.querySelector('[data-zero-status]')
-        return statusEl?.getAttribute('data-zero-status') === 'connected'
-      },
-      { timeout }
-    )
-    .catch(() => {
-      console.info('Zero status element not found, continuing anyway')
-    })
-}

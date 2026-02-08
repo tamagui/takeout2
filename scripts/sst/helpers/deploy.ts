@@ -2,8 +2,7 @@
  * SST deployment helpers for ci/cd
  */
 
-import { existsSync } from 'node:fs'
-import { mkdir, writeFile } from 'node:fs/promises'
+import fs from 'node:fs'
 import { join } from 'node:path'
 
 import {
@@ -124,7 +123,7 @@ export async function buildAndPushDockerImage() {
 
 export async function loadLastDockerImage(): Promise<string | null> {
   const filePath = join(process.cwd(), 'dist', '.last-docker-image')
-  if (!existsSync(filePath)) {
+  if (!fs.existsSync(filePath)) {
     return null
   }
   try {
@@ -191,10 +190,10 @@ async function getAwsAccountId(): Promise<string> {
 
 async function saveLastDockerImage(imageUri: string): Promise<void> {
   const distDir = join(process.cwd(), 'dist')
-  if (!existsSync(distDir)) {
-    await mkdir(distDir, { recursive: true })
+  if (!fs.existsSync(distDir)) {
+    await fs.promises.mkdir(distDir, { recursive: true })
   }
   const filePath = join(distDir, '.last-docker-image')
-  await writeFile(filePath, imageUri, 'utf-8')
+  await fs.promises.writeFile(filePath, imageUri, 'utf-8')
   console.info(`Saved Docker image URI to ${filePath}`)
 }

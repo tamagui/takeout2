@@ -51,7 +51,7 @@ Monitors the deployment and exits when all services are healthy or on timeout.
   // try to load from .env.production if env vars not set (local use)
   if (!deployHost) {
     try {
-      const envContent = await fs.readFile(envFile, 'utf-8')
+      const envContent = await fs.promises.readFile(envFile, 'utf-8')
       envContent.split('\n').forEach((line) => {
         const [key, value] = line.split('=')
         if (key === 'DEPLOY_HOST') deployHost = value?.trim()

@@ -3,7 +3,6 @@
 import { cmd } from '@take-out/cli'
 
 await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
-  const { existsSync } = await import('node:fs')
   const { config } = await import('dotenv')
 
   const { buildMigrations, buildWeb, buildDockerImage } = await import('./helpers/build')
@@ -13,7 +12,7 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
     await import('./helpers/uncloud')
 
   async function getZeroVersion(): Promise<string> {
-    const packageJson = JSON.parse(await fs.readFile('package.json', 'utf-8'))
+    const packageJson = JSON.parse(await fs.promises.readFile('package.json', 'utf-8'))
     return packageJson.dependencies?.['@rocicorp/zero']?.replace(/^[\^~]/, '') || ''
   }
 
@@ -24,7 +23,7 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
 
   // load .env.production if it exists (for local use)
   const envPath = path.resolve(process.cwd(), '.env.production')
-  if (existsSync(envPath)) {
+  if (fs.existsSync(envPath)) {
     config({ path: envPath, override: false })
   }
 
@@ -121,13 +120,13 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
     const resolvedCert = path.resolve(process.cwd(), certPath)
     const resolvedKey = path.resolve(process.cwd(), keyPath)
 
-    if (!existsSync(resolvedCert)) {
+    if (!fs.existsSync(resolvedCert)) {
       console.warn(colors.yellow(`⚠️  origin ca cert not found: ${resolvedCert}`))
       console.warn(colors.gray("   falling back to let's encrypt"))
       return
     }
 
-    if (!existsSync(resolvedKey)) {
+    if (!fs.existsSync(resolvedKey)) {
       console.warn(colors.yellow(`⚠️  origin ca key not found: ${resolvedKey}`))
       console.warn(colors.gray("   falling back to let's encrypt"))
       return
@@ -210,7 +209,7 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
       '',
     ].join('\n')
 
-    await fs.writeFile(caddyfilePath, caddyConfig)
+    await fs.promises.writeFile(caddyfilePath, caddyConfig)
     console.info(colors.gray(`   generated caddyfile for: ${domains.join(', ')}`))
 
     console.info('\n🔄 deploying caddy with custom tls config...')

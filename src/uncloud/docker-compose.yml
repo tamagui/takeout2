@@ -33,7 +33,6 @@ x-app-env: &app-env
   ZERO_DOMAIN: ${ZERO_DOMAIN:-}
   ZERO_QUERY_FORWARD_COOKIES: ${ZERO_QUERY_FORWARD_COOKIES:-}
   ZERO_MUTATE_FORWARD_COOKIES: ${ZERO_MUTATE_FORWARD_COOKIES:-}
-  ZERO_VERSION: ${ZERO_VERSION:-}
   ZERO_NUM_SYNC_WORKERS: ${ZERO_NUM_SYNC_WORKERS:-}
   ZERO_CVR_MAX_CONNS: ${ZERO_CVR_MAX_CONNS:-}
   ZERO_UPSTREAM_MAX_CONNS: ${ZERO_UPSTREAM_MAX_CONNS:-}
@@ -82,7 +81,7 @@ services:
     command: ["node", "/app/src/database/migrate-dist.js"]
 
   zero:
-    image: "rocicorp/zero:${ZERO_VERSION:-0.25.12}"
+    image: "rocicorp/zero:${ZERO_VERSION:-error-run-bun-tko-run-sync-zero-version}"
     restart: always
     depends_on:
       - migrate

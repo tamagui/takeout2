@@ -164,6 +164,7 @@
     "@types/react": "~19.1.10",
     "@types/subset-font": "^2",
     "@typescript/native-preview": "7.0.0-dev.20251211.1",
+    "chrome-devtools-mcp": "^0.16.0",
     "dotenv": "^17.2.3",
     "drizzle-kit": "^0.30.5",
     "fs-extra": "^11.2.0",
@@ -180,7 +181,8 @@
     "typescript": "^5.9.3",
     "valibot": "^1.1.0",
     "vite": "^7.1.12",
-    "vitest": "^4.0.3"
+    "vitest": "^4.0.3",
+    "xcodebuildmcp": "1.15.1"
   },
   "reanimated": {
     "staticFeatureFlags": {
@@ -225,7 +227,6 @@
     "ZERO_DOMAIN": "",
     "ZERO_QUERY_FORWARD_COOKIES": "true",
     "ZERO_MUTATE_FORWARD_COOKIES": "true",
-    "ZERO_VERSION": "0.25.12",
     "ZERO_NUM_SYNC_WORKERS": "2",
     "ZERO_CVR_MAX_CONNS": "4",
     "ZERO_UPSTREAM_MAX_CONNS": "8",

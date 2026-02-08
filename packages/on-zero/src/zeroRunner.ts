@@ -22,7 +22,7 @@ export function setRunner(r: ZeroRunner) {
 
 export function getRunner(): ZeroRunner {
   if (isInZeroMutation()) {
-    return mutatorContext().tx.run
+    return (q, o) => mutatorContext().tx.run(q, o)
   }
 
   if (!runner) {

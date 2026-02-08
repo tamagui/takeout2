@@ -75,10 +75,13 @@ await cmd`sync environment variables from package.json to CI and server configs`
       }
 
       const envExports = Object.entries(envVars)
-        .map(
-          ([key, value]) =>
-            `export const ${key} = ensureEnv('${key}'${typeof value === 'string' ? `, ${JSON.stringify(value)}` : ''})`
-        )
+        .map(([key, value]) => {
+          // $dep: values have no compile-time default — resolved into .env at runtime
+          if (typeof value === 'string' && value.startsWith('$dep:')) {
+            return `export const ${key} = ensureEnv('${key}')`
+          }
+          return `export const ${key} = ensureEnv('${key}'${typeof value === 'string' ? `, ${JSON.stringify(value)}` : ''})`
+        })
         .join('\n')
 
       const newEnvServer = envServer.replace(

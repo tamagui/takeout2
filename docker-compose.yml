@@ -44,24 +44,25 @@ services:
   zero:
     image: "rocicorp/zero:${ZERO_VERSION:-error-run-bun-tko-run-update-local-env}"
     depends_on:
-      - migrate
-      - pgdb
+      migrate:
+        condition: service_completed_successfully
+      pgdb:
+        condition: service_healthy
     volumes:
       - ./.docker/zero:/app
     working_dir: /app
+    env_file: .env
     extra_hosts:
       # This maps host.docker.internal to the host gateway IP on Linux
       # On Mac/Windows Docker Desktop, this is already available
       - "host.docker.internal:host-gateway"
     environment:
-      - ZERO_ADMIN_PASSWORD=dev-mode
+      - ZERO_ADMIN_PASSWORD=dev
       - ZERO_LOG_LEVEL=${ZERO_LOG_LEVEL:-info}
       # These URLs are provided via environment variables
       # In CI, they'll be overridden with the correct Docker host IP
       - ZERO_MUTATE_URL=${ZERO_MUTATE_URL:-http://host.docker.internal:8081/api/zero/push}
       - ZERO_QUERY_URL=${ZERO_QUERY_URL:-http://host.docker.internal:8081/api/zero/pull}
-      - ZERO_MUTATE_FORWARD_COOKIES=true
-      - ZERO_QUERY_FORWARD_COOKIES=true
       - ZERO_UPSTREAM_DB=postgresql://user:password@pgdb:5432/postgres
       - ZERO_CVR_DB=postgresql://user:password@pgdb:5432/zero_cvr
       - ZERO_CHANGE_DB=postgresql://user:password@pgdb:5432/zero_cdb

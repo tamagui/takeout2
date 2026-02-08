@@ -3,10 +3,8 @@ import { join } from 'node:path'
 
 import { loadEnv } from './env-load'
 import { getDockerHost } from './get-docker-host'
-import { getZeroVersion } from './zero-get-version'
 
 export async function getTestEnv() {
-  const zeroVersion = getZeroVersion()
   const dockerHost = getDockerHost()
   const devEnv = await loadEnv('development')
   const envPath =
@@ -31,7 +29,6 @@ export async function getTestEnv() {
       ZERO_LOG_LEVEL: 'warn',
     }),
     DO_NOT_TRACK: '1',
-    ZERO_VERSION: zeroVersion,
     ZERO_MUTATE_URL: `http://${dockerHost}:${appPort}/api/zero/push`,
     ZERO_QUERY_URL: `http://${dockerHost}:${appPort}/api/zero/pull`,
     ZERO_UPSTREAM_DB: `${dockerDbBase}/postgres`,

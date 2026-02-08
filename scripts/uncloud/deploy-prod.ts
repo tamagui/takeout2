@@ -11,20 +11,19 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
   const { checkUncloudCLI, initUncloud, pushImage, deployStack, showStatus } =
     await import('./helpers/uncloud')
 
-  async function getZeroVersion(): Promise<string> {
-    const packageJson = JSON.parse(await fs.promises.readFile('package.json', 'utf-8'))
-    return packageJson.dependencies?.['@rocicorp/zero']?.replace(/^[\^~]/, '') || ''
-  }
-
   // parse args
   const args = process.argv.slice(2)
   const skipBuild = args.includes('--skip-build')
   const skipDocker = args.includes('--skip-docker')
 
-  // load .env.production if it exists (for local use)
+  // load .env.production if it exists (for local use), then .env for defaults
   const envPath = path.resolve(process.cwd(), '.env.production')
   if (fs.existsSync(envPath)) {
     config({ path: envPath, override: false })
+  }
+  const dotenvPath = path.resolve(process.cwd(), '.env')
+  if (fs.existsSync(dotenvPath)) {
+    config({ path: dotenvPath, override: false })
   }
 
   const DEPLOY_HOST = process.env.DEPLOY_HOST
@@ -269,16 +268,13 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
   // spreads process.env so all vars are available, only derived db urls need explicit override
   console.info('\n📝 processing compose file with production env...\n')
   const processedCompose = 'src/uncloud/docker-compose.processed.yml'
-  const zeroVersion = await getZeroVersion()
-  console.info(colors.gray(`   zero version: ${zeroVersion}`))
+  console.info(colors.gray(`   zero version: ${process.env.ZERO_VERSION}`))
   processComposeEnv('src/uncloud/docker-compose.yml', processedCompose, {
     ...(process.env as Record<string, string | undefined>),
     // derived zero database urls from DEPLOY_DB
     ZERO_UPSTREAM_DB,
     ZERO_CVR_DB,
     ZERO_CHANGE_DB,
-    // always use zero version from package.json
-    ZERO_VERSION: zeroVersion,
   })
 
   // deploy without pgdb profile since using external database

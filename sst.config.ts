@@ -20,7 +20,6 @@ export default $config({
   },
 
   async run() {
-    const { readFileSync } = await import('node:fs')
     const { execSync } = await import('node:child_process')
     const { loadEnv } = await import('@take-out/scripts/helpers/env-load')
     const { DOMAIN } = await import('./src/constants/app')
@@ -43,12 +42,10 @@ export default $config({
       ONE_SERVER_URL,
     }
 
-    const zeroVersion = JSON.parse(readFileSync('package.json', 'utf-8')).dependencies[
-      '@rocicorp/zero'
-    ]
+    const zeroVersion = process.env.ZERO_VERSION
 
     if (!zeroVersion) {
-      throw new Error(`No zero version found`)
+      throw new Error(`No zero version found — run: bun tko run update-local-env`)
     }
 
     const domain = DOMAIN
@@ -267,16 +264,10 @@ export default $config({
 
     const zeroEnv = {
       ...commonEnv,
-      ZERO_APP_ID: 'zero',
       ZERO_LOG_FORMAT: 'json',
       ZERO_REPLICA_FILE: 'sync-replica.db',
       ZERO_MUTATE_URL: $interpolate`${webApp.url}api/zero/push`,
       ZERO_QUERY_URL: $interpolate`${webApp.url}api/zero/pull`,
-      ZERO_MUTATE_FORWARD_COOKIES: 'true',
-      ZERO_QUERY_FORWARD_COOKIES: 'true',
-      // these two are X max mutations per Y ms, not too aggressive but enough to avoid more DDoS stuff:
-      ZERO_PER_USER_MUTATION_LIMIT_MAX: '20',
-      ZERO_PER_USER_MUTATION_LIMIT_WINDOW_MS: '10000',
       // getting  received unexpected error = request to http://169.254.169.254/computeMetadata/v1/instance failed, reason: connect EINVAL
       // due to zero telemtry gcp-metadata
       DO_NOT_TRACK: '1',

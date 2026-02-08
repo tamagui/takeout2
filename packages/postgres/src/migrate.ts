@@ -10,7 +10,7 @@
 
 import { basename } from 'node:path'
 
-import { getDBClient } from './helpers/getDBClient'
+import { getDBClient } from './getDBClient'
 
 import type { PoolClient } from 'pg'
 

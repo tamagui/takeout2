@@ -1,3 +1,5 @@
+// tables here are excluded from zero's replication publication (zero_takeout).
+// if you add/remove a table, also update PRIVATE_TABLES in migrate.ts
 import { pgTable } from 'drizzle-orm/pg-core'
 
 import type { InferSelectModel } from 'drizzle-orm'

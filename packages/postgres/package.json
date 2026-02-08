@@ -36,20 +36,10 @@
       "require": "./dist/cjs/index.cjs",
       "default": "./dist/esm/index.mjs"
     },
-    "./migrate": {
-      "types": "./src/migrate.ts",
-      "import": "./dist/esm/migrate.mjs",
-      "require": "./dist/cjs/migrate.cjs"
-    },
-    "./build": {
-      "types": "./src/build.ts",
-      "import": "./dist/esm/build.mjs",
-      "require": "./dist/cjs/build.cjs"
-    },
-    "./scripts/*": {
-      "types": "./src/scripts/*.ts",
-      "import": "./dist/esm/scripts/*.mjs",
-      "require": "./dist/cjs/scripts/*.cjs"
+    "./*": {
+      "types": "./src/*.ts",
+      "import": "./dist/esm/*.mjs",
+      "require": "./dist/cjs/*.cjs"
     }
   },
   "dependencies": {

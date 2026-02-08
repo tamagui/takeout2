@@ -1,4 +1,4 @@
-import { getDBClient, type GetDBClientOptions } from './helpers/getDBClient'
+import { getDBClient, type GetDBClientOptions } from './getDBClient'
 import { createSql, setDefaultPool } from './sql'
 
 import type { Pool } from 'pg'

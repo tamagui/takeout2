@@ -25,6 +25,7 @@ dist
 .env
 .env.production
 .env.hotupdater
+.env.bak
 
 # local env files
 .env.local

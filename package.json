@@ -206,11 +206,10 @@
     "APNS_KEY": "",
     "BETTER_AUTH_SECRET": true,
     "BETTER_AUTH_URL": true,
-    "CLOUDFLARE_API_TOKEN": "sst",
-    "CLOUDFLARE_R2_ACCESS_KEY": "minio",
-    "CLOUDFLARE_R2_ENDPOINT": "http://minio:9000",
-    "CLOUDFLARE_R2_PUBLIC_URL": "http://localhost:9200",
-    "CLOUDFLARE_R2_SECRET_KEY": "minio_password",
+    "CLOUDFLARE_R2_ACCESS_KEY": true,
+    "CLOUDFLARE_R2_ENDPOINT": true,
+    "CLOUDFLARE_R2_PUBLIC_URL": true,
+    "CLOUDFLARE_R2_SECRET_KEY": true,
     "DEPLOYMENT_PLATFORM": "uncloud",
     "DEPLOYMENT_ARCH": "linux/amd64",
     "DEPLOY_HOST": "",
@@ -227,11 +226,11 @@
     "ZERO_DOMAIN": "",
     "ZERO_QUERY_FORWARD_COOKIES": "true",
     "ZERO_MUTATE_FORWARD_COOKIES": "true",
-    "ZERO_NUM_SYNC_WORKERS": "2",
-    "ZERO_CVR_MAX_CONNS": "4",
     "ZERO_UPSTREAM_MAX_CONNS": "8",
     "ZERO_PER_USER_MUTATION_LIMIT_MAX": "30",
-    "ZERO_PER_USER_MUTATION_LIMIT_WINDOW_MS": "60000"
+    "ZERO_PER_USER_MUTATION_LIMIT_WINDOW_MS": "60000",
+    "ZERO_APP_PUBLICATIONS": "zero_takeout",
+    "ZERO_VERSION": "$dep:@rocicorp/zero"
   },
   "publishConfig": {
     "access": "public"

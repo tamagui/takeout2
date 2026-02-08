@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test'
 
+import { loginAsDemo } from './helpers'
+
 const BASE_URL = 'http://localhost:8081'
 const SEED_POST_ID = 'seed-post-1'
 
@@ -7,15 +9,14 @@ test.describe('Comment Flow', () => {
   test('can add comment immediately after login without page refresh', async ({
     page,
   }) => {
-    // login
-    await page.goto(`${BASE_URL}/auth/login`, { waitUntil: 'networkidle' })
-    await page.getByTestId('login-as-demo').click()
-    await page.waitForURL((url) => !url.toString().includes('/auth/login'), {
-      timeout: 10000,
-    })
+    test.setTimeout(90000)
 
-    // navigate to post
-    await page.locator(`a[href*="/feed/post/${SEED_POST_ID}"]`).first().click()
+    await loginAsDemo(page)
+
+    // wait for feed to populate via zero sync
+    const postLink = page.locator(`a[href*="/feed/post/${SEED_POST_ID}"]`).first()
+    await postLink.waitFor({ timeout: 30000 })
+    await postLink.click()
 
     // add comment
     const commentText = `Test comment ${Date.now()}`

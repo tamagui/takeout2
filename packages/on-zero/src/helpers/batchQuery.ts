@@ -2,45 +2,53 @@ import { sleep } from '@take-out/helpers'
 
 import type { Query, Row } from '@rocicorp/zero'
 
-export async function batchQuery<Q extends Query<any, any, any>, Item extends Row<Q>>(
-  q: Q,
-  mapper: (items: Item[]) => Promise<void>,
-  {
-    chunk,
-    pause = 0,
-    stopAfter = 100_000,
-  }: {
-    chunk: number
-    pause?: number
-    stopAfter?: number
-  } = { chunk: 20 }
-) {
-  let hasMore = true
-  let last: Item | null = null
-  let iterations = 0
+type ServerWithQuery = {
+  query: (cb: (q: any) => any) => Promise<any>
+}
 
-  while (hasMore) {
-    let query = q.limit(chunk)
+export function createBatchQuery(server: ServerWithQuery) {
+  return async function batchQuery<Q extends Query<any, any, any>, Item extends Row<Q>>(
+    buildQuery: (q: any) => Q,
+    mapper: (items: Item[]) => Promise<void>,
+    {
+      chunk,
+      pause = 0,
+      stopAfter = 100_000,
+    }: {
+      chunk: number
+      pause?: number
+      stopAfter?: number
+    } = { chunk: 20 }
+  ) {
+    let hasMore = true
+    let last: Item | null = null
+    let iterations = 0
 
-    if (last) {
-      query = query.start(last)
-    }
+    while (hasMore) {
+      const results = await server.query((q: any) => {
+        let query = buildQuery(q).limit(chunk)
 
-    const results = await query.run({ type: 'complete' })
+        if (last) {
+          query = query.start(last)
+        }
 
-    await mapper(results as Item[])
+        return query
+      })
 
-    if (results.length < chunk) {
-      hasMore = false
-    }
+      await mapper(results as Item[])
 
-    if (iterations > stopAfter) {
-      console.error(`[batchQuery] ‼️ stopping batch, ran ${stopAfter} chunks`)
-      break
-    }
+      if (results.length < chunk) {
+        hasMore = false
+      }
 
-    if (pause) {
-      await sleep(pause)
+      if (iterations > stopAfter) {
+        console.error(`[batchQuery] ‼️ stopping batch, ran ${stopAfter} chunks`)
+        break
+      }
+
+      if (pause) {
+        await sleep(pause)
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Where } from './types'
+import type { Where } from './types'
 
 const mutationsToPermissionsRegistry = new Map<string, Where>()
 

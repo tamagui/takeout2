@@ -24,7 +24,16 @@ function getCustomQueries(): AnyQueryRegistry {
 }
 
 // execute a query once (non-reactive counterpart to useQuery)
-// defaults to 'complete' (fetches from server), pass 'complete' to have client fetch from server
+// defaults to 'unknown', pass 'complete' to have client fetch from server
+export function run<
+  Schema extends ZeroSchema,
+  TTable extends keyof Schema['tables'] & string,
+  TReturn,
+>(
+  query: Query<TTable, Schema, TReturn>,
+  mode?: 'complete'
+): Promise<HumanReadable<TReturn>>
+
 export function run<
   Schema extends ZeroSchema,
   TArg,
@@ -45,23 +54,31 @@ export function run<
   mode?: 'complete'
 ): Promise<HumanReadable<TReturn>>
 
-export function run(fnArg: any, paramsOrMode?: any, modeArg?: 'complete'): Promise<any> {
+export function run(
+  queryOrFn: any,
+  paramsOrMode?: any,
+  modeArg?: 'complete'
+): Promise<any> {
   const hasParams = modeArg !== undefined || (paramsOrMode && paramsOrMode !== 'complete')
   const params = hasParams ? paramsOrMode : undefined
   const mode = hasParams ? modeArg : paramsOrMode
+  const runner = getRunner()
+  const options =
+    mode === 'complete'
+      ? ({
+          type: 'complete',
+        } as const)
+      : undefined
+
+  if (queryOrFn && queryOrFn['ast']) {
+    // inline zql - on client it only resolves against cache, on server fully
+    return runner(queryOrFn, options)
+  }
 
   const customQueries = getCustomQueries()
-  const queryRequest = resolveQuery({ customQueries, fn: fnArg, params })
-  const runner = getRunner()
+  const queryRequest = resolveQuery({ customQueries, fn: queryOrFn, params })
 
-  const out = runner(
-    queryRequest as any,
-    mode === 'complete'
-      ? {
-          type: 'complete',
-        }
-      : undefined
-  )
+  const out = runner(queryRequest as any, options)
 
   return out
 }

@@ -10,8 +10,8 @@ test.describe('query()', () => {
 
     // query() and userByUsername are exposed on window.Dev in dev mode
     const user = await page.evaluate(async () => {
-      const { query, userByUsername } = (window as any).Dev
-      return await query(userByUsername, { username: 'alexr' })
+      const { run, userByUsername } = (window as any).Dev
+      return await run(userByUsername, { username: 'alexr' })
     })
 
     expect(user).toBeTruthy()

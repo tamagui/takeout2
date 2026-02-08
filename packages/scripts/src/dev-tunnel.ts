@@ -1,11 +1,12 @@
 #!/usr/bin/env bun
 
+import fs from 'node:fs'
+
 import { cmd } from './cmd'
 
 await cmd`set up cloudflare dev tunnel for local development`
   .args('--port number')
   .run(async ({ args, run, os, path }) => {
-    const { existsSync, mkdirSync, readFileSync, writeFileSync } = await import('node:fs')
     const { handleProcessExit } = await import('./helpers/handleProcessExit')
 
     handleProcessExit()
@@ -30,7 +31,7 @@ await cmd`set up cloudflare dev tunnel for local development`
 
     async function ensureAuthenticated(): Promise<boolean> {
       const certPath = path.join(os.homedir(), '.cloudflared', 'cert.pem')
-      if (existsSync(certPath)) {
+      if (fs.existsSync(certPath)) {
         return true
       }
 
@@ -44,12 +45,12 @@ await cmd`set up cloudflare dev tunnel for local development`
     }
 
     async function getOrCreateTunnel(): Promise<string | null> {
-      if (!existsSync(TUNNEL_CONFIG_DIR)) {
-        mkdirSync(TUNNEL_CONFIG_DIR, { recursive: true })
+      if (!fs.existsSync(TUNNEL_CONFIG_DIR)) {
+        fs.mkdirSync(TUNNEL_CONFIG_DIR, { recursive: true })
       }
 
-      if (existsSync(TUNNEL_ID_FILE)) {
-        const tunnelId = readFileSync(TUNNEL_ID_FILE, 'utf-8').trim()
+      if (fs.existsSync(TUNNEL_ID_FILE)) {
+        const tunnelId = fs.readFileSync(TUNNEL_ID_FILE, 'utf-8').trim()
         return tunnelId
       }
 
@@ -70,7 +71,7 @@ await cmd`set up cloudflare dev tunnel for local development`
         const tunnelId = match1?.[1] || match2?.[1] || match3?.[1]
 
         if (tunnelId) {
-          writeFileSync(TUNNEL_ID_FILE, tunnelId)
+          fs.writeFileSync(TUNNEL_ID_FILE, tunnelId)
           return tunnelId
         }
 
@@ -87,7 +88,7 @@ await cmd`set up cloudflare dev tunnel for local development`
             const tunnels = JSON.parse(stdout)
             if (tunnels.length > 0) {
               const tunnelId = tunnels[0].id
-              writeFileSync(TUNNEL_ID_FILE, tunnelId)
+              fs.writeFileSync(TUNNEL_ID_FILE, tunnelId)
               return tunnelId
             }
           } catch (e) {
@@ -125,7 +126,7 @@ await cmd`set up cloudflare dev tunnel for local development`
 
     // save the expected url immediately so it's available right away
     const expectedUrl = `https://${tunnelId}.cfargotunnel.com`
-    writeFileSync(path.join(TUNNEL_CONFIG_DIR, 'tunnel-url.txt'), expectedUrl)
+    fs.writeFileSync(path.join(TUNNEL_CONFIG_DIR, 'tunnel-url.txt'), expectedUrl)
     console.info(`\n🌐 Tunnel URL: ${expectedUrl}`)
 
     // get the public url in the background
@@ -142,7 +143,7 @@ await cmd`set up cloudflare dev tunnel for local development`
         try {
           const info = JSON.parse(stdout)
           const hostname = info.hostname || `${tunnelId}.cfargotunnel.com`
-          writeFileSync(
+          fs.writeFileSync(
             path.join(TUNNEL_CONFIG_DIR, 'tunnel-url.txt'),
             `https://${hostname}`
           )

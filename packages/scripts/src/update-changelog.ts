@@ -1,18 +1,19 @@
 #!/usr/bin/env bun
 
+import fs from 'node:fs'
+
 import { cmd } from './cmd'
 
 await cmd`update changelog with recent git commits`.run(async ({ path }) => {
   const { execSync } = await import('node:child_process')
-  const { existsSync, readFileSync } = await import('node:fs')
 
   const CHANGELOG_PATH = path.join(process.cwd(), 'src/features/site/docs/changelog.mdx')
 
   function getLastSha(): string | null {
-    if (!existsSync(CHANGELOG_PATH)) return null
+    if (!fs.existsSync(CHANGELOG_PATH)) return null
 
     try {
-      const content = readFileSync(CHANGELOG_PATH, 'utf-8')
+      const content = fs.readFileSync(CHANGELOG_PATH, 'utf-8')
       const match = content.match(/\{\/\* last updated: ([a-f0-9]+) \*\/\}/)
       return match?.[1] || null
     } catch {

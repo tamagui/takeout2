@@ -1,12 +1,13 @@
 #!/usr/bin/env bun
 
+import fs from 'node:fs'
+
 import { cmd } from './cmd'
 
 await cmd`sync environment variables from package.json to CI and server configs`.run(
   async () => {
-    const { readFileSync, writeFileSync } = await import('node:fs')
 
-    const packageJson = JSON.parse(readFileSync('package.json', 'utf-8'))
+    const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf-8'))
     const envVars = packageJson.env as Record<string, boolean | string>
 
     if (!envVars || Array.isArray(envVars) || typeof envVars !== 'object') {
@@ -36,7 +37,7 @@ await cmd`sync environment variables from package.json to CI and server configs`
 
     function updateDeployYml() {
       const deployYmlPath = '.github/workflows/ci.yml'
-      let deployYml = readFileSync(deployYmlPath, 'utf-8')
+      let deployYml = fs.readFileSync(deployYmlPath, 'utf-8')
 
       if (!deployYml.includes(yamlStartMarker) || !deployYml.includes(yamlEndMarker)) {
         throw new Error(`Markers not found in ${deployYmlPath}`)
@@ -49,7 +50,7 @@ await cmd`sync environment variables from package.json to CI and server configs`
 
       const newDeployYml = replaceYamlSection(deployYml, envSection, { indent })
 
-      writeFileSync(deployYmlPath, newDeployYml, 'utf-8')
+      fs.writeFileSync(deployYmlPath, newDeployYml, 'utf-8')
       console.info('✅ Updated Github workflow')
     }
 
@@ -60,7 +61,7 @@ await cmd`sync environment variables from package.json to CI and server configs`
 
       for (const p of candidates) {
         try {
-          envServer = readFileSync(p, 'utf-8')
+          envServer = fs.readFileSync(p, 'utf-8')
           envServerPath = p
           break
         } catch {}
@@ -86,7 +87,7 @@ await cmd`sync environment variables from package.json to CI and server configs`
         `${jsStartMarker}\n${envExports}\n${jsEndMarker}`
       )
 
-      writeFileSync(envServerPath, newEnvServer, 'utf-8')
+      fs.writeFileSync(envServerPath, newEnvServer, 'utf-8')
       console.info('✅ Updated server env')
     }
 
@@ -95,7 +96,7 @@ await cmd`sync environment variables from package.json to CI and server configs`
 
       let dockerCompose = ''
       try {
-        dockerCompose = readFileSync(dockerComposePath, 'utf-8')
+        dockerCompose = fs.readFileSync(dockerComposePath, 'utf-8')
       } catch (_error) {
         // file doesn't exist, skip
         return
@@ -128,7 +129,7 @@ await cmd`sync environment variables from package.json to CI and server configs`
 
       const newDockerCompose = replaceYamlSection(dockerCompose, envLines, { indent })
 
-      writeFileSync(dockerComposePath, newDockerCompose, 'utf-8')
+      fs.writeFileSync(dockerComposePath, newDockerCompose, 'utf-8')
       console.info('✅ Updated docker-compose.yml')
     }
 

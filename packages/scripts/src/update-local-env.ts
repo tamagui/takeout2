@@ -1,16 +1,10 @@
 #!/usr/bin/env bun
 
+import fs from 'node:fs'
+
 import { cmd } from './cmd'
 
 await cmd`sync auto-generated env vars to local .env file`.run(async ({ path }) => {
-  const {
-    existsSync,
-    readFileSync,
-    writeFileSync,
-    copyFileSync,
-    renameSync,
-    unlinkSync,
-  } = await import('node:fs')
   const { getZeroVersion } = await import('./helpers/zero-get-version')
 
   // skip in CI environments
@@ -29,13 +23,13 @@ await cmd`sync auto-generated env vars to local .env file`.run(async ({ path }) 
   const END_MARKER = '# ---- END AUTO-GENERATED ----'
 
   function createEnvFromTemplate(): boolean {
-    if (!existsSync(ENV_TEMPLATE_PATH)) {
+    if (!fs.existsSync(ENV_TEMPLATE_PATH)) {
       console.info('No .env.template found, skipping .env creation')
       return false
     }
 
     try {
-      copyFileSync(ENV_TEMPLATE_PATH, ENV_PATH)
+      fs.copyFileSync(ENV_TEMPLATE_PATH, ENV_PATH)
       console.info('Created .env from .env.template')
       return true
     } catch (error) {
@@ -63,21 +57,21 @@ await cmd`sync auto-generated env vars to local .env file`.run(async ({ path }) 
 
   function updateEnvFile(): void {
     // ensure .env exists
-    if (!existsSync(ENV_PATH)) {
+    if (!fs.existsSync(ENV_PATH)) {
       const created = createEnvFromTemplate()
-      if (!created && !existsSync(ENV_PATH)) {
-        writeFileSync(ENV_PATH, '')
+      if (!created && !fs.existsSync(ENV_PATH)) {
+        fs.writeFileSync(ENV_PATH, '')
         console.info('Created empty .env file')
       }
     }
 
     try {
       // create backup
-      if (existsSync(ENV_PATH)) {
-        copyFileSync(ENV_PATH, ENV_BACKUP_PATH)
+      if (fs.existsSync(ENV_PATH)) {
+        fs.copyFileSync(ENV_PATH, ENV_BACKUP_PATH)
       }
 
-      const currentContent = readFileSync(ENV_PATH, 'utf-8')
+      const currentContent = fs.readFileSync(ENV_PATH, 'utf-8')
 
       const beginIndex = currentContent.indexOf(BEGIN_MARKER)
       const endIndex = currentContent.indexOf(END_MARKER)
@@ -107,20 +101,20 @@ await cmd`sync auto-generated env vars to local .env file`.run(async ({ path }) 
       }
 
       // write to temp file first (atomic operation)
-      writeFileSync(ENV_TEMP_PATH, newContent)
+      fs.writeFileSync(ENV_TEMP_PATH, newContent)
 
       // validate temp file
-      const tempContent = readFileSync(ENV_TEMP_PATH, 'utf-8')
+      const tempContent = fs.readFileSync(ENV_TEMP_PATH, 'utf-8')
       if (!tempContent.includes(BEGIN_MARKER) || !tempContent.includes(END_MARKER)) {
         throw new Error('Generated content validation failed')
       }
 
       // atomic replace
-      renameSync(ENV_TEMP_PATH, ENV_PATH)
+      fs.renameSync(ENV_TEMP_PATH, ENV_PATH)
 
-      if (existsSync(ENV_BACKUP_PATH)) {
+      if (fs.existsSync(ENV_BACKUP_PATH)) {
         try {
-          unlinkSync(ENV_BACKUP_PATH)
+          fs.unlinkSync(ENV_BACKUP_PATH)
         } catch {
           // ignore cleanup errors
         }
@@ -131,9 +125,9 @@ await cmd`sync auto-generated env vars to local .env file`.run(async ({ path }) 
       console.error('Failed to update .env file:', error)
 
       // attempt to restore backup
-      if (existsSync(ENV_BACKUP_PATH)) {
+      if (fs.existsSync(ENV_BACKUP_PATH)) {
         try {
-          copyFileSync(ENV_BACKUP_PATH, ENV_PATH)
+          fs.copyFileSync(ENV_BACKUP_PATH, ENV_PATH)
           console.info('Restored .env from backup')
         } catch (restoreError) {
           console.error('Failed to restore backup:', restoreError)
@@ -141,9 +135,9 @@ await cmd`sync auto-generated env vars to local .env file`.run(async ({ path }) 
       }
 
       // clean up temp file
-      if (existsSync(ENV_TEMP_PATH)) {
+      if (fs.existsSync(ENV_TEMP_PATH)) {
         try {
-          unlinkSync(ENV_TEMP_PATH)
+          fs.unlinkSync(ENV_TEMP_PATH)
         } catch {
           // ignore cleanup errors
         }

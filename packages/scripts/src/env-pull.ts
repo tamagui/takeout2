@@ -1,15 +1,16 @@
 #!/usr/bin/env bun
 
+import fs from 'node:fs'
+
 import { cmd } from './cmd'
 
 await cmd`pull environment variables from SST production`.run(async ({ path }) => {
-  const { existsSync, writeFileSync } = await import('node:fs')
   const { getEnvironment } = await import('./sst-get-environment')
 
   const rootDir = process.cwd()
 
   const envFilePath = path.join(rootDir, '.env.production')
-  if (existsSync(envFilePath)) {
+  if (fs.existsSync(envFilePath)) {
     console.error(
       '❌ Error: .env.production already exists. Please remove or rename it first.'
     )
@@ -45,7 +46,7 @@ await cmd`pull environment variables from SST production`.run(async ({ path }) =
       process.exit(1)
     }
 
-    writeFileSync(envFilePath, envFileContent)
+    fs.writeFileSync(envFilePath, envFileContent)
 
     console.info(
       `✅ Success! ${foundCount} environment variables written to .env.production`

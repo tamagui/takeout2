@@ -4,13 +4,10 @@ import { cmd } from './cmd'
 
 await cmd`bootstrap project workspace and build initial packages`.run(
   async ({ $, fs, path }) => {
-    const { existsSync, mkdirSync, readFileSync, symlinkSync } = await import('node:fs')
-    const { exists } = fs
-
-    const hasPackages = await exists(`./packages`)
+    const hasPackages = fs.existsSync(`./packages`)
 
     // only run once
-    if (!(await exists(`./node_modules/.bin/tko`))) {
+    if (!fs.existsSync(`./node_modules/.bin/tko`)) {
       if (hasPackages) {
         symlinkBins()
       }
@@ -19,8 +16,8 @@ await cmd`bootstrap project workspace and build initial packages`.run(
     // check if critical packages are built
     if (hasPackages) {
       const needsBuild =
-        !(await exists(`./packages/helpers/dist`)) ||
-        !(await exists(`./packages/cli/dist/esm`))
+        !fs.existsSync(`./packages/helpers/dist`) ||
+        !fs.existsSync(`./packages/cli/dist/esm`)
 
       if (needsBuild) {
         // build helpers first as other packages depend on it
@@ -37,7 +34,7 @@ await cmd`bootstrap project workspace and build initial packages`.run(
     function checkAndShowWelcome(cwd: string = process.cwd()): void {
       try {
         const packagePath = path.join(cwd, 'package.json')
-        const pkg = JSON.parse(readFileSync(packagePath, 'utf-8'))
+        const pkg = JSON.parse(fs.readFileSync(packagePath, 'utf-8'))
 
         if (pkg.takeout?.onboarded === false) {
           console.info()
@@ -70,8 +67,8 @@ await cmd`bootstrap project workspace and build initial packages`.run(
 
       const binDir = path.join(process.cwd(), 'node_modules', '.bin')
 
-      if (!existsSync(binDir)) {
-        mkdirSync(binDir, { recursive: true })
+      if (!fs.existsSync(binDir)) {
+        fs.mkdirSync(binDir, { recursive: true })
       }
 
       for (const pkg of packagesWithCLI) {
@@ -86,12 +83,12 @@ await cmd`bootstrap project workspace and build initial packages`.run(
       }
 
       function symlinkTo(source: string, target: string): void {
-        if (existsSync(target)) {
+        if (fs.existsSync(target)) {
           console.info(`✓ Symlink already exists: ${target}`)
           return
         }
 
-        symlinkSync(source, target)
+        fs.symlinkSync(source, target)
         console.info(`→ Created symlink: ${source} ⇢ ${target}`)
       }
     }

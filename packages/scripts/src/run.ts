@@ -5,7 +5,7 @@
  */
 
 import { spawn } from 'node:child_process'
-import { promises as fs } from 'node:fs'
+import fs from 'node:fs'
 import { join, relative, resolve } from 'node:path'
 
 import { handleProcessExit } from '@take-out/scripts/helpers/handleProcessExit'
@@ -101,7 +101,7 @@ if (runCommands.length === 0) {
 async function readPackageJson(directoryPath: string) {
   try {
     const packageJsonPath = join(directoryPath, 'package.json')
-    const content = await fs.readFile(packageJsonPath, 'utf8')
+    const content = await fs.promises.readFile(packageJsonPath, 'utf8')
     return JSON.parse(content)
   } catch (_) {
     return null
@@ -124,7 +124,7 @@ async function getWorkspacePatterns(): Promise<string[]> {
 
 async function hasPackageJson(path: string): Promise<boolean> {
   try {
-    await fs.access(join(path, 'package.json'))
+    await fs.promises.access(join(path, 'package.json'))
     return true
   } catch {
     return false
@@ -135,7 +135,7 @@ async function findPackageJsonDirs(basePath: string, maxDepth = 3): Promise<stri
   if (maxDepth <= 0) return []
 
   try {
-    const entries = await fs.readdir(basePath, { withFileTypes: true })
+    const entries = await fs.promises.readdir(basePath, { withFileTypes: true })
     const results: string[] = []
 
     if (await hasPackageJson(basePath)) {

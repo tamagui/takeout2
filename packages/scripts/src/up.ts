@@ -12,9 +12,6 @@ interface PackageJson {
 await cmd`upgrade packages by name or pattern`
   .args('--tag string --canary boolean --rc boolean')
   .run(async ({ args, $, path, fs }) => {
-    const { existsSync, readdirSync, readFileSync, writeFileSync, rmSync } =
-      await import('node:fs')
-
     let globalTag: string | undefined = args.tag
     if (args.canary) globalTag = 'canary'
     if (args.rc) globalTag = 'rc'
@@ -22,7 +19,7 @@ await cmd`upgrade packages by name or pattern`
     const packagePatterns: string[] = []
     const rootDir = process.cwd()
     const rootPackageJson = JSON.parse(
-      readFileSync(path.join(rootDir, 'package.json'), 'utf-8')
+      fs.readFileSync(path.join(rootDir, 'package.json'), 'utf-8')
     )
     const upgradeSets: Record<string, string[]> = rootPackageJson.upgradeSets || {}
 
@@ -54,14 +51,14 @@ await cmd`upgrade packages by name or pattern`
     function findPackageJsonFiles(dir: string): string[] {
       const results: string[] = []
 
-      if (existsSync(path.join(dir, 'package.json'))) {
+      if (fs.existsSync(path.join(dir, 'package.json'))) {
         results.push(path.join(dir, 'package.json'))
       }
 
       // check if it's a monorepo with workspaces
       try {
         const packageJson = JSON.parse(
-          readFileSync(path.join(dir, 'package.json'), 'utf-8')
+          fs.readFileSync(path.join(dir, 'package.json'), 'utf-8')
         )
         if (packageJson.workspaces) {
           let workspacePaths: string[] = []
@@ -81,15 +78,15 @@ await cmd`upgrade packages by name or pattern`
               const baseDir = normalizedWorkspace.split('**')[0]!.replace(/\/$/, '')
               const basePath = path.join(dir, baseDir)
 
-              if (existsSync(basePath)) {
+              if (fs.existsSync(basePath)) {
                 const findPackages = (searchDir: string) => {
                   try {
-                    const entries = readdirSync(searchDir, { withFileTypes: true })
+                    const entries = fs.readdirSync(searchDir, { withFileTypes: true })
                     for (const entry of entries) {
                       if (entry.isDirectory() && entry.name !== 'node_modules') {
                         const subPath = path.join(searchDir, entry.name)
                         const pkgPath = path.join(subPath, 'package.json')
-                        if (existsSync(pkgPath)) {
+                        if (fs.existsSync(pkgPath)) {
                           results.push(pkgPath)
                         }
                         // recurse into subdirectories
@@ -105,15 +102,15 @@ await cmd`upgrade packages by name or pattern`
             } else if (normalizedWorkspace.includes('*')) {
               // simple glob pattern like "packages/*"
               const workspaceDir = normalizedWorkspace.replace(/\/\*$/, '')
-              if (existsSync(path.join(dir, workspaceDir))) {
-                const subdirs = readdirSync(path.join(dir, workspaceDir), {
+              if (fs.existsSync(path.join(dir, workspaceDir))) {
+                const subdirs = fs.readdirSync(path.join(dir, workspaceDir), {
                   withFileTypes: true,
                 })
                   .filter((dirent) => dirent.isDirectory())
                   .map((dirent) => path.join(dir, workspaceDir, dirent.name))
 
                 for (const subdir of subdirs) {
-                  if (existsSync(path.join(subdir, 'package.json'))) {
+                  if (fs.existsSync(path.join(subdir, 'package.json'))) {
                     results.push(path.join(subdir, 'package.json'))
                   }
                 }
@@ -121,7 +118,7 @@ await cmd`upgrade packages by name or pattern`
             } else {
               // exact path like "code/tamagui.dev" or "./code/sandbox"
               const pkgPath = path.join(dir, normalizedWorkspace, 'package.json')
-              if (existsSync(pkgPath)) {
+              if (fs.existsSync(pkgPath)) {
                 results.push(pkgPath)
               }
             }
@@ -136,7 +133,7 @@ await cmd`upgrade packages by name or pattern`
 
     function extractDependencies(packageJsonPath: string): string[] {
       try {
-        const content = readFileSync(packageJsonPath, 'utf-8')
+        const content = fs.readFileSync(packageJsonPath, 'utf-8')
         const packageJson = JSON.parse(content) as PackageJson
 
         const deps: string[] = []
@@ -176,7 +173,7 @@ await cmd`upgrade packages by name or pattern`
       packagesToUpdate: string[],
       versionMap: Map<string, string>
     ): number {
-      const content = readFileSync(packageJsonPath, 'utf-8')
+      const content = fs.readFileSync(packageJsonPath, 'utf-8')
       const packageJson = JSON.parse(content) as PackageJson
       let updatedCount = 0
 
@@ -214,7 +211,7 @@ await cmd`upgrade packages by name or pattern`
       updateDeps(packageJson.optionalDependencies)
 
       if (updatedCount > 0) {
-        writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n')
+        fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n')
       }
 
       return updatedCount
@@ -226,7 +223,7 @@ await cmd`upgrade packages by name or pattern`
       packageJsonFiles: string[]
     ) {
       try {
-        rmSync(`node_modules/vite`, {
+        fs.rmSync(`node_modules/vite`, {
           recursive: true,
           force: true,
         })
@@ -338,7 +335,7 @@ await cmd`upgrade packages by name or pattern`
       if (packageJsonPath === path.join(rootDir, 'package.json')) continue
 
       try {
-        const content = readFileSync(packageJsonPath, 'utf-8')
+        const content = fs.readFileSync(packageJsonPath, 'utf-8')
         const packageJson = JSON.parse(content)
         if (packageJson.name) {
           workspacePackageNames.add(packageJson.name)
@@ -405,7 +402,7 @@ await cmd`upgrade packages by name or pattern`
       })
 
       // insert placeholder so updatePackageJsonVersions can set the real version
-      const rootPkg = JSON.parse(readFileSync(rootPkgPath, 'utf-8'))
+      const rootPkg = JSON.parse(fs.readFileSync(rootPkgPath, 'utf-8'))
       if (!rootPkg.dependencies) {
         rootPkg.dependencies = {}
       }
@@ -414,7 +411,7 @@ await cmd`upgrade packages by name or pattern`
           rootPkg.dependencies[pkg] = '*'
         }
       }
-      writeFileSync(rootPkgPath, JSON.stringify(rootPkg, null, 2) + '\n')
+      fs.writeFileSync(rootPkgPath, JSON.stringify(rootPkg, null, 2) + '\n')
     } else {
       console.info(
         `Found ${allMatchingDeps.size} dependencies matching patterns: ${packagePatterns.join(', ')}`

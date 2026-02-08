@@ -1,5 +1,7 @@
 #!/usr/bin/env bun
 
+import fs from 'node:fs'
+
 import { cmd } from './cmd'
 
 function getCurrentNodeVersion() {
@@ -7,12 +9,11 @@ function getCurrentNodeVersion() {
 }
 
 async function getRequiredNodeVersion() {
-  const fs = await import('node:fs/promises')
   const path = await import('node:path')
 
   // try .node-version file first
   try {
-    const nodeVersionContent = await fs.readFile(
+    const nodeVersionContent = await fs.promises.readFile(
       path.join(process.cwd(), '.node-version'),
       'utf-8'
     )
@@ -22,7 +23,7 @@ async function getRequiredNodeVersion() {
   // fallback to package.json engines.node
   try {
     const packageJson = JSON.parse(
-      await fs.readFile(path.join(process.cwd(), 'package.json'), 'utf-8')
+      await fs.promises.readFile(path.join(process.cwd(), 'package.json'), 'utf-8')
     )
     return packageJson?.engines?.node ? `v${packageJson.engines.node}` : null
   } catch {

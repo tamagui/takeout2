@@ -28,6 +28,7 @@ declare module 'one' {
         | `/(app)/home/feed/`
         | `/(app)/home/notification`
         | `/(app)/home/notification/`
+        | `/(app)/home/products`
         | `/(app)/home/profile`
         | `/(app)/home/profile/`
         | `/(app)/home/search`
@@ -62,6 +63,7 @@ declare module 'one' {
         | `/home/feed/`
         | `/home/notification`
         | `/home/notification/`
+        | `/home/products`
         | `/home/profile`
         | `/home/profile/`
         | `/home/search`

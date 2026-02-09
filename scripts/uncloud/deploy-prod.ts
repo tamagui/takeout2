@@ -182,14 +182,14 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
       return // not using origin ca, caddy will use default acme
     }
 
-    // get custom domains from env vars
-    const webDomain = process.env.WEB_DOMAIN
-    const zeroDomain = process.env.ZERO_DOMAIN
-    const domains = [webDomain, zeroDomain].filter(Boolean)
+    // get custom hostnames from env vars
+    const webHost = process.env.VITE_WEB_HOST
+    const zeroHost = process.env.VITE_ZERO_HOST
+    const domains = [webHost, zeroHost].filter(Boolean)
 
     if (domains.length === 0) {
       console.warn(
-        colors.yellow('⚠️  no custom domains configured (WEB_DOMAIN, ZERO_DOMAIN)')
+        colors.yellow('⚠️  no custom domains configured (VITE_WEB_HOST, VITE_ZERO_HOST)')
       )
       console.warn(colors.gray("   caddy will use let's encrypt for tls"))
       return
@@ -199,7 +199,7 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
     const caddyfilePath = path.resolve(process.cwd(), 'src/uncloud/Caddyfile')
     const caddyConfig = [
       '# origin ca certificates for cloudflare proxied domains',
-      '# auto-generated during deploy from WEB_DOMAIN/ZERO_DOMAIN env vars',
+      '# auto-generated during deploy from VITE_WEB_HOST/VITE_ZERO_HOST env vars',
       '',
       ...domains.map(
         (domain) =>

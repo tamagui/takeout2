@@ -37,7 +37,7 @@ export async function execWithEnvironment(
     ...(USE_LOCAL_SERVER && {
       ONE_SERVER_URL: devEnv?.ONE_SERVER_URL,
       // vite reads from .env.production for us unless defined into process.env
-      VITE_PUBLIC_ZERO_SERVER: 'https://start.chat',
+      VITE_ZERO_HOST: 'start.chat',
     }),
   } as any as Record<string, string>
 

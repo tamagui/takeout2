@@ -105,7 +105,7 @@ max_wal_senders = 4
 
 1. Point your domain to your server (A record for Uncloud, or ALB for SST)
 2. Set `ONE_SERVER_URL` and `BETTER_AUTH_URL` to your domain
-3. Set `VITE_PUBLIC_ZERO_SERVER` to your Zero subdomain
+3. Set `VITE_ZERO_HOST` to your Zero hostname (https:// assumed)
 
 SSL is automatic—Caddy handles Let's Encrypt for Uncloud, ALB handles certs for
 SST.

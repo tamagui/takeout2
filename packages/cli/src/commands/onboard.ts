@@ -727,7 +727,11 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   updateEnvVariable(cwd, 'BETTER_AUTH_SECRET', authSecret, envFile)
   updateEnvVariable(cwd, 'BETTER_AUTH_URL', domain, envFile)
   updateEnvVariable(cwd, 'ONE_SERVER_URL', domain, envFile)
-  updateEnvVariable(cwd, 'VITE_PUBLIC_ZERO_SERVER', zeroUrl, envFile)
+  // extract hostname from URL (remove protocol)
+  const zeroHost = zeroUrl.replace(/^https?:\/\//, '')
+  const webHost = domain.replace(/^https?:\/\//, '')
+  updateEnvVariable(cwd, 'VITE_ZERO_HOST', zeroHost, envFile)
+  updateEnvVariable(cwd, 'VITE_WEB_HOST', webHost, envFile)
 
   // derive zero database URLs from the main database URL
   const dbBase = dbUrl.split('/').slice(0, -1).join('/')
@@ -793,7 +797,9 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   )
   console.info(pc.gray('  1. Adding CNAME records in your DNS provider'))
   console.info(pc.gray(`  2. Pointing to your cluster subdomain`))
-  console.info(pc.gray('  3. Setting WEB_DOMAIN and ZERO_DOMAIN in .env.production'))
+  console.info(
+    pc.gray('  3. Setting VITE_WEB_HOST and VITE_ZERO_HOST in .env.production')
+  )
   console.info()
 
   const configureCustomDomain = await confirmContinue(
@@ -843,18 +849,13 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
         console.info(pc.yellow('⚠️  Set DNS to "DNS only" mode (gray cloud), not proxied'))
         console.info()
 
-        updateEnvVariable(cwd, 'WEB_DOMAIN', webDomain, envFile)
-        updateEnvVariable(cwd, 'BETTER_AUTH_URL', `https://${webDomain}`, envFile)
-        updateEnvVariable(cwd, 'ONE_SERVER_URL', `https://${webDomain}`, envFile)
+        const webUrl = `https://${webDomain}`
+        updateEnvVariable(cwd, 'VITE_WEB_HOST', webDomain, envFile)
+        updateEnvVariable(cwd, 'BETTER_AUTH_URL', webUrl, envFile)
+        updateEnvVariable(cwd, 'ONE_SERVER_URL', webUrl, envFile)
 
         if (zeroDomain) {
-          updateEnvVariable(cwd, 'ZERO_DOMAIN', zeroDomain, envFile)
-          updateEnvVariable(
-            cwd,
-            'VITE_PUBLIC_ZERO_SERVER',
-            `https://${zeroDomain}`,
-            envFile
-          )
+          updateEnvVariable(cwd, 'VITE_ZERO_HOST', zeroDomain, envFile)
         }
 
         showSuccess('✓ Custom domains configured')

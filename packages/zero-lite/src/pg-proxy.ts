@@ -408,6 +408,17 @@ async function handleReplicationMessage(
       },
     }
 
+    // consume incoming standby status updates from zero-cache
+    // without this, the socket buffer fills and the connection stalls
+    socket.on('data', (_chunk: Buffer) => {
+      // standby status updates (CopyData with 'r' type) - just drain them
+    })
+
+    socket.on('close', () => {
+      // signal the poll loop to stop
+      socket.destroy()
+    })
+
     // send the response through raw socket, not pg-gateway
     handleStartReplication(query, writer, db).catch((err) => {
       console.info(`[zero-lite] replication stream ended: ${err}`)

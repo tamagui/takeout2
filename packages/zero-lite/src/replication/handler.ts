@@ -238,6 +238,8 @@ export async function handleStartReplication(
   writer: ReplicationWriter,
   db: PGlite
 ): Promise<void> {
+  console.info('[zero-lite] replication: entering streaming mode')
+
   // send CopyBothResponse to enter streaming mode
   const copyBoth = new Uint8Array(1 + 4 + 1 + 2)
   copyBoth[0] = 0x57 // 'W' CopyBothResponse
@@ -300,18 +302,20 @@ export async function handleStartReplication(
         await new Promise((resolve) => setTimeout(resolve, pollInterval))
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err)
+        console.info(`[zero-lite] replication poll error: ${msg}`)
         if (msg.includes('closed') || msg.includes('destroyed')) {
           running = false
           break
         }
-        console.info(`[zero-lite] replication poll error: ${msg}`)
         await new Promise((resolve) => setTimeout(resolve, 1000))
       }
     }
   }
 
   // start polling (runs until connection closes)
+  console.info('[zero-lite] replication: starting poll loop')
   await poll()
+  console.info('[zero-lite] replication: poll loop exited')
 }
 
 async function streamChanges(

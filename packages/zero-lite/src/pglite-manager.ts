@@ -17,6 +17,16 @@ export async function createPGliteInstance(config: ZeroLiteConfig): Promise<PGli
   await db.exec('CREATE SCHEMA IF NOT EXISTS zero_cvr')
   await db.exec('CREATE SCHEMA IF NOT EXISTS zero_cdb')
 
+  // create publication for zero-cache (reads ZERO_APP_PUBLICATIONS from env)
+  const pubName = process.env.ZERO_APP_PUBLICATIONS || 'zero_takeout'
+  const pubs = await db.query<{ count: string }>(
+    `SELECT count(*) as count FROM pg_publication WHERE pubname = $1`,
+    [pubName]
+  )
+  if (Number(pubs.rows[0].count) === 0) {
+    await db.exec(`CREATE PUBLICATION ${pubName} FOR ALL TABLES`)
+  }
+
   return db
 }
 

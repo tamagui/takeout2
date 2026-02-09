@@ -16,7 +16,7 @@ export function getConfig(overrides: Partial<ZeroLiteConfig> = {}): ZeroLiteConf
     pgPort: overrides.pgPort || 6434,
     zeroPort: overrides.zeroPort || 5849,
     s3Port: overrides.s3Port || 10201,
-    webPort: overrides.webPort || 7777,
+    webPort: overrides.webPort || Number(process.env.VITE_PORT_WEB) || 8081,
     pgUser: overrides.pgUser || 'user',
     pgPassword: overrides.pgPassword || 'password',
     migrationsDir: overrides.migrationsDir || 'src/database/migrations',

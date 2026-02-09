@@ -18,6 +18,7 @@ dist
 .tamagui
 
 .sst
+.zero-lite
 
 # generated claude skills from packages/docs (run `bun tko docs skills` to regenerate)
 .claude/skills/takeout-*

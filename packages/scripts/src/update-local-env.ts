@@ -5,12 +5,6 @@ import fs from 'node:fs'
 import { cmd } from './cmd'
 
 await cmd`sync auto-generated env vars to local .env file`.run(async ({ path }) => {
-  // skip in CI environments
-  if (process.env.CI === 'true') {
-    console.info('Skipping bootstrap in CI environment')
-    process.exit(0)
-  }
-
   const ENV_PATH = path.join(process.cwd(), '.env')
   const ENV_BACKUP_PATH = path.join(process.cwd(), '.env.backup')
   const ENV_TEMP_PATH = path.join(process.cwd(), '.env.tmp')

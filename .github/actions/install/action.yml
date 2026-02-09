@@ -22,10 +22,7 @@ runs:
 
     - name: Install Dependencies
       shell: bash
-      # touch .env so our postinstall doesn't create a fake env
-      run: |
-        touch .env
-        bun install
+      run: bun install
 
     - name: Postinstall
       shell: bash

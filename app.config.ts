@@ -159,13 +159,13 @@ export default {
           imageHeight: 80,
         },
       ],
-      // temporarily disabled due to module compatibility issue with mime package
-      [
-        '@hot-updater/react-native',
-        {
-          channel: APP_VARIANT,
-        },
-      ],
+      // enable hot-updater here
+      // [
+      //   '@hot-updater/react-native',
+      //   {
+      //     channel: APP_VARIANT,
+      //   },
+      // ],
     ],
     extra: {
       eas: {

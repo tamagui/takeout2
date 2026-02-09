@@ -81,6 +81,7 @@ OTA Applied: ${isOtaApplied ? 'Yes' : 'No'}`
       <DebugRow label="OTA Applied" value={isOtaApplied ? 'Yes' : 'No'} />
       <DebugRow label="Bundle ID" value={bundleId} mono />
       <DebugRow label="Min Bundle" value={minBundleId} mono />
+      <CrashHistoryRow />
 
       <CheckForUpdateButton />
 
@@ -129,10 +130,22 @@ const CheckForUpdateButton = memo(() => {
     }
   }
 
+  const handleClearCrashHistory = () => {
+    const result = HotUpdater.clearCrashHistory()
+    if (result) {
+      setStatus('Crash history cleared')
+    } else {
+      setStatus('Failed to clear crash history')
+    }
+  }
+
   return (
     <YStack gap="$2" mt="$2">
       <Button size="small" onPress={handleCheckForUpdate} disabled={isChecking}>
         {isChecking ? <Spinner size="small" /> : 'Check for Update'}
+      </Button>
+      <Button size="small" onPress={handleClearCrashHistory}>
+        Clear Crash History
       </Button>
       {status && (
         <YStack items="center">
@@ -141,6 +154,24 @@ const CheckForUpdateButton = memo(() => {
           </SizableText>
         </YStack>
       )}
+    </YStack>
+  )
+})
+
+const CrashHistoryRow = memo(() => {
+  const crashHistory = HotUpdater.getCrashHistory()
+  if (crashHistory.length === 0) return null
+
+  return (
+    <YStack gap="$1">
+      <SizableText size="$1" color="$red10">
+        Crashed Bundles: {crashHistory.length}
+      </SizableText>
+      {crashHistory.map((id) => (
+        <SizableText key={id} size="$1" color="$red9" fontFamily="$mono" ml="$2">
+          {id.slice(-12)}
+        </SizableText>
+      ))}
     </YStack>
   )
 })

@@ -13,10 +13,13 @@ Minimal, headless React Native hot update library.
 
 ## Prerequisites
 
-Before using this package, you need a hot-updater backend. We use Supabase:
+The Takeout template ships with `HotUpdaterSplash` already wrapping your native
+app. The app runs fine without a backend - updates are gated by PostHog feature
+flags (off by default).
+
+When ready to deploy OTA updates, set up a backend:
 
 ```bash
-bun add hot-updater --dev
 npx -y supabase login
 npx hot-updater init
 ```
@@ -27,7 +30,7 @@ During `hot-updater init`, select:
 - **Storage/Database**: `Supabase`
 
 This generates `hot-updater.config.ts` and `.env.hotupdater` with your Supabase
-credentials.
+credentials. Then enable via PostHog feature flags.
 
 See https://hot-updater.dev/docs/managed/supabase for full backend setup.
 

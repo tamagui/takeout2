@@ -35,13 +35,65 @@ React Native apps without going through the app store review process.
 - `src/features/hot-updater/HotUpdaterDebugInfo.native.tsx` - debug panel
 - `packages/native-hot-update/` - @take-out/native-hot-update package
 
-## Initial Setup (Supabase Backend)
+## What's Already Configured
+
+The template ships with hot updater fully wired up. The app runs fine without
+a backend - updates are gated by `ENABLE_HOT_UPDATES` PostHog flag (off by
+default).
+
+### Expo plugin (`app.config.ts`)
+
+```typescript
+plugins: [
+  [
+    "@hot-updater/react-native",
+    { channel: APP_VARIANT } // development, preview, or production
+  ]
+]
+```
+
+### HotUpdaterSplash (`src/features/hot-updater/HotUpdaterSplash.native.tsx`)
+
+Wraps the native app in `app/_layout.tsx`. Uses `HotUpdater.wrap()` to
+initialize the native module and enable crash protection:
+
+```tsx
+import { HotUpdater } from '@take-out/native-hot-update'
+
+const SplashContent = ({ children }: { children?: React.ReactNode }) => {
+  const { userClearedForAccess, progress } = useHotUpdater()
+  if (!userClearedForAccess) {
+    return <SplashScreen progress={progress} />
+  }
+  return <>{children}</>
+}
+
+export const HotUpdaterSplash = HotUpdater.wrap({
+  baseURL: DEFAULT_HOT_UPDATE_SERVER_URL,
+  updateMode: 'manual',
+})(SplashContent)
+```
+
+### Babel plugins (`vite.config.ts`)
+
+Configured via `babelConfigOverrides`:
+
+- `babel-plugin-react-compiler` - must run first
+- `hot-updater/babel-plugin` - hot updater transform
+- `react-native-reanimated/plugin` - must be last
+
+### Other pre-configured features
+
+- `useHotUpdater` hook with PostHog feature flag integration
+- debug panel (tap version info 5 times to reveal)
+
+## Backend Setup (When Ready to Deploy Updates)
+
+Only needed when you want to start deploying OTA updates.
 
 ### Prerequisites
 
-- Docker or OrbStack installed
-- Supabase CLI
-- Active Supabase account
+- Supabase CLI and active account
 
 ### 1. Install dependencies
 
@@ -50,7 +102,7 @@ bun add hot-updater --dev
 bun add @hot-updater/react-native @hot-updater/bare @hot-updater/supabase
 ```
 
-### 2. Login to Supabase and initialize
+### 2. Initialize hot-updater
 
 ```bash
 npx -y supabase login
@@ -74,49 +126,14 @@ HOT_UPDATER_SUPABASE_ANON_KEY=your-anon-key
 HOT_UPDATER_SUPABASE_BUCKET_NAME=your-bucket-name
 ```
 
-### 4. Expo plugin configuration
+### 4. Enable via PostHog
 
-In `app.config.ts`:
+Set these feature flags in PostHog to activate updates:
 
-```typescript
-plugins: [
-  [
-    "@hot-updater/react-native",
-    { channel: APP_VARIANT } // development, preview, or production
-  ]
-]
-```
-
-### 5. Babel plugins
-
-Babel plugins are configured in `vite.config.ts` via `babelConfigOverrides`
-(no separate `babel.config.js` needed):
-
-- `babel-plugin-react-compiler` - must run first
-- `hot-updater/babel-plugin` - hot updater transform
-- `react-native-reanimated/plugin` - must be last
+1. **ENABLE_HOT_UPDATES** = `true`
+2. **HOT_UPDATE_SERVER_URL** = your Supabase functions URL
 
 ## Implementation
-
-### HotUpdater.wrap() (required)
-
-`HotUpdater.wrap()` must wrap a component early in the app tree. It initializes
-the native module and enables crash protection via `notifyAppReady`.
-
-```tsx
-import { HotUpdater } from '@take-out/native-hot-update'
-
-const SplashContent = ({ children }: { children?: React.ReactNode }) => {
-  const { userClearedForAccess, progress } = useHotUpdater()
-  if (!userClearedForAccess) return <SplashScreen progress={progress} />
-  return <>{children}</>
-}
-
-export const HotUpdaterSplash = HotUpdater.wrap({
-  baseURL: DEFAULT_HOT_UPDATE_SERVER_URL,
-  updateMode: 'manual',
-})(SplashContent)
-```
 
 ### useHotUpdater hook (with PostHog)
 

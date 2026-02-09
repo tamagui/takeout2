@@ -75,7 +75,9 @@ export function args<const S extends string>(strings: TemplateStringsArray | S):
     const arg = argv[i]!
 
     if (arg.startsWith('-')) {
-      const key = arg.replace(/^--?/, '').replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase())
+      const key = arg
+        .replace(/^--?/, '')
+        .replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase())
       const type = schema[key]
 
       if (type === 'boolean') {

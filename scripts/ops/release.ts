@@ -6,7 +6,7 @@ type DeployPlatform = 'sst' | 'uncloud'
 
 await cmd`Run full CI/CD pipeline: test, build prod, deploy`
   .args(
-    `--skip-tests boolean --skip-deploy boolean --dry-run boolean --deploy-only boolean --redeploy boolean --dev boolean`,
+    `--skip-tests boolean --skip-deploy boolean --dry-run boolean --deploy-only boolean --redeploy boolean --dev boolean`
   )
   .run(async ({ args, run }) => {
     const { time } = await import('@take-out/helpers')
@@ -75,7 +75,7 @@ await cmd`Run full CI/CD pipeline: test, build prod, deploy`
             ])
             if (!skipDeploy) {
               await printTiming('prebuild docker image', () =>
-                prebuildDockerImage(deployPlatform),
+                prebuildDockerImage(deployPlatform)
               )
             }
           },
@@ -110,7 +110,7 @@ await cmd`Run full CI/CD pipeline: test, build prod, deploy`
               captureOutput: true,
               silent: true,
               timeout: time.ms.minutes(1),
-            },
+            }
           )
           console.info(`Docker ps:\n${psOutput}\n\nDocker logs:\n${logsOutput}`)
         } catch (logError) {
@@ -188,11 +188,11 @@ await cmd`Run full CI/CD pipeline: test, build prod, deploy`
         await fs.promises.mkdir(awsDir, { recursive: true })
         await fs.promises.writeFile(
           join(awsDir, 'config'),
-          `[profile tamagui-prod]\nregion = us-west-1`,
+          `[profile tamagui-prod]\nregion = us-west-1`
         )
         await fs.promises.writeFile(
           join(awsDir, 'credentials'),
-          `[tamagui-prod]\naws_access_key_id=${process.env.AWS_ACCESS_KEY_ID}\naws_secret_access_key=${process.env.AWS_SECRET_ACCESS_KEY}`,
+          `[tamagui-prod]\naws_access_key_id=${process.env.AWS_ACCESS_KEY_ID}\naws_secret_access_key=${process.env.AWS_SECRET_ACCESS_KEY}`
         )
       }
     }

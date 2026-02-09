@@ -245,7 +245,7 @@ await cmd`Run checks, build with test env, and run all tests (unit + e2e)`
             captureOutput: true,
             silent: true,
             timeout: time.ms.minutes(1),
-          },
+          }
         )
         console.info(`Docker ps:\n${psOutput}\n\nDocker logs:\n${logsOutput}`)
         console.info('='.repeat(80))

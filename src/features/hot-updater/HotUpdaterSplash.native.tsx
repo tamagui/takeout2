@@ -1,4 +1,3 @@
-import type { HotUpdaterResolver } from '@hot-updater/react-native'
 import { HotUpdater } from '@take-out/native-hot-update'
 import { ActivityIndicator } from 'react-native'
 import { MMKV } from 'react-native-mmkv'
@@ -8,12 +7,15 @@ import { DEFAULT_HOT_UPDATE_SERVER_URL } from '~/constants/urls'
 
 import { DYNAMIC_SERVER_URL_KEY, useHotUpdater } from './useHotUpdater'
 
+import type { HotUpdaterResolver } from '@hot-updater/react-native'
+
 // reads URL from MMKV on every update check, so PostHog changes apply same session
 const mmkv = new MMKV({ id: 'hot-updater' })
 
 const resolver: HotUpdaterResolver = {
   checkUpdate: async (params) => {
-    const baseURL = mmkv.getString(DYNAMIC_SERVER_URL_KEY) || DEFAULT_HOT_UPDATE_SERVER_URL
+    const baseURL =
+      mmkv.getString(DYNAMIC_SERVER_URL_KEY) || DEFAULT_HOT_UPDATE_SERVER_URL
 
     const strategyPath =
       params.updateStrategy === 'fingerprint'

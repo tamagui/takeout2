@@ -27,3 +27,8 @@ runs:
     - name: Postinstall
       shell: bash
       run: bun run postinstall
+
+    - name: Generate Environment
+      shell: bash
+      # CI= unsets the variable so generate-env actually runs
+      run: CI= bun tko run generate-env

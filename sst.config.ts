@@ -45,7 +45,7 @@ export default $config({
     const zeroVersion = process.env.ZERO_VERSION
 
     if (!zeroVersion) {
-      throw new Error(`No zero version found — run: bun tko run update-local-env`)
+      throw new Error(`No zero version found — run: bun tko run generate-env`)
     }
 
     const domain = DOMAIN

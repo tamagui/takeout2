@@ -429,7 +429,7 @@ await cmd`upgrade packages by name or pattern`
     // special handling for zero - update ZERO_VERSION in .env
     if (packagePatterns.includes('@rocicorp/zero')) {
       console.info('\n🔄 Updating local env for Zero...')
-      await $`bun tko run update-local-env`
+      await $`bun tko run generate-env`
     }
 
     console.info('\n🎉 Dependency update complete!')

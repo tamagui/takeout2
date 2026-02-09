@@ -1,20 +1,10 @@
 import {
-  createStripeClient,
   handleWebhook,
   WebhookVerificationError,
   type WebhookCallbacks,
 } from '@take-out/payments/server'
-import { STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET } from '~/server/env-server'
-
-// initialize stripe on first request
-let initialized = false
-
-function ensureStripeInit(): void {
-  if (!initialized) {
-    createStripeClient({ secretKey: STRIPE_SECRET_KEY })
-    initialized = true
-  }
-}
+import { STRIPE_WEBHOOK_SECRET } from '~/server/env-server'
+import { ensureStripeInit } from './_init'
 
 // stub callbacks — replace with real db operations when you add payment tables
 const webhookCallbacks: WebhookCallbacks = {

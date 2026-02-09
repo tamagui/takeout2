@@ -1,34 +1,31 @@
 import {
-  createStripeClient,
   createPaymentIntent,
   getPaymentIntent,
+  getPrice,
 } from '@take-out/payments/server'
 import { ensureAuth } from '~/features/auth/server/ensureAuth'
-import { STRIPE_SECRET_KEY } from '~/server/env-server'
+import { ensureStripeInit } from './_init'
 
-let initialized = false
-
-function ensureStripeInit(): void {
-  if (!initialized) {
-    createStripeClient({ secretKey: STRIPE_SECRET_KEY })
-    initialized = true
-  }
-}
-
-// POST /api/payments/intent — create a payment intent and return the client secret
+// POST /api/payments/intent — create a payment intent from a price id (server-side amount lookup)
 export async function POST(req: Request): Promise<Response> {
   await ensureAuth(req)
   ensureStripeInit()
 
-  const body = (await req.json()) as { amount?: number; currency?: string }
+  const body = (await req.json()) as { priceId?: string }
 
-  if (!body.amount || body.amount <= 0) {
-    return Response.json({ error: 'amount is required and must be positive' }, { status: 400 })
+  if (!body.priceId) {
+    return Response.json({ error: 'priceId is required' }, { status: 400 })
+  }
+
+  const price = await getPrice(body.priceId)
+
+  if (!price.unit_amount || price.unit_amount <= 0) {
+    return Response.json({ error: 'price has no valid amount' }, { status: 400 })
   }
 
   const intent = await createPaymentIntent({
-    amount: body.amount,
-    currency: body.currency ?? 'usd',
+    amount: price.unit_amount,
+    currency: price.currency,
   })
 
   return Response.json({

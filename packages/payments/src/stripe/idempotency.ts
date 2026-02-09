@@ -1,13 +1,4 @@
-// generate deterministic idempotency keys to prevent duplicate stripe operations on retry
-export function createIdempotencyKey(
-  userId: string,
-  action: string,
-  uniqueData: string
-): string {
-  return `${userId}_${action}_${uniqueData}_${Date.now()}`
-}
-
-// stable key that won't change on retry (no timestamp)
+// stable key that won't change on retry — use for operations that should be deduplicated
 export function createStableIdempotencyKey(
   userId: string,
   action: string,

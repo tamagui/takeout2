@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useOpenCheckout } from '../components/CheckoutButton'
 
 export interface UseCheckoutOptions {
@@ -22,24 +22,32 @@ export function useCheckout(
   const [error, setError] = useState<Error | null>(null)
   const { openCheckout } = useOpenCheckout()
 
+  // stable refs so useCallback doesn't re-create on every render
+  const fetchRef = useRef(fetchCheckoutUrl)
+  fetchRef.current = fetchCheckoutUrl
+  const onSuccessRef = useRef(options?.onSuccess)
+  onSuccessRef.current = options?.onSuccess
+  const onErrorRef = useRef(options?.onError)
+  onErrorRef.current = options?.onError
+
   const startCheckout = useCallback(
     async (params: { priceId: string }) => {
       setLoading(true)
       setError(null)
 
       try {
-        const url = await fetchCheckoutUrl(params.priceId)
+        const url = await fetchRef.current(params.priceId)
         openCheckout(url)
-        options?.onSuccess?.()
+        onSuccessRef.current?.()
       } catch (err) {
         const e = err instanceof Error ? err : new Error('checkout failed')
         setError(e)
-        options?.onError?.(e)
+        onErrorRef.current?.(e)
       } finally {
         setLoading(false)
       }
     },
-    [fetchCheckoutUrl, openCheckout, options?.onSuccess, options?.onError]
+    [openCheckout]
   )
 
   return { startCheckout, loading, error }

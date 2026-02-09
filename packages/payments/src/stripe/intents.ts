@@ -1,6 +1,5 @@
 import type Stripe from 'stripe'
 import { getStripeClient } from './client'
-import { createStableIdempotencyKey } from './idempotency'
 
 export interface CreatePaymentIntentParams {
   amount: number
@@ -15,25 +14,14 @@ export async function createPaymentIntent(
 ): Promise<Stripe.PaymentIntent> {
   const stripe = getStripeClient()
 
-  return stripe.paymentIntents.create(
-    {
-      amount: params.amount,
-      currency: params.currency,
-      customer: params.customerId,
-      metadata: params.metadata,
-      payment_method_types: ['card'],
-      setup_future_usage: params.setupFutureUsage,
-    },
-    params.customerId
-      ? {
-          idempotencyKey: createStableIdempotencyKey(
-            params.customerId,
-            'pi',
-            String(params.amount)
-          ),
-        }
-      : undefined
-  )
+  return stripe.paymentIntents.create({
+    amount: params.amount,
+    currency: params.currency,
+    customer: params.customerId,
+    metadata: params.metadata,
+    automatic_payment_methods: { enabled: true },
+    setup_future_usage: params.setupFutureUsage,
+  })
 }
 
 export async function confirmPaymentIntent(

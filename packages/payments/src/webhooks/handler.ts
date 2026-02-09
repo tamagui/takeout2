@@ -56,12 +56,9 @@ export async function handleWebhook(
     await callbacks.markEventProcessed(event.id, event.type)
     result.processed = true
   } catch (err) {
-    result.error = err instanceof Error ? err.message : 'processing failed'
-    // still mark as processed to avoid infinite retries on persistent errors
-    // log the error for investigation
+    // do not mark as processed — let stripe retry on transient failures
     console.info(`[payments] webhook processing error for ${event.id}:`, err)
-    await callbacks.markEventProcessed(event.id, event.type)
-    result.processed = true
+    throw err
   }
 
   return result

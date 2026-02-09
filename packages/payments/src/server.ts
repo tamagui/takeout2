@@ -52,7 +52,7 @@ export {
 } from './webhooks/handler'
 
 // idempotency
-export { createIdempotencyKey, createStableIdempotencyKey } from './stripe/idempotency'
+export { createStableIdempotencyKey } from './stripe/idempotency'
 
 // error handling
 export { parseStripeError, type PaymentError } from './stripe/errors'

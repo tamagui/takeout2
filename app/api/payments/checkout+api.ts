@@ -1,20 +1,10 @@
 import {
-  createStripeClient,
   createCheckoutSession,
   listProducts,
   listPrices,
 } from '@take-out/payments/server'
 import { ensureAuth } from '~/features/auth/server/ensureAuth'
-import { STRIPE_SECRET_KEY } from '~/server/env-server'
-
-let initialized = false
-
-function ensureStripeInit(): void {
-  if (!initialized) {
-    createStripeClient({ secretKey: STRIPE_SECRET_KEY })
-    initialized = true
-  }
-}
+import { ensureStripeInit } from './_init'
 
 // POST /api/payments/checkout — create a checkout session and return the url
 export async function POST(req: Request): Promise<Response> {
@@ -49,10 +39,18 @@ export async function POST(req: Request): Promise<Response> {
   return Response.json({ url: checkoutSession.url })
 }
 
+// products/prices rarely change — cache for 5 minutes to avoid hitting stripe API on every page load
+const CATALOG_CACHE_TTL = 5 * 60 * 1000
+let catalogCache: { data: unknown; ts: number } | null = null
+
 // GET /api/payments/checkout — list products and prices for the storefront
 export async function GET(req: Request): Promise<Response> {
   await ensureAuth(req)
   ensureStripeInit()
+
+  if (catalogCache && Date.now() - catalogCache.ts < CATALOG_CACHE_TTL) {
+    return Response.json(catalogCache.data)
+  }
 
   const [products, prices] = await Promise.all([listProducts(), listPrices()])
 
@@ -71,5 +69,8 @@ export async function GET(req: Request): Promise<Response> {
       })),
   }))
 
-  return Response.json({ products: productsWithPrices })
+  const responseData = { products: productsWithPrices }
+  catalogCache = { data: responseData, ts: Date.now() }
+
+  return Response.json(responseData)
 }

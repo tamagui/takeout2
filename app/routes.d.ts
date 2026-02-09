@@ -41,6 +41,7 @@ declare module 'one' {
         | `/(legal)/privacy-policy`
         | `/(legal)/terms-of-service`
         | `/_sitemap`
+        | `/api/payments/_init`
         | `/auth`
         | `/auth/login`
         | `/auth/signup/otp`

@@ -14,7 +14,7 @@ export async function createCheckoutSession(
     userId,
     email,
     priceId,
-    mode = 'subscription',
+    mode = 'payment',
     successUrl,
     cancelUrl,
     metadata,
@@ -62,9 +62,7 @@ export async function createCheckoutSession(
     }
   }
 
-  return stripe.checkout.sessions.create(sessionParams, {
-    idempotencyKey: createStableIdempotencyKey(userId, 'checkout', priceId),
-  })
+  return stripe.checkout.sessions.create(sessionParams)
 }
 
 // result from creating a subscription directly (not via checkout)

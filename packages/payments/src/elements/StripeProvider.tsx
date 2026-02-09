@@ -2,13 +2,14 @@ import { type ReactElement, useMemo } from 'react'
 import { Elements } from '@stripe/react-stripe-js'
 import { type Appearance, type StripeElementsOptions, loadStripe } from '@stripe/stripe-js'
 
-let stripePromise: ReturnType<typeof loadStripe> | null = null
+const stripeCache = new Map<string, ReturnType<typeof loadStripe>>()
 
 function getStripe(publishableKey: string): ReturnType<typeof loadStripe> {
-  if (!stripePromise) {
-    stripePromise = loadStripe(publishableKey)
-  }
-  return stripePromise
+  const cached = stripeCache.get(publishableKey)
+  if (cached) return cached
+  const promise = loadStripe(publishableKey)
+  stripeCache.set(publishableKey, promise)
+  return promise
 }
 
 export interface StripeProviderProps {

@@ -192,7 +192,7 @@ try {
 - `listPrices`, `listProducts`, `getPrice`, `getProduct` — catalog
 - `handleWebhook`, `WebhookVerificationError` — webhook processing
 - `parseStripeError` — error handling
-- `createIdempotencyKey`, `createStableIdempotencyKey` — retry safety
+- `createStableIdempotencyKey` — retry safety
 
 ## Stripe test mode
 

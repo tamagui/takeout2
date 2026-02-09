@@ -1,7 +1,7 @@
 import { type ReactElement } from 'react'
 import { H5, Paragraph, SizableText, YStack, styled } from 'tamagui'
 import type { Plan } from '../types'
-import { formatPrice } from '../stripe/prices'
+import { formatPrice } from '../utils/formatPrice'
 
 export interface PricingCardProps {
   plan: Plan

@@ -32,12 +32,12 @@ export async function getOrCreateCustomer(
 
   // search stripe by email as fallback
   const existing = await stripe.customers.list({ email, limit: 1 })
-  if (existing.data.length > 0) {
-    const customer = existing.data[0]
+  const found = existing.data[0]
+  if (found) {
     if (options?.saveCustomer) {
-      await options.saveCustomer(userId, customer.id)
+      await options.saveCustomer(userId, found.id)
     }
-    return customer
+    return found
   }
 
   // create new customer

@@ -18,7 +18,7 @@ Add these to your `.env.development`:
 
 ```
 STRIPE_SECRET_KEY=sk_test_...
-STRIPE_PUBLISHABLE_KEY=pk_test_...
+VITE_STRIPE_PUBLISH_KEY=pk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 ```
 
@@ -27,7 +27,7 @@ Then add them to the `env` section in `package.json` and run `bun env:update`:
 ```json
 "env": {
   "STRIPE_SECRET_KEY": true,
-  "STRIPE_PUBLISHABLE_KEY": "",
+  "VITE_STRIPE_PUBLISH_KEY": "",
   "STRIPE_WEBHOOK_SECRET": ""
 }
 ```

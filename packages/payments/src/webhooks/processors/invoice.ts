@@ -1,5 +1,5 @@
 import type Stripe from 'stripe'
-import type { WebhookCallbacks } from '../../types'
+import type { WebhookCallbacks } from '../../types.server'
 
 export type InvoiceEventType = 'succeeded' | 'failed'
 

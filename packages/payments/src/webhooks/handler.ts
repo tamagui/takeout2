@@ -1,6 +1,6 @@
 import type Stripe from 'stripe'
 import { getStripeClient } from '../stripe/client'
-import type { WebhookCallbacks } from '../types'
+import type { WebhookCallbacks } from '../types.server'
 import { processCheckoutCompleted } from './processors/checkout'
 import { processSubscriptionEvent } from './processors/subscription'
 import { processInvoiceEvent } from './processors/invoice'

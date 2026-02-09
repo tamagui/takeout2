@@ -1,5 +1,6 @@
-import { type ReactElement, useCallback, useState } from 'react'
 import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
+import { type ReactElement, useCallback, useState } from 'react'
+
 import type { PaymentElementProps } from '@stripe/react-stripe-js'
 
 export interface PaymentFormProps {

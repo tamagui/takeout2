@@ -14,6 +14,7 @@ export async function createCheckoutSession(
     userId,
     email,
     priceId,
+    items,
     mode = 'payment',
     successUrl,
     cancelUrl,
@@ -22,6 +23,13 @@ export async function createCheckoutSession(
     allowPromotionCodes = false,
     customerId,
   } = params
+
+  // build line_items from items array or single priceId
+  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = items?.length
+    ? items.map((item) => ({ price: item.priceId, quantity: item.quantity }))
+    : priceId
+      ? [{ price: priceId, quantity: 1 }]
+      : []
 
   const sessionParams: Stripe.Checkout.SessionCreateParams = {
     mode,
@@ -32,12 +40,7 @@ export async function createCheckoutSession(
       userId,
       ...metadata,
     },
-    line_items: [
-      {
-        price: priceId,
-        quantity: 1,
-      },
-    ],
+    line_items: lineItems,
   }
 
   // use existing customer if available, otherwise set email for new customer creation

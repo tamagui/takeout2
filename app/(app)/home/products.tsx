@@ -1,7 +1,8 @@
 import { formatPrice } from '@take-out/payments'
-import { StripeProvider, PaymentForm } from '@take-out/payments/elements'
-import { useState } from 'react'
+import { PaymentMethodForm, StripeProvider } from '@take-out/payments/elements'
+import { useCallback, useState } from 'react'
 import {
+  H3,
   H4,
   Paragraph,
   ScrollView,
@@ -14,6 +15,7 @@ import {
 } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
+import { useCart } from '~/features/payment/useCart'
 import { usePaymentCheckout } from '~/features/payment/usePaymentCheckout'
 import { useProducts } from '~/features/payment/useProducts'
 import { HeadInfo } from '~/interface/app/HeadInfo'
@@ -30,12 +32,14 @@ const PUBLISHABLE_KEY = process.env.VITE_STRIPE_PUBLISH_KEY ?? ''
 export const ProductsPage = () => {
   const auth = useAuth()
   const [checkoutMode, setCheckoutMode] = useState<CheckoutMode>('hosted')
+  const [showCoupon, setShowCoupon] = useState(false)
 
   const {
     products,
     loading,
     error: productsError,
   } = useProducts(auth.state === 'logged-in')
+  const cart = useCart()
   const checkout = usePaymentCheckout(checkoutMode)
 
   const error = checkout.error || productsError
@@ -45,6 +49,24 @@ export const ProductsPage = () => {
     typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
   const success = params?.get('success') === 'true'
   const canceled = params?.get('canceled') === 'true'
+
+  const handleCheckout = useCallback(() => {
+    checkout.startCheckout(cart.items)
+  }, [checkout, cart.items])
+
+  const handlePaymentMethodCreated = useCallback(
+    (paymentMethodId: string) => {
+      checkout.submitOrder(paymentMethodId, cart.items)
+    },
+    [checkout, cart.items]
+  )
+
+  const handleDialogClose = useCallback(() => {
+    checkout.closeDialog()
+    if (checkout.paymentSuccess) {
+      cart.clearCart()
+    }
+  }, [checkout, cart])
 
   if (auth.state !== 'logged-in') {
     return (
@@ -159,7 +181,7 @@ export const ProductsPage = () => {
 
                 <YStack gap="$2" items="flex-end">
                   {product.prices.map((price) => {
-                    const isLoading = checkout.activePriceId === price.id
+                    const inCart = cart.isInCart(price.id)
 
                     return (
                       <XStack key={price.id} items="center" gap="$3">
@@ -175,26 +197,10 @@ export const ProductsPage = () => {
 
                         <Button
                           size="small"
-                          variant="action"
-                          disabled={!!checkout.activePriceId}
-                          onPress={() => checkout.handleBuy(product, price)}
-                          gap="$2"
+                          variant={inCart ? 'outlined' : 'action'}
+                          onPress={() => cart.toggleItem(product, price)}
                         >
-                          {isLoading ? (
-                            <Spinner
-                              size="small"
-                              transition="bouncy"
-                              enterStyle={{ scale: 0 }}
-                              exitStyle={{ scale: 0 }}
-                            />
-                          ) : null}
-                          <Button.Text>
-                            {isLoading
-                              ? checkoutMode === 'hosted'
-                                ? 'Redirecting'
-                                : 'Loading'
-                              : 'Buy'}
-                          </Button.Text>
+                          <Button.Text>{inCart ? 'Remove' : 'Add'}</Button.Text>
                         </Button>
                       </XStack>
                     )
@@ -206,167 +212,287 @@ export const ProductsPage = () => {
         </YStack>
       </ScrollView>
 
+      {/* cart summary bar */}
+      {!cart.isEmpty ? (
+        <XStack
+          p="$4"
+          gap="$4"
+          items="center"
+          justify="space-between"
+          borderTopWidth={1}
+          borderColor="$color4"
+          bg="$color2"
+        >
+          <YStack gap="$1">
+            <SizableText size="$3" color="$color10">
+              {cart.itemCount} {cart.itemCount === 1 ? 'item' : 'items'}
+              {cart.hasRecurring && cart.hasOneTime ? ' (one-time + subscription)' : ''}
+            </SizableText>
+            <SizableText size="$5" fontWeight="700">
+              {formatPrice(cart.subtotal, cart.currency)}
+            </SizableText>
+          </YStack>
+
+          <XStack gap="$2">
+            <Button size="small" variant="outlined" onPress={cart.clearCart}>
+              Clear
+            </Button>
+            <Button
+              variant="action"
+              disabled={checkout.loading}
+              onPress={handleCheckout}
+              gap="$2"
+            >
+              {checkout.loading ? (
+                <Spinner
+                  size="small"
+                  transition="bouncy"
+                  enterStyle={{ scale: 0 }}
+                  exitStyle={{ scale: 0 }}
+                />
+              ) : null}
+              <Button.Text>
+                {checkout.loading
+                  ? checkoutMode === 'hosted'
+                    ? 'Redirecting'
+                    : 'Loading'
+                  : 'Checkout'}
+              </Button.Text>
+            </Button>
+          </XStack>
+        </XStack>
+      ) : null}
+
       {/* embedded checkout dialog */}
       <Dialog
         open={checkout.dialogOpen}
         onOpenChange={(open) => {
-          if (!open) checkout.closeDialog()
+          if (!open) handleDialogClose()
         }}
         minH={500}
-        minW={900}
+        minW={960}
       >
         <Dialog.Header title="Checkout" hidden />
 
         <Dialog.Body>
           {checkout.paymentSuccess ? (
-            <YStack
-              gap="$3"
-              p="$4"
-              rounded="$4"
-              bg="$green3"
-              borderWidth={1}
-              borderColor="$green7"
-            >
-              <SizableText size="$5" fontWeight="700" color="$green11">
-                Payment succeeded
-              </SizableText>
-              <Button size="small" variant="action" onPress={checkout.closeDialog}>
-                Done
-              </Button>
+            <YStack gap="$4" p="$6" items="center" justify="center">
+              <YStack
+                gap="$3"
+                p="$5"
+                rounded="$4"
+                bg="$green3"
+                borderWidth={1}
+                borderColor="$green7"
+                items="center"
+                width="100%"
+                maxW={400}
+              >
+                <SizableText size="$6" fontWeight="700" color="$green11">
+                  Payment succeeded
+                </SizableText>
+                <Paragraph size="$3" color="$green11">
+                  Thank you for your purchase.
+                </Paragraph>
+                <Button variant="action" onPress={handleDialogClose} mt="$2">
+                  <Button.Text>Done</Button.Text>
+                </Button>
+              </YStack>
             </YStack>
-          ) : checkout.clientSecret ? (
-            <XStack gap="$5" flexWrap="wrap">
-              {/* left: card form */}
-              <YStack flex={1} minW={340}>
-                <ScrollView>
-                  <YStack gap="$4" p="$1">
-                    <SizableText size="$5" fontWeight="600">
-                      Payment Details
-                    </SizableText>
+          ) : (
+            <XStack gap="$6" flex={1} overflow="hidden">
+              {/* left: payment form */}
+              <YStack flex={1} gap="$4" overflow="hidden">
+                <H3>Payment details</H3>
+                <Separator />
 
+                <ScrollView flex={1}>
+                  <YStack gap="$4" pr="$1">
                     <StripeProvider
                       publishableKey={PUBLISHABLE_KEY}
-                      clientSecret={checkout.clientSecret}
+                      mode={cart.stripeMode}
+                      amount={cart.subtotal}
+                      currency={cart.currency}
                     >
-                      <PaymentForm
-                        layout="tabs"
-                        onSuccess={(id) => {
-                          console.info('[products] payment succeeded:', id)
-                          checkout.setPaymentSuccess(true)
-                        }}
+                      <PaymentMethodForm
+                        layout="accordion"
+                        onSuccess={handlePaymentMethodCreated}
                         onError={(err) => console.info('[products] payment error:', err)}
                       >
                         {({ submit, error: formError }) => {
                           checkout.submitRef.current = submit
                           return (
-                            <YStack>
+                            <YStack gap="$2">
                               {formError ? (
-                                <SizableText color="$red10">{formError}</SizableText>
+                                <Paragraph size="$3" color="$red10">
+                                  {formError}
+                                </Paragraph>
+                              ) : null}
+                              {checkout.error ? (
+                                <Paragraph size="$3" color="$red10">
+                                  {checkout.error}
+                                </Paragraph>
                               ) : null}
                             </YStack>
                           )
                         }}
-                      </PaymentForm>
+                      </PaymentMethodForm>
                     </StripeProvider>
                   </YStack>
                 </ScrollView>
+
+                {/* purchase button below payment form */}
+                <YStack gap="$3" pt="$2">
+                  <Button
+                    variant="action"
+                    self="flex-end"
+                    disabled={checkout.loading}
+                    onPress={() => checkout.submitRef.current?.()}
+                    gap="$2"
+                  >
+                    {checkout.loading ? (
+                      <Spinner
+                        size="small"
+                        transition="bouncy"
+                        enterStyle={{ scale: 0 }}
+                        exitStyle={{ scale: 0 }}
+                      />
+                    ) : null}
+                    <Button.Text fontFamily="$mono">
+                      {checkout.loading ? 'Processing...' : 'Complete purchase'}
+                    </Button.Text>
+                  </Button>
+                </YStack>
               </YStack>
 
               {/* right: order summary */}
-              <YStack flex={1} minW={300} gap="$4">
-                <SizableText size="$5" fontWeight="600">
-                  Order Summary
-                </SizableText>
 
-                <YStack
-                  gap="$3"
-                  p="$4"
-                  rounded="$4"
-                  bg="$color3"
-                  borderWidth={1}
-                  borderColor="$color5"
-                >
-                  {/* product info */}
-                  <XStack gap="$3" items="center">
-                    {checkout.selectedProduct?.images[0] ? (
-                      <Image
-                        src={checkout.selectedProduct.images[0]}
-                        alt={checkout.selectedProduct.name}
-                        width={48}
-                        height={48}
-                        rounded="$2"
-                        objectFit="cover"
-                      />
-                    ) : null}
+              <YStack gap="$4" flex={1} minW={340}>
+                <H3>Order summary</H3>
+                <Separator />
 
-                    <YStack flex={1} gap="$1">
-                      <SizableText size="$4" fontWeight="700">
-                        {checkout.selectedProduct?.name}
-                      </SizableText>
+                <YStack gap="$4" bg="$color2" p="$4" rounded="$4">
+                  {/* line items */}
+                  {cart.items.map((item) => (
+                    <XStack key={item.price.id} gap="$3" items="center">
+                      {item.product.images[0] ? (
+                        <Image
+                          src={item.product.images[0]}
+                          alt={item.product.name}
+                          width={48}
+                          height={48}
+                          rounded="$2"
+                          objectFit="cover"
+                        />
+                      ) : (
+                        <View
+                          width={48}
+                          height={48}
+                          rounded="$2"
+                          bg="$color4"
+                          items="center"
+                          justify="center"
+                        >
+                          <SizableText size="$5" color="$color8">
+                            {item.product.name.charAt(0)}
+                          </SizableText>
+                        </View>
+                      )}
 
-                      {checkout.selectedProduct?.description ? (
-                        <Paragraph size="$2" color="$color10" numberOfLines={2}>
-                          {checkout.selectedProduct.description}
+                      <YStack flex={1} gap="$0.5">
+                        <Paragraph fontFamily="$mono" size="$4">
+                          {item.product.name}
+                        </Paragraph>
+                        {item.price.type === 'recurring' ? (
+                          <Paragraph size="$2" color="$color9">
+                            {item.price.interval}ly subscription
+                          </Paragraph>
+                        ) : (
+                          <Paragraph size="$2" color="$color9">
+                            one-time
+                          </Paragraph>
+                        )}
+                      </YStack>
+
+                      <Paragraph fontFamily="$mono" size="$4">
+                        {item.price.amount != null
+                          ? formatPrice(
+                              item.price.amount,
+                              item.price.currency,
+                              item.price.interval === 'one_time'
+                                ? null
+                                : item.price.interval
+                            )
+                          : '—'}
+                      </Paragraph>
+                    </XStack>
+                  ))}
+
+                  {/* discount line */}
+                  {checkout.promoApplied && checkout.promoDiscount ? (
+                    <XStack justify="space-between" items="center">
+                      <XStack gap="$2" items="center" flex={1}>
+                        <Paragraph fontFamily="$mono" size="$3" color="$green10">
+                          {checkout.promoApplied}
+                          {checkout.promoDiscount.percentOff
+                            ? ` (${checkout.promoDiscount.percentOff}% off)`
+                            : ''}
+                        </Paragraph>
+                        <SizableText
+                          size="$2"
+                          color="$color9"
+                          cursor="pointer"
+                          hoverStyle={{ color: '$color11' }}
+                          onPress={checkout.removePromo}
+                        >
+                          remove
+                        </SizableText>
+                      </XStack>
+                      <Paragraph fontFamily="$mono" size="$3" color="$green10">
+                        -
+                        {formatPrice(
+                          cart.subtotal - checkout.getDiscountedTotal(cart.subtotal),
+                          cart.currency
+                        )}
+                      </Paragraph>
+                    </XStack>
+                  ) : null}
+
+                  <Separator borderColor="$color5" />
+
+                  {/* total */}
+                  <XStack justify="space-between" items="center">
+                    <H3>Total</H3>
+                    <YStack items="flex-end">
+                      {checkout.promoApplied ? (
+                        <Paragraph
+                          fontFamily="$mono"
+                          size="$3"
+                          opacity={0.5}
+                          textDecorationLine="line-through"
+                        >
+                          {formatPrice(cart.subtotal, cart.currency)}
                         </Paragraph>
                       ) : null}
+                      <H3 fontFamily="$mono">
+                        {formatPrice(
+                          checkout.getDiscountedTotal(cart.subtotal),
+                          cart.currency
+                        )}
+                      </H3>
                     </YStack>
                   </XStack>
 
                   <Separator borderColor="$color5" />
 
-                  {/* subtotal */}
-                  <XStack justify="space-between" items="center">
-                    <SizableText size="$3" color="$color10">
-                      Subtotal
-                    </SizableText>
-                    <SizableText size="$4" fontWeight="600">
-                      {checkout.selectedPrice?.amount != null
-                        ? formatPrice(
-                            checkout.selectedPrice.amount,
-                            checkout.selectedPrice.currency
-                          )
-                        : '—'}
-                    </SizableText>
-                  </XStack>
-
-                  {/* discount */}
-                  <XStack justify="space-between" items="center">
-                    <SizableText size="$3" color="$color10">
-                      Discount
-                    </SizableText>
-                    <SizableText
-                      size="$4"
-                      color={checkout.promoApplied ? '$green10' : '$color10'}
-                      fontWeight={checkout.promoApplied ? '600' : '400'}
-                    >
-                      {checkout.promoApplied && checkout.selectedPrice
-                        ? `−${formatPrice(checkout.discountAmount, checkout.selectedPrice.currency)}`
-                        : '—'}
-                    </SizableText>
-                  </XStack>
-
-                  {/* promo code */}
-                  {checkout.promoApplied ? (
-                    <XStack gap="$2" items="center">
-                      <SizableText size="$3" color="$green10" flex={1}>
-                        {checkout.promoApplied} applied
-                      </SizableText>
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        onPress={checkout.removePromo}
-                      >
-                        Remove
-                      </Button>
-                    </XStack>
-                  ) : (
-                    <YStack gap="$1.5">
+                  {/* coupon code — hidden by default */}
+                  {checkout.promoApplied ? null : showCoupon ? (
+                    <YStack gap="$2">
                       <XStack gap="$2" items="center">
                         <Input
                           flex={1}
                           size="$3"
-                          height={36}
-                          placeholder="Promo code"
+                          placeholder="Enter code"
                           value={checkout.promoCode}
                           onChangeText={(text: string) => {
                             checkout.setPromoCode(text)
@@ -375,90 +501,38 @@ export const ProductsPage = () => {
                         />
                         <Button
                           size="small"
-                          variant="outlined"
+                          variant="action"
                           disabled={!checkout.promoCode || checkout.applyingPromo}
                           onPress={checkout.handleApplyPromo}
                           gap="$2"
                         >
                           {checkout.applyingPromo ? <Spinner size="small" /> : null}
-                          Apply
+                          <Button.Text>Apply</Button.Text>
                         </Button>
                       </XStack>
                       {checkout.promoError ? (
-                        <SizableText size="$2" color="$red10">
+                        <Paragraph size="$2" color="$red10">
                           {checkout.promoError}
-                        </SizableText>
+                        </Paragraph>
                       ) : null}
                     </YStack>
+                  ) : (
+                    <SizableText
+                      size="$3"
+                      color="$color10"
+                      opacity={0.5}
+                      cursor="pointer"
+                      hoverStyle={{ opacity: 0.9 }}
+                      onPress={() => setShowCoupon(true)}
+                    >
+                      Have a coupon code?
+                    </SizableText>
                   )}
-
-                  <Separator borderColor="$color5" />
-
-                  {/* total */}
-                  <XStack justify="space-between" items="center">
-                    <SizableText size="$4" fontWeight="600">
-                      Total
-                    </SizableText>
-                    <SizableText size="$6" fontWeight="700">
-                      {checkout.discountedTotal != null && checkout.selectedPrice
-                        ? formatPrice(
-                            checkout.discountedTotal,
-                            checkout.selectedPrice.currency
-                          )
-                        : checkout.selectedPrice?.amount != null
-                          ? formatPrice(
-                              checkout.selectedPrice.amount,
-                              checkout.selectedPrice.currency
-                            )
-                          : 'Custom'}
-                    </SizableText>
-                  </XStack>
                 </YStack>
               </YStack>
             </XStack>
-          ) : null}
+          )}
         </Dialog.Body>
-
-        {!checkout.paymentSuccess ? (
-          <Dialog.Footer>
-            <XStack gap="$3" justify="space-between" flex={1}>
-              {checkout.clientSecret ? (
-                <Button
-                  variant="action"
-                  disabled={checkout.submitting}
-                  onPress={checkout.handlePay}
-                  gap="$2"
-                >
-                  {checkout.submitting ? (
-                    <Spinner
-                      size="small"
-                      transition="bouncy"
-                      enterStyle={{ scale: 0 }}
-                      exitStyle={{ scale: 0 }}
-                    />
-                  ) : null}
-                  <Button.Text>
-                    {checkout.submitting
-                      ? 'Processing'
-                      : checkout.discountedTotal != null && checkout.selectedPrice
-                        ? `Pay ${formatPrice(checkout.discountedTotal, checkout.selectedPrice.currency)}`
-                        : checkout.selectedPrice?.amount != null
-                          ? `Pay ${formatPrice(checkout.selectedPrice.amount, checkout.selectedPrice.currency)}`
-                          : 'Pay'}
-                  </Button.Text>
-                </Button>
-              ) : (
-                <View />
-              )}
-
-              <Dialog.Close asChild>
-                <Button variant="outlined" onPress={checkout.closeDialog}>
-                  Cancel
-                </Button>
-              </Dialog.Close>
-            </XStack>
-          </Dialog.Footer>
-        ) : null}
       </Dialog>
     </View>
   )

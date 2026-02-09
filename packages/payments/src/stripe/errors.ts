@@ -68,7 +68,7 @@ export function parseStripeError(error: unknown): PaymentError {
 
   return {
     code: stripeError.code ?? 'stripe_error',
-    message: 'A payment error occurred. Please try again.',
+    message: stripeError.message || 'A payment error occurred. Please try again.',
     httpStatus: stripeError.statusCode ?? 500,
     isRetryable: true,
   }

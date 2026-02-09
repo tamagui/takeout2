@@ -4,7 +4,9 @@ import {
   updatePaymentIntentAmount,
   getPaymentIntent,
 } from '@take-out/payments/server'
+
 import { ensureAuth } from '~/features/auth/server/ensureAuth'
+
 import { ensureStripeInit } from './_init'
 
 // POST /api/payments/promo — validate a promo code and apply to a payment intent
@@ -15,19 +17,32 @@ export async function POST(req: Request): Promise<Response> {
   const body = (await req.json()) as {
     code?: string
     paymentIntentId?: string
+    validateOnly?: boolean
   }
 
-  if (!body.code || !body.paymentIntentId) {
-    return Response.json(
-      { error: 'code and paymentIntentId are required' },
-      { status: 400 }
-    )
+  if (!body.code) {
+    return Response.json({ error: 'code is required' }, { status: 400 })
   }
 
   const promo = await validatePromotionCode(body.code)
 
   if (!promo) {
     return Response.json({ error: 'invalid or expired promo code' }, { status: 400 })
+  }
+
+  // validate-only mode: just check if the code is valid (used by cart-based checkout)
+  if (body.validateOnly) {
+    return Response.json({
+      valid: true,
+      code: promo.code,
+      percentOff: promo.percentOff,
+      amountOff: promo.amountOff,
+    })
+  }
+
+  // apply mode: requires paymentIntentId to update the amount
+  if (!body.paymentIntentId) {
+    return Response.json({ error: 'paymentIntentId is required' }, { status: 400 })
   }
 
   // get the current payment intent to know the original amount

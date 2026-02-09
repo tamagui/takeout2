@@ -68,7 +68,8 @@ export interface PaymentEventRecord {
 export interface CreateCheckoutParams {
   userId: string
   email: string
-  priceId: string
+  priceId?: string
+  items?: CartLineItem[]
   mode?: CheckoutMode
   successUrl: string
   cancelUrl: string
@@ -76,6 +77,27 @@ export interface CreateCheckoutParams {
   trialPeriodDays?: number
   allowPromotionCodes?: boolean
   customerId?: string
+}
+
+// multi-item order (invoice + subscription pattern)
+export interface CartLineItem {
+  priceId: string
+  quantity: number
+}
+
+export interface CreateOrderParams {
+  customerId: string
+  paymentMethodId: string
+  items: CartLineItem[]
+  couponId?: string
+  metadata?: Record<string, string>
+}
+
+export interface CreateOrderResult {
+  invoiceId: string | null
+  subscriptionIds: string[]
+  status: 'succeeded' | 'requires_action' | 'incomplete'
+  clientSecret: string | null
 }
 
 // params for creating customer portal sessions

@@ -1,7 +1,11 @@
 // server-only exports — stripe sdk + webhook handling
 
 // stripe client
-export { createStripeClient, getStripeClient, type StripeClientOptions } from './stripe/client'
+export {
+  createStripeClient,
+  getStripeClient,
+  type StripeClientOptions,
+} from './stripe/client'
 
 // checkout sessions + direct subscriptions
 export {
@@ -50,6 +54,9 @@ export {
   getPaymentIntent,
   type CreatePaymentIntentParams,
 } from './stripe/intents'
+
+// multi-item orders (invoice + subscription pattern)
+export { createOrder, rollbackOrder } from './stripe/orders'
 
 // webhook handling
 export {

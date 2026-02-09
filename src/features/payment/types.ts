@@ -5,6 +5,7 @@ export interface ProductPrice {
   amount: number | null
   currency: string
   interval: string
+  type: 'one_time' | 'recurring'
 }
 
 export interface Product {
@@ -13,4 +14,9 @@ export interface Product {
   description: string | null
   images: string[]
   prices: ProductPrice[]
+}
+
+export interface CartItem {
+  product: Product
+  price: ProductPrice
 }

@@ -1,42 +1,53 @@
+import { loadStripe } from '@stripe/stripe-js'
 import { useCallback, useRef, useState } from 'react'
 
 import { API_URL } from '~/constants/urls'
 
-import type { CheckoutMode, Product, ProductPrice } from './types'
+import type { CartItem, CheckoutMode } from './types'
+
+const PUBLISHABLE_KEY = process.env.VITE_STRIPE_PUBLISH_KEY ?? ''
+
+interface OrderResult {
+  invoiceId: string | null
+  subscriptionIds: string[]
+  status: 'succeeded' | 'requires_action' | 'incomplete'
+  clientSecret: string | null
+  error?: string
+}
 
 export const usePaymentCheckout = (checkoutMode: CheckoutMode) => {
-  const [activePriceId, setActivePriceId] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  // embedded checkout state
-  const [clientSecret, setClientSecret] = useState<string | null>(null)
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
-  const [selectedPrice, setSelectedPrice] = useState<ProductPrice | null>(null)
+  const [dialogOpen, setDialogOpen] = useState(false)
   const [paymentSuccess, setPaymentSuccess] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
+  const [confirmClientSecret, setConfirmClientSecret] = useState<string | null>(null)
+
+  // promo code state
   const [promoCode, setPromoCode] = useState('')
   const [promoApplied, setPromoApplied] = useState<string | null>(null)
-  const [discountAmount, setDiscountAmount] = useState(0)
-  const [discountedTotal, setDiscountedTotal] = useState<number | null>(null)
+  const [promoDiscount, setPromoDiscount] = useState<{
+    percentOff: number | null
+    amountOff: number | null
+  } | null>(null)
   const [applyingPromo, setApplyingPromo] = useState(false)
   const [promoError, setPromoError] = useState<string | null>(null)
-  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null)
+
   const submitRef = useRef<(() => Promise<void>) | null>(null)
 
-  const dialogOpen = !!(clientSecret && selectedPrice && selectedProduct)
-
-  const startHostedCheckout = useCallback(async (price: ProductPrice) => {
-    if (!price.amount) return
-    setActivePriceId(price.id)
+  // hosted checkout — redirect to stripe (supports promo codes natively)
+  const startHostedCheckout = useCallback(async (items: CartItem[]) => {
+    if (items.length === 0) return
+    setLoading(true)
     setError(null)
 
     try {
-      const mode = price.interval === 'one_time' ? 'payment' : 'subscription'
       const res = await fetch(`${API_URL}/payments/checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ priceId: price.id, mode }),
+        body: JSON.stringify({
+          items: items.map((i) => ({ priceId: i.price.id, quantity: 1 })),
+        }),
       })
 
       if (!res.ok) {
@@ -48,72 +59,84 @@ export const usePaymentCheckout = (checkoutMode: CheckoutMode) => {
       window.location.href = data.url
     } catch (err) {
       setError(err instanceof Error ? err.message : 'failed to create checkout')
-      setActivePriceId(null)
+      setLoading(false)
     }
   }, [])
 
-  const startEmbeddedCheckout = useCallback(
-    async (product: Product, price: ProductPrice) => {
-      if (!price.amount) return
-      setActivePriceId(price.id)
+  // embedded checkout — open dialog with PaymentMethodForm
+  const startEmbeddedCheckout = useCallback((_items: CartItem[]) => {
+    setDialogOpen(true)
+    setError(null)
+  }, [])
+
+  const closeDialog = useCallback(() => {
+    setDialogOpen(false)
+    setPaymentSuccess(false)
+    setConfirmClientSecret(null)
+    setPromoCode('')
+    setPromoApplied(null)
+    setPromoDiscount(null)
+    setPromoError(null)
+    setError(null)
+    setLoading(false)
+  }, [])
+
+  // called after PaymentMethodForm creates a payment method
+  const submitOrder = useCallback(
+    async (paymentMethodId: string, items: CartItem[]) => {
+      setLoading(true)
       setError(null)
 
       try {
-        const res = await fetch(`${API_URL}/payments/intent`, {
+        const res = await fetch(`${API_URL}/payments/order`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ priceId: price.id }),
+          body: JSON.stringify({
+            items: items.map((i) => ({ priceId: i.price.id, quantity: 1 })),
+            paymentMethodId,
+            promoCode: promoApplied || undefined,
+          }),
         })
 
         if (!res.ok) {
           const data = (await res.json()) as { error?: string }
-          throw new Error(data.error || 'failed to create payment')
+          throw new Error(data.error || 'payment failed')
         }
 
-        const data = (await res.json()) as {
-          clientSecret: string
-          paymentIntentId: string
+        const result = (await res.json()) as OrderResult
+
+        if (result.status === 'succeeded') {
+          setPaymentSuccess(true)
+        } else if (result.status === 'requires_action' && result.clientSecret) {
+          // 3DS authentication required — handle via stripe.js
+          const stripe = await loadStripe(PUBLISHABLE_KEY)
+          if (!stripe) throw new Error('stripe failed to load')
+
+          const { error: confirmError } = await stripe.handleNextAction({
+            clientSecret: result.clientSecret,
+          })
+
+          if (confirmError) {
+            throw new Error(confirmError.message || 'authentication failed')
+          }
+
+          setPaymentSuccess(true)
+        } else {
+          throw new Error('payment incomplete — please try again')
         }
-        setClientSecret(data.clientSecret)
-        setPaymentIntentId(data.paymentIntentId)
-        setSelectedProduct(product)
-        setSelectedPrice(price)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'failed to create payment')
+        setError(err instanceof Error ? err.message : 'payment failed')
       } finally {
-        setActivePriceId(null)
+        setLoading(false)
       }
     },
-    []
+    [promoApplied]
   )
 
-  const closeDialog = useCallback(() => {
-    setClientSecret(null)
-    setPaymentIntentId(null)
-    setSelectedProduct(null)
-    setSelectedPrice(null)
-    setPaymentSuccess(false)
-    setSubmitting(false)
-    setPromoCode('')
-    setPromoApplied(null)
-    setDiscountAmount(0)
-    setDiscountedTotal(null)
-    setPromoError(null)
-  }, [])
-
-  const handlePay = useCallback(async () => {
-    if (!submitRef.current) return
-    setSubmitting(true)
-    try {
-      await submitRef.current()
-    } finally {
-      setSubmitting(false)
-    }
-  }, [])
-
+  // validate promo code server-side
   const handleApplyPromo = useCallback(async () => {
-    if (!promoCode || !paymentIntentId) return
+    if (!promoCode) return
     setApplyingPromo(true)
     setPromoError(null)
 
@@ -122,7 +145,7 @@ export const usePaymentCheckout = (checkoutMode: CheckoutMode) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ code: promoCode, paymentIntentId }),
+        body: JSON.stringify({ code: promoCode, validateOnly: true }),
       })
 
       if (!res.ok) {
@@ -132,65 +155,83 @@ export const usePaymentCheckout = (checkoutMode: CheckoutMode) => {
       }
 
       const data = (await res.json()) as {
-        code: string
-        discountAmount: number
-        discountedAmount: number
-        currency: string
+        valid: boolean
+        percentOff: number | null
+        amountOff: number | null
       }
 
-      setPromoApplied(data.code)
-      setDiscountAmount(data.discountAmount)
-      setDiscountedTotal(data.discountedAmount)
+      setPromoApplied(promoCode)
+      setPromoDiscount({
+        percentOff: data.percentOff,
+        amountOff: data.amountOff,
+      })
     } catch (err) {
-      setPromoError(err instanceof Error ? err.message : 'failed to apply promo')
+      setPromoError(err instanceof Error ? err.message : 'failed to validate promo')
     } finally {
       setApplyingPromo(false)
     }
-  }, [promoCode, paymentIntentId])
+  }, [promoCode])
 
-  const handleBuy = useCallback(
-    (product: Product, price: ProductPrice) => {
-      if (checkoutMode === 'hosted') {
-        startHostedCheckout(price)
+  const removePromo = useCallback(() => {
+    setPromoApplied(null)
+    setPromoDiscount(null)
+    setPromoCode('')
+    setPromoError(null)
+  }, [])
+
+  const startCheckout = useCallback(
+    (items: CartItem[]) => {
+      // stripe checkout sessions can't mix different recurring intervals (e.g. monthly + yearly)
+      // detect this and fall back to the order API (embedded) which handles it correctly
+      const recurringIntervals = new Set(
+        items.filter((i) => i.price.type === 'recurring').map((i) => i.price.interval)
+      )
+      const needsOrderApi = recurringIntervals.size > 1
+
+      if (checkoutMode === 'hosted' && !needsOrderApi) {
+        startHostedCheckout(items)
       } else {
-        startEmbeddedCheckout(product, price)
+        startEmbeddedCheckout(items)
       }
     },
     [checkoutMode, startHostedCheckout, startEmbeddedCheckout]
   )
 
-  const removePromo = useCallback(() => {
-    setPromoApplied(null)
-    setDiscountAmount(0)
-    setDiscountedTotal(null)
-    setPromoCode('')
-    setPromoError(null)
-  }, [])
+  // compute discounted total from subtotal
+  const getDiscountedTotal = useCallback(
+    (subtotal: number) => {
+      if (!promoDiscount) return subtotal
+      if (promoDiscount.percentOff) {
+        return Math.max(0, Math.round(subtotal * (1 - promoDiscount.percentOff / 100)))
+      }
+      if (promoDiscount.amountOff) {
+        return Math.max(0, subtotal - promoDiscount.amountOff)
+      }
+      return subtotal
+    },
+    [promoDiscount]
+  )
 
   return {
-    activePriceId,
+    loading,
     error,
-    setError,
-    clientSecret,
-    selectedProduct,
-    selectedPrice,
+    dialogOpen,
     paymentSuccess,
-    setPaymentSuccess,
-    submitting,
+    confirmClientSecret,
     promoCode,
     setPromoCode,
     promoApplied,
-    discountAmount,
-    discountedTotal,
+    promoDiscount,
     applyingPromo,
     promoError,
     setPromoError,
     submitRef,
-    dialogOpen,
-    handleBuy,
-    handlePay,
+    startCheckout,
+    submitOrder,
     handleApplyPromo,
     removePromo,
     closeDialog,
+    setPaymentSuccess,
+    getDiscountedTotal,
   }
 }

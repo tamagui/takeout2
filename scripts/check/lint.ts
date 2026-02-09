@@ -4,8 +4,8 @@ import { cmd } from '@take-out/cli'
 
 await cmd`Run oxlint linter`.args('--fix boolean').run(async ({ args, $ }) => {
   if (args.fix) {
-    await $`oxfmt && oxlint --fix --fix-suggestions`
+    await $`oxfmt && oxlint --import-plugin --type-aware --fix --fix-suggestions`
   } else {
-    await $`oxlint`
+    await $`oxlint --import-plugin --type-aware`
   }
 })

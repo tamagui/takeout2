@@ -112,6 +112,7 @@
         "knip": "^5.82.0",
         "oxfmt": "^0.16.0",
         "oxlint": "^1.31.0",
+        "oxlint-tsgolint": "^0.11.4",
         "p-map": "^7.0.3",
         "picocolors": "^1.1.1",
         "playwright": "^1.57.0",
@@ -128,7 +129,7 @@
     },
     "packages/better-auth-utils": {
       "name": "@take-out/better-auth-utils",
-      "version": "0.0.97",
+      "version": "0.1.6",
       "dependencies": {
         "@take-out/helpers": "workspace:*",
         "jose": "^6.0.10",
@@ -148,7 +149,7 @@
     },
     "packages/cli": {
       "name": "@take-out/cli",
-      "version": "0.0.97",
+      "version": "0.1.6",
       "bin": {
         "takeout": "./cli.mjs",
         "tko": "./cli.mjs",
@@ -176,7 +177,7 @@
     },
     "packages/create-takeout": {
       "name": "create-takeout",
-      "version": "0.0.97",
+      "version": "0.1.6",
       "bin": "./run.js",
       "dependencies": {
         "citty": "^0.1.6",
@@ -191,11 +192,11 @@
     },
     "packages/docs": {
       "name": "@take-out/docs",
-      "version": "0.0.97",
+      "version": "0.1.6",
     },
     "packages/helpers": {
       "name": "@take-out/helpers",
-      "version": "0.0.97",
+      "version": "0.1.6",
       "dependencies": {
         "@tamagui/constants": "2.0.0-rc.6-1770450745210",
         "dequal": "^2.0.3",
@@ -222,7 +223,7 @@
     },
     "packages/hooks": {
       "name": "@take-out/hooks",
-      "version": "0.0.97",
+      "version": "0.1.6",
       "dependencies": {
         "@take-out/helpers": "workspace:*",
       },
@@ -241,14 +242,14 @@
     },
     "packages/native": {
       "name": "@take-out/native",
-      "version": "0.0.97",
+      "version": "0.1.6",
       "peerDependencies": {
         "expo-crypto": "*",
       },
     },
     "packages/native-hot-update": {
       "name": "@take-out/native-hot-update",
-      "version": "0.0.97",
+      "version": "0.1.6",
       "dependencies": {
         "@hot-updater/react-native": "0.25.6",
       },
@@ -268,7 +269,7 @@
     },
     "packages/on-zero": {
       "name": "on-zero",
-      "version": "0.0.97",
+      "version": "0.1.6",
       "bin": {
         "on-zero": "./cli.cjs",
       },
@@ -303,7 +304,7 @@
     },
     "packages/postgres": {
       "name": "@take-out/postgres",
-      "version": "0.0.97",
+      "version": "0.1.6",
       "bin": {
         "postgres": "./cli.cjs",
       },
@@ -327,7 +328,7 @@
     },
     "packages/scripts": {
       "name": "@take-out/scripts",
-      "version": "0.0.97",
+      "version": "0.1.6",
       "dependencies": {
         "@clack/prompts": "^0.8.2",
         "@take-out/helpers": "workspace:*",
@@ -1330,6 +1331,18 @@
     "@oxfmt/win32-arm64": ["@oxfmt/win32-arm64@0.16.0", "", { "os": "win32", "cpu": "arm64" }, "sha512-Jaesn+FYn+MudSmWJMPGBAa0PhQXo52Z0ZYeNfzbQP7v2GFbZBI3Cb87+K0aHGlpqK3VEJKXeIaASaTWlkgO1Q=="],
 
     "@oxfmt/win32-x64": ["@oxfmt/win32-x64@0.16.0", "", { "os": "win32", "cpu": "x64" }, "sha512-1obVSlb5blwBKgSsE1mNxvcq1pK9I6aXpZDy5d6jjGdrru33dHrH1ASChrcxwCukkToH2SxwYmnzAto0xeuZlw=="],
+
+    "@oxlint-tsgolint/darwin-arm64": ["@oxlint-tsgolint/darwin-arm64@0.11.5", "", { "os": "darwin", "cpu": "arm64" }, "sha512-mzsjJVIUgcGJovBXME63VW2Uau7MS/xCe7xdYj2BplSCuRb5Yoy7WuwCIlbD5ISHjnS6rx26oD2kmzHLRV5Wfw=="],
+
+    "@oxlint-tsgolint/darwin-x64": ["@oxlint-tsgolint/darwin-x64@0.11.5", "", { "os": "darwin", "cpu": "x64" }, "sha512-zItUS0qLzSzVy0ZQHc4MOphA9lVeP5jffsgZFLCdo+JqmkbVZ14aDtiVUHSHi2hia+qatbb109CHQ9YIl0x7+A=="],
+
+    "@oxlint-tsgolint/linux-arm64": ["@oxlint-tsgolint/linux-arm64@0.11.5", "", { "os": "linux", "cpu": "arm64" }, "sha512-R0r/3QTdMtIjfUOM1oxIaCV0s+j7xrnUe4CXo10ZbBzlXfMesWYNcf/oCrhsy87w0kCPFsg58nAdKaIR8xylFg=="],
+
+    "@oxlint-tsgolint/linux-x64": ["@oxlint-tsgolint/linux-x64@0.11.5", "", { "os": "linux", "cpu": "x64" }, "sha512-g23J3T29EHWUQYC6aTwLnhwcFtjQh+VfxyGuFjYGGTLhESdlQH9E/pwsN8K9HaAiYWjI51m3r3BqQjXxEW8Jjg=="],
+
+    "@oxlint-tsgolint/win32-arm64": ["@oxlint-tsgolint/win32-arm64@0.11.5", "", { "os": "win32", "cpu": "arm64" }, "sha512-MJNT/MPUIZKQCRtCX5s6pCnoe7If/i3RjJzFMe4kSLomRsHrNFYOJBwt4+w/Hqfyg9jNOgR8tbgdx6ofjHaPMQ=="],
+
+    "@oxlint-tsgolint/win32-x64": ["@oxlint-tsgolint/win32-x64@0.11.5", "", { "os": "win32", "cpu": "x64" }, "sha512-IQmj4EkcZOBlLnj1CdxKFrWT7NAWXZ9ypZ874X/w7S5gRzB2sO4KmE6Z0MWxx05pL9AQF+CWVRjZrKVIYWTzPg=="],
 
     "@oxlint/darwin-arm64": ["@oxlint/darwin-arm64@1.31.0", "", { "os": "darwin", "cpu": "arm64" }, "sha512-HqoYNH5WFZRdqGUROTFGOdBcA9y/YdHNoR/ujlyVO53it+q96dujbgKEvlff/WEuo4LbDKBrKLWKTKvOd/VYdg=="],
 
@@ -3630,6 +3643,8 @@
     "oxfmt": ["oxfmt@0.16.0", "", { "optionalDependencies": { "@oxfmt/darwin-arm64": "0.16.0", "@oxfmt/darwin-x64": "0.16.0", "@oxfmt/linux-arm64-gnu": "0.16.0", "@oxfmt/linux-arm64-musl": "0.16.0", "@oxfmt/linux-x64-gnu": "0.16.0", "@oxfmt/linux-x64-musl": "0.16.0", "@oxfmt/win32-arm64": "0.16.0", "@oxfmt/win32-x64": "0.16.0" }, "bin": { "oxfmt": "bin/oxfmt" } }, "sha512-uRnnBAN0zH07FXSfvSKbIw+Jrohv4Px2RwNiZOGI4/pvns4sx0+k4WSt+tqwd7bDeoWaXiGmhZgnbK63hi6hVQ=="],
 
     "oxlint": ["oxlint@1.31.0", "", { "optionalDependencies": { "@oxlint/darwin-arm64": "1.31.0", "@oxlint/darwin-x64": "1.31.0", "@oxlint/linux-arm64-gnu": "1.31.0", "@oxlint/linux-arm64-musl": "1.31.0", "@oxlint/linux-x64-gnu": "1.31.0", "@oxlint/linux-x64-musl": "1.31.0", "@oxlint/win32-arm64": "1.31.0", "@oxlint/win32-x64": "1.31.0" }, "peerDependencies": { "oxlint-tsgolint": ">=0.8.1" }, "optionalPeers": ["oxlint-tsgolint"], "bin": { "oxlint": "bin/oxlint", "oxc_language_server": "bin/oxc_language_server" } }, "sha512-U+Z3VShi1zuLF2Hz/pm4vWJUBm5sDHjwSzj340tz4tS2yXg9H5PTipsZv+Yu/alg6Z7EM2cZPKGNBZAvmdfkQg=="],
+
+    "oxlint-tsgolint": ["oxlint-tsgolint@0.11.5", "", { "optionalDependencies": { "@oxlint-tsgolint/darwin-arm64": "0.11.5", "@oxlint-tsgolint/darwin-x64": "0.11.5", "@oxlint-tsgolint/linux-arm64": "0.11.5", "@oxlint-tsgolint/linux-x64": "0.11.5", "@oxlint-tsgolint/win32-arm64": "0.11.5", "@oxlint-tsgolint/win32-x64": "0.11.5" }, "bin": { "tsgolint": "bin/tsgolint.js" } }, "sha512-4uVv43EhkeMvlxDU1GUsR5P5c0q74rB/pQRhjGsTOnMIrDbg3TABTntRyeAkmXItqVEJTcDRv9+Yk+LFXkHKlg=="],
 
     "p-event": ["p-event@6.0.1", "", { "dependencies": { "p-timeout": "^6.1.2" } }, "sha512-Q6Bekk5wpzW5qIyUP4gdMEujObYstZl6DMMOSenwBvV0BlE5LkDwkjs5yHbZmdCEq2o4RJx4tE1vwxFVf2FG1w=="],
 

@@ -323,6 +323,16 @@ function hasSkillFrontmatter(content: string): boolean {
   return frontmatter.includes('name:') && frontmatter.includes('description:')
 }
 
+// check if content has dev: true in frontmatter
+function isDevOnly(content: string): boolean {
+  if (!content.startsWith('---')) return false
+  const endIndex = content.indexOf('---', 3)
+  if (endIndex === -1) return false
+
+  const frontmatter = content.slice(3, endIndex)
+  return /\bdev:\s*true\b/.test(frontmatter)
+}
+
 // extract title and description from markdown content (for docs without frontmatter)
 function extractDocMeta(content: string): { title: string; description: string } {
   const lines = content.split('\n')
@@ -452,9 +462,15 @@ const skillsCommand = defineCommand({
     let generated = 0
     let unchanged = 0
 
+    const isDev = !!process.env.IS_TAMAGUI_DEV
+
     for (const doc of docs) {
       // read doc content
       const content = readFileSync(doc.path, 'utf-8')
+
+      // skip dev-only docs unless IS_TAMAGUI_DEV is set
+      if (isDevOnly(content) && !isDev) continue
+
       const hasFrontmatter = hasSkillFrontmatter(content)
 
       if (hasFrontmatter) {

@@ -3,6 +3,7 @@
 import fs from 'node:fs'
 
 import { cmd } from './cmd'
+import { resolveDepVersion } from './helpers/resolve-dep-version'
 
 await cmd`sync environment variables from package.json to CI and server configs`.run(
   async () => {
@@ -43,8 +44,14 @@ await cmd`sync environment variables from package.json to CI and server configs`
       }
 
       const indent = `          `
-      const envSection = Object.keys(envVars)
-        .map((key) => `${indent}${key}: \${{ secrets.${key} }}`)
+      const envSection = Object.entries(envVars)
+        .map(([key, value]) => {
+          const resolved = resolveDepVersion(value, packageJson.dependencies)
+          if (resolved) {
+            return `${indent}${key}: \${{ secrets.${key} || '${resolved}' }}`
+          }
+          return `${indent}${key}: \${{ secrets.${key} }}`
+        })
         .join('\n')
 
       const newDeployYml = replaceYamlSection(deployYml, envSection, { indent })

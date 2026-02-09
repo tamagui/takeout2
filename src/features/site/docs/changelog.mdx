@@ -18,7 +18,7 @@ description: Weekly updates and changes to Takeout
 - Intercepting routes for feed detail - posts open in a modal overlay on web while preserving direct URL navigation
 - Push notification toggle in settings
 - `cmd()` script helper - tagged template API for cleaner CLI scripts with auto-generated `--help`, typed argument parsing, and built-in `run()` context
-- `query()` function for one-shot non-reactive Zero queries - defaults to server fetch (`'complete'`), pass `'cached'` for local-only reads
+- `run()` function for one-shot non-reactive Zero queries - defaults to server fetch (`'complete'`), pass `'cached'` for local-only reads
 - `usePermission` now supports `permissionStrategy` option - choose between `'optimistic'` (evaluate client-side), `'optimistic-deny'` (false until server confirms), or `'optimistic-allow'` (true until server confirms)
 - on-zero `run()` works in both queries and mutations, accepting regular query functions alongside synced queries
 - Local MCP server config added (`.claude/mcp.json`) for bun-based tooling setup
@@ -27,7 +27,7 @@ description: Weekly updates and changes to Takeout
 ### Upgrades
 
 - Tamagui upgraded to 2.0 RC6 with theme and font refinements
-- One upgraded to 1.6.1 with HTML cache fixes (reverted from 1.4.13 which shipped with `workspace:*` refs, then re-upgraded through 1.4.15 to 1.6.1)
+- One upgraded to 1.6.1 with HTML cache fixes
 - Zero upgraded to 0.25.12 with less noisy logging
 
 ### Improvements

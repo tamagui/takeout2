@@ -3,6 +3,7 @@
 import fs from 'node:fs'
 
 import { cmd } from './cmd'
+import { resolveDepVersion } from './helpers/resolve-dep-version'
 
 await cmd`sync auto-generated env vars to local .env file`.run(async ({ path }) => {
   const ENV_PATH = path.join(process.cwd(), '.env')
@@ -26,15 +27,13 @@ await cmd`sync auto-generated env vars to local .env file`.run(async ({ path }) 
     const lines: string[] = [BEGIN_MARKER, `# Generated at: ${new Date().toISOString()}`]
 
     for (const [key, value] of Object.entries(envVars)) {
-      if (typeof value === 'string' && value.startsWith('$dep:')) {
-        // resolve version from dependency
-        const depName = value.slice('$dep:'.length)
-        const version = packageJson.dependencies?.[depName]?.replace(/^[\^~]/, '')
-        if (version) {
-          lines.push(`${key}=${version}`)
-        } else {
-          console.warn(`Could not resolve dependency version for ${depName}`)
-        }
+      const depVersion = resolveDepVersion(value, packageJson.dependencies)
+      if (depVersion) {
+        lines.push(`${key}=${depVersion}`)
+      } else if (typeof value === 'string' && value.startsWith('$dep:')) {
+        console.warn(
+          `Could not resolve dependency version for ${value.slice('$dep:'.length)}`
+        )
       } else if (typeof value === 'string' && value !== '') {
         // non-empty string default
         lines.push(`${key}=${value}`)

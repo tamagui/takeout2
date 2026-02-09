@@ -1,199 +1,226 @@
 ---
 name: takeout-hot-updater
-description: Guide for implementing OTA updates and hot updates in React Native apps. hot updater, OTA updates, over-the-air updates, app updates, code push, deploy updates, @hot-updater/react-native, HotUpdaterProvider, useHotUpdater, update deployment.
+description: Guide for implementing OTA updates and hot updates in React Native apps. hot updater, OTA updates, over-the-air updates, app updates, code push, deploy updates, @hot-updater/react-native, HotUpdater.wrap, useHotUpdater, update deployment, clearCrashHistory, crash history.
 ---
 
 # Hot Updater Guide
 
 This guide covers the hot update system for delivering over-the-air (OTA)
-updates to React Native applications.
+updates to React Native applications using `@hot-updater/react-native` and the
+`@take-out/native-hot-update` helper package.
 
 ## Overview
 
 The hot updater system allows you to push JavaScript bundle updates to deployed
-React Native apps without going through the app store review process. This
-enables rapid bug fixes and feature deployments.
+React Native apps without going through the app store review process.
 
 ## Architecture
 
 ### Components
 
-1. **@hot-updater/react-native** - React Native client library
-2. **HotUpdaterProvider** - React context provider for update management
-3. **Feature Flags** - Remote configuration via PostHog
-4. **Update Server** - Hosts update bundles (configurable via feature flag)
+1. **@hot-updater/react-native** - React Native client library (v0.25.x+)
+2. **@take-out/native-hot-update** - Takeout helper package wrapping
+   hot-updater with MMKV storage, timeout protection, and pre-release support
+3. **HotUpdater.wrap()** - HOC that initializes config and crash protection
+4. **Feature Flags** - Remote configuration via PostHog
+5. **Supabase** - Backend for bundle storage and database
 
-## Setup
+### Key Files
 
-### Installation
+- `hot-updater.config.ts` - server-side config for deploy command
+- `app.config.ts` - expo plugin config with channel
+- `vite.config.ts` - babel plugins via `babelConfigOverrides`
+- `src/features/hot-updater/HotUpdaterSplash.native.tsx` - HotUpdater.wrap()
+- `src/features/hot-updater/useHotUpdater.ts` - hook with PostHog integration
+- `src/features/hot-updater/HotUpdaterDebugInfo.native.tsx` - debug panel
+- `packages/native-hot-update/` - @take-out/native-hot-update package
 
-The hot-updater package is already installed:
+## Initial Setup (Supabase Backend)
+
+### Prerequisites
+
+- Docker or OrbStack installed
+- Supabase CLI
+- Active Supabase account
+
+### 1. Install dependencies
 
 ```bash
-bun add @hot-updater/react-native
+bun add hot-updater --dev
+bun add @hot-updater/react-native @hot-updater/bare @hot-updater/supabase
 ```
 
-### Configuration
+### 2. Login to Supabase and initialize
+
+```bash
+npx -y supabase login
+npx hot-updater init
+```
+
+During `hot-updater init`, select:
+
+- **Build plugin**: `Bare` (required for our Metro/Expo setup)
+- **Storage/Database**: `Supabase`
+
+This generates `hot-updater.config.ts` and sets up Supabase tables/storage.
+
+### 3. Environment variables
+
+Create `.env.hotupdater` with values from `hot-updater init`:
+
+```
+HOT_UPDATER_SUPABASE_URL=https://your-project-id.supabase.co
+HOT_UPDATER_SUPABASE_ANON_KEY=your-anon-key
+HOT_UPDATER_SUPABASE_BUCKET_NAME=your-bucket-name
+```
+
+### 4. Expo plugin configuration
 
 In `app.config.ts`:
 
 ```typescript
-{
-  expo: {
-    version: "0.0.6",
-    runtimeVersion: version, // Required for appVersion strategy
-    plugins: [
-      [
-        "@hot-updater/react-native",
-        {
-          channel: APP_VARIANT, // development, preview, or production
-        }
-      ]
-    ]
-  }
+plugins: [
+  [
+    "@hot-updater/react-native",
+    { channel: APP_VARIANT } // development, preview, or production
+  ]
+]
+```
+
+### 5. Babel plugins
+
+Babel plugins are configured in `vite.config.ts` via `babelConfigOverrides`
+(no separate `babel.config.js` needed):
+
+- `babel-plugin-react-compiler` - must run first
+- `hot-updater/babel-plugin` - hot updater transform
+- `react-native-reanimated/plugin` - must be last
+
+## Implementation
+
+### HotUpdater.wrap() (required)
+
+`HotUpdater.wrap()` must wrap a component early in the app tree. It initializes
+the native module and enables crash protection via `notifyAppReady`.
+
+```tsx
+import { HotUpdater } from '@take-out/native-hot-update'
+
+const SplashContent = ({ children }: { children?: React.ReactNode }) => {
+  const { userClearedForAccess, progress } = useHotUpdater()
+  if (!userClearedForAccess) return <SplashScreen progress={progress} />
+  return <>{children}</>
+}
+
+export const HotUpdaterSplash = HotUpdater.wrap({
+  baseURL: DEFAULT_HOT_UPDATE_SERVER_URL,
+  updateMode: 'manual',
+})(SplashContent)
+```
+
+### useHotUpdater hook (with PostHog)
+
+```tsx
+import { createHotUpdater } from '@take-out/native-hot-update'
+import { createMMKVStorage } from '@take-out/native-hot-update/mmkv'
+
+export function useHotUpdater() {
+  const posthog = usePostHogClient()
+  const isEnabled = posthog?.isFeatureEnabled(FEATURE_FLAGS.ENABLE_HOT_UPDATES) ?? false
+  const serverUrl = posthog?.getFeatureFlag(DYNAMIC_CONFIGS.HOT_UPDATE_SERVER_URL) as string || ''
+
+  const hotUpdater = createHotUpdater({
+    serverUrl,
+    storage: createMMKVStorage(mmkv),
+    updateStrategy: 'appVersion',
+  })
+
+  return hotUpdater.useOtaUpdater({
+    enabled: isEnabled && !!serverUrl,
+  })
 }
 ```
 
 ### Feature Flags
 
-Two feature flags control hot updates:
+Two PostHog feature flags control hot updates:
 
-1. **ENABLE_HOT_UPDATES** - Boolean flag to enable/disable hot updates
-2. **HOT_UPDATE_SERVER_URL** - Dynamic config for update server URL
-
-Configure these in PostHog or your feature flag service.
-
-## Implementation
-
-### Provider Setup
-
-Wrap your app with the HotUpdaterProvider:
-
-```tsx
-import { HotUpdaterProvider } from '~/features/hot-updater'
-
-function App() {
-  return <HotUpdaterProvider>{/* Your app components */}</HotUpdaterProvider>
-}
-```
-
-### Update Notification UI
-
-Add the notification component to show update prompts:
-
-```tsx
-import { HotUpdaterNotification } from '~/features/hot-updater'
-
-function AppLayout() {
-  return (
-    <>
-      {/* Your app content */}
-      <HotUpdaterNotification />
-    </>
-  )
-}
-```
-
-### Using the Hook
-
-Access hot updater functionality in components:
-
-```tsx
-import { useHotUpdater } from '~/features/hot-updater'
-
-function SettingsScreen() {
-  const {
-    isUpdateAvailable,
-    isDownloading,
-    downloadProgress,
-    checkForUpdate,
-    applyUpdate,
-    lastCheckTime,
-  } = useHotUpdater()
-
-  return (
-    <View>
-      {isUpdateAvailable && <Button onPress={applyUpdate}>Apply Update</Button>}
-
-      <Button onPress={checkForUpdate}>Check for Updates</Button>
-
-      {lastCheckTime && (
-        <Text>Last checked: {lastCheckTime.toLocaleString()}</Text>
-      )}
-    </View>
-  )
-}
-```
+1. **ENABLE_HOT_UPDATES** - boolean to enable/disable
+2. **HOT_UPDATE_SERVER_URL** - dynamic config for server URL
 
 ## Update Strategy
 
 ### Version Management
 
-The app uses the "appVersion" strategy:
+Uses the "appVersion" strategy:
 
-- Runtime version matches app version (e.g., "0.0.6")
+- Runtime version matches app version
 - Updates are compatible within the same runtime version
 - Native changes require a new app store release
 
 ### Channels
 
-Updates are distributed through channels based on APP_VARIANT:
-
-- **development** - For development builds
-- **preview** - For staging/preview builds
-- **production** - For production releases
-
-### Update Check Frequency
-
-- On app launch
-- When app returns to foreground
-- Every 30 minutes while app is active
-- Manual check via UI
+Based on APP_VARIANT: `development`, `preview`, `production`
 
 ## Deployment
 
-### Creating an Update
+### Deploy an update
 
-1. Make JavaScript/asset changes (no native code changes)
-2. Build the update bundle:
+```bash
+# iOS
+tko hot-update ios
 
-   ```bash
-   eas update --branch [branch-name] --message "[update message]"
-   ```
+# Android
+tko hot-update android
+```
 
-3. The update is automatically distributed to devices
+Or directly:
 
-### Update Server
+```bash
+npx hot-updater deploy --platform ios --channel production
+npx hot-updater deploy --platform android --channel production
+```
 
-Configure the update server URL via the HOT_UPDATE_SERVER_URL feature flag. The
-default server handles:
+## Crash Protection and Rollback
 
-- Bundle hosting
-- Version compatibility checks
-- Channel-based distribution
-- Download progress tracking
+### How it works (v0.25.x+)
+
+1. When a bundle is applied, it's tracked as "staging"
+2. `HotUpdater.wrap()` calls `notifyAppReady` internally on successful launch
+3. `notifyAppReady` promotes the bundle to "stable"
+4. If the app crashes before `notifyAppReady`, the bundle goes to crash history
+5. Crashed bundles are blocked from being re-applied
+
+### Crash history management
+
+```typescript
+// clear crash history to retry blocked bundles
+HotUpdater.clearCrashHistory()
+
+// inspect crashed bundles
+const crashedBundles = HotUpdater.getCrashHistory()
+```
+
+### Rollback strategy
+
+1. **Automatic** - crashed bundles roll back to the previous stable bundle
+2. **Feature flag** - disable ENABLE_HOT_UPDATES to stop all OTA updates
+3. **Deploy fix** - push a corrected bundle via `hot-updater deploy`
 
 ## Monitoring
 
-### Analytics Events
+### PostHog events
 
-The system tracks these events via PostHog:
+- `hot_update_downloaded` - update downloaded
+- `hot_update_check_error` - error checking for updates
 
-- `hot_update_available` - Update detected
-- `hot_update_downloaded` - Update downloaded successfully
-- `hot_update_check_error` - Error checking for updates
-- `hot_update_apply_error` - Error applying update
+### Debug panel
 
-### Debugging
+Tap version info 5 times to reveal the debug panel showing:
 
-Enable verbose logging:
-
-```tsx
-// In development
-console.info('Hot updates enabled:', isEnabled)
-console.info('Server URL:', serverUrl)
-console.info('Current version:', Updates.currentVersion)
-```
+- bundle ID, channel, OTA status
+- crash history
+- manual update check and crash history clear buttons
 
 ## Best Practices
 
@@ -204,6 +231,7 @@ console.info('Current version:', Updates.currentVersion)
 3. **Monitor analytics** after deploying updates
 4. **Keep updates small** - large bundles take longer to download
 5. **Version native changes** properly with runtime version bumps
+6. **Import HotUpdater from `@take-out/native-hot-update`** - ensures single instance
 
 ### Don'ts
 
@@ -212,12 +240,4 @@ console.info('Current version:', Updates.currentVersion)
 3. **Don't force updates** without user consent
 4. **Don't update during critical user operations**
 5. **Don't ignore error tracking**
-
-## Rollback Strategy
-
-If an update causes issues:
-
-1. **Disable via feature flag** - Turn off ENABLE_HOT_UPDATES
-2. **Deploy fix** - Create and test a fix
-3. **Roll forward** - Deploy the fix as a new update
-4. **Monitor** - Track analytics to ensure issues are resolved
+6. **Don't import HotUpdater from `@hot-updater/react-native` directly in app code** - use the package re-export

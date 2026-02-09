@@ -11,6 +11,26 @@ Minimal, headless React Native hot update library.
 - Works with Expo & React Native
 - Zero UI - bring your own components
 
+## Prerequisites
+
+Before using this package, you need a hot-updater backend. We use Supabase:
+
+```bash
+bun add hot-updater --dev
+npx -y supabase login
+npx hot-updater init
+```
+
+During `hot-updater init`, select:
+
+- **Build plugin**: `Bare`
+- **Storage/Database**: `Supabase`
+
+This generates `hot-updater.config.ts` and `.env.hotupdater` with your Supabase
+credentials.
+
+See https://hot-updater.dev/docs/managed/supabase for full backend setup.
+
 ## Installation
 
 ```bash

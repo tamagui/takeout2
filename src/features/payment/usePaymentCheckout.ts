@@ -32,8 +32,6 @@ export const usePaymentCheckout = (checkoutMode: CheckoutMode) => {
   const [applyingPromo, setApplyingPromo] = useState(false)
   const [promoError, setPromoError] = useState<string | null>(null)
 
-  const submitRef = useRef<(() => Promise<void>) | null>(null)
-
   // hosted checkout — redirect to stripe (supports promo codes natively)
   const startHostedCheckout = useCallback(async (items: CartItem[]) => {
     if (items.length === 0) return
@@ -81,6 +79,10 @@ export const usePaymentCheckout = (checkoutMode: CheckoutMode) => {
     setLoading(false)
   }, [])
 
+  // read promoApplied via ref to avoid stale closure in submitOrder
+  const promoAppliedRef = useRef(promoApplied)
+  promoAppliedRef.current = promoApplied
+
   // called after PaymentMethodForm creates a payment method
   const submitOrder = useCallback(
     async (paymentMethodId: string, items: CartItem[]) => {
@@ -95,7 +97,7 @@ export const usePaymentCheckout = (checkoutMode: CheckoutMode) => {
           body: JSON.stringify({
             items: items.map((i) => ({ priceId: i.price.id, quantity: 1 })),
             paymentMethodId,
-            promoCode: promoApplied || undefined,
+            promoCode: promoAppliedRef.current || undefined,
           }),
         })
 
@@ -131,7 +133,7 @@ export const usePaymentCheckout = (checkoutMode: CheckoutMode) => {
         setLoading(false)
       }
     },
-    [promoApplied]
+    []
   )
 
   // validate promo code server-side
@@ -225,7 +227,6 @@ export const usePaymentCheckout = (checkoutMode: CheckoutMode) => {
     applyingPromo,
     promoError,
     setPromoError,
-    submitRef,
     startCheckout,
     submitOrder,
     handleApplyPromo,

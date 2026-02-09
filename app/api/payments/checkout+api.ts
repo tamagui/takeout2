@@ -1,5 +1,6 @@
 import {
   createCheckoutSession,
+  getOrCreateCustomer,
   listProducts,
   listPrices,
 } from '@take-out/payments/server'
@@ -39,12 +40,19 @@ export async function POST(req: Request): Promise<Response> {
     mode = hasRecurring ? 'subscription' : 'payment'
   }
 
+  // reuse existing stripe customer to avoid duplicates
+  const customer = await getOrCreateCustomer({
+    userId: session.user.id,
+    email: session.user.email,
+  })
+
   const origin =
     req.headers.get('origin') || req.headers.get('referer') || 'http://localhost:8081'
 
   const checkoutSession = await createCheckoutSession({
     userId: session.user.id,
     email: session.user.email,
+    customerId: customer.id,
     items,
     mode,
     successUrl: `${origin}/home/products?success=true`,

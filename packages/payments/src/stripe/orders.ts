@@ -66,13 +66,20 @@ export async function createOrder(params: CreateOrderParams): Promise<CreateOrde
     }
 
     for (const [, groupItems] of byInterval) {
-      const subResult = await createRecurringSubscription(
-        stripe,
-        customerId,
-        groupItems,
-        couponId,
-        metadata
-      )
+      let subResult: Awaited<ReturnType<typeof createRecurringSubscription>>
+      try {
+        subResult = await createRecurringSubscription(
+          stripe,
+          customerId,
+          groupItems,
+          couponId,
+          metadata
+        )
+      } catch (err) {
+        // partial failure — roll back invoice and any subscriptions created so far
+        await rollbackOrder(invoiceId, subscriptionIds)
+        throw err
+      }
       subscriptionIds.push(subResult.subscriptionId)
 
       if (subResult.status === 'requires_action' && !clientSecret) {
@@ -221,26 +228,24 @@ export async function rollbackOrder(
 ): Promise<void> {
   const stripe = getStripeClient()
 
-  for (const subId of subscriptionIds) {
-    try {
-      await stripe.subscriptions.cancel(subId)
-    } catch {
-      // best-effort rollback
-    }
-  }
+  const tasks: Promise<void>[] = subscriptionIds.map((subId) =>
+    stripe.subscriptions.cancel(subId).then(() => {}).catch(() => {})
+  )
 
   if (invoiceId) {
-    try {
-      const invoice = await stripe.invoices.retrieve(invoiceId, {
-        expand: ['payments.data.payment.charge'],
-      })
-      const charge = invoice.payments?.data?.[0]?.payment?.charge
-      const chargeId = typeof charge === 'string' ? charge : charge?.id
-      if (chargeId) {
-        await stripe.refunds.create({ charge: chargeId })
-      }
-    } catch {
-      // best-effort rollback
-    }
+    tasks.push(
+      (async () => {
+        const invoice = await stripe.invoices.retrieve(invoiceId, {
+          expand: ['payments.data.payment.charge'],
+        })
+        const charge = invoice.payments?.data?.[0]?.payment?.charge
+        const chargeId = typeof charge === 'string' ? charge : charge?.id
+        if (chargeId) {
+          await stripe.refunds.create({ charge: chargeId })
+        }
+      })().catch(() => {})
+    )
   }
+
+  await Promise.all(tasks)
 }

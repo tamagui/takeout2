@@ -319,50 +319,45 @@ export const ProductsPage = () => {
                         onSuccess={handlePaymentMethodCreated}
                         onError={(err) => console.info('[products] payment error:', err)}
                       >
-                        {({ submit, error: formError }) => {
-                          checkout.submitRef.current = submit
-                          return (
-                            <YStack gap="$2">
-                              {formError ? (
-                                <Paragraph size="$3" color="$red10">
-                                  {formError}
-                                </Paragraph>
+                        {({ submit, error: formError }) => (
+                          <YStack gap="$2">
+                            {formError ? (
+                              <Paragraph size="$3" color="$red10">
+                                {formError}
+                              </Paragraph>
+                            ) : null}
+                            {checkout.error ? (
+                              <Paragraph size="$3" color="$red10">
+                                {checkout.error}
+                              </Paragraph>
+                            ) : null}
+
+                            <Button
+                              variant="action"
+                              self="flex-end"
+                              disabled={checkout.loading}
+                              onPress={submit}
+                              gap="$2"
+                              mt="$2"
+                            >
+                              {checkout.loading ? (
+                                <Spinner
+                                  size="small"
+                                  transition="bouncy"
+                                  enterStyle={{ scale: 0 }}
+                                  exitStyle={{ scale: 0 }}
+                                />
                               ) : null}
-                              {checkout.error ? (
-                                <Paragraph size="$3" color="$red10">
-                                  {checkout.error}
-                                </Paragraph>
-                              ) : null}
-                            </YStack>
-                          )
-                        }}
+                              <Button.Text fontFamily="$mono">
+                                {checkout.loading ? 'Processing...' : 'Complete purchase'}
+                              </Button.Text>
+                            </Button>
+                          </YStack>
+                        )}
                       </PaymentMethodForm>
                     </StripeProvider>
                   </YStack>
                 </ScrollView>
-
-                {/* purchase button below payment form */}
-                <YStack gap="$3" pt="$2">
-                  <Button
-                    variant="action"
-                    self="flex-end"
-                    disabled={checkout.loading}
-                    onPress={() => checkout.submitRef.current?.()}
-                    gap="$2"
-                  >
-                    {checkout.loading ? (
-                      <Spinner
-                        size="small"
-                        transition="bouncy"
-                        enterStyle={{ scale: 0 }}
-                        exitStyle={{ scale: 0 }}
-                      />
-                    ) : null}
-                    <Button.Text fontFamily="$mono">
-                      {checkout.loading ? 'Processing...' : 'Complete purchase'}
-                    </Button.Text>
-                  </Button>
-                </YStack>
               </YStack>
 
               {/* right: order summary */}

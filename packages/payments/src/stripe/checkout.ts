@@ -91,7 +91,7 @@ export async function createDirectSubscription(
   const params: Stripe.SubscriptionCreateParams = {
     customer: customerId,
     items: [{ price: priceId }],
-    payment_behavior: 'default_incomplete',
+    payment_behavior: 'allow_incomplete',
     payment_settings: {
       save_default_payment_method: 'on_subscription',
     },

@@ -277,5 +277,7 @@ export function createHotUpdater(config: HotUpdaterConfig): HotUpdaterInstance {
     getBundleId: () => HotUpdater.getBundleId(),
     getMinBundleId: () => HotUpdater.getMinBundleId(),
     getChannel: () => HotUpdater.getChannel(),
+    clearCrashHistory: () => HotUpdater.clearCrashHistory(),
+    getCrashHistory: () => HotUpdater.getCrashHistory(),
   }
 }

@@ -190,3 +190,5 @@ React hook for automatic update checking.
 - `getBundleId()` - Get current bundle ID
 - `getMinBundleId()` - Get minimum bundle ID
 - `getChannel()` - Get current channel
+- `clearCrashHistory()` - Clear crashed bundle history (allows retrying failed bundles)
+- `getCrashHistory()` - Get list of crashed bundle IDs

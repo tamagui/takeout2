@@ -64,4 +64,10 @@ export interface HotUpdaterInstance {
 
   /** Get current channel */
   getChannel: () => string
+
+  /** Clear crash history to allow retrying failed bundles */
+  clearCrashHistory: () => boolean
+
+  /** Get list of crashed bundle IDs */
+  getCrashHistory: () => string[]
 }

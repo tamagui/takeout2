@@ -1,7 +1,8 @@
-import type Stripe from 'stripe'
 import { getStripeClient } from './client'
 import { createStableIdempotencyKey } from './idempotency'
+
 import type { CreateCheckoutParams, CreatePortalParams } from '../types'
+import type Stripe from 'stripe'
 
 // create a stripe checkout session (hosted page — works for both web and native via browser)
 export async function createCheckoutSession(

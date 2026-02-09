@@ -35,6 +35,14 @@ export {
 // prices and products
 export { listPrices, getPrice, listProducts, getProduct } from './stripe/prices'
 
+// payment intents (for custom Elements flow)
+export {
+  createPaymentIntent,
+  confirmPaymentIntent,
+  getPaymentIntent,
+  type CreatePaymentIntentParams,
+} from './stripe/intents'
+
 // webhook handling
 export {
   handleWebhook,
@@ -49,5 +57,6 @@ export { createIdempotencyKey, createStableIdempotencyKey } from './stripe/idemp
 // error handling
 export { parseStripeError, type PaymentError } from './stripe/errors'
 
-// re-export types for convenience
+// re-export all types (client + server)
 export type * from './types'
+export type { WebhookCallbacks } from './types.server'

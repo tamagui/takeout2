@@ -39,23 +39,35 @@
       "import": "./dist/esm/server.mjs",
       "require": "./dist/cjs/server.cjs",
       "default": "./dist/esm/server.mjs"
+    },
+    "./elements": {
+      "types": "./src/elements/index.ts",
+      "import": "./dist/esm/elements/index.mjs",
+      "require": "./dist/cjs/elements/index.cjs",
+      "default": "./dist/esm/elements/index.mjs"
     }
   },
   "dependencies": {
     "stripe": "^20.3.1"
   },
   "peerDependencies": {
+    "@stripe/react-stripe-js": ">=3",
+    "@stripe/stripe-js": ">=5",
     "expo-web-browser": "*",
     "react": "*",
     "react-native": "*",
     "tamagui": "*"
   },
   "peerDependenciesMeta": {
+    "@stripe/react-stripe-js": { "optional": true },
+    "@stripe/stripe-js": { "optional": true },
     "expo-web-browser": { "optional": true },
     "react-native": { "optional": true },
     "tamagui": { "optional": true }
   },
   "devDependencies": {
+    "@stripe/react-stripe-js": ">=3",
+    "@stripe/stripe-js": ">=5",
     "@tamagui/build": "2.0.0-rc.5-1770352331483",
     "@types/node": "24.0.3",
     "@types/react": "^19.0.8",

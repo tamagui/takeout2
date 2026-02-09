@@ -1,6 +1,6 @@
 // client-safe exports — types, components, hooks, utilities
 
-// types
+// types (client-safe — no stripe sdk dependency)
 export type {
   Plan,
   SubscriptionStatus,
@@ -12,12 +12,11 @@ export type {
   CreateCheckoutParams,
   CreatePortalParams,
   PaymentWebhookEventType,
-  WebhookCallbacks,
   PaymentEventRecord,
 } from './types'
 
 // utilities
-export { formatPrice } from './stripe/prices'
+export { formatPrice } from './utils/formatPrice'
 
 // components
 export { PricingCard, type PricingCardProps } from './components/PricingCard'

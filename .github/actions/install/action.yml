@@ -30,5 +30,4 @@ runs:
 
     - name: Generate Environment
       shell: bash
-      # CI= unsets the variable so generate-env actually runs
-      run: CI= bun tko run generate-env
+      run: bun tko run generate-env

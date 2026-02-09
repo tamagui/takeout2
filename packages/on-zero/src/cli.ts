@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { basename, resolve } from 'node:path'
 
@@ -7,23 +8,66 @@ import { TypeScriptToModel } from '@sinclair/typebox-codegen/typescript'
 import { defineCommand, runMain } from 'citty'
 import * as ts from 'typescript'
 
+const hash = (s: string) => createHash('sha256').update(s).digest('hex')
+
+/**
+ * cache of raw generated content hashes so we can skip writes when
+ * a formatter (--after) rewrites files to a different style.
+ * without this, the raw output never matches the formatted file on disk
+ * and every regeneration triggers unnecessary file watcher events.
+ */
+let generateCache: Record<string, string> = {}
+let generateCachePath = ''
+
+function getCacheDir() {
+  // walk up from cwd to find nearest node_modules
+  let dir = process.cwd()
+  while (dir !== '/') {
+    const nm = resolve(dir, 'node_modules')
+    if (existsSync(nm)) {
+      const cacheDir = resolve(nm, '.on-zero')
+      if (!existsSync(cacheDir)) {
+        mkdirSync(cacheDir, { recursive: true })
+      }
+      return cacheDir
+    }
+    dir = resolve(dir, '..')
+  }
+  return null
+}
+
+function loadCache() {
+  const cacheDir = getCacheDir()
+  if (!cacheDir) return
+  generateCachePath = resolve(cacheDir, 'generate-cache.json')
+  try {
+    generateCache = JSON.parse(readFileSync(generateCachePath, 'utf-8'))
+  } catch {
+    generateCache = {}
+  }
+}
+
+function saveCache() {
+  if (generateCachePath) {
+    writeFileSync(generateCachePath, JSON.stringify(generateCache) + '\n', 'utf-8')
+  }
+}
+
 /**
  * Write file only if the content has changed.
- * This prevents unnecessary rebuilds from file watchers.
+ * Uses a hash cache of raw generated content to avoid false positives
+ * when a formatter rewrites files to a different style.
  */
 function writeFileIfChanged(filePath: string, content: string): boolean {
-  try {
-    if (existsSync(filePath)) {
-      const existingContent = readFileSync(filePath, 'utf-8')
-      if (existingContent === content) {
-        return false // no change
-      }
-    }
-  } catch {
-    // if we can't read the file, proceed with writing
+  const contentHash = hash(content)
+  const cachedHash = generateCache[filePath]
+
+  if (cachedHash === contentHash && existsSync(filePath)) {
+    return false // raw content unchanged, formatted file on disk is fine
   }
 
   writeFileSync(filePath, content, 'utf-8')
+  generateCache[filePath] = contentHash
   return true // file was written
 }
 
@@ -151,6 +195,8 @@ const generate = defineCommand({
       if (!existsSync(generatedDir)) {
         mkdirSync(generatedDir, { recursive: true })
       }
+
+      loadCache()
 
       // read all model files and check for schemas in parallel
       const allModelFiles = readdirSync(modelsDir)
@@ -315,6 +361,8 @@ const generate = defineCommand({
             console.error(`Error running after command: ${err}`)
           }
         }
+
+        saveCache()
       } else {
         if (filesChanged > 0 && !silent) {
           console.info(
@@ -334,6 +382,8 @@ const generate = defineCommand({
             console.error(`Error running after command: ${err}`)
           }
         }
+
+        saveCache()
       }
     }
 

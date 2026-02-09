@@ -21,6 +21,14 @@ services:
       -c max_replication_slots=5
       -c hot_standby=on
       -c max_connections=256
+    # for verbose logging when debugging (uncomment as needed):
+      # -c log_error_verbosity=default
+      # -c log_min_messages=info
+      # -c log_statement=all
+      # -c log_connections=on
+      # -c log_disconnections=on
+      # -c log_duration=on
+      # -c log_line_prefix='%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
     volumes:
       - ./.docker/pgdb:/var/lib/postgresql/data
       - ./src/database/:/docker-entrypoint-initdb.d
@@ -48,36 +56,23 @@ services:
         condition: service_completed_successfully
       pgdb:
         condition: service_healthy
+    env_file: .env
     volumes:
       - ./.docker/zero:/app
     working_dir: /app
-    env_file: .env
     extra_hosts:
-      # This maps host.docker.internal to the host gateway IP on Linux
-      # On Mac/Windows Docker Desktop, this is already available
+      # maps host.docker.internal to the host gateway IP on Linux
+      # on Mac/Windows Docker Desktop, this is already available
       - "host.docker.internal:host-gateway"
     environment:
-      - ZERO_ADMIN_PASSWORD=dev
-      - ZERO_LOG_LEVEL=${ZERO_LOG_LEVEL:-info}
-      # These URLs are provided via environment variables
-      # In CI, they'll be overridden with the correct Docker host IP
-      - ZERO_MUTATE_URL=${ZERO_MUTATE_URL:-http://host.docker.internal:8081/api/zero/push}
-      - ZERO_QUERY_URL=${ZERO_QUERY_URL:-http://host.docker.internal:8081/api/zero/pull}
-      - ZERO_MUTATE_FORWARD_COOKIES=true
-      - ZERO_QUERY_FORWARD_COOKIES=true
+      # docker-internal overrides (DB URLs use container hostnames, not localhost)
       - ZERO_UPSTREAM_DB=postgresql://user:password@pgdb:5432/postgres
       - ZERO_CVR_DB=postgresql://user:password@pgdb:5432/zero_cvr
       - ZERO_CHANGE_DB=postgresql://user:password@pgdb:5432/zero_cdb
-      # putting this into /app seems to break things
-      - ZERO_REPLICA_FILE=/tmp/sync-replica.db
-      # note: i bumped CI to a 32 core machine and got this error:
-      # Error: Insufficient upstream connections (20) for 31 syncers.Increase ZERO_UPSTREAM_MAX_CONNS or decrease ZERO_NUM_SYNC_WORKERS (which defaults to available cores).
-      # then i got this error:
-      # pid 30 exiting with error Error: Insufficient cvr connections (30) for 31 syncers.Increase ZERO_CVR_MAX_CONNS or decrease ZERO_NUM_SYNC_WORKERS (which defaults to available cores).
-      # so i'm harcoding all three so they always work and should run fine on most machines
-      - ZERO_NUM_SYNC_WORKERS=8
-      - ZERO_CVR_MAX_CONNS=16
-      - ZERO_UPSTREAM_MAX_CONNS=32
+      # push/pull URLs point to host dev server (not available in .env)
+      - ZERO_MUTATE_URL=http://host.docker.internal:8081/api/zero/push
+      - ZERO_QUERY_URL=http://host.docker.internal:8081/api/zero/pull
+      - ZERO_ADMIN_PASSWORD=dev
     ports:
       - "${VITE_PORT_ZERO:-4848}:4848"
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+
 import { cmd } from '@take-out/cli'
 
 await cmd`Start backend and frontend in dev mode for quick integration testing`.run(
@@ -13,7 +14,7 @@ await cmd`Start backend and frontend in dev mode for quick integration testing`.
     const testEnv = await getTestEnv()
 
     // start backend in background
-    void run(`bun ./scripts/ops/run-backend.ts`, {
+    void run(`bun ops run-backend`, {
       detached: true,
       env: testEnv,
     })
@@ -24,8 +25,8 @@ await cmd`Start backend and frontend in dev mode for quick integration testing`.
     await waitForPort(+(process.env.VITE_PORT_ZERO || 4848))
 
     // start frontend in dev mode
-    await run(`bun ./scripts/ops/run-frontend-dev.ts`, {
+    await run(`bun ops run-frontend --dev`, {
       env: testEnv,
     })
-  }
+  },
 )

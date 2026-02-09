@@ -10,7 +10,7 @@ export const SERVER_URL = (() => {
   const url = getURL()
   if (url === 'http://one-server.example.com') {
     // release build - use baked-in URL or default
-    return import.meta.env.VITE_PUBLIC_SERVER || 'http://localhost:8081'
+    return import.meta.env.VITE_SERVER || 'http://localhost:8081'
   }
   return url
 })()
@@ -23,12 +23,14 @@ export const ZERO_SERVER_URL = (() => {
       const port = import.meta.env.VITE_PORT_ZERO || '4848'
       return `${location.protocol}//${location.hostname}:${port}`
     }
-    // production: use baked-in full URL
-    return import.meta.env.VITE_PUBLIC_ZERO_SERVER!
+    // production: construct https URL from hostname
+    const host = import.meta.env.VITE_ZERO_HOST
+    return host ? `https://${host}` : ''
   }
 
-  // server/native: use baked-in URL or fallback
-  return import.meta.env.VITE_PUBLIC_ZERO_SERVER || 'http://localhost:4848'
+  // server/native: construct from hostname or fallback
+  const host = import.meta.env.VITE_ZERO_HOST
+  return host ? `https://${host}` : 'http://localhost:4848'
 })()
 
 export const DEFAULT_HOT_UPDATE_SERVER_URL =

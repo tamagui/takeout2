@@ -27,9 +27,8 @@ x-app-env: &app-env
   VITE_DEMO_MODE: ${VITE_DEMO_MODE:-}
   VITE_POSTHOG_API_KEY: ${VITE_POSTHOG_API_KEY:-}
   VITE_POSTHOG_HOST: ${VITE_POSTHOG_HOST:-}
-  VITE_PUBLIC_ZERO_SERVER: ${VITE_PUBLIC_ZERO_SERVER:-}
-  WEB_DOMAIN: ${WEB_DOMAIN:-}
-  ZERO_DOMAIN: ${ZERO_DOMAIN:-}
+  VITE_ZERO_HOST: ${VITE_ZERO_HOST:-}
+  VITE_WEB_HOST: ${VITE_WEB_HOST:-}
   ZERO_NUM_SYNC_WORKERS: ${ZERO_NUM_SYNC_WORKERS:-}
   ZERO_CVR_MAX_CONNS: ${ZERO_CVR_MAX_CONNS:-}
   ZERO_UPSTREAM_MAX_CONNS: ${ZERO_UPSTREAM_MAX_CONNS:-}
@@ -88,7 +87,7 @@ services:
       migrate:
         condition: service_completed_successfully
     x-ports:
-      - ${ZERO_DOMAIN:-zero-takeout.uncld.dev}:4848/https
+      - ${VITE_ZERO_HOST:-zero-takeout.uncld.dev}:4848/https
     environment:
       <<: *app-env
       ZERO_ADMIN_PASSWORD: ${ZERO_ADMIN_PASSWORD:-production-admin-change-me}
@@ -147,7 +146,7 @@ services:
     depends_on:
       - zero
     x-ports:
-      - ${WEB_DOMAIN:-takeout.uncld.dev}:8081/https
+      - ${VITE_WEB_HOST:-takeout.uncld.dev}:8081/https
     environment:
       <<: *app-env
       NODE_ENV: production

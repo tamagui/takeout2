@@ -110,23 +110,33 @@ async function createOneTimeInvoice(
   couponId?: string,
   metadata?: Record<string, string>
 ): Promise<{ invoiceId: string; status: 'succeeded' | 'requires_action'; clientSecret: string | null }> {
-  // create invoice items (they attach to the customer's next invoice)
-  for (const item of items) {
-    await stripe.invoiceItems.create({
-      customer: customerId,
-      pricing: { price: item.price.id },
-      quantity: item.quantity,
-      metadata,
-    })
-  }
+  // create invoice items in parallel (they attach to the customer's next invoice)
+  await Promise.all(
+    items.map((item) =>
+      stripe.invoiceItems.create({
+        customer: customerId,
+        pricing: { price: item.price.id },
+        quantity: item.quantity,
+        metadata,
+      })
+    )
+  )
 
-  // create the invoice with optional coupon discount
-  const invoice = await stripe.invoices.create({
-    customer: customerId,
-    auto_advance: false,
-    metadata,
-    ...(couponId ? { discounts: [{ coupon: couponId }] } : {}),
-  })
+  let invoice: Stripe.Invoice
+  try {
+    // create the invoice with optional coupon discount
+    invoice = await stripe.invoices.create({
+      customer: customerId,
+      auto_advance: false,
+      metadata,
+      ...(couponId ? { discounts: [{ coupon: couponId }] } : {}),
+    })
+  } catch (err) {
+    // clean up orphaned invoice items — they'd otherwise appear on the customer's next invoice
+    const pending = await stripe.invoiceItems.list({ customer: customerId, pending: true })
+    await Promise.all(pending.data.map((ii) => stripe.invoiceItems.del(ii.id).catch(() => {})))
+    throw err
+  }
 
   // finalize — stripe may auto-collect if customer has a default payment method
   const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id, {
@@ -156,7 +166,8 @@ async function createOneTimeInvoice(
     }
   }
 
-  return { invoiceId: paidInvoice.id, status: 'succeeded', clientSecret: null }
+  // invoice not paid and no client secret for 3DS — something went wrong
+  throw new Error(`invoice ${paidInvoice.id} not paid (status: ${paidInvoice.status})`)
 }
 
 async function createRecurringSubscription(

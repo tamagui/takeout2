@@ -1,5 +1,3 @@
-import type { HotUpdaterResolver } from '@hot-updater/react-native'
-
 /** Simple key-value storage interface */
 export interface HotUpdateStorage {
   get(key: string): string | undefined
@@ -8,8 +6,6 @@ export interface HotUpdateStorage {
 }
 
 export interface HotUpdaterConfig {
-  /** Hot update server URL */
-  serverUrl: string
   /** Storage for persisting update state */
   storage: HotUpdateStorage
   /** Update strategy (default: 'appVersion') */
@@ -24,9 +20,6 @@ export interface UpdateInfo {
 }
 
 export interface HotUpdaterInstance {
-  /** Creates a resolver for use with HotUpdater.wrap() */
-  createResolver: () => HotUpdaterResolver
-
   /** React hook for automatic update checking */
   useOtaUpdater: (options?: {
     enabled?: boolean

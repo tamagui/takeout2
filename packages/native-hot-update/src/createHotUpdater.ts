@@ -1,8 +1,4 @@
-import {
-  HotUpdater,
-  useHotUpdaterStore,
-  type HotUpdaterResolver,
-} from '@hot-updater/react-native'
+import { HotUpdater, useHotUpdaterStore } from '@hot-updater/react-native'
 import * as Application from 'expo-application'
 import { useEffect, useRef, useState } from 'react'
 import { Alert } from 'react-native'
@@ -18,35 +14,7 @@ const PRE_RELEASE_BUNDLE_ID_KEY = 'hotUpdater.preReleaseBundleId'
  * NOTE: Requires HotUpdater.wrap() to be called first (e.g., in HotUpdaterSplash).
  */
 export function createHotUpdater(config: HotUpdaterConfig): HotUpdaterInstance {
-  const { serverUrl, storage, updateStrategy = 'appVersion' } = config
-
-  // Create a custom resolver for advanced use cases
-  const createResolver = (): HotUpdaterResolver => ({
-    checkUpdate: async (params) => {
-      const response = await fetch(`${serverUrl}/check`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...params.requestHeaders,
-        },
-        body: JSON.stringify({
-          platform: params.platform,
-          appVersion: params.appVersion,
-          bundleId: params.bundleId,
-          minBundleId: params.minBundleId,
-          channel: params.channel,
-          updateStrategy: params.updateStrategy || updateStrategy,
-          fingerprintHash: params.fingerprintHash,
-        }),
-        signal: params.requestTimeout
-          ? AbortSignal.timeout(params.requestTimeout)
-          : undefined,
-      })
-
-      if (!response.ok) return null
-      return response.json()
-    },
-  })
+  const { storage, updateStrategy = 'appVersion' } = config
 
   let isUpdatePending = false
 
@@ -267,7 +235,6 @@ export function createHotUpdater(config: HotUpdaterConfig): HotUpdaterInstance {
   }
 
   return {
-    createResolver,
     useOtaUpdater,
     checkForUpdate,
     getAppliedOta,

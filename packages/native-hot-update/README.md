@@ -53,7 +53,6 @@ import { createMMKVStorage } from '@take-out/native-hot-update/mmkv'
 const mmkv = new MMKV({ id: 'hot-updater' })
 
 const hotUpdaterInstance = createHotUpdater({
-  serverUrl: 'https://your-update-server.com',
   storage: createMMKVStorage(mmkv),
   updateStrategy: 'appVersion',
 })
@@ -80,9 +79,6 @@ export default HotUpdater.wrap({
   updateMode: 'manual', // Use manual mode with custom hooks
 })(App)
 ```
-
-> **Note**: For custom server implementations, you can use `resolver` instead of
-> `baseURL`. See advanced usage below.
 
 ### 3. Use in Your App
 
@@ -180,7 +176,6 @@ Creates a hot updater instance.
 
 **Config:**
 
-- `serverUrl` (string): Your hot update server URL
 - `storage` (HotUpdateStorage): Storage adapter for persisting state
 - `updateStrategy` ('appVersion' | 'fingerprint'): Update strategy (default:
   'appVersion')

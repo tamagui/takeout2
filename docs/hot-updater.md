@@ -54,22 +54,24 @@ plugins: [
 
 ### HotUpdaterSplash (`src/features/hot-updater/HotUpdaterSplash.native.tsx`)
 
-Wraps the native app in `app/_layout.tsx`. Uses `HotUpdater.wrap()` to
-initialize the native module and enable crash protection:
+Wraps the native app in `app/_layout.tsx`. Uses `HotUpdater.wrap()` with a
+custom resolver that reads the server URL from MMKV on each update check:
 
 ```tsx
 import { HotUpdater } from '@take-out/native-hot-update'
 
-const SplashContent = ({ children }: { children?: React.ReactNode }) => {
-  const { userClearedForAccess, progress } = useHotUpdater()
-  if (!userClearedForAccess) {
-    return <SplashScreen progress={progress} />
-  }
-  return <>{children}</>
+const mmkv = new MMKV({ id: 'hot-updater' })
+
+const resolver: HotUpdaterResolver = {
+  checkUpdate: async (params) => {
+    const baseURL = mmkv.getString(DYNAMIC_SERVER_URL_KEY) || DEFAULT_HOT_UPDATE_SERVER_URL
+    const url = `${baseURL}/app-version/${params.platform}/${params.appVersion}/...`
+    return fetch(url, { headers: params.requestHeaders }).then((r) => r.json())
+  },
 }
 
 export const HotUpdaterSplash = HotUpdater.wrap({
-  baseURL: DEFAULT_HOT_UPDATE_SERVER_URL,
+  resolver,
   updateMode: 'manual',
 })(SplashContent)
 ```
@@ -126,12 +128,19 @@ HOT_UPDATER_SUPABASE_ANON_KEY=your-anon-key
 HOT_UPDATER_SUPABASE_BUCKET_NAME=your-bucket-name
 ```
 
-### 4. Enable via PostHog
+### 4. Update server URL
 
-Set these feature flags in PostHog to activate updates:
+Update `DEFAULT_HOT_UPDATE_SERVER_URL` in `src/constants/urls.ts` with your
+Supabase functions URL from step 2.
+
+Optionally, set **HOT_UPDATE_SERVER_URL** in PostHog to override the server URL
+dynamically (takes effect on next app launch).
+
+### 5. Enable via PostHog
+
+Set this feature flag in PostHog to activate updates:
 
 1. **ENABLE_HOT_UPDATES** = `true`
-2. **HOT_UPDATE_SERVER_URL** = your Supabase functions URL
 
 ## Implementation
 
@@ -141,29 +150,48 @@ Set these feature flags in PostHog to activate updates:
 import { createHotUpdater } from '@take-out/native-hot-update'
 import { createMMKVStorage } from '@take-out/native-hot-update/mmkv'
 
+const mmkv = new MMKV({ id: 'hot-updater' })
+
+// module-level instance so useOtaUpdater is the same function every render
+const hotUpdater = createHotUpdater({
+  storage: createMMKVStorage(mmkv),
+  updateStrategy: 'appVersion',
+})
+
 export function useHotUpdater() {
   const posthog = usePostHogClient()
   const isEnabled = posthog?.isFeatureEnabled(FEATURE_FLAGS.ENABLE_HOT_UPDATES) ?? false
-  const serverUrl = posthog?.getFeatureFlag(DYNAMIC_CONFIGS.HOT_UPDATE_SERVER_URL) as string || ''
-
-  const hotUpdater = createHotUpdater({
-    serverUrl,
-    storage: createMMKVStorage(mmkv),
-    updateStrategy: 'appVersion',
-  })
 
   return hotUpdater.useOtaUpdater({
-    enabled: isEnabled && !!serverUrl,
+    enabled: isEnabled,
   })
 }
 ```
 
 ### Feature Flags
 
-Two PostHog feature flags control hot updates:
+PostHog controls hot updates:
 
-1. **ENABLE_HOT_UPDATES** - boolean to enable/disable
-2. **HOT_UPDATE_SERVER_URL** - dynamic config for server URL
+1. **ENABLE_HOT_UPDATES** - boolean to enable/disable OTA updates
+2. **HOT_UPDATE_SERVER_URL** (optional) - override server URL dynamically.
+   Persisted to MMKV and used on next app launch. Falls back to
+   `DEFAULT_HOT_UPDATE_SERVER_URL` if not set.
+
+### Dynamic Server URL
+
+The server URL flows through MMKV, bridging PostHog (runtime) with the
+custom resolver (called on each update check):
+
+| What | Where | When |
+|------|-------|------|
+| Default URL | `urls.ts` constant | Always available (fallback) |
+| Dynamic URL | PostHog → MMKV | Persisted during session |
+| Active URL | MMKV read by resolver | Each update check |
+| On/off switch | PostHog `ENABLE_HOT_UPDATES` | Checked each render |
+
+A custom `resolver` is used instead of `baseURL` so the dynamic URL takes
+effect **in the same session** - no app restart required. The resolver reads
+from MMKV on every `checkUpdate` call.
 
 ## Update Strategy
 

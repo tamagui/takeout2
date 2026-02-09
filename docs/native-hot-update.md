@@ -58,7 +58,11 @@ version is newer.
 Controlled via PostHog:
 
 - ENABLE_HOT_UPDATES: Master on/off switch
-- HOT_UPDATE_SERVER_URL: Server endpoint for updates
+- HOT_UPDATE_SERVER_URL (optional): Override server URL dynamically (takes effect same session)
+
+Default server URL is set via `DEFAULT_HOT_UPDATE_SERVER_URL` in `src/constants/urls.ts`.
+If HOT_UPDATE_SERVER_URL is set in PostHog, it's persisted to MMKV and picked up by the
+custom resolver on the next update check (no app restart required).
 
 ### Environment
 
@@ -234,8 +238,9 @@ accidental rollbacks.
 
 ### Updates not applying
 
-Check feature flags in PostHog, verify server URL is configured, confirm
-.env.hotupdater has correct credentials.
+Check ENABLE_HOT_UPDATES feature flag in PostHog, verify server URL
+(DEFAULT_HOT_UPDATE_SERVER_URL in urls.ts or HOT_UPDATE_SERVER_URL in PostHog),
+confirm .env.hotupdater has correct credentials.
 
 ### Splash screen stuck
 

@@ -61,10 +61,10 @@ export function args<const S extends string>(strings: TemplateStringsArray | S):
 
   // parse spec: "--port number --verbose boolean"
   const schema: Record<string, 'string' | 'number' | 'boolean'> = {}
-  const matches = spec.matchAll(/--?([a-z-]+)\s+(string|number|boolean)/gi)
+  const matches = spec.matchAll(/--?([a-z0-9-]+)\s+(string|number|boolean)/gi)
 
   for (const [, flag, type] of matches) {
-    const camel = flag!.replace(/-([a-z])/g, (_, c) => c.toUpperCase())
+    const camel = flag!.replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase())
     schema[camel] = type as 'string' | 'number' | 'boolean'
   }
 
@@ -75,7 +75,7 @@ export function args<const S extends string>(strings: TemplateStringsArray | S):
     const arg = argv[i]!
 
     if (arg.startsWith('-')) {
-      const key = arg.replace(/^--?/, '').replace(/-([a-z])/g, (_, c) => c.toUpperCase())
+      const key = arg.replace(/^--?/, '').replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase())
       const type = schema[key]
 
       if (type === 'boolean') {

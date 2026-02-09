@@ -5,6 +5,7 @@ import type { PaymentElementProps } from '@stripe/react-stripe-js'
 export interface PaymentFormProps {
   onSuccess?: (paymentIntentId: string) => void
   onError?: (error: Error) => void
+  returnUrl?: string
   layout?: NonNullable<PaymentElementProps['options']>['layout']
   children: (props: {
     submit: () => Promise<void>
@@ -17,6 +18,7 @@ export interface PaymentFormProps {
 export const PaymentForm = ({
   onSuccess,
   onError,
+  returnUrl,
   layout = 'accordion',
   children,
 }: PaymentFormProps): ReactElement => {
@@ -41,6 +43,7 @@ export const PaymentForm = ({
 
       const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
         elements,
+        confirmParams: returnUrl ? { return_url: returnUrl } : undefined,
         redirect: 'if_required',
       })
 
@@ -60,7 +63,7 @@ export const PaymentForm = ({
     } finally {
       setLoading(false)
     }
-  }, [stripe, elements, onSuccess, onError])
+  }, [stripe, elements, returnUrl, onSuccess, onError])
 
   return (
     <>

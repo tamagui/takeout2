@@ -27,6 +27,7 @@ export async function POST(req: Request): Promise<Response> {
     mode: (body.mode as 'payment' | 'subscription') || 'payment',
     successUrl: `${origin}/home/products?success=true`,
     cancelUrl: `${origin}/home/products?canceled=true`,
+    allowPromotionCodes: true,
     metadata: {
       source: 'products-page',
     },

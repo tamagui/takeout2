@@ -35,6 +35,14 @@ export {
 // prices and products
 export { listPrices, getPrice, listProducts, getProduct } from './stripe/prices'
 
+// promotion codes
+export {
+  validatePromotionCode,
+  calculateDiscountedAmount,
+  updatePaymentIntentAmount,
+  type ValidatedPromo,
+} from './stripe/promos'
+
 // payment intents (for custom Elements flow)
 export {
   createPaymentIntent,

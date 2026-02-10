@@ -71,7 +71,7 @@ const DesktopIcon: React.FC<{
           textAlign: 'center',
           textShadow: '0 1px 2px rgba(255,255,255,0.5)',
           lineHeight: 1.2,
-          whiteSpace: 'nowrap',
+          whiteSpace: 'pre-line',
         }}
       >
         {icon.label}

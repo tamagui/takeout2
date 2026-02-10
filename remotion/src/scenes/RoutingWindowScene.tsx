@@ -11,8 +11,8 @@ import {
 
 import { FakeDesktopScene } from './FakeDesktopScene'
 
-const MONO = "'SF Mono', 'Fira Code', 'Cascadia Code', monospace"
-const UI = "'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif"
+export const MONO = "'SF Mono', 'Fira Code', 'Cascadia Code', monospace"
+export const UI = "'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif"
 
 // routing icon is 2nd in left column
 const CURSOR_START = { x: 700, y: 500 }
@@ -51,7 +51,7 @@ type TreeEntry = {
   active?: boolean
 }
 
-const FILE_TREE: TreeEntry[] = [
+export const FILE_TREE: TreeEntry[] = [
   { indent: 0, name: '...', isFolder: true },
   { indent: 0, name: 'feed', isFolder: true },
   { indent: 1, name: '@modal', isFolder: true },
@@ -70,7 +70,7 @@ type CodeSnippet = {
   lines: CodeToken[][]
 }
 
-const SNIPPET_1: CodeSnippet = {
+export const SNIPPET_1: CodeSnippet = {
   title: 'feed/@modal/(..)photo/[id]/page.tsx',
   lines: [
     [
@@ -113,7 +113,7 @@ const SNIPPET_1: CodeSnippet = {
   ],
 }
 
-const SNIPPET_2: CodeSnippet = {
+export const SNIPPET_2: CodeSnippet = {
   title: 'photo/[id]/page.tsx',
   lines: [
     [
@@ -143,7 +143,7 @@ const SNIPPET_2: CodeSnippet = {
 }
 
 // mini browser wireframe for diagrams
-const MiniBrowser: React.FC<{
+export const MiniBrowser: React.FC<{
   url: string
   width?: number
   height?: number
@@ -218,7 +218,7 @@ const GRID_COLORS = [
   '#e0e0e0',
 ]
 
-const FeedCards: React.FC<{ highlightIndex?: number; dimmed?: boolean }> = ({
+export const FeedCards: React.FC<{ highlightIndex?: number; dimmed?: boolean }> = ({
   highlightIndex = -1,
   dimmed = false,
 }) => (

@@ -46,7 +46,7 @@ type CodeToken = { text: string; color: string }
 type CodeSnippet = { title: string; lines: CodeToken[][] }
 
 // stage 1 left — traditional options API
-const OPTIONS_SNIPPET: CodeSnippet = {
+export const OPTIONS_SNIPPET: CodeSnippet = {
   title: '_layout.tsx — options API',
   lines: [
     [
@@ -100,7 +100,7 @@ const OPTIONS_SNIPPET: CodeSnippet = {
 }
 
 // stage 1 right — composition API
-const COMPOSITION_SNIPPET: CodeSnippet = {
+export const COMPOSITION_SNIPPET: CodeSnippet = {
   title: '_layout.tsx — composition API',
   lines: [
     [
@@ -163,7 +163,7 @@ const COMPOSITION_SNIPPET: CodeSnippet = {
 }
 
 // stage 2 — advanced configuration
-const ADVANCED_SNIPPET: CodeSnippet = {
+export const ADVANCED_SNIPPET: CodeSnippet = {
   title: 'feed/_layout.tsx',
   lines: [
     [
@@ -244,7 +244,7 @@ const ADVANCED_SNIPPET: CodeSnippet = {
 }
 
 // stage 3 — code snippets
-const SNIPPET_1: CodeSnippet = {
+export const SNIPPET_1: CodeSnippet = {
   title: '_layout.tsx',
   lines: [
     [
@@ -314,7 +314,7 @@ const SNIPPET_1: CodeSnippet = {
   ],
 }
 
-const SNIPPET_2: CodeSnippet = {
+export const SNIPPET_2: CodeSnippet = {
   title: 'search/_layout.tsx',
   lines: [
     [
@@ -369,7 +369,7 @@ const SNIPPET_2: CodeSnippet = {
 }
 
 // reusable code card for stages 1 and 2
-const CodeCard: React.FC<{
+export const CodeCard: React.FC<{
   snippet: CodeSnippet
   width?: number
 }> = ({ snippet, width = 550 }) => (
@@ -433,7 +433,7 @@ const CodeCard: React.FC<{
 )
 
 // iOS header mockup for stage 2
-const HeaderMockup: React.FC = () => (
+export const HeaderMockup: React.FC = () => (
   <div
     style={{
       width: 380,

@@ -16,6 +16,10 @@ import {
   StackHeaderWindowScene,
   STACK_HEADER_WINDOW_DURATION,
 } from './scenes/StackHeaderWindowScene'
+import {
+  OnePromoCombined,
+  ONE_PROMO_COMBINED_DURATION,
+} from './scenes/OnePromoCombined'
 
 const LaunchIntroSchema = z.object({
   tagline: z.string(),
@@ -46,6 +50,15 @@ export const RemotionRoot = () => {
         id="OnePromoStackHeader"
         component={StackHeaderWindowScene}
         durationInFrames={STACK_HEADER_WINDOW_DURATION}
+        fps={60}
+        width={1920}
+        height={1080}
+      />
+
+      <Composition
+        id="OnePromoCombined"
+        component={OnePromoCombined}
+        durationInFrames={ONE_PROMO_COMBINED_DURATION}
         fps={60}
         width={1920}
         height={1080}

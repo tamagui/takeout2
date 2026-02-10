@@ -25,6 +25,14 @@ const MOVE_END = 35
 const CLICK = 40
 const WINDOW_OPEN = 52
 
+// right panel stage timeline
+const S1_ENTER = WINDOW_OPEN + 16
+const S1_EXIT = WINDOW_OPEN + 170
+const S2_ENTER = WINDOW_OPEN + 180
+const S2_EXIT = WINDOW_OPEN + 350
+const S3_ENTER = WINDOW_OPEN + 360
+const STAGE_FADE = 20
+
 // syntax highlight colors matching the reference image
 const C = {
   keyword: '#cf222e',
@@ -36,7 +44,7 @@ const C = {
   string: '#0a3069',
 }
 
-// file tree entries for the left card
+// file tree entries
 type TreeEntry = {
   indent: number
   name: string
@@ -135,7 +143,125 @@ const SNIPPET_2: CodeSnippet = {
   ],
 }
 
-export const ROUTING_WINDOW_DURATION = 960 // 16s at 60fps
+// mini browser wireframe for diagrams
+const MiniBrowser: React.FC<{
+  url: string
+  width?: number
+  height?: number
+  children: React.ReactNode
+}> = ({ url, width = 280, height = 210, children }) => (
+  <div
+    style={{
+      width,
+      height,
+      borderRadius: 8,
+      border: '1px solid #d0d7de',
+      overflow: 'hidden',
+      background: '#fff',
+      display: 'flex',
+      flexDirection: 'column',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+    }}
+  >
+    <div
+      style={{
+        height: 26,
+        background: '#f6f8fa',
+        borderBottom: '1px solid #d0d7de',
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0 8px',
+        gap: 5,
+        flexShrink: 0,
+      }}
+    >
+      <div style={{ display: 'flex', gap: 4 }}>
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            style={{
+              width: 7,
+              height: 7,
+              borderRadius: '50%',
+              background: ['#FF5F57', '#FFBD2E', '#28CA42'][i],
+            }}
+          />
+        ))}
+      </div>
+      <div
+        style={{
+          flex: 1,
+          background: '#fff',
+          borderRadius: 4,
+          border: '1px solid #e0e0e0',
+          padding: '2px 8px',
+          fontSize: 10,
+          fontFamily: UI,
+          color: '#57606a',
+        }}
+      >
+        {url}
+      </div>
+    </div>
+    <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+      {children}
+    </div>
+  </div>
+)
+
+// card placeholders for feed wireframes
+const FeedCards: React.FC<{ highlightIndex?: number; dimmed?: boolean }> = ({
+  highlightIndex = -1,
+  dimmed = false,
+}) => (
+  <div
+    style={{
+      padding: 8,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 6,
+      opacity: dimmed ? 0.3 : 1,
+    }}
+  >
+    {[0, 1, 2, 3].map((i) => {
+      const active = i === highlightIndex
+      return (
+        <div
+          key={i}
+          style={{
+            height: 46,
+            borderRadius: 6,
+            background: active ? 'rgba(59, 130, 246, 0.12)' : '#f0f0f0',
+            border: active ? '2px solid #3b82f6' : '1px solid #e0e0e0',
+            display: 'flex',
+            alignItems: 'center',
+            padding: '0 10px',
+            gap: 8,
+          }}
+        >
+          <div
+            style={{
+              width: 22,
+              height: 22,
+              borderRadius: 4,
+              background: active ? '#93c5fd' : '#d4d4d4',
+            }}
+          />
+          <div
+            style={{
+              flex: 1,
+              height: 8,
+              borderRadius: 4,
+              background: active ? '#93c5fd' : '#d4d4d4',
+            }}
+          />
+        </div>
+      )
+    })}
+  </div>
+)
+
+export const ROUTING_WINDOW_DURATION = 600 // 10s at 60fps
 
 export const RoutingWindowScene: React.FC = () => {
   const frame = useCurrentFrame()
@@ -198,6 +324,42 @@ export const RoutingWindowScene: React.FC = () => {
     extrapolateRight: 'clamp',
   })
 
+  // right panel stage animations
+  const s1Spring = spring({
+    frame: Math.max(0, frame - S1_ENTER),
+    fps,
+    config: { damping: 20, stiffness: 140 },
+    durationInFrames: 25,
+  })
+  const s1Exit = interpolate(frame, [S1_EXIT, S1_EXIT + STAGE_FADE], [1, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
+  const stage1Opacity = Math.min(s1Spring, s1Exit)
+  const stage1Y = interpolate(s1Spring, [0, 1], [15, 0])
+
+  const s2Spring = spring({
+    frame: Math.max(0, frame - S2_ENTER),
+    fps,
+    config: { damping: 20, stiffness: 140 },
+    durationInFrames: 25,
+  })
+  const s2Exit = interpolate(frame, [S2_EXIT, S2_EXIT + STAGE_FADE], [1, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
+  const stage2Opacity = Math.min(s2Spring, s2Exit)
+  const stage2Y = interpolate(s2Spring, [0, 1], [15, 0])
+
+  const s3Spring = spring({
+    frame: Math.max(0, frame - S3_ENTER),
+    fps,
+    config: { damping: 20, stiffness: 140 },
+    durationInFrames: 25,
+  })
+  const stage3Opacity = s3Spring
+  const stage3Y = interpolate(s3Spring, [0, 1], [15, 0])
+
   return (
     <AbsoluteFill>
       {/* desktop background */}
@@ -219,7 +381,7 @@ export const RoutingWindowScene: React.FC = () => {
         />
       )}
 
-      {/* routes window - split layout */}
+      {/* routes window */}
       {frame >= WINDOW_OPEN && (
         <div
           style={{
@@ -293,7 +455,7 @@ export const RoutingWindowScene: React.FC = () => {
             <div style={{ width: 52 }} />
           </div>
 
-          {/* split content: video left, file tree right */}
+          {/* split content: video left, diagrams right */}
           <div
             style={{
               flex: 1,
@@ -304,7 +466,7 @@ export const RoutingWindowScene: React.FC = () => {
             {/* left: demo video */}
             <div
               style={{
-                width: '50%',
+                width: '38%',
                 background: '#1a1a2e',
                 display: 'flex',
                 alignItems: 'center',
@@ -349,10 +511,10 @@ export const RoutingWindowScene: React.FC = () => {
               />
             </div>
 
-            {/* right: file tree + code snippets (image reference style) */}
+            {/* right: intercepting routes demo */}
             <div
               style={{
-                width: '50%',
+                width: '62%',
                 background: '#f5f5f5',
                 display: 'flex',
                 flexDirection: 'column',
@@ -368,290 +530,420 @@ export const RoutingWindowScene: React.FC = () => {
                   fontWeight: 700,
                   color: '#1f2328',
                   marginBottom: 16,
+                  flexShrink: 0,
                 }}
               >
                 Intercepting Routes
               </div>
 
-              {/* file tree + snippets row */}
-              <div
-                style={{
-                  flex: 1,
-                  display: 'flex',
-                  gap: 16,
-                  overflow: 'hidden',
-                }}
-              >
-              {/* file tree card */}
-              <div
-                style={{
-                  width: 240,
-                  flexShrink: 0,
-                  background: '#fff',
-                  borderRadius: 10,
-                  border: '1px solid #e0e0e0',
-                  padding: '16px 0',
-                  alignSelf: 'flex-start',
-                }}
-              >
-                {FILE_TREE.map((entry, i) => {
-                  const treeSpring = spring({
-                    frame: Math.max(0, frame - WINDOW_OPEN - 14 - i * 2),
-                    fps,
-                    config: { damping: 22, stiffness: 160 },
-                    durationInFrames: 20,
-                  })
-                  const treeOpacity = interpolate(
-                    treeSpring,
-                    [0, 0.4],
-                    [0, 1],
-                    { extrapolateRight: 'clamp' }
-                  )
-
-                  return (
+              {/* stages container */}
+              <div style={{ flex: 1, position: 'relative' }}>
+                {/* stage 1: feed → modal */}
+                {stage1Opacity > 0 && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      opacity: stage1Opacity,
+                      transform: `translateY(${stage1Y}px)`,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 20,
+                    }}
+                  >
                     <div
-                      key={`${entry.name}-${i}`}
+                      style={{
+                        fontSize: 15,
+                        fontFamily: UI,
+                        fontWeight: 600,
+                        color: '#57606a',
+                      }}
+                    >
+                      When a user clicks from the feed...
+                    </div>
+
+                    <div
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        height: 36,
-                        paddingLeft: 16 + entry.indent * 20,
-                        paddingRight: 12,
-                        opacity: treeOpacity,
+                        gap: 20,
                       }}
                     >
-                      <span
-                        style={{
-                          fontSize: 14,
-                          color: '#8b8b8b',
-                          marginRight: 8,
-                          flexShrink: 0,
-                        }}
-                      >
-                        {entry.isFolder ? '📁' : '📄'}
-                      </span>
-                      <span
-                        style={{
-                          fontSize: 15,
-                          fontFamily: UI,
-                          fontWeight: entry.isFolder ? 600 : 400,
-                          color: '#1f2328',
-                          flex: 1,
-                        }}
-                      >
-                        {entry.name}
-                      </span>
-                      {entry.active && (
-                        <div
-                          style={{
-                            width: 10,
-                            height: 10,
-                            borderRadius: '50%',
-                            background: '#3b82f6',
-                            flexShrink: 0,
-                          }}
-                        />
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
+                      {/* feed page with highlighted card */}
+                      <MiniBrowser url="acme.com/feed" width={360} height={270}>
+                        <FeedCards highlightIndex={1} />
+                      </MiniBrowser>
 
-              {/* arrow + code cards column */}
-              <div
-                style={{
-                  flex: 1,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 20,
-                  justifyContent: 'center',
-                }}
-              >
-                {/* snippet 1 */}
-                {(() => {
-                  const s1Spring = spring({
-                    frame: Math.max(0, frame - WINDOW_OPEN - 30),
-                    fps,
-                    config: { damping: 20, stiffness: 140 },
-                    durationInFrames: 25,
-                  })
-                  const s1Opacity = interpolate(
-                    s1Spring,
-                    [0, 0.3],
-                    [0, 1],
-                    { extrapolateRight: 'clamp' }
-                  )
-                  const s1X = interpolate(s1Spring, [0, 1], [15, 0])
-                  return (
-                    <div
-                      style={{
-                        opacity: s1Opacity,
-                        transform: `translateX(${s1X}px)`,
-                      }}
-                    >
                       {/* arrow */}
                       <div
                         style={{
-                          fontSize: 18,
-                          color: '#9ca3af',
-                          marginBottom: 6,
-                          marginLeft: -20,
+                          fontSize: 32,
+                          color: '#3b82f6',
+                          fontWeight: 700,
                         }}
                       >
                         →
                       </div>
-                      <div
-                        style={{
-                          background: '#fff',
-                          borderRadius: 10,
-                          border: '1px solid #d0d7de',
-                          overflow: 'hidden',
-                        }}
-                      >
-                        {/* snippet header */}
+
+                      {/* feed page with modal overlay */}
+                      <MiniBrowser url="acme.com/feed" width={360} height={270}>
+                        <FeedCards dimmed />
+                        {/* modal overlay */}
                         <div
                           style={{
-                            padding: '8px 14px',
-                            background: '#f6f8fa',
-                            borderBottom: '1px solid #d0d7de',
+                            position: 'absolute',
+                            inset: 0,
+                            background: 'rgba(0,0,0,0.25)',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: 6,
+                            justifyContent: 'center',
                           }}
                         >
-                          <span style={{ fontSize: 13, color: '#6e7781' }}>
-                            ⚛
-                          </span>
-                          <span
+                          <div
                             style={{
-                              fontSize: 12,
-                              fontFamily: MONO,
-                              fontWeight: 500,
-                              color: '#57606a',
+                              width: '70%',
+                              height: '55%',
+                              background: '#fff',
+                              borderRadius: 8,
+                              boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
                             }}
                           >
-                            {SNIPPET_1.title}
-                          </span>
-                        </div>
-                        {/* snippet code */}
-                        <div style={{ padding: '12px 16px' }}>
-                          {SNIPPET_1.lines.map((line, li) => (
                             <div
-                              key={li}
                               style={{
-                                fontFamily: MONO,
-                                fontSize: 13,
-                                lineHeight: 1.7,
-                                whiteSpace: 'pre',
+                                width: 65,
+                                height: 65,
+                                borderRadius: 8,
+                                background:
+                                  'linear-gradient(135deg, #93c5fd, #3b82f6)',
                               }}
-                            >
-                              {line.map((token, ti) => (
-                                <span
-                                  key={ti}
-                                  style={{ color: token.color }}
-                                >
-                                  {token.text}
-                                </span>
-                              ))}
-                            </div>
-                          ))}
+                            />
+                          </div>
                         </div>
-                      </div>
+                      </MiniBrowser>
                     </div>
-                  )
-                })()}
 
-                {/* snippet 2 */}
-                {(() => {
-                  const s2Spring = spring({
-                    frame: Math.max(0, frame - WINDOW_OPEN - 42),
-                    fps,
-                    config: { damping: 20, stiffness: 140 },
-                    durationInFrames: 25,
-                  })
-                  const s2Opacity = interpolate(
-                    s2Spring,
-                    [0, 0.3],
-                    [0, 1],
-                    { extrapolateRight: 'clamp' }
-                  )
-                  const s2X = interpolate(s2Spring, [0, 1], [15, 0])
-                  return (
                     <div
                       style={{
-                        opacity: s2Opacity,
-                        transform: `translateX(${s2X}px)`,
+                        fontSize: 13,
+                        fontFamily: UI,
+                        color: '#3b82f6',
+                        fontWeight: 600,
+                        background: 'rgba(59, 130, 246, 0.08)',
+                        padding: '6px 14px',
+                        borderRadius: 6,
                       }}
                     >
+                      Photo opens as a modal overlay
+                    </div>
+                  </div>
+                )}
+
+                {/* stage 2: direct URL → full page */}
+                {stage2Opacity > 0 && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      opacity: stage2Opacity,
+                      transform: `translateY(${stage2Y}px)`,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 20,
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: 15,
+                        fontFamily: UI,
+                        fontWeight: 600,
+                        color: '#57606a',
+                      }}
+                    >
+                      When visiting the URL directly...
+                    </div>
+
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 20,
+                      }}
+                    >
+                      {/* browser with direct URL */}
+                      <MiniBrowser url="acme.com/photo/123" width={360} height={270}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: '100%',
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: 100,
+                              height: 100,
+                              borderRadius: 10,
+                              background:
+                                'linear-gradient(135deg, #93c5fd, #3b82f6)',
+                            }}
+                          />
+                        </div>
+                      </MiniBrowser>
+
+                      {/* arrow */}
                       <div
                         style={{
-                          fontSize: 18,
-                          color: '#9ca3af',
-                          marginBottom: 6,
-                          marginLeft: -20,
+                          fontSize: 32,
+                          color: '#3b82f6',
+                          fontWeight: 700,
                         }}
                       >
                         →
                       </div>
-                      <div
-                        style={{
-                          background: '#fff',
-                          borderRadius: 10,
-                          border: '1px solid #d0d7de',
-                          overflow: 'hidden',
-                        }}
-                      >
+
+                      {/* full page view */}
+                      <MiniBrowser url="acme.com/photo/123" width={360} height={270}>
                         <div
                           style={{
-                            padding: '8px 14px',
-                            background: '#f6f8fa',
-                            borderBottom: '1px solid #d0d7de',
                             display: 'flex',
-                            alignItems: 'center',
-                            gap: 6,
+                            flexDirection: 'column',
+                            height: '100%',
                           }}
                         >
-                          <span style={{ fontSize: 13, color: '#6e7781' }}>
-                            ⚛
+                          {/* photo taking most of the page */}
+                          <div
+                            style={{
+                              flex: 1,
+                              margin: 8,
+                              borderRadius: 6,
+                              background:
+                                'linear-gradient(135deg, #93c5fd, #3b82f6)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <div
+                              style={{
+                                color: '#fff',
+                                fontSize: 11,
+                                fontFamily: UI,
+                                fontWeight: 600,
+                              }}
+                            >
+                              Full Page View
+                            </div>
+                          </div>
+                          {/* content bars below */}
+                          <div
+                            style={{
+                              padding: '0 8px 8px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: 4,
+                            }}
+                          >
+                            <div
+                              style={{
+                                height: 6,
+                                borderRadius: 3,
+                                background: '#e0e0e0',
+                                width: '80%',
+                              }}
+                            />
+                            <div
+                              style={{
+                                height: 6,
+                                borderRadius: 3,
+                                background: '#e0e0e0',
+                                width: '60%',
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </MiniBrowser>
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: 13,
+                        fontFamily: UI,
+                        color: '#3b82f6',
+                        fontWeight: 600,
+                        background: 'rgba(59, 130, 246, 0.08)',
+                        padding: '6px 14px',
+                        borderRadius: 6,
+                      }}
+                    >
+                      Same component renders as full page
+                    </div>
+                  </div>
+                )}
+
+                {/* stage 3: file tree + code snippets */}
+                {stage3Opacity > 0 && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      opacity: stage3Opacity,
+                      transform: `translateY(${stage3Y}px)`,
+                      display: 'flex',
+                      gap: 16,
+                      overflow: 'hidden',
+                    }}
+                  >
+                    {/* file tree card */}
+                    <div
+                      style={{
+                        width: 240,
+                        flexShrink: 0,
+                        background: '#fff',
+                        borderRadius: 10,
+                        border: '1px solid #e0e0e0',
+                        padding: '16px 0',
+                        alignSelf: 'flex-start',
+                      }}
+                    >
+                      {FILE_TREE.map((entry, i) => (
+                        <div
+                          key={`${entry.name}-${i}`}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            height: 36,
+                            paddingLeft: 16 + entry.indent * 20,
+                            paddingRight: 12,
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: 14,
+                              color: '#8b8b8b',
+                              marginRight: 8,
+                              flexShrink: 0,
+                            }}
+                          >
+                            {entry.isFolder ? '\u{1F4C1}' : '\u{1F4C4}'}
                           </span>
                           <span
                             style={{
-                              fontSize: 12,
-                              fontFamily: MONO,
-                              fontWeight: 500,
-                              color: '#57606a',
+                              fontSize: 15,
+                              fontFamily: UI,
+                              fontWeight: entry.isFolder ? 600 : 400,
+                              color: '#1f2328',
+                              flex: 1,
                             }}
                           >
-                            {SNIPPET_2.title}
+                            {entry.name}
                           </span>
-                        </div>
-                        <div style={{ padding: '12px 16px' }}>
-                          {SNIPPET_2.lines.map((line, li) => (
+                          {entry.active && (
                             <div
-                              key={li}
                               style={{
-                                fontFamily: MONO,
-                                fontSize: 13,
-                                lineHeight: 1.7,
-                                whiteSpace: 'pre',
+                                width: 10,
+                                height: 10,
+                                borderRadius: '50%',
+                                background: '#3b82f6',
+                                flexShrink: 0,
+                              }}
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* code snippets column */}
+                    <div
+                      style={{
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 16,
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {[SNIPPET_1, SNIPPET_2].map((snippet, si) => (
+                        <div key={si}>
+                          <div
+                            style={{
+                              fontSize: 18,
+                              color: '#9ca3af',
+                              marginBottom: 6,
+                              marginLeft: -20,
+                            }}
+                          >
+                            →
+                          </div>
+                          <div
+                            style={{
+                              background: '#fff',
+                              borderRadius: 10,
+                              border: '1px solid #d0d7de',
+                              overflow: 'hidden',
+                            }}
+                          >
+                            <div
+                              style={{
+                                padding: '8px 14px',
+                                background: '#f6f8fa',
+                                borderBottom: '1px solid #d0d7de',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 6,
                               }}
                             >
-                              {line.map((token, ti) => (
-                                <span
-                                  key={ti}
-                                  style={{ color: token.color }}
+                              <span
+                                style={{ fontSize: 13, color: '#6e7781' }}
+                              >
+                                ⚛
+                              </span>
+                              <span
+                                style={{
+                                  fontSize: 12,
+                                  fontFamily: MONO,
+                                  fontWeight: 500,
+                                  color: '#57606a',
+                                }}
+                              >
+                                {snippet.title}
+                              </span>
+                            </div>
+                            <div style={{ padding: '12px 16px' }}>
+                              {snippet.lines.map((line, li) => (
+                                <div
+                                  key={li}
+                                  style={{
+                                    fontFamily: MONO,
+                                    fontSize: 13,
+                                    lineHeight: 1.7,
+                                    whiteSpace: 'pre',
+                                  }}
                                 >
-                                  {token.text}
-                                </span>
+                                  {line.map((token, ti) => (
+                                    <span
+                                      key={ti}
+                                      style={{ color: token.color }}
+                                    >
+                                      {token.text}
+                                    </span>
+                                  ))}
+                                </div>
                               ))}
                             </div>
-                          ))}
+                          </div>
                         </div>
-                      </div>
+                      ))}
                     </div>
-                  )
-                })()}
-              </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

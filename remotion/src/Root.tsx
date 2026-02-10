@@ -12,6 +12,10 @@ import {
   RoutingWindowScene,
   ROUTING_WINDOW_DURATION,
 } from './scenes/RoutingWindowScene'
+import {
+  StackHeaderWindowScene,
+  STACK_HEADER_WINDOW_DURATION,
+} from './scenes/StackHeaderWindowScene'
 
 const LaunchIntroSchema = z.object({
   tagline: z.string(),
@@ -33,6 +37,15 @@ export const RemotionRoot = () => {
         id="OnePromoRouting"
         component={RoutingWindowScene}
         durationInFrames={ROUTING_WINDOW_DURATION}
+        fps={60}
+        width={1920}
+        height={1080}
+      />
+
+      <Composition
+        id="OnePromoStackHeader"
+        component={StackHeaderWindowScene}
+        durationInFrames={STACK_HEADER_WINDOW_DURATION}
         fps={60}
         width={1920}
         height={1080}

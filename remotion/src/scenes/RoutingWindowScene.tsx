@@ -1,8 +1,10 @@
 import {
   AbsoluteFill,
   Easing,
+  Img,
   interpolate,
   spring,
+  staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion'
@@ -206,52 +208,77 @@ const MiniBrowser: React.FC<{
   </div>
 )
 
-// card placeholders for feed wireframes
+// photo grid for feed wireframes
+const GRID_COLORS = [
+  '#e8e8e8',
+  '#e0e0e0',
+  '#e5e5e5',
+  '#e2e2e2',
+  '#e8e8e8',
+  '#e0e0e0',
+]
+
 const FeedCards: React.FC<{ highlightIndex?: number; dimmed?: boolean }> = ({
   highlightIndex = -1,
   dimmed = false,
 }) => (
   <div
     style={{
-      padding: 8,
+      padding: 10,
       display: 'flex',
-      flexDirection: 'column',
-      gap: 6,
+      flexWrap: 'wrap',
+      gap: 8,
       opacity: dimmed ? 0.3 : 1,
     }}
   >
-    {[0, 1, 2, 3].map((i) => {
+    {[0, 1, 2, 3, 4, 5].map((i) => {
       const active = i === highlightIndex
       return (
         <div
           key={i}
           style={{
-            height: 46,
-            borderRadius: 6,
-            background: active ? 'rgba(59, 130, 246, 0.12)' : '#f0f0f0',
-            border: active ? '2px solid #3b82f6' : '1px solid #e0e0e0',
+            width: 'calc(33.333% - 6px)',
+            aspectRatio: '1',
+            borderRadius: 8,
+            overflow: 'hidden',
+            border: active ? '3px solid #3b82f6' : '1px solid #e8e8e8',
+            boxShadow: active
+              ? '0 0 0 2px rgba(59, 130, 246, 0.3)'
+              : '0 1px 3px rgba(0,0,0,0.06)',
             display: 'flex',
-            alignItems: 'center',
-            padding: '0 10px',
-            gap: 8,
+            flexDirection: 'column',
           }}
         >
           <div
             style={{
-              width: 22,
-              height: 22,
-              borderRadius: 4,
-              background: active ? '#93c5fd' : '#d4d4d4',
+              flex: 1,
+              background: GRID_COLORS[i],
             }}
           />
           <div
             style={{
-              flex: 1,
-              height: 8,
-              borderRadius: 4,
-              background: active ? '#93c5fd' : '#d4d4d4',
+              padding: '6px 8px',
+              background: '#fff',
             }}
-          />
+          >
+            <div
+              style={{
+                height: 6,
+                width: '70%',
+                borderRadius: 3,
+                background: active ? '#93c5fd' : '#e0e0e0',
+              }}
+            />
+            <div
+              style={{
+                height: 5,
+                width: '45%',
+                borderRadius: 3,
+                background: active ? '#bfdbfe' : '#f0f0f0',
+                marginTop: 4,
+              }}
+            />
+          </div>
         </div>
       )
     })}
@@ -728,13 +755,13 @@ export const RoutingWindowScene: React.FC = () => {
                       {/* feed page with highlighted card + ripple */}
                       <MiniBrowser url="acme.com/feed" width={580} height={420}>
                         <FeedCards highlightIndex={1} />
-                        {/* ripple press effect on card index 1 */}
+                        {/* ripple press effect on card index 1 (top-right in grid) */}
                         {rippleProgress > 0 && rippleProgress < 1 && (
                           <div
                             style={{
                               position: 'absolute',
                               left: '50%',
-                              top: 83,
+                              top: '22%',
                               width: 40,
                               height: 40,
                               borderRadius: '50%',
@@ -1012,35 +1039,67 @@ export const RoutingWindowScene: React.FC = () => {
                     {/* file tree card */}
                     <div
                       style={{
-                        width: 280,
+                        width: 300,
                         flexShrink: 0,
                         background: '#fff',
                         borderRadius: 10,
                         border: '1px solid #e0e0e0',
-                        padding: '18px 0',
+                        overflow: 'hidden',
                       }}
                     >
+                      {/* top bar */}
+                      <div
+                        style={{
+                          height: 36,
+                          background: '#f6f8fa',
+                          borderBottom: '1px solid #e0e0e0',
+                          display: 'flex',
+                          alignItems: 'center',
+                          padding: '0 14px',
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: 13,
+                            fontFamily: UI,
+                            fontWeight: 600,
+                            color: '#57606a',
+                          }}
+                        >
+                          app/
+                        </span>
+                      </div>
+
                       {FILE_TREE.map((entry, i) => (
                         <div
                           key={`${entry.name}-${i}`}
                           style={{
                             display: 'flex',
                             alignItems: 'center',
-                            height: 40,
+                            height: 46,
                             paddingLeft: 18 + entry.indent * 22,
                             paddingRight: 14,
+                            borderBottom:
+                              i < FILE_TREE.length - 1
+                                ? '1px solid #f0f0f0'
+                                : 'none',
                           }}
                         >
-                          <span
+                          <Img
+                            src={staticFile(
+                              entry.isFolder
+                                ? 'icons/folder2.png'
+                                : 'icons/note.png'
+                            )}
                             style={{
-                              fontSize: 16,
-                              color: '#8b8b8b',
-                              marginRight: 8,
+                              width: 22,
+                              height: 22,
+                              objectFit: 'contain',
+                              marginRight: 10,
                               flexShrink: 0,
+                              opacity: 0.7,
                             }}
-                          >
-                            {entry.isFolder ? '\u{1F4C1}' : '\u{1F4C4}'}
-                          </span>
+                          />
                           <span
                             style={{
                               fontSize: 17,

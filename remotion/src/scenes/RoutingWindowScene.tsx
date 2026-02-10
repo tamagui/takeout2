@@ -22,12 +22,12 @@ const MOVE_END = 35
 const CLICK = 40
 const WINDOW_OPEN = 52
 
-// right panel stage timeline
-const S1_ENTER = WINDOW_OPEN + 16
-const S1_EXIT = WINDOW_OPEN + 170
-const S2_ENTER = WINDOW_OPEN + 180
-const S2_EXIT = WINDOW_OPEN + 350
-const S3_ENTER = WINDOW_OPEN + 360
+// right panel stage timeline — starts after zoom completes (WINDOW_OPEN + 65 = frame 117)
+const S1_ENTER = WINDOW_OPEN + 70
+const S1_EXIT = WINDOW_OPEN + 210
+const S2_ENTER = WINDOW_OPEN + 220
+const S2_EXIT = WINDOW_OPEN + 360
+const S3_ENTER = WINDOW_OPEN + 370
 const STAGE_FADE = 20
 
 // syntax highlight colors matching the reference image
@@ -351,6 +351,25 @@ export const RoutingWindowScene: React.FC = () => {
   const finalCursorOpacity = isOpenPhase ? cursorIn * cursorOut : closeCursorIn * closeCursorOut
   const finalClickScale = isOpenPhase ? clickScale : closeClickScale
 
+  // placeholder — visible while zooming, before stage 1
+  const placeholderIn = spring({
+    frame: Math.max(0, frame - (WINDOW_OPEN + 10)),
+    fps,
+    config: { damping: 20, stiffness: 140 },
+    durationInFrames: 25,
+  })
+  const placeholderOut = interpolate(frame, [S1_ENTER - 15, S1_ENTER], [1, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
+  const placeholderOpacity = Math.min(placeholderIn, placeholderOut)
+  // shimmer sweep position (loops)
+  const shimmerX = interpolate(
+    (frame - WINDOW_OPEN) % 40,
+    [0, 40],
+    [-100, 200]
+  )
+
   // right panel stage animations
   const s1Spring = spring({
     frame: Math.max(0, frame - S1_ENTER),
@@ -616,6 +635,63 @@ export const RoutingWindowScene: React.FC = () => {
 
               {/* stages container */}
               <div style={{ flex: 1, position: 'relative' }}>
+                {/* shimmer skeleton — shows during zoom before stage 1 */}
+                {placeholderOpacity > 0 && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      opacity: placeholderOpacity,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 40,
+                    }}
+                  >
+                    {/* left skeleton card */}
+                    <div
+                      style={{
+                        width: 520,
+                        height: 380,
+                        borderRadius: 10,
+                        background: '#e8e8e8',
+                        overflow: 'hidden',
+                        position: 'relative',
+                      }}
+                    >
+                      <div
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          background: `linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%)`,
+                          transform: `translateX(${shimmerX}%)`,
+                        }}
+                      />
+                    </div>
+
+                    {/* right skeleton card */}
+                    <div
+                      style={{
+                        width: 520,
+                        height: 380,
+                        borderRadius: 10,
+                        background: '#e8e8e8',
+                        overflow: 'hidden',
+                        position: 'relative',
+                      }}
+                    >
+                      <div
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          background: `linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%)`,
+                          transform: `translateX(${shimmerX}%)`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+
                 {/* stage 1: feed → modal */}
                 {stage1Opacity > 0 && (
                   <div
@@ -927,7 +1003,7 @@ export const RoutingWindowScene: React.FC = () => {
                       opacity: stage3Opacity,
                       transform: `translateY(${stage3Y}px)`,
                       display: 'flex',
-                      gap: 16,
+                      gap: 24,
                       overflow: 'hidden',
                       justifyContent: 'center',
                       alignItems: 'center',
@@ -936,12 +1012,12 @@ export const RoutingWindowScene: React.FC = () => {
                     {/* file tree card */}
                     <div
                       style={{
-                        width: 240,
+                        width: 280,
                         flexShrink: 0,
                         background: '#fff',
                         borderRadius: 10,
                         border: '1px solid #e0e0e0',
-                        padding: '16px 0',
+                        padding: '18px 0',
                       }}
                     >
                       {FILE_TREE.map((entry, i) => (
@@ -950,14 +1026,14 @@ export const RoutingWindowScene: React.FC = () => {
                           style={{
                             display: 'flex',
                             alignItems: 'center',
-                            height: 36,
-                            paddingLeft: 16 + entry.indent * 20,
-                            paddingRight: 12,
+                            height: 40,
+                            paddingLeft: 18 + entry.indent * 22,
+                            paddingRight: 14,
                           }}
                         >
                           <span
                             style={{
-                              fontSize: 14,
+                              fontSize: 16,
                               color: '#8b8b8b',
                               marginRight: 8,
                               flexShrink: 0,
@@ -967,7 +1043,7 @@ export const RoutingWindowScene: React.FC = () => {
                           </span>
                           <span
                             style={{
-                              fontSize: 15,
+                              fontSize: 17,
                               fontFamily: UI,
                               fontWeight: entry.isFolder ? 600 : 400,
                               color: '#1f2328',
@@ -996,7 +1072,7 @@ export const RoutingWindowScene: React.FC = () => {
                       style={{
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: 16,
+                        gap: 20,
                         justifyContent: 'center',
                       }}
                     >
@@ -1012,22 +1088,22 @@ export const RoutingWindowScene: React.FC = () => {
                           >
                             <div
                               style={{
-                                padding: '8px 14px',
+                                padding: '10px 16px',
                                 background: '#f6f8fa',
                                 borderBottom: '1px solid #d0d7de',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: 6,
+                                gap: 8,
                               }}
                             >
                               <span
-                                style={{ fontSize: 13, color: '#6e7781' }}
+                                style={{ fontSize: 15, color: '#6e7781' }}
                               >
                                 ⚛
                               </span>
                               <span
                                 style={{
-                                  fontSize: 12,
+                                  fontSize: 15,
                                   fontFamily: MONO,
                                   fontWeight: 500,
                                   color: '#57606a',
@@ -1036,13 +1112,13 @@ export const RoutingWindowScene: React.FC = () => {
                                 {snippet.title}
                               </span>
                             </div>
-                            <div style={{ padding: '12px 16px' }}>
+                            <div style={{ padding: '14px 18px' }}>
                               {snippet.lines.map((line, li) => (
                                 <div
                                   key={li}
                                   style={{
                                     fontFamily: MONO,
-                                    fontSize: 13,
+                                    fontSize: 16,
                                     lineHeight: 1.7,
                                     whiteSpace: 'pre',
                                   }}

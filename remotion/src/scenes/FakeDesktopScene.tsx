@@ -1,5 +1,7 @@
 import { AbsoluteFill, Img, staticFile } from 'remotion'
 
+import { OneLogo } from '../TakeoutLogo'
+
 const FONT = "'Inter', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
 
 type IconDef = {
@@ -17,7 +19,7 @@ const LEFT_ICONS: IconDef[] = [
   { icon: 'mobile-app.png', label: 'Native App' },
   { icon: 'video.png', label: 'demo.mov' },
   { icon: 'email.png', label: 'Talk to us' },
-  { icon: 'title.png', label: 'Headless Stack API' },
+  { icon: 'title.png', label: 'Stack Header\nComposition API' },
 ]
 
 // right column - utility/info items
@@ -114,7 +116,7 @@ export const FakeDesktopScene: React.FC = () => {
         />
       ))}
 
-      {/* one logo - centered as brand */}
+      {/* takeout logo - centered as brand */}
       <div
         style={{
           position: 'absolute',
@@ -124,14 +126,7 @@ export const FakeDesktopScene: React.FC = () => {
           filter: 'drop-shadow(0 16px 32px rgba(0,0,0,0.18))',
         }}
       >
-        <Img
-          src={staticFile('ball_circle.WEBP')}
-          style={{
-            width: 360,
-            height: 360,
-            objectFit: 'contain',
-          }}
-        />
+        <OneLogo size={2.5} />
       </div>
     </AbsoluteFill>
   )

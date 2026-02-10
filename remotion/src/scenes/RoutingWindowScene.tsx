@@ -1,6 +1,7 @@
 import {
   AbsoluteFill,
   Easing,
+  Img,
   interpolate,
   spring,
   staticFile,
@@ -134,7 +135,7 @@ const SNIPPET_2: CodeSnippet = {
   ],
 }
 
-export const ROUTING_WINDOW_DURATION = 1680 // ~28s (27s video + intro)
+export const ROUTING_WINDOW_DURATION = 960 // 16s at 60fps
 
 export const RoutingWindowScene: React.FC = () => {
   const frame = useCurrentFrame()
@@ -304,15 +305,37 @@ export const RoutingWindowScene: React.FC = () => {
             <div
               style={{
                 width: '50%',
-                background: '#111',
+                background: '#1a1a2e',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                opacity: videoOpacity,
                 overflow: 'hidden',
                 borderRight: '1px solid #333',
+                position: 'relative',
               }}
             >
+              {/* placeholder shown before video loads */}
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background:
+                    'radial-gradient(ellipse at center, #2a2a4a 0%, #1a1a2e 70%)',
+                }}
+              >
+                <Img
+                  src={staticFile('ball2.png')}
+                  style={{
+                    width: 80,
+                    height: 80,
+                    objectFit: 'contain',
+                    opacity: 0.3,
+                  }}
+                />
+              </div>
               <Video
                 src={staticFile('test.mp4')}
                 muted
@@ -320,6 +343,8 @@ export const RoutingWindowScene: React.FC = () => {
                   width: '100%',
                   height: '100%',
                   objectFit: 'contain',
+                  opacity: videoOpacity,
+                  position: 'relative',
                 }}
               />
             </div>
@@ -330,11 +355,33 @@ export const RoutingWindowScene: React.FC = () => {
                 width: '50%',
                 background: '#f5f5f5',
                 display: 'flex',
+                flexDirection: 'column',
                 padding: 24,
-                gap: 16,
                 overflow: 'hidden',
               }}
             >
+              {/* feature title */}
+              <div
+                style={{
+                  fontSize: 22,
+                  fontFamily: UI,
+                  fontWeight: 700,
+                  color: '#1f2328',
+                  marginBottom: 16,
+                }}
+              >
+                Intercepting Routes
+              </div>
+
+              {/* file tree + snippets row */}
+              <div
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  gap: 16,
+                  overflow: 'hidden',
+                }}
+              >
               {/* file tree card */}
               <div
                 style={{
@@ -604,6 +651,7 @@ export const RoutingWindowScene: React.FC = () => {
                     </div>
                   )
                 })()}
+              </div>
               </div>
             </div>
           </div>

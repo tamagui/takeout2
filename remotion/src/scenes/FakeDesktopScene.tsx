@@ -1,42 +1,33 @@
-import {
-  AbsoluteFill,
-  Img,
-  interpolate,
-  spring,
-  staticFile,
-  useCurrentFrame,
-  useVideoConfig,
-} from 'remotion'
+import { AbsoluteFill, Img, staticFile } from 'remotion'
 
-const FONT =
-  "'Inter', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
+const FONT = "'Inter', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
 
 type IconDef = {
-  emoji: string
+  icon: string
   label: string
 }
 
-// left column - content/feature demos to show in the video
+// left column - content/feature demos
 const LEFT_ICONS: IconDef[] = [
-  { emoji: '📝', label: 'home.tsx' },
-  { emoji: '📁', label: 'Routing' },
-  { emoji: '🎨', label: 'UI Kit' },
-  { emoji: '🔄', label: 'Zero Sync' },
-  { emoji: '⚡', label: 'Server Fns' },
-  { emoji: '📱', label: 'Native App' },
-  { emoji: '🎬', label: 'demo.mov' },
-  { emoji: '✉️', label: 'Talk to us' },
-  { emoji: '🚀', label: 'Sign up ↗' },
+  { icon: 'house.png', label: 'home.tsx' },
+  { icon: 'folder.png', label: 'Routing' },
+  { icon: 'painting.png', label: 'UI Kit' },
+  { icon: 'refresh.png', label: 'Zero Sync' },
+  { icon: 'flash.png', label: 'Server Fns' },
+  { icon: 'mobile-app.png', label: 'Native App' },
+  { icon: 'video.png', label: 'demo.mov' },
+  { icon: 'email.png', label: 'Talk to us' },
+  { icon: 'paper.png', label: 'Sign up ↗' },
 ]
 
 // right column - utility/info items
 const RIGHT_ICONS: IconDef[] = [
-  { emoji: '🏁', label: 'Why One?' },
-  { emoji: '📦', label: 'Changelog' },
-  { emoji: '📖', label: 'Getting Started' },
-  { emoji: '🛍️', label: 'Templates' },
-  { emoji: '💻', label: 'Contribute' },
-  { emoji: '🗑️', label: 'Trash' },
+  { icon: 'image.png', label: 'Why One?' },
+  { icon: 'document.png', label: 'Changelog' },
+  { icon: 'open-book.png', label: 'Getting Started' },
+  { icon: 'template.png', label: 'Templates' },
+  { icon: 'computer.png', label: 'Contribute' },
+  { icon: 'trash.png', label: 'Trash' },
 ]
 
 const ICON_SPACING = 100
@@ -59,15 +50,15 @@ const DesktopIcon: React.FC<{
         width: 100,
       }}
     >
-      <div
+      <Img
+        src={staticFile(`icons/${icon.icon}`)}
         style={{
-          fontSize: 46,
-          lineHeight: 1,
+          width: 52,
+          height: 52,
+          objectFit: 'contain',
           filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.12))',
         }}
-      >
-        {icon.emoji}
-      </div>
+      />
       <div
         style={{
           marginTop: 6,
@@ -90,26 +81,6 @@ const DesktopIcon: React.FC<{
 export const FAKE_DESKTOP_DURATION = 300
 
 export const FakeDesktopScene: React.FC = () => {
-  const frame = useCurrentFrame()
-  const { fps } = useVideoConfig()
-
-  // one logo entrance
-  const logoEntrance = spring({
-    frame: Math.max(0, frame - 15),
-    fps,
-    config: { damping: 14, stiffness: 80, mass: 1.1 },
-    durationInFrames: 40,
-  })
-  const logoOpacity = interpolate(logoEntrance, [0, 0.3], [0, 1], {
-    extrapolateRight: 'clamp',
-  })
-  const logoScale = interpolate(logoEntrance, [0, 1], [0.7, 1])
-
-  // subtle float on the logo after it settles
-  const floatStart = 55
-  const floatProgress = Math.max(0, frame - floatStart)
-  const floatY = floatProgress > 0 ? Math.sin(floatProgress * 0.02) * 4 : 0
-
   return (
     <AbsoluteFill>
       {/* sand texture background */}
@@ -143,22 +114,21 @@ export const FakeDesktopScene: React.FC = () => {
         />
       ))}
 
-      {/* one logo - bottom left */}
+      {/* one logo - centered as brand */}
       <div
         style={{
           position: 'absolute',
-          right: 60,
-          bottom: 40,
-          opacity: logoOpacity,
-          transform: `scale(${logoScale}) translateY(${floatY}px)`,
-          filter: 'drop-shadow(0 12px 24px rgba(0,0,0,0.15))',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          filter: 'drop-shadow(0 16px 32px rgba(0,0,0,0.18))',
         }}
       >
         <Img
-          src={staticFile('ball2.png')}
+          src={staticFile('ball_circle.WEBP')}
           style={{
-            width: 280,
-            height: 280,
+            width: 360,
+            height: 360,
             objectFit: 'contain',
           }}
         />

@@ -365,6 +365,45 @@ export const RoutingWindowScene: React.FC = () => {
   const stage1Opacity = Math.min(s1Spring, s1Exit)
   const stage1Y = interpolate(s1Spring, [0, 1], [15, 0])
 
+  // stage 1 sub-animations: sequential reveal
+  const s1Local = Math.max(0, frame - S1_ENTER)
+
+  // ripple press on highlighted card — starts after left browser settles
+  const RIPPLE_START = 30
+  const rippleProgress = interpolate(s1Local, [RIPPLE_START, RIPPLE_START + 18], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
+  const rippleScale = interpolate(rippleProgress, [0, 1], [0, 2.5])
+  const rippleOpacity = interpolate(rippleProgress, [0, 0.3, 1], [0, 0.5, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
+
+  // arrow fades in after ripple
+  const arrowOpacity = interpolate(s1Local, [42, 52], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
+
+  // right browser springs in after arrow
+  const rightBrowserSpring = spring({
+    frame: Math.max(0, s1Local - 48),
+    fps,
+    config: { damping: 18, stiffness: 120 },
+    durationInFrames: 25,
+  })
+  const rightBrowserScale = interpolate(rightBrowserSpring, [0, 1], [0.85, 1])
+  const rightBrowserOpacity = interpolate(rightBrowserSpring, [0, 0.3], [0, 1], {
+    extrapolateRight: 'clamp',
+  })
+
+  // bottom label fades in after right browser
+  const s1LabelOpacity = interpolate(s1Local, [65, 78], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
+
   const s2Spring = spring({
     frame: Math.max(0, frame - S2_ENTER),
     fps,
@@ -377,6 +416,44 @@ export const RoutingWindowScene: React.FC = () => {
   })
   const stage2Opacity = Math.min(s2Spring, s2Exit)
   const stage2Y = interpolate(s2Spring, [0, 1], [15, 0])
+
+  // stage 2 sub-animations: sequential reveal
+  const s2Local = Math.max(0, frame - S2_ENTER)
+
+  // URL bar glow pulse — highlights the direct URL
+  const S2_PULSE_START = 28
+  const s2PulseProgress = interpolate(s2Local, [S2_PULSE_START, S2_PULSE_START + 20], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
+  const s2PulseOpacity = interpolate(s2PulseProgress, [0, 0.3, 1], [0, 0.6, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
+
+  // stage 2 arrow fades in
+  const s2ArrowOpacity = interpolate(s2Local, [42, 52], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
+
+  // stage 2 right browser springs in
+  const s2RightSpring = spring({
+    frame: Math.max(0, s2Local - 48),
+    fps,
+    config: { damping: 18, stiffness: 120 },
+    durationInFrames: 25,
+  })
+  const s2RightScale = interpolate(s2RightSpring, [0, 1], [0.85, 1])
+  const s2RightOpacity = interpolate(s2RightSpring, [0, 0.3], [0, 1], {
+    extrapolateRight: 'clamp',
+  })
+
+  // stage 2 label fades in
+  const s2LabelOpacity = interpolate(s2Local, [65, 78], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
 
   const s3Spring = spring({
     frame: Math.max(0, frame - S3_ENTER),
@@ -531,6 +608,7 @@ export const RoutingWindowScene: React.FC = () => {
                   color: '#1f2328',
                   marginBottom: 24,
                   flexShrink: 0,
+                  textAlign: 'center',
                 }}
               >
                 Intercepting Routes
@@ -571,43 +649,55 @@ export const RoutingWindowScene: React.FC = () => {
                         gap: 20,
                       }}
                     >
-                      {/* feed page with highlighted card */}
+                      {/* feed page with highlighted card + ripple */}
                       <MiniBrowser url="acme.com/feed" width={580} height={420}>
                         <FeedCards highlightIndex={1} />
+                        {/* ripple press effect on card index 1 */}
+                        {rippleProgress > 0 && rippleProgress < 1 && (
+                          <div
+                            style={{
+                              position: 'absolute',
+                              left: '50%',
+                              top: 83,
+                              width: 40,
+                              height: 40,
+                              borderRadius: '50%',
+                              background: 'rgba(59, 130, 246, 0.35)',
+                              transform: `translate(-50%, -50%) scale(${rippleScale})`,
+                              opacity: rippleOpacity,
+                              pointerEvents: 'none',
+                            }}
+                          />
+                        )}
                       </MiniBrowser>
 
-                      {/* arrow */}
+                      {/* arrow — fades in after ripple */}
                       <div
                         style={{
                           fontSize: 36,
                           color: '#3b82f6',
                           fontWeight: 700,
+                          opacity: arrowOpacity,
                         }}
                       >
                         →
                       </div>
 
-                      {/* feed page with modal overlay */}
-                      <MiniBrowser url="acme.com/feed" width={580} height={420}>
-                        <FeedCards dimmed />
-                        {/* modal overlay */}
-                        <div
-                          style={{
-                            position: 'absolute',
-                            inset: 0,
-                            background: 'rgba(0,0,0,0.25)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
+                      {/* feed page with modal overlay — springs in last */}
+                      <div
+                        style={{
+                          opacity: rightBrowserOpacity,
+                          transform: `scale(${rightBrowserScale})`,
+                        }}
+                      >
+                        <MiniBrowser url="acme.com/feed" width={580} height={420}>
+                          <FeedCards dimmed />
+                          {/* modal overlay */}
                           <div
                             style={{
-                              width: '70%',
-                              height: '55%',
-                              background: '#fff',
-                              borderRadius: 8,
-                              boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                              position: 'absolute',
+                              inset: 0,
+                              background: 'rgba(0,0,0,0.25)',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
@@ -615,16 +705,29 @@ export const RoutingWindowScene: React.FC = () => {
                           >
                             <div
                               style={{
-                                width: 80,
-                                height: 80,
+                                width: '70%',
+                                height: '55%',
+                                background: '#fff',
                                 borderRadius: 8,
-                                background:
-                                  'linear-gradient(135deg, #93c5fd, #3b82f6)',
+                                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
                               }}
-                            />
+                            >
+                              <div
+                                style={{
+                                  width: 80,
+                                  height: 80,
+                                  borderRadius: 8,
+                                  background:
+                                    'linear-gradient(135deg, #93c5fd, #3b82f6)',
+                                }}
+                              />
+                            </div>
                           </div>
-                        </div>
-                      </MiniBrowser>
+                        </MiniBrowser>
+                      </div>
                     </div>
 
                     <div
@@ -636,6 +739,7 @@ export const RoutingWindowScene: React.FC = () => {
                         background: 'rgba(59, 130, 246, 0.08)',
                         padding: '10px 20px',
                         borderRadius: 8,
+                        opacity: s1LabelOpacity,
                       }}
                     >
                       Photo opens as a modal overlay
@@ -676,7 +780,7 @@ export const RoutingWindowScene: React.FC = () => {
                         gap: 20,
                       }}
                     >
-                      {/* browser with direct URL */}
+                      {/* browser with direct URL + URL bar glow */}
                       <MiniBrowser url="acme.com/photo/123" width={580} height={420}>
                         <div
                           style={{
@@ -696,80 +800,105 @@ export const RoutingWindowScene: React.FC = () => {
                             }}
                           />
                         </div>
+                        {/* URL bar glow pulse */}
+                        {s2PulseOpacity > 0 && (
+                          <div
+                            style={{
+                              position: 'absolute',
+                              top: -32,
+                              left: 0,
+                              right: 0,
+                              height: 28,
+                              borderRadius: 4,
+                              background: 'rgba(59, 130, 246, 0.25)',
+                              boxShadow: '0 0 12px rgba(59, 130, 246, 0.4)',
+                              opacity: s2PulseOpacity,
+                              pointerEvents: 'none',
+                            }}
+                          />
+                        )}
                       </MiniBrowser>
 
-                      {/* arrow */}
+                      {/* arrow — fades in after pulse */}
                       <div
                         style={{
                           fontSize: 36,
                           color: '#3b82f6',
                           fontWeight: 700,
+                          opacity: s2ArrowOpacity,
                         }}
                       >
                         →
                       </div>
 
-                      {/* full page view */}
-                      <MiniBrowser url="acme.com/photo/123" width={580} height={420}>
-                        <div
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            height: '100%',
-                          }}
-                        >
-                          {/* photo taking most of the page */}
+                      {/* full page view — springs in last */}
+                      <div
+                        style={{
+                          opacity: s2RightOpacity,
+                          transform: `scale(${s2RightScale})`,
+                        }}
+                      >
+                        <MiniBrowser url="acme.com/photo/123" width={580} height={420}>
                           <div
                             style={{
-                              flex: 1,
-                              margin: 8,
-                              borderRadius: 6,
-                              background:
-                                'linear-gradient(135deg, #93c5fd, #3b82f6)',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                            }}
-                          >
-                            <div
-                              style={{
-                                color: '#fff',
-                                fontSize: 11,
-                                fontFamily: UI,
-                                fontWeight: 600,
-                              }}
-                            >
-                              Full Page View
-                            </div>
-                          </div>
-                          {/* content bars below */}
-                          <div
-                            style={{
-                              padding: '0 8px 8px',
                               display: 'flex',
                               flexDirection: 'column',
-                              gap: 4,
+                              height: '100%',
                             }}
                           >
+                            {/* photo taking most of the page */}
                             <div
                               style={{
-                                height: 6,
-                                borderRadius: 3,
-                                background: '#e0e0e0',
-                                width: '80%',
+                                flex: 1,
+                                margin: 8,
+                                borderRadius: 6,
+                                background:
+                                  'linear-gradient(135deg, #93c5fd, #3b82f6)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
                               }}
-                            />
+                            >
+                              <div
+                                style={{
+                                  color: '#fff',
+                                  fontSize: 11,
+                                  fontFamily: UI,
+                                  fontWeight: 600,
+                                }}
+                              >
+                                Full Page View
+                              </div>
+                            </div>
+                            {/* content bars below */}
                             <div
                               style={{
-                                height: 6,
-                                borderRadius: 3,
-                                background: '#e0e0e0',
-                                width: '60%',
+                                padding: '0 8px 8px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 4,
                               }}
-                            />
+                            >
+                              <div
+                                style={{
+                                  height: 6,
+                                  borderRadius: 3,
+                                  background: '#e0e0e0',
+                                  width: '80%',
+                                }}
+                              />
+                              <div
+                                style={{
+                                  height: 6,
+                                  borderRadius: 3,
+                                  background: '#e0e0e0',
+                                  width: '60%',
+                                }}
+                              />
+                            </div>
                           </div>
-                        </div>
-                      </MiniBrowser>
+                        </MiniBrowser>
+                      </div>
                     </div>
 
                     <div
@@ -781,6 +910,7 @@ export const RoutingWindowScene: React.FC = () => {
                         background: 'rgba(59, 130, 246, 0.08)',
                         padding: '10px 20px',
                         borderRadius: 8,
+                        opacity: s2LabelOpacity,
                       }}
                     >
                       Same component renders as full page
@@ -799,6 +929,8 @@ export const RoutingWindowScene: React.FC = () => {
                       display: 'flex',
                       gap: 16,
                       overflow: 'hidden',
+                      justifyContent: 'center',
+                      alignItems: 'center',
                     }}
                   >
                     {/* file tree card */}
@@ -810,7 +942,6 @@ export const RoutingWindowScene: React.FC = () => {
                         borderRadius: 10,
                         border: '1px solid #e0e0e0',
                         padding: '16px 0',
-                        alignSelf: 'flex-start',
                       }}
                     >
                       {FILE_TREE.map((entry, i) => (
@@ -863,7 +994,6 @@ export const RoutingWindowScene: React.FC = () => {
                     {/* code snippets column */}
                     <div
                       style={{
-                        flex: 1,
                         display: 'flex',
                         flexDirection: 'column',
                         gap: 16,
@@ -871,18 +1001,8 @@ export const RoutingWindowScene: React.FC = () => {
                       }}
                     >
                       {[SNIPPET_1, SNIPPET_2].map((snippet, si) => (
-                        <div key={si}>
                           <div
-                            style={{
-                              fontSize: 18,
-                              color: '#9ca3af',
-                              marginBottom: 6,
-                              marginLeft: -20,
-                            }}
-                          >
-                            →
-                          </div>
-                          <div
+                            key={si}
                             style={{
                               background: '#fff',
                               borderRadius: 10,
@@ -939,7 +1059,6 @@ export const RoutingWindowScene: React.FC = () => {
                               ))}
                             </div>
                           </div>
-                        </div>
                       ))}
                     </div>
                   </div>

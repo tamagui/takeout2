@@ -1167,6 +1167,22 @@ export const OnePromoCombined: React.FC = () => {
                 overflow: 'hidden',
               }}
             >
+              {/* radial dot grid background */}
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  backgroundImage:
+                    'radial-gradient(circle, #d8d8d8 1px, transparent 1px)',
+                  backgroundSize: '24px 24px',
+                  maskImage:
+                    'radial-gradient(ellipse at center, black 20%, transparent 70%)',
+                  WebkitMaskImage:
+                    'radial-gradient(ellipse at center, black 20%, transparent 70%)',
+                  pointerEvents: 'none',
+                }}
+              />
+
               {/* feature title with crossfade */}
               <div
                 style={{

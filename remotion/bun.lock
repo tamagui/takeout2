@@ -7,6 +7,7 @@
         "@react-three/drei": "^10.7.7",
         "@remotion/fonts": "4.0.410",
         "@remotion/google-fonts": "4.0.410",
+        "@remotion/media": "4.0.410",
         "@remotion/three": "4.0.410",
         "@remotion/transitions": "4.0.410",
         "@remotion/zod-types": "4.0.410",
@@ -120,6 +121,8 @@
     "@remotion/google-fonts": ["@remotion/google-fonts@4.0.410", "", { "dependencies": { "remotion": "4.0.410" } }, "sha512-c0w3mCk+EINosaCQEh2L4SBA9kZ/0yPLHUsRg9G73R7mMaOSt1V1XzBcp1AF85BfLfkq4ehGiVmdZkkF9R7aWw=="],
 
     "@remotion/licensing": ["@remotion/licensing@4.0.410", "", {}, "sha512-Rnu/FabQFLfT+CKPbFMFrqcs7yA0C+QZAGv2to5lZfFk9CjZ+mEyx4Ek4afr4Nv9+bVPQ9mU7FF2fTHyglZTIg=="],
+
+    "@remotion/media": ["@remotion/media@4.0.410", "", { "dependencies": { "mediabunny": "1.29.0", "remotion": "4.0.410" }, "peerDependencies": { "react": ">=16.8.0", "react-dom": ">=16.8.0" } }, "sha512-kJp8ubC/ZtLuqNWXS084ZZX+Vv1PaeWmE5ze2q9P7Z5GmxadI31Y9BgQQDsUPjVSoGGGIAQQPgmzUoZi2YpWuQ=="],
 
     "@remotion/media-parser": ["@remotion/media-parser@4.0.410", "", {}, "sha512-rfmFy5ZnE+TOvqXRgROI4t9lODlKLzGDdstN+0yB/84eRj1hLAIqeGROtbfohFO+X20WFRtNTS7HAs6318fOmg=="],
 

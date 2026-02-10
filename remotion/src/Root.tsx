@@ -4,6 +4,14 @@ import { z } from 'zod'
 import { FeatureFlash, FEATURE_FLASH_DURATION } from './FeatureFlash'
 import { LaunchIntro, TOTAL_DURATION } from './LaunchIntro'
 import { RapidIntro, RAPID_INTRO_TOTAL_DURATION } from './RapidIntro'
+import {
+  FakeDesktopScene,
+  FAKE_DESKTOP_DURATION,
+} from './scenes/FakeDesktopScene'
+import {
+  RoutingWindowScene,
+  ROUTING_WINDOW_DURATION,
+} from './scenes/RoutingWindowScene'
 
 const LaunchIntroSchema = z.object({
   tagline: z.string(),
@@ -12,6 +20,24 @@ const LaunchIntroSchema = z.object({
 export const RemotionRoot = () => {
   return (
     <>
+      <Composition
+        id="OnePromoDesktop"
+        component={FakeDesktopScene}
+        durationInFrames={FAKE_DESKTOP_DURATION}
+        fps={60}
+        width={1920}
+        height={1080}
+      />
+
+      <Composition
+        id="OnePromoRouting"
+        component={RoutingWindowScene}
+        durationInFrames={ROUTING_WINDOW_DURATION}
+        fps={60}
+        width={1920}
+        height={1080}
+      />
+
       <Composition
         id="FeatureFlash"
         component={FeatureFlash}

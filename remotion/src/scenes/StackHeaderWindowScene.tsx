@@ -1,8 +1,10 @@
 import {
   AbsoluteFill,
   Easing,
+  Img,
   interpolate,
   spring,
+  staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion'
@@ -1201,14 +1203,23 @@ export const StackHeaderWindowScene: React.FC = () => {
                         {'\u2192'}
                       </div>
 
-                      {/* iOS header mockup — springs in */}
+                      {/* iOS header screenshot — springs in */}
                       <div
                         style={{
                           opacity: s2RightOpacity,
                           transform: `scale(${s2RightScale})`,
                         }}
                       >
-                        <HeaderMockup />
+                        <Img
+                          src={staticFile('screenshots/HeaderStack.png')}
+                          style={{
+                            height: 580,
+                            width: Math.round(580 * (777 / 1570)),
+                            borderRadius: 28,
+                            boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+                            objectFit: 'cover',
+                          }}
+                        />
                       </div>
                     </div>
 

@@ -202,9 +202,7 @@ const RoutingStages: React.FC<{ localFrame: number; fps: number }> = ({
             >
               {'\u2192'}
             </div>
-            <div
-              style={{ opacity: rBrOp, transform: `scale(${rBrSc})` }}
-            >
+            <div style={{ opacity: rBrOp, transform: `scale(${rBrSc})` }}>
               <MiniBrowser url="acme.com/feed" width={580} height={420}>
                 <FeedCards dimmed />
                 <div
@@ -234,8 +232,7 @@ const RoutingStages: React.FC<{ localFrame: number; fps: number }> = ({
                         width: 80,
                         height: 80,
                         borderRadius: 8,
-                        background:
-                          'linear-gradient(135deg, #93c5fd, #3b82f6)',
+                        background: 'linear-gradient(135deg, #93c5fd, #3b82f6)',
                       }}
                     />
                   </div>
@@ -300,8 +297,7 @@ const RoutingStages: React.FC<{ localFrame: number; fps: number }> = ({
                     width: 120,
                     height: 120,
                     borderRadius: 10,
-                    background:
-                      'linear-gradient(135deg, #93c5fd, #3b82f6)',
+                    background: 'linear-gradient(135deg, #93c5fd, #3b82f6)',
                   }}
                 />
               </div>
@@ -332,9 +328,7 @@ const RoutingStages: React.FC<{ localFrame: number; fps: number }> = ({
             >
               {'\u2192'}
             </div>
-            <div
-              style={{ opacity: s2ROp, transform: `scale(${s2RSc})` }}
-            >
+            <div style={{ opacity: s2ROp, transform: `scale(${s2RSc})` }}>
               <MiniBrowser url="acme.com/photo/123" width={580} height={420}>
                 <div
                   style={{
@@ -348,8 +342,7 @@ const RoutingStages: React.FC<{ localFrame: number; fps: number }> = ({
                       flex: 1,
                       margin: 8,
                       borderRadius: 6,
-                      background:
-                        'linear-gradient(135deg, #93c5fd, #3b82f6)',
+                      background: 'linear-gradient(135deg, #93c5fd, #3b82f6)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -467,17 +460,12 @@ const RoutingStages: React.FC<{ localFrame: number; fps: number }> = ({
                   height: 46,
                   paddingLeft: 18 + entry.indent * 22,
                   paddingRight: 14,
-                  borderBottom:
-                    i < FILE_TREE.length - 1
-                      ? '1px solid #f0f0f0'
-                      : 'none',
+                  borderBottom: i < FILE_TREE.length - 1 ? '1px solid #f0f0f0' : 'none',
                 }}
               >
                 <Img
                   src={staticFile(
-                    entry.isFolder
-                      ? 'icons/folder2.png'
-                      : 'icons/note.png'
+                    entry.isFolder ? 'icons/folder2.png' : 'icons/note.png'
                   )}
                   style={{
                     width: 22,
@@ -541,9 +529,7 @@ const RoutingStages: React.FC<{ localFrame: number; fps: number }> = ({
                     gap: 8,
                   }}
                 >
-                  <span style={{ fontSize: 15, color: '#6e7781' }}>
-                    {'\u269B'}
-                  </span>
+                  <span style={{ fontSize: 15, color: '#6e7781' }}>{'\u269B'}</span>
                   <span
                     style={{
                       fontSize: 15,
@@ -706,9 +692,7 @@ const StackHeaderStages: React.FC<{
             >
               {'\u2192'}
             </div>
-            <div
-              style={{ opacity: rCOp, transform: `scale(${rCSc})` }}
-            >
+            <div style={{ opacity: rCOp, transform: `scale(${rCSc})` }}>
               <CodeCard snippet={COMPOSITION_SNIPPET} />
             </div>
           </div>
@@ -781,10 +765,15 @@ const StackHeaderStages: React.FC<{
             >
               {'\u2192'}
             </div>
-            <div
-              style={{ opacity: s2ROp, transform: `scale(${s2RSc})` }}
-            >
-              <HeaderMockup />
+            <div style={{ opacity: s2ROp, transform: `scale(${s2RSc})` }}>
+              <Img
+                src={staticFile('screenshots/HeaderStack.png')}
+                style={{
+                  height: 580,
+                  width: Math.round(580 * (777 / 1570)),
+                  objectFit: 'cover',
+                }}
+              />
             </div>
           </div>
           <div
@@ -839,9 +828,7 @@ const StackHeaderStages: React.FC<{
                   gap: 8,
                 }}
               >
-                <span style={{ fontSize: 15, color: '#6e7781' }}>
-                  {'\u269B'}
-                </span>
+                <span style={{ fontSize: 15, color: '#6e7781' }}>{'\u269B'}</span>
                 <span
                   style={{
                     fontSize: 15,
@@ -893,20 +880,9 @@ export const OnePromoCombined: React.FC = () => {
     ...clamp,
     easing: Easing.bezier(0.4, 0, 0.2, 1),
   })
-  const cursorX = interpolate(moveProgress, [0, 1], [
-    CURSOR_START.x,
-    ICON_CENTER.x,
-  ])
-  const cursorY = interpolate(moveProgress, [0, 1], [
-    CURSOR_START.y,
-    ICON_CENTER.y,
-  ])
-  const cursorIn = interpolate(
-    frame,
-    [MOVE_START - 5, MOVE_START],
-    [0, 1],
-    clamp
-  )
+  const cursorX = interpolate(moveProgress, [0, 1], [CURSOR_START.x, ICON_CENTER.x])
+  const cursorY = interpolate(moveProgress, [0, 1], [CURSOR_START.y, ICON_CENTER.y])
+  const cursorIn = interpolate(frame, [MOVE_START - 5, MOVE_START], [0, 1], clamp)
   const cursorOut = interpolate(
     frame,
     [WINDOW_OPEN + 15, WINDOW_OPEN + 30],
@@ -926,42 +902,27 @@ export const OnePromoCombined: React.FC = () => {
   })
 
   // === CLOSE PHASE ===
-  const closeMoveProgress = interpolate(
-    frame,
-    [CL_CURSOR_START, CL_CURSOR_END],
-    [0, 1],
-    { ...clamp, easing: Easing.bezier(0.4, 0, 0.2, 1) }
-  )
-  const closeCursorX = interpolate(closeMoveProgress, [0, 1], [
-    700,
-    CLOSE_BTN.x,
-  ])
-  const closeCursorY = interpolate(closeMoveProgress, [0, 1], [
-    650,
-    CLOSE_BTN.y,
-  ])
+  const closeMoveProgress = interpolate(frame, [CL_CURSOR_START, CL_CURSOR_END], [0, 1], {
+    ...clamp,
+    easing: Easing.bezier(0.4, 0, 0.2, 1),
+  })
+  const closeCursorX = interpolate(closeMoveProgress, [0, 1], [700, CLOSE_BTN.x])
+  const closeCursorY = interpolate(closeMoveProgress, [0, 1], [650, CLOSE_BTN.y])
   const closeCursorIn = interpolate(
     frame,
     [CL_CURSOR_START - 5, CL_CURSOR_START],
     [0, 1],
     clamp
   )
-  const closeCursorOut = interpolate(
-    frame,
-    [CL_WIN_END - 5, CL_WIN_END],
-    [1, 0],
-    clamp
-  )
+  const closeCursorOut = interpolate(frame, [CL_WIN_END - 5, CL_WIN_END], [1, 0], clamp)
   const isCloseClicking = frame >= CL_CLICK && frame < CL_CLICK + 6
   const closeClickScale = isCloseClicking ? 0.82 : 1
 
   // window exit
-  const winCloseProgress = interpolate(
-    frame,
-    [CL_WIN_START, CL_WIN_END],
-    [0, 1],
-    { ...clamp, easing: Easing.inOut(Easing.cubic) }
-  )
+  const winCloseProgress = interpolate(frame, [CL_WIN_START, CL_WIN_END], [0, 1], {
+    ...clamp,
+    easing: Easing.inOut(Easing.cubic),
+  })
   const winScale =
     interpolate(winSpring, [0, 1], [0.2, 1]) *
     interpolate(winCloseProgress, [0, 1], [1, 0.2])
@@ -984,12 +945,10 @@ export const OnePromoCombined: React.FC = () => {
     ...clamp,
     easing: Easing.inOut(Easing.cubic),
   })
-  const zoomOut = interpolate(
-    frame,
-    [ZOOM_OUT_START, ZOOM_OUT_END],
-    [1.18, 1],
-    { ...clamp, easing: Easing.inOut(Easing.cubic) }
-  )
+  const zoomOut = interpolate(frame, [ZOOM_OUT_START, ZOOM_OUT_END], [1.18, 1], {
+    ...clamp,
+    easing: Easing.inOut(Easing.cubic),
+  })
   const cameraZoom = Math.min(zoomIn, zoomOut)
 
   // === INITIAL SHIMMER (during zoom, before F1) ===
@@ -1001,11 +960,7 @@ export const OnePromoCombined: React.FC = () => {
   })
   const shimmerOut = interpolate(frame, [F1 - 15, F1], [1, 0], clamp)
   const initShimmerOp = Math.min(shimmerIn, shimmerOut)
-  const shimmerX = interpolate(
-    (frame - WINDOW_OPEN) % 40,
-    [0, 40],
-    [-100, 200]
-  )
+  const shimmerX = interpolate((frame - WINDOW_OPEN) % 40, [0, 40], [-100, 200])
 
   // === TRANSITION SHIMMER (between features) ===
   const transShimmerIn = interpolate(
@@ -1014,20 +969,11 @@ export const OnePromoCombined: React.FC = () => {
     [0, 1],
     clamp
   )
-  const transShimmerOut = interpolate(
-    frame,
-    [TRANS_IN - 10, TRANS_IN + 5],
-    [1, 0],
-    clamp
-  )
+  const transShimmerOut = interpolate(frame, [TRANS_IN - 10, TRANS_IN + 5], [1, 0], clamp)
   const transShimmerOp =
     Math.min(transShimmerIn, transShimmerOut) *
     (frame > TRANS_OUT && frame < TRANS_IN + 10 ? 1 : 0)
-  const transShimmerX = interpolate(
-    (frame - TRANS_OUT) % 40,
-    [0, 40],
-    [-100, 200]
-  )
+  const transShimmerX = interpolate((frame - TRANS_OUT) % 40, [0, 40], [-100, 200])
 
   // === FEATURE CONTENT OPACITY ===
   const f1Op = interpolate(frame, [TRANS_OUT, TRANS_OUT + 20], [1, 0], clamp)
@@ -1036,18 +982,8 @@ export const OnePromoCombined: React.FC = () => {
   const f2LocalFrame = frame - F2
 
   // === TITLE CROSSFADE ===
-  const titleF1Op = interpolate(
-    frame,
-    [TRANS_OUT, TRANS_OUT + 15],
-    [1, 0],
-    clamp
-  )
-  const titleF2Op = interpolate(
-    frame,
-    [TRANS_IN - 5, TRANS_IN + 10],
-    [0, 1],
-    clamp
-  )
+  const titleF1Op = interpolate(frame, [TRANS_OUT, TRANS_OUT + 15], [1, 0], clamp)
+  const titleF2Op = interpolate(frame, [TRANS_IN - 5, TRANS_IN + 10], [0, 1], clamp)
   const barF1Op = titleF1Op
   const barF2Op = titleF2Op
 
@@ -1093,8 +1029,7 @@ export const OnePromoCombined: React.FC = () => {
               height: 880,
               borderRadius: 12,
               overflow: 'hidden',
-              boxShadow:
-                '0 25px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.08)',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.08)',
               zIndex: 500,
               display: 'flex',
               flexDirection: 'column',
@@ -1104,8 +1039,7 @@ export const OnePromoCombined: React.FC = () => {
             <div
               style={{
                 height: 44,
-                background:
-                  'linear-gradient(180deg, #e8e6e3 0%, #d6d4d1 100%)',
+                background: 'linear-gradient(180deg, #e8e6e3 0%, #d6d4d1 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 padding: '0 16px',
@@ -1137,9 +1071,7 @@ export const OnePromoCombined: React.FC = () => {
                   position: 'relative',
                 }}
               >
-                <span style={{ opacity: barF1Op }}>
-                  File-Based Routing — app/
-                </span>
+                <span style={{ opacity: barF1Op }}>File-Based Routing — app/</span>
                 {barF2Op > 0 && (
                   <span
                     style={{
@@ -1197,9 +1129,7 @@ export const OnePromoCombined: React.FC = () => {
                   height: 48,
                 }}
               >
-                <span style={{ opacity: titleF1Op }}>
-                  Intercepting Routes
-                </span>
+                <span style={{ opacity: titleF1Op }}>Intercepting Routes</span>
                 {titleF2Op > 0 && (
                   <span
                     style={{
@@ -1316,10 +1246,7 @@ export const OnePromoCombined: React.FC = () => {
                       opacity: f2Op,
                     }}
                   >
-                    <StackHeaderStages
-                      localFrame={Math.max(0, f2LocalFrame)}
-                      fps={fps}
-                    />
+                    <StackHeaderStages localFrame={Math.max(0, f2LocalFrame)} fps={fps} />
                   </div>
                 )}
               </div>

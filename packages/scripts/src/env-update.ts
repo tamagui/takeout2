@@ -130,10 +130,14 @@ await cmd`sync environment variables from package.json to CI and server configs`
       const beforeMarker = dockerCompose.slice(0, dockerCompose.indexOf(yamlStartMarker))
       const isMap = /x-[\w-]+:.*&[\w-]+/s.test(beforeMarker)
 
-      const envLines = Object.keys(envVars)
-        .map((key) =>
-          isMap ? `${indent}${key}: \${${key}:-}` : `${indent}- ${key}=\${${key}:-}`
-        )
+      const envLines = Object.entries(envVars)
+        .map(([key, value]) => {
+          const resolved = resolveDepVersion(value, packageJson.dependencies)
+          const defaultVal = resolved || (typeof value === 'string' ? value : '')
+          return isMap
+            ? `${indent}${key}: \${${key}:-${defaultVal}}`
+            : `${indent}- ${key}=\${${key}:-${defaultVal}}`
+        })
         .join('\n')
 
       const newDockerCompose = replaceYamlSection(dockerCompose, envLines, { indent })

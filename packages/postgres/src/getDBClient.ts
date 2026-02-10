@@ -66,9 +66,7 @@ async function tryToGetNewClientFromPool(
   const clientFromPool = await retry(
     async () => {
       if (providedPool) {
-        console.info(`Connecting to provided pool...`)
         const client = await providedPool.connect()
-        console.info(`Connected to pool`)
         return client
       }
 
@@ -87,9 +85,7 @@ async function tryToGetNewClientFromPool(
 
       const poolCache = getOrCreatePoolCache(connectionString, configurations)
 
-      console.info(`Connecting to pool ${connectionString}...`)
       const client = await poolCache.pool.connect()
-      console.info(`Connected to pool`)
       return client
     },
     {
@@ -159,9 +155,6 @@ async function checkForTooManyConnections(
 
   if (poolCache.maxConnections === null || poolCache.reservedConnections === null) {
     const [maxConnections, reservedConnections] = await getConnectionLimits(client)
-    console.info(
-      `Max connections: ${maxConnections}, Reserved connections: ${reservedConnections}`
-    )
     poolCache.maxConnections = maxConnections
     poolCache.reservedConnections = reservedConnections
   }
@@ -190,7 +183,6 @@ async function checkForTooManyConnections(
 }
 
 async function getConnectionLimits(client: PoolClient): Promise<[number, number]> {
-  console.info(`Getting connection limits...`)
   const maxConnectionsResult = await client.query('SHOW max_connections')
   const reservedConnectionResult = await client.query(
     'SHOW superuser_reserved_connections'
@@ -208,7 +200,6 @@ async function getOpenedConnections(
 ): Promise<number> {
   // For Aurora/RDS, we need to get the database name from connection string
   const dbName = new URL(connectionString).pathname.slice(1)
-  console.info(`Getting opened connections...`)
   const openConnectionsResult = await client.query(
     'SELECT numbackends as opened_connections FROM pg_stat_database WHERE datname = $1',
     [dbName]
@@ -217,7 +208,6 @@ async function getOpenedConnections(
     openConnectionsResult.rows[0]?.opened_connections || 0,
     10
   )
-  console.info(`Opened connections: ${result}`)
   return result
 }
 

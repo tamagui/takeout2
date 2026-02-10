@@ -48,8 +48,6 @@ export async function migrate(options: MigrateOptions) {
     changeDb,
   } = options
 
-  console.info(`Running migrations${gitSha ? ` for git version: ${gitSha}` : ''}`)
-
   const client = await getDBClient({ connectionString })
 
   const hasDB = async (name: string) => {
@@ -58,8 +56,6 @@ export async function migrate(options: MigrateOptions) {
         SELECT 1 FROM pg_database WHERE datname = '${name}'
       `)
     ).rows.length
-
-    console.info(result ? `${name} db exists` : `creating ${name} db`)
 
     return result
   }
@@ -111,13 +107,10 @@ export async function migrate(options: MigrateOptions) {
       }))
       .filter(({ name }) => /^[\d]+/.test(name))
 
-    console.info(`Found ${tsMigrationsSorted.length} TypeScript migrations`)
-
     // process TypeScript migrations
     const tsMigrations: Migration[] = await Promise.all(
       tsMigrationsSorted.map(async ({ name, run }) => {
         if (appliedMigrationNames.has(name)) {
-          console.info(`TypeScript migration applied already: ${name}`)
           return null
         }
         try {
@@ -134,32 +127,23 @@ export async function migrate(options: MigrateOptions) {
     const migrations = [...tsMigrations].sort((a, b) => a.name.localeCompare(b.name))
 
     if (!migrations.length) {
-      console.info(`No migrations to apply!`)
       await client.query('COMMIT')
     } else {
       for (const migration of migrations) {
-        // don't try catch here, we want to exit and rollback all migrations if one fails
-        console.info(`Migrating: ${migration.name}`)
-
         if (migration.up) {
-          // TypeScript migration
-          console.info(`Applying migration: ${migration.name}`)
           await migration.up(client)
         }
 
         await client.query('INSERT INTO public.migrations (name) VALUES ($1)', [
           migration.name,
         ])
-        console.info(`Successfully applied migration: ${migration.name}`)
       }
 
       await client.query('COMMIT')
-      console.info(`Successfully committed all migrations`)
     }
   } catch (e) {
     console.error(`Migration failed, rolling back:`, e)
     await client.query('ROLLBACK')
-    console.info(`Releasing client connection...`)
     try {
       client.release(false)
     } catch (releaseErr) {
@@ -172,7 +156,6 @@ export async function migrate(options: MigrateOptions) {
     await onMigrationComplete()
   }
 
-  console.info(`Releasing client connection...`)
   try {
     // don't destroy the connection forcefully - let it return to pool gracefully
     client.release(false)
@@ -184,8 +167,6 @@ export async function migrate(options: MigrateOptions) {
       console.error(`Error destroying connection:`, destroyErr)
     }
   }
-
-  console.info(`🙌 Done migrating`)
 
   exitProcess()
 }

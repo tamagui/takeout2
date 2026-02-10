@@ -1,14 +1,11 @@
 import {
   AbsoluteFill,
   Easing,
-  Img,
   interpolate,
   spring,
-  staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion'
-import { Video } from '@remotion/media'
 
 import { FakeDesktopScene } from './FakeDesktopScene'
 
@@ -308,21 +305,51 @@ export const RoutingWindowScene: React.FC = () => {
     config: { damping: 16, stiffness: 100, mass: 0.9 },
     durationInFrames: 35,
   })
-  const winScale = interpolate(winSpring, [0, 1], [0.2, 1])
+
+  // close animation timeline
+  const CLOSE_CURSOR_START = 545
+  const CLOSE_CURSOR_END = 570
+  const CLOSE_CLICK = 574
+  const WIN_CLOSE_START = 578
+  const WIN_CLOSE_END = 598
+
+  // close button position — window top-left is (160,100), button offset ~(22,22)
+  const CLOSE_BTN = { x: 182, y: 122 }
+  const closeMoveProgress = interpolate(frame, [CLOSE_CURSOR_START, CLOSE_CURSOR_END], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: Easing.bezier(0.4, 0, 0.2, 1),
+  })
+  const closeCursorX = interpolate(closeMoveProgress, [0, 1], [700, CLOSE_BTN.x])
+  const closeCursorY = interpolate(closeMoveProgress, [0, 1], [650, CLOSE_BTN.y])
+  const closeCursorIn = interpolate(frame, [CLOSE_CURSOR_START - 5, CLOSE_CURSOR_START], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
+  const closeCursorOut = interpolate(frame, [WIN_CLOSE_END - 5, WIN_CLOSE_END], [1, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
+  const isCloseClicking = frame >= CLOSE_CLICK && frame < CLOSE_CLICK + 6
+  const closeClickScale = isCloseClicking ? 0.82 : 1
+
+  // window exit — shrink and fade after cursor clicks X
+  const winCloseProgress = interpolate(frame, [WIN_CLOSE_START, WIN_CLOSE_END], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: Easing.inOut(Easing.cubic),
+  })
+  const winScale = interpolate(winSpring, [0, 1], [0.2, 1]) * interpolate(winCloseProgress, [0, 1], [1, 0.2])
   const winOpacity = interpolate(winSpring, [0, 0.15], [0, 1], {
     extrapolateRight: 'clamp',
-  })
+  }) * interpolate(winCloseProgress, [0, 1], [1, 0])
 
-  // video panel slides in slightly after window opens
-  const videoEntrance = spring({
-    frame: Math.max(0, frame - WINDOW_OPEN - 8),
-    fps,
-    config: { damping: 20, stiffness: 130 },
-    durationInFrames: 30,
-  })
-  const videoOpacity = interpolate(videoEntrance, [0, 0.3], [0, 1], {
-    extrapolateRight: 'clamp',
-  })
+  // combine cursor phases: opening (move to icon) and closing (move to X)
+  const isOpenPhase = frame < WINDOW_OPEN + 60
+  const finalCursorX = isOpenPhase ? cursorX : closeCursorX
+  const finalCursorY = isOpenPhase ? cursorY : closeCursorY
+  const finalCursorOpacity = isOpenPhase ? cursorIn * cursorOut : closeCursorIn * closeCursorOut
+  const finalClickScale = isOpenPhase ? clickScale : closeClickScale
 
   // right panel stage animations
   const s1Spring = spring({
@@ -360,8 +387,37 @@ export const RoutingWindowScene: React.FC = () => {
   const stage3Opacity = s3Spring
   const stage3Y = interpolate(s3Spring, [0, 1], [15, 0])
 
+  // screen studio style camera zoom — scales window (1600x880) to fill screen (1920x1080)
+  const ZOOM_START = WINDOW_OPEN + 35
+  const ZOOM_END = WINDOW_OPEN + 65
+  const zoomIn = interpolate(frame, [ZOOM_START, ZOOM_END], [1, 1.18], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: Easing.inOut(Easing.cubic),
+  })
+
+  // zoom out — return to desktop view, finishes before cursor reappears
+  const ZOOM_OUT_START = 505
+  const ZOOM_OUT_END = 542
+  const zoomOut = interpolate(frame, [ZOOM_OUT_START, ZOOM_OUT_END], [1.18, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: Easing.inOut(Easing.cubic),
+  })
+
+  const cameraZoom = Math.min(zoomIn, zoomOut)
+
   return (
     <AbsoluteFill>
+      {/* screen studio camera — zooms into right panel after window opens */}
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          transform: `scale(${cameraZoom})`,
+          transformOrigin: '960px 540px',
+        }}
+      >
       {/* desktop background */}
       <FakeDesktopScene />
 
@@ -455,81 +511,25 @@ export const RoutingWindowScene: React.FC = () => {
             <div style={{ width: 52 }} />
           </div>
 
-          {/* split content: video left, diagrams right */}
+          {/* full-width content */}
           <div
             style={{
               flex: 1,
+              background: '#f5f5f5',
               display: 'flex',
+              flexDirection: 'column',
+              padding: '24px 40px',
               overflow: 'hidden',
             }}
           >
-            {/* left: demo video */}
-            <div
-              style={{
-                width: '38%',
-                background: '#1a1a2e',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                overflow: 'hidden',
-                borderRight: '1px solid #333',
-                position: 'relative',
-              }}
-            >
-              {/* placeholder shown before video loads */}
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background:
-                    'radial-gradient(ellipse at center, #2a2a4a 0%, #1a1a2e 70%)',
-                }}
-              >
-                <Img
-                  src={staticFile('ball2.png')}
-                  style={{
-                    width: 80,
-                    height: 80,
-                    objectFit: 'contain',
-                    opacity: 0.3,
-                  }}
-                />
-              </div>
-              <Video
-                src={staticFile('test.mp4')}
-                muted
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'contain',
-                  opacity: videoOpacity,
-                  position: 'relative',
-                }}
-              />
-            </div>
-
-            {/* right: intercepting routes demo */}
-            <div
-              style={{
-                width: '62%',
-                background: '#f5f5f5',
-                display: 'flex',
-                flexDirection: 'column',
-                padding: 24,
-                overflow: 'hidden',
-              }}
-            >
               {/* feature title */}
               <div
                 style={{
-                  fontSize: 22,
+                  fontSize: 38,
                   fontFamily: UI,
                   fontWeight: 700,
                   color: '#1f2328',
-                  marginBottom: 16,
+                  marginBottom: 24,
                   flexShrink: 0,
                 }}
               >
@@ -555,7 +555,7 @@ export const RoutingWindowScene: React.FC = () => {
                   >
                     <div
                       style={{
-                        fontSize: 15,
+                        fontSize: 24,
                         fontFamily: UI,
                         fontWeight: 600,
                         color: '#57606a',
@@ -572,14 +572,14 @@ export const RoutingWindowScene: React.FC = () => {
                       }}
                     >
                       {/* feed page with highlighted card */}
-                      <MiniBrowser url="acme.com/feed" width={360} height={270}>
+                      <MiniBrowser url="acme.com/feed" width={580} height={420}>
                         <FeedCards highlightIndex={1} />
                       </MiniBrowser>
 
                       {/* arrow */}
                       <div
                         style={{
-                          fontSize: 32,
+                          fontSize: 36,
                           color: '#3b82f6',
                           fontWeight: 700,
                         }}
@@ -588,7 +588,7 @@ export const RoutingWindowScene: React.FC = () => {
                       </div>
 
                       {/* feed page with modal overlay */}
-                      <MiniBrowser url="acme.com/feed" width={360} height={270}>
+                      <MiniBrowser url="acme.com/feed" width={580} height={420}>
                         <FeedCards dimmed />
                         {/* modal overlay */}
                         <div
@@ -615,8 +615,8 @@ export const RoutingWindowScene: React.FC = () => {
                           >
                             <div
                               style={{
-                                width: 65,
-                                height: 65,
+                                width: 80,
+                                height: 80,
                                 borderRadius: 8,
                                 background:
                                   'linear-gradient(135deg, #93c5fd, #3b82f6)',
@@ -629,13 +629,13 @@ export const RoutingWindowScene: React.FC = () => {
 
                     <div
                       style={{
-                        fontSize: 13,
+                        fontSize: 22,
                         fontFamily: UI,
                         color: '#3b82f6',
                         fontWeight: 600,
                         background: 'rgba(59, 130, 246, 0.08)',
-                        padding: '6px 14px',
-                        borderRadius: 6,
+                        padding: '10px 20px',
+                        borderRadius: 8,
                       }}
                     >
                       Photo opens as a modal overlay
@@ -660,7 +660,7 @@ export const RoutingWindowScene: React.FC = () => {
                   >
                     <div
                       style={{
-                        fontSize: 15,
+                        fontSize: 24,
                         fontFamily: UI,
                         fontWeight: 600,
                         color: '#57606a',
@@ -677,7 +677,7 @@ export const RoutingWindowScene: React.FC = () => {
                       }}
                     >
                       {/* browser with direct URL */}
-                      <MiniBrowser url="acme.com/photo/123" width={360} height={270}>
+                      <MiniBrowser url="acme.com/photo/123" width={580} height={420}>
                         <div
                           style={{
                             display: 'flex',
@@ -688,8 +688,8 @@ export const RoutingWindowScene: React.FC = () => {
                         >
                           <div
                             style={{
-                              width: 100,
-                              height: 100,
+                              width: 120,
+                              height: 120,
                               borderRadius: 10,
                               background:
                                 'linear-gradient(135deg, #93c5fd, #3b82f6)',
@@ -701,7 +701,7 @@ export const RoutingWindowScene: React.FC = () => {
                       {/* arrow */}
                       <div
                         style={{
-                          fontSize: 32,
+                          fontSize: 36,
                           color: '#3b82f6',
                           fontWeight: 700,
                         }}
@@ -710,7 +710,7 @@ export const RoutingWindowScene: React.FC = () => {
                       </div>
 
                       {/* full page view */}
-                      <MiniBrowser url="acme.com/photo/123" width={360} height={270}>
+                      <MiniBrowser url="acme.com/photo/123" width={580} height={420}>
                         <div
                           style={{
                             display: 'flex',
@@ -774,13 +774,13 @@ export const RoutingWindowScene: React.FC = () => {
 
                     <div
                       style={{
-                        fontSize: 13,
+                        fontSize: 22,
                         fontFamily: UI,
                         color: '#3b82f6',
                         fontWeight: 600,
                         background: 'rgba(59, 130, 246, 0.08)',
-                        padding: '6px 14px',
-                        borderRadius: 6,
+                        padding: '10px 20px',
+                        borderRadius: 8,
                       }}
                     >
                       Same component renders as full page
@@ -945,7 +945,6 @@ export const RoutingWindowScene: React.FC = () => {
                   </div>
                 )}
               </div>
-            </div>
           </div>
         </div>
       )}
@@ -954,10 +953,10 @@ export const RoutingWindowScene: React.FC = () => {
       <div
         style={{
           position: 'absolute',
-          left: cursorX,
-          top: cursorY,
-          opacity: cursorIn * cursorOut,
-          transform: `scale(${clickScale})`,
+          left: finalCursorX,
+          top: finalCursorY,
+          opacity: finalCursorOpacity,
+          transform: `scale(${finalClickScale})`,
           zIndex: 1000,
         }}
       >
@@ -970,6 +969,7 @@ export const RoutingWindowScene: React.FC = () => {
             strokeLinejoin="round"
           />
         </svg>
+      </div>
       </div>
     </AbsoluteFill>
   )

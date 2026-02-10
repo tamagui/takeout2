@@ -17,7 +17,7 @@ const LEFT_ICONS: IconDef[] = [
   { icon: 'mobile-app.png', label: 'Native App' },
   { icon: 'video.png', label: 'demo.mov' },
   { icon: 'email.png', label: 'Talk to us' },
-  { icon: 'paper.png', label: 'Sign up ↗' },
+  { icon: 'title.png', label: 'Headless Stack API' },
 ]
 
 // right column - utility/info items

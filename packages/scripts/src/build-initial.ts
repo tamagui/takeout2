@@ -4,7 +4,8 @@ import { cmd } from './cmd'
 
 await cmd`bootstrap project workspace and build initial packages`.run(
   async ({ $, fs, path }) => {
-    const hasPackages = fs.existsSync(`./packages`)
+    // use our own file because we know its takeout-like packages if it exists
+    const hasPackages = fs.existsSync(`./packages/scripts/src/build-initial.ts`)
 
     // only run once
     if (!fs.existsSync(`./node_modules/.bin/tko`)) {

@@ -1,13 +1,9 @@
-import { spawn } from 'node:child_process'
-
 import {
   addProcessHandler,
   setExitCleanupState,
   type ProcessHandler,
   type ProcessType,
 } from './run'
-
-import type { ChildProcess } from 'node:child_process'
 
 type ExitCallback = (info: { signal: NodeJS.Signals | string }) => void | Promise<void>
 
@@ -17,94 +13,37 @@ interface HandleProcessExitReturn {
   exit: (code?: number) => Promise<void>
 }
 
-async function getChildPids(parentPid: number): Promise<number[]> {
-  try {
-    const proc = spawn('pgrep', ['-P', parentPid.toString()], {
-      stdio: ['ignore', 'pipe', 'pipe'],
-    })
-
-    return new Promise((resolve) => {
-      let output = ''
-      proc.stdout?.on('data', (data) => {
-        output += data.toString()
-      })
-
-      proc.on('close', () => {
-        const childPids = output.trim().split('\n').filter(Boolean).map(Number)
-        resolve(childPids)
-      })
-    })
-  } catch (error) {
-    console.error(`Error getting child PIDs for ${parentPid}: ${error}`)
-    return []
-  }
-}
-
-async function getAllDescendantPids(parentPid: number): Promise<number[]> {
-  const childPids = await getChildPids(parentPid)
-  const descendantPids = [...childPids]
-
-  for (const childPid of childPids) {
-    const grandchildren = await getAllDescendantPids(childPid)
-    descendantPids.push(...grandchildren)
-  }
-
-  return descendantPids
-}
-
-async function killProcessTree(
+// kill an entire process group (works because children are spawned with detached: true,
+// which makes them process group leaders). negative pid = kill the whole group.
+// this is synchronous, no pgrep needed, no races.
+function killProcessGroup(
   pid: number,
   signal: NodeJS.Signals = 'SIGTERM',
   forceful: boolean = false
-): Promise<void> {
+): void {
+  // kill the process group (negative pid)
   try {
-    const descendants = await getAllDescendantPids(pid)
-
-    // first send the requested signal
-    for (const descendantPid of descendants.reverse()) {
-      try {
-        process.kill(descendantPid, signal)
-      } catch (_) {
-        // process may already be gone
-      }
+    process.kill(-pid, signal)
+  } catch (_) {
+    // group may already be gone, try the individual process
+    try {
+      process.kill(pid, signal)
+    } catch (_) {
+      // process already gone
     }
-
-    if (pid && !Number.isNaN(pid)) {
-      try {
-        process.kill(pid, signal)
-      } catch (_) {
-        // process may already be gone
-      }
-    }
-
-    // if forceful, wait briefly then send SIGKILL
-    if (forceful && signal !== 'SIGKILL') {
-      await new Promise((resolve) => setTimeout(resolve, 100))
-
-      // send SIGKILL to any still-alive processes
-      for (const descendantPid of descendants.reverse()) {
-        try {
-          process.kill(descendantPid, 'SIGKILL')
-        } catch (_) {
-          // process may already be gone
-        }
-      }
-
-      if (pid && !Number.isNaN(pid)) {
-        try {
-          process.kill(pid, 'SIGKILL')
-        } catch (_) {
-          // process may already be gone
-        }
-      }
-    }
-  } catch (error) {
-    console.error(`Error killing process tree for ${pid}: ${error}`)
   }
-}
 
-function isChildProcess(proc: ProcessType): proc is ChildProcess {
-  return 'killed' in proc && typeof (proc as any).on === 'function'
+  if (forceful && signal !== 'SIGKILL') {
+    // schedule a SIGKILL followup
+    setTimeout(() => {
+      try {
+        process.kill(-pid, 'SIGKILL')
+      } catch (_) {}
+      try {
+        process.kill(pid, 'SIGKILL')
+      } catch (_) {}
+    }, 100)
+  }
 }
 
 let isHandling = false
@@ -120,26 +59,27 @@ export function handleProcessExit({
 
   isHandling = true
   const processes: ProcessType[] = []
-  const allChildPids = new Set<number>()
-  let cleaning = false
+  let cleanupPromise: Promise<void> | null = null
 
-  const cleanup = async (signal: NodeJS.Signals | string = 'SIGTERM') => {
-    if (cleaning) return
-    cleaning = true
+  const cleanup = (signal: NodeJS.Signals | string = 'SIGTERM'): Promise<void> => {
+    // return existing cleanup promise if already running, so process.exit
+    // override waits for the real cleanup instead of exiting early
+    if (cleanupPromise) return cleanupPromise
 
-    // notify run.ts that we're in cleanup state
+    cleanupPromise = doCleanup(signal)
+    return cleanupPromise
+  }
+
+  const doCleanup = async (signal: NodeJS.Signals | string) => {
     setExitCleanupState(true)
 
-    // suppress console output during cleanup for cleaner exit
     if (signal === 'SIGINT') {
       const noop = () => {}
       console.log = noop
       console.info = noop
       console.warn = noop
-      // keep console.error for critical errors only
     }
 
-    // wrap entire cleanup in a timeout to prevent hanging
     if (onExit) {
       try {
         await onExit({ signal })
@@ -148,68 +88,35 @@ export function handleProcessExit({
       }
     }
 
-    // skip cleanup if no processes to clean up
     if (processes.length === 0) {
       return
     }
 
-    // for SIGINT (Ctrl+C), be more aggressive with cleanup
+    // kill process groups synchronously - no pgrep, no races
+    // detached: true makes each child a process group leader,
+    // so kill(-pid) gets the entire group in one syscall
     const isInterrupt = signal === 'SIGINT'
     const killSignal = isInterrupt ? 'SIGTERM' : (signal as NodeJS.Signals)
 
-    await Promise.all(
-      processes.map(async (proc) => {
-        if (proc.pid) {
-          try {
-            await killProcessTree(proc.pid, killSignal, isInterrupt)
-          } catch (error) {
-            console.error(
-              `Error during graceful shutdown of process ${proc.pid}: ${error}`
-            )
-          }
-        }
-      })
-    )
-
-    // shorter wait for SIGINT
-    await new Promise((res) => setTimeout(res, isInterrupt ? 50 : 200))
-
-    // force kill any remaining processes
     for (const proc of processes) {
-      try {
-        if (!proc.exitCode && proc.pid) {
-          await killProcessTree(proc.pid, 'SIGKILL', true)
-        }
-      } catch (err) {
-        // process already gone
+      if (proc.pid) {
+        killProcessGroup(proc.pid, killSignal, isInterrupt)
+      }
+    }
+
+    // brief wait for graceful shutdown
+    await new Promise((res) => setTimeout(res, isInterrupt ? 80 : 200))
+
+    // force kill any remaining
+    for (const proc of processes) {
+      if (proc.pid && !proc.exitCode) {
+        killProcessGroup(proc.pid, 'SIGKILL')
       }
     }
   }
 
   const addChildProcess = (proc: ProcessType) => {
     processes.push(proc)
-
-    // track pid if available
-    const pid = (proc as any).pid
-    if (pid) {
-      allChildPids.add(pid)
-
-      // for child processes, capture descendants once after a brief delay
-      if (isChildProcess(proc)) {
-        setTimeout(async () => {
-          if (proc.pid) {
-            try {
-              const childPids = await getChildPids(proc.pid)
-              for (const childPid of childPids) {
-                allChildPids.add(childPid)
-              }
-            } catch {
-              // ignore errors in background polling
-            }
-          }
-        }, 300)
-      }
-    }
   }
 
   addProcessHandler(addChildProcess)
@@ -231,7 +138,9 @@ export function handleProcessExit({
     })
   }
 
-  // intercept process.exit to ensure cleanup
+  // intercept process.exit to ensure cleanup completes before exiting.
+  // if cleanup is already running, this awaits the SAME promise instead of
+  // early-returning and calling originalExit prematurely.
   const originalExit = process.exit
   process.exit = ((code?: number) => {
     cleanup('SIGTERM').then(() => {

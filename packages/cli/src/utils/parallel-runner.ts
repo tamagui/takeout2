@@ -2,7 +2,7 @@
  * Utility for running scripts in parallel with color-coded output
  */
 
-import { spawn } from 'node:child_process'
+import { spawn, type ChildProcess } from 'node:child_process'
 import { cpus } from 'node:os'
 
 const colors = [
@@ -39,6 +39,41 @@ interface ScriptToRun {
   path: string
   args?: string[]
 }
+
+// track all spawned processes for cleanup
+const spawnedProcesses: ChildProcess[] = []
+let cleaning = false
+
+function killAllProcessGroups(signal: NodeJS.Signals = 'SIGTERM') {
+  for (const proc of spawnedProcesses) {
+    if (proc.pid) {
+      // negative pid kills the entire process group (detached: true makes them group leaders)
+      try {
+        process.kill(-proc.pid, signal)
+      } catch (_) {
+        try {
+          process.kill(proc.pid, signal)
+        } catch (_) {}
+      }
+    }
+  }
+}
+
+function cleanupAndExit() {
+  if (cleaning) return
+  cleaning = true
+
+  process.stdout.write('\n\x1b[0m')
+  killAllProcessGroups('SIGTERM')
+
+  setTimeout(() => {
+    killAllProcessGroups('SIGKILL')
+    process.exit(0)
+  }, 150)
+}
+
+process.on('SIGINT', cleanupAndExit)
+process.on('SIGTERM', cleanupAndExit)
 
 export async function runScriptsInParallel(
   scripts: ScriptToRun[],
@@ -100,9 +135,12 @@ function runSingleScript(script: ScriptToRun, colorIndex: number): Promise<void>
       detached: true,
     })
 
+    spawnedProcesses.push(proc)
+
     let stderrBuffer = ''
 
     proc.stdout.on('data', (data) => {
+      if (cleaning) return
       const lines = data.toString().split('\n')
       for (const line of lines) {
         if (line) console.info(`${color}${prefixLabel}${reset} ${line}`)
@@ -113,6 +151,7 @@ function runSingleScript(script: ScriptToRun, colorIndex: number): Promise<void>
       const dataStr = data.toString()
       stderrBuffer += dataStr
 
+      if (cleaning) return
       const lines = dataStr.split('\n')
       for (const line of lines) {
         if (line && !isBunShellNoise(line)) {
@@ -127,6 +166,8 @@ function runSingleScript(script: ScriptToRun, colorIndex: number): Promise<void>
     })
 
     proc.on('close', (code) => {
+      if (cleaning) return
+
       if (code && code !== 0) {
         // detect if this was a bun shell error (already printed inline)
         // check for ShellError or the bun shell stack trace pattern

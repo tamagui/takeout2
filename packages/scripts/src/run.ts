@@ -89,8 +89,29 @@ const parentRunningScripts = process.env.BUN_RUN_SCRIPTS
   ? process.env.BUN_RUN_SCRIPTS.split(',')
   : []
 
-const processes: ReturnType<typeof spawn>[] = []
+interface ManagedProcess {
+  proc: ReturnType<typeof spawn>
+  name: string
+  cwd: string
+  prefixLabel: string
+  extraArgs: string[]
+  index: number
+  shortcut: string
+  restarting: boolean
+  killing: boolean
+}
+
+const managedProcesses: ManagedProcess[] = []
 const { addChildProcess, exit } = handleProcessExit()
+
+// dynamic prefix using shortcut letter(s) — falls back to index before shortcuts are computed
+function getPrefix(index: number): string {
+  const managed = managedProcesses[index]
+  if (!managed) return ''
+  const color = colors[index % colors.length]
+  const sc = managed.shortcut || String(index + 1)
+  return `${color}${sc} ${managed.prefixLabel}${reset}`
+}
 
 if (runCommands.length === 0) {
   log.error('Please provide at least one script name to run')
@@ -239,59 +260,68 @@ const runScript = async (
   cwd = '.',
   prefixLabel: string = name,
   restarts = 0,
-  extraArgs: string[] = []
+  extraArgs: string[] = [],
+  managedIndex?: number,
 ) => {
-  const colorIndex = processes.length % colors.length
-  const color = colors[colorIndex]
+  const index = managedIndex ?? managedProcesses.length
 
-  // Capture stderr for error reporting
+  // capture stderr for error reporting
   let stderrBuffer = ''
 
-  // Construct command with arguments to forward
   // --silent suppresses bun's "$ command" output
   const runArgs = ['run', '--silent', runBun ? '--bun' : '', name, ...extraArgs].filter(
     Boolean
   )
 
-  // Log the exact command being run
   const commandDisplay = `bun ${runArgs.join(' ')}`
+  log.info(`${getPrefix(index)} Running: ${commandDisplay} (in ${resolve(cwd)})`)
 
-  log.info(
-    `${color}${prefixLabel}${reset} Running: ${commandDisplay} (in ${resolve(cwd)})`
-  )
-
-  // Combine parent running scripts with current scripts to prevent recursion
   const allRunningScripts = [...parentRunningScripts, ...runCommands].join(',')
 
-  const shouldInheritStdin = name === stdinScript
+  // always pipe stdin - parent handles keyboard shortcuts and forwarding
   const proc = spawn('bun', runArgs, {
-    stdio: [shouldInheritStdin ? 'inherit' : 'pipe', 'pipe', 'pipe'],
+    stdio: ['pipe', 'pipe', 'pipe'],
     shell: false,
     env: {
       ...process.env,
       FORCE_COLOR: '3',
       BUN_RUN_PARENT_SCRIPT: name,
       BUN_RUN_SCRIPTS: allRunningScripts,
-      // propagate silent mode to child scripts
       TKO_SILENT: '1',
     } as any,
     cwd: resolve(cwd),
     detached: true,
   })
 
-  log.info(`${color}${prefixLabel}${reset} Process started with PID: ${proc.pid}`)
+  log.info(`${getPrefix(index)} Process started with PID: ${proc.pid}`)
 
-  processes.push(proc)
+  const managed: ManagedProcess = {
+    proc,
+    name,
+    cwd,
+    prefixLabel,
+    extraArgs,
+    index,
+    shortcut: '',
+    restarting: false,
+    killing: false,
+  }
+
+  if (managedIndex !== undefined) {
+    managedProcesses[managedIndex] = managed
+  } else {
+    managedProcesses.push(managed)
+  }
+
   addChildProcess(proc)
 
   proc.stdout!.on('data', (data) => {
-    if (getIsExiting()) return // prevent output during cleanup
+    if (getIsExiting()) return
     const lines = data.toString().split('\n')
     for (const line of lines) {
-      // filter out bun's "$ command" echo lines in nested scripts
       const stripped = line.replace(ansiPattern, '')
       if (stripped.startsWith('$ ')) continue
-      if (line) log.output(`${color}${prefixLabel}${reset} ${line}`)
+      if (line) log.output(`${getPrefix(index)} ${line}`)
     }
   })
 
@@ -299,28 +329,28 @@ const runScript = async (
     const dataStr = data.toString()
     stderrBuffer += dataStr
 
-    if (getIsExiting()) return // prevent output during cleanup
+    if (getIsExiting()) return
     const lines = dataStr.split('\n')
     for (const line of lines) {
-      // filter out bun's "$ command" echo lines in nested scripts
       const stripped = line.replace(ansiPattern, '')
       if (stripped.startsWith('$ ')) continue
-      if (line) log.error(`${color}${prefixLabel}${reset} ${line}`)
+      if (line) log.error(`${getPrefix(index)} ${line}`)
     }
   })
 
   proc.on('error', (error) => {
-    log.error(`${color}${prefixLabel}${reset} Failed to start: ${error.message}`)
+    log.error(`${getPrefix(index)} Failed to start: ${error.message}`)
   })
 
   proc.on('close', (code) => {
-    if (getIsExiting()) {
-      // silently exit during cleanup
-      return
-    }
+    if (getIsExiting()) return
+
+    // intentionally killed or restarting - skip error handling
+    const currentManaged = managedProcesses[index]
+    if (currentManaged?.restarting || currentManaged?.killing) return
 
     if (code && code !== 0) {
-      log.error(`${color}${prefixLabel}${reset} Process exited with code ${code}`)
+      log.error(`${getPrefix(index)} Process exited with code ${code}`)
 
       if (code === 1) {
         console.error('\x1b[31m❌ Run Failed\x1b[0m')
@@ -333,7 +363,7 @@ const runScript = async (
           console.info(
             `Restarting process ${name} (${newRestarts}/${MAX_RESTARTS} times)`
           )
-          runScript(name, cwd, prefixLabel, newRestarts, extraArgs)
+          runScript(name, cwd, prefixLabel, newRestarts, extraArgs, index)
         } else {
           exit(1)
         }
@@ -342,6 +372,251 @@ const runScript = async (
   })
 
   return proc
+}
+
+// compute unique letter-based shortcuts from process labels
+// splits on non-letters, takes first char of each word, extends until unique
+function computeShortcuts() {
+  const initials = managedProcesses.map((p) => {
+    const words = p.prefixLabel
+      .toLowerCase()
+      .split(/[^a-z]+/)
+      .filter(Boolean)
+    return words.map((w) => w[0]).join('')
+  })
+
+  // start each shortcut at 1 letter, extend collisions
+  const lengths = new Array(managedProcesses.length).fill(1) as number[]
+
+  for (let round = 0; round < 5; round++) {
+    const shortcuts = initials.map(
+      (init, i) => init.slice(0, lengths[i]) || init
+    )
+
+    let hasCollision = false
+    const groups = new Map<string, number[]>()
+    for (let i = 0; i < shortcuts.length; i++) {
+      const key = shortcuts[i]!
+      if (!groups.has(key)) groups.set(key, [])
+      groups.get(key)!.push(i)
+    }
+
+    for (const [, indices] of groups) {
+      if (indices.length <= 1) continue
+      hasCollision = true
+      for (const idx of indices) {
+        lengths[idx]!++
+      }
+    }
+
+    if (!hasCollision) {
+      for (let i = 0; i < managedProcesses.length; i++) {
+        managedProcesses[i]!.shortcut = shortcuts[i]!
+      }
+      return
+    }
+  }
+
+  // fallback: use whatever we have, append index if still colliding
+  for (let i = 0; i < managedProcesses.length; i++) {
+    const sc = initials[i]!.slice(0, lengths[i]) || initials[i]!
+    managedProcesses[i]!.shortcut = sc || String(i + 1)
+  }
+}
+
+async function killProcessGroup(managed: ManagedProcess) {
+  if (managed.proc.pid) {
+    try {
+      process.kill(-managed.proc.pid, 'SIGTERM')
+    } catch {}
+    await new Promise((r) => setTimeout(r, 200))
+    try {
+      process.kill(-managed.proc.pid, 'SIGKILL')
+    } catch {}
+  }
+  await new Promise((r) => setTimeout(r, 100))
+}
+
+async function restartProcess(index: number) {
+  const managed = managedProcesses[index]
+  if (!managed) return
+
+  const { name, cwd, prefixLabel, extraArgs } = managed
+
+  managed.restarting = true
+  managed.killing = false
+  console.info(`\x1b[2m  restarting ${managed.shortcut} ${prefixLabel}...\x1b[0m`)
+
+  await killProcessGroup(managed)
+  await runScript(name, cwd, prefixLabel, 0, extraArgs, index)
+  console.info(`${getPrefix(index)} \x1b[32m↻ restarted\x1b[0m`)
+}
+
+async function killProcess(index: number) {
+  const managed = managedProcesses[index]
+  if (!managed) return
+
+  if (managed.killing) {
+    console.info(`\x1b[2m  ${managed.shortcut} ${managed.prefixLabel} already stopped\x1b[0m`)
+    return
+  }
+
+  managed.killing = true
+  managed.restarting = false
+  console.info(`\x1b[2m  killing ${managed.shortcut} ${managed.prefixLabel}...\x1b[0m`)
+
+  await killProcessGroup(managed)
+  console.info(`${getPrefix(index)} \x1b[31m■ stopped\x1b[0m`)
+}
+
+type InputMode = 'restart' | 'kill' | null
+
+function setupKeyboardShortcuts() {
+  if (!process.stdin.isTTY) return
+  if (managedProcesses.length === 0) return
+
+  process.stdin.setRawMode(true)
+  process.stdin.resume()
+  process.stdin.setEncoding('utf8')
+
+  let mode: InputMode = null
+  let buffer = ''
+  let timer: ReturnType<typeof setTimeout> | null = null
+
+  function clearTimer() {
+    if (timer) {
+      clearTimeout(timer)
+      timer = null
+    }
+  }
+
+  function dispatchMatch(m: InputMode, index: number) {
+    if (m === 'restart') restartProcess(index)
+    else if (m === 'kill') killProcess(index)
+  }
+
+  function finishMatch() {
+    clearTimer()
+    if (!buffer) return
+
+    const currentMode = mode
+    const match = managedProcesses.find((p) => p.shortcut === buffer)
+    if (match) {
+      dispatchMatch(currentMode, match.index)
+    } else {
+      console.info(`\x1b[2m  no match for "${buffer}"\x1b[0m`)
+    }
+
+    buffer = ''
+    mode = null
+  }
+
+  function showProcessList(label: string) {
+    const dim = '\x1b[2m'
+    console.info()
+    console.info(`${dim}  ${label} which process?${reset}`)
+    for (const managed of managedProcesses) {
+      const color = colors[managed.index % colors.length]
+      const stopped = managed.killing ? `${dim} (stopped)` : ''
+      console.info(`${dim}  ${reset}${color}${managed.shortcut}${reset}${dim} ${managed.prefixLabel}${stopped}${reset}`)
+    }
+    console.info()
+  }
+
+  function enterMode(newMode: InputMode, label: string) {
+    clearTimer()
+    mode = newMode
+    buffer = ''
+    showProcessList(label)
+  }
+
+  process.stdin.on('data', (key: string) => {
+    // ctrl+c
+    if (key === '\x03') {
+      process.stdin.setRawMode(false)
+      exit(0)
+      return
+    }
+
+    // escape cancels
+    if (key === '\x1b' && mode) {
+      clearTimer()
+      buffer = ''
+      mode = null
+      console.info('\x1b[2m  cancelled\x1b[0m')
+      return
+    }
+
+    // ctrl+r - restart mode
+    if (key === '\x12') {
+      enterMode('restart', 'restart')
+      return
+    }
+
+    // ctrl+k - kill mode
+    if (key === '\x0b') {
+      enterMode('kill', 'kill')
+      return
+    }
+
+    // ctrl+l - clear screen
+    if (key === '\x0c') {
+      process.stdout.write('\x1b[2J\x1b[H')
+      return
+    }
+
+    if (mode) {
+      const lower = key.toLowerCase()
+      if (/^[a-z]$/.test(lower)) {
+        buffer += lower
+        clearTimer()
+
+        // exact match → dispatch immediately
+        const exact = managedProcesses.find((p) => p.shortcut === buffer)
+        if (exact) {
+          const m = mode
+          mode = null
+          buffer = ''
+          dispatchMatch(m, exact.index)
+          return
+        }
+
+        // no shortcuts start with buffer → no match
+        const hasPrefix = managedProcesses.some((p) => p.shortcut.startsWith(buffer))
+        if (!hasPrefix) {
+          console.info(`\x1b[2m  no match for "${buffer}"\x1b[0m`)
+          buffer = ''
+          mode = null
+          return
+        }
+
+        // ambiguous — wait 500ms for more input
+        timer = setTimeout(finishMatch, 500)
+      } else {
+        // non-letter cancels
+        clearTimer()
+        buffer = ''
+        mode = null
+        console.info('\x1b[2m  cancelled\x1b[0m')
+      }
+      return
+    }
+
+    // forward other input to the designated stdin process
+    const stdinProc = managedProcesses.find((p) => p.name === stdinScript)
+    if (stdinProc?.proc.stdin && !stdinProc.proc.stdin.destroyed) {
+      stdinProc.proc.stdin.write(key)
+    }
+  })
+}
+
+function printShortcutHint() {
+  if (!process.stdin.isTTY) return
+  if (managedProcesses.length === 0) return
+
+  const dim = '\x1b[2m'
+  console.info(`${dim}  ctrl+r restart · ctrl+k kill · ctrl+l clear · ctrl+c exit${reset}`)
+  console.info()
 }
 
 async function main() {
@@ -384,8 +659,12 @@ async function main() {
       }
     }
 
-    if (processes.length === 0) {
+    if (managedProcesses.length === 0) {
       exit(0)
+    } else {
+      computeShortcuts()
+      printShortcutHint()
+      setupKeyboardShortcuts()
     }
   } catch (error) {
     log.error(`Error running scripts: ${error}`)

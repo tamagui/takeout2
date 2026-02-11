@@ -1043,7 +1043,7 @@ export const OnePromoCombined: React.FC = () => {
                 display: 'flex',
                 alignItems: 'center',
                 padding: '0 16px',
-                borderBottom: '1px solid #bbb',
+                // borderBottom: '2px solid #bbb',
                 flexShrink: 0,
               }}
             >

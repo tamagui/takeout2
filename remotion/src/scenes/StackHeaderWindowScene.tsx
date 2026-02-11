@@ -513,9 +513,7 @@ export const HeaderMockup: React.FC = () => (
       >
         Feed
       </span>
-      <span style={{ fontSize: 17, color: '#007AFF', fontFamily: UI }}>
-        Edit
-      </span>
+      <span style={{ fontSize: 17, color: '#007AFF', fontFamily: UI }}>Edit</span>
     </div>
 
     {/* large title */}
@@ -548,9 +546,7 @@ export const HeaderMockup: React.FC = () => (
         <circle cx="6" cy="6" r="5" stroke="#8e8e93" strokeWidth="1.5" fill="none" />
         <line x1="10" y1="10" x2="13" y2="13" stroke="#8e8e93" strokeWidth="1.5" />
       </svg>
-      <span style={{ fontSize: 16, fontFamily: UI, color: '#8e8e93' }}>
-        Search...
-      </span>
+      <span style={{ fontSize: 16, fontFamily: UI, color: '#8e8e93' }}>Search...</span>
     </div>
 
     {/* separator */}

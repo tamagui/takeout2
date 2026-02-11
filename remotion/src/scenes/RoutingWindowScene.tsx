@@ -202,21 +202,12 @@ export const MiniBrowser: React.FC<{
         {url}
       </div>
     </div>
-    <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-      {children}
-    </div>
+    <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>{children}</div>
   </div>
 )
 
 // photo grid for feed wireframes
-const GRID_COLORS = [
-  '#e8e8e8',
-  '#e0e0e0',
-  '#e5e5e5',
-  '#e2e2e2',
-  '#e8e8e8',
-  '#e0e0e0',
-]
+const GRID_COLORS = ['#e8e8e8', '#e0e0e0', '#e5e5e5', '#e2e2e2', '#e8e8e8', '#e0e0e0']
 
 export const FeedCards: React.FC<{ highlightIndex?: number; dimmed?: boolean }> = ({
   highlightIndex = -1,
@@ -297,26 +288,18 @@ export const RoutingWindowScene: React.FC = () => {
     extrapolateRight: 'clamp',
     easing: Easing.bezier(0.4, 0, 0.2, 1),
   })
-  const cursorX = interpolate(moveProgress, [0, 1], [
-    CURSOR_START.x,
-    ICON_CENTER.x,
-  ])
-  const cursorY = interpolate(moveProgress, [0, 1], [
-    CURSOR_START.y,
-    ICON_CENTER.y,
-  ])
+  const cursorX = interpolate(moveProgress, [0, 1], [CURSOR_START.x, ICON_CENTER.x])
+  const cursorY = interpolate(moveProgress, [0, 1], [CURSOR_START.y, ICON_CENTER.y])
 
   // cursor fade in / out
   const cursorIn = interpolate(frame, [MOVE_START - 5, MOVE_START], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   })
-  const cursorOut = interpolate(
-    frame,
-    [WINDOW_OPEN + 15, WINDOW_OPEN + 30],
-    [1, 0],
-    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
-  )
+  const cursorOut = interpolate(frame, [WINDOW_OPEN + 15, WINDOW_OPEN + 30], [1, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
 
   // click bounce
   const isClicking = frame >= CLICK && frame < CLICK + 8
@@ -342,17 +325,27 @@ export const RoutingWindowScene: React.FC = () => {
 
   // close button position — window top-left is (160,100), button offset ~(22,22)
   const CLOSE_BTN = { x: 182, y: 122 }
-  const closeMoveProgress = interpolate(frame, [CLOSE_CURSOR_START, CLOSE_CURSOR_END], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: Easing.bezier(0.4, 0, 0.2, 1),
-  })
+  const closeMoveProgress = interpolate(
+    frame,
+    [CLOSE_CURSOR_START, CLOSE_CURSOR_END],
+    [0, 1],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: Easing.bezier(0.4, 0, 0.2, 1),
+    }
+  )
   const closeCursorX = interpolate(closeMoveProgress, [0, 1], [700, CLOSE_BTN.x])
   const closeCursorY = interpolate(closeMoveProgress, [0, 1], [650, CLOSE_BTN.y])
-  const closeCursorIn = interpolate(frame, [CLOSE_CURSOR_START - 5, CLOSE_CURSOR_START], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  })
+  const closeCursorIn = interpolate(
+    frame,
+    [CLOSE_CURSOR_START - 5, CLOSE_CURSOR_START],
+    [0, 1],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    }
+  )
   const closeCursorOut = interpolate(frame, [WIN_CLOSE_END - 5, WIN_CLOSE_END], [1, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
@@ -366,16 +359,21 @@ export const RoutingWindowScene: React.FC = () => {
     extrapolateRight: 'clamp',
     easing: Easing.inOut(Easing.cubic),
   })
-  const winScale = interpolate(winSpring, [0, 1], [0.2, 1]) * interpolate(winCloseProgress, [0, 1], [1, 0.2])
-  const winOpacity = interpolate(winSpring, [0, 0.15], [0, 1], {
-    extrapolateRight: 'clamp',
-  }) * interpolate(winCloseProgress, [0, 1], [1, 0])
+  const winScale =
+    interpolate(winSpring, [0, 1], [0.2, 1]) *
+    interpolate(winCloseProgress, [0, 1], [1, 0.2])
+  const winOpacity =
+    interpolate(winSpring, [0, 0.15], [0, 1], {
+      extrapolateRight: 'clamp',
+    }) * interpolate(winCloseProgress, [0, 1], [1, 0])
 
   // combine cursor phases: opening (move to icon) and closing (move to X)
   const isOpenPhase = frame < WINDOW_OPEN + 60
   const finalCursorX = isOpenPhase ? cursorX : closeCursorX
   const finalCursorY = isOpenPhase ? cursorY : closeCursorY
-  const finalCursorOpacity = isOpenPhase ? cursorIn * cursorOut : closeCursorIn * closeCursorOut
+  const finalCursorOpacity = isOpenPhase
+    ? cursorIn * cursorOut
+    : closeCursorIn * closeCursorOut
   const finalClickScale = isOpenPhase ? clickScale : closeClickScale
 
   // placeholder — visible while zooming, before stage 1
@@ -391,11 +389,7 @@ export const RoutingWindowScene: React.FC = () => {
   })
   const placeholderOpacity = Math.min(placeholderIn, placeholderOut)
   // shimmer sweep position (loops)
-  const shimmerX = interpolate(
-    (frame - WINDOW_OPEN) % 40,
-    [0, 40],
-    [-100, 200]
-  )
+  const shimmerX = interpolate((frame - WINDOW_OPEN) % 40, [0, 40], [-100, 200])
 
   // right panel stage animations
   const s1Spring = spring({
@@ -468,10 +462,15 @@ export const RoutingWindowScene: React.FC = () => {
 
   // URL bar glow pulse — highlights the direct URL
   const S2_PULSE_START = 28
-  const s2PulseProgress = interpolate(s2Local, [S2_PULSE_START, S2_PULSE_START + 20], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  })
+  const s2PulseProgress = interpolate(
+    s2Local,
+    [S2_PULSE_START, S2_PULSE_START + 20],
+    [0, 1],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    }
+  )
   const s2PulseOpacity = interpolate(s2PulseProgress, [0, 0.3, 1], [0, 0.6, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
@@ -541,110 +540,108 @@ export const RoutingWindowScene: React.FC = () => {
           transformOrigin: '960px 540px',
         }}
       >
-      {/* desktop background */}
-      <FakeDesktopScene />
+        {/* desktop background */}
+        <FakeDesktopScene />
 
-      {/* icon selection highlight */}
-      {showHighlight && (
-        <div
-          style={{
-            position: 'absolute',
-            left: 14,
-            top: 130,
-            width: 108,
-            height: 78,
-            background: 'rgba(59, 130, 246, 0.2)',
-            borderRadius: 8,
-            border: '2px solid rgba(59, 130, 246, 0.35)',
-          }}
-        />
-      )}
-
-      {/* routes window */}
-      {frame >= WINDOW_OPEN && (
-        <div
-          style={{
-            position: 'absolute',
-            left: '50%',
-            top: '50%',
-            transform: `translate(-50%, -50%) scale(${winScale})`,
-            opacity: winOpacity,
-            width: 1600,
-            height: 880,
-            borderRadius: 12,
-            overflow: 'hidden',
-            boxShadow:
-              '0 25px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.08)',
-            zIndex: 500,
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          {/* title bar */}
+        {/* icon selection highlight */}
+        {showHighlight && (
           <div
             style={{
-              height: 44,
-              background:
-                'linear-gradient(180deg, #e8e6e3 0%, #d6d4d1 100%)',
+              position: 'absolute',
+              left: 14,
+              top: 130,
+              width: 108,
+              height: 78,
+              background: 'rgba(59, 130, 246, 0.2)',
+              borderRadius: 8,
+              border: '2px solid rgba(59, 130, 246, 0.35)',
+            }}
+          />
+        )}
+
+        {/* routes window */}
+        {frame >= WINDOW_OPEN && (
+          <div
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: '50%',
+              transform: `translate(-50%, -50%) scale(${winScale})`,
+              opacity: winOpacity,
+              width: 1600,
+              height: 880,
+              borderRadius: 12,
+              overflow: 'hidden',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.08)',
+              zIndex: 500,
               display: 'flex',
-              alignItems: 'center',
-              padding: '0 16px',
-              borderBottom: '1px solid #bbb',
-              flexShrink: 0,
+              flexDirection: 'column',
             }}
           >
-            <div style={{ display: 'flex', gap: 8 }}>
+            {/* title bar */}
+            <div
+              style={{
+                height: 44,
+                background: 'linear-gradient(180deg, #e8e6e3 0%, #d6d4d1 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '0 16px',
+                borderBottom: '1px solid #bbb',
+                flexShrink: 0,
+              }}
+            >
+              <div style={{ display: 'flex', gap: 8 }}>
+                <div
+                  style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: '50%',
+                    background: '#FF5F57',
+                  }}
+                />
+                <div
+                  style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: '50%',
+                    background: '#FFBD2E',
+                  }}
+                />
+                <div
+                  style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: '50%',
+                    background: '#28CA42',
+                  }}
+                />
+              </div>
               <div
                 style={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: '50%',
-                  background: '#FF5F57',
+                  flex: 1,
+                  textAlign: 'center',
+                  fontSize: 13,
+                  fontFamily: UI,
+                  fontWeight: 600,
+                  color: '#4a4a4a',
                 }}
-              />
-              <div
-                style={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: '50%',
-                  background: '#FFBD2E',
-                }}
-              />
-              <div
-                style={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: '50%',
-                  background: '#28CA42',
-                }}
-              />
+              >
+                File-Based Routing — app/
+              </div>
+              <div style={{ width: 52 }} />
             </div>
+
+            {/* full-width content */}
             <div
               style={{
                 flex: 1,
-                textAlign: 'center',
-                fontSize: 13,
-                fontFamily: UI,
-                fontWeight: 600,
-                color: '#4a4a4a',
+                background: '#f5f5f5',
+                display: 'flex',
+                flexDirection: 'column',
+                padding: '24px 40px',
+                overflow: 'hidden',
               }}
             >
-              File-Based Routing — app/
-            </div>
-            <div style={{ width: 52 }} />
-          </div>
-
-          {/* full-width content */}
-          <div
-            style={{
-              flex: 1,
-              background: '#f5f5f5',
-              display: 'flex',
-              flexDirection: 'column',
-              padding: '24px 40px',
-              overflow: 'hidden',
-            }}
-          >
               {/* radial dot grid background */}
               <div
                 style={{
@@ -839,8 +836,7 @@ export const RoutingWindowScene: React.FC = () => {
                                   width: 80,
                                   height: 80,
                                   borderRadius: 8,
-                                  background:
-                                    'linear-gradient(135deg, #93c5fd, #3b82f6)',
+                                  background: 'linear-gradient(135deg, #93c5fd, #3b82f6)',
                                 }}
                               />
                             </div>
@@ -914,8 +910,7 @@ export const RoutingWindowScene: React.FC = () => {
                               width: 120,
                               height: 120,
                               borderRadius: 10,
-                              background:
-                                'linear-gradient(135deg, #93c5fd, #3b82f6)',
+                              background: 'linear-gradient(135deg, #93c5fd, #3b82f6)',
                             }}
                           />
                         </div>
@@ -971,8 +966,7 @@ export const RoutingWindowScene: React.FC = () => {
                                 flex: 1,
                                 margin: 8,
                                 borderRadius: 6,
-                                background:
-                                  'linear-gradient(135deg, #93c5fd, #3b82f6)',
+                                background: 'linear-gradient(135deg, #93c5fd, #3b82f6)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -1096,16 +1090,12 @@ export const RoutingWindowScene: React.FC = () => {
                             paddingLeft: 18 + entry.indent * 22,
                             paddingRight: 14,
                             borderBottom:
-                              i < FILE_TREE.length - 1
-                                ? '1px solid #f0f0f0'
-                                : 'none',
+                              i < FILE_TREE.length - 1 ? '1px solid #f0f0f0' : 'none',
                           }}
                         >
                           <Img
                             src={staticFile(
-                              entry.isFolder
-                                ? 'icons/folder2.png'
-                                : 'icons/note.png'
+                              entry.isFolder ? 'icons/folder2.png' : 'icons/note.png'
                             )}
                             style={{
                               width: 22,
@@ -1152,94 +1142,87 @@ export const RoutingWindowScene: React.FC = () => {
                       }}
                     >
                       {[SNIPPET_1, SNIPPET_2].map((snippet, si) => (
+                        <div
+                          key={si}
+                          style={{
+                            background: '#fff',
+                            borderRadius: 10,
+                            border: '1px solid #d0d7de',
+                            overflow: 'hidden',
+                          }}
+                        >
                           <div
-                            key={si}
                             style={{
-                              background: '#fff',
-                              borderRadius: 10,
-                              border: '1px solid #d0d7de',
-                              overflow: 'hidden',
+                              padding: '10px 16px',
+                              background: '#f6f8fa',
+                              borderBottom: '1px solid #d0d7de',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 8,
                             }}
                           >
-                            <div
+                            <span style={{ fontSize: 15, color: '#6e7781' }}>⚛</span>
+                            <span
                               style={{
-                                padding: '10px 16px',
-                                background: '#f6f8fa',
-                                borderBottom: '1px solid #d0d7de',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 8,
+                                fontSize: 15,
+                                fontFamily: MONO,
+                                fontWeight: 500,
+                                color: '#57606a',
                               }}
                             >
-                              <span
-                                style={{ fontSize: 15, color: '#6e7781' }}
-                              >
-                                ⚛
-                              </span>
-                              <span
+                              {snippet.title}
+                            </span>
+                          </div>
+                          <div style={{ padding: '14px 18px' }}>
+                            {snippet.lines.map((line, li) => (
+                              <div
+                                key={li}
                                 style={{
-                                  fontSize: 15,
                                   fontFamily: MONO,
-                                  fontWeight: 500,
-                                  color: '#57606a',
+                                  fontSize: 16,
+                                  lineHeight: 1.7,
+                                  whiteSpace: 'pre',
                                 }}
                               >
-                                {snippet.title}
-                              </span>
-                            </div>
-                            <div style={{ padding: '14px 18px' }}>
-                              {snippet.lines.map((line, li) => (
-                                <div
-                                  key={li}
-                                  style={{
-                                    fontFamily: MONO,
-                                    fontSize: 16,
-                                    lineHeight: 1.7,
-                                    whiteSpace: 'pre',
-                                  }}
-                                >
-                                  {line.map((token, ti) => (
-                                    <span
-                                      key={ti}
-                                      style={{ color: token.color }}
-                                    >
-                                      {token.text}
-                                    </span>
-                                  ))}
-                                </div>
-                              ))}
-                            </div>
+                                {line.map((token, ti) => (
+                                  <span key={ti} style={{ color: token.color }}>
+                                    {token.text}
+                                  </span>
+                                ))}
+                              </div>
+                            ))}
                           </div>
+                        </div>
                       ))}
                     </div>
                   </div>
                 )}
               </div>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* macos cursor */}
-      <div
-        style={{
-          position: 'absolute',
-          left: finalCursorX,
-          top: finalCursorY,
-          opacity: finalCursorOpacity,
-          transform: `scale(${finalClickScale})`,
-          zIndex: 1000,
-        }}
-      >
-        <svg width="24" height="36" viewBox="0 0 24 36">
-          <path
-            d="M2 1L2 27L8 21L13 32L17 30L12 19L19 18L2 1Z"
-            fill="white"
-            stroke="#333"
-            strokeWidth="1.5"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </div>
+        {/* macos cursor */}
+        <div
+          style={{
+            position: 'absolute',
+            left: finalCursorX,
+            top: finalCursorY,
+            opacity: finalCursorOpacity,
+            transform: `scale(${finalClickScale})`,
+            zIndex: 1000,
+          }}
+        >
+          <svg width="24" height="36" viewBox="0 0 24 36">
+            <path
+              d="M2 1L2 27L8 21L13 32L17 30L12 19L19 18L2 1Z"
+              fill="white"
+              stroke="#333"
+              strokeWidth="1.5"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
       </div>
     </AbsoluteFill>
   )

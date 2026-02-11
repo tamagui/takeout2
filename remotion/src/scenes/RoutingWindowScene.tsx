@@ -26,10 +26,10 @@ const WINDOW_OPEN = 52
 
 // right panel stage timeline — starts after zoom completes (WINDOW_OPEN + 65 = frame 117)
 const S1_ENTER = WINDOW_OPEN + 70
-const S1_EXIT = WINDOW_OPEN + 280
-const S2_ENTER = WINDOW_OPEN + 300
-const S2_EXIT = WINDOW_OPEN + 510
-const S3_ENTER = WINDOW_OPEN + 530
+const S1_EXIT = WINDOW_OPEN + 550
+const S2_ENTER = WINDOW_OPEN + 570
+const S2_EXIT = WINDOW_OPEN + 1050
+const S3_ENTER = WINDOW_OPEN + 1070
 const STAGE_FADE = 20
 
 // syntax highlight colors matching the reference image
@@ -276,7 +276,7 @@ export const FeedCards: React.FC<{ highlightIndex?: number; dimmed?: boolean }> 
   </div>
 )
 
-export const ROUTING_WINDOW_DURATION = 860 // ~14.3s at 60fps
+export const ROUTING_WINDOW_DURATION = 1520 // ~25.3s at 60fps
 
 export const RoutingWindowScene: React.FC = () => {
   const frame = useCurrentFrame()
@@ -317,11 +317,11 @@ export const RoutingWindowScene: React.FC = () => {
   })
 
   // close animation timeline
-  const CLOSE_CURSOR_START = 800
-  const CLOSE_CURSOR_END = 825
-  const CLOSE_CLICK = 829
-  const WIN_CLOSE_START = 833
-  const WIN_CLOSE_END = 853
+  const CLOSE_CURSOR_START = 1460
+  const CLOSE_CURSOR_END = 1485
+  const CLOSE_CLICK = 1489
+  const WIN_CLOSE_START = 1493
+  const WIN_CLOSE_END = 1513
 
   // close button position — window top-left is (160,100), button offset ~(22,22)
   const CLOSE_BTN = { x: 182, y: 122 }
@@ -408,8 +408,14 @@ export const RoutingWindowScene: React.FC = () => {
   // stage 1 sub-animations: sequential reveal
   const s1Local = Math.max(0, frame - S1_ENTER)
 
+  // left part fades in 1s after stage enters
+  const s1LeftOpacity = interpolate(s1Local, [60, 75], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
+
   // ripple press on highlighted card — starts after left browser settles
-  const RIPPLE_START = 30
+  const RIPPLE_START = 90
   const rippleProgress = interpolate(s1Local, [RIPPLE_START, RIPPLE_START + 18], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
@@ -420,15 +426,15 @@ export const RoutingWindowScene: React.FC = () => {
     extrapolateRight: 'clamp',
   })
 
-  // arrow fades in after ripple
-  const arrowOpacity = interpolate(s1Local, [42, 52], [0, 1], {
+  // arrow fades in 2s after ripple
+  const arrowOpacity = interpolate(s1Local, [210, 220], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   })
 
   // right browser springs in after arrow
   const rightBrowserSpring = spring({
-    frame: Math.max(0, s1Local - 48),
+    frame: Math.max(0, s1Local - 216),
     fps,
     config: { damping: 18, stiffness: 120 },
     durationInFrames: 25,
@@ -438,8 +444,8 @@ export const RoutingWindowScene: React.FC = () => {
     extrapolateRight: 'clamp',
   })
 
-  // bottom label fades in after right browser
-  const s1LabelOpacity = interpolate(s1Local, [65, 78], [0, 1], {
+  // bottom label fades in 2s after right browser
+  const s1LabelOpacity = interpolate(s1Local, [360, 373], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   })
@@ -460,8 +466,14 @@ export const RoutingWindowScene: React.FC = () => {
   // stage 2 sub-animations: sequential reveal
   const s2Local = Math.max(0, frame - S2_ENTER)
 
+  // left part fades in 1s after stage enters
+  const s2LeftOpacity = interpolate(s2Local, [60, 75], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
+
   // URL bar glow pulse — highlights the direct URL
-  const S2_PULSE_START = 28
+  const S2_PULSE_START = 88
   const s2PulseProgress = interpolate(
     s2Local,
     [S2_PULSE_START, S2_PULSE_START + 20],
@@ -476,15 +488,15 @@ export const RoutingWindowScene: React.FC = () => {
     extrapolateRight: 'clamp',
   })
 
-  // stage 2 arrow fades in
-  const s2ArrowOpacity = interpolate(s2Local, [42, 52], [0, 1], {
+  // stage 2 arrow fades in 2s after pulse
+  const s2ArrowOpacity = interpolate(s2Local, [210, 220], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   })
 
-  // stage 2 right browser springs in
+  // stage 2 right browser springs in after arrow
   const s2RightSpring = spring({
-    frame: Math.max(0, s2Local - 48),
+    frame: Math.max(0, s2Local - 216),
     fps,
     config: { damping: 18, stiffness: 120 },
     durationInFrames: 25,
@@ -494,8 +506,8 @@ export const RoutingWindowScene: React.FC = () => {
     extrapolateRight: 'clamp',
   })
 
-  // stage 2 label fades in
-  const s2LabelOpacity = interpolate(s2Local, [65, 78], [0, 1], {
+  // stage 2 label fades in 2s after right browser
+  const s2LabelOpacity = interpolate(s2Local, [360, 373], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   })
@@ -519,8 +531,8 @@ export const RoutingWindowScene: React.FC = () => {
   })
 
   // zoom out — return to desktop view, finishes before cursor reappears
-  const ZOOM_OUT_START = 760
-  const ZOOM_OUT_END = 797
+  const ZOOM_OUT_START = 1420
+  const ZOOM_OUT_END = 1457
   const zoomOut = interpolate(frame, [ZOOM_OUT_START, ZOOM_OUT_END], [1.18, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
@@ -752,6 +764,7 @@ export const RoutingWindowScene: React.FC = () => {
                         fontFamily: UI,
                         fontWeight: 600,
                         color: '#57606a',
+                        opacity: s1LeftOpacity,
                       }}
                     >
                       When a user clicks from the feed...
@@ -765,6 +778,7 @@ export const RoutingWindowScene: React.FC = () => {
                       }}
                     >
                       {/* feed page with highlighted card + ripple */}
+                      <div style={{ opacity: s1LeftOpacity }}>
                       <MiniBrowser url="acme.com/feed" width={580} height={420}>
                         <FeedCards highlightIndex={1} />
                         {/* ripple press effect on card index 1 (top-right in grid) */}
@@ -785,6 +799,7 @@ export const RoutingWindowScene: React.FC = () => {
                           />
                         )}
                       </MiniBrowser>
+                      </div>
 
                       {/* arrow — fades in after ripple */}
                       <div
@@ -878,6 +893,7 @@ export const RoutingWindowScene: React.FC = () => {
                         fontFamily: UI,
                         fontWeight: 600,
                         color: '#57606a',
+                        opacity: s2LeftOpacity,
                       }}
                     >
                       When visiting the URL directly...
@@ -891,6 +907,7 @@ export const RoutingWindowScene: React.FC = () => {
                       }}
                     >
                       {/* browser with direct URL + URL bar glow */}
+                      <div style={{ opacity: s2LeftOpacity }}>
                       <MiniBrowser url="acme.com/photo/123" width={580} height={420}>
                         <div
                           style={{
@@ -927,6 +944,7 @@ export const RoutingWindowScene: React.FC = () => {
                           />
                         )}
                       </MiniBrowser>
+                      </div>
 
                       {/* arrow — fades in after pulse */}
                       <div

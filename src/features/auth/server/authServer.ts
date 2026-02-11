@@ -30,8 +30,12 @@ export const authServer = betterAuth({
     },
   },
 
-  // cloudflare IP header
+  // cloudflare IP header + cross-subdomain cookies for zero.tamagui.dev
   advanced: {
+    crossSubDomainCookies: {
+      enabled: true,
+      domain: '.tamagui.dev',
+    },
     ipAddress: {
       ipAddressHeaders: ['cf-connecting-ip', 'x-forwarded-for'],
     },

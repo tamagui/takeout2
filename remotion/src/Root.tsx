@@ -36,6 +36,10 @@ import {
   DeployWindowScene,
   DEPLOY_WINDOW_DURATION,
 } from './scenes/DeployWindowScene'
+import {
+  ProtectedRoutesWindowScene,
+  PROTECTED_ROUTES_WINDOW_DURATION,
+} from './scenes/ProtectedRoutesWindowScene'
 
 const LaunchIntroSchema = z.object({
   tagline: z.string(),
@@ -93,6 +97,15 @@ export const RemotionRoot = () => {
         id="OnePromoDeploy"
         component={DeployWindowScene}
         durationInFrames={DEPLOY_WINDOW_DURATION}
+        fps={60}
+        width={1920}
+        height={1080}
+      />
+
+      <Composition
+        id="OnePromoProtectedRoutes"
+        component={ProtectedRoutesWindowScene}
+        durationInFrames={PROTECTED_ROUTES_WINDOW_DURATION}
         fps={60}
         width={1920}
         height={1080}

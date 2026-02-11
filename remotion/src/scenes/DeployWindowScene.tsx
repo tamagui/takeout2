@@ -46,7 +46,7 @@ type CodeSnippet = { title: string; lines: CodeToken[][] }
 
 // verified from ONE source: src/vite/types.ts — deploy?: 'node' | 'vercel' | 'cloudflare'
 export const DEPLOY_CONFIG_SNIPPET: CodeSnippet = {
-  title: 'one.config.ts',
+  title: 'vite.config.ts',
   lines: [
     [
       { text: 'import ', color: C.keyword },
@@ -60,20 +60,24 @@ export const DEPLOY_CONFIG_SNIPPET: CodeSnippet = {
     [
       { text: 'export ', color: C.keyword },
       { text: 'default ', color: C.keyword },
+      { text: '{', color: C.text },
+    ],
+    [
+      { text: '  plugins', color: C.param },
+      { text: ': [', color: C.text },
       { text: 'one', color: C.func },
       { text: '({', color: C.text },
     ],
     [
-      { text: '  web', color: C.param },
-      { text: ': {', color: C.text },
-    ],
-    [
-      { text: '    deploy', color: C.param },
+      { text: '    web', color: C.param },
+      { text: ': { ', color: C.text },
+      { text: 'deploy', color: C.param },
       { text: ': ', color: C.text },
       { text: "'vercel'", color: C.string },
+      { text: ' }', color: C.text },
     ],
-    [{ text: '  }', color: C.text }],
-    [{ text: '})', color: C.text }],
+    [{ text: '  })]', color: C.text }],
+    [{ text: '}', color: C.text }],
   ],
 }
 
@@ -94,7 +98,7 @@ export const WORKER_SNIPPET: CodeSnippet = {
       { text: '  ', color: C.text },
       { text: 'async ', color: C.keyword },
       { text: 'fetch', color: C.func },
-      { text: '(request, env) {', color: C.text },
+      { text: '(request, env, ctx) {', color: C.text },
     ],
     [
       { text: '    ', color: C.text },

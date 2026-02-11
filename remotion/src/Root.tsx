@@ -28,6 +28,10 @@ import {
   OnePromoFull,
   ONE_PROMO_FULL_DURATION,
 } from './OnePromoFull'
+import {
+  PrefetchWindowScene,
+  PREFETCH_WINDOW_DURATION,
+} from './scenes/PrefetchWindowScene'
 
 const LaunchIntroSchema = z.object({
   tagline: z.string(),
@@ -67,6 +71,15 @@ export const RemotionRoot = () => {
         id="OnePromoStackHeader"
         component={StackHeaderWindowScene}
         durationInFrames={STACK_HEADER_WINDOW_DURATION}
+        fps={60}
+        width={1920}
+        height={1080}
+      />
+
+      <Composition
+        id="OnePromoPrefetch"
+        component={PrefetchWindowScene}
+        durationInFrames={PREFETCH_WINDOW_DURATION}
         fps={60}
         width={1920}
         height={1080}

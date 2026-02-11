@@ -19,7 +19,7 @@ dist
 
 .sst
 
-# generated claude skills from packages/docs (run `bun tko docs skills` to regenerate)
+# generated claude skills from packages/docs (run `bun tko skills generate` to regenerate)
 .claude/skills/takeout-*
 
 .env

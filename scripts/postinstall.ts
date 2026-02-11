@@ -11,6 +11,6 @@ await cmd`npm postinstall tasks`.run(async ({ $, fs }) => {
     $`bun tko run generate-env`,
     $`bun run one patch`,
     // regenerate claude code skills from docs (skills dir is gitignored)
-    $`bun tko docs skills`,
+    $`bun tko skills generate`,
   ])
 })

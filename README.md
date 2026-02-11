@@ -79,7 +79,7 @@ description: What this skill does and when to use it
 ---
 ```
 
-Run `bun tko docs skills` to sync skills after adding new docs.
+Run `bun tko skills generate` to sync skills after adding new docs.
 
 ### Development
 

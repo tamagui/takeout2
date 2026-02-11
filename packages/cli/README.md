@@ -79,13 +79,13 @@ takeout docs path
 takeout docs eject
 
 # generate Claude Code skills from docs
-takeout docs skills
-takeout docs skills --clean  # clean and regenerate
+takeout skills generate
+takeout skills generate --clean  # clean and regenerate
 ```
 
 ##### Claude Code Skills
 
-The `docs skills` command generates Claude Code skills from your documentation:
+The `skills generate` command generates Claude Code skills from your documentation:
 
 1. scans docs from both `./docs/` (local) and package docs
 2. for docs with YAML frontmatter, creates symlinks to `.claude/skills/`
@@ -111,10 +111,10 @@ updates automatically. docs without frontmatter get generated copies.
 
 ```bash
 # regenerate after doc changes
-bun tko docs skills
+bun tko skills generate
 
 # clean and regenerate all
-bun tko docs skills --clean
+bun tko skills generate --clean
 ```
 
 skills are gitignored by default (`.claude/skills`).

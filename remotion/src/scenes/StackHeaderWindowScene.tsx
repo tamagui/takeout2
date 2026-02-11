@@ -26,10 +26,10 @@ const WINDOW_OPEN = 52
 
 // stage timeline — starts after zoom completes
 const S1_ENTER = WINDOW_OPEN + 70
-const S1_EXIT = WINDOW_OPEN + 210
-const S2_ENTER = WINDOW_OPEN + 220
-const S2_EXIT = WINDOW_OPEN + 360
-const S3_ENTER = WINDOW_OPEN + 370
+const S1_EXIT = WINDOW_OPEN + 460
+const S2_ENTER = WINDOW_OPEN + 480
+const S2_EXIT = WINDOW_OPEN + 870
+const S3_ENTER = WINDOW_OPEN + 890
 const STAGE_FADE = 20
 
 // syntax highlight colors
@@ -608,7 +608,7 @@ export const HeaderMockup: React.FC = () => (
   </div>
 )
 
-export const STACK_HEADER_WINDOW_DURATION = 600
+export const STACK_HEADER_WINDOW_DURATION = 1340
 
 export const StackHeaderWindowScene: React.FC = () => {
   const frame = useCurrentFrame()
@@ -649,11 +649,11 @@ export const StackHeaderWindowScene: React.FC = () => {
   })
 
   // close animation timeline
-  const CLOSE_CURSOR_START = 545
-  const CLOSE_CURSOR_END = 570
-  const CLOSE_CLICK = 574
-  const WIN_CLOSE_START = 578
-  const WIN_CLOSE_END = 598
+  const CLOSE_CURSOR_START = 1280
+  const CLOSE_CURSOR_END = 1305
+  const CLOSE_CLICK = 1309
+  const WIN_CLOSE_START = 1313
+  const WIN_CLOSE_END = 1333
 
   const CLOSE_BTN = { x: 182, y: 122 }
   const closeMoveProgress = interpolate(
@@ -734,7 +734,13 @@ export const StackHeaderWindowScene: React.FC = () => {
   // stage 1 sub-animations
   const s1Local = Math.max(0, frame - S1_ENTER)
 
-  const HIGHLIGHT_START = 30
+  // left content fades in after stage enters
+  const s1LeftOpacity = interpolate(s1Local, [30, 42], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
+
+  const HIGHLIGHT_START = 60
   const highlightProgress = interpolate(
     s1Local,
     [HIGHLIGHT_START, HIGHLIGHT_START + 18],
@@ -746,13 +752,15 @@ export const StackHeaderWindowScene: React.FC = () => {
     extrapolateRight: 'clamp',
   })
 
-  const arrowOpacity = interpolate(s1Local, [42, 52], [0, 1], {
+  // arrow fades in 1.5s after highlight
+  const arrowOpacity = interpolate(s1Local, [150, 160], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   })
 
+  // right card springs in after arrow
   const rightCardSpring = spring({
-    frame: Math.max(0, s1Local - 48),
+    frame: Math.max(0, s1Local - 156),
     fps,
     config: { damping: 18, stiffness: 120 },
     durationInFrames: 25,
@@ -762,7 +770,8 @@ export const StackHeaderWindowScene: React.FC = () => {
     extrapolateRight: 'clamp',
   })
 
-  const s1LabelOpacity = interpolate(s1Local, [65, 78], [0, 1], {
+  // label fades in 1.5s after right card
+  const s1LabelOpacity = interpolate(s1Local, [270, 283], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   })
@@ -783,7 +792,13 @@ export const StackHeaderWindowScene: React.FC = () => {
 
   const s2Local = Math.max(0, frame - S2_ENTER)
 
-  const S2_GLOW_START = 28
+  // left content fades in after stage enters
+  const s2LeftOpacity = interpolate(s2Local, [30, 42], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
+
+  const S2_GLOW_START = 60
   const s2GlowProgress = interpolate(
     s2Local,
     [S2_GLOW_START, S2_GLOW_START + 20],
@@ -795,13 +810,15 @@ export const StackHeaderWindowScene: React.FC = () => {
     extrapolateRight: 'clamp',
   })
 
-  const s2ArrowOpacity = interpolate(s2Local, [42, 52], [0, 1], {
+  // arrow fades in 1.5s after glow
+  const s2ArrowOpacity = interpolate(s2Local, [150, 160], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   })
 
+  // right element springs in after arrow
   const s2RightSpring = spring({
-    frame: Math.max(0, s2Local - 48),
+    frame: Math.max(0, s2Local - 156),
     fps,
     config: { damping: 18, stiffness: 120 },
     durationInFrames: 25,
@@ -811,7 +828,8 @@ export const StackHeaderWindowScene: React.FC = () => {
     extrapolateRight: 'clamp',
   })
 
-  const s2LabelOpacity = interpolate(s2Local, [65, 78], [0, 1], {
+  // label fades in 1.5s after right element
+  const s2LabelOpacity = interpolate(s2Local, [270, 283], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   })
@@ -835,8 +853,8 @@ export const StackHeaderWindowScene: React.FC = () => {
     easing: Easing.inOut(Easing.cubic),
   })
 
-  const ZOOM_OUT_START = 505
-  const ZOOM_OUT_END = 542
+  const ZOOM_OUT_START = 1240
+  const ZOOM_OUT_END = 1277
   const zoomOut = interpolate(frame, [ZOOM_OUT_START, ZOOM_OUT_END], [1.18, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
@@ -977,7 +995,7 @@ export const StackHeaderWindowScene: React.FC = () => {
               {/* feature title */}
               <div
                 style={{
-                  fontSize: 38,
+                  fontSize: 76,
                   fontFamily: UI,
                   fontWeight: 700,
                   color: '#1f2328',
@@ -1056,8 +1074,7 @@ export const StackHeaderWindowScene: React.FC = () => {
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 20,
+                      justifyContent: 'space-around',
                     }}
                   >
                     <div
@@ -1066,6 +1083,7 @@ export const StackHeaderWindowScene: React.FC = () => {
                         fontFamily: UI,
                         fontWeight: 600,
                         color: '#57606a',
+                        opacity: s1LeftOpacity,
                       }}
                     >
                       The traditional options approach...
@@ -1079,7 +1097,7 @@ export const StackHeaderWindowScene: React.FC = () => {
                       }}
                     >
                       {/* options API card with highlight pulse */}
-                      <div style={{ position: 'relative' }}>
+                      <div style={{ position: 'relative', opacity: s1LeftOpacity }}>
                         <CodeCard snippet={OPTIONS_SNIPPET} />
                         {highlightOpacity > 0 && (
                           <div
@@ -1121,13 +1139,10 @@ export const StackHeaderWindowScene: React.FC = () => {
 
                     <div
                       style={{
-                        fontSize: 22,
+                        fontSize: 66,
                         fontFamily: UI,
-                        color: '#3b82f6',
+                        color: '#57606a',
                         fontWeight: 600,
-                        background: 'rgba(59, 130, 246, 0.08)',
-                        padding: '10px 20px',
-                        borderRadius: 8,
                         opacity: s1LabelOpacity,
                       }}
                     >
@@ -1147,8 +1162,7 @@ export const StackHeaderWindowScene: React.FC = () => {
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 20,
+                      justifyContent: 'space-around',
                     }}
                   >
                     <div
@@ -1157,6 +1171,7 @@ export const StackHeaderWindowScene: React.FC = () => {
                         fontFamily: UI,
                         fontWeight: 600,
                         color: '#57606a',
+                        opacity: s2LeftOpacity,
                       }}
                     >
                       Build rich native headers in JSX...
@@ -1170,7 +1185,7 @@ export const StackHeaderWindowScene: React.FC = () => {
                       }}
                     >
                       {/* advanced config code card with glow */}
-                      <div style={{ position: 'relative' }}>
+                      <div style={{ position: 'relative', opacity: s2LeftOpacity }}>
                         <CodeCard snippet={ADVANCED_SNIPPET} width={500} />
                         {s2GlowOpacity > 0 && (
                           <div
@@ -1209,10 +1224,8 @@ export const StackHeaderWindowScene: React.FC = () => {
                         <Img
                           src={staticFile('screenshots/HeaderStack.png')}
                           style={{
-                            height: 580,
-                            width: Math.round(580 * (777 / 1570)),
-                            borderRadius: 28,
-                            boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+                            height: 440,
+                            width: Math.round(440 * (777 / 1570)),
                             objectFit: 'cover',
                           }}
                         />
@@ -1221,13 +1234,10 @@ export const StackHeaderWindowScene: React.FC = () => {
 
                     <div
                       style={{
-                        fontSize: 22,
+                        fontSize: 66,
                         fontFamily: UI,
-                        color: '#3b82f6',
+                        color: '#57606a',
                         fontWeight: 600,
-                        background: 'rgba(59, 130, 246, 0.08)',
-                        padding: '10px 20px',
-                        borderRadius: 8,
                         opacity: s2LabelOpacity,
                       }}
                     >

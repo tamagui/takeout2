@@ -24,10 +24,10 @@ const WINDOW_OPEN = 52
 
 // stage timeline
 const S1_ENTER = WINDOW_OPEN + 70
-const S1_EXIT = WINDOW_OPEN + 210
-const S2_ENTER = WINDOW_OPEN + 220
-const S2_EXIT = WINDOW_OPEN + 360
-const S3_ENTER = WINDOW_OPEN + 370
+const S1_EXIT = WINDOW_OPEN + 460
+const S2_ENTER = WINDOW_OPEN + 480
+const S2_EXIT = WINDOW_OPEN + 870
+const S3_ENTER = WINDOW_OPEN + 890
 const STAGE_FADE = 20
 
 // syntax colors
@@ -144,7 +144,7 @@ const clamp = {
   extrapolateRight: 'clamp' as const,
 }
 
-export const PREFETCH_WINDOW_DURATION = 600
+export const PREFETCH_WINDOW_DURATION = 1340
 
 // reusable code card
 export const PrefetchCodeCard: React.FC<{
@@ -402,18 +402,68 @@ export const PrefetchWindowScene: React.FC = () => {
     config: { damping: 16, stiffness: 100, mass: 0.9 },
     durationInFrames: 35,
   })
-  const winScale = interpolate(winSpring, [0, 1], [0.2, 1])
-  const winOpacity = interpolate(winSpring, [0, 0.15], [0, 1], {
-    extrapolateRight: 'clamp',
+
+  // close animation timeline
+  const CLOSE_CURSOR_START = 1280
+  const CLOSE_CURSOR_END = 1305
+  const CLOSE_CLICK = 1309
+  const WIN_CLOSE_START = 1313
+  const WIN_CLOSE_END = 1333
+
+  const CLOSE_BTN = { x: 182, y: 122 }
+  const closeMoveProgress = interpolate(
+    frame,
+    [CLOSE_CURSOR_START, CLOSE_CURSOR_END],
+    [0, 1],
+    { ...clamp, easing: Easing.bezier(0.4, 0, 0.2, 1) }
+  )
+  const closeCursorX = interpolate(closeMoveProgress, [0, 1], [700, CLOSE_BTN.x])
+  const closeCursorY = interpolate(closeMoveProgress, [0, 1], [650, CLOSE_BTN.y])
+  const closeCursorIn = interpolate(
+    frame,
+    [CLOSE_CURSOR_START - 5, CLOSE_CURSOR_START],
+    [0, 1],
+    clamp
+  )
+  const closeCursorOut = interpolate(frame, [WIN_CLOSE_END - 5, WIN_CLOSE_END], [1, 0], clamp)
+  const isCloseClicking = frame >= CLOSE_CLICK && frame < CLOSE_CLICK + 6
+  const closeClickScale = isCloseClicking ? 0.82 : 1
+
+  // window exit
+  const winCloseProgress = interpolate(frame, [WIN_CLOSE_START, WIN_CLOSE_END], [0, 1], {
+    ...clamp,
+    easing: Easing.inOut(Easing.cubic),
   })
+  const winScale =
+    interpolate(winSpring, [0, 1], [0.2, 1]) *
+    interpolate(winCloseProgress, [0, 1], [1, 0.2])
+  const winOpacity =
+    interpolate(winSpring, [0, 0.15], [0, 1], { extrapolateRight: 'clamp' }) *
+    interpolate(winCloseProgress, [0, 1], [1, 0])
+
+  // combine cursor phases
+  const isOpenPhase = frame < WINDOW_OPEN + 60
+  const finalCursorX = isOpenPhase ? cursorX : closeCursorX
+  const finalCursorY = isOpenPhase ? cursorY : closeCursorY
+  const finalCursorOpacity = isOpenPhase
+    ? cursorIn * cursorOut
+    : closeCursorIn * closeCursorOut
+  const finalClickScale = isOpenPhase ? clickScale : closeClickScale
 
   // camera zoom
-  const cameraZoom = interpolate(
+  const zoomIn = interpolate(
     frame,
     [WINDOW_OPEN + 35, WINDOW_OPEN + 65],
     [1, 1.18],
     { ...clamp, easing: Easing.inOut(Easing.cubic) }
   )
+  const ZOOM_OUT_START = 1240
+  const ZOOM_OUT_END = 1277
+  const zoomOut = interpolate(frame, [ZOOM_OUT_START, ZOOM_OUT_END], [1.18, 1], {
+    ...clamp,
+    easing: Easing.inOut(Easing.cubic),
+  })
+  const cameraZoom = Math.min(zoomIn, zoomOut)
 
   // shimmer
   const shimmerSp = spring({
@@ -438,27 +488,34 @@ export const PrefetchWindowScene: React.FC = () => {
   const st1Y = interpolate(s1Sp, [0, 1], [15, 0])
 
   const s1L = Math.max(0, frame - S1_ENTER)
+
+  // left content fades in after stage enters
+  const s1LeftOpacity = interpolate(s1L, [30, 42], [0, 1], clamp)
+
   // cursor inside stage content moves toward target link
-  const intentCursorX = interpolate(s1L, [15, 65], [250, 100], {
+  const intentCursorX = interpolate(s1L, [45, 95], [250, 100], {
     ...clamp,
     easing: Easing.out(Easing.cubic),
   })
-  const intentCursorY = interpolate(s1L, [15, 65], [240, 130], {
+  const intentCursorY = interpolate(s1L, [45, 95], [240, 130], {
     ...clamp,
     easing: Easing.out(Easing.cubic),
   })
-  const targetGlow = interpolate(s1L, [36, 48], [0, 1], clamp)
-  const prefetchToastOp = interpolate(s1L, [44, 52], [0, 1], clamp)
-  const s1ArrOp = interpolate(s1L, [50, 60], [0, 1], clamp)
+  const targetGlow = interpolate(s1L, [66, 78], [0, 1], clamp)
+  const prefetchToastOp = interpolate(s1L, [74, 82], [0, 1], clamp)
+  // arrow fades in 1.5s after glow
+  const s1ArrOp = interpolate(s1L, [150, 160], [0, 1], clamp)
+  // right card springs in after arrow
   const s1RSp = spring({
-    frame: Math.max(0, s1L - 56),
+    frame: Math.max(0, s1L - 156),
     fps,
     config: { damping: 18, stiffness: 120 },
     durationInFrames: 25,
   })
   const s1RSc = interpolate(s1RSp, [0, 1], [0.85, 1])
   const s1ROp = interpolate(s1RSp, [0, 0.3], [0, 1], { extrapolateRight: 'clamp' })
-  const s1LblOp = interpolate(s1L, [72, 85], [0, 1], clamp)
+  // label fades in 1.5s after right card
+  const s1LblOp = interpolate(s1L, [270, 283], [0, 1], clamp)
 
   // === STAGE 2: Preload Pipeline ===
   const s2Sp = spring({
@@ -472,16 +529,23 @@ export const PrefetchWindowScene: React.FC = () => {
   const st2Y = interpolate(s2Sp, [0, 1], [15, 0])
 
   const s2L = Math.max(0, frame - S2_ENTER)
-  const s2ArrOp = interpolate(s2L, [42, 52], [0, 1], clamp)
+
+  // left content fades in after stage enters
+  const s2LeftOpacity = interpolate(s2L, [30, 42], [0, 1], clamp)
+
+  // arrow fades in 1.5s after left
+  const s2ArrOp = interpolate(s2L, [150, 160], [0, 1], clamp)
+  // right card springs in after arrow
   const s2RSp = spring({
-    frame: Math.max(0, s2L - 48),
+    frame: Math.max(0, s2L - 156),
     fps,
     config: { damping: 18, stiffness: 120 },
     durationInFrames: 25,
   })
   const s2RSc = interpolate(s2RSp, [0, 1], [0.85, 1])
   const s2ROp = interpolate(s2RSp, [0, 0.3], [0, 1], { extrapolateRight: 'clamp' })
-  const s2LblOp = interpolate(s2L, [65, 78], [0, 1], clamp)
+  // label fades in 1.5s after right card
+  const s2LblOp = interpolate(s2L, [270, 283], [0, 1], clamp)
 
   // === STAGE 3: Code Snippets ===
   const s3Sp = spring({
@@ -604,7 +668,7 @@ export const PrefetchWindowScene: React.FC = () => {
 
               <div
                 style={{
-                  fontSize: 38,
+                  fontSize: 76,
                   fontFamily: UI,
                   fontWeight: 700,
                   color: '#1f2328',
@@ -667,8 +731,7 @@ export const PrefetchWindowScene: React.FC = () => {
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 20,
+                      justifyContent: 'space-around',
                     }}
                   >
                     <div
@@ -677,12 +740,13 @@ export const PrefetchWindowScene: React.FC = () => {
                         fontFamily: UI,
                         fontWeight: 600,
                         color: '#57606a',
+                        opacity: s1LeftOpacity,
                       }}
                     >
                       Cursor moves toward a link...
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-                      <div style={{ position: 'relative', marginRight: 200 }}>
+                      <div style={{ position: 'relative', marginRight: 200, opacity: s1LeftOpacity }}>
                         <NavSidebar targetGlow={targetGlow} />
                         {/* mini cursor */}
                         <svg
@@ -743,13 +807,10 @@ export const PrefetchWindowScene: React.FC = () => {
                     </div>
                     <div
                       style={{
-                        fontSize: 22,
+                        fontSize: 66,
                         fontFamily: UI,
-                        color: '#3b82f6',
+                        color: '#57606a',
                         fontWeight: 600,
-                        background: 'rgba(59,130,246,0.08)',
-                        padding: '10px 20px',
-                        borderRadius: 8,
                         opacity: s1LblOp,
                       }}
                     >
@@ -769,8 +830,7 @@ export const PrefetchWindowScene: React.FC = () => {
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 20,
+                      justifyContent: 'space-around',
                     }}
                   >
                     <div
@@ -779,12 +839,15 @@ export const PrefetchWindowScene: React.FC = () => {
                         fontFamily: UI,
                         fontWeight: 600,
                         color: '#57606a',
+                        opacity: s2LeftOpacity,
                       }}
                     >
                       Everything loads in parallel...
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-                      <PipelineViz localFrame={s2L} />
+                      <div style={{ opacity: s2LeftOpacity }}>
+                        <PipelineViz localFrame={s2L} />
+                      </div>
                       <div
                         style={{
                           fontSize: 36,
@@ -801,13 +864,10 @@ export const PrefetchWindowScene: React.FC = () => {
                     </div>
                     <div
                       style={{
-                        fontSize: 22,
+                        fontSize: 66,
                         fontFamily: UI,
-                        color: '#3b82f6',
+                        color: '#57606a',
                         fontWeight: 600,
-                        background: 'rgba(59,130,246,0.08)',
-                        padding: '10px 20px',
-                        borderRadius: 8,
                         opacity: s2LblOp,
                       }}
                     >
@@ -897,10 +957,10 @@ export const PrefetchWindowScene: React.FC = () => {
         <div
           style={{
             position: 'absolute',
-            left: cursorX,
-            top: cursorY,
-            opacity: cursorIn * cursorOut,
-            transform: `scale(${clickScale})`,
+            left: finalCursorX,
+            top: finalCursorY,
+            opacity: finalCursorOpacity,
+            transform: `scale(${finalClickScale})`,
             zIndex: 1000,
           }}
         >

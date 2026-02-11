@@ -26,10 +26,10 @@ const WINDOW_OPEN = 52
 
 // right panel stage timeline — starts after zoom completes (WINDOW_OPEN + 65 = frame 117)
 const S1_ENTER = WINDOW_OPEN + 70
-const S1_EXIT = WINDOW_OPEN + 210
-const S2_ENTER = WINDOW_OPEN + 220
-const S2_EXIT = WINDOW_OPEN + 360
-const S3_ENTER = WINDOW_OPEN + 370
+const S1_EXIT = WINDOW_OPEN + 280
+const S2_ENTER = WINDOW_OPEN + 300
+const S2_EXIT = WINDOW_OPEN + 510
+const S3_ENTER = WINDOW_OPEN + 530
 const STAGE_FADE = 20
 
 // syntax highlight colors matching the reference image
@@ -276,7 +276,7 @@ export const FeedCards: React.FC<{ highlightIndex?: number; dimmed?: boolean }> 
   </div>
 )
 
-export const ROUTING_WINDOW_DURATION = 600 // 10s at 60fps
+export const ROUTING_WINDOW_DURATION = 860 // ~14.3s at 60fps
 
 export const RoutingWindowScene: React.FC = () => {
   const frame = useCurrentFrame()
@@ -317,11 +317,11 @@ export const RoutingWindowScene: React.FC = () => {
   })
 
   // close animation timeline
-  const CLOSE_CURSOR_START = 545
-  const CLOSE_CURSOR_END = 570
-  const CLOSE_CLICK = 574
-  const WIN_CLOSE_START = 578
-  const WIN_CLOSE_END = 598
+  const CLOSE_CURSOR_START = 800
+  const CLOSE_CURSOR_END = 825
+  const CLOSE_CLICK = 829
+  const WIN_CLOSE_START = 833
+  const WIN_CLOSE_END = 853
 
   // close button position — window top-left is (160,100), button offset ~(22,22)
   const CLOSE_BTN = { x: 182, y: 122 }
@@ -519,8 +519,8 @@ export const RoutingWindowScene: React.FC = () => {
   })
 
   // zoom out — return to desktop view, finishes before cursor reappears
-  const ZOOM_OUT_START = 505
-  const ZOOM_OUT_END = 542
+  const ZOOM_OUT_START = 760
+  const ZOOM_OUT_END = 797
   const zoomOut = interpolate(frame, [ZOOM_OUT_START, ZOOM_OUT_END], [1.18, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
@@ -661,7 +661,7 @@ export const RoutingWindowScene: React.FC = () => {
               {/* feature title */}
               <div
                 style={{
-                  fontSize: 38,
+                  fontSize: 76,
                   fontFamily: UI,
                   fontWeight: 700,
                   color: '#1f2328',
@@ -743,8 +743,7 @@ export const RoutingWindowScene: React.FC = () => {
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 20,
+                      justifyContent: 'space-around',
                     }}
                   >
                     <div
@@ -847,13 +846,10 @@ export const RoutingWindowScene: React.FC = () => {
 
                     <div
                       style={{
-                        fontSize: 22,
+                        fontSize: 66,
                         fontFamily: UI,
-                        color: '#3b82f6',
+                        color: '#57606a',
                         fontWeight: 600,
-                        background: 'rgba(59, 130, 246, 0.08)',
-                        padding: '10px 20px',
-                        borderRadius: 8,
                         opacity: s1LabelOpacity,
                       }}
                     >
@@ -873,8 +869,7 @@ export const RoutingWindowScene: React.FC = () => {
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 20,
+                      justifyContent: 'space-around',
                     }}
                   >
                     <div
@@ -1016,13 +1011,10 @@ export const RoutingWindowScene: React.FC = () => {
 
                     <div
                       style={{
-                        fontSize: 22,
+                        fontSize: 66,
                         fontFamily: UI,
-                        color: '#3b82f6',
+                        color: '#57606a',
                         fontWeight: 600,
-                        background: 'rgba(59, 130, 246, 0.08)',
-                        padding: '10px 20px',
-                        borderRadius: 8,
                         opacity: s2LabelOpacity,
                       }}
                     >

@@ -32,6 +32,10 @@ import {
   PrefetchWindowScene,
   PREFETCH_WINDOW_DURATION,
 } from './scenes/PrefetchWindowScene'
+import {
+  DeployWindowScene,
+  DEPLOY_WINDOW_DURATION,
+} from './scenes/DeployWindowScene'
 
 const LaunchIntroSchema = z.object({
   tagline: z.string(),
@@ -80,6 +84,15 @@ export const RemotionRoot = () => {
         id="OnePromoPrefetch"
         component={PrefetchWindowScene}
         durationInFrames={PREFETCH_WINDOW_DURATION}
+        fps={60}
+        width={1920}
+        height={1080}
+      />
+
+      <Composition
+        id="OnePromoDeploy"
+        component={DeployWindowScene}
+        durationInFrames={DEPLOY_WINDOW_DURATION}
         fps={60}
         width={1920}
         height={1080}

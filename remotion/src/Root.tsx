@@ -20,6 +20,14 @@ import {
   OnePromoCombined,
   ONE_PROMO_COMBINED_DURATION,
 } from './scenes/OnePromoCombined'
+import {
+  IntroLandingScene,
+  INTRO_LANDING_DURATION,
+} from './scenes/IntroLandingScene'
+import {
+  OnePromoFull,
+  ONE_PROMO_FULL_DURATION,
+} from './OnePromoFull'
 
 const LaunchIntroSchema = z.object({
   tagline: z.string(),
@@ -28,6 +36,15 @@ const LaunchIntroSchema = z.object({
 export const RemotionRoot = () => {
   return (
     <>
+      <Composition
+        id="IntroLanding"
+        component={IntroLandingScene}
+        durationInFrames={INTRO_LANDING_DURATION}
+        fps={60}
+        width={1920}
+        height={1080}
+      />
+
       <Composition
         id="OnePromoDesktop"
         component={FakeDesktopScene}
@@ -59,6 +76,15 @@ export const RemotionRoot = () => {
         id="OnePromoCombined"
         component={OnePromoCombined}
         durationInFrames={ONE_PROMO_COMBINED_DURATION}
+        fps={60}
+        width={1920}
+        height={1080}
+      />
+
+      <Composition
+        id="OnePromoFull"
+        component={OnePromoFull}
+        durationInFrames={ONE_PROMO_FULL_DURATION}
         fps={60}
         width={1920}
         height={1080}

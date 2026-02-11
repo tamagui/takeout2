@@ -29,13 +29,14 @@ import {
   SNIPPET_2 as H_SNIPPET_2,
 } from './StackHeaderWindowScene'
 
-// timeline (frames at 60fps)
+// timeline (frames at 60fps) — 2s pause before cursor appears
+const DELAY = 120
 const CURSOR_START = { x: 700, y: 500 }
 const ICON_CENTER = { x: 68, y: 160 }
-const MOVE_START = 8
-const MOVE_END = 35
-const CLICK = 40
-const WINDOW_OPEN = 52
+const MOVE_START = DELAY + 8
+const MOVE_END = DELAY + 35
+const CLICK = DELAY + 40
+const WINDOW_OPEN = DELAY + 52
 
 // per-feature relative stage timing
 const S1 = 0

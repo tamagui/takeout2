@@ -128,7 +128,7 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
       ...authClientOptions,
       fetchOptions: {
         credentials: 'include',
-        headers: useJWT ? { Authorization: `Bearer ${session}` } : undefined,
+        headers: session ? { Authorization: `Bearer ${session}` } : undefined,
       },
     })
   }

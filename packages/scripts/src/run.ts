@@ -261,7 +261,7 @@ const runScript = async (
   prefixLabel: string = name,
   restarts = 0,
   extraArgs: string[] = [],
-  managedIndex?: number,
+  managedIndex?: number
 ) => {
   const index = managedIndex ?? managedProcesses.length
 
@@ -389,9 +389,7 @@ function computeShortcuts() {
   const lengths = new Array(managedProcesses.length).fill(1) as number[]
 
   for (let round = 0; round < 5; round++) {
-    const shortcuts = initials.map(
-      (init, i) => init.slice(0, lengths[i]) || init
-    )
+    const shortcuts = initials.map((init, i) => init.slice(0, lengths[i]) || init)
 
     let hasCollision = false
     const groups = new Map<string, number[]>()
@@ -457,7 +455,9 @@ async function killProcess(index: number) {
   if (!managed) return
 
   if (managed.killing) {
-    console.info(`\x1b[2m  ${managed.shortcut} ${managed.prefixLabel} already stopped\x1b[0m`)
+    console.info(
+      `\x1b[2m  ${managed.shortcut} ${managed.prefixLabel} already stopped\x1b[0m`
+    )
     return
   }
 
@@ -518,7 +518,9 @@ function setupKeyboardShortcuts() {
     for (const managed of managedProcesses) {
       const color = colors[managed.index % colors.length]
       const stopped = managed.killing ? `${dim} (stopped)` : ''
-      console.info(`${dim}  ${reset}${color}${managed.shortcut}${reset}${dim} ${managed.prefixLabel}${stopped}${reset}`)
+      console.info(
+        `${dim}  ${reset}${color}${managed.shortcut}${reset}${dim} ${managed.prefixLabel}${stopped}${reset}`
+      )
     }
     console.info()
   }
@@ -615,7 +617,9 @@ function printShortcutHint() {
   if (managedProcesses.length === 0) return
 
   const dim = '\x1b[2m'
-  console.info(`${dim}  ctrl+r restart · ctrl+k kill · ctrl+l clear · ctrl+c exit${reset}`)
+  console.info(
+    `${dim}  ctrl+r restart · ctrl+k kill · ctrl+l clear · ctrl+c exit${reset}`
+  )
   console.info()
 }
 

@@ -18,13 +18,13 @@ export const schema = table('userPublic')
   })
   .primaryKey('id')
 
-const permissions = serverWhere('userPublic', (_, auth) => {
+const permissions = serverWhere('userPublic', (_, { auth }) => {
   return _.or(_.cmpLit(auth?.role || '', '=', 'admin'), _.cmp('id', auth?.id || ''))
 })
 
 export const mutate = mutations(schema, permissions, {
-  completeSignup: async ({ server, authData, tx }, userId: string) => {
-    ensure(authData)
+  completeSignup: async ({ server, auth, tx }, userId: string) => {
+    ensure(auth)
 
     await tx.mutate.userPublic.update({
       id: userId,
@@ -33,8 +33,8 @@ export const mutate = mutations(schema, permissions, {
 
     if (process.env.VITE_ENVIRONMENT === 'ssr' && server) {
       server.asyncTasks.push(async () => {
-        await server.actions.analyticsActions().logEvent(authData.id, 'user_onboarded', {
-          userId: authData.id,
+        await server.actions.analyticsActions().logEvent(auth.id, 'user_onboarded', {
+          userId: auth.id,
           hasCompletedProfile: true,
         })
       })
@@ -47,9 +47,9 @@ export const mutate = mutations(schema, permissions, {
     }
   },
 
-  update: async ({ authData, can, tx, environment, server }, user: UserUpdate) => {
-    ensure(authData)
-    await can(permissions, authData.id)
+  update: async ({ auth, can, tx, environment, server }, user: UserUpdate) => {
+    ensure(auth)
+    await can(permissions, auth.id)
 
     // Create a mutable copy for modification
     let updateData = { ...user }
@@ -65,7 +65,7 @@ export const mutate = mutations(schema, permissions, {
     }
 
     if (environment === 'server' && server && updateData.username) {
-      await server.actions.userActions.validateUsername(updateData.username, authData.id)
+      await server.actions.userActions.validateUsername(updateData.username, auth.id)
     }
 
     await tx.mutate.userPublic.update(updateData)
@@ -73,27 +73,27 @@ export const mutate = mutations(schema, permissions, {
     if (environment === 'server' && server) {
       const fieldsUpdated = Object.keys(user).filter((key) => key !== 'id')
       server.asyncTasks.push(() =>
-        server.actions.analyticsActions().logEvent(authData.id, 'profile_updated', {
+        server.actions.analyticsActions().logEvent(auth.id, 'profile_updated', {
           fieldsUpdated,
         })
       )
     }
   },
 
-  delete: async ({ authData, server, can, environment, tx }, _user: UserUpdate) => {
-    ensure(authData)
-    await can(permissions, authData.id)
+  delete: async ({ auth, server, can, environment, tx }, _user: UserUpdate) => {
+    ensure(auth)
+    await can(permissions, auth.id)
 
     // only perform deletion on server
     if (environment === 'server' && server) {
       // server will handle deletion of all user data
       // except for likes and follows as specified
-      await server.actions.userActions.deleteAccount(authData.id)
+      await server.actions.userActions.deleteAccount(auth.id)
     }
   },
 
-  whitelistUsers: async ({ authData, tx, environment, server }, emails: string[]) => {
-    ensure(authData)
+  whitelistUsers: async ({ auth, tx, environment, server }, emails: string[]) => {
+    ensure(auth)
 
     // only perform on server
     if (environment === 'server' && server) {
@@ -102,11 +102,11 @@ export const mutate = mutations(schema, permissions, {
     }
   },
 
-  finishOnboarding: async ({ tx, can, authData }) => {
-    ensure(authData)
-    await can(permissions, authData.id)
+  finishOnboarding: async ({ tx, can, auth }) => {
+    ensure(auth)
+    await can(permissions, auth.id)
     await tx.mutate.userPublic.update({
-      id: authData.id,
+      id: auth.id,
       hasOnboarded: true,
     })
   },

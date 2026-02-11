@@ -1,5 +1,5 @@
 import { number, string, table } from '@rocicorp/zero'
-import { ensureLoggedIn, mutations, serverWhere } from 'on-zero'
+import { ensureAuth, mutations, serverWhere } from 'on-zero'
 
 export const schema = table('block')
   .columns({
@@ -10,7 +10,7 @@ export const schema = table('block')
   })
   .primaryKey('id')
 
-const permissions = serverWhere('block', (_, auth) => {
+const permissions = serverWhere('block', (_, { auth }) => {
   return _.cmp('blockerId', auth?.id || '')
 })
 
@@ -19,16 +19,16 @@ export const mutate = mutations(schema, permissions, {
     { tx, server },
     data: { blockedId: string; id: string; createdAt: number }
   ) => {
-    const authData = ensureLoggedIn()
+    const auth = ensureAuth()
 
     await tx.mutate.block.insert({
       ...data,
-      blockerId: authData.id,
+      blockerId: auth.id,
     })
 
     if (process.env.VITE_ENVIRONMENT === 'ssr' && server) {
       server.asyncTasks.push(() =>
-        server.actions.analyticsActions().logEvent(authData.id, 'user_blocked', {
+        server.actions.analyticsActions().logEvent(auth.id, 'user_blocked', {
           targetUserId: data.blockedId,
         })
       )
@@ -36,7 +36,7 @@ export const mutate = mutations(schema, permissions, {
   },
 
   delete: async ({ tx, server }, data: { id: string; blockedUserId?: string }) => {
-    const authData = ensureLoggedIn()
+    const auth = ensureAuth()
 
     // permissions already ensure user can only delete their own blocks
     await tx.mutate.block.delete({ id: data.id })
@@ -45,7 +45,7 @@ export const mutate = mutations(schema, permissions, {
 
     if (process.env.VITE_ENVIRONMENT === 'ssr' && server && blockedUserId) {
       server.asyncTasks.push(() =>
-        server.actions.analyticsActions().logEvent(authData.id, 'user_unblocked', {
+        server.actions.analyticsActions().logEvent(auth.id, 'user_unblocked', {
           targetUserId: blockedUserId,
         })
       )

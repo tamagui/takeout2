@@ -10,7 +10,7 @@ import { createMutators } from './helpers/createMutators'
 import { isInZeroMutation, mutatorContext } from './helpers/mutatorContext'
 import { getMutationsPermissions } from './modelRegistry'
 import { setCustomQueries } from './run'
-import { getZQL, setAuthData, setSchema } from './state'
+import { getZQL, setContext, setSchema } from './state'
 import { setRunner } from './zeroRunner'
 
 import type {
@@ -19,6 +19,7 @@ import type {
   GenericModels,
   GetZeroMutators,
   QueryBuilder,
+  Context,
   Transaction,
 } from './types'
 import type {
@@ -72,14 +73,22 @@ export function createZeroServer<
   const processor = new PushProcessor(zeroDb)
 
   const handleMutationRequest = async ({
+    context: contextIn,
+    auth,
     authData,
     request,
     skipAsyncTasks,
   }: {
-    authData: AuthData | null
+    context?: Context
+    auth?: AuthData | null
+    authData?: AuthData | null
     request: Request
     skipAsyncTasks?: boolean
   }) => {
+    const context: Context = contextIn
+      ? contextIn
+      : ({ auth: auth ?? authData ?? null } as Context)
+
     // since mutations do DB work in transaction, avoid any async tasks during
     const asyncTasks: AsyncAction[] = []
 
@@ -89,7 +98,7 @@ export function createZeroServer<
       createServerActions,
       environment: 'server',
       models,
-      authData,
+      context,
     })
 
     // @ts-expect-error type is ok but config in monorepo
@@ -114,11 +123,9 @@ export function createZeroServer<
     }
   }
 
-  const handleQueryRequest = async ({
-    authData,
-    request,
-  }: {
-    authData: AuthData | null
+  const handleQueryRequest = async (opts: {
+    context?: Context
+    authData?: AuthData | null
     request: Request
   }) => {
     if (!queries) {
@@ -128,8 +135,12 @@ export function createZeroServer<
       )
     }
 
-    // set authData globally for permission checks in query functions
-    setAuthData(authData || ({} as AuthData))
+    // build context from whichever param is provided
+    const context: Context = opts.context
+      ? opts.context
+      : ({ auth: opts.authData || null } as Context)
+    // set context globally for permission checks in query functions
+    setContext(context)
 
     const response = await zeroHandleQueryRequest(
       (name, args) => {
@@ -145,16 +156,16 @@ export function createZeroServer<
           }
           return (getZQL() as any)[table]
             .where((eb: any) => {
-              return permissions.buildPermissionQuery(authData, eb, perm, objOrId, table)
+              return permissions.buildPermissionQuery(context, eb, perm, objOrId, table)
             })
             .one()
         }
 
         const query = (mustGetQuery as any)(queries, name)
-        return query.fn({ args, ctx: authData })
+        return query.fn({ args, ctx: context })
       },
       schema,
-      request
+      opts.request
     )
 
     return {
@@ -164,20 +175,32 @@ export function createZeroServer<
 
   const mutate = async (
     run: (tx: Transaction, mutators: GetZeroMutators<Models>) => Promise<void>,
-    authData?: Pick<AuthData, 'email' | 'id'> & Partial<AuthData>
+    opts?:
+      | {
+          context?: Context
+          authData?: Pick<AuthData, 'email' | 'id'> & Partial<AuthData>
+        }
+      | (Pick<AuthData, 'email' | 'id'> & Partial<AuthData>)
   ) => {
     const asyncTasks: Array<() => Promise<void>> = []
+
+    const authData =
+      opts && !('context' in opts || 'authData' in opts) ? opts : opts?.authData
+    const context = {
+      auth: {
+        id: '',
+        email: 'admin@start.chat',
+        role: 'admin',
+        ...(authData || {}),
+      },
+      ...((opts && 'context' in opts && opts.context) || {}),
+    } as Context
 
     const mutators = createMutators({
       models,
       environment: 'server',
       asyncTasks,
-      authData: {
-        id: '',
-        email: 'admin@start.chat',
-        role: 'admin',
-        ...authData,
-      },
+      context,
       createServerActions,
       can: permissions.can,
     })

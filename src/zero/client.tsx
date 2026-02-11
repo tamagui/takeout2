@@ -2,7 +2,7 @@ import { dropAllDatabases } from '@rocicorp/zero'
 import { useZero } from '@rocicorp/zero/react'
 import { isBrowser } from '@tamagui/constants'
 import { createZeroClient, run } from 'on-zero'
-import { memo, useEffect, type ReactNode } from 'react'
+import { memo, useEffect, useMemo, type ReactNode } from 'react'
 
 import { ZERO_SERVER_URL } from '~/constants/urls'
 import * as groupedQueries from '~/data/generated/groupedQueries'
@@ -28,6 +28,10 @@ export const {
 export const ProvideZero = ({ children }: { children: ReactNode }) => {
   const auth = useAuth()
   const kvStore = isBrowser && auth ? 'idb' : 'mem'
+  const context = useMemo(
+    () => (auth.authData ? { auth: auth.authData } : null),
+    [auth.authData]
+  )
 
   return (
     <ProvideZeroWithoutAuth
@@ -35,7 +39,7 @@ export const ProvideZero = ({ children }: { children: ReactNode }) => {
       // TODO simplify this conditional - on web it breaks with it, on native breaks without
       auth={process.env.VITE_NATIVE ? auth.authClient.getCookie() : undefined}
       kvStore={kvStore}
-      authData={auth.authData}
+      context={context}
       cacheURL={ZERO_SERVER_URL}
     >
       {children}

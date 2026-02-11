@@ -14,7 +14,7 @@ export const POST: Endpoint = async (request) => {
   try {
     const authData = await getAuthDataFromRequest(authServer, request)
     const { response } = await zeroServer.handleMutationRequest({
-      authData,
+      auth: authData,
       request,
     })
     return Response.json(response)

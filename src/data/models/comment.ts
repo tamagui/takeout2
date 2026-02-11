@@ -16,12 +16,12 @@ export const schema = table('comment')
   })
   .primaryKey('id')
 
-const permissions = serverWhere('comment', (_, auth) => {
+const permissions = serverWhere('comment', (_, { auth }) => {
   return _.cmp('userId', auth?.id || '')
 })
 
 export const mutate = mutations(schema, permissions, {
-  insert: async ({ tx, server, authData }, comment: Comment) => {
+  insert: async ({ tx, server, auth }, comment: Comment) => {
     if (process.env.VITE_ENVIRONMENT === 'ssr') {
       if (comment.content) {
         const profanityCheck = checkProfanity(comment.content)
@@ -39,7 +39,7 @@ export const mutate = mutations(schema, permissions, {
 
     await tx.mutate.comment.insert(comment)
 
-    if (process.env.VITE_ENVIRONMENT === 'ssr' && server && authData) {
+    if (process.env.VITE_ENVIRONMENT === 'ssr' && server && auth) {
       server.asyncTasks.push(async () => {
         await server.actions.pushNotificationActions().notifyCommentOnPost({
           postId: comment.postId,

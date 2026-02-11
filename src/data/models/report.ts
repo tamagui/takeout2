@@ -17,24 +17,24 @@ export const schema = table('report')
   })
   .primaryKey('id')
 
-const permissions = serverWhere('report', (_, auth) => {
+const permissions = serverWhere('report', (_, { auth }) => {
   return _.cmp('reporterId', auth?.id || '')
 })
 
 export const mutate = mutations(schema, permissions, {
   reportPost: async (
-    { tx, authData },
+    { tx, auth },
     data: {
       postId: string
       reason: string
       details?: string
     }
   ) => {
-    if (!authData) throw new Error('Not authenticated')
+    if (!auth) throw new Error('Not authenticated')
 
     await tx.mutate.report.insert({
       id: randomId(),
-      reporterId: authData.id,
+      reporterId: auth.id,
       reportedPostId: data.postId,
       reportedUserId: undefined,
       reason: data.reason,
@@ -47,18 +47,18 @@ export const mutate = mutations(schema, permissions, {
   },
 
   reportUser: async (
-    { tx, authData },
+    { tx, auth },
     data: {
       userId: string
       reason: string
       details?: string
     }
   ) => {
-    if (!authData) throw new Error('Not authenticated')
+    if (!auth) throw new Error('Not authenticated')
 
     await tx.mutate.report.insert({
       id: randomId(),
-      reporterId: authData.id,
+      reporterId: auth.id,
       reportedUserId: data.userId,
       reportedPostId: undefined,
       reason: data.reason,

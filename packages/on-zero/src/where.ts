@@ -1,9 +1,9 @@
 import { globalValue } from '@take-out/helpers'
 
 import { isServer } from './constants'
-import { getQueryOrMutatorAuthData } from './helpers/getQueryOrMutatorAuthData'
+import { queryContext } from './query'
 
-import type { TableName, Where } from './types'
+import type { TableName, Where, WhereBuilder } from './types'
 import type { Condition, ExpressionBuilder } from '@rocicorp/zero'
 
 // when true, serverWhere bypasses the client no-op so nested serverWhere
@@ -14,27 +14,25 @@ export function setEvaluatingPermission(value: boolean) {
   _evaluatingPermission = value
 }
 
-export function where<Table extends TableName, Builder extends Where<Table>>(
+export function where<Table extends TableName, Builder extends WhereBuilder<Table>>(
   tableName: Table,
   builder: Builder,
   isServerOnly?: boolean
 ): Where<Table, Condition>
 
-export function where<Table extends TableName, Builder extends Where = Where<Table>>(
-  builder: Builder
-): Where<Table, Condition>
+export function where<
+  Table extends TableName,
+  Builder extends WhereBuilder = WhereBuilder<Table>,
+>(builder: Builder): Where<Table, Condition>
 
-export function where<Table extends TableName, Builder extends Where<Table>>(
+export function where<Table extends TableName, Builder extends WhereBuilder<Table>>(
   a: Table | Builder,
   b?: Builder,
   isServerOnly = false
 ): Where<Table, any> | Builder {
   const whereFn = (b || a) as any
 
-  const wrappedWhereFn = ((
-    a: ExpressionBuilder<any, any>,
-    b = getQueryOrMutatorAuthData()
-  ) => {
+  const wrappedWhereFn = ((a: ExpressionBuilder<any, any>, b = queryContext()) => {
     if (!isServer && isServerOnly && !_evaluatingPermission) {
       // on client (web or native) where conditions always pass
       return a.and()
@@ -49,10 +47,10 @@ export function where<Table extends TableName, Builder extends Where<Table>>(
       }
     }
     return result
-  }) as Builder
+  }) as Where<Table>
 
   // store the raw (unwrapped) builder so permission checks can evaluate it on client
-  WhereRawBuilderMap.set(wrappedWhereFn, whereFn)
+  WhereRawBuilderMap.set(wrappedWhereFn, whereFn as Where)
 
   if (b) {
     WhereTableNameMap.set(wrappedWhereFn, a as Table)

@@ -1,6 +1,6 @@
 import { serverWhere, zql } from 'on-zero'
 
-const permission = serverWhere('block', (row, auth) => {
+const permission = serverWhere('block', (row, { auth }) => {
   return row.cmp('blockerId', auth?.id || '')
 })
 

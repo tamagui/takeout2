@@ -49,7 +49,7 @@ const [data] = useQuery(userById, { userId }, { enabled: Boolean(userId) })
 permissions only execute server-side. use `serverWhere` for query permissions:
 
 ```ts
-const permission = serverWhere('post', (q, auth) => {
+const permission = serverWhere('post', (q, { auth }) => {
   if (auth?.role === 'admin') return true
   return q.cmp('userId', auth?.id || '')
 })
@@ -59,7 +59,7 @@ for reusable permissions, extract to `src/data/where/`:
 
 ```ts
 // src/data/where/notBlockedByViewer.ts
-export const notBlockedByViewer = serverWhere('post', (q, auth) => {
+export const notBlockedByViewer = serverWhere('post', (q, { auth }) => {
   if (!auth?.id) return true
   return q.not(q.exists('authorBlockedBy', (block) =>
     block.where('blockerId', auth.id)
@@ -155,7 +155,7 @@ export const schema = table('post')
   })
   .primaryKey('id')
 
-const permissions = serverWhere('post', (q, auth) => {
+const permissions = serverWhere('post', (q, { auth }) => {
   return q.cmp('userId', auth?.id || '')
 })
 
@@ -165,7 +165,7 @@ export const mutate = mutations(schema, permissions, {
 
     if (ctx.server) {
       ctx.server.asyncTasks.push(() =>
-        ctx.server.actions.analyticsActions().logEvent(ctx.authData.id, 'post_created')
+        ctx.server.actions.analyticsActions().logEvent(ctx.auth.id, 'post_created')
       )
     }
   },
@@ -185,7 +185,7 @@ zero.mutate.post.delete(post)
 ```ts
 type MutatorContext = {
   tx: Transaction
-  authData: AuthData | null
+  auth: AuthData | null
   environment: 'server' | 'client'
   can: (where, obj) => Promise<void>
   server?: {
@@ -306,7 +306,7 @@ const [posts] = useQuery(postsFiltered, { blockedUserIds: blockedIds })
 
 ```ts
 // filter server-side with exists()
-const notBlocked = serverWhere('post', (q, auth) => {
+const notBlocked = serverWhere('post', (q, { auth }) => {
   if (!auth?.id) return true
   return q.not(q.exists('authorBlockedBy', (b) => b.where('blockerId', auth.id)))
 })

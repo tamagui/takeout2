@@ -6,7 +6,7 @@ import { prettyFormatZeroQuery } from './helpers/prettyFormatZeroQuery'
 import { getZQL } from './state'
 import { getWhereTableName } from './where'
 
-import type { AuthData, Can, TableName, Transaction, Where } from './types'
+import type { Can, Context, TableName, Transaction, Where } from './types'
 import type {
   Condition,
   ExpressionBuilder,
@@ -29,7 +29,7 @@ export function createPermissions<Schema extends ZeroSchema>({
   >
 
   function buildPermissionQuery<PermissionWhere extends PermissionsWhere>(
-    authData: AuthData | null,
+    ctx: Context,
     eb: ExpressionBuilder<any, any>,
     permissionWhere: PermissionWhere,
     // TODO until i can get a working PickPrimaryKeys<'message'>
@@ -49,7 +49,7 @@ export function createPermissions<Schema extends ZeroSchema>({
     }
 
     const primaryKeys = tableSchema.primaryKey
-    const permissionReturn = permissionWhere(eb, authData)
+    const permissionReturn = permissionWhere(eb, ctx)
 
     if (permissionReturn == null) {
       throw new Error(`No permission defined for ${tableName}`)
@@ -81,19 +81,20 @@ export function createPermissions<Schema extends ZeroSchema>({
       if (!tableName) {
         throw new Error(`Must use where('table') style where to pass to can()`)
       }
-      await ensurePermission(ctx.tx, ctx.authData, tableName, where, obj)
+      await ensurePermission(ctx.tx, ctx, tableName, where, obj)
       setDidRunPermissionCheck(ctx)
     }
   }
 
   async function ensurePermission(
     tx: Transaction,
-    authData: AuthData | null,
+    ctx: Context,
     tableName: TableName,
     where: Where,
     obj: any // TODO until i can get a working PickPrimaryKeys<'message'>
   ): Promise<void> {
-    if (authData?.role === 'admin') {
+    const auth = ctx.auth
+    if (auth?.role === 'admin') {
       // admin role can do any mutation
       return
     }
@@ -105,13 +106,13 @@ export function createPermissions<Schema extends ZeroSchema>({
     try {
       query = queryBase
         .where((eb) => {
-          return buildPermissionQuery(authData, eb, where, obj)
+          return buildPermissionQuery(ctx, eb, where, obj)
         })
         .one()
 
       ensure(await tx.run(query))
     } catch (err) {
-      const errorTitle = `${tableName} with auth id: ${authData?.id}`
+      const errorTitle = `${tableName} with auth id: ${auth?.id}`
 
       if (err instanceof EnsureError) {
         let msg = `[permission] 🚫 Not Allowed: ${errorTitle}`

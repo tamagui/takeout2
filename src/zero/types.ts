@@ -7,7 +7,7 @@ type Schema = typeof schema
 declare module 'on-zero' {
   interface Config {
     schema: Schema
-    authData: AuthData
+    context: { auth: AuthData }
     serverActions: ServerActions
   }
 }

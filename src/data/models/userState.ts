@@ -16,7 +16,7 @@ export const schema = table('userState')
   })
   .primaryKey('userId')
 
-const permissions = serverWhere('userState', (_, auth) => {
+const permissions = serverWhere('userState', (_, { auth }) => {
   return _.cmp('userId', auth?.id || '')
 })
 

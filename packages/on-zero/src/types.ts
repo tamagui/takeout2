@@ -19,7 +19,7 @@ import type { NullToOptional, TupleToUnion } from '@take-out/helpers'
  *   declare module 'on-zero' {
  *     interface Config {
  *       schema: Schema
- *       authData: AuthData
+ *       context: { auth: AuthData }
  *     }
  *   }
  *
@@ -33,8 +33,8 @@ export interface Config {}
 
 interface DefaultConfig {
   schema: ZeroSchema
-  authData: {}
   serverActions: null
+  context: null
 }
 
 interface FinalConfig extends Omit<DefaultConfig, keyof Config>, Config {}
@@ -47,10 +47,16 @@ export type TableName = keyof Schema['tables'] extends string
 
 export type Transaction = ZeroTransaction<Schema>
 
-export type AuthData =
-  FinalConfig['authData'] extends Record<string, unknown>
-    ? FinalConfig['authData']
+export type AuthData = FinalConfig['context'] extends { auth: infer A }
+  ? A extends Record<string, unknown>
+    ? A
     : Record<string, unknown>
+  : Record<string, unknown>
+
+export type Context =
+  FinalConfig['context'] extends Record<string, unknown>
+    ? Omit<FinalConfig['context'], 'auth'> & { auth: AuthData | null }
+    : { auth: AuthData | null }
 
 export type ServerActions =
   FinalConfig['serverActions'] extends Record<string, unknown>
@@ -63,10 +69,10 @@ export type QueryBuilder = SchemaQuery<Schema>
  * ➗0️⃣ END OVERRIDDEN TYPES
  */
 
-// the first argument passed to every mutation:
-export type MutatorContext = {
+// the first argument passed to every mutation
+export type MutatorContext = Omit<Context, 'auth'> & {
   tx: Transaction
-  authData: AuthData | null
+  auth: AuthData | null
   environment: 'server' | 'client'
   server?: {
     actions: ServerActions
@@ -100,10 +106,13 @@ export type TransformMutators<T> = {
 export type Where<
   Table extends TableName = TableName,
   ReturnType extends Condition | boolean = Condition | boolean,
-> = (
-  expressionBuilder: ExpressionBuilder<Table, Schema>,
-  auth?: AuthData | null
-) => ReturnType
+> = (expressionBuilder: ExpressionBuilder<Table, Schema>, ctx?: Context) => ReturnType
+
+// builder variant with required ctx for where()/serverWhere() callbacks
+export type WhereBuilder<
+  Table extends TableName = TableName,
+  ReturnType extends Condition | boolean = Condition | boolean,
+> = (expressionBuilder: ExpressionBuilder<Table, Schema>, ctx: Context) => ReturnType
 
 export type Can = <PWhere extends Where>(
   where: PWhere,

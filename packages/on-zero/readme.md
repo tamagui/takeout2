@@ -35,7 +35,7 @@ write plain functions. they become synced queries automatically.
 // src/data/queries/notification.ts
 import { zql, serverWhere } from 'on-zero'
 
-const permission = serverWhere('notification', (q, auth) => {
+const permission = serverWhere('notification', (q, { auth }) => {
   return q.cmp('userId', auth?.id || '')
 })
 
@@ -68,7 +68,7 @@ creates a cached `SyncedQuery` per function, and calls it with your params.
 define permissions inline using `serverWhere()`:
 
 ```ts
-const permission = serverWhere('channel', (q, auth) => {
+const permission = serverWhere('channel', (q, { auth }) => {
   if (auth?.role === 'admin') return true
 
   return q.and(
@@ -114,7 +114,7 @@ export const schema = table('message')
   })
   .primaryKey('id')
 
-export const permissions = serverWhere('message', (q, auth) => {
+export const permissions = serverWhere('message', (q, { auth }) => {
   return q.cmp('authorId', auth?.id || '')
 })
 
@@ -127,7 +127,7 @@ export const mutate = mutations(schema, permissions, {
       id: randomId(),
       content: props.content,
       channelId: props.channelId,
-      authorId: ctx.authData!.id,
+      authorId: ctx.auth!.id,
       createdAt: Date.now(),
     })
 
@@ -166,7 +166,7 @@ permissions use the `serverWhere()` helper to create Zero `ExpressionBuilder`
 conditions:
 
 ```ts
-export const permissions = serverWhere('channel', (q, auth) => {
+export const permissions = serverWhere('channel', (q, { auth }) => {
   if (auth?.role === 'admin') return true
 
   return q.or(
@@ -184,7 +184,7 @@ server-side - on the client they automatically pass.
 
 ```ts
 // src/data/queries/channel.ts
-const permission = serverWhere('channel', (q, auth) => {
+const permission = serverWhere('channel', (q, { auth }) => {
   return q.cmp('userId', auth?.id || '')
 })
 
@@ -197,7 +197,7 @@ export const myChannels = () => {
 
 ```ts
 // src/data/models/message.ts
-export const permissions = serverWhere('message', (q, auth) => {
+export const permissions = serverWhere('message', (q, { auth }) => {
   return q.cmp('authorId', auth?.id || '')
 })
 ```
@@ -226,7 +226,7 @@ import { serverWhere } from 'on-zero'
 
 type RelatedToServer = 'role' | 'channel' | 'message'
 
-export const hasServerAdminPermission = serverWhere<RelatedToServer>((_, auth) =>
+export const hasServerAdminPermission = serverWhere<RelatedToServer>((_, { auth }) =>
   _.exists('server', (q) =>
     q.whereExists('role', (r) =>
       r.where('canAdmin', true)
@@ -235,7 +235,7 @@ export const hasServerAdminPermission = serverWhere<RelatedToServer>((_, auth) =
   )
 )
 
-export const hasServerReadPermission = serverWhere<RelatedToServer>((_, auth) =>
+export const hasServerReadPermission = serverWhere<RelatedToServer>((_, { auth }) =>
   _.exists('server', (q) =>
     q.where((_) =>
       _.or(
@@ -256,7 +256,7 @@ import { hasServerAdminPermission, hasServerReadPermission } from './server'
 
 type RelatedToChannel = 'message' | 'pin' | 'channelTopic'
 
-const hasChannelRole = serverWhere<RelatedToChannel>((_, auth) =>
+const hasChannelRole = serverWhere<RelatedToChannel>((_, { auth }) =>
   _.exists('channel', (q) =>
     q.whereExists('role', (r) =>
       r.whereExists('member', (m) => m.where('id', auth?.id || ''))
@@ -264,10 +264,10 @@ const hasChannelRole = serverWhere<RelatedToChannel>((_, auth) =>
   )
 )
 
-export const hasChannelReadPermission = serverWhere<RelatedToChannel>((_, auth) => {
-  const isServerMember = hasServerReadPermission(_, auth)
-  const isChannelMember = hasChannelRole(_, auth)
-  const isAdmin = hasServerAdminPermission(_, auth)
+export const hasChannelReadPermission = serverWhere<RelatedToChannel>((_, ctx) => {
+  const isServerMember = hasServerReadPermission(_, ctx)
+  const isChannelMember = hasChannelRole(_, ctx)
+  const isAdmin = hasServerAdminPermission(_, ctx)
 
   return _.or(isServerMember, isChannelMember, isAdmin)
 })
@@ -428,15 +428,22 @@ export const { ProvideZero, useQuery, zero, usePermission } = createZeroClient({
 })
 
 // in your app root
+const context = useMemo(
+  () => ({ auth: { id: user.id, email: user.email, role: user.role } }),
+  [user.id, user.email, user.role]
+)
+
 <ProvideZero
   server="http://localhost:4848"
   userID={user.id}
   auth={jwtToken}
-  authData={{ id: user.id, email: user.email, role: user.role }}
+  context={context}
 >
   <App />
 </ProvideZero>
 ```
+
+memoize `context` (as above) so provider renders don't create unnecessary object churn.
 
 server:
 
@@ -458,7 +465,7 @@ export const zeroServer = createZeroServer({
 app.post('/api/zero/push', async (req) => {
   const authData = await getAuthFromRequest(req)
   const { response } = await zeroServer.handleMutationRequest({
-    authData,
+    context: { auth: authData },
     request: req
   })
   return response
@@ -468,7 +475,7 @@ app.post('/api/zero/push', async (req) => {
 app.post('/api/zero/pull', async (req) => {
   const authData = await getAuthFromRequest(req)
   const { response } = await zeroServer.handleQueryRequest({
-    authData,
+    context: { auth: authData },
     request: req
   })
   return response
@@ -485,7 +492,7 @@ import type { AuthData } from './auth'
 declare module 'on-zero' {
   interface Config {
     schema: typeof schema
-    authData: AuthData
+    context: { auth: AuthData }
   }
 }
 ```
@@ -496,8 +503,9 @@ every mutation receives `MutatorContext` as first argument:
 
 ```ts
 type MutatorContext = {
+  // plus any extra fields from your configured Config.context
   tx: Transaction // database transaction
-  authData: AuthData | null // current user
+  auth: AuthData | null // current user
   environment: 'server' | 'client' // where executing
   can: (where, obj) => Promise<void> // permission checker
   server?: {

@@ -1,10 +1,11 @@
 import { createBuilder, type Schema } from '@rocicorp/zero'
 
-import type { AuthData, QueryBuilder } from './types'
+import type { Context, QueryBuilder } from './types'
 
 let schema: Schema | null = null
 let zql: QueryBuilder | null = null
-let authData: AuthData | null | undefined
+let ctx: Context | undefined
+const defaultContext = { auth: null } as Context
 
 const errMessage = `Haven't called createZeroClient or createZeroServer yet!`
 
@@ -23,10 +24,11 @@ export const setSchema = (_: Schema) => {
   zql = createBuilder(_) as QueryBuilder
 }
 
-export const getAuthData = () => {
-  return authData || null
+export const getContext = (): Context => {
+  if (ctx) return ctx
+  return defaultContext
 }
 
-export const setAuthData = (_: AuthData) => {
-  authData = _
+export const setContext = (_: Context) => {
+  ctx = _
 }

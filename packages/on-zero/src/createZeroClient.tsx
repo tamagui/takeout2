@@ -14,20 +14,21 @@ import {
 import { createPermissions } from './createPermissions'
 import { createUseQuery } from './createUseQuery'
 import { createMutators } from './helpers/createMutators'
-import { getQueryOrMutatorAuthData } from './helpers/getQueryOrMutatorAuthData'
 import { getAllMutationsPermissions, getMutationsPermissions } from './modelRegistry'
+import { queryContext } from './query'
 import { registerQuery } from './queryRegistry'
 import { resolveQuery, type PlainQueryFn } from './resolveQuery'
 import { setCustomQueries } from './run'
-import { setAuthData, setSchema } from './state'
+import { setContext, setSchema } from './state'
 import { getRawWhere, setEvaluatingPermission } from './where'
 import { setRunner } from './zeroRunner'
 import { zql } from './zql'
 
-import type { AuthData, GenericModels, GetZeroMutators, ZeroEvent } from './types'
+import type { GenericModels, GetZeroMutators, Context, ZeroEvent } from './types'
 import type { Query, Row, Zero, ZeroOptions, Schema as ZeroSchema } from '@rocicorp/zero'
 
 type PreloadOptions = { ttl?: 'always' | 'never' | number | undefined }
+const emptyContext = { auth: null } as Context
 
 export type GroupedQueries = Record<string, Record<string, (...args: any[]) => any>>
 
@@ -76,8 +77,13 @@ export function createZeroClient<
     for (const [name, fn] of Object.entries(queries)) {
       registerQuery(fn, `${namespace}.${name}`)
       // wrap each plain function in defineQuery
-      wrappedNamespaces[namespace][name] = defineQuery(({ args }: { args: any }) =>
-        fn(args)
+      wrappedNamespaces[namespace][name] = defineQuery(
+        ({ args, ctx }: { args: any; ctx: any }) => {
+          if (ctx && typeof ctx === 'object') {
+            setContext(ctx as Context)
+          }
+          return fn(args)
+        }
       )
     }
   }
@@ -108,7 +114,7 @@ export function createZeroClient<
             setEvaluatingPermission(true)
             try {
               return permissionsHelpers.buildPermissionQuery(
-                getQueryOrMutatorAuthData(),
+                queryContext(),
                 eb,
                 rawPerm || ((e: any) => e.and()),
                 args.objOrId,
@@ -132,7 +138,7 @@ export function createZeroClient<
       return base
         .where((eb: any) => {
           return permissionsHelpers.buildPermissionQuery(
-            getQueryOrMutatorAuthData(),
+            queryContext(),
             eb,
             perm || ((e: any) => e.and()),
             args.objOrId,
@@ -177,8 +183,6 @@ export function createZeroClient<
 
   const zeroEvents = createEmitter<ZeroEvent | null>('zero', null)
 
-  const AuthDataContext = createContext<AuthData>({} as AuthData)
-
   const useQuery = createUseQuery<Schema>({
     DisabledContext,
     customQueries,
@@ -216,31 +220,32 @@ export function createZeroClient<
 
   const ProvideZero = ({
     children,
-    authData: authDataIn,
+    context: contextIn,
     disable,
     ...props
   }: Omit<ZeroOptions<Schema, ZeroMutators>, 'schema' | 'mutators'> & {
     children: ReactNode
-    authData?: AuthData | null
+    context?: Context | null
     disable?: boolean
   }) => {
-    const authData = (authDataIn ?? null) as AuthData
+    const context = useMemo(() => (contextIn ?? emptyContext) as Context, [contextIn])
+    const auth = context.auth ?? null
 
-    // update global authData synchronously during render so mutations always have latest auth
-    // (mutations read auth dynamically via getAuthData() to avoid stale closure race condition)
-    setAuthData(authData)
+    // update global context synchronously during render so mutations always have latest auth
+    // (mutations read auth dynamically via getContext() to avoid stale closure race condition)
+    setContext(context)
 
     // recreate mutators when auth changes so ZeroProvider recreates the Zero instance
-    // (mutators read auth dynamically via getAuthData(), but Zero needs fresh instance on auth change)
+    // (mutators read auth dynamically via getContext(), but Zero needs fresh instance on auth change)
     const mutators = useMemo(() => {
       return createMutators({
         models,
         environment: 'client',
-        authData,
+        context,
         can: permissionsHelpers.can,
       })
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [authData])
+    }, [auth])
 
     // for now we re-parent
     if (disable) {
@@ -248,19 +253,17 @@ export function createZeroClient<
     }
 
     return (
-      <AuthDataContext.Provider value={authData}>
-        <ZeroProvider
-          schema={schema}
-          kvStore="mem"
-          // @ts-expect-error
-          mutators={mutators}
-          {...props}
-        >
-          <SetZeroInstance />
-          <ConnectionMonitor zeroEvents={zeroEvents} />
-          {children}
-        </ZeroProvider>
-      </AuthDataContext.Provider>
+      <ZeroProvider
+        schema={schema}
+        kvStore="mem"
+        // @ts-expect-error
+        mutators={mutators}
+        {...props}
+      >
+        <SetZeroInstance />
+        <ConnectionMonitor zeroEvents={zeroEvents} />
+        {children}
+      </ZeroProvider>
     )
   }
 

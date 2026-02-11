@@ -109,19 +109,19 @@ export const schema = table('post')
   })
   .primaryKey('id')
 
-const permissions = serverWhere('post', (_, auth) => {
+const permissions = serverWhere('post', (_, { auth }) => {
   return _.cmp('userId', auth?.id || '')
 })
 
 export const mutate = mutations(schema, permissions, {
-  insert: async ({ tx, environment, server, authData }, post: Post) => {
+  insert: async ({ tx, environment, server, auth }, post: Post) => {
     await tx.mutate.post.insert(post)
 
-    if (environment === 'server' && server && authData) {
+    if (environment === 'server' && server && auth) {
       server.asyncTasks.push(() =>
         server.actions
           .analyticsActions()
-          .logEvent(authData.id, 'post_created', {
+          .logEvent(auth.id, 'post_created', {
             postId: post.id,
           }),
       )
@@ -142,7 +142,7 @@ await zero.mutate.post.upsert(post)
 ```
 
 Custom mutations go in the third argument. They receive a context with the
-transaction, auth data, and server actions.
+transaction, auth, and server actions.
 
 ### Mutation Context
 
@@ -151,7 +151,7 @@ Every mutation receives `MutatorContext`:
 ```ts
 type MutatorContext = {
   tx: Transaction // database transaction
-  authData: AuthData | null // current user
+  auth: AuthData | null // current user
   environment: 'server' | 'client'
   can: (where, obj) => Promise<void>
   server?: {
@@ -468,7 +468,7 @@ permissions easy. These run on the server but always pass on the client.
 
 ```ts
 // src/data/queries/post.ts
-const permission = serverWhere('post', (q, auth) => {
+const permission = serverWhere('post', (q, { auth }) => {
   return q.or(
     q.cmp('published', '=', true),
     q.cmp('userId', '=', auth?.id || ''),
@@ -482,7 +482,7 @@ export const allPosts = () => zql.post.where(permission)
 
 ```ts
 // src/data/models/post.ts
-const permissions = serverWhere('post', (q, auth) => {
+const permissions = serverWhere('post', (q, { auth }) => {
   if (auth?.role === 'admin') return true
   return q.cmp('userId', auth?.id || '')
 })
@@ -592,15 +592,19 @@ export const {
 Wrap your app with the provider:
 
 ```tsx
+const context = useMemo(() => ({ auth: { id: userId, role } }), [userId, role])
+
 <ProvideZeroWithoutAuth
   server={ZERO_SERVER_URL}
   userID={userId}
-  authData={{ id: userId, role }}
+  context={context}
   kvStore={isWeb ? 'idb' : 'mem'}
 >
   <App />
 </ProvideZeroWithoutAuth>
 ```
+
+Memoize `context` so the provider receives a stable object between renders.
 
 Storage backends:
 
@@ -642,7 +646,7 @@ import type { ServerActions } from '~/data/server/createServerActions'
 declare module 'on-zero' {
   interface Config {
     schema: typeof schema
-    authData: AuthData
+    context: { auth: AuthData }
     serverActions: ServerActions
   }
 }

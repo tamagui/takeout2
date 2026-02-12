@@ -760,7 +760,7 @@ export const RoutingWindowScene: React.FC = () => {
                   >
                     <div
                       style={{
-                        fontSize: 24,
+                        fontSize: 48,
                         fontFamily: UI,
                         fontWeight: 600,
                         color: '#57606a',
@@ -779,26 +779,26 @@ export const RoutingWindowScene: React.FC = () => {
                     >
                       {/* feed page with highlighted card + ripple */}
                       <div style={{ opacity: s1LeftOpacity }}>
-                      <MiniBrowser url="acme.com/feed" width={580} height={420}>
-                        <FeedCards highlightIndex={1} />
-                        {/* ripple press effect on card index 1 (top-right in grid) */}
-                        {rippleProgress > 0 && rippleProgress < 1 && (
-                          <div
-                            style={{
-                              position: 'absolute',
-                              left: '50%',
-                              top: '22%',
-                              width: 40,
-                              height: 40,
-                              borderRadius: '50%',
-                              background: 'rgba(59, 130, 246, 0.35)',
-                              transform: `translate(-50%, -50%) scale(${rippleScale})`,
-                              opacity: rippleOpacity,
-                              pointerEvents: 'none',
-                            }}
-                          />
-                        )}
-                      </MiniBrowser>
+                        <MiniBrowser url="acme.com/feed" width={580} height={420}>
+                          <FeedCards highlightIndex={1} />
+                          {/* ripple press effect on card index 1 (top-right in grid) */}
+                          {rippleProgress > 0 && rippleProgress < 1 && (
+                            <div
+                              style={{
+                                position: 'absolute',
+                                left: '50%',
+                                top: '22%',
+                                width: 40,
+                                height: 40,
+                                borderRadius: '50%',
+                                background: 'rgba(59, 130, 246, 0.35)',
+                                transform: `translate(-50%, -50%) scale(${rippleScale})`,
+                                opacity: rippleOpacity,
+                                pointerEvents: 'none',
+                              }}
+                            />
+                          )}
+                        </MiniBrowser>
                       </div>
 
                       {/* arrow — fades in after ripple */}
@@ -889,7 +889,7 @@ export const RoutingWindowScene: React.FC = () => {
                   >
                     <div
                       style={{
-                        fontSize: 24,
+                        fontSize: 48,
                         fontFamily: UI,
                         fontWeight: 600,
                         color: '#57606a',
@@ -908,42 +908,42 @@ export const RoutingWindowScene: React.FC = () => {
                     >
                       {/* browser with direct URL + URL bar glow */}
                       <div style={{ opacity: s2LeftOpacity }}>
-                      <MiniBrowser url="acme.com/photo/123" width={580} height={420}>
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            height: '100%',
-                          }}
-                        >
+                        <MiniBrowser url="acme.com/photo/123" width={580} height={420}>
                           <div
                             style={{
-                              width: 120,
-                              height: 120,
-                              borderRadius: 10,
-                              background: 'linear-gradient(135deg, #93c5fd, #3b82f6)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              height: '100%',
                             }}
-                          />
-                        </div>
-                        {/* URL bar glow pulse */}
-                        {s2PulseOpacity > 0 && (
-                          <div
-                            style={{
-                              position: 'absolute',
-                              top: -32,
-                              left: 0,
-                              right: 0,
-                              height: 28,
-                              borderRadius: 4,
-                              background: 'rgba(59, 130, 246, 0.25)',
-                              boxShadow: '0 0 12px rgba(59, 130, 246, 0.4)',
-                              opacity: s2PulseOpacity,
-                              pointerEvents: 'none',
-                            }}
-                          />
-                        )}
-                      </MiniBrowser>
+                          >
+                            <div
+                              style={{
+                                width: 120,
+                                height: 120,
+                                borderRadius: 10,
+                                background: 'linear-gradient(135deg, #93c5fd, #3b82f6)',
+                              }}
+                            />
+                          </div>
+                          {/* URL bar glow pulse */}
+                          {s2PulseOpacity > 0 && (
+                            <div
+                              style={{
+                                position: 'absolute',
+                                top: -32,
+                                left: 0,
+                                right: 0,
+                                height: 28,
+                                borderRadius: 4,
+                                background: 'rgba(59, 130, 246, 0.25)',
+                                boxShadow: '0 0 12px rgba(59, 130, 246, 0.4)',
+                                opacity: s2PulseOpacity,
+                                pointerEvents: 'none',
+                              }}
+                            />
+                          )}
+                        </MiniBrowser>
                       </div>
 
                       {/* arrow — fades in after pulse */}

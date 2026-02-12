@@ -209,7 +209,7 @@ export const IntoTheBoxScene: React.FC<{ tagline: string }> = ({ tagline }) => {
         {/* url */}
         <div
           style={{
-            fontSize: 24,
+            fontSize: 48,
             fontFamily: FONT,
             fontWeight: 500,
             color: '#a0a0a0',

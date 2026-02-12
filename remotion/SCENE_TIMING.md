@@ -149,7 +149,7 @@ LAST_STAGE_HOLD:
 Window:         1600×880, borderRadius 12
 Title bar:      44px height, macOS traffic lights, centered title (fontSize 13)
 Feature title:  fontSize 76, fontWeight 700, centered, color #1f2328
-Subtitle:       fontSize 24, fontWeight 600, color #57606a
+Subtitle:       fontSize 48, fontWeight 600, color #57606a
 Bottom label:   fontSize 66, fontWeight 600, color #57606a
 Arrow:          fontSize 36, color #3b82f6, fontWeight 700, unicode →
 Stage layout:   flexDirection column, justifyContent space-around, alignItems center

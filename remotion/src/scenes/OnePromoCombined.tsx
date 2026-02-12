@@ -165,7 +165,7 @@ const RoutingStages: React.FC<{ localFrame: number; fps: number }> = ({
         >
           <div
             style={{
-              fontSize: 24,
+              fontSize: 48,
               fontFamily: UI,
               fontWeight: 600,
               color: '#57606a',
@@ -275,7 +275,7 @@ const RoutingStages: React.FC<{ localFrame: number; fps: number }> = ({
         >
           <div
             style={{
-              fontSize: 24,
+              fontSize: 48,
               fontFamily: UI,
               fontWeight: 600,
               color: '#57606a',
@@ -658,7 +658,7 @@ const StackHeaderStages: React.FC<{
         >
           <div
             style={{
-              fontSize: 24,
+              fontSize: 48,
               fontFamily: UI,
               fontWeight: 600,
               color: '#57606a',
@@ -731,7 +731,7 @@ const StackHeaderStages: React.FC<{
         >
           <div
             style={{
-              fontSize: 24,
+              fontSize: 48,
               fontFamily: UI,
               fontWeight: 600,
               color: '#57606a',

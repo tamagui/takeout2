@@ -774,7 +774,7 @@ export const PrefetchWindowScene: React.FC = () => {
                   >
                     <div
                       style={{
-                        fontSize: 24,
+                        fontSize: 48,
                         fontFamily: UI,
                         fontWeight: 600,
                         color: '#57606a',
@@ -879,7 +879,7 @@ export const PrefetchWindowScene: React.FC = () => {
                   >
                     <div
                       style={{
-                        fontSize: 24,
+                        fontSize: 48,
                         fontFamily: UI,
                         fontWeight: 600,
                         color: '#57606a',

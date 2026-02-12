@@ -393,7 +393,12 @@ export const ProtectedRoutesWindowScene: React.FC = () => {
   const cursorX = interpolate(moveProgress, [0, 1], [CURSOR_START.x, ICON_CENTER.x])
   const cursorY = interpolate(moveProgress, [0, 1], [CURSOR_START.y, ICON_CENTER.y])
   const cursorIn = interpolate(frame, [MOVE_START - 5, MOVE_START], [0, 1], clamp)
-  const cursorOut = interpolate(frame, [WINDOW_OPEN + 15, WINDOW_OPEN + 30], [1, 0], clamp)
+  const cursorOut = interpolate(
+    frame,
+    [WINDOW_OPEN + 15, WINDOW_OPEN + 30],
+    [1, 0],
+    clamp
+  )
   const isClicking = frame >= CLICK && frame < CLICK + 8
   const clickScale = isClicking ? 0.82 : 1
   const showHighlight = frame >= CLICK && frame < WINDOW_OPEN + 15
@@ -427,7 +432,12 @@ export const ProtectedRoutesWindowScene: React.FC = () => {
     [0, 1],
     clamp
   )
-  const closeCursorOut = interpolate(frame, [WIN_CLOSE_END - 5, WIN_CLOSE_END], [1, 0], clamp)
+  const closeCursorOut = interpolate(
+    frame,
+    [WIN_CLOSE_END - 5, WIN_CLOSE_END],
+    [1, 0],
+    clamp
+  )
   const isCloseClicking = frame >= CLOSE_CLICK && frame < CLOSE_CLICK + 6
   const closeClickScale = isCloseClicking ? 0.82 : 1
 
@@ -453,12 +463,10 @@ export const ProtectedRoutesWindowScene: React.FC = () => {
   const finalClickScale = isOpenPhase ? clickScale : closeClickScale
 
   // camera zoom
-  const zoomIn = interpolate(
-    frame,
-    [WINDOW_OPEN + 35, WINDOW_OPEN + 65],
-    [1, 1.18],
-    { ...clamp, easing: Easing.inOut(Easing.cubic) }
-  )
+  const zoomIn = interpolate(frame, [WINDOW_OPEN + 35, WINDOW_OPEN + 65], [1, 1.18], {
+    ...clamp,
+    easing: Easing.inOut(Easing.cubic),
+  })
   const ZOOM_OUT_START = 1240
   const ZOOM_OUT_END = 1277
   const zoomOut = interpolate(frame, [ZOOM_OUT_START, ZOOM_OUT_END], [1.18, 1], {
@@ -746,7 +754,7 @@ export const ProtectedRoutesWindowScene: React.FC = () => {
                   >
                     <div
                       style={{
-                        fontSize: 24,
+                        fontSize: 48,
                         fontFamily: UI,
                         fontWeight: 600,
                         color: '#57606a',
@@ -871,7 +879,7 @@ export const ProtectedRoutesWindowScene: React.FC = () => {
                   >
                     <div
                       style={{
-                        fontSize: 24,
+                        fontSize: 48,
                         fontFamily: UI,
                         fontWeight: 600,
                         color: '#57606a',

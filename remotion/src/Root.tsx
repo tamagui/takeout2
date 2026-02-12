@@ -40,6 +40,18 @@ import {
   ProtectedRoutesWindowScene,
   PROTECTED_ROUTES_WINDOW_DURATION,
 } from './scenes/ProtectedRoutesWindowScene'
+import {
+  UseBlockerWindowScene,
+  USE_BLOCKER_WINDOW_DURATION,
+} from './scenes/UseBlockerWindowScene'
+import {
+  DevToolsWindowScene,
+  DEVTOOLS_WINDOW_DURATION,
+} from './scenes/DevToolsWindowScene'
+import {
+  SearchParamsWindowScene,
+  SEARCH_PARAMS_WINDOW_DURATION,
+} from './scenes/SearchParamsWindowScene'
 
 const LaunchIntroSchema = z.object({
   tagline: z.string(),
@@ -106,6 +118,33 @@ export const RemotionRoot = () => {
         id="OnePromoProtectedRoutes"
         component={ProtectedRoutesWindowScene}
         durationInFrames={PROTECTED_ROUTES_WINDOW_DURATION}
+        fps={60}
+        width={1920}
+        height={1080}
+      />
+
+      <Composition
+        id="OnePromoUseBlocker"
+        component={UseBlockerWindowScene}
+        durationInFrames={USE_BLOCKER_WINDOW_DURATION}
+        fps={60}
+        width={1920}
+        height={1080}
+      />
+
+      <Composition
+        id="OnePromoDevTools"
+        component={DevToolsWindowScene}
+        durationInFrames={DEVTOOLS_WINDOW_DURATION}
+        fps={60}
+        width={1920}
+        height={1080}
+      />
+
+      <Composition
+        id="OnePromoSearchParams"
+        component={SearchParamsWindowScene}
+        durationInFrames={SEARCH_PARAMS_WINDOW_DURATION}
         fps={60}
         width={1920}
         height={1080}

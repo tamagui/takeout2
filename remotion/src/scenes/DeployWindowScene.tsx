@@ -1,8 +1,10 @@
 import {
   AbsoluteFill,
   Easing,
+  Img,
   interpolate,
   spring,
+  staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion'
@@ -22,12 +24,12 @@ const MOVE_END = 35
 const CLICK = 40
 const WINDOW_OPEN = 52
 
-// stage timeline
+// stage timeline (3 stages: 2 LEFT+RIGHT + 1 single-content)
 const S1_ENTER = WINDOW_OPEN + 70
-const S1_EXIT = WINDOW_OPEN + 210
-const S2_ENTER = WINDOW_OPEN + 220
-const S2_EXIT = WINDOW_OPEN + 360
-const S3_ENTER = WINDOW_OPEN + 370
+const S1_EXIT = WINDOW_OPEN + 460
+const S2_ENTER = WINDOW_OPEN + 480
+const S2_EXIT = WINDOW_OPEN + 870
+const S3_ENTER = WINDOW_OPEN + 890
 const STAGE_FADE = 20
 
 // syntax colors
@@ -127,21 +129,21 @@ export const WORKER_SNIPPET: CodeSnippet = {
 export const SNIPPET_1 = DEPLOY_CONFIG_SNIPPET
 export const SNIPPET_2 = WORKER_SNIPPET
 
-// platforms
+// platforms with brand logos + colors
 const PLATFORMS = [
-  { name: 'Node.js', value: 'node', color: '#339933' },
-  { name: 'Vercel', value: 'vercel', color: '#000000' },
-  { name: 'Cloudflare', value: 'cloudflare', color: '#F38020' },
+  { name: 'Node.js', value: 'node', logo: 'branches/node.png', color: '#339933', activatesAt: 0 },
+  { name: 'Vercel', value: 'vercel', logo: 'branches/vercel.png', color: '#000000', activatesAt: 80 },
+  { name: 'Cloudflare', value: 'cloudflare', logo: 'branches/cloudflare.png', color: '#F38020', activatesAt: 130 },
 ]
 
-// build output lines
+// build output lines — muted monochrome
 const BUILD_LINES = [
-  { text: '$ one build', color: '#f5e6c8', delay: 0 },
-  { text: '  \u25B8 Scanning routes...         12 found', color: '#8a8070', delay: 8 },
-  { text: '  \u25B8 Bundling server entry...    done', color: '#8a8070', delay: 20 },
-  { text: '  \u25B8 Generating static pages...  done', color: '#8a8070', delay: 32 },
-  { text: '  \u25B8 Creating .vercel/output/    done', color: '#8a8070', delay: 44 },
-  { text: '  \u2713 Ready to deploy', color: '#10b981', delay: 58 },
+  { text: '$ one build', color: '#c9d1d9', delay: 0 },
+  { text: '  \u25B8 Scanning routes...         12 found', color: '#8b949e', delay: 8 },
+  { text: '  \u25B8 Bundling server entry...    done', color: '#8b949e', delay: 20 },
+  { text: '  \u25B8 Generating static pages...  done', color: '#8b949e', delay: 32 },
+  { text: '  \u25B8 Creating .vercel/output/    done', color: '#8b949e', delay: 44 },
+  { text: '  \u2713 Ready to deploy', color: '#c9d1d9', delay: 58 },
 ]
 
 const clamp = {
@@ -149,7 +151,7 @@ const clamp = {
   extrapolateRight: 'clamp' as const,
 }
 
-export const DEPLOY_WINDOW_DURATION = 600
+export const DEPLOY_WINDOW_DURATION = 1340 // ~22.3s at 60fps
 
 // reusable code card
 export const DeployCodeCard: React.FC<{
@@ -211,25 +213,26 @@ export const DeployCodeCard: React.FC<{
   </div>
 )
 
-// platform selector with animated highlight
+// platform selector with brand logos, colors, and animated checkmark
 export const PlatformSelector: React.FC<{
   activeIndex: number
-}> = ({ activeIndex }) => (
+  localFrame: number
+}> = ({ activeIndex, localFrame }) => (
   <div
     style={{
       width: 320,
       background: '#fff',
       borderRadius: 12,
-      border: '1px solid #e0e0e0',
+      border: '1px solid #d0d7de',
       overflow: 'hidden',
-      boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
     }}
   >
     <div
       style={{
         height: 44,
         background: '#f6f8fa',
-        borderBottom: '1px solid #e0e0e0',
+        borderBottom: '1px solid #d0d7de',
         display: 'flex',
         alignItems: 'center',
         padding: '0 16px',
@@ -239,7 +242,7 @@ export const PlatformSelector: React.FC<{
         style={{
           fontSize: 15,
           fontFamily: UI,
-          fontWeight: 700,
+          fontWeight: 600,
           color: '#1f2328',
         }}
       >
@@ -248,43 +251,41 @@ export const PlatformSelector: React.FC<{
     </div>
     {PLATFORMS.map((platform, i) => {
       const isActive = i === activeIndex
+      const checkProgress = interpolate(
+        localFrame,
+        [platform.activatesAt, platform.activatesAt + 10],
+        [0, 1],
+        clamp
+      )
+      const checkScale = isActive ? checkProgress : 0
       return (
         <div
           key={i}
           style={{
-            padding: '16px 20px',
+            padding: '14px 18px',
             display: 'flex',
             alignItems: 'center',
             gap: 14,
             borderBottom: i < PLATFORMS.length - 1 ? '1px solid #f0f0f0' : 'none',
-            background: isActive ? `${platform.color}12` : 'transparent',
-            borderRadius: i === PLATFORMS.length - 1 ? '0 0 12px 12px' : 0,
+            background: isActive ? `${platform.color}0a` : 'transparent',
           }}
         >
-          <div
+          <Img
+            src={staticFile(platform.logo)}
             style={{
-              width: 38,
-              height: 38,
-              borderRadius: 10,
-              background: isActive ? platform.color : '#e8e8e8',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 16,
-              fontFamily: UI,
-              fontWeight: 700,
-              color: isActive ? '#fff' : '#999',
+              width: 28,
+              height: 28,
+              objectFit: 'contain',
+              opacity: isActive ? 1 : 0.35,
             }}
-          >
-            {platform.name[0]}
-          </div>
+          />
           <div style={{ flex: 1 }}>
             <div
               style={{
                 fontSize: 15,
                 fontFamily: UI,
                 fontWeight: 600,
-                color: isActive ? platform.color : '#57606a',
+                color: isActive ? platform.color : '#8b949e',
               }}
             >
               {platform.name}
@@ -293,68 +294,107 @@ export const PlatformSelector: React.FC<{
               style={{
                 fontSize: 12,
                 fontFamily: MONO,
-                color: '#8e8e93',
+                color: '#8b949e',
                 marginTop: 2,
               }}
             >
               '{platform.value}'
             </div>
           </div>
-          {isActive && (
-            <div
-              style={{
-                width: 22,
-                height: 22,
-                borderRadius: 11,
-                background: platform.color,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 13,
-                color: '#fff',
-                fontWeight: 700,
-              }}
-            >
-              {'\u2713'}
-            </div>
-          )}
+          <div
+            style={{
+              width: 20,
+              height: 20,
+              borderRadius: 10,
+              background: platform.color,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 12,
+              color: '#fff',
+              fontWeight: 700,
+              transform: `scale(${checkScale})`,
+              opacity: checkScale,
+            }}
+          >
+            {'\u2713'}
+          </div>
         </div>
       )
     })}
   </div>
 )
 
-// build output terminal
+// build output terminal — clean dark card
 export const BuildOutput: React.FC<{
   localFrame: number
 }> = ({ localFrame }) => (
   <div
     style={{
       width: 420,
-      background: 'rgba(30, 28, 25, 0.95)',
-      borderRadius: 12,
-      padding: '18px 22px',
-      boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+      background: '#161b22',
+      borderRadius: 10,
+      border: '1px solid #30363d',
+      overflow: 'hidden',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
     }}
   >
-    {BUILD_LINES.map((line, i) => {
-      const op = interpolate(localFrame, [line.delay, line.delay + 6], [0, 1], clamp)
-      return (
+    <div
+      style={{
+        height: 32,
+        background: '#21262d',
+        borderBottom: '1px solid #30363d',
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0 12px',
+        gap: 6,
+      }}
+    >
+      {['#ff5f57', '#febc2e', '#28c840'].map((bg) => (
         <div
-          key={i}
+          key={bg}
           style={{
-            fontFamily: MONO,
-            fontSize: 14,
-            lineHeight: 1.9,
-            color: line.color,
-            opacity: op,
-            whiteSpace: 'pre',
+            width: 8,
+            height: 8,
+            borderRadius: '50%',
+            background: bg,
+            opacity: 0.7,
           }}
-        >
-          {line.text}
-        </div>
-      )
-    })}
+        />
+      ))}
+      <span
+        style={{
+          flex: 1,
+          textAlign: 'center',
+          fontSize: 11,
+          fontFamily: MONO,
+          color: '#8b949e',
+        }}
+      >
+        terminal
+      </span>
+      <div style={{ width: 38 }} />
+    </div>
+    <div style={{ padding: '14px 18px' }}>
+      {BUILD_LINES.map((line, i) => {
+        const op = interpolate(localFrame, [line.delay, line.delay + 6], [0, 1], clamp)
+        return (
+          <div
+            key={i}
+            style={{
+              fontFamily: MONO,
+              fontSize: 14,
+              lineHeight: 1.9,
+              color: line.color,
+              opacity: op,
+              whiteSpace: 'pre',
+            }}
+          >
+            {line.text}
+          </div>
+        )
+      })}
+    </div>
   </div>
 )
 
@@ -383,18 +423,69 @@ export const DeployWindowScene: React.FC = () => {
     config: { damping: 16, stiffness: 100, mass: 0.9 },
     durationInFrames: 35,
   })
-  const winScale = interpolate(winSpring, [0, 1], [0.2, 1])
-  const winOpacity = interpolate(winSpring, [0, 0.15], [0, 1], {
-    extrapolateRight: 'clamp',
+  // close animation timeline (last 100 frames)
+  const CLOSE_CURSOR_START = DEPLOY_WINDOW_DURATION - 60
+  const CLOSE_CURSOR_END = DEPLOY_WINDOW_DURATION - 35
+  const CLOSE_CLICK = DEPLOY_WINDOW_DURATION - 31
+  const WIN_CLOSE_START = DEPLOY_WINDOW_DURATION - 27
+  const WIN_CLOSE_END = DEPLOY_WINDOW_DURATION - 7
+
+  const CLOSE_BTN = { x: 182, y: 122 }
+  const closeMoveProgress = interpolate(
+    frame,
+    [CLOSE_CURSOR_START, CLOSE_CURSOR_END],
+    [0, 1],
+    { ...clamp, easing: Easing.bezier(0.4, 0, 0.2, 1) }
+  )
+  const closeCursorX = interpolate(closeMoveProgress, [0, 1], [700, CLOSE_BTN.x])
+  const closeCursorY = interpolate(closeMoveProgress, [0, 1], [650, CLOSE_BTN.y])
+  const closeCursorIn = interpolate(
+    frame,
+    [CLOSE_CURSOR_START - 5, CLOSE_CURSOR_START],
+    [0, 1],
+    clamp
+  )
+  const closeCursorOut = interpolate(frame, [WIN_CLOSE_END - 5, WIN_CLOSE_END], [1, 0], clamp)
+  const isCloseClicking = frame >= CLOSE_CLICK && frame < CLOSE_CLICK + 6
+  const closeClickScale = isCloseClicking ? 0.82 : 1
+
+  // window exit — shrink and fade after cursor clicks X
+  const winCloseProgress = interpolate(frame, [WIN_CLOSE_START, WIN_CLOSE_END], [0, 1], {
+    ...clamp,
+    easing: Easing.inOut(Easing.cubic),
   })
 
-  // camera zoom
-  const cameraZoom = interpolate(
+  const winScale =
+    interpolate(winSpring, [0, 1], [0.2, 1]) *
+    interpolate(winCloseProgress, [0, 1], [1, 0.2])
+  const winOpacity =
+    interpolate(winSpring, [0, 0.15], [0, 1], {
+      extrapolateRight: 'clamp',
+    }) * interpolate(winCloseProgress, [0, 1], [1, 0])
+
+  // combine cursor phases: opening (move to icon) and closing (move to X)
+  const isOpenPhase = frame < WINDOW_OPEN + 60
+  const finalCursorX = isOpenPhase ? cursorX : closeCursorX
+  const finalCursorY = isOpenPhase ? cursorY : closeCursorY
+  const finalCursorOpacity = isOpenPhase
+    ? cursorIn * cursorOut
+    : closeCursorIn * closeCursorOut
+  const finalClickScale = isOpenPhase ? clickScale : closeClickScale
+
+  // camera zoom in + out
+  const zoomIn = interpolate(
     frame,
     [WINDOW_OPEN + 35, WINDOW_OPEN + 65],
     [1, 1.18],
     { ...clamp, easing: Easing.inOut(Easing.cubic) }
   )
+  const ZOOM_OUT_START = DEPLOY_WINDOW_DURATION - 100
+  const ZOOM_OUT_END = DEPLOY_WINDOW_DURATION - 63
+  const zoomOut = interpolate(frame, [ZOOM_OUT_START, ZOOM_OUT_END], [1.18, 1], {
+    ...clamp,
+    easing: Easing.inOut(Easing.cubic),
+  })
+  const cameraZoom = Math.min(zoomIn, zoomOut)
 
   // shimmer
   const shimmerSp = spring({
@@ -419,19 +510,26 @@ export const DeployWindowScene: React.FC = () => {
   const st1Y = interpolate(s1Sp, [0, 1], [15, 0])
 
   const s1L = Math.max(0, frame - S1_ENTER)
-  // platform cycling: Node → Vercel → Cloudflare
-  const activePlatform = s1L < 45 ? 0 : s1L < 85 ? 1 : 2
 
-  const s1ArrOp = interpolate(s1L, [42, 52], [0, 1], clamp)
+  // left content + subtitle fade in
+  const s1LeftOp = interpolate(s1L, [30, 42], [0, 1], clamp)
+
+  // platform cycling: Node → Vercel → Cloudflare
+  const activePlatform = s1L < 80 ? 0 : s1L < 130 ? 1 : 2
+
+  // arrow fades in 1.5s after interaction
+  const s1ArrOp = interpolate(s1L, [150, 160], [0, 1], clamp)
+  // right content springs in after arrow
   const s1RSp = spring({
-    frame: Math.max(0, s1L - 48),
+    frame: Math.max(0, s1L - 156),
     fps,
     config: { damping: 18, stiffness: 120 },
     durationInFrames: 25,
   })
   const s1RSc = interpolate(s1RSp, [0, 1], [0.85, 1])
   const s1ROp = interpolate(s1RSp, [0, 0.3], [0, 1], { extrapolateRight: 'clamp' })
-  const s1LblOp = interpolate(s1L, [65, 78], [0, 1], clamp)
+  // label fades in 1.5s after right content
+  const s1LblOp = interpolate(s1L, [270, 283], [0, 1], clamp)
 
   // === STAGE 2: Build output + worker ===
   const s2Sp = spring({
@@ -445,16 +543,23 @@ export const DeployWindowScene: React.FC = () => {
   const st2Y = interpolate(s2Sp, [0, 1], [15, 0])
 
   const s2L = Math.max(0, frame - S2_ENTER)
-  const s2ArrOp = interpolate(s2L, [42, 52], [0, 1], clamp)
+
+  // left content + subtitle fade in
+  const s2LeftOp = interpolate(s2L, [30, 42], [0, 1], clamp)
+
+  // arrow fades in 1.5s after interaction
+  const s2ArrOp = interpolate(s2L, [150, 160], [0, 1], clamp)
+  // right content springs in after arrow
   const s2RSp = spring({
-    frame: Math.max(0, s2L - 48),
+    frame: Math.max(0, s2L - 156),
     fps,
     config: { damping: 18, stiffness: 120 },
     durationInFrames: 25,
   })
   const s2RSc = interpolate(s2RSp, [0, 1], [0.85, 1])
   const s2ROp = interpolate(s2RSp, [0, 0.3], [0, 1], { extrapolateRight: 'clamp' })
-  const s2LblOp = interpolate(s2L, [65, 78], [0, 1], clamp)
+  // label fades in 1.5s after right content
+  const s2LblOp = interpolate(s2L, [270, 283], [0, 1], clamp)
 
   // === STAGE 3: Code snippets ===
   const s3Sp = spring({
@@ -577,7 +682,7 @@ export const DeployWindowScene: React.FC = () => {
 
               <div
                 style={{
-                  fontSize: 38,
+                  fontSize: 76,
                   fontFamily: UI,
                   fontWeight: 700,
                   color: '#1f2328',
@@ -640,8 +745,7 @@ export const DeployWindowScene: React.FC = () => {
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 20,
+                      justifyContent: 'space-around',
                     }}
                   >
                     <div
@@ -650,12 +754,15 @@ export const DeployWindowScene: React.FC = () => {
                         fontFamily: UI,
                         fontWeight: 600,
                         color: '#57606a',
+                        opacity: s1LeftOp,
                       }}
                     >
                       One config, three platforms...
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-                      <PlatformSelector activeIndex={activePlatform} />
+                      <div style={{ opacity: s1LeftOp }}>
+                        <PlatformSelector activeIndex={activePlatform} localFrame={s1L} />
+                      </div>
                       <div
                         style={{
                           fontSize: 36,
@@ -672,13 +779,10 @@ export const DeployWindowScene: React.FC = () => {
                     </div>
                     <div
                       style={{
-                        fontSize: 22,
+                        fontSize: 66,
                         fontFamily: UI,
-                        color: '#3b82f6',
+                        color: '#57606a',
                         fontWeight: 600,
-                        background: 'rgba(59,130,246,0.08)',
-                        padding: '10px 20px',
-                        borderRadius: 8,
                         opacity: s1LblOp,
                       }}
                     >
@@ -698,8 +802,7 @@ export const DeployWindowScene: React.FC = () => {
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 20,
+                      justifyContent: 'space-around',
                     }}
                   >
                     <div
@@ -708,12 +811,15 @@ export const DeployWindowScene: React.FC = () => {
                         fontFamily: UI,
                         fontWeight: 600,
                         color: '#57606a',
+                        opacity: s2LeftOp,
                       }}
                     >
                       Build generates platform output...
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-                      <BuildOutput localFrame={s2L} />
+                      <div style={{ opacity: s2LeftOp }}>
+                        <BuildOutput localFrame={s2L} />
+                      </div>
                       <div
                         style={{
                           fontSize: 36,
@@ -730,17 +836,14 @@ export const DeployWindowScene: React.FC = () => {
                     </div>
                     <div
                       style={{
-                        fontSize: 22,
+                        fontSize: 66,
                         fontFamily: UI,
-                        color: '#3b82f6',
+                        color: '#57606a',
                         fontWeight: 600,
-                        background: 'rgba(59,130,246,0.08)',
-                        padding: '10px 20px',
-                        borderRadius: 8,
                         opacity: s2LblOp,
                       }}
                     >
-                      Auto-generated worker — zero manual setup
+                      Auto-generated worker — zero setup
                     </div>
                   </div>
                 )}
@@ -822,14 +925,14 @@ export const DeployWindowScene: React.FC = () => {
           </div>
         )}
 
-        {/* cursor */}
+        {/* cursor (open phase + close phase combined) */}
         <div
           style={{
             position: 'absolute',
-            left: cursorX,
-            top: cursorY,
-            opacity: cursorIn * cursorOut,
-            transform: `scale(${clickScale})`,
+            left: finalCursorX,
+            top: finalCursorY,
+            opacity: finalCursorOpacity,
+            transform: `scale(${finalClickScale})`,
             zIndex: 1000,
           }}
         >

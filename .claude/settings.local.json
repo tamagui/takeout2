@@ -5,7 +5,14 @@
       "Bash(bunx remotion studio:*)",
       "Bash(npx tsc:*)",
       "Bash(bunx remotion add:*)",
-      "Bash(bun add:*)"
+      "Bash(bun add:*)",
+      "WebFetch(domain:onestack.dev)",
+      "Bash(npx remotion studio:*)",
+      "Bash(gh api:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.remotion.dev)",
+      "Bash(npm install:*)",
+      "Bash(npm run studio:*)"
     ],
     "deny": []
   },

@@ -126,21 +126,15 @@ export const SNIPPET_1 = CONFIG_SNIPPET
 export const SNIPPET_2 = PRELOAD_SNIPPET
 
 // nav links for sidebar demo
-const NAV_LINKS = [
-  'Getting Started',
-  'Routing',
-  'API Reference',
-  'Deployment',
-  'Themes',
-]
+const NAV_LINKS = ['Getting Started', 'Routing', 'API Reference', 'Deployment', 'Themes']
 const TARGET_IDX = 1
 
-// pipeline items
+// pipeline items — staggered delays for waterfall effect
 const PIPELINE_ITEMS = [
-  { label: 'Route Bundle', color: '#3b82f6', delay: 0 },
-  { label: 'CSS Module', color: '#8b5cf6', delay: 3 },
-  { label: 'Loader Data', color: '#06b6d4', delay: 5 },
-  { label: 'Child Routes', color: '#10b981', delay: 8 },
+  { label: 'Route Bundle', delay: 50 },
+  { label: 'CSS Module', delay: 60 },
+  { label: 'Loader Data', delay: 70 },
+  { label: 'Child Routes', delay: 80 },
 ]
 
 const clamp = {
@@ -293,27 +287,48 @@ export const PipelineViz: React.FC<{
   <div
     style={{
       width: 380,
-      background: '#fff',
+      background: '#1a1b1e',
       borderRadius: 10,
-      border: '1px solid #e0e0e0',
       overflow: 'hidden',
+      border: '1px solid #2d2e32',
     }}
   >
     <div
       style={{
         height: 40,
-        background: '#f6f8fa',
-        borderBottom: '1px solid #e0e0e0',
+        background: '#222326',
+        borderBottom: '1px solid #2d2e32',
         display: 'flex',
         alignItems: 'center',
         padding: '0 16px',
         gap: 8,
       }}
     >
-      <span style={{ fontSize: 14, fontFamily: UI, fontWeight: 700, color: '#1f2328' }}>
+      <div style={{ display: 'flex', gap: 6 }}>
+        {['#ff5f57', '#ffbd2e', '#28ca42'].map((bg) => (
+          <div
+            key={bg}
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: '50%',
+              background: bg,
+            }}
+          />
+        ))}
+      </div>
+      <span
+        style={{
+          fontSize: 13,
+          fontFamily: MONO,
+          fontWeight: 500,
+          color: '#8b949e',
+          marginLeft: 8,
+        }}
+      >
         Preload Pipeline
       </span>
-      <span style={{ fontSize: 12, fontFamily: MONO, color: '#6e7781' }}>
+      <span style={{ fontSize: 11, fontFamily: MONO, color: '#484f58' }}>
         /docs/routing
       </span>
     </div>
@@ -325,7 +340,12 @@ export const PipelineViz: React.FC<{
           [0, 100],
           clamp
         )
-        const itemOp = interpolate(localFrame, [item.delay, item.delay + 8], [0, 1], clamp)
+        const itemOp = interpolate(
+          localFrame,
+          [item.delay, item.delay + 8],
+          [0, 1],
+          clamp
+        )
 
         return (
           <div
@@ -343,7 +363,12 @@ export const PipelineViz: React.FC<{
               }}
             >
               <span
-                style={{ fontSize: 13, fontFamily: UI, fontWeight: 600, color: '#1f2328' }}
+                style={{
+                  fontSize: 13,
+                  fontFamily: UI,
+                  fontWeight: 600,
+                  color: '#c9d1d9',
+                }}
               >
                 {item.label}
               </span>
@@ -351,7 +376,7 @@ export const PipelineViz: React.FC<{
                 style={{
                   fontSize: 12,
                   fontFamily: MONO,
-                  color: progress >= 100 ? '#10b981' : '#6e7781',
+                  color: progress >= 100 ? '#8b949e' : '#484f58',
                 }}
               >
                 {progress >= 100 ? '\u2713' : `${Math.round(progress)}%`}
@@ -359,9 +384,9 @@ export const PipelineViz: React.FC<{
             </div>
             <div
               style={{
-                height: 8,
-                background: '#f0f0f0',
-                borderRadius: 4,
+                height: 6,
+                background: '#2d2e32',
+                borderRadius: 3,
                 overflow: 'hidden',
               }}
             >
@@ -369,8 +394,8 @@ export const PipelineViz: React.FC<{
                 style={{
                   height: '100%',
                   width: `${progress}%`,
-                  background: item.color,
-                  borderRadius: 4,
+                  background: '#8b949e',
+                  borderRadius: 3,
                 }}
               />
             </div>
@@ -395,7 +420,12 @@ export const PrefetchWindowScene: React.FC = () => {
   const cursorX = interpolate(moveProgress, [0, 1], [CURSOR_START.x, ICON_CENTER.x])
   const cursorY = interpolate(moveProgress, [0, 1], [CURSOR_START.y, ICON_CENTER.y])
   const cursorIn = interpolate(frame, [MOVE_START - 5, MOVE_START], [0, 1], clamp)
-  const cursorOut = interpolate(frame, [WINDOW_OPEN + 15, WINDOW_OPEN + 30], [1, 0], clamp)
+  const cursorOut = interpolate(
+    frame,
+    [WINDOW_OPEN + 15, WINDOW_OPEN + 30],
+    [1, 0],
+    clamp
+  )
   const isClicking = frame >= CLICK && frame < CLICK + 8
   const clickScale = isClicking ? 0.82 : 1
   const showHighlight = frame >= CLICK && frame < WINDOW_OPEN + 15
@@ -429,7 +459,12 @@ export const PrefetchWindowScene: React.FC = () => {
     [0, 1],
     clamp
   )
-  const closeCursorOut = interpolate(frame, [WIN_CLOSE_END - 5, WIN_CLOSE_END], [1, 0], clamp)
+  const closeCursorOut = interpolate(
+    frame,
+    [WIN_CLOSE_END - 5, WIN_CLOSE_END],
+    [1, 0],
+    clamp
+  )
   const isCloseClicking = frame >= CLOSE_CLICK && frame < CLOSE_CLICK + 6
   const closeClickScale = isCloseClicking ? 0.82 : 1
 
@@ -455,12 +490,10 @@ export const PrefetchWindowScene: React.FC = () => {
   const finalClickScale = isOpenPhase ? clickScale : closeClickScale
 
   // camera zoom
-  const zoomIn = interpolate(
-    frame,
-    [WINDOW_OPEN + 35, WINDOW_OPEN + 65],
-    [1, 1.18],
-    { ...clamp, easing: Easing.inOut(Easing.cubic) }
-  )
+  const zoomIn = interpolate(frame, [WINDOW_OPEN + 35, WINDOW_OPEN + 65], [1, 1.18], {
+    ...clamp,
+    easing: Easing.inOut(Easing.cubic),
+  })
   const ZOOM_OUT_START = 1240
   const ZOOM_OUT_END = 1277
   const zoomOut = interpolate(frame, [ZOOM_OUT_START, ZOOM_OUT_END], [1.18, 1], {
@@ -660,7 +693,8 @@ export const PrefetchWindowScene: React.FC = () => {
                 style={{
                   position: 'absolute',
                   inset: 0,
-                  backgroundImage: 'radial-gradient(circle, #d8d8d8 1px, transparent 1px)',
+                  backgroundImage:
+                    'radial-gradient(circle, #d8d8d8 1px, transparent 1px)',
                   backgroundSize: '24px 24px',
                   maskImage:
                     'radial-gradient(ellipse at center, black 20%, transparent 70%)',
@@ -750,7 +784,13 @@ export const PrefetchWindowScene: React.FC = () => {
                       Cursor moves toward a link...
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-                      <div style={{ position: 'relative', marginRight: 200, opacity: s1LeftOpacity }}>
+                      <div
+                        style={{
+                          position: 'relative',
+                          marginRight: 200,
+                          opacity: s1LeftOpacity,
+                        }}
+                      >
                         <NavSidebar targetGlow={targetGlow} />
                         {/* mini cursor */}
                         <svg
@@ -915,7 +955,9 @@ export const PrefetchWindowScene: React.FC = () => {
                             gap: 8,
                           }}
                         >
-                          <span style={{ fontSize: 15, color: '#6e7781' }}>{'\u269B'}</span>
+                          <span style={{ fontSize: 15, color: '#6e7781' }}>
+                            {'\u269B'}
+                          </span>
                           <span
                             style={{
                               fontSize: 15,

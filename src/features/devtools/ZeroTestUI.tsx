@@ -1,4 +1,5 @@
 import { memo, useEffect, useState } from 'react'
+import { isWeb } from 'tamagui'
 
 import { feedPosts } from '~/data/queries/post'
 import { useAuth } from '~/features/auth/client/authClient'
@@ -9,6 +10,7 @@ export const ZeroTestUI = memo(() => {
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
+    if (!isWeb) return
     const handler = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.altKey && e.key.toLowerCase() === 'p') {
         e.preventDefault()

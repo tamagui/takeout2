@@ -12,7 +12,10 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:www.remotion.dev)",
       "Bash(npm install:*)",
-      "Bash(npm run studio:*)"
+      "Bash(npm run studio:*)",
+      "Bash(xargs:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)"
     ],
     "deny": []
   },

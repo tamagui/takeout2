@@ -115,8 +115,22 @@ export async function setupSSHKey() {
     await fs.promises.mkdir(sshDir, { recursive: true })
   }
 
-  // write ssh key content to file
-  await fs.promises.writeFile(keyPath, sshKeyValue, { mode: 0o600 })
+  // decode base64-encoded keys (github secrets often store keys as base64)
+  let keyContent = sshKeyValue
+  if (
+    !sshKeyValue.includes('-----BEGIN') &&
+    /^[A-Za-z0-9+/=\s]+$/.test(sshKeyValue.trim())
+  ) {
+    console.info(pc.gray('  detected base64-encoded key, decoding...'))
+    keyContent = Buffer.from(sshKeyValue.trim(), 'base64').toString('utf-8')
+  }
+
+  // ensure trailing newline (github secrets can strip it)
+  if (!keyContent.endsWith('\n')) {
+    keyContent += '\n'
+  }
+
+  await fs.promises.writeFile(keyPath, keyContent, { mode: 0o600 })
 
   // add host to known_hosts
   if (process.env.DEPLOY_HOST) {

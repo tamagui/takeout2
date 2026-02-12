@@ -29,6 +29,9 @@ export async function getTestEnv() {
       ZERO_LOG_LEVEL: 'warn',
     }),
     DO_NOT_TRACK: '1',
+    // force localhost urls so cross-subdomain cookies don't activate in test
+    BETTER_AUTH_URL: `http://localhost:${appPort}`,
+    ONE_SERVER_URL: `http://localhost:${appPort}`,
     ZERO_MUTATE_URL: `http://${dockerHost}:${appPort}/api/zero/push`,
     ZERO_QUERY_URL: `http://${dockerHost}:${appPort}/api/zero/pull`,
     ZERO_UPSTREAM_DB: `${dockerDbBase}/postgres`,

@@ -134,12 +134,13 @@ export async function migrate(options: MigrateOptions) {
           // use savepoints so "already exists" errors don't abort the transaction.
           // this handles cases where tables/columns exist but migration tracking
           // was lost (e.g. db restore, pglite data loss)
-          await client.query(`SAVEPOINT migration_${migration.name}`)
+          const sp = `sp_${migration.name.replace(/\W/g, '_')}`
+          await client.query(`SAVEPOINT ${sp}`)
           try {
             await migration.up(client)
-            await client.query(`RELEASE SAVEPOINT migration_${migration.name}`)
+            await client.query(`RELEASE SAVEPOINT ${sp}`)
           } catch (e: any) {
-            await client.query(`ROLLBACK TO SAVEPOINT migration_${migration.name}`)
+            await client.query(`ROLLBACK TO SAVEPOINT ${sp}`)
             // pg "duplicate" class errors: table, column, object, etc
             if (e?.code?.startsWith('42')) {
               console.info(

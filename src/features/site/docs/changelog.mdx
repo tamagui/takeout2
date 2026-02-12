@@ -68,7 +68,7 @@ description: Weekly updates and changes to Takeout
 - all scripts rewritten to use `cmd()` API - 71 files migrated from raw exec/spawn to typed, self-documenting commands with automatic help generation
 - scripts directory renamed from `ci/` to `ops/` (avoids conflict with bun's built-in `bun ci` command), and `ops ci` renamed to `ops release`
 - CI pipeline split into separate `test.ts` and `release.ts` - test runner extracted for independent use, release just orchestrates test + build + deploy
-- Env vars simplified - `VITE_PUBLIC_ZERO_SERVER` and `WEB_DOMAIN`/`ZERO_DOMAIN` replaced with just `VITE_ZERO_HOST` and `VITE_WEB_HOST` (hostname only, protocol constructed at runtime)
+- Env vars simplified - `VITE_PUBLIC_ZERO_SERVER` and `WEB_DOMAIN`/`ZERO_DOMAIN` replaced with just `VITE_ZERO_HOSTNAME` and `VITE_WEB_HOSTNAME` (hostname only, protocol constructed at runtime)
 - Zero env vars centralized through `package.json` env defaults -> auto-generated `.env` -> docker `env_file` instead of hardcoded values in docker-compose
 - `run-frontend-dev.ts` merged into `run-frontend.ts --dev` flag, eliminating duplicate script
 - CLI startup made faster by lazy-importing dependencies instead of importing everything up-front

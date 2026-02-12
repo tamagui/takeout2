@@ -730,8 +730,8 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   // extract hostname from URL (remove protocol)
   const zeroHost = zeroUrl.replace(/^https?:\/\//, '')
   const webHost = domain.replace(/^https?:\/\//, '')
-  updateEnvVariable(cwd, 'VITE_ZERO_HOST', zeroHost, envFile)
-  updateEnvVariable(cwd, 'VITE_WEB_HOST', webHost, envFile)
+  updateEnvVariable(cwd, 'VITE_ZERO_HOSTNAME', zeroHost, envFile)
+  updateEnvVariable(cwd, 'VITE_WEB_HOSTNAME', webHost, envFile)
 
   // derive zero database URLs from the main database URL
   const dbBase = dbUrl.split('/').slice(0, -1).join('/')
@@ -798,7 +798,7 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   console.info(pc.gray('  1. Adding CNAME records in your DNS provider'))
   console.info(pc.gray(`  2. Pointing to your cluster subdomain`))
   console.info(
-    pc.gray('  3. Setting VITE_WEB_HOST and VITE_ZERO_HOST in .env.production')
+    pc.gray('  3. Setting VITE_WEB_HOSTNAME and VITE_ZERO_HOSTNAME in .env.production')
   )
   console.info()
 
@@ -850,12 +850,12 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
         console.info()
 
         const webUrl = `https://${webDomain}`
-        updateEnvVariable(cwd, 'VITE_WEB_HOST', webDomain, envFile)
+        updateEnvVariable(cwd, 'VITE_WEB_HOSTNAME', webDomain, envFile)
         updateEnvVariable(cwd, 'BETTER_AUTH_URL', webUrl, envFile)
         updateEnvVariable(cwd, 'ONE_SERVER_URL', webUrl, envFile)
 
         if (zeroDomain) {
-          updateEnvVariable(cwd, 'VITE_ZERO_HOST', zeroDomain, envFile)
+          updateEnvVariable(cwd, 'VITE_ZERO_HOSTNAME', zeroDomain, envFile)
         }
 
         showSuccess('✓ Custom domains configured')

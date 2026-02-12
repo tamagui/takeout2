@@ -28,8 +28,8 @@ export const POSTMARK_SERVER_TOKEN = ensureEnv('POSTMARK_SERVER_TOKEN')
 export const VITE_DEMO_MODE = ensureEnv('VITE_DEMO_MODE', "")
 export const VITE_POSTHOG_API_KEY = ensureEnv('VITE_POSTHOG_API_KEY', "")
 export const VITE_POSTHOG_HOST = ensureEnv('VITE_POSTHOG_HOST', "")
-export const VITE_ZERO_HOST = ensureEnv('VITE_ZERO_HOST', "")
-export const VITE_WEB_HOST = ensureEnv('VITE_WEB_HOST', "")
+export const VITE_ZERO_HOSTNAME = ensureEnv('VITE_ZERO_HOSTNAME', "")
+export const VITE_WEB_HOSTNAME = ensureEnv('VITE_WEB_HOSTNAME', "")
 export const ZERO_NUM_SYNC_WORKERS = ensureEnv('ZERO_NUM_SYNC_WORKERS', "2")
 export const ZERO_CVR_MAX_CONNS = ensureEnv('ZERO_CVR_MAX_CONNS', "4")
 export const ZERO_UPSTREAM_MAX_CONNS = ensureEnv('ZERO_UPSTREAM_MAX_CONNS', "8")
@@ -46,3 +46,9 @@ export const ZERO_VERSION = ensureEnv('ZERO_VERSION')
 export const ZERO_UPSTREAM_DB = process.env['ZERO_UPSTREAM_DB'] || ''
 export const ZERO_CVR_DB = process.env['ZERO_CVR_DB'] || ''
 export const ZERO_CHANGE_DB = process.env['ZERO_CHANGE_DB'] || ''
+
+// production host detection
+export const SERVER_IS_PRODUCTION_HOST = !!VITE_WEB_HOSTNAME
+export const SERVER_AUTH_HOSTNAME = BETTER_AUTH_URL
+  ? new URL(BETTER_AUTH_URL).hostname
+  : ''

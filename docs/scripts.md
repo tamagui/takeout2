@@ -60,9 +60,13 @@ scripts/
 ├── check/
 │   ├── dependencies.ts
 │   └── types.ts
-├── ci/
+├── ops/
 │   ├── release.ts
-│   └── check.ts
+│   └── run-backend.ts
+├── test/
+│   ├── e2e.ts
+│   ├── unit.ts
+│   └── integration.ts
 └── web/
     ├── build.ts
     └── serve.ts

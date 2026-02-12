@@ -286,7 +286,6 @@ uncloud cluster deployment
 
 - support multiple DEPLOY_HOSTS for multi-machine clusters
 - automated database backups before deployment
-- rollback mechanism
 - blue-green deployments
 - canary deployments
 - prometheus metrics

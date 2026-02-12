@@ -40,7 +40,7 @@ export const envCategories: EnvCategory[] = [
         placeholder: 'https://your-app.com',
       },
       {
-        key: 'VITE_ZERO_HOST',
+        key: 'VITE_ZERO_HOSTNAME',
         label: 'Zero Sync Server Host',
         description: 'Hostname for real-time sync server',
         instructions:

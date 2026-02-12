@@ -27,8 +27,8 @@ x-app-env: &app-env
   VITE_DEMO_MODE: ${VITE_DEMO_MODE:-}
   VITE_POSTHOG_API_KEY: ${VITE_POSTHOG_API_KEY:-}
   VITE_POSTHOG_HOST: ${VITE_POSTHOG_HOST:-}
-  VITE_ZERO_HOST: ${VITE_ZERO_HOST:-}
-  VITE_WEB_HOST: ${VITE_WEB_HOST:-}
+  VITE_ZERO_HOSTNAME: ${VITE_ZERO_HOSTNAME:-}
+  VITE_WEB_HOSTNAME: ${VITE_WEB_HOSTNAME:-}
   ZERO_NUM_SYNC_WORKERS: ${ZERO_NUM_SYNC_WORKERS:-2}
   ZERO_CVR_MAX_CONNS: ${ZERO_CVR_MAX_CONNS:-4}
   ZERO_UPSTREAM_MAX_CONNS: ${ZERO_UPSTREAM_MAX_CONNS:-8}
@@ -45,6 +45,8 @@ services:
     image: pgvector/pgvector:pg16
     shm_size: 1g
     restart: always
+    stop_grace_period: 60s
+    stop_signal: SIGTERM
     profiles:
       - self-hosted-db
     healthcheck:
@@ -87,7 +89,7 @@ services:
       migrate:
         condition: service_completed_successfully
     x-ports:
-      - ${VITE_ZERO_HOST:-zero-takeout.uncld.dev}:4848/https
+      - ${VITE_ZERO_HOSTNAME:-zero-takeout.uncld.dev}:4848/https
     environment:
       <<: *app-env
       ZERO_ADMIN_PASSWORD: ${ZERO_ADMIN_PASSWORD:-production-admin-change-me}
@@ -146,7 +148,7 @@ services:
     depends_on:
       - zero
     x-ports:
-      - ${VITE_WEB_HOST:-takeout.uncld.dev}:8081/https
+      - ${VITE_WEB_HOSTNAME:-takeout.uncld.dev}:8081/https
     environment:
       <<: *app-env
       NODE_ENV: production

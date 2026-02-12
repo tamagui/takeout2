@@ -101,7 +101,7 @@ That's it. CI handles building and deploying migrations automatically.
 For data migrations or changes that can't be expressed in schema:
 
 ```bash
-bun db:migrate-add backfill-user-counts
+bun db:add-migration backfill-user-counts
 ```
 
 This creates a TypeScript migration file:

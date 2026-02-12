@@ -133,7 +133,7 @@ bun migrate build
 For data migrations or complex changes that can't be expressed in schema:
 
 ```bash
-bun db:migrate-add update-user-stats
+bun db:add-migration update-user-stats
 ```
 
 This creates a TypeScript migration file:

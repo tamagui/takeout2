@@ -84,9 +84,8 @@ match the version field.
 Run deployment scripts for specific platforms:
 
 ```
-bun deploy-hot-update:ios
-bun deploy-hot-update:android
-bun deploy-hot-update
+bun tko hot-update ios
+bun tko hot-update android
 ```
 
 ### Automated

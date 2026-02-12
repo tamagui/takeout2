@@ -433,8 +433,8 @@ Monitors the deployment and exits when all services are healthy or on timeout.
           console.info(`🎉 deployment successful!`)
 
           // Show access info
-          const webHost = process.env.VITE_WEB_HOST || deployHost
-          const zeroHost = process.env.VITE_ZERO_HOST
+          const webHost = process.env.VITE_WEB_HOSTNAME || deployHost
+          const zeroHost = process.env.VITE_ZERO_HOSTNAME
           console.info()
           console.info(`  web:  https://${webHost}`)
           if (zeroHost) {

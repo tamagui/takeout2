@@ -106,9 +106,9 @@ The test configuration is defined in `playwright.config.ts`:
 
 ```typescript
 export default defineConfig({
-  testDir: './src/integration',
-  outputDir: './src/integration/.output/test-results',
-  globalSetup: './src/integration/global-setup.ts',
+  testDir: './integration',
+  outputDir: './integration/.output/test-results',
+  globalSetup: './integration/global-setup.ts',
   timeout: 30 * 1000,
   expect: {
     timeout: 5000,
@@ -472,7 +472,7 @@ test.use({
 View traces:
 
 ```bash
-bunx playwright show-trace src/integration/.output/test-results/*/trace.zip
+cd src/test && bunx playwright show-trace integration/.output/test-results/*/trace.zip
 ```
 
 ## Best Practices
@@ -494,13 +494,13 @@ bunx playwright show-trace src/integration/.output/test-results/*/trace.zip
 To run a single test file:
 
 ```bash
-bun test:integration src/integration/search.test.ts
+cd src/test && bunx playwright test integration/search.test.ts
 ```
 
 To run tests with debugging output:
 
 ```bash
-PWDEBUG=1 bun test:integration src/integration/search.test.ts --headed
+cd src/test && PWDEBUG=1 bunx playwright test integration/search.test.ts --headed
 ```
 
 ## Advanced Topics

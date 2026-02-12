@@ -136,7 +136,7 @@ bun migrate run
 bun migrate build
 
 # add a custom typescript migration
-bun db:migrate-add my-migration-name
+bun db:add-migration my-migration-name
 ```
 
 ### CLI Configuration
@@ -162,7 +162,7 @@ migrations. You don't need to run Drizzle commands directly.
 For data migrations or changes that can't be expressed in schema:
 
 ```bash
-bun db:migrate-add fix-user-data
+bun db:add-migration fix-user-data
 ```
 
 This creates a new TypeScript file:

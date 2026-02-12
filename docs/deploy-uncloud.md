@@ -411,6 +411,7 @@ scripts/uncloud/
 ├── cluster.ts             # encrypted cluster config management
 └── helpers/
     ├── build.ts           # build functions
+    ├── deploy.ts          # rollback, health checks, deploy lock
     ├── ssh.ts             # ssh utilities
     ├── uncloud.ts         # uncloud cli wrappers
     └── processEnv.ts      # env variable processing

@@ -36,7 +36,7 @@ await cmd`Run full CI/CD pipeline: test, build prod, deploy`
       // step 1: run tests (unless --deploy-only or --skip-tests)
       if (!skipTests) {
         console.info('\n📋 running tests...')
-        await run(`bun ops test${devMode ? ' --dev' : ''}`, {
+        await run(`bun tko test e2e${devMode ? ' --dev' : ''}`, {
           prefix: 'test',
           timeout: time.ms.minutes(20),
           timing: 'tests',
@@ -143,9 +143,8 @@ await cmd`Run full CI/CD pipeline: test, build prod, deploy`
           await sst.deploy()
           await sst.runHealthCheck()
         } else {
-          await uncloud.runDeployment()
+          await uncloud.runDeploymentWithRollback()
           await uncloud.showDeploymentStatus?.()
-          await uncloud.runHealthCheck()
           await uncloud.tailLogs?.()
           uncloud.showDeploymentInfo?.()
         }

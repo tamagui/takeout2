@@ -2,15 +2,16 @@
 
 import { cmd } from '@take-out/cli'
 
-await cmd`Run checks, build with test env, and run all tests (unit + e2e)`
-  .args(`--skip-checks boolean --skip-unit boolean --skip-e2e boolean --dev boolean`)
-  .run(async ({ args, run }) => {
+await cmd`Run checks, build with test env, and run all tests (unit + integration)`
+  .args(
+    `--skip-checks boolean --skip-unit boolean --skip-integration boolean --dev boolean --start boolean --unit boolean --integration boolean --filter string`,
+  )
+  .run(async ({ args }) => {
     const { sleep, time } = await import('@take-out/helpers')
-    const { checkPort } = await import('@take-out/scripts/helpers/check-port')
     const { getTestEnv } = await import('@take-out/scripts/helpers/get-test-env')
     const { handleProcessExit } =
       await import('@take-out/scripts/helpers/handleProcessExit')
-    const { printTiming, runInline, runParallel, waitForRun } =
+    const { run, printTiming, runInline, runParallel, waitForRun } =
       await import('@take-out/scripts/helpers/run')
     const { waitForPort } = await import('@take-out/scripts/helpers/wait-for-port')
 
@@ -27,12 +28,28 @@ await cmd`Run checks, build with test env, and run all tests (unit + e2e)`
       },
     })
 
-    const skipChecks = args.skipChecks
-    const skipUnit = args.skipUnit
-    const skipE2e = args.skipE2e
-    const devMode = args.dev
+    // --unit/--integration shortcuts imply skipping the other + skipping checks
+    const focused = args.unit || args.integration
+    const skipChecks = args.skipChecks || focused
+    const skipUnit = args.skipUnit || args.integration
+    const skipIntegration = args.skipIntegration || args.unit
+    const devMode = args.dev || args.unit
+    const startOnly = args.start
+
+    // filter from --filter or rest positional args
+    const filter = args.filter || args.rest.join(' ')
 
     console.info('🧪 test')
+
+    // --start: just start backend+frontend, no tests
+    if (startOnly) {
+      await startBackend()
+      await waitForBackend()
+      await startFrontend()
+      // keep running until killed
+      await new Promise(() => {})
+      return
+    }
 
     const failures: Array<{ task: string; error: any }> = []
     const SEPARATOR = '\n' + '='.repeat(80)
@@ -53,7 +70,7 @@ await cmd`Run checks, build with test env, and run all tests (unit + e2e)`
 
         {
           name: 'playwright-install',
-          condition: () => !skipE2e,
+          condition: () => !skipIntegration,
           async fn() {
             await run('bunx playwright install --with-deps chromium', {
               prefix: 'playwright',
@@ -65,7 +82,7 @@ await cmd`Run checks, build with test env, and run all tests (unit + e2e)`
 
         {
           name: 'backend',
-          condition: () => !skipUnit || !skipE2e,
+          condition: () => !skipUnit || !skipIntegration,
           fn: () => setupBackend(),
         },
 
@@ -76,24 +93,26 @@ await cmd`Run checks, build with test env, and run all tests (unit + e2e)`
               await run(`bun tko db build`, {
                 prefix: 'migrations',
                 timeout: time.ms.minutes(2),
-                timing: 'db:build',
+                timing: 'db build',
               })
 
-              if (!devMode && !skipE2e) {
-                await run(`bun run web build`, {
+              if (!devMode && !skipIntegration) {
+                // always dev build even non-dev mode
+                await run(`bun web build`, {
                   prefix: 'web-build',
                   timeout: time.ms.minutes(5),
-                  timing: 'web:build (test)',
+                  timing: 'web build (test)',
                   env: {
                     ALLOW_MISSING_ENV: '1',
                   },
                 })
               }
 
-              // run unit + e2e in parallel once build is ready
+              // run unit + integration in parallel once build is ready
               await Promise.all([
                 !skipUnit && printTiming('unit tests', () => runUnitTests()),
-                !skipE2e && printTiming('e2e tests', () => runIntegrationTests()),
+                !skipIntegration &&
+                  printTiming('integration tests', () => runIntegrationTests()),
               ])
             } catch (error) {
               failures.push({ task: 'build-and-test', error })
@@ -129,14 +148,36 @@ await cmd`Run checks, build with test env, and run all tests (unit + e2e)`
 
     // -----------------------------------------------------------------------
 
-    async function setupBackend() {
-      await runInline('backend', async () => {
-        await run(`docker compose down`, {
-          env: await getTestEnv(),
-        })
-        void run(`bun ops run-backend`, {
+    async function startBackend() {
+      const testEnv = await getTestEnv()
+      if (!process.env.SKIP_BACKEND_CLEAN) {
+        await run('bun backend:clean', { env: testEnv })
+      }
+      void run('bun backend --no-color', {
+        env: {
+          ...testEnv,
+          ZERO_LOG_LEVEL: 'warn',
+        },
+        detached: true,
+      })
+    }
+
+    async function startFrontend() {
+      const testEnv = await getTestEnv()
+      if (devMode) {
+        void run('bun one:dev', { env: testEnv, detached: true })
+      } else {
+        void run('bun web serve', {
+          env: { ...testEnv, IS_TESTING: '1' },
           detached: true,
         })
+      }
+    }
+
+    async function setupBackend() {
+      await runInline('backend', async () => {
+        await run('docker compose down', { env: await getTestEnv() })
+        await startBackend()
         await waitForBackend()
       })
     }
@@ -188,9 +229,10 @@ await cmd`Run checks, build with test env, and run all tests (unit + e2e)`
 
     async function runUnitTests() {
       const testEnv = await getTestEnv()
+      const cmd = filter ? `bun run test:unit ${filter}` : 'bun run test:unit'
 
       try {
-        await run('bun run test:unit', {
+        await run(cmd, {
           env: testEnv,
           prefix: 'tests',
           timeout: time.ms.minutes(5),
@@ -207,24 +249,24 @@ await cmd`Run checks, build with test env, and run all tests (unit + e2e)`
 
       try {
         await waitForRun('playwright install')
-        await waitForBackend()
+        await waitForRun('backend')
 
-        void run(`bun ops run-frontend${devMode ? ' --dev' : ''}`, {
-          detached: true,
-        })
-
-        await waitForPort(+(process.env.VITE_PORT_WEB || 8081))
+        await startFrontend()
+        await waitForPort(8081)
 
         const testEnv = await getTestEnv()
 
-        await run('cd src/test && bunx playwright test', {
-          prefix: 'e2e',
+        const integrationCmd = filter
+          ? `cd src/test && bunx playwright test ${filter}`
+          : 'cd src/test && bunx playwright test'
+        await run(integrationCmd, {
+          prefix: 'integration',
           env: testEnv,
           timeout: time.ms.minutes(8),
           timing: 'playwright tests',
         })
       } catch (error) {
-        failures.push({ task: 'e2e tests', error })
+        failures.push({ task: 'integration tests', error })
         throw error
       }
     }
@@ -245,7 +287,7 @@ await cmd`Run checks, build with test env, and run all tests (unit + e2e)`
             captureOutput: true,
             silent: true,
             timeout: time.ms.minutes(1),
-          }
+          },
         )
         console.info(`Docker ps:\n${psOutput}\n\nDocker logs:\n${logsOutput}`)
         console.info('='.repeat(80))

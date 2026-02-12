@@ -83,8 +83,8 @@ jobs:
           VITE_DEMO_MODE: ${{ secrets.VITE_DEMO_MODE }}
           VITE_POSTHOG_API_KEY: ${{ secrets.VITE_POSTHOG_API_KEY }}
           VITE_POSTHOG_HOST: ${{ secrets.VITE_POSTHOG_HOST }}
-          VITE_ZERO_HOST: ${{ secrets.VITE_ZERO_HOST }}
-          VITE_WEB_HOST: ${{ secrets.VITE_WEB_HOST }}
+          VITE_ZERO_HOSTNAME: ${{ secrets.VITE_ZERO_HOSTNAME }}
+          VITE_WEB_HOSTNAME: ${{ secrets.VITE_WEB_HOSTNAME }}
           ZERO_NUM_SYNC_WORKERS: ${{ secrets.ZERO_NUM_SYNC_WORKERS }}
           ZERO_CVR_MAX_CONNS: ${{ secrets.ZERO_CVR_MAX_CONNS }}
           ZERO_UPSTREAM_MAX_CONNS: ${{ secrets.ZERO_UPSTREAM_MAX_CONNS }}

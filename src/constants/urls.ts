@@ -24,12 +24,12 @@ export const ZERO_SERVER_URL = (() => {
       return `${location.protocol}//${location.hostname}:${port}`
     }
     // production: construct https URL from hostname
-    const host = import.meta.env.VITE_ZERO_HOST
+    const host = import.meta.env.VITE_ZERO_HOSTNAME
     return host ? `https://${host}` : ''
   }
 
   // server/native: construct from hostname or fallback
-  const host = import.meta.env.VITE_ZERO_HOST
+  const host = import.meta.env.VITE_ZERO_HOSTNAME
   return host ? `https://${host}` : 'http://localhost:4848'
 })()
 

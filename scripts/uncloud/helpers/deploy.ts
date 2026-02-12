@@ -1,159 +1,53 @@
 /**
  * uncloud deployment helpers for ci/cd
+ * re-exports shared helpers from @take-out/scripts, adds takeout-specific deploy logic
  */
 
-import fs from 'node:fs'
 import { homedir } from 'node:os'
-import { join } from 'node:path'
 
 import { time } from '@take-out/helpers'
 import { run } from '@take-out/scripts/helpers/run'
+import {
+  checkUncloudConfigured,
+  installUncloudCLI as _installUncloudCLI,
+  setupSSHKey as _setupSSHKey,
+  verifyDatabaseConfig,
+} from '@take-out/scripts/helpers/uncloud-deploy'
 import pc from 'picocolors'
 
-export async function checkUncloudConfigured(): Promise<boolean> {
-  return Boolean(process.env.DEPLOY_HOST && process.env.DEPLOY_DB)
+export { checkUncloudConfigured, verifyDatabaseConfig }
+
+// load production env so DEPLOY_HOST etc are available for rollback/health checks
+let envLoaded = false
+async function ensureEnv() {
+  if (envLoaded) return
+  envLoaded = true
+  const { loadEnv } = await import('@take-out/scripts/helpers/env-load')
+  await loadEnv('production').catch((err) => {
+    console.warn('warning: could not load production env:', err?.message || err)
+  })
 }
 
-export async function verifyDatabaseConfig(): Promise<{
-  valid: boolean
-  errors: string[]
-}> {
-  const errors: string[] = []
-
-  const deployDb = process.env.DEPLOY_DB
-  const upstreamDb = process.env.ZERO_UPSTREAM_DB
-  const cvrDb = process.env.ZERO_CVR_DB
-  const changeDb = process.env.ZERO_CHANGE_DB
-
-  // check all required vars exist
-  if (!deployDb) errors.push('DEPLOY_DB is not set')
-  if (!upstreamDb) errors.push('ZERO_UPSTREAM_DB is not set')
-  if (!cvrDb) errors.push('ZERO_CVR_DB is not set')
-  if (!changeDb) errors.push('ZERO_CHANGE_DB is not set')
-
-  if (errors.length > 0) {
-    return { valid: false, errors }
-  }
-
-  // extract hosts from database URLs
-  const getHost = (url: string): string | null => {
-    try {
-      const match = url.match(/@([^:/]+)/)
-      return match?.[1] || null
-    } catch {
-      return null
-    }
-  }
-
-  const deployHost = getHost(deployDb!)
-  const upstreamHost = getHost(upstreamDb!)
-  const cvrHost = getHost(cvrDb!)
-  const changeHost = getHost(changeDb!)
-
-  // verify all database hosts match
-  if (deployHost && upstreamHost && deployHost !== upstreamHost) {
-    errors.push(
-      `ZERO_UPSTREAM_DB host (${upstreamHost}) does not match DEPLOY_DB host (${deployHost})`
-    )
-  }
-  if (deployHost && cvrHost && deployHost !== cvrHost) {
-    errors.push(
-      `ZERO_CVR_DB host (${cvrHost}) does not match DEPLOY_DB host (${deployHost})`
-    )
-  }
-  if (deployHost && changeHost && deployHost !== changeHost) {
-    errors.push(
-      `ZERO_CHANGE_DB host (${changeHost}) does not match DEPLOY_DB host (${deployHost})`
-    )
-  }
-
-  return { valid: errors.length === 0, errors }
-}
-
-const UNCLOUD_VERSION = '0.15.0'
+const UNCLOUD_VERSION = '0.16.0'
 
 export async function installUncloudCLI() {
-  console.info('🔧 checking uncloud cli...')
-  try {
-    await run('uc --version', { silent: true, timeout: time.ms.seconds(5) })
-    console.info(pc.gray('  uncloud cli already installed'))
-  } catch {
-    console.info(pc.gray(`  installing uncloud cli v${UNCLOUD_VERSION}...`))
-    await run(
-      `curl -fsS https://get.uncloud.run/install.sh | sh -s -- --version ${UNCLOUD_VERSION}`,
-      {
-        timeout: time.ms.seconds(30),
-      }
-    )
-    console.info(pc.gray('  ✓ uncloud cli installed'))
-  }
+  return _installUncloudCLI(UNCLOUD_VERSION)
 }
 
 export async function setupSSHKey() {
-  if (!process.env.DEPLOY_SSH_KEY) {
-    return
-  }
-
-  const sshKeyValue = process.env.DEPLOY_SSH_KEY
-
-  // check if it's a path to an existing file (local usage) or key content (CI usage)
-  const isFilePath = fs.existsSync(sshKeyValue)
-
-  if (isFilePath) {
-    // local usage - DEPLOY_SSH_KEY is already a valid file path
-    console.info(pc.gray(`  using ssh key from: ${sshKeyValue}`))
-    return
-  }
-
-  // CI usage - DEPLOY_SSH_KEY contains the actual key content
-  console.info('🔑 setting up ssh key from environment...')
-  const sshDir = join(homedir(), '.ssh')
-  const keyPath = join(sshDir, 'uncloud_deploy')
-
-  // create .ssh directory if needed
-  if (!fs.existsSync(sshDir)) {
-    await fs.promises.mkdir(sshDir, { recursive: true })
-  }
-
-  // decode base64-encoded keys (github secrets often store keys as base64)
-  let keyContent = sshKeyValue
-  if (
-    !sshKeyValue.includes('-----BEGIN') &&
-    /^[A-Za-z0-9+/=\s]+$/.test(sshKeyValue.trim())
-  ) {
-    console.info(pc.gray('  detected base64-encoded key, decoding...'))
-    keyContent = Buffer.from(sshKeyValue.trim(), 'base64').toString('utf-8')
-  }
-
-  // ensure trailing newline (github secrets can strip it)
-  if (!keyContent.endsWith('\n')) {
-    keyContent += '\n'
-  }
-
-  await fs.promises.writeFile(keyPath, keyContent, { mode: 0o600 })
-
-  // add host to known_hosts
-  if (process.env.DEPLOY_HOST) {
-    try {
-      await run(
-        `ssh-keyscan -H ${process.env.DEPLOY_HOST} >> ${join(sshDir, 'known_hosts')}`,
-        {
-          silent: true,
-          timeout: time.ms.seconds(10),
-        }
-      )
-    } catch {
-      // ignore errors - ssh will prompt if needed
-    }
-  }
-
-  // override env var to point to the file we created
-  process.env.DEPLOY_SSH_KEY = keyPath
-  console.info(pc.gray(`  ssh key written to ${keyPath}`))
+  return _setupSSHKey()
 }
 
-export async function runDeployment() {
-  await run('bun tko uncloud deploy-prod', {
+export async function runDeployment(opts?: { skipLock?: boolean }) {
+  await ensureEnv()
+  const flags = [
+    opts?.skipLock && '--skip-lock',
+    opts?.skipLock && '--skip-build',
+    opts?.skipLock && '--skip-docker',
+  ]
+    .filter(Boolean)
+    .join(' ')
+  await run(`bun run:prod tko uncloud deploy-prod${flags ? ` ${flags}` : ''}`, {
     prefix: 'deploy',
     timeout: time.ms.minutes(15),
     timing: 'uncloud deploy',
@@ -179,9 +73,82 @@ export async function runHealthCheck() {
   console.info('\n🏥 checking deployment health...')
   await run('bun tko uncloud check-deployment', {
     prefix: 'health',
-    timeout: time.ms.minutes(5),
+    timeout: time.ms.minutes(10),
     timing: 'uncloud health check',
   })
+}
+
+async function getSSHCmd(): Promise<string> {
+  await ensureEnv()
+  const deployHost = process.env.DEPLOY_HOST
+  if (!deployHost) {
+    throw new Error('DEPLOY_HOST not set — cannot build SSH command for rollback')
+  }
+  const deployUser = process.env.DEPLOY_USER || 'root'
+  const sshKey = (
+    process.env.DEPLOY_SSH_KEY || `${homedir()}/.ssh/uncloud_deploy`
+  ).replace(/^~/, homedir())
+  return `ssh -i ${sshKey} -o StrictHostKeyChecking=no ${deployUser}@${deployHost}`
+}
+
+async function rollbackToPrevious(): Promise<boolean> {
+  console.info(pc.yellow('\n⚠️  health check failed, attempting rollback to previous image...'))
+
+  const ssh = await getSSHCmd()
+
+  try {
+    // check if :previous image exists
+    const { stdout } = await run(
+      `${ssh} "docker image inspect takeout-web:previous >/dev/null 2>&1 && echo EXISTS || echo NONE"`,
+      { captureOutput: true, silent: true }
+    )
+
+    if (stdout.trim() !== 'EXISTS') {
+      console.error(pc.red('  no previous image available for rollback'))
+      return false
+    }
+
+    // restore previous image as :latest
+    await run(`${ssh} "docker tag takeout-web:previous takeout-web:latest"`, {
+      silent: true,
+    })
+    console.info(pc.yellow('  restored takeout-web:previous → takeout-web:latest'))
+
+    // re-deploy with the restored image (skip lock — caller already holds it)
+    console.info(pc.yellow('  re-deploying with previous image...'))
+    await runDeployment({ skipLock: true })
+
+    // re-check health
+    console.info(pc.yellow('  verifying rollback health...'))
+    await runHealthCheck()
+
+    console.info(pc.green('  ✅ rollback successful, production restored'))
+    return true
+  } catch (err) {
+    console.error(pc.red('  rollback also failed:'), err instanceof Error ? err.message : err)
+    return false
+  }
+}
+
+export async function runDeploymentWithRollback(): Promise<void> {
+  await runDeployment()
+
+  try {
+    await runHealthCheck()
+  } catch (healthError) {
+    const rolledBack = await rollbackToPrevious()
+
+    if (rolledBack) {
+      // production is restored but CI should still fail
+      throw new Error(
+        'deployment health check failed. rolled back to previous image successfully, ' +
+          'but failing CI so the broken build is investigated.'
+      )
+    }
+
+    // rollback also failed, re-throw original error
+    throw healthError
+  }
 }
 
 export async function tailLogs() {

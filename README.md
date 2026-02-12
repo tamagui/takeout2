@@ -122,7 +122,7 @@ bun tko check types          # TypeScript type checking
 
 # Database
 bun migrate run              # Build and run migrations
-bun db:migrate-add <name>    # Create one-off migrations
+bun db:add-migration <name>  # Create one-off migrations
 
 # Deployment
 bun ops release                   # Full CI/CD pipeline
@@ -274,7 +274,7 @@ Database schema is defined in:
 - `src/database/schema-private.ts` - Private tables
 
 If you need something outside of Drizzle migrations, you can do
-`bun db:migrate-add`
+`bun db:add-migration`
 
 ## Environment Configuration
 

@@ -1,6 +1,6 @@
 ---
 name: tko-scripts
-description: CLI scripts and commands reference for the tko (takeout) CLI. Use when the user asks to run scripts, manage the project, or needs to know what commands are available. tko, takeout, CLI, scripts, commands, bun tko, project tasks, automation, aws, check, db, dev, eas, env, hot-update, icon, ios, ops, sst, uncloud, web, zero, aws/configure, aws/health, aws/users, build-initial, changed, check/dependencies, check/knip, check/lint, check/types, clean, completion, db/add-migration, db/auth-migrate, db/build, db/clear-jwks, db/migrate, db/reset-demo, db/reset-schema, db/seed-demo, dev-tunnel, dev/cleanup-dev, docs, eas/build-dev, eas/build-preview, eas/build-prod, ensure-port, ensure-tunnel, env-pull, env-update, env/sync-to-github, env:setup, exec-with-env, generate-env, hot-update/android, hot-update/ios, icon/add-phosphor, ios/setup-release, node, node-version-check, onboard, one-dev, ops/github-tail, ops/release, ops/run-backend, ops/run-frontend, ops/start-all-dev, ops/test, postinstall, preinstall, release, run, script, skills, sst-get-environment, sst/check, sync, typecheck, uncloud/check-deployment, uncloud/clean, uncloud/cluster, uncloud/deploy-local, uncloud/deploy-prod, uncloud/logs, up, update-changelog, wait-for-dev, web/build, web/build-analyze, web/build-docker, web/serve, zero/generate
+description: CLI scripts and commands reference for the tko (takeout) CLI. Use when the user asks to run scripts, manage the project, or needs to know what commands are available. tko, takeout, CLI, scripts, commands, bun tko, project tasks, automation, aws, check, db, dev, eas, env, hot-update, icon, ios, ops, sst, uncloud, web, zero, aws/configure, aws/health, aws/users, build-initial, changed, check/dependencies, check/knip, check/lint, check/types, clean, completion, db/add-migration, db/auth-migrate, db/build, db/clear-jwks, db/migrate, db/reset-demo, db/reset-schema, db/seed-demo, dev-tunnel, dev/cleanup-dev, docs, eas/build-dev, eas/build-preview, eas/build-prod, ensure-port, ensure-tunnel, env-pull, env-update, env/sync-to-github, env:setup, exec-with-env, generate-env, hot-update/android, hot-update/ios, icon/add-phosphor, ios/setup-release, node, node-version-check, onboard, one-dev, ops/github-tail, ops/release, ops/run-backend, ops/run-frontend, ops/start-all-dev, test/e2e, test/unit, test/integration, postinstall, preinstall, release, run, script, skills, sst-get-environment, sst/check, sync, typecheck, uncloud/check-deployment, uncloud/clean, uncloud/cluster, uncloud/deploy-local, uncloud/deploy-prod, uncloud/logs, up, update-changelog, wait-for-dev, web/build, web/build-analyze, web/build-docker, web/serve, zero/generate
 ---
 
 # tko CLI - scripts & commands
@@ -74,10 +74,14 @@ run with `bun tko <command>` or `bun tko <script-name>`.
     clean - Clean up local Multipass VM
     deploy-local - Deploy to local Multipass VM
 
+  test/
+    e2e - Run checks, build with test env, and run all tests (unit + integration) [--skip-checks, --skip-unit, --skip-integration, --dev, --start, --unit, --integration, --filter]
+    unit - Run unit tests only
+    integration - Run integration tests only
+
   ops/
     run-frontend - Start frontend in production mode for CI [--dev]
     start-all-dev - Start backend and frontend in dev mode for quick integration testing
-    test - Run checks, build with test env, and run all tests (unit + e2e) [--skip-checks, --skip-unit, --skip-e, --dev]
     github-tail - Tail GitHub CI logs
     run-backend - Start backend services for CI
     release - Run full CI/CD pipeline: test, build prod, deploy [--skip-tests, --skip-deploy, --dry-run, --deploy-only, --redeploy, --dev]

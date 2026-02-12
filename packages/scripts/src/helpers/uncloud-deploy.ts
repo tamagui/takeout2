@@ -1,8 +1,10 @@
 /**
  * generic uncloud deployment helpers for ci/cd
+ * shared across repos via @take-out/scripts/helpers/uncloud-deploy
  */
 
-import fs from 'node:fs'
+import { existsSync } from 'node:fs'
+import { mkdir, writeFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 
@@ -82,26 +84,47 @@ export async function installUncloudCLI(version = '0.16.0') {
   }
 }
 
-export async function setupSSHKey() {
-  if (!process.env.DEPLOY_SSH_KEY) {
+export interface SetupSSHKeyOptions {
+  // env var containing the key path or content (default: DEPLOY_SSH_KEY)
+  envVar?: string
+  // filename to write in ~/.ssh/ (default: uncloud_deploy)
+  keyName?: string
+  // host to add to known_hosts (default: process.env.DEPLOY_HOST)
+  host?: string
+}
+
+/**
+ * resolve an ssh key from env - handles both file paths (local) and
+ * raw/base64 key content (CI). writes to ~/.ssh/{keyName} and updates
+ * the env var to point to the file.
+ */
+export async function setupSSHKey(options: SetupSSHKeyOptions = {}) {
+  const envVar = options.envVar || 'DEPLOY_SSH_KEY'
+  const keyName = options.keyName || 'uncloud_deploy'
+  const host = options.host || process.env.DEPLOY_HOST
+
+  if (!process.env[envVar]) {
     return
   }
 
-  const sshKeyValue = process.env.DEPLOY_SSH_KEY
+  // expand ~ to home directory (node doesn't do this automatically)
+  const sshKeyValue = process.env[envVar]!.replace(/^~/, homedir())
 
   // check if it's a path to an existing file (local usage) or key content (CI usage)
-  if (fs.existsSync(sshKeyValue)) {
+  if (existsSync(sshKeyValue)) {
+    // local usage - ensure env has resolved path (not ~ prefix)
+    process.env[envVar] = sshKeyValue
     console.info(`  using ssh key from: ${sshKeyValue}`)
     return
   }
 
-  // CI usage - DEPLOY_SSH_KEY contains the actual key content
+  // CI usage - env var contains the actual key content
   console.info('🔑 setting up ssh key from environment...')
   const sshDir = join(homedir(), '.ssh')
-  const keyPath = join(sshDir, 'uncloud_deploy')
+  const keyPath = join(sshDir, keyName)
 
-  if (!fs.existsSync(sshDir)) {
-    await fs.promises.mkdir(sshDir, { recursive: true })
+  if (!existsSync(sshDir)) {
+    await mkdir(sshDir, { recursive: true })
   }
 
   // decode base64-encoded keys (github secrets often store keys as base64)
@@ -119,13 +142,13 @@ export async function setupSSHKey() {
     keyContent += '\n'
   }
 
-  await fs.promises.writeFile(keyPath, keyContent, { mode: 0o600 })
+  await writeFile(keyPath, keyContent, { mode: 0o600 })
 
   // add host to known_hosts
-  if (process.env.DEPLOY_HOST) {
+  if (host) {
     try {
       await run(
-        `ssh-keyscan -H ${process.env.DEPLOY_HOST} >> ${join(sshDir, 'known_hosts')}`,
+        `ssh-keyscan -H ${host} >> ${join(sshDir, 'known_hosts')}`,
         { silent: true, timeout: time.ms.seconds(10) }
       )
     } catch {
@@ -134,6 +157,6 @@ export async function setupSSHKey() {
   }
 
   // override env var to point to the file we created
-  process.env.DEPLOY_SSH_KEY = keyPath
+  process.env[envVar] = keyPath
   console.info(`  ssh key written to ${keyPath}`)
 }

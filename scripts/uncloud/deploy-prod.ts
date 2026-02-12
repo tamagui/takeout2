@@ -3,34 +3,95 @@
 import { cmd } from '@take-out/cli'
 
 await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
-  const { config } = await import('dotenv')
-
+  // env is loaded by run:prod wrapper (dotenvx --overload -f .env .env.production)
   const { buildMigrations, buildWeb, buildDockerImage } = await import('./helpers/build')
   const { processComposeEnv } = await import('./helpers/processEnv')
   const { checkSSHKey, testSSHConnection } = await import('./helpers/ssh')
   const { checkUncloudCLI, initUncloud, pushImage, deployStack, showStatus } =
     await import('./helpers/uncloud')
+  const { acquireDeployLock, releaseDeployLock } =
+    await import('@take-out/scripts/helpers/deploy-lock')
 
   // parse args
   const args = process.argv.slice(2)
   const skipBuild = args.includes('--skip-build')
   const skipDocker = args.includes('--skip-docker')
-
-  // load .env.production if it exists (for local use), then .env for defaults
-  const envPath = path.resolve(process.cwd(), '.env.production')
-  if (fs.existsSync(envPath)) {
-    config({ path: envPath, override: false })
-  }
-  const dotenvPath = path.resolve(process.cwd(), '.env')
-  if (fs.existsSync(dotenvPath)) {
-    config({ path: dotenvPath, override: false })
-  }
+  const skipLock = args.includes('--skip-lock')
 
   const DEPLOY_HOST = process.env.DEPLOY_HOST
   const DEPLOY_USER = process.env.DEPLOY_USER || 'root'
   // default to uncloud_deploy (set by CI), fall back to id_rsa locally
   const DEPLOY_SSH_KEY =
     process.env.DEPLOY_SSH_KEY || `${process.env.HOME}/.ssh/uncloud_deploy`
+
+  function getSSHCmd(host: string, sshKey: string): string {
+    return `ssh -i ${sshKey} -o StrictHostKeyChecking=no ${host}`
+  }
+
+  async function tagPreviousImage(host: string, sshKey: string): Promise<void> {
+    const ssh = getSSHCmd(host, sshKey)
+    try {
+      await run(
+        `${ssh} "docker tag takeout-web:latest takeout-web:previous 2>/dev/null || true"`,
+        { silent: true }
+      )
+      console.info(colors.gray('  tagged current image as takeout-web:previous'))
+    } catch {
+      console.info(colors.gray('  no existing image to tag (first deploy?)'))
+    }
+  }
+
+  async function gracefulStopZero(host: string, sshKey: string): Promise<void> {
+    const ssh = getSSHCmd(host, sshKey)
+    try {
+      const { stdout } = await run(`${ssh} "docker ps -qf name=zero"`, {
+        captureOutput: true,
+        silent: true,
+      })
+      const containerId = stdout.trim()
+      if (!containerId) return
+
+      console.info(colors.gray('  stopping zero gracefully (15s timeout)...'))
+      await run(`${ssh} "docker stop -t 15 ${containerId}"`, { silent: true })
+      console.info(colors.gray('  zero stopped cleanly'))
+    } catch {
+      console.info(colors.gray('  zero: not running or already stopped'))
+    }
+  }
+
+  async function gracefulStopPgdb(host: string, sshKey: string): Promise<void> {
+    const ssh = getSSHCmd(host, sshKey)
+    try {
+      const { stdout } = await run(`${ssh} "docker ps -qf name=pgdb"`, {
+        captureOutput: true,
+        silent: true,
+      })
+      const containerId = stdout.trim()
+      if (!containerId) return
+
+      const { stdout: ready } = await run(
+        `${ssh} "docker exec ${containerId} pg_isready -U takeout 2>&1 || echo NOT_READY"`,
+        { captureOutput: true, silent: true }
+      )
+
+      if (ready.includes('NOT_READY')) {
+        console.info(colors.gray('  pgdb: not ready, skipping graceful stop'))
+        return
+      }
+
+      console.info(colors.gray('  pgdb: issuing CHECKPOINT before stop...'))
+      await run(
+        `${ssh} "docker exec ${containerId} psql -U takeout -d postgres -c 'CHECKPOINT;'"`,
+        { silent: true }
+      )
+
+      console.info(colors.gray('  stopping pgdb gracefully (60s timeout)...'))
+      await run(`${ssh} "docker stop -t 60 ${containerId}"`, { silent: true })
+      console.info(colors.gray('  pgdb stopped cleanly'))
+    } catch {
+      console.info(colors.gray('  pgdb: not running or already stopped'))
+    }
+  }
 
   async function checkPrerequisites(): Promise<{
     ZERO_UPSTREAM_DB: string
@@ -133,11 +194,11 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
 
     console.info('\n🔐 uploading origin ca certificates...')
 
-    const sshCmd = `ssh -i ${sshKey} -o StrictHostKeyChecking=no ${host}`
+    const ssh = getSSHCmd(host, sshKey)
 
     try {
       // create certs directories on server
-      await run(`${sshCmd} "mkdir -p /etc/uncloud/certs /var/lib/uncloud/caddy/certs"`, {
+      await run(`${ssh} "mkdir -p /etc/uncloud/certs /var/lib/uncloud/caddy/certs"`, {
         silent: true,
       })
 
@@ -151,7 +212,7 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
 
       // copy to caddy volume mount path (accessible at /config/certs inside container)
       await run(
-        `${sshCmd} "cp /etc/uncloud/certs/origin.* /var/lib/uncloud/caddy/certs/"`,
+        `${ssh} "cp /etc/uncloud/certs/origin.* /var/lib/uncloud/caddy/certs/"`,
         {
           silent: true,
         }
@@ -159,7 +220,7 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
 
       // set permissions
       await run(
-        `${sshCmd} "chmod 600 /etc/uncloud/certs/origin.key /var/lib/uncloud/caddy/certs/origin.key"`,
+        `${ssh} "chmod 600 /etc/uncloud/certs/origin.key /var/lib/uncloud/caddy/certs/origin.key"`,
         { silent: true }
       )
 
@@ -183,13 +244,13 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
     }
 
     // get custom hostnames from env vars
-    const webHost = process.env.VITE_WEB_HOST
-    const zeroHost = process.env.VITE_ZERO_HOST
+    const webHost = process.env.VITE_WEB_HOSTNAME
+    const zeroHost = process.env.VITE_ZERO_HOSTNAME
     const domains = [webHost, zeroHost].filter(Boolean)
 
     if (domains.length === 0) {
       console.warn(
-        colors.yellow('⚠️  no custom domains configured (VITE_WEB_HOST, VITE_ZERO_HOST)')
+        colors.yellow('⚠️  no custom domains configured (VITE_WEB_HOSTNAME, VITE_ZERO_HOSTNAME)')
       )
       console.warn(colors.gray("   caddy will use let's encrypt for tls"))
       return
@@ -199,7 +260,7 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
     const caddyfilePath = path.resolve(process.cwd(), 'src/uncloud/Caddyfile')
     const caddyConfig = [
       '# origin ca certificates for cloudflare proxied domains',
-      '# auto-generated during deploy from VITE_WEB_HOST/VITE_ZERO_HOST env vars',
+      '# auto-generated during deploy from VITE_WEB_HOSTNAME/VITE_ZERO_HOSTNAME env vars',
       '',
       ...domains.map(
         (domain) =>
@@ -213,13 +274,13 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
 
     console.info('\n🔄 deploying caddy with custom tls config...')
 
-    const sshCmd = `ssh -i ${sshKey} -o StrictHostKeyChecking=no ${host}`
+    const ssh = getSSHCmd(host, sshKey)
 
     try {
       await run(`echo "y" | uc caddy deploy --caddyfile ${caddyfilePath}`)
 
       // restart caddy to ensure tls certs are loaded from volume
-      await run(`${sshCmd} "docker restart \\$(docker ps -qf name=caddy)"`, {
+      await run(`${ssh} "docker restart \\$(docker ps -qf name=caddy)"`, {
         silent: true,
       })
       console.info(colors.green('✓ caddy deployed with origin ca certificates'))
@@ -257,44 +318,61 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
 
   await testSSHConnection(host, DEPLOY_SSH_KEY)
 
-  await initUncloud(host, DEPLOY_SSH_KEY)
+  const ssh = getSSHCmd(host, DEPLOY_SSH_KEY)
 
-  // upload origin ca certs AFTER init (cluster reset creates fresh caddy volume)
-  await uploadOriginCACerts(host, DEPLOY_SSH_KEY)
+  if (!skipLock) {
+    await acquireDeployLock(ssh)
+    console.info(colors.gray('  acquired deploy lock'))
+  }
 
-  await pushImage('takeout-web:latest')
+  try {
+    await tagPreviousImage(host, DEPLOY_SSH_KEY)
 
-  // process environment variables in compose file
-  // spreads process.env so all vars are available, only derived db urls need explicit override
-  console.info('\n📝 processing compose file with production env...\n')
-  const processedCompose = 'src/uncloud/docker-compose.processed.yml'
-  console.info(colors.gray(`   zero version: ${process.env.ZERO_VERSION}`))
-  processComposeEnv('src/uncloud/docker-compose.yml', processedCompose, {
-    ...(process.env as Record<string, string | undefined>),
-    // derived zero database urls from DEPLOY_DB
-    ZERO_UPSTREAM_DB,
-    ZERO_CVR_DB,
-    ZERO_CHANGE_DB,
-  })
+    await initUncloud(host, DEPLOY_SSH_KEY)
 
-  // deploy without pgdb profile since using external database
-  await deployStack(processedCompose)
+    // upload origin ca certs AFTER init (cluster reset creates fresh caddy volume)
+    await uploadOriginCACerts(host, DEPLOY_SSH_KEY)
 
-  // deploy caddy with custom tls config if origin ca certs are configured
-  await deployCaddyWithTLS(host, DEPLOY_SSH_KEY)
+    await pushImage('takeout-web:latest')
 
-  await showStatus()
+    // process environment variables in compose file
+    console.info('\n📝 processing compose file with production env...\n')
+    const processedCompose = 'src/uncloud/docker-compose.processed.yml'
+    console.info(colors.gray(`   zero version: ${process.env.ZERO_VERSION}`))
+    processComposeEnv('src/uncloud/docker-compose.yml', processedCompose, {
+      ...(process.env as Record<string, string | undefined>),
+      ZERO_UPSTREAM_DB,
+      ZERO_CVR_DB,
+      ZERO_CHANGE_DB,
+    })
 
-  console.info('\n🎉 deployment ready!')
-  console.info('\naccess your app:')
-  console.info(`  web app:     http://${DEPLOY_HOST}:8081`)
-  console.info(`  zero sync:   http://${DEPLOY_HOST}:4848`)
-  console.info(`  ssh:         ssh ${DEPLOY_USER}@${DEPLOY_HOST}`)
-  console.info('\nuseful commands:')
-  console.info('  uc ls                    # list services')
-  console.info('  uc logs web              # view web logs')
-  console.info('  uc logs web -f           # follow web logs')
-  console.info(`  ssh ${DEPLOY_USER}@${DEPLOY_HOST}  # ssh to server`)
-  console.info('\nto skip builds on redeploy:')
-  console.info('  bun scripts/uncloud/deploy-prod.ts --skip-build --skip-docker')
+    await gracefulStopZero(host, DEPLOY_SSH_KEY)
+    await gracefulStopPgdb(host, DEPLOY_SSH_KEY)
+
+    // deploy without pgdb profile since using external database
+    await deployStack(processedCompose)
+
+    // deploy caddy with custom tls config if origin ca certs are configured
+    await deployCaddyWithTLS(host, DEPLOY_SSH_KEY)
+
+    await showStatus()
+
+    console.info('\n🎉 deployment ready!')
+    console.info('\naccess your app:')
+    console.info(`  web app:     http://${DEPLOY_HOST}:8081`)
+    console.info(`  zero sync:   http://${DEPLOY_HOST}:4848`)
+    console.info(`  ssh:         ssh ${DEPLOY_USER}@${DEPLOY_HOST}`)
+    console.info('\nuseful commands:')
+    console.info('  uc ls                    # list services')
+    console.info('  uc logs web              # view web logs')
+    console.info('  uc logs web -f           # follow web logs')
+    console.info(`  ssh ${DEPLOY_USER}@${DEPLOY_HOST}  # ssh to server`)
+    console.info('\nto skip builds on redeploy:')
+    console.info('  bun scripts/uncloud/deploy-prod.ts --skip-build --skip-docker')
+  } finally {
+    if (!skipLock) {
+      await releaseDeployLock(ssh)
+      console.info(colors.gray('  released deploy lock'))
+    }
+  }
 })

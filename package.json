@@ -29,7 +29,7 @@
     "db:add-migration": "tko db add-migration",
     "db:migrate": "tko db migrate",
     "db": "tko db",
-    "dev": "tko run-all --flags=last watch one:dev",
+    "dev": "tko run-all --pty --flags=last watch watch:types watch:zero:generate one:dev",
     "eas": "tko eas",
     "env": "dotenvx run --overload -f .env .env.${NODE_ENV:-development} --",
     "env:dev": "NODE_ENV=development bun env --",
@@ -57,7 +57,6 @@
     "up": "tko up",
     "watch:types": "tko run typecheck --watch",
     "watch:zero:generate": "bun zero:generate --watch",
-    "watch": "tko run watch watch:types watch:zero:generate",
     "web": "tko web",
     "zero:generate": "on-zero generate --after 'oxfmt src/data/generated'",
     "zero": "tko zero"

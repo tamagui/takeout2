@@ -14,6 +14,7 @@ import { getZQL, setAuthData, setSchema } from './state'
 import { setRunner } from './zeroRunner'
 
 import type {
+  AdminRoleMode,
   AsyncAction,
   AuthData,
   GenericModels,
@@ -29,6 +30,22 @@ import type {
 } from '@rocicorp/zero'
 import type { TransactionProviderInput } from '@rocicorp/zero/pg'
 
+export type ValidateQueryArgs = {
+  authData: AuthData | null
+  queryName: string
+  params: unknown
+}
+
+export type ValidateMutationArgs = {
+  authData: AuthData | null
+  mutatorName: string
+  tableName: string
+  args: unknown
+}
+
+export type ValidateQueryFn = (args: ValidateQueryArgs) => void
+export type ValidateMutationFn = (args: ValidateMutationArgs) => void | Promise<void>
+
 export function createZeroServer<
   Schema extends ZeroSchema,
   Models extends GenericModels,
@@ -39,6 +56,9 @@ export function createZeroServer<
   schema,
   models,
   queries,
+  validateQuery,
+  validateMutation,
+  defaultAllowAdminRole = 'all',
 }: {
   /**
    * The DB connection string, same as ZERO_UPSTREAM_DB
@@ -48,6 +68,23 @@ export function createZeroServer<
   models: Models
   createServerActions: () => ServerActions
   queries?: AnyQueryRegistry
+  /**
+   * Hook to validate queries before execution. Throw to reject.
+   * Must be synchronous.
+   */
+  validateQuery?: ValidateQueryFn
+  /**
+   * Hook to validate mutations before execution. Throw to reject.
+   */
+  validateMutation?: ValidateMutationFn
+  /**
+   * Admin role bypass for permissions:
+   * - 'all': admin bypasses both query and mutation permissions (default)
+   * - 'queries': admin bypasses only query permissions
+   * - 'mutations': admin bypasses only mutation permissions
+   * - 'off': admin has no special bypass
+   */
+  defaultAllowAdminRole?: AdminRoleMode
 }) {
   setSchema(schema)
 
@@ -67,6 +104,7 @@ export function createZeroServer<
   const permissions = createPermissions<Schema>({
     environment: 'server',
     schema,
+    adminRoleMode: defaultAllowAdminRole,
   })
 
   const processor = new PushProcessor(zeroDb)
@@ -90,6 +128,7 @@ export function createZeroServer<
       environment: 'server',
       models,
       authData,
+      validateMutation,
     })
 
     // @ts-expect-error type is ok but config in monorepo
@@ -150,6 +189,11 @@ export function createZeroServer<
             .one()
         }
 
+        // run validation hook if provided (must be sync - throw to reject)
+        if (validateQuery) {
+          validateQuery({ authData, queryName: name, params: args })
+        }
+
         const query = (mustGetQuery as any)(queries, name)
         return query.fn({ args, ctx: authData })
       },
@@ -180,6 +224,7 @@ export function createZeroServer<
       },
       createServerActions,
       can: permissions.can,
+      validateMutation,
     })
 
     await transaction(async (tx) => {

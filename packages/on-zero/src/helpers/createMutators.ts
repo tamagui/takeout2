@@ -13,6 +13,15 @@ import type {
   Transaction,
 } from '../types'
 
+export type ValidateMutationFn = (args: {
+  authData: AuthData | null
+  mutatorName: string
+  tableName: string
+  args: unknown
+}) => void | Promise<void>
+
+export type { ValidateMutationFn as CreateMutatorsValidateFn }
+
 export function createMutators<Models extends GenericModels>({
   environment,
   authData,
@@ -20,6 +29,7 @@ export function createMutators<Models extends GenericModels>({
   asyncTasks = [],
   can,
   models,
+  validateMutation,
 }: {
   environment: 'server' | 'client'
   authData: AuthData | null
@@ -27,6 +37,7 @@ export function createMutators<Models extends GenericModels>({
   models: Models
   asyncTasks?: Array<() => Promise<void>>
   createServerActions?: () => Record<string, any>
+  validateMutation?: ValidateMutationFn
 }): GetZeroMutators<Models> {
   const serverActions = createServerActions?.()
 
@@ -122,6 +133,27 @@ export function createMutators<Models extends GenericModels>({
     }
   }
 
+  function withValidation<Args extends any[]>(
+    tableName: string,
+    mutatorName: string,
+    fn: (...args: Args) => Promise<void>
+  ) {
+    if (!validateMutation) {
+      return fn
+    }
+
+    return async (...args: Args): Promise<void> => {
+      // args[0] is tx, args[1] is the mutation args
+      await validateMutation({
+        authData: isBrowser ? getAuthData() : authData,
+        tableName,
+        mutatorName,
+        args: args[1],
+      })
+      return fn(...args)
+    }
+  }
+
   function decorateMutators<T extends Record<string, Record<string, any>>>(modules: T) {
     const result: any = {}
 
@@ -132,7 +164,10 @@ export function createMutators<Models extends GenericModels>({
           const fullName = `${moduleName}.${name}`
           result[moduleName][name] = withDevelopmentLogging(
             fullName,
-            withTimeoutGuard(fullName, withContext(exportValue))
+            withTimeoutGuard(
+              fullName,
+              withValidation(moduleName, name, withContext(exportValue))
+            )
           )
         }
       }

@@ -475,6 +475,41 @@ app.post('/api/zero/pull', async (req) => {
 })
 ```
 
+### server validation hooks
+
+add custom validation for all queries and mutations:
+
+```ts
+export const zeroServer = createZeroServer({
+  schema,
+  models,
+  database: process.env.DATABASE_URL,
+  queries: syncedQueries,
+  createServerActions: () => ({ ... }),
+
+  // validate all queries before execution (must be sync, throw to reject)
+  validateQuery({ authData, queryName, params }) {
+    if (queryName === 'adminOnlyQuery' && authData?.role !== 'admin') {
+      throw new Error('admin only')
+    }
+  },
+
+  // validate all mutations before execution (can be async)
+  async validateMutation({ authData, tableName, mutatorName, args }) {
+    if (tableName === 'user' && mutatorName === 'delete') {
+      await auditLog('user.delete', authData, args)
+    }
+  },
+
+  // admin role bypass for permissions (default: 'all')
+  // - 'all': admin bypasses both query and mutation permissions
+  // - 'queries': admin bypasses only query permissions
+  // - 'mutations': admin bypasses only mutation permissions
+  // - 'off': no admin bypass, normal permission checks apply
+  defaultAllowAdminRole: 'all',
+})
+```
+
 type augmentation:
 
 ```ts

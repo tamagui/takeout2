@@ -134,3 +134,12 @@ export type TablePrimaryKeys<TS extends GenericTable> = TupleToUnion<
 >
 
 export type ZeroEvent = { type: 'error'; message: string }
+
+/**
+ * Admin role bypass for permissions:
+ * - 'all': admin bypasses both query and mutation permissions (default)
+ * - 'queries': admin bypasses only query permissions
+ * - 'mutations': admin bypasses only mutation permissions
+ * - 'off': admin has no special bypass
+ */
+export type AdminRoleMode = 'all' | 'queries' | 'mutations' | 'off'

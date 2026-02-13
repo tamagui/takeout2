@@ -6,7 +6,7 @@ import { prettyFormatZeroQuery } from './helpers/prettyFormatZeroQuery'
 import { getZQL } from './state'
 import { getWhereTableName } from './where'
 
-import type { AuthData, Can, TableName, Transaction, Where } from './types'
+import type { AdminRoleMode, AuthData, Can, TableName, Transaction, Where } from './types'
 import type {
   Condition,
   ExpressionBuilder,
@@ -17,9 +17,11 @@ import type {
 export function createPermissions<Schema extends ZeroSchema>({
   environment,
   schema,
+  adminRoleMode = 'all',
 }: {
   environment: 'client' | 'server'
   schema: Schema
+  adminRoleMode?: AdminRoleMode
 }) {
   type PermissionReturn = Condition | boolean
 
@@ -36,6 +38,12 @@ export function createPermissions<Schema extends ZeroSchema>({
     objOrId: Record<string, any> | string,
     tableNameOverride?: TableName
   ) {
+    // check admin bypass for queries
+    const adminBypassQueries = adminRoleMode === 'all' || adminRoleMode === 'queries'
+    if (adminBypassQueries && authData?.role === 'admin') {
+      return eb.cmpLit(true, '=', true)
+    }
+
     const tableName = tableNameOverride || getWhereTableName(permissionWhere)
 
     if (!tableName) {
@@ -93,8 +101,9 @@ export function createPermissions<Schema extends ZeroSchema>({
     where: Where,
     obj: any // TODO until i can get a working PickPrimaryKeys<'message'>
   ): Promise<void> {
-    if (authData?.role === 'admin') {
-      // admin role can do any mutation
+    // check admin bypass for mutations
+    const adminBypassMutations = adminRoleMode === 'all' || adminRoleMode === 'mutations'
+    if (adminBypassMutations && authData?.role === 'admin') {
       return
     }
 

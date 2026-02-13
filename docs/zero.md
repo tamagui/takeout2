@@ -44,27 +44,27 @@ useQuery(queryFn, { param1, param2 }, { enabled: true })
 const [data] = useQuery(userById, { userId }, { enabled: Boolean(userId) })
 ```
 
-### query() - non-reactive
+### run() - non-reactive
 
-`query()` executes a query once and returns a promise (non-reactive counterpart
-to `useQuery`). defaults to `'complete'` which fetches from the server. pass
-`'cached'` for local-only:
+`run()` executes a query once and returns a promise (non-reactive counterpart
+to `useQuery`). defaults to cache-only on client. pass `'complete'` to fetch
+from server:
 
 ```ts
-import { query } from 'on-zero'
+import { run } from 'on-zero'
 import { allPosts } from '~/data/queries/post'
 
-// fetch from server (default)
-const posts = await query(allPosts, { limit: 10 })
+// cache only (default on client)
+const posts = await run(allPosts, { limit: 10 })
 
-// local cache only
-const cached = await query(allPosts, { limit: 10 }, 'cached')
+// fetch from server (waits for sync)
+const posts = await run(allPosts, { limit: 10 }, 'complete')
 
 // no params
-const posts = await query(allPosts)
+const posts = await run(allPosts)
 
-// no params, cached
-const posts = await query(allPosts, 'cached')
+// no params, fetch from server
+const posts = await run(allPosts, 'complete')
 ```
 
 ## permissions

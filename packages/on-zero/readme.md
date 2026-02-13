@@ -540,23 +540,24 @@ run a query once without subscribing. works on both client and server:
 import { run } from 'on-zero'
 import { userById } from '~/data/queries/user'
 
-// with params
+// with params - defaults to cache only on client
 const user = await run(userById, { id: userId })
+
+// fetch from server (waits for sync)
+const user = await run(userById, { id: userId }, 'complete')
 
 // without params
 const allUsers = await run(allUsers)
 
-// with options (client only)
-const cached = await run(userById, { id: userId }, { type: 'unknown' })
+// without params, fetch from server
+const allUsers = await run(allUsers, 'complete')
 ```
 
 on-zero run is smart:
 
-- on client, uses client `zero.run()` 
+- on client, uses client `zero.run()`
 - on server, uses server `zero.run()`
 - in a mutation, uses `tx.run()`
-
-this gives you a nice api.
 
 **preloading data (client only):**
 

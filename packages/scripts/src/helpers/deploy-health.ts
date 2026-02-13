@@ -24,12 +24,19 @@ export interface ContainerInfo {
 /**
  * check for containers stuck in restart loop
  * fails fast if any container is crash-looping
+ * excludes init containers (minio-init, migrate) that are expected to exit
  */
-export async function checkRestartLoops(ctx: SSHContext): Promise<{
+export async function checkRestartLoops(
+  ctx: SSHContext,
+  options?: { excludePatterns?: string[] }
+): Promise<{
   hasLoop: boolean
   services: string[]
 }> {
   const { sshOpts, deployUser, deployHost, $ } = ctx
+  // default exclude patterns for init/oneshot containers
+  const excludePatterns = options?.excludePatterns ?? ['init', 'migrate']
+
   try {
     const sshCmd = `ssh ${sshOpts} ${deployUser}@${deployHost}`
     const result =
@@ -40,7 +47,11 @@ export async function checkRestartLoops(ctx: SSHContext): Promise<{
     for (const line of lines) {
       if (line.includes('Restarting')) {
         const name = line.split(' ')[0] || ''
-        loopingServices.push(name)
+        // skip init/oneshot containers
+        const isExcluded = excludePatterns.some((pattern) => name.includes(pattern))
+        if (!isExcluded) {
+          loopingServices.push(name)
+        }
       }
     }
 

@@ -4,7 +4,7 @@ import { cmd } from '@take-out/cli'
 
 await cmd`Run checks, build with test env, and run all tests (unit + integration)`
   .args(
-    `--skip-checks boolean --skip-unit boolean --skip-integration boolean --dev boolean --start boolean --unit boolean --integration boolean --filter string`,
+    `--skip-checks boolean --skip-unit boolean --skip-integration boolean --dev boolean --start boolean --unit boolean --integration boolean --filter string`
   )
   .run(async ({ args }) => {
     const { sleep, time } = await import('@take-out/helpers')
@@ -287,7 +287,7 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
             captureOutput: true,
             silent: true,
             timeout: time.ms.minutes(1),
-          },
+          }
         )
         console.info(`Docker ps:\n${psOutput}\n\nDocker logs:\n${logsOutput}`)
         console.info('='.repeat(80))

@@ -144,7 +144,7 @@ export async function migrate(options: MigrateOptions) {
             // pg "duplicate" class errors: table, column, object, etc
             if (e?.code?.startsWith('42')) {
               console.info(
-                `[migrate] ${migration.name}: ${e.message}, recording as applied`,
+                `[migrate] ${migration.name}: ${e.message}, recording as applied`
               )
             } else {
               throw e

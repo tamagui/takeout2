@@ -147,10 +147,10 @@ export async function setupSSHKey(options: SetupSSHKeyOptions = {}) {
   // add host to known_hosts
   if (host) {
     try {
-      await run(
-        `ssh-keyscan -H ${host} >> ${join(sshDir, 'known_hosts')}`,
-        { silent: true, timeout: time.ms.seconds(10) }
-      )
+      await run(`ssh-keyscan -H ${host} >> ${join(sshDir, 'known_hosts')}`, {
+        silent: true,
+        timeout: time.ms.seconds(10),
+      })
     } catch {
       // ignore - ssh will prompt if needed
     }

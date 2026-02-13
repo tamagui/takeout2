@@ -36,11 +36,15 @@ export async function testSSHConnection(
     } catch (err) {
       lastError = err as Error
       if (attempt < maxRetries) {
-        console.info(`  ssh attempt ${attempt}/${maxRetries} failed, retrying in ${retryDelay / 1000}s...`)
+        console.info(
+          `  ssh attempt ${attempt}/${maxRetries} failed, retrying in ${retryDelay / 1000}s...`
+        )
         await sleep(retryDelay)
       }
     }
   }
 
-  throw new Error(`cannot connect to ${host} after ${maxRetries} attempts - check ssh key: ${sshKey}`)
+  throw new Error(
+    `cannot connect to ${host} after ${maxRetries} attempts - check ssh key: ${sshKey}`
+  )
 }

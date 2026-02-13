@@ -92,7 +92,9 @@ async function getSSHCmd(): Promise<string> {
 }
 
 async function rollbackToPrevious(): Promise<boolean> {
-  console.info(pc.yellow('\n⚠️  health check failed, attempting rollback to previous image...'))
+  console.info(
+    pc.yellow('\n⚠️  health check failed, attempting rollback to previous image...')
+  )
 
   const ssh = await getSSHCmd()
 
@@ -125,7 +127,10 @@ async function rollbackToPrevious(): Promise<boolean> {
     console.info(pc.green('  ✅ rollback successful, production restored'))
     return true
   } catch (err) {
-    console.error(pc.red('  rollback also failed:'), err instanceof Error ? err.message : err)
+    console.error(
+      pc.red('  rollback also failed:'),
+      err instanceof Error ? err.message : err
+    )
     return false
   }
 }

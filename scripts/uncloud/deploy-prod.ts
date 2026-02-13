@@ -211,12 +211,9 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
       )
 
       // copy to caddy volume mount path (accessible at /config/certs inside container)
-      await run(
-        `${ssh} "cp /etc/uncloud/certs/origin.* /var/lib/uncloud/caddy/certs/"`,
-        {
-          silent: true,
-        }
-      )
+      await run(`${ssh} "cp /etc/uncloud/certs/origin.* /var/lib/uncloud/caddy/certs/"`, {
+        silent: true,
+      })
 
       // set permissions
       await run(
@@ -250,7 +247,9 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
 
     if (domains.length === 0) {
       console.warn(
-        colors.yellow('⚠️  no custom domains configured (VITE_WEB_HOSTNAME, VITE_ZERO_HOSTNAME)')
+        colors.yellow(
+          '⚠️  no custom domains configured (VITE_WEB_HOSTNAME, VITE_ZERO_HOSTNAME)'
+        )
       )
       console.warn(colors.gray("   caddy will use let's encrypt for tls"))
       return

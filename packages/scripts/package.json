@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.8.2",
-    "@take-out/helpers": "0.1.16",
+    "@take-out/helpers": "workspace:*",
     "picocolors": "^1.1.1"
   },
   "peerDependencies": {

@@ -1,6 +1,14 @@
 #!/usr/bin/env bun
 
 import { cmd } from '@take-out/cli'
+import {
+  checkRestartLoops,
+  getContainerStatus as getContainerStatusHelper,
+  checkContainerHealth as checkContainerHealthHelper,
+  checkHttpHealth as checkHttpHealthHelper,
+  getContainerLogs as getContainerLogsHelper,
+  type SSHContext,
+} from '@take-out/scripts/helpers/deploy-health'
 
 await cmd`Check deployment health`.run(async ({ $, fs }) => {
   const TIMEOUT = 5 * 60 * 1000 // 5 minutes
@@ -58,15 +66,15 @@ Monitors the deployment and exits when all services are healthy or on timeout.
         if (key === 'DEPLOY_USER') deployUser = value?.trim()
         if (key === 'DEPLOY_SSH_KEY') deploySshKey = value?.trim()
       })
-    } catch (error) {
+    } catch {
       // file doesn't exist - likely running in CI without deployment configured
     }
   }
 
   if (!deployHost) {
-    console.error('❌ DEPLOY_HOST not set')
-    console.error('For local: add to .env.production')
-    console.error('For CI: ensure DEPLOY_HOST is in GitHub secrets')
+    console.error('DEPLOY_HOST not set')
+    console.error('for local: add to .env.production')
+    console.error('for CI: ensure DEPLOY_HOST is in GitHub secrets')
     process.exit(1)
   }
 
@@ -76,162 +84,30 @@ Monitors the deployment and exits when all services are healthy or on timeout.
   const sshOpts =
     `${sshIdentity} -o ConnectTimeout=10 -o StrictHostKeyChecking=no -o BatchMode=yes`.trim()
 
-  /**
-   * Get container status via SSH using docker ps with better pattern matching
-   */
-  async function getContainerStatus(): Promise<Map<string, any>> {
-    try {
-      const sshCmd = `ssh ${sshOpts} ${deployUser}@${deployHost}`
-      const result = await $`${sshCmd.split(' ')} "docker ps --format json"`.quiet()
-      const lines = result.stdout.toString().trim().split('\n').filter(Boolean)
-
-      const containers = new Map()
-      for (const line of lines) {
-        try {
-          const container = JSON.parse(line)
-          // Try multiple patterns to extract service name
-          // Pattern 1: "takeout-web-1" -> "web"
-          // Pattern 2: "takeout_web_1" -> "web"
-          // Pattern 3: just "web-1" -> "web"
-          const name = container.Names || ''
-          let serviceName = null
-
-          // try takeout prefix with dash or underscore
-          let match = name.match(/takeout[_-]([^_-]+)[_-]\w+/)
-          if (match) {
-            serviceName = match[1]
-          } else {
-            // try without takeout prefix (uncloud format: service-xxxx where xxxx is alphanumeric)
-            match = name.match(/^([^_-]+)[_-]\w+$/)
-            if (match) {
-              serviceName = match[1]
-            } else {
-              // try just the name before any dash or underscore
-              match = name.match(/^([^_-]+)/)
-              if (match) {
-                serviceName = match[1]
-              }
-            }
-          }
-
-          if (serviceName) {
-            containers.set(serviceName, {
-              id: container.ID,
-              status: container.Status,
-              state: container.State,
-              names: container.Names,
-            })
-          }
-        } catch (e) {
-          // skip invalid json lines
-        }
-      }
-
-      return containers
-    } catch (error) {
-      if (verbose) {
-        console.error('Failed to get container status:', error)
-      }
-      return new Map()
-    }
+  // create ssh context for shared helpers
+  const sshCtx: SSHContext = {
+    sshOpts,
+    deployUser: deployUser!,
+    deployHost: deployHost!,
+    $,
   }
 
-  /**
-   * Check health status of a specific container
-   * Uses docker's built-in health check status if available
-   */
-  async function checkContainerHealth(containerId: string): Promise<boolean> {
-    try {
-      const sshCmd = `ssh ${sshOpts} ${deployUser}@${deployHost}`
-      // first check if container has a health check configured
-      const healthResult =
-        await $`${sshCmd.split(' ')} "docker inspect ${containerId} --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}no-healthcheck{{end}}'"`.quiet()
-      const healthStatus = healthResult.stdout.toString().trim()
-
-      if (healthStatus === 'healthy') {
-        return true
-      } else if (healthStatus === 'no-healthcheck') {
-        // fall back to checking if running for containers without healthcheck
-        const statusResult =
-          await $`${sshCmd.split(' ')} "docker inspect ${containerId} --format '{{.State.Status}}'"`.quiet()
-        const status = statusResult.stdout.toString().trim()
-        return status === 'running'
-      }
-
-      // unhealthy, starting, or other health status - not ready yet
-      return false
-    } catch (error) {
-      console.error(`  error checking ${containerId}: ${error}`)
-      return false
-    }
+  // wrapper functions using shared helpers
+  async function getContainerStatus() {
+    return getContainerStatusHelper(sshCtx, { verbose })
   }
 
-  /**
-   * Get recent logs from a container
-   */
-  async function getContainerLogs(containerId: string, lines = 20): Promise<string[]> {
-    try {
-      const sshCmd = `ssh ${sshOpts} ${deployUser}@${deployHost}`
-      const result =
-        await $`${sshCmd.split(' ')} "docker logs ${containerId} --tail ${lines} 2>&1"`.quiet()
-      return result.stdout.toString().trim().split('\n')
-    } catch {
-      return []
-    }
+  async function checkContainerHealth(containerId: string) {
+    const result = await checkContainerHealthHelper(sshCtx, containerId)
+    return result === 'healthy'
   }
 
-  /**
-   * Check HTTP health endpoint from inside web container
-   */
-  async function checkHttpHealth(): Promise<{
-    healthy: boolean
-    status?: number
-    message?: string
-  }> {
-    try {
-      const sshCmd = `ssh ${sshOpts} ${deployUser}@${deployHost}`
-      // Get web container name
-      const containersResult =
-        await $`${sshCmd.split(' ')} "docker ps --filter 'name=web' --format '{{.Names}}'"`.quiet()
-      const webContainer = containersResult.stdout.toString().trim()
+  async function getContainerLogs(containerId: string, lines = 20) {
+    return getContainerLogsHelper(sshCtx, containerId, lines)
+  }
 
-      if (!webContainer) {
-        return { healthy: false, message: 'Web container not found' }
-      }
-
-      // Check the /api/health endpoint from inside the container
-      // use -f to fail on HTTP errors, check exit code separately
-      const result =
-        await $`${sshCmd.split(' ')} "docker exec ${webContainer} curl -sf -o /dev/null -w '%{http_code}' -m 5 http://localhost:8081/api/health || echo $?"`.quiet()
-      const output = result.stdout.toString().trim()
-
-      // if output is just a number 0-255, curl failed (exit code)
-      if (/^\d{1,3}$/.test(output) && parseInt(output, 10) !== 200) {
-        // curl failed - app not ready yet, keep trying
-        return { healthy: false, message: 'App starting...' }
-      }
-
-      const statusCode = parseInt(output, 10)
-
-      if (statusCode === 200) {
-        return { healthy: true, status: statusCode }
-      } else if (statusCode === 302) {
-        return { healthy: true, status: statusCode, message: 'Redirect (auth working)' }
-      } else if (statusCode === 404) {
-        return {
-          healthy: true,
-          status: statusCode,
-          message: 'Not found (server running)',
-        }
-      } else if (statusCode >= 500) {
-        return { healthy: false, status: statusCode, message: 'Server error' }
-      }
-
-      return { healthy: false, message: 'App starting...' }
-    } catch {
-      // container or curl command failed - app not ready yet
-      return { healthy: false, message: 'App starting...' }
-    }
+  async function checkHttpHealth() {
+    return checkHttpHealthHelper(sshCtx, { endpoint: 'http://localhost:8081/api/health' })
   }
 
   /**
@@ -280,7 +156,18 @@ Monitors the deployment and exits when all services are healthy or on timeout.
     console.info('waiting for services to become healthy...')
     console.info('')
 
-    // Quick initial check
+    // check for restart loops first - fail fast if containers are looping
+    console.info('checking for restart loops...')
+    const initialLoops = await checkRestartLoops(sshCtx)
+    if (initialLoops.hasLoop) {
+      console.error(`restart loop detected: ${initialLoops.services.join(', ')}`)
+      console.error('containers are crash-looping - deployment unhealthy')
+      process.exit(1)
+    }
+    console.info('  no restart loops detected')
+    console.info('')
+
+    // quick initial check
     console.info('checking initial container status...')
     const initialContainers = await getContainerStatus()
     console.info(`found ${initialContainers.size} containers`)
@@ -342,7 +229,15 @@ Monitors the deployment and exits when all services are healthy or on timeout.
 
       console.info(`[${elapsedSeconds}s] checking health...`)
 
-      // Get current state
+      // check for restart loops
+      const loops = await checkRestartLoops(sshCtx)
+      if (loops.hasLoop) {
+        console.error(`  restart loop detected: ${loops.services.join(', ')}`)
+        console.error('containers are crash-looping - deployment failed')
+        process.exit(1)
+      }
+
+      // get current state
       const containers = await getContainerStatus()
       console.info(`  containers found: ${containers.size}`)
 

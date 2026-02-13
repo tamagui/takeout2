@@ -19,6 +19,8 @@ export const runAllCommand = defineCommand({
   run: async () => {
     // Get all arguments after 'run-all'
     const scriptArgs = process.argv.slice(3)
+    const usePty = scriptArgs.includes('--pty')
+    const filteredArgs = scriptArgs.filter((a) => a !== '--pty')
 
     // Find the project root by looking for package.json with workspaces or takeout field
     let currentDir = process.cwd()
@@ -44,12 +46,13 @@ export const runAllCommand = defineCommand({
     }
 
     // check if local packages/scripts exists (takeout monorepo), otherwise use installed package
-    const localScriptsPath = resolve(projectRoot, 'packages/scripts/src/run.ts')
+    const scriptFile = usePty ? 'run-pty.mjs' : 'run.ts'
+    const localScriptsPath = resolve(projectRoot, `packages/scripts/src/${scriptFile}`)
     const scriptPath = existsSync(localScriptsPath)
       ? localScriptsPath
-      : resolve(projectRoot, 'node_modules/@take-out/scripts/src/run.ts')
+      : resolve(projectRoot, `node_modules/@take-out/scripts/src/${scriptFile}`)
 
-    const child = spawn('bun', [scriptPath, ...scriptArgs], {
+    const child = spawn(usePty ? 'node' : 'bun', [scriptPath, ...filteredArgs], {
       stdio: 'inherit',
       shell: false,
     })

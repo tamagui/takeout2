@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.8.2",
+    "@lydell/node-pty": "^1.2.0-beta.3",
     "@take-out/helpers": "workspace:*",
     "picocolors": "^1.1.1"
   },

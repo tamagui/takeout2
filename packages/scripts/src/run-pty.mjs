@@ -6,12 +6,12 @@ import { join, relative, resolve } from 'node:path'
 import pty from '@lydell/node-pty'
 
 const colors = [
-  '\x1b[38;5;245m',
-  '\x1b[38;5;240m',
-  '\x1b[38;5;243m',
-  '\x1b[38;5;248m',
-  '\x1b[38;5;238m',
-  '\x1b[38;5;252m',
+  '\x1b[38;5;81m',
+  '\x1b[38;5;209m',
+  '\x1b[38;5;156m',
+  '\x1b[38;5;183m',
+  '\x1b[38;5;222m',
+  '\x1b[38;5;117m',
 ]
 const reset = '\x1b[0m'
 const dim = '\x1b[2m'
@@ -43,14 +43,13 @@ const runBun = args.includes('--bun')
 const flagsLast = args.includes('--flags=last')
 
 const processes = []
-let dashboardMode = false
-let selectedIndex = 0
+let focusedIndex = -1 // -1 = interleaved/dashboard
 
 function getPrefix(index) {
   const p = processes[index]
   if (!p) return ''
   const color = colors[index % colors.length]
-  return `${color}${p.shortcut} ${p.label}${reset}`
+  return `${color}${p.shortcut}${reset}`
 }
 
 if (runCommands.length === 0) {
@@ -97,10 +96,8 @@ async function findPackageJsonDirs(base, depth = 3) {
 async function findWorkspaceScripts(scripts) {
   const patterns = await getWorkspacePatterns()
   if (!patterns.length) return new Map()
-
   const dirs = await findPackageJsonDirs('.')
   const result = new Map()
-
   for (const dir of dirs) {
     if (dir === '.') continue
     const rel = relative('.', dir).replace(/\\/g, '/')
@@ -111,7 +108,6 @@ async function findWorkspaceScripts(scripts) {
         : rel === np || rel.startsWith(np + '/')
     })
     if (!matches) continue
-
     const pkg = await readPackageJson(dir)
     if (!pkg?.scripts) continue
     const available = scripts.filter((s) => typeof pkg.scripts[s] === 'string')
@@ -124,7 +120,6 @@ function spawnScript(name, cwd, label, extraArgs, index) {
   const runArgs = ['run', '--silent', runBun ? '--bun' : '', name, ...extraArgs].filter(
     Boolean
   )
-
   const terminal = pty.spawn('bun', runArgs, {
     cwd: resolve(cwd),
     cols: process.stdout.columns || 80,
@@ -144,26 +139,34 @@ function spawnScript(name, cwd, label, extraArgs, index) {
     killed: false,
   }
 
-  if (index !== undefined) {
-    processes[index] = managed
-  } else {
-    processes.push(managed)
-  }
+  if (index !== undefined) processes[index] = managed
+  else processes.push(managed)
 
   terminal.onData((data) => {
-    if (dashboardMode) return
-    const lines = data.split('\n')
-    for (const line of lines) {
-      if (line && line !== '\r') {
+    if (focusedIndex === -1) {
+      // interleaved - prefix each line, skip bun's $ command echo
+      const lines = data.split(/\r?\n/)
+      for (const line of lines) {
+        if (!line) continue
+        // eslint-disable-next-line no-control-regex
+        const stripped = line.replace(/\x1b\[[0-9;]*m/g, '')
+        if (stripped.startsWith('$ ')) continue
         process.stdout.write(`${getPrefix(idx)} ${line}\n`)
       }
+    } else if (focusedIndex === idx) {
+      // focused - raw output
+      process.stdout.write(data)
     }
   })
 
   terminal.onExit(({ exitCode }) => {
     if (managed.killed) return
+    if (focusedIndex === idx) {
+      focusedIndex = -1
+      showDashboard()
+    }
     if (exitCode !== 0) {
-      process.stdout.write(`${getPrefix(idx)} exited with code ${exitCode}\n`)
+      console.error(`${getPrefix(idx)} exited ${exitCode}`)
     }
   })
 
@@ -171,115 +174,122 @@ function spawnScript(name, cwd, label, extraArgs, index) {
 }
 
 function computeShortcuts() {
-  const initials = processes.map((p) =>
-    p.label
+  // use last word of label
+  for (let i = 0; i < processes.length; i++) {
+    const p = processes[i]
+    const words = p.label
       .toLowerCase()
       .split(/[^a-z]+/)
       .filter(Boolean)
-      .map((w) => w[0])
-      .join('')
-  )
-  const lengths = new Array(processes.length).fill(1)
+    const lastWord = words[words.length - 1] || words[0] || String(i)
 
-  for (let round = 0; round < 5; round++) {
-    const shortcuts = initials.map((init, i) => init.slice(0, lengths[i]) || init)
-    const groups = new Map()
-    shortcuts.forEach((s, i) => groups.set(s, [...(groups.get(s) || []), i]))
-
-    let collision = false
-    for (const indices of groups.values()) {
-      if (indices.length > 1) {
-        collision = true
-        indices.forEach((i) => lengths[i]++)
-      }
+    // find unique shortcut
+    let shortcut = lastWord[0]
+    let len = 1
+    while (
+      processes.slice(0, i).some((q) => q.shortcut === shortcut) &&
+      len < lastWord.length
+    ) {
+      len++
+      shortcut = lastWord.slice(0, len)
     }
-    if (!collision) {
-      processes.forEach((p, i) => (p.shortcut = shortcuts[i]))
-      return
-    }
+    p.shortcut = shortcut
   }
-  processes.forEach(
-    (p, i) => (p.shortcut = initials[i]?.slice(0, lengths[i]) || String(i + 1))
+}
+
+function showDashboard() {
+  const tabs = processes
+    .map((p, i) => {
+      const color = colors[i % colors.length]
+      return `${color}[${p.shortcut}]${reset} ${p.label.split(' ').pop()}${p.killed ? dim + ' ✗' + reset : ''}`
+    })
+    .join('  ')
+  console.log(`\n${tabs}`)
+  console.log(
+    `${dim}press shortcut to focus, r+shortcut restart, k+shortcut kill, ctrl+c exit${reset}\n`
   )
 }
 
-function renderDashboard() {
-  process.stdout.write('\x1b[2J\x1b[H')
-  process.stdout.write(
-    `${bold}Dashboard${reset} ${dim}(↑↓ navigate, r restart, k kill, esc back)${reset}\n\n`
-  )
-
-  for (let i = 0; i < processes.length; i++) {
-    const p = processes[i]
-    const prefix = i === selectedIndex ? `${inverse} > ${reset}` : '   '
-    const status = p.killed
-      ? `${dim}(killed)${reset}`
-      : p.terminal.pid
-        ? `${dim}(pid ${p.terminal.pid})${reset}`
-        : ''
-    process.stdout.write(`${prefix} ${getPrefix(i)} ${status}\n`)
-  }
-  process.stdout.write(`\n${dim}ctrl+c to exit${reset}\n`)
-}
-
-function exitDashboard() {
-  dashboardMode = false
-  process.stdout.write('\x1b[2J\x1b[H')
-  process.stdout.write(
-    `${dim}  running ${processes.length} processes (ctrl+z dashboard, ctrl+c exit)${reset}\n\n`
-  )
-}
+let pendingAction = null // 'r' or 'k'
 
 function handleInput(data) {
   const str = data.toString()
 
+  // ctrl+c exit
   if (str === '\x03') {
     cleanup()
     return
   }
 
+  // ctrl+z toggle focus
   if (str === '\x1a') {
-    if (dashboardMode) {
-      exitDashboard()
+    if (focusedIndex >= 0) {
+      focusedIndex = -1
+      showDashboard()
     } else {
-      dashboardMode = true
-      renderDashboard()
+      showDashboard()
     }
     return
   }
 
-  if (dashboardMode) {
-    if (str === '\x1b[A') {
-      selectedIndex = Math.max(0, selectedIndex - 1)
-      renderDashboard()
-    } else if (str === '\x1b[B') {
-      selectedIndex = Math.min(processes.length - 1, selectedIndex + 1)
-      renderDashboard()
-    } else if (str === 'r' || str === 'R') {
-      const p = processes[selectedIndex]
-      if (p) {
-        p.killed = true
-        p.terminal.kill()
-        setTimeout(() => {
-          spawnScript(p.name, p.cwd, p.label, p.extraArgs, p.index)
-          exitDashboard()
-        }, 100)
-      }
-    } else if (str === 'k' || str === 'K') {
-      const p = processes[selectedIndex]
-      if (p && !p.killed) {
-        p.killed = true
-        p.terminal.kill()
-        renderDashboard()
-      }
-    } else if (str === '\x1b' || str === '\x1b\x1b') {
-      exitDashboard()
+  // if focused, forward to process
+  if (focusedIndex >= 0) {
+    const p = processes[focusedIndex]
+    if (p && !p.killed) {
+      p.terminal.write(str)
     }
+    return
+  }
+
+  // dashboard mode
+  if (str === 'r') {
+    pendingAction = 'restart'
+    process.stdout.write(`${dim}restart which? ${reset}`)
+    return
+  }
+  if (str === 'k') {
+    pendingAction = 'kill'
+    process.stdout.write(`${dim}kill which? ${reset}`)
+    return
+  }
+
+  // check for shortcut match
+  const match = processes.find((p) => p.shortcut === str.toLowerCase())
+  if (match) {
+    if (pendingAction === 'restart') {
+      pendingAction = null
+      console.log(match.shortcut)
+      match.killed = true
+      match.terminal.kill()
+      setTimeout(() => {
+        spawnScript(match.name, match.cwd, match.label, match.extraArgs, match.index)
+        console.log(`${getPrefix(match.index)} restarted`)
+      }, 100)
+    } else if (pendingAction === 'kill') {
+      pendingAction = null
+      console.log(match.shortcut)
+      if (!match.killed) {
+        match.killed = true
+        match.terminal.kill()
+        console.log(`${getPrefix(match.index)} killed`)
+      }
+    } else {
+      // focus
+      focusedIndex = match.index
+      console.log(`${dim}focused: ${match.label} (ctrl+z to unfocus)${reset}\n`)
+    }
+    return
+  }
+
+  // escape cancels pending
+  if (str === '\x1b' && pendingAction) {
+    pendingAction = null
+    console.log('cancelled')
   }
 }
 
 function cleanup() {
-  process.stdout.write('\n')
+  console.log()
   for (const p of processes) {
     if (!p.killed) {
       p.killed = true
@@ -297,8 +307,12 @@ async function main() {
     if (pkg?.scripts) {
       for (const name of runCommands) {
         if (typeof pkg.scripts[name] === 'string') {
-          const scriptArgs = !flagsLast || name === lastScript ? forwardArgs : []
-          spawnScript(name, '.', name, scriptArgs)
+          spawnScript(
+            name,
+            '.',
+            name,
+            !flagsLast || name === lastScript ? forwardArgs : []
+          )
         }
       }
     }
@@ -307,8 +321,12 @@ async function main() {
   const wsScripts = await findWorkspaceScripts(runCommands)
   for (const [dir, { scripts, name }] of wsScripts) {
     for (const script of scripts) {
-      const scriptArgs = !flagsLast || script === lastScript ? forwardArgs : []
-      spawnScript(script, dir, `${name} ${script}`, scriptArgs)
+      spawnScript(
+        script,
+        dir,
+        `${name} ${script}`,
+        !flagsLast || script === lastScript ? forwardArgs : []
+      )
     }
   }
 
@@ -318,9 +336,7 @@ async function main() {
   }
 
   computeShortcuts()
-  process.stdout.write(
-    `${dim}  running ${processes.length} processes (ctrl+z dashboard, ctrl+c exit)${reset}\n\n`
-  )
+  showDashboard()
 
   if (process.stdin.isTTY) {
     process.stdin.setRawMode(true)
@@ -329,12 +345,9 @@ async function main() {
   }
 
   process.stdout.on('resize', () => {
-    const cols = process.stdout.columns || 80
-    const rows = process.stdout.rows || 24
     for (const p of processes) {
-      if (!p.killed) {
-        p.terminal.resize(cols, rows)
-      }
+      if (!p.killed)
+        p.terminal.resize(process.stdout.columns || 80, process.stdout.rows || 24)
     }
   })
 

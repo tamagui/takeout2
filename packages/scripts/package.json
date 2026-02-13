@@ -1,6 +1,6 @@
 {
   "name": "@take-out/scripts",
-  "version": "0.1.16",
+  "version": "0.1.18",
   "type": "module",
   "main": "./src/run.ts",
   "sideEffects": false,
@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.8.2",
-    "@take-out/helpers": "workspace:*",
+    "@take-out/helpers": "0.1.16",
     "picocolors": "^1.1.1"
   },
   "peerDependencies": {

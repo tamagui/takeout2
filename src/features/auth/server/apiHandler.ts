@@ -42,9 +42,9 @@ export function authAPIHandler(method: 'GET' | 'POST') {
 
     // handle all other auth endpoints
     const res = await authServer.handler(req)
-    console.info(`[auth] ${method} ${res.status}`, req.url)
 
     if (process.env.DEBUG || res.status >= 400) {
+      console.info(`[auth] ${method} ${res.status}`, req.url)
       prettyPrintResponse(res)
     }
 

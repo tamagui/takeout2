@@ -68,27 +68,31 @@ export function createMutators<Models extends GenericModels>({
       return fn
     }
 
+    const debug = process.env.DEBUG
+
     return async (...args: Args): Promise<void> => {
       const startTime = performance.now()
 
       try {
-        if (isServer) {
+        if (debug && isServer) {
           console.info(`[mutator] ${name} start`)
         }
         const result = await fn(...args)
         const duration = (performance.now() - startTime).toFixed(2)
-        if (isBrowser) {
-          console.groupCollapsed(`[mutator] ${name} completed in ${duration}ms`)
-          console.info('→', args[1])
-          console.info('←', result)
-          console.trace()
-          console.groupEnd()
-        } else {
-          // TODO in prod just track
-          console.info(`[mutator] ${name} completed in ${duration}ms`)
+        if (debug) {
+          if (isBrowser) {
+            console.groupCollapsed(`[mutator] ${name} completed in ${duration}ms`)
+            console.info('→', args[1])
+            console.info('←', result)
+            console.trace()
+            console.groupEnd()
+          } else {
+            console.info(`[mutator] ${name} completed in ${duration}ms`)
+          }
         }
         return result
       } catch (error) {
+        // always log errors
         const duration = (performance.now() - startTime).toFixed(2)
         console.groupCollapsed(`[mutator] ${name} failed after ${duration}ms`)
         console.error('error:', error)

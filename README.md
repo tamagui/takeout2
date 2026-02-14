@@ -29,8 +29,8 @@ For mobile development:
 ## Quick Start
 
 ```bash
-bun install
-bun onboard
+./scripts/bootstrap.sh   # checks environment, installs dependencies
+bun onboard              # setup wizard
 ```
 
 The onboarding wizard will guide you through setup. After onboarding, run in

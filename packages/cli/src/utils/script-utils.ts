@@ -74,9 +74,6 @@ export function discoverScripts(dir: string, baseDir: string = dir): Map<string,
       const fullPath = join(dir, entry)
       const stat = statSync(fullPath)
 
-      // skip non-script module files
-      const skipFiles = ['cmd.ts', 'run.ts']
-
       if (stat.isDirectory()) {
         if (entry === 'helpers' || entry === 'internal') continue
         // one level deep only
@@ -92,10 +89,7 @@ export function discoverScripts(dir: string, baseDir: string = dir): Map<string,
             scripts.set(scriptName, subPath)
           }
         }
-      } else if (
-        (entry.endsWith('.ts') || entry.endsWith('.js')) &&
-        !skipFiles.includes(entry)
-      ) {
+      } else if (entry.endsWith('.ts') || entry.endsWith('.js')) {
         const relativePath = relative(baseDir, fullPath).split('\\').join('/')
         const scriptName = relativePath.replace(/\.(ts|js)$/, '')
         scripts.set(scriptName, fullPath)

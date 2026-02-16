@@ -340,8 +340,9 @@ export async function generate(options: GenerateOptions): Promise<GenerateResult
   // generate query files if queries directory exists
   if (existsSync(queriesDir)) {
     const ts = await import('typescript')
-    const { ModelToValibot } = await import('@sinclair/typebox-codegen/model')
-    const { TypeScriptToModel } = await import('@sinclair/typebox-codegen/typescript')
+    const { ModelToValibot } = await import('@sinclair/typebox-codegen/model/index.js')
+    const { TypeScriptToModel } =
+      await import('@sinclair/typebox-codegen/typescript/index.js')
 
     const queryFiles = readdirSync(queriesDir).filter((f) => f.endsWith('.ts'))
 

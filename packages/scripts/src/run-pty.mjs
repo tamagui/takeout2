@@ -346,8 +346,13 @@ async function main() {
 
   process.stdout.on('resize', () => {
     for (const p of processes) {
-      if (!p.killed)
-        p.terminal.resize(process.stdout.columns || 80, process.stdout.rows || 24)
+      if (!p.killed) {
+        try {
+          p.terminal.resize(process.stdout.columns || 80, process.stdout.rows || 24)
+        } catch {
+          // pty already closed
+        }
+      }
     }
   })
 

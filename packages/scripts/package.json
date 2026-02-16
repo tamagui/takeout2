@@ -1,6 +1,6 @@
 {
   "name": "@take-out/scripts",
-  "version": "0.1.25",
+  "version": "0.1.26",
   "type": "module",
   "main": "./src/run.ts",
   "sideEffects": false,

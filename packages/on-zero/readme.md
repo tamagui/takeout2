@@ -364,35 +364,6 @@ bun on-zero generate ./app/data
 bun on-zero generate --after "bun lint:fix"
 ```
 
-**`on-zero generate-queries <dir>`**
-
-generates query validators from TypeScript query functions. this is included in
-`generate` but can be run standalone.
-
-- parses exported arrow functions from `.ts` files in the queries directory
-- extracts parameter types using TypeScript compiler API
-- generates valibot schemas using typebox-codegen
-
-**example:**
-
-```bash
-bun on-zero generate-queries src/data/queries
-```
-
-### what gets generated
-
-**models.ts:**
-
-```ts
-import * as channel from '~/data/models/channel'
-import * as message from '~/data/models/message'
-
-export const models = {
-  channel,
-  message,
-}
-```
-
 **types.ts:**
 
 ```ts

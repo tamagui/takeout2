@@ -1,6 +1,6 @@
 ---
 name: tko-scripts
-description: CLI scripts and commands reference for the tko (takeout) CLI. Use when the user asks to run scripts, manage the project, or needs to know what commands are available. tko, takeout, CLI, scripts, commands, bun tko, project tasks, automation, aws, check, db, dev, eas, env, hot-update, icon, ios, ops, sst, test, uncloud, web, zero, aws/configure, aws/health, aws/users, build-initial, changed, check/dependencies, check/knip, check/lint, check/types, clean, completion, db/add-migration, db/auth-migrate, db/build, db/clear-jwks, db/migrate, db/reset-demo, db/reset-schema, db/seed-demo, dev-tunnel, dev/cleanup-dev, dev/clear-ports, docs, eas/build-dev, eas/build-preview, eas/build-prod, ensure-port, ensure-tunnel, env-pull, env-update, env/sync-to-github, env:setup, exec-with-env, generate-env, hot-update/android, hot-update/ios, icon/add-phosphor, ios/setup-release, node, node-version-check, onboard, one-dev, ops/github-tail, ops/release, ops/run-backend, ops/run-frontend, ops/start-all-dev, postinstall, preinstall, release, run, script, skills, sst-get-environment, sst/check, sync, test/e2e, test/integration, test/unit, typecheck, uncloud/check-deployment, uncloud/clean, uncloud/cluster, uncloud/deploy-local, uncloud/deploy-prod, uncloud/logs, up, update-changelog, wait-for-dev, web/build, web/build-analyze, web/build-docker, web/serve, zero/generate
+description: CLI scripts and commands reference for the tko (takeout) CLI. Use when the user asks to run scripts, manage the project, or needs to know what commands are available. tko, takeout, CLI, scripts, commands, bun tko, project tasks, automation, aws, check, db, dev, eas, env, hot-update, icon, ios, ops, sst, test, uncloud, web, zero, aws/configure, aws/health, aws/users, build-initial, changed, check/dependencies, check/knip, check/lint, check/types, clean, cmd, completion, db/add-migration, db/auth-migrate, db/build, db/clear-jwks, db/migrate, db/reset-demo, db/reset-schema, db/seed-demo, dev-tunnel, dev/cleanup-dev, dev/clear-ports, docs, eas/build-dev, eas/build-preview, eas/build-prod, ensure-port, ensure-tunnel, env-pull, env-update, env/sync-to-github, env:setup, exec-with-env, generate-env, hot-update/android, hot-update/ios, icon/add-phosphor, ios/setup-release, node, node-version-check, onboard, one-dev, ops/github-tail, ops/release, ops/run-backend, ops/run-frontend, ops/start-all-dev, postinstall, preinstall, release, run, script, skills, sst-get-environment, sst/check, sync, test/e2e, test/integration, test/unit, typecheck, uncloud/check-deployment, uncloud/clean, uncloud/cluster, uncloud/deploy-local, uncloud/deploy-prod, uncloud/logs, up, update-changelog, wait-for-dev, web/build, web/build-analyze, web/build-docker, web/serve, zero/generate
 ---
 
 # tko CLI - scripts & commands
@@ -116,7 +116,9 @@ run with `bun tko <command>` or `bun tko <script-name>`.
   clean - clean build artifacts and temporary files [--full, --modules, --native]
   generate-env - sync auto-generated env vars to local .env file
   release - publish takeout packages to npm [--patch, --minor, --major, --canary, --rerun, --republish, --finish, --skip-finish, --dry-run, --skip-test, --skip-build, --skip-version, --dirty, --tamagui-git-user, --sync-on-zero, --skip-on-zero-sync]
+  cmd
   ensure-port - ensure a port is available, exit with error if in use [--auto-kill]
+  run
   exec-with-env
   node-version-check
 

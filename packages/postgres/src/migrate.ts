@@ -17,7 +17,12 @@ import type { PoolClient } from 'pg'
 export type Migration = {
   name: string
   up?: (client: PoolClient) => Promise<void>
+  /** per-migration timeout in ms, overrides defaultTimeout */
+  timeout?: number
 }
+
+/** default timeout for migrations (5 seconds) */
+const DEFAULT_MIGRATION_TIMEOUT = 5_000
 
 export type MigrateOptions = {
   connectionString: string
@@ -27,6 +32,8 @@ export type MigrateOptions = {
   gitSha?: string
   cvrDb?: string
   changeDb?: string
+  /** default timeout for all migrations in ms (default: 5000) */
+  defaultTimeout?: number
 }
 
 // check if we're running in AWS Lambda or other serverless environment
@@ -37,6 +44,20 @@ const isServerless = !!(
   process.env.IS_SERVERLESS
 )
 
+async function withTimeout<T>(promise: Promise<T>, ms: number, name: string): Promise<T> {
+  let timeoutId: ReturnType<typeof setTimeout>
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => {
+      reject(new Error(`migration "${name}" timed out after ${ms}ms`))
+    }, ms)
+  })
+  try {
+    return await Promise.race([promise, timeoutPromise])
+  } finally {
+    clearTimeout(timeoutId!)
+  }
+}
+
 export async function migrate(options: MigrateOptions) {
   const {
     connectionString,
@@ -46,6 +67,7 @@ export async function migrate(options: MigrateOptions) {
     gitSha,
     cvrDb,
     changeDb,
+    defaultTimeout = DEFAULT_MIGRATION_TIMEOUT,
   } = options
 
   const client = await getDBClient({ connectionString })
@@ -137,7 +159,8 @@ export async function migrate(options: MigrateOptions) {
           const sp = `sp_${migration.name.replace(/\W/g, '_')}`
           await client.query(`SAVEPOINT ${sp}`)
           try {
-            await migration.up(client)
+            const timeout = migration.timeout ?? defaultTimeout
+            await withTimeout(migration.up(client), timeout, migration.name)
             await client.query(`RELEASE SAVEPOINT ${sp}`)
           } catch (e: any) {
             await client.query(`ROLLBACK TO SAVEPOINT ${sp}`)

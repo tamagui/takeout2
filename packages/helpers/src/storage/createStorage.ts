@@ -1,6 +1,14 @@
 import { getStorageDriver } from './driver'
 
-const namespaces = new Set<string>()
+// hmr-safe: store caches on globalThis so they survive module reloads
+const globalKey = '__takeout_storage__'
+const globalCache = ((globalThis as any)[globalKey] ??= {
+  namespaces: new Set<string>(),
+  instances: new Map<string, Storage<any, any>>(),
+}) as {
+  namespaces: Set<string>
+  instances: Map<string, Storage<any, any>>
+}
 
 /**
  * namespaced storage interface with JSON serialization
@@ -27,8 +35,8 @@ export interface Storage<K extends string = string, V = unknown> {
 }
 
 /**
- * create a namespaced storage instance
- * @param namespace - unique prefix for all keys (throws if already used)
+ * create a namespaced storage instance (hmr-safe, returns existing instance if already created)
+ * @param namespace - unique prefix for all keys
  * @returns storage instance with get/set (JSON) and getItem/setItem (raw) methods
  * @example
  * const store = createStorage<'token' | 'user', string>('auth')
@@ -36,15 +44,18 @@ export interface Storage<K extends string = string, V = unknown> {
  * store.get('token') // 'abc123'
  */
 export function createStorage<K extends string, V>(namespace: string): Storage<K, V> {
-  if (namespaces.has(namespace)) {
-    throw new Error(`storage namespace already exists: ${namespace}`)
+  // return existing instance for hmr safety
+  const existing = globalCache.instances.get(namespace)
+  if (existing) {
+    return existing as Storage<K, V>
   }
-  namespaces.add(namespace)
+
+  globalCache.namespaces.add(namespace)
 
   const prefix = `${namespace}:`
   const prefixKey = (key: string) => `${prefix}${key}`
 
-  return {
+  const storage: Storage<K, V> = {
     get(key: K): V | undefined {
       const driver = getStorageDriver()
       if (!driver) return undefined
@@ -104,6 +115,9 @@ export function createStorage<K extends string, V>(namespace: string): Storage<K
       driver.setItem(prefixKey(key), value)
     },
   }
+
+  globalCache.instances.set(namespace, storage)
+  return storage
 }
 
 /**

@@ -35,6 +35,8 @@
   "scripts": {
     "build": "tamagui-build",
     "watch": "tamagui-build --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "clean": "tamagui-build clean",
     "clean:build": "tamagui-build clean:build",
@@ -98,6 +100,7 @@
     "oxlint": "^1.31.0",
     "react": "^19.0.0",
     "react-native": "*",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^3.1.1"
   }
 }

@@ -61,6 +61,11 @@
       "types": "./types/server.d.ts",
       "import": "./dist/esm/server.mjs",
       "require": "./dist/cjs/server.cjs"
+    },
+    "./vite": {
+      "types": "./types/vite-plugin.d.ts",
+      "import": "./dist/esm/vite-plugin.mjs",
+      "require": "./dist/cjs/vite-plugin.cjs"
     }
   },
   "dependencies": {

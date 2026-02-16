@@ -159,17 +159,23 @@ export function createMutators<Models extends GenericModels>({
 
     for (const [moduleName, moduleExports] of Object.entries(modules)) {
       result[moduleName] = {}
-      for (const [name, exportValue] of Object.entries(moduleExports)) {
-        if (typeof exportValue === 'function') {
-          const fullName = `${moduleName}.${name}`
-          result[moduleName][name] = withDevelopmentLogging(
+      for (const [name] of Object.entries(moduleExports)) {
+        const fullName = `${moduleName}.${name}`
+        // look up function dynamically to support HMR
+        // modules[moduleName] is a proxy that returns updated implementations
+        const getDynamicFn = () => modules[moduleName][name]
+
+        result[moduleName][name] = withDevelopmentLogging(
+          fullName,
+          withTimeoutGuard(
             fullName,
-            withTimeoutGuard(
-              fullName,
-              withValidation(moduleName, name, withContext(exportValue))
+            withValidation(
+              moduleName,
+              name,
+              withContext((...args: any[]) => getDynamicFn()(...args))
             )
           )
-        }
+        )
       }
     }
 

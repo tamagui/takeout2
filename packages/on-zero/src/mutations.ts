@@ -10,6 +10,59 @@ import type {
 } from './types'
 import type { TableBuilderWithColumns } from '@rocicorp/zero'
 
+// HMR registry - stores mutation implementations and proxies by table name
+// allows hot-swapping implementations without changing object references
+// stored on globalThis to persist across HMR module reloads
+const registryKey = '__onZeroMutationRegistry__'
+const proxyKey = '__onZeroProxyRegistry__'
+
+// @ts-ignore
+const mutationRegistry: Map<string, Record<string, Function>> = globalThis[registryKey] ||
+(globalThis[registryKey] = new Map())
+// @ts-ignore
+const proxyRegistry: Map<string, any> =
+  globalThis[proxyKey] || (globalThis[proxyKey] = new Map())
+
+// get or create a proxy that delegates to the registry
+// returns the SAME proxy object on subsequent calls so HMR works
+function getOrCreateMutationProxy<T extends Record<string, Function>>(
+  tableName: string,
+  implementations: T
+): T {
+  // always update implementations (supports HMR)
+  mutationRegistry.set(tableName, implementations)
+
+  // return existing proxy if we have one (HMR case)
+  const existing = proxyRegistry.get(tableName)
+  if (existing) {
+    return existing as T
+  }
+
+  // first time - create the proxy
+  const proxy = new Proxy({} as T, {
+    get(_, key: string) {
+      return mutationRegistry.get(tableName)?.[key]
+    },
+    ownKeys() {
+      const current = mutationRegistry.get(tableName)
+      return current ? Object.keys(current) : []
+    },
+    getOwnPropertyDescriptor(_, key: string) {
+      const current = mutationRegistry.get(tableName)
+      if (current && key in current) {
+        return { enumerable: true, configurable: true, value: current[key] }
+      }
+    },
+    has(_, key: string) {
+      const current = mutationRegistry.get(tableName)
+      return current ? key in current : false
+    },
+  })
+
+  proxyRegistry.set(tableName, proxy)
+  return proxy
+}
+
 // two ways to use it:
 //  - mutations({}) which doesn't add the "allowed" helper or add CRUD
 //  - mutation('tableName', permissions) adds CRUD with permissions, adds allowed
@@ -122,16 +175,16 @@ export function mutations<
       upsert: createCRUDMutation('upsert'),
     }
 
-    const finalMutations = Object.freeze({
+    const finalMutations = {
       ...mutations,
       // overwrite regular mutations but call them if they are defined by user
       ...crudMutations,
-      // expose permissions for usePermission hook
-    }) as any as Mutations
+    } as any as Mutations
 
     setMutationsPermissions(tableName, permissions)
 
-    return finalMutations
+    // return proxy for HMR support - allows swapping implementations at runtime
+    return getOrCreateMutationProxy(tableName, finalMutations)
   }
 
   // no schema/permissions don't add CRUD

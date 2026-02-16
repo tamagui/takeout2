@@ -287,10 +287,49 @@ export const channelMessages = (props: { channelId: string }) => {
 
 ## generation
 
-`on-zero` has a CLI that auto-generates glue files that wire up your models,
-queries, and types.
+on-zero auto-generates glue files that wire up your models, queries, and types.
 
-### cli commands
+### vite plugin (recommended)
+
+the vite plugin handles generation and HMR automatically:
+
+```ts
+// vite.config.ts
+import { onZeroPlugin } from 'on-zero/vite'
+
+export default {
+  plugins: [
+    onZeroPlugin(),
+    // ... other plugins
+  ]
+}
+```
+
+**features:**
+
+- generates on dev server start
+- watches for model changes and regenerates
+- enables HMR for mutations (no page reload when editing models)
+- generates before production builds
+
+**options:**
+
+```ts
+onZeroPlugin({
+  // path to data directory (default: 'src/data')
+  dataDir: 'src/data',
+
+  // additional paths to apply HMR fix to
+  hmrInclude: ['/src/zero/'],
+
+  // disable generation (HMR only)
+  disableGenerate: false,
+})
+```
+
+### cli (alternative)
+
+if you prefer CLI over the vite plugin:
 
 **`on-zero generate [dir]`**
 

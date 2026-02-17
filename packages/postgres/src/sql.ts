@@ -13,7 +13,9 @@ export const createSql = (pool: Pool) => {
       return result + str + (i < values.length ? `$${i + 1}` : '')
     }, '')
 
-    console.info(`sql: ${ellipsis(text, 80)}`)
+    if (process.env.DEBUG) {
+      console.info(`sql: ${ellipsis(text, 80)}`)
+    }
 
     return pool.query(text.trim(), values)
   }

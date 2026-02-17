@@ -3,6 +3,8 @@ import { Configuration, isWeb, SizableText } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
 import { ZeroTestUI } from '~/features/devtools/ZeroTestUI'
+import { useWidgetDeepLink } from '~/features/widgets/useWidgetDeepLink'
+import { useWidgets } from '~/features/widgets/useWidgets'
 import { Dialogs } from '~/interface/dialogs/Dialogs'
 import { Gallery } from '~/interface/gallery/Gallery'
 import { NotificationProvider } from '~/interface/notification/Notification'
@@ -10,6 +12,12 @@ import { ToastProvider } from '~/interface/toast/Toast'
 import { DragDropFile } from '~/interface/upload/DragDropFile'
 import { animationsApp } from '~/tamagui/animationsApp'
 import { ProvideZero } from '~/zero/client'
+
+function WidgetSetup() {
+  useWidgetDeepLink()
+  useWidgets()
+  return null
+}
 
 export function AppLayout() {
   const { state } = useAuth()
@@ -38,6 +46,7 @@ export function AppLayout() {
     // our app is SPA from here on down, avoid extra work by disabling SSR
     <Configuration disableSSR animationDriver={animationsApp}>
       <ProvideZero>
+        <WidgetSetup />
         <ToastProvider>
           <NotificationProvider>
             {!process.env.VITE_NATIVE ? (

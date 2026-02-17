@@ -159,6 +159,20 @@ export default {
           imageHeight: 80,
         },
       ],
+      [
+        'voltra',
+        {
+          groupIdentifier: `group.${getBundleId()}`,
+          widgets: [
+            {
+              id: 'create_post',
+              displayName: 'Create Post',
+              description: 'Quickly create a new Takeout post',
+              supportedFamilies: ['systemSmall'],
+            },
+          ],
+        },
+      ],
       // enable hot-updater here
       // [
       //   '@hot-updater/react-native',

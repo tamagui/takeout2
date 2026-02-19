@@ -47,8 +47,13 @@ const [data] = useQuery(userById, { userId }, { enabled: Boolean(userId) })
 ### run() - non-reactive
 
 `run()` executes a query once and returns a promise (non-reactive counterpart
-to `useQuery`). defaults to cache-only on client. pass `'complete'` to fetch
-from server:
+to `useQuery`). 
+
+#### ⚠️ FOOTGUN ALERT!!!!!!!!!!!
+
+`run` is a Zero concept, `on-zero` simply makes it easier to use. But either way it's important to know that **run() defaults to ONLY reading from the client-side cache on the client**! you *can* pass `run(query, 'complete')` to have it fetch from the server, but this should be exceptionally rare.
+
+`run` is mostly server-side!!!!!!!
 
 ```ts
 import { run } from 'on-zero'

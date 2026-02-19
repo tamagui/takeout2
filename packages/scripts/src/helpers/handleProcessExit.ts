@@ -5,18 +5,6 @@ import {
   type ProcessType,
 } from './run'
 
-// reset terminal to sane state
-function resetTerminal() {
-  try {
-    // restore cooked mode if we have a TTY
-    if (process.stdin.isTTY && process.stdin.setRawMode) {
-      process.stdin.setRawMode(false)
-    }
-  } catch {}
-  // reset ANSI attributes
-  process.stdout.write('\x1b[0m')
-}
-
 type ExitCallback = (info: { signal: NodeJS.Signals | string }) => void | Promise<void>
 
 interface HandleProcessExitReturn {
@@ -85,13 +73,6 @@ export function handleProcessExit({
   const doCleanup = async (signal: NodeJS.Signals | string) => {
     setExitCleanupState(true)
 
-    if (signal === 'SIGINT') {
-      const noop = () => {}
-      console.log = noop
-      console.info = noop
-      console.warn = noop
-    }
-
     if (onExit) {
       try {
         await onExit({ signal })
@@ -133,22 +114,32 @@ export function handleProcessExit({
 
   addProcessHandler(addChildProcess)
 
+  let finalized = false
+
+  const finalizeWithSignal = (signal: NodeJS.Signals, fallbackCode: number) => {
+    if (finalized) return
+    finalized = true
+    process.off('SIGINT', sigintHandler)
+    process.off('SIGTERM', sigtermHandler)
+    process.off('beforeExit', beforeExitHandler)
+    process.exit = originalExit
+
+    try {
+      process.kill(process.pid, signal)
+    } catch {
+      originalExit(fallbackCode)
+    }
+  }
+
   const sigtermHandler = () => {
     cleanup('SIGTERM').then(() => {
-      process.exit(0)
+      finalizeWithSignal('SIGTERM', 143)
     })
   }
 
   const sigintHandler = () => {
-    // restore terminal to sane state
-    resetTerminal()
-    // immediately print newline and reset cursor for clean terminal
-    process.stdout.write('\n')
-    // reset terminal attributes
-    process.stdout.write('\x1b[0m')
-
     cleanup('SIGINT').then(() => {
-      process.exit(0)
+      finalizeWithSignal('SIGINT', 130)
     })
   }
 
@@ -162,7 +153,8 @@ export function handleProcessExit({
     })
   }) as typeof process.exit
 
-  process.on('beforeExit', () => cleanup('SIGTERM'))
+  const beforeExitHandler = () => cleanup('SIGTERM')
+  process.on('beforeExit', beforeExitHandler)
   process.on('SIGINT', sigintHandler)
   process.on('SIGTERM', sigtermHandler)
 

@@ -1,5 +1,5 @@
-import { updateWidget } from 'voltra/client'
 import { Voltra } from 'voltra'
+import { updateWidget } from 'voltra/client'
 
 import { APP_SCHEME } from '~/features/auth/constants'
 

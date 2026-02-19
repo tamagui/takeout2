@@ -46,8 +46,8 @@ export const AvatarWithMenu = memo(
 
         <Menu.Portal zIndex={100}>
           <Menu.Content
-            transition="100ms ease-in-out"
-            borderRadius="$4"
+            transition="100ms"
+            rounded="$4"
             enterStyle={{ scale: 0.9, opacity: 0, y: -5 }}
             exitStyle={{ scale: 0.95, opacity: 0, y: -3 }}
             elevate
@@ -64,7 +64,6 @@ export const AvatarWithMenu = memo(
                   <Menu.ItemIcon
                     ios={{
                       name: isFollowing ? 'heart.fill' : 'heart',
-                      pointSize: 18,
                     }}
                     androidIconName={isFollowing ? 'ic_menu_delete' : 'ic_menu_add'}
                   >
@@ -86,7 +85,6 @@ export const AvatarWithMenu = memo(
               <Menu.ItemIcon
                 ios={{
                   name: 'person.crop.circle',
-                  pointSize: 18,
                 }}
                 androidIconName="ic_menu_myplaces"
               >

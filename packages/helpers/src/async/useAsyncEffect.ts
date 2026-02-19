@@ -47,7 +47,13 @@ function useAsyncEffectImpl(
 
   effectHook(() => {
     // Generate a unique ID for this effect instance for loop detection
-    checkEffectLoop(effectId, cb, deps, options.circuitBreakAfter, options.circuitBreakPeriod)
+    checkEffectLoop(
+      effectId,
+      cb,
+      deps,
+      options.circuitBreakAfter,
+      options.circuitBreakPeriod
+    )
     const controller = new AbortController()
     const signal = controller.signal
 

@@ -132,10 +132,9 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
       <Menu.Portal zIndex={100}>
         <Menu.Content
           transition="quickestLessBouncy"
-          borderRadius="$4"
           enterStyle={{ scale: 0.9, opacity: 0, y: -5 }}
           exitStyle={{ scale: 0.95, opacity: 0, y: -3 }}
-          boxShadow="0 $2 $4 $shadowColor"
+          elevate
         >
           <Menu.Item
             key="save-image"
@@ -145,7 +144,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
           >
             <Menu.ItemTitle>Save Image</Menu.ItemTitle>
             <Menu.ItemIcon
-              ios={{ name: 'arrow.down.circle', pointSize: 18 }}
+              ios={{ name: 'arrow.down.circle' }}
               androidIconName="ic_menu_save"
             >
               <DownloadSimpleIcon size={18} color="$color10" />
@@ -161,7 +160,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
             >
               <Menu.ItemTitle>View Profile</Menu.ItemTitle>
               <Menu.ItemIcon
-                ios={{ name: 'person.circle', pointSize: 18 }}
+                ios={{ name: 'person.circle' }}
                 androidIconName="ic_menu_myplaces"
               >
                 <UserCircleIcon size={18} color="$color10" />
@@ -178,10 +177,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
               textValue="Delete Post"
             >
               <Menu.ItemTitle color="$red10">Delete Post</Menu.ItemTitle>
-              <Menu.ItemIcon
-                ios={{ name: 'trash', pointSize: 18 }}
-                androidIconName="ic_menu_delete"
-              >
+              <Menu.ItemIcon ios={{ name: 'trash' }} androidIconName="ic_menu_delete">
                 <TrashIcon size={18} color="$red10" />
               </Menu.ItemIcon>
             </Menu.Item>
@@ -199,7 +195,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
               >
                 {isNative && (
                   <Menu.ItemIcon
-                    ios={{ name: 'exclamationmark.triangle', pointSize: 18 }}
+                    ios={{ name: 'exclamationmark.triangle' }}
                     androidIconName="ic_menu_report"
                   />
                 )}
@@ -245,7 +241,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
               >
                 <Menu.ItemTitle color="$red10">Block User</Menu.ItemTitle>
                 <Menu.ItemIcon
-                  ios={{ name: 'xmark.circle', pointSize: 18 }}
+                  ios={{ name: 'xmark.circle' }}
                   androidIconName="ic_menu_close_clear_cancel"
                 >
                   <XCircleIcon size={18} color="$red10" />
@@ -263,10 +259,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
               textValue="Hide Post (Admin)"
             >
               <Menu.ItemTitle color="$red10">Hide Post (Admin)</Menu.ItemTitle>
-              <Menu.ItemIcon
-                ios={{ name: 'eye.slash', pointSize: 18 }}
-                androidIconName="ic_menu_view"
-              >
+              <Menu.ItemIcon ios={{ name: 'eye.slash' }} androidIconName="ic_menu_view">
                 <WarningCircleIcon size={18} color="$red10" />
               </Menu.ItemIcon>
             </Menu.Item>

@@ -4,6 +4,7 @@
   "private": true,
   "sideEffects": false,
   "type": "module",
+  "main": "node_modules/one/metro-entry.js",
   "files": [],
   "engines": {
     "node": "24.3.0",

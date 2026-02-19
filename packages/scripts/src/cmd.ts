@@ -26,6 +26,7 @@ export function setInterceptCmd(
 
 function createCmd(description: string) {
   let argsSpec: string | undefined
+  let envVars: Record<string, string> = {}
 
   function makeRun<S extends string>(spec: S): RunFn<S> {
     return async (fn) => {
@@ -50,6 +51,11 @@ function createCmd(description: string) {
         process.exit(0)
       }
 
+      // apply env vars before running
+      for (const [key, value] of Object.entries(envVars)) {
+        process.env[key] = value
+      }
+
       const [{ $ }, prompt, { run }, { args: parseArgs }, fs, path, os] =
         await Promise.all([
           import(`bun`),
@@ -68,10 +74,24 @@ function createCmd(description: string) {
     }
   }
 
+  function makeChainable<S extends string>(spec: S) {
+    return {
+      env(vars: Record<string, string>) {
+        Object.assign(envVars, vars)
+        return this
+      },
+      run: makeRun(spec),
+    }
+  }
+
   return {
+    env(vars: Record<string, string>) {
+      Object.assign(envVars, vars)
+      return this
+    },
     args<const S extends string>(spec: S) {
       argsSpec = spec
-      return { run: makeRun(spec) }
+      return makeChainable(spec)
     },
     run: makeRun(`` as ``),
   }

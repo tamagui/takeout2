@@ -15,8 +15,6 @@ const colors = [
 ]
 const reset = '\x1b[0m'
 const dim = '\x1b[2m'
-const bold = '\x1b[1m'
-const inverse = '\x1b[7m'
 
 const args = process.argv.slice(2)
 const ownFlags = ['--no-root', '--bun', '--watch', '--flags=last']
@@ -289,7 +287,15 @@ function handleInput(data) {
 }
 
 function cleanup() {
-  console.log()
+  // restore terminal to cooked mode before exiting
+  if (process.stdin.isTTY && process.stdin.setRawMode) {
+    try {
+      process.stdin.setRawMode(false)
+    } catch {}
+  }
+  // reset terminal attributes (colors, etc)
+  process.stdout.write('\x1b[0m\n')
+
   for (const p of processes) {
     if (!p.killed) {
       p.killed = true
@@ -360,7 +366,24 @@ async function main() {
   process.on('SIGTERM', cleanup)
 }
 
+// restore terminal on any unexpected exit
+function restoreTerminal() {
+  if (process.stdin.isTTY && process.stdin.setRawMode) {
+    try {
+      process.stdin.setRawMode(false)
+    } catch {}
+  }
+  process.stdout.write('\x1b[0m')
+}
+
+process.on('uncaughtException', (e) => {
+  restoreTerminal()
+  console.error(e)
+  process.exit(1)
+})
+
 main().catch((e) => {
+  restoreTerminal()
   console.error(e)
   process.exit(1)
 })

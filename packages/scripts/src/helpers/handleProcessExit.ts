@@ -5,6 +5,18 @@ import {
   type ProcessType,
 } from './run'
 
+// reset terminal to sane state
+function resetTerminal() {
+  try {
+    // restore cooked mode if we have a TTY
+    if (process.stdin.isTTY && process.stdin.setRawMode) {
+      process.stdin.setRawMode(false)
+    }
+  } catch {}
+  // reset ANSI attributes
+  process.stdout.write('\x1b[0m')
+}
+
 type ExitCallback = (info: { signal: NodeJS.Signals | string }) => void | Promise<void>
 
 interface HandleProcessExitReturn {
@@ -128,6 +140,8 @@ export function handleProcessExit({
   }
 
   const sigintHandler = () => {
+    // restore terminal to sane state
+    resetTerminal()
     // immediately print newline and reset cursor for clean terminal
     process.stdout.write('\n')
     // reset terminal attributes

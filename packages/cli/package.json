@@ -65,7 +65,7 @@
     }
   },
   "devDependencies": {
-    "@tamagui/build": "2.0.0-rc.11",
+    "@tamagui/build": "2.0.0-rc.15",
     "@types/node": "24.0.3",
     "bun-types": "latest",
     "oxfmt": "^0.16.0",

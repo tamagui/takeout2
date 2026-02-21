@@ -107,8 +107,10 @@ export async function migrate(options: MigrateOptions) {
 
   try {
     await client.query('BEGIN')
-    // use public schema explicitly - pg_dump restores into public, and if a schema
-    // matching the db user exists (e.g. startchat), unqualified names resolve there first
+    // force public schema - if a schema matching the db user exists (e.g. startchat),
+    // postgres resolves unqualified names there first, causing tables to land in the
+    // wrong schema. setting search_path ensures all CREATE TABLE etc go to public.
+    await client.query(`SET search_path = public`)
     await client.query(`
       CREATE TABLE IF NOT EXISTS public.migrations (
         id SERIAL PRIMARY KEY,
@@ -219,12 +221,19 @@ export async function migrate(options: MigrateOptions) {
     }
   }
 
-  exitProcess()
+  await exitProcess()
 }
 
-function exitProcess() {
+async function exitProcess() {
   if (typeof process === 'undefined') return
   // lambda was complaining about process.exit
   if (isServerless) return
+  // flush stdio before exiting - process.exit() doesn't wait for streams to drain,
+  // which causes silent output loss in docker exec over ssh
+  await new Promise<void>((resolve) => {
+    process.stderr.write('', () => {
+      process.stdout.write('', () => resolve())
+    })
+  })
   process.exit(0)
 }

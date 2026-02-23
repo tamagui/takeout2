@@ -53,9 +53,7 @@ export function createZeroClient<
 }) {
   type ZeroMutators = GetZeroMutators<Models>
   type ZeroInstance = Zero<Schema, ZeroMutators>
-  type TableName = keyof ZeroInstance['query'] extends string
-    ? keyof ZeroInstance['query']
-    : never
+  type TableName = keyof Schema['tables'] & string
 
   setSchema(schema)
 

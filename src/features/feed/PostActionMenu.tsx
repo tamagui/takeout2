@@ -134,7 +134,11 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
           transition="quickestLessBouncy"
           enterStyle={{ scale: 0.9, opacity: 0, y: -5 }}
           exitStyle={{ scale: 0.95, opacity: 0, y: -3 }}
-          elevate
+          rounded="$4"
+          p="$2"
+          borderWidth={1}
+          borderColor="$borderColor"
+          boxShadow="0 4px 5px $shadowColor"
         >
           <Menu.Item
             key="save-image"
@@ -208,12 +212,12 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
                   enterStyle={{ scale: 0.95, opacity: 0 }}
                   exitStyle={{ scale: 0.95, opacity: 0 }}
                   transition="quickestLessBouncy"
-                  elevation="$3"
                   minW={200}
-                  bg="$background"
-                  p="$1.5"
+                  rounded="$4"
+                  p="$2"
                   borderWidth={1}
                   borderColor="$borderColor"
+                  boxShadow="0 4px 5px $shadowColor"
                 >
                   {REPORT_REASONS.map((reason) => (
                     <Menu.Item
@@ -247,7 +251,6 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
                   <XCircleIcon size={18} color="$red10" />
                 </Menu.ItemIcon>
               </Menu.Item>
-              <Menu.Separator />
             </>
           )}
           {isAdmin && (

@@ -159,6 +159,10 @@ export default {
           imageHeight: 80,
         },
       ],
+      // EAS enables the App Groups capability but does NOT assign the group identifier.
+      // go to apple developer portal → Certificates, Identifiers & Profiles →
+      // edit App ID Configuration for both the main app and Live Activity extension →
+      // App Groups → select group.<bundleId>, then rebuild
       [
         'voltra',
         {

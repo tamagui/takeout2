@@ -36,6 +36,8 @@ export type UseQueryHook<Schema extends ZeroSchema> = {
   ): QueryResult<TReturn>
 }
 
+const EMPTY_RESPONSE = [null, { type: 'unknown' }] as never
+
 export function createUseQuery<Schema extends ZeroSchema>({
   DisabledContext,
   customQueries,
@@ -64,15 +66,16 @@ export function createUseQuery<Schema extends ZeroSchema>({
       return { queryRequest, options: opts }
     }, [fn, paramsOrOptions, optionsArg])
 
-    const out = zeroUseQuery(queryRequest as any, options)
+    const out = zeroUseQuery(queryRequest, options)
 
     if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      useZeroDebug(queryRequest as any, options, out)
+      if (process.env.DEBUG_ZERO_QUERIES === '1')
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        useZeroDebug(queryRequest, options, out)
     }
 
     if (disabled) {
-      return [null, { type: 'unknown' }] as never
+      return EMPTY_RESPONSE
     }
 
     return out

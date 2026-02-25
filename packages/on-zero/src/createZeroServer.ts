@@ -208,7 +208,8 @@ export function createZeroServer<
 
   const mutate = async (
     run: (tx: Transaction, mutators: GetZeroMutators<Models>) => Promise<void>,
-    authData?: Pick<AuthData, 'email' | 'id'> & Partial<AuthData>
+    authData?: Pick<AuthData, 'email' | 'id'> & Partial<AuthData>,
+    options?: { awaitAsyncTasks?: boolean }
   ) => {
     const asyncTasks: Array<() => Promise<void>> = []
 
@@ -231,7 +232,21 @@ export function createZeroServer<
       await run(tx, mutators)
     })
 
-    await Promise.all(asyncTasks.map((t) => t()))
+    if (asyncTasks.length) {
+      if (options?.awaitAsyncTasks) {
+        await Promise.all(asyncTasks.map((t) => t()))
+      } else {
+        const id = randomId()
+        console.info(`[mutate] running async tasks ${asyncTasks.length} id ${id}`)
+        Promise.all(asyncTasks.map((t) => t()))
+          .then(() => {
+            console.info(`[mutate] async tasks complete ${id}`)
+          })
+          .catch((err) => {
+            console.error(`[mutate] error: async tasks failed`, err)
+          })
+      }
+    }
   }
 
   async function transaction<

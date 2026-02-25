@@ -7,7 +7,7 @@
  */
 
 import { existsSync } from 'node:fs'
-import { readdir, writeFile, stat, rename } from 'node:fs/promises'
+import { readdir, readFile, writeFile, stat, rename } from 'node:fs/promises'
 import { join, basename, extname } from 'node:path'
 
 export type DrizzleSyncOptions = {
@@ -103,6 +103,34 @@ async function renameNewDrizzleMigrations(
           const newSnapshotName = `${newNumStr}_snapshot.json`
           await rename(join(metaDir, snapshotFile), join(metaDir, newSnapshotName))
           console.info(`  Renamed meta/${snapshotFile} -> meta/${newSnapshotName}`)
+        }
+
+        // update journal tags to match renamed files
+        const journalPath = join(metaDir, '_journal.json')
+        if (existsSync(journalPath)) {
+          const journal = JSON.parse(await readFile(journalPath, 'utf-8'))
+          let journalUpdated = false
+
+          for (const entry of journal.entries) {
+            // match by suffix (the descriptive part after the number)
+            const tagMatch = entry.tag.match(/^\d+_(.+)$/)
+            if (!tagMatch) continue
+
+            for (const file of groupFiles) {
+              const fileTag = file.replace('.sql', '')
+              const fileSuffix = fileTag.replace(/^\d+_/, '')
+              if (tagMatch[1] === fileSuffix) {
+                const newTag = `${newNumStr}_${fileSuffix}`
+                console.info(`  Updated journal tag: ${entry.tag} -> ${newTag}`)
+                entry.tag = newTag
+                journalUpdated = true
+              }
+            }
+          }
+
+          if (journalUpdated) {
+            await writeFile(journalPath, JSON.stringify(journal, null, 4))
+          }
         }
       }
 

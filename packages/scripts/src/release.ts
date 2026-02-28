@@ -12,7 +12,8 @@ await cmd`publish takeout packages to npm`
     `--patch boolean --minor boolean --major boolean --canary boolean
      --rerun boolean --republish boolean --finish boolean --skip-finish boolean
      --dry-run boolean --skip-test boolean --skip-build boolean --skip-version boolean
-     --dirty boolean --tamagui-git-user boolean --sync-on-zero boolean --skip-on-zero-sync boolean`
+     --dirty boolean --tamagui-git-user boolean --sync-on-zero boolean --skip-on-zero-sync boolean
+     --undocumented boolean --skip-all boolean`
   )
   .run(async ({ args, $, run, path, os }) => {
     const fs = (await import('fs-extra')).default
@@ -27,17 +28,19 @@ await cmd`publish takeout packages to npm`
     const reRun = args.rerun
     const rePublish = reRun || args.republish
     const finish = args.finish
-    const skipFinish = args.skipFinish
+    const skipAll = args.skipAll
+    const undocumented = args.undocumented
+    const skipFinish = args.skipFinish || skipAll || undocumented
 
     const canary = args.canary
     const skipVersion = finish || rePublish || args.skipVersion
     const shouldMajor = args.major
     const shouldMinor = args.minor
     const shouldPatch = args.patch
-    const dirty = finish || args.dirty
+    const dirty = finish || undocumented || args.dirty
     const skipTest =
-      finish || rePublish || args.skipTest || process.argv.includes('--skip-tests')
-    const skipBuild = finish || rePublish || args.skipBuild
+      finish || rePublish || skipAll || args.skipTest || process.argv.includes('--skip-tests')
+    const skipBuild = finish || rePublish || skipAll || args.skipBuild
     const dryRun = args.dryRun
     const tamaguiGitUser = args.tamaguiGitUser
     const syncOnZeroOnly = args.syncOnZero
@@ -231,7 +234,7 @@ await cmd`publish takeout packages to npm`
     const curVersion = fs.readJSONSync('./packages/helpers/package.json').version
 
     // must specify version (unless republishing):
-    if (!rePublish && !skipVersion && !shouldPatch && !shouldMinor && !shouldMajor) {
+    if (!rePublish && !skipVersion && !canary && !shouldPatch && !shouldMinor && !shouldMajor) {
       console.error(`Must specify one of --patch, --minor, or --major`)
       process.exit(1)
     }
@@ -457,6 +460,13 @@ await cmd`publish takeout packages to npm`
         if (dryRun) {
           await run(`git checkout -- packages/*/package.json`, { silent: true })
           console.info('Reverted version changes\n')
+        }
+
+        // restore package.json files for undocumented releases (no git history)
+        if (undocumented) {
+          console.info('restoring package.json files...')
+          await run(`git checkout -- packages/*/package.json`, { silent: true })
+          console.info(`✅ restored package.json files (undocumented release)\n`)
         }
       }
 

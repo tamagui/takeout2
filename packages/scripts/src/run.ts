@@ -235,6 +235,7 @@ const runScript = async (
   const proc = spawn('bun', runArgs, {
     stdio: ['ignore', 'pipe', 'pipe'],
     shell: false,
+    detached: true,
     env: {
       ...process.env,
       FORCE_COLOR: '3',

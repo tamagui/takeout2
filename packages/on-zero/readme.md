@@ -592,6 +592,17 @@ context, or client-side global. most of the time you won't need this directly
 since `serverWhere()` passes auth to your callback automatically. use `getAuth()`
 when you need auth data outside of those callbacks, like in a shared utility.
 
+### ensureAuth
+
+`ensureAuth()` is the same as `getAuth()` but throws if the user is not
+authenticated instead of returning null:
+
+```ts
+import { ensureAuth } from 'on-zero'
+
+const auth = ensureAuth() // AuthData (throws if not authenticated)
+```
+
 ## patterns
 
 **server-only mutations:**

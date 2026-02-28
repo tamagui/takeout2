@@ -4,7 +4,7 @@ export * from './helpers/batchQuery'
 export * from './helpers/createMutators'
 export * from './helpers/ensureLoggedIn'
 export * from './helpers/mutatorContext'
-export { getAuth } from './helpers/getAuth'
+export { ensureAuth, getAuth } from './helpers/getAuth'
 
 export * from './createZeroClient'
 export * from './createUseQuery'

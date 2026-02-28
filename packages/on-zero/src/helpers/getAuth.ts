@@ -4,7 +4,7 @@ import { isInQueryContext, queryAuthData } from './queryContext'
 
 import type { AuthData } from '../types'
 
-export function getQueryOrMutatorAuthData(): AuthData | null {
+export function getAuth(): AuthData | null {
   if (isInZeroMutation()) {
     return mutatorContext().authData as AuthData
   }

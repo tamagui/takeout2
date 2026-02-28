@@ -92,8 +92,7 @@ export const channelById = (props: { channelId: string }) => {
 ```
 
 permissions execute server-side only. on the client they automatically pass. the
-`serverWhere()` helper automatically accesses auth data from `queryContext()` or
-`mutatorContext()` so you don't need to pass it manually.
+`serverWhere()` helper automatically accesses auth data via `getAuth()` so you don't need to pass it manually.
 
 ## models
 
@@ -176,8 +175,7 @@ export const permissions = serverWhere('channel', (q, auth) => {
 })
 ```
 
-the `serverWhere()` helper automatically gets auth data from `queryContext()` or
-`mutatorContext()`, so you don't manually pass it. permissions only execute
+the `serverWhere()` helper automatically gets auth data via `getAuth()`, so you don't manually pass it. permissions only execute
 server-side - on the client they automatically pass.
 
 **for queries:** define permissions inline as a constant in query files:
@@ -577,6 +575,22 @@ export const mutate = mutations(schema, permissions, {
   },
 })
 ```
+
+## getAuth
+
+`getAuth()` returns the current user's auth data. works inside both queries and
+mutations:
+
+```ts
+import { getAuth } from 'on-zero'
+
+const auth = getAuth() // AuthData | null
+```
+
+it resolves auth from whichever context is active — mutation context, query
+context, or client-side global. most of the time you won't need this directly
+since `serverWhere()` passes auth to your callback automatically. use `getAuth()`
+when you need auth data outside of those callbacks, like in a shared utility.
 
 ## patterns
 

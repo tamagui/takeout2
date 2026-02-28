@@ -1,7 +1,7 @@
 import { globalValue } from '@take-out/helpers'
 
 import { isServer } from './constants'
-import { getQueryOrMutatorAuthData } from './helpers/getQueryOrMutatorAuthData'
+import { getAuth } from './helpers/getAuth'
 
 import type { TableName, Where } from './types'
 import type { Condition, ExpressionBuilder } from '@rocicorp/zero'
@@ -31,10 +31,7 @@ export function where<Table extends TableName, Builder extends Where<Table>>(
 ): Where<Table, any> | Builder {
   const whereFn = (b || a) as any
 
-  const wrappedWhereFn = ((
-    a: ExpressionBuilder<any, any>,
-    b = getQueryOrMutatorAuthData()
-  ) => {
+  const wrappedWhereFn = ((a: ExpressionBuilder<any, any>, b = getAuth()) => {
     if (!isServer && isServerOnly && !_evaluatingPermission) {
       // on client (web or native) where conditions always pass
       return a.and()

@@ -14,7 +14,7 @@ import {
 import { createPermissions } from './createPermissions'
 import { createUseQuery } from './createUseQuery'
 import { createMutators } from './helpers/createMutators'
-import { getQueryOrMutatorAuthData } from './helpers/getQueryOrMutatorAuthData'
+import { getAuth } from './helpers/getAuth'
 import { getAllMutationsPermissions, getMutationsPermissions } from './modelRegistry'
 import { registerQuery } from './queryRegistry'
 import { resolveQuery, type PlainQueryFn } from './resolveQuery'
@@ -106,7 +106,7 @@ export function createZeroClient<
             setEvaluatingPermission(true)
             try {
               return permissionsHelpers.buildPermissionQuery(
-                getQueryOrMutatorAuthData(),
+                getAuth(),
                 eb,
                 rawPerm || ((e: any) => e.and()),
                 args.objOrId,
@@ -130,7 +130,7 @@ export function createZeroClient<
       return base
         .where((eb: any) => {
           return permissionsHelpers.buildPermissionQuery(
-            getQueryOrMutatorAuthData(),
+            getAuth(),
             eb,
             perm || ((e: any) => e.and()),
             args.objOrId,

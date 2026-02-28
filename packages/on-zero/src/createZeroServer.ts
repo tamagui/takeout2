@@ -268,8 +268,10 @@ export function createZeroServer<
       validateMutation,
     })
 
-    const modelMutators = mutators[modelName as keyof typeof mutators] as
-      Record<string, (tx: Transaction, arg?: unknown) => Promise<void>>
+    const modelMutators = mutators[modelName as keyof typeof mutators] as Record<
+      string,
+      (tx: Transaction, arg?: unknown) => Promise<void>
+    >
     const mutator = modelMutators[mutatorName]
 
     await transaction(async (tx) => {

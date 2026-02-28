@@ -39,7 +39,11 @@ await cmd`publish takeout packages to npm`
     const shouldPatch = args.patch
     const dirty = finish || undocumented || args.dirty
     const skipTest =
-      finish || rePublish || skipAll || args.skipTest || process.argv.includes('--skip-tests')
+      finish ||
+      rePublish ||
+      skipAll ||
+      args.skipTest ||
+      process.argv.includes('--skip-tests')
     const skipBuild = finish || rePublish || skipAll || args.skipBuild
     const dryRun = args.dryRun
     const tamaguiGitUser = args.tamaguiGitUser
@@ -234,7 +238,14 @@ await cmd`publish takeout packages to npm`
     const curVersion = fs.readJSONSync('./packages/helpers/package.json').version
 
     // must specify version (unless republishing):
-    if (!rePublish && !skipVersion && !canary && !shouldPatch && !shouldMinor && !shouldMajor) {
+    if (
+      !rePublish &&
+      !skipVersion &&
+      !canary &&
+      !shouldPatch &&
+      !shouldMinor &&
+      !shouldMajor
+    ) {
       console.error(`Must specify one of --patch, --minor, or --major`)
       process.exit(1)
     }

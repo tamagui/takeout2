@@ -7,7 +7,12 @@ import { Pool } from 'pg'
 
 import { createPermissions } from './createPermissions'
 import { createMutators } from './helpers/createMutators'
-import { isInZeroMutation, mutatorContext } from './helpers/mutatorContext'
+import {
+  getScopedAuthData,
+  isInZeroMutation,
+  mutatorContext,
+  runWithAuthScope,
+} from './helpers/mutatorContext'
 import { runWithQueryContext } from './helpers/queryContext'
 import { getMutationsPermissions } from './modelRegistry'
 import { setCustomQueries } from './run'
@@ -19,7 +24,7 @@ import type {
   AsyncAction,
   AuthData,
   GenericModels,
-  GetZeroMutators,
+  MutatorContext,
   QueryBuilder,
   Transaction,
 } from './types'
@@ -30,6 +35,19 @@ import type {
   Schema as ZeroSchema,
 } from '@rocicorp/zero'
 import type { TransactionProviderInput } from '@rocicorp/zero/pg'
+
+type MutateAuthData = Pick<AuthData, 'email' | 'id'> & Partial<AuthData>
+
+type ServerMutate<Models extends GenericModels> = {
+  [Key in keyof Models]: {
+    [K in keyof Models[Key]['mutate']]: Models[Key]['mutate'][K] extends (
+      ctx: MutatorContext,
+      arg: infer Arg
+    ) => any
+      ? (arg: Arg, authData?: MutateAuthData) => Promise<void>
+      : (authData?: MutateAuthData) => Promise<void>
+  }
+}
 
 export type ValidateQueryArgs = {
   authData: AuthData | null
@@ -60,6 +78,7 @@ export function createZeroServer<
   validateQuery,
   validateMutation,
   defaultAllowAdminRole = 'all',
+  defaultMutateAuthData = {} as MutateAuthData,
 }: {
   /**
    * The DB connection string, same as ZERO_UPSTREAM_DB
@@ -86,6 +105,12 @@ export function createZeroServer<
    * - 'off': admin has no special bypass
    */
   defaultAllowAdminRole?: AdminRoleMode
+  /**
+   * Default authData used by zeroServer.mutate when no authData is provided
+   * and none is available from mutation context or auth scope.
+   * Defaults to {}.
+   */
+  defaultMutateAuthData?: MutateAuthData
 }) {
   setSchema(schema)
 
@@ -139,7 +164,7 @@ export function createZeroServer<
     if (!skipAsyncTasks && asyncTasks.length) {
       const id = randomId()
       console.info(`[push] complete, running async tasks ${asyncTasks.length} id ${id}`)
-      Promise.all(asyncTasks.map((task) => task()))
+      Promise.all(asyncTasks.map((task) => runWithAuthScope(authData, task)))
         .then(() => {
           console.info(`[push] async tasks complete ${id}`)
         })
@@ -214,11 +239,20 @@ export function createZeroServer<
     }
   }
 
-  const mutate = async (
-    run: (tx: Transaction, mutators: GetZeroMutators<Models>) => Promise<void>,
-    authData?: Pick<AuthData, 'email' | 'id'> & Partial<AuthData>,
-    options?: { awaitAsyncTasks?: boolean }
-  ) => {
+  async function runMutate(
+    modelName: string,
+    mutatorName: string,
+    mutatorArg: unknown,
+    authData?: MutateAuthData
+  ) {
+    // auto-resolve authData from mutation context or auth scope
+    if (!authData) {
+      const scoped = getScopedAuthData()
+      if (scoped) {
+        authData = scoped as MutateAuthData
+      }
+    }
+
     const asyncTasks: Array<() => Promise<void>> = []
 
     const mutators = createMutators({
@@ -226,9 +260,7 @@ export function createZeroServer<
       environment: 'server',
       asyncTasks,
       authData: {
-        id: '',
-        email: 'admin@start.chat',
-        role: 'admin',
+        ...defaultMutateAuthData,
         ...authData,
       },
       createServerActions,
@@ -236,26 +268,42 @@ export function createZeroServer<
       validateMutation,
     })
 
+    const modelMutators = mutators[modelName as keyof typeof mutators] as
+      Record<string, (tx: Transaction, arg?: unknown) => Promise<void>>
+    const mutator = modelMutators[mutatorName]
+
     await transaction(async (tx) => {
-      await run(tx, mutators)
+      await mutator(tx, mutatorArg)
     })
 
     if (asyncTasks.length) {
-      if (options?.awaitAsyncTasks) {
-        await Promise.all(asyncTasks.map((t) => t()))
-      } else {
-        const id = randomId()
-        console.info(`[mutate] running async tasks ${asyncTasks.length} id ${id}`)
-        Promise.all(asyncTasks.map((t) => t()))
-          .then(() => {
-            console.info(`[mutate] async tasks complete ${id}`)
-          })
-          .catch((err) => {
-            console.error(`[mutate] error: async tasks failed`, err)
-          })
-      }
+      const id = randomId()
+      const resolvedAuth = authData ?? null
+      console.info(`[mutate] running async tasks ${asyncTasks.length} id ${id}`)
+      Promise.all(asyncTasks.map((t) => runWithAuthScope(resolvedAuth, t)))
+        .then(() => {
+          console.info(`[mutate] async tasks complete ${id}`)
+        })
+        .catch((err) => {
+          console.error(`[mutate] error: async tasks failed`, err)
+        })
     }
   }
+
+  // zeroServer.mutate.user.insert(user)
+  const mutate = new Proxy({} as ServerMutate<Models>, {
+    get(_, modelName: string) {
+      return new Proxy(
+        {},
+        {
+          get(_, mutatorName: string) {
+            return (arg: unknown, authData?: MutateAuthData) =>
+              runMutate(modelName, mutatorName, arg, authData)
+          },
+        }
+      )
+    },
+  })
 
   async function transaction<
     CB extends (tx: Transaction) => Promise<any>,

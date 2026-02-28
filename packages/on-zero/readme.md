@@ -572,9 +572,10 @@ export const mutate = mutations(schema, permissions, {
 **server-only mutations:**
 
 ```ts
-await zeroServer.mutate(async (tx, mutators) => {
-  await mutators.user.insert(tx, user)
-})
+await zeroServer.mutate.user.insert(user)
+
+// with custom auth
+await zeroServer.mutate.user.insert(user, { id: userId, email })
 ```
 
 **one-off queries with `run()`:**

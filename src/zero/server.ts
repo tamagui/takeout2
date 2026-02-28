@@ -14,4 +14,6 @@ export const zeroServer = createZeroServer({
   queries,
   // use imported value (bracket notation) to prevent build-time inlining
   database: assertString(ZERO_UPSTREAM_DB, `no ZERO_UPSTREAM_DB`),
+  // if you want admin default mutations:
+  // defaultMutateAuthData: { id: '', email: 'admin@start.chat', role: 'admin' },
 })

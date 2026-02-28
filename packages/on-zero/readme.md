@@ -517,6 +517,10 @@ export const zeroServer = createZeroServer({
   // - 'mutations': admin bypasses only mutation permissions
   // - 'off': no admin bypass, normal permission checks apply
   defaultAllowAdminRole: 'all',
+
+  // default authData for zeroServer.mutate when none is provided or in scope
+  // defaults to {}
+  defaultMutateAuthData: { id: 'system', email: 'system@example.com' },
 })
 ```
 
@@ -562,6 +566,13 @@ export const mutate = mutations(schema, permissions, {
 
     ctx.server?.asyncTasks.push(async () => {
       await ctx.server.actions.indexForSearch(messageId)
+
+      // zeroServer.mutate works here too - authData is auto-inherited
+      await zeroServer.mutate.activity.insert({
+        id: randomId(),
+        type: 'archive',
+        messageId,
+      })
     })
   },
 })
@@ -574,9 +585,16 @@ export const mutate = mutations(schema, permissions, {
 ```ts
 await zeroServer.mutate.user.insert(user)
 
-// with custom auth
+// with explicit auth (optional - authData auto-resolves from context)
 await zeroServer.mutate.user.insert(user, { id: userId, email })
 ```
+
+authData is automatically resolved in this order:
+
+1. explicit `authData` argument (if passed)
+2. current mutation context (inside a mutation)
+3. auth scope (inside asyncTasks - automatically inherited)
+4. `defaultMutateAuthData` from `createZeroServer` config (defaults to `{}`)
 
 **one-off queries with `run()`:**
 

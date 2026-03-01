@@ -23,15 +23,24 @@ function createOnZeroHmrPlugin(hmrInclude: string[] = []): Plugin {
 
     transform(code, id) {
       if (!hmrPaths.some((p) => id.includes(p)) || !/\.tsx?$/.test(id)) return
-      if (!code.includes('import.meta.hot.invalidate')) return
 
-      return {
-        code: code.replace(
+      let transformed = code
+
+      // strip zero's default invalidate behavior so models HMR in-place
+      if (code.includes('import.meta.hot.invalidate')) {
+        transformed = transformed.replace(
           /if\s*\(invalidateMessage\)\s*import\.meta\.hot\.invalidate\(invalidateMessage\);?/g,
           '/* on-zero: HMR invalidate disabled */'
-        ),
-        map: null,
+        )
       }
+
+      // inject HMR accept boundary for generated models file
+      if (id.includes('/generated/models.') && !code.includes('import.meta.hot.accept')) {
+        transformed += `\nif (import.meta.hot) {\n  import.meta.hot.accept()\n}\n`
+      }
+
+      if (transformed === code) return
+      return { code: transformed, map: null }
     },
   }
 }

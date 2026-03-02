@@ -258,7 +258,7 @@ function handleInput(data) {
       pendingAction = null
       console.log(match.shortcut)
       match.killed = true
-      match.terminal.kill()
+      killProcessTree(match.terminal.pid)
       setTimeout(() => {
         spawnScript(match.name, match.cwd, match.label, match.extraArgs, match.index)
         console.log(`${getPrefix(match.index)} restarted`)
@@ -268,7 +268,7 @@ function handleInput(data) {
       console.log(match.shortcut)
       if (!match.killed) {
         match.killed = true
-        match.terminal.kill()
+        killProcessTree(match.terminal.pid)
         console.log(`${getPrefix(match.index)} killed`)
       }
     } else {
@@ -286,6 +286,28 @@ function handleInput(data) {
   }
 }
 
+// kill entire process group to prevent orphans
+function killProcessTree(pid) {
+  if (!pid) return
+  // try killing process group first (negative pid)
+  try {
+    process.kill(-pid, 'SIGTERM')
+  } catch {}
+  // also kill direct process
+  try {
+    process.kill(pid, 'SIGTERM')
+  } catch {}
+  // schedule force kill
+  setTimeout(() => {
+    try {
+      process.kill(-pid, 'SIGKILL')
+    } catch {}
+    try {
+      process.kill(pid, 'SIGKILL')
+    } catch {}
+  }, 100)
+}
+
 function cleanup() {
   // restore terminal to cooked mode before exiting
   if (process.stdin.isTTY && process.stdin.setRawMode) {
@@ -299,10 +321,12 @@ function cleanup() {
   for (const p of processes) {
     if (!p.killed) {
       p.killed = true
-      p.terminal.kill()
+      killProcessTree(p.terminal.pid)
     }
   }
-  process.exit(0)
+
+  // wait for kills to complete before exit
+  setTimeout(() => process.exit(0), 150)
 }
 
 async function main() {

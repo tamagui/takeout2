@@ -338,6 +338,8 @@ generates all files needed to connect your models and queries:
 - `tables.ts` - exports table schemas (separate to avoid circular types)
 - `syncedQueries.ts` - generates synced query definitions with valibot
   validators
+- `syncedMutations.ts` - generates valibot validators for mutation args
+  (auto-validation on server)
 
 **options:**
 
@@ -411,8 +413,12 @@ the generator:
 3. parses TypeScript AST to extract parameter types
 4. converts types to valibot schemas using typebox-codegen
 5. wraps query functions in `syncedQuery()` with validators
-6. handles special cases (void params, user → userPublic mapping)
-7. groups query imports by source file
+6. extracts mutation handler param types using the TS type checker (resolves
+   imports, aliases, and cross-file references)
+7. generates `syncedMutations.ts` with valibot validators for CRUD and custom
+   mutation args
+8. handles special cases (void params, user → userPublic mapping)
+9. groups query imports by source file
 
 queries with no parameters get wrapped in `v.parser(v.tuple([]))` while queries
 with params get validators like `v.parser(v.tuple([v.object({ ... })]))`.
@@ -451,12 +457,14 @@ server:
 ```ts
 import { createZeroServer } from 'on-zero/server'
 import { syncedQueries } from '~/data/generated/syncedQueries'
+import { mutationValidators } from '~/data/generated/syncedMutations'
 
 export const zeroServer = createZeroServer({
   schema,
   models,
   database: process.env.DATABASE_URL,
   queries: syncedQueries, // required for synced queries / pull endpoint
+  mutations: mutationValidators, // auto-validates mutation args with valibot
   createServerActions: () => ({
     sendEmail: async (to, subject, body) => { ... }
   })
@@ -521,6 +529,56 @@ export const zeroServer = createZeroServer({
   defaultMutateAuthData: { id: 'system', email: 'system@example.com' },
 })
 ```
+
+### mutation arg validation
+
+on-zero can auto-generate valibot validators for all mutation arguments. the
+generator uses the TypeScript type checker to deeply resolve param types -
+including imported types, aliases, and cross-file references - then converts them
+to valibot schemas.
+
+pass the generated `mutationValidators` to `createZeroServer`:
+
+```ts
+import { mutationValidators } from '~/data/generated/syncedMutations'
+
+export const zeroServer = createZeroServer({
+  // ...
+  mutations: mutationValidators,
+})
+```
+
+this auto-validates args before every mutation runs. for a model like:
+
+```ts
+export const mutate = mutations(schema, permissions, {
+  async send(ctx, props: { content: string; channelId: string }) {
+    // ...
+  },
+})
+```
+
+the generator produces validators for both the CRUD operations (derived from the
+schema columns) and custom mutations (derived from handler param types). if
+validation fails, the mutation throws before executing.
+
+the generated `syncedMutations.ts` looks like:
+
+```ts
+import * as v from 'valibot'
+
+export const mutationValidators = {
+  message: {
+    insert: v.object({ id: v.string(), content: v.string(), ... }),
+    update: v.object({ id: v.string(), content: v.optional(v.string()), ... }),
+    delete: v.object({ id: v.string() }),
+    send: v.object({ content: v.string(), channelId: v.string() }),
+  },
+}
+```
+
+validation runs before the `validateMutation` hook, so both layers stack:
+valibot validates shape/types, then your custom hook can add business logic.
 
 type augmentation:
 

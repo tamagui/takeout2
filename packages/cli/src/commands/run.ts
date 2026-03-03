@@ -29,10 +29,13 @@ export const runCommand = defineCommand({
 
       // Check if it's a category directory
       if (existsSync(categoryPath) && statSync(categoryPath).isDirectory()) {
-        // Check if --all flag is present
-        const hasAllFlag = secondArg === '--all'
+        // only run all when flags come before any sub-script name
+        const nonFlagArgs = scriptArgs.slice(1).filter((a) => !a.startsWith('--'))
+        const hasSubScript = nonFlagArgs.length > 0
+        const hasAllFlag = secondArg === '--all' && !hasSubScript
+        const hasDefaultAllFlag = scriptArgs.includes('--default-all') && !hasSubScript
 
-        if (hasAllFlag) {
+        if (hasAllFlag || hasDefaultAllFlag) {
           // Run all scripts in this category in parallel
           const { discoverScripts } = await import('../utils/script-utils')
           const { runScriptsInParallel } = await import('../utils/parallel-runner')

@@ -77,7 +77,6 @@ const isShorthand = true
 if (isShorthand) {
   // in shorthand mode, treat first arg as potential script command
   const firstArg = process.argv[2]
-  const secondArg = process.argv[3]
   const builtInCommands = [
     'docs',
     'onboard',
@@ -101,12 +100,16 @@ if (isShorthand) {
     // check if it's a script category or has a slash (category/script format)
     // Do a lazy check only on the specific arg, not scanning all directories
     if (isScriptCategory(firstArg)) {
-      // If there's a second arg, treat it as a script within the category
-      // e.g., "tko aws health" becomes "tko run aws/health"
-      if (secondArg && !secondArg.startsWith('-')) {
-        resolvedScriptName = `${firstArg}/${secondArg}`
-        // Replace the two args with the combined path
-        process.argv.splice(2, 2, resolvedScriptName)
+      // find first non-flag arg as sub-script name
+      // e.g., "tko check types" or "tko check --default-all types"
+      const restArgs = process.argv.slice(3)
+      const subScriptIdx = restArgs.findIndex((a) => !a.startsWith('-'))
+      if (subScriptIdx !== -1) {
+        const subScript = restArgs[subScriptIdx]
+        resolvedScriptName = `${firstArg}/${subScript}`
+        // remove the sub-script from its position and replace category with combined path
+        process.argv.splice(3 + subScriptIdx, 1)
+        process.argv[2] = resolvedScriptName
       }
       // inject "run" into args to use the run command directly
       process.argv.splice(2, 0, 'run')

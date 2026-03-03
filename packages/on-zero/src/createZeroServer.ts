@@ -116,16 +116,24 @@ export function createZeroServer<
 
   const dbString = assertString(database, `createZeroServer "database"`)
 
-  const zeroDb = zeroNodePg(
-    schema,
-    new Pool({
-      connectionString: dbString,
-      // handle self-signed certificates in production
-      ssl: dbString.includes('sslmode=require')
-        ? { rejectUnauthorized: false }
-        : undefined,
+  const pool = new Pool({
+    connectionString: dbString,
+    // handle self-signed certificates in production
+    ssl: dbString.includes('sslmode=require') ? { rejectUnauthorized: false } : undefined,
+  })
+
+  // prevent unhandled 'error' events from crashing the process
+  // when postgres kills idle-in-transaction connections
+  pool.on('error', (error) => {
+    console.error(`[on-zero] pool error`, error.message)
+  })
+  pool.on('connect', (client) => {
+    client.on('error', (error) => {
+      console.error(`[on-zero] client error`, error.message)
     })
-  )
+  })
+
+  const zeroDb = zeroNodePg(schema, pool)
 
   const permissions = createPermissions<Schema>({
     environment: 'server',

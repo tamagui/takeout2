@@ -131,7 +131,7 @@ function runSingleScript(script: ScriptToRun, colorIndex: number): Promise<void>
     const proc = spawn('bun', [script.path, ...(script.args || [])], {
       stdio: ['pipe', 'pipe', 'pipe'],
       shell: false,
-      env: { ...process.env, FORCE_COLOR: '3' } as any,
+      env: { ...process.env, FORCE_COLOR: '3', TKO_IS_RUNNING_ALL: '1' } as any,
       detached: true,
     })
 

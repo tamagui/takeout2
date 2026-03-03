@@ -75,6 +75,7 @@ export function createZeroServer<
   schema,
   models,
   queries,
+  mutations: mutationValidators,
   validateQuery,
   validateMutation,
   defaultAllowAdminRole = 'all',
@@ -88,6 +89,12 @@ export function createZeroServer<
   models: Models
   createServerActions: () => ServerActions
   queries?: AnyQueryRegistry
+  /**
+   * Generated valibot validators for mutation args, keyed by model.mutationName.
+   * Pass the `mutationValidators` export from generated syncedMutations.ts.
+   * Args are auto-validated before running the mutation.
+   */
+  mutations?: Record<string, Record<string, any>>
   /**
    * Hook to validate queries before execution. Throw to reject.
    * Must be synchronous.
@@ -163,6 +170,7 @@ export function createZeroServer<
       models,
       authData,
       validateMutation,
+      mutationValidators,
     })
 
     // @ts-expect-error type is ok but config in monorepo
@@ -274,6 +282,7 @@ export function createZeroServer<
       createServerActions,
       can: permissions.can,
       validateMutation,
+      mutationValidators,
     })
 
     const modelMutators = mutators[modelName as keyof typeof mutators] as Record<

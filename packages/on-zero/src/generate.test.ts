@@ -199,3 +199,343 @@ export const allPosts = () => zero.query.post
     expect(second.filesChanged).toBe(0)
   })
 })
+
+describe('mutations', () => {
+  test('generates validators for inline mutation param types', async () => {
+    writeFileSync(
+      join(testDir, 'models/post.ts'),
+      `
+import { table, string } from 'on-zero'
+import { mutations, serverWhere } from 'on-zero'
+
+export const schema = table('post').columns({
+  id: string(),
+  title: string(),
+}).primaryKey('id')
+
+const perm = serverWhere('post', () => true)
+
+export const mutate = mutations(schema, perm, {
+  archive: async ({ tx }, { id, reason }: { id: string; reason: string }) => {
+    await tx.mutate.post.update({ id, archived: true })
+  },
+})
+`
+    )
+
+    const result = await generate({ dir: testDir, silent: true })
+
+    expect(result.mutationCount).toBeGreaterThan(0)
+    expect(existsSync(join(testDir, 'generated/syncedMutations.ts'))).toBe(true)
+
+    const content = readFileSync(join(testDir, 'generated/syncedMutations.ts'), 'utf-8')
+    expect(content).toContain('archive')
+    expect(content).toContain('v.object')
+    expect(content).toContain('v.string()')
+  })
+
+  test('generates CRUD validators from schema columns', async () => {
+    writeFileSync(
+      join(testDir, 'models/task.ts'),
+      `
+import { table, string, number, boolean } from 'on-zero'
+import { mutations, serverWhere } from 'on-zero'
+
+export const schema = table('task').columns({
+  id: string(),
+  title: string(),
+  priority: number(),
+  done: boolean(),
+  note: string().optional(),
+}).primaryKey('id')
+
+const perm = serverWhere('task', () => true)
+
+export const mutate = mutations(schema, perm)
+`
+    )
+
+    const result = await generate({ dir: testDir, silent: true })
+
+    const content = readFileSync(join(testDir, 'generated/syncedMutations.ts'), 'utf-8')
+
+    // insert: all columns present
+    expect(content).toContain('insert:')
+    expect(content).toMatch(/insert:.*v\.object/)
+
+    // update: id required, rest optional
+    expect(content).toContain('update:')
+
+    // delete: only PK
+    expect(content).toContain('delete:')
+  })
+
+  test('skips models without export const mutate', async () => {
+    writeFileSync(
+      join(testDir, 'models/readonly.ts'),
+      `
+import { table, string } from 'on-zero'
+
+export const schema = table('readonly').columns({
+  id: string(),
+  name: string(),
+}).primaryKey('id')
+`
+    )
+
+    const result = await generate({ dir: testDir, silent: true })
+    expect(result.mutationCount).toBe(0)
+  })
+
+  test('extracts custom mutations from bare mutations({})', async () => {
+    writeFileSync(
+      join(testDir, 'models/admin.ts'),
+      `
+import { mutations } from 'on-zero'
+
+export const mutate = mutations({
+  reset: async ({ tx }, { targetId }: { targetId: string }) => {
+    await tx.mutate.admin.delete({ id: targetId })
+  },
+})
+`
+    )
+
+    const result = await generate({ dir: testDir, silent: true })
+
+    const content = readFileSync(join(testDir, 'generated/syncedMutations.ts'), 'utf-8')
+    expect(content).toContain('reset')
+    expect(content).toContain('v.string()')
+  })
+
+  test('handles mutations with only context param (void)', async () => {
+    writeFileSync(
+      join(testDir, 'models/user.ts'),
+      `
+import { table, string } from 'on-zero'
+import { mutations, serverWhere } from 'on-zero'
+
+export const schema = table('user').columns({
+  id: string(),
+  name: string(),
+}).primaryKey('id')
+
+const perm = serverWhere('user', () => true)
+
+export const mutate = mutations(schema, perm, {
+  finishOnboarding: async ({ tx }) => {
+    // no second param
+  },
+})
+`
+    )
+
+    const result = await generate({ dir: testDir, silent: true })
+
+    const content = readFileSync(join(testDir, 'generated/syncedMutations.ts'), 'utf-8')
+    // should not crash, void mutations get no validator
+    expect(content).toContain('finishOnboarding')
+  })
+
+  test('handles primitive param type', async () => {
+    writeFileSync(
+      join(testDir, 'models/user.ts'),
+      `
+import { table, string } from 'on-zero'
+import { mutations, serverWhere } from 'on-zero'
+
+export const schema = table('user').columns({
+  id: string(),
+  name: string(),
+}).primaryKey('id')
+
+const perm = serverWhere('user', () => true)
+
+export const mutate = mutations(schema, perm, {
+  completeSignup: async ({ tx }, userId: string) => {
+    await tx.mutate.user.update({ id: userId })
+  },
+})
+`
+    )
+
+    const result = await generate({ dir: testDir, silent: true })
+
+    const content = readFileSync(join(testDir, 'generated/syncedMutations.ts'), 'utf-8')
+    expect(content).toContain('completeSignup')
+    expect(content).toContain('v.string()')
+  })
+
+  test('handles array param type', async () => {
+    writeFileSync(
+      join(testDir, 'models/batch.ts'),
+      `
+import { mutations } from 'on-zero'
+
+export const mutate = mutations({
+  bulkDelete: async ({ tx }, ids: Array<{ id: string }>) => {
+    for (const { id } of ids) await tx.mutate.batch.delete({ id })
+  },
+})
+`
+    )
+
+    const result = await generate({ dir: testDir, silent: true })
+
+    const content = readFileSync(join(testDir, 'generated/syncedMutations.ts'), 'utf-8')
+    expect(content).toContain('bulkDelete')
+    expect(content).toContain('v.array')
+  })
+
+  test('populates mutationCount and caching works', async () => {
+    writeFileSync(
+      join(testDir, 'models/item.ts'),
+      `
+import { table, string } from 'on-zero'
+import { mutations, serverWhere } from 'on-zero'
+
+export const schema = table('item').columns({
+  id: string(),
+  name: string(),
+}).primaryKey('id')
+
+const perm = serverWhere('item', () => true)
+
+export const mutate = mutations(schema, perm, {
+  rename: async ({ tx }, { id, name }: { id: string; name: string }) => {
+    await tx.mutate.item.update({ id, name })
+  },
+})
+`
+    )
+
+    const first = await generate({ dir: testDir, silent: true })
+    expect(first.mutationCount).toBeGreaterThan(0)
+
+    const second = await generate({ dir: testDir, silent: true })
+    expect(second.filesChanged).toBe(0)
+    expect(second.mutationCount).toBe(first.mutationCount)
+  })
+})
+
+describe('type resolution', () => {
+  test('resolves imported type references for mutations', async () => {
+    // types file that the model imports from
+    writeFileSync(
+      join(testDir, 'models/types.ts'),
+      `
+export type ArchiveParams = {
+  id: string
+  reason: string
+  archived: boolean
+}
+`
+    )
+
+    writeFileSync(
+      join(testDir, 'models/post.ts'),
+      `
+import { table, string, boolean } from 'on-zero'
+import { mutations } from 'on-zero'
+import type { ArchiveParams } from './types'
+
+export const mutate = mutations({
+  archive: async ({ tx }, params: ArchiveParams) => {
+    await tx.mutate.post.update(params)
+  },
+})
+`
+    )
+
+    const result = await generate({ dir: testDir, silent: true })
+
+    const content = readFileSync(join(testDir, 'generated/syncedMutations.ts'), 'utf-8')
+    // the imported ArchiveParams type should be resolved to its fields
+    expect(content).toContain('v.string()')
+    expect(content).toContain('v.boolean()')
+    expect(content).toContain('reason')
+    expect(content).toContain('archived')
+  })
+
+  test('resolves utility types like Pick', async () => {
+    writeFileSync(
+      join(testDir, 'models/types.ts'),
+      `
+export type Item = {
+  id: string
+  name: string
+  description: string
+  count: number
+}
+`
+    )
+
+    writeFileSync(
+      join(testDir, 'models/item.ts'),
+      `
+import { table, string, number } from 'on-zero'
+import { mutations, serverWhere } from 'on-zero'
+import type { Item } from './types'
+
+export const schema = table('item').columns({
+  id: string(),
+  name: string(),
+  description: string(),
+  count: number(),
+}).primaryKey('id')
+
+const perm = serverWhere('item', () => true)
+
+export const mutate = mutations(schema, perm, {
+  rename: async ({ tx }, updates: Pick<Item, 'id' | 'name'>) => {
+    await tx.mutate.item.update(updates)
+  },
+})
+`
+    )
+
+    const result = await generate({ dir: testDir, silent: true })
+
+    const content = readFileSync(join(testDir, 'generated/syncedMutations.ts'), 'utf-8')
+    // Pick should resolve to only id and name
+    expect(content).toContain('id')
+    expect(content).toContain('name')
+    // description and count should NOT be in the rename validator
+    expect(content).not.toMatch(/rename:[\s\S]*description/)
+    expect(content).not.toMatch(/rename:[\s\S]*count/)
+  })
+
+  test('resolves imported types in query params', async () => {
+    writeFileSync(
+      join(testDir, 'models/post.ts'),
+      `export const schema = table('post', { id: string() })`
+    )
+
+    writeFileSync(
+      join(testDir, 'queries/types.ts'),
+      `
+export type PostFilter = {
+  authorId: string
+  published: boolean
+}
+`
+    )
+
+    writeFileSync(
+      join(testDir, 'queries/post.ts'),
+      `
+import type { PostFilter } from './types'
+
+export const filteredPosts = (filter: PostFilter) => zero.query.post
+`
+    )
+
+    const result = await generate({ dir: testDir, silent: true })
+
+    const content = readFileSync(join(testDir, 'generated/syncedQueries.ts'), 'utf-8')
+    expect(content).toContain('filteredPosts')
+    expect(content).toContain('v.object')
+    expect(content).toContain('authorId')
+    expect(content).toContain('v.boolean()')
+  })
+})

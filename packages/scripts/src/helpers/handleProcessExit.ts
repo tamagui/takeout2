@@ -13,32 +13,19 @@ interface HandleProcessExitReturn {
   exit: (code?: number) => Promise<void>
 }
 
-// kill an entire process group (works because children are spawned with detached: true,
-// which makes them process group leaders). negative pid = kill the whole group.
-// this is synchronous, no pgrep needed, no races.
-function killProcessGroup(
+function killProcess(
   pid: number,
   signal: NodeJS.Signals = 'SIGTERM',
   forceful: boolean = false
 ): void {
-  // kill the process group (negative pid)
   try {
-    process.kill(-pid, signal)
+    process.kill(pid, signal)
   } catch (_) {
-    // group may already be gone, try the individual process
-    try {
-      process.kill(pid, signal)
-    } catch (_) {
-      // process already gone
-    }
+    // process already gone
   }
 
   if (forceful && signal !== 'SIGKILL') {
-    // schedule a SIGKILL followup
     setTimeout(() => {
-      try {
-        process.kill(-pid, 'SIGKILL')
-      } catch (_) {}
       try {
         process.kill(pid, 'SIGKILL')
       } catch (_) {}
@@ -85,15 +72,12 @@ export function handleProcessExit({
       return
     }
 
-    // kill process groups synchronously - no pgrep, no races
-    // detached: true makes each child a process group leader,
-    // so kill(-pid) gets the entire group in one syscall
     const isInterrupt = signal === 'SIGINT'
     const killSignal = isInterrupt ? 'SIGTERM' : (signal as NodeJS.Signals)
 
     for (const proc of processes) {
       if (proc.pid) {
-        killProcessGroup(proc.pid, killSignal, isInterrupt)
+        killProcess(proc.pid, killSignal, isInterrupt)
       }
     }
 
@@ -103,7 +87,7 @@ export function handleProcessExit({
     // force kill any remaining
     for (const proc of processes) {
       if (proc.pid && !proc.exitCode) {
-        killProcessGroup(proc.pid, 'SIGKILL')
+        killProcess(proc.pid, 'SIGKILL')
       }
     }
   }

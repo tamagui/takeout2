@@ -113,7 +113,7 @@ export const runCommand = defineCommand({
 
       if (scriptPath) {
         // Use spawn instead of Bun's $ helper since we're in a compiled context
-        const scriptArgsToPass = scriptArgs.slice(1)
+        const scriptArgsToPass = scriptArgs.slice(1).filter((a) => a !== '--default-all' && a !== '--all')
         const child = spawn('bun', [scriptPath, ...scriptArgsToPass], {
           stdio: 'inherit',
           shell: false,

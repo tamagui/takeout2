@@ -706,6 +706,23 @@ on-zero run is smart:
 - on server, uses server `zero.run()`
 - in a mutation, uses `tx.run()`
 
+**getQuery — resolve a query object directly:**
+
+use `getQuery` when you need the raw zero query object rather than subscribing via `useQuery`. useful for passing to third-party hooks that accept zero query objects directly (e.g. virtualized list hooks):
+
+```ts
+import { getQuery } from '~/zero/client'
+import { postById } from '~/data/queries/post'
+
+// returns the zero query object — same as what useQuery resolves internally
+const query = getQuery(postById, { postId: '123' })
+
+// pass to any hook that accepts a zero query directly
+const [rows] = useRows(getQuery(feedPosts, { limit: 50 }))
+```
+
+same signature as `useQuery` — `getQuery(fn, params?)`.
+
 **preloading data (client only):**
 
 preload query results into cache without subscribing:

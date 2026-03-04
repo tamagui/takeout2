@@ -334,6 +334,17 @@ export function createZeroClient<
     return zero.preload(queryRequest as any, options)
   }
 
+  function getQuery<TArg, TTable extends keyof Schema['tables'] & string, TReturn>(
+    fn: PlainQueryFn<TArg, Query<TTable, Schema, TReturn>>,
+    params: TArg
+  ): ReturnType<typeof resolveQuery<Schema>>
+  function getQuery<TTable extends keyof Schema['tables'] & string, TReturn>(
+    fn: PlainQueryFn<void, Query<TTable, Schema, TReturn>>
+  ): ReturnType<typeof resolveQuery<Schema>>
+  function getQuery(fn: any, params?: any) {
+    return resolveQuery({ customQueries, fn, params })
+  }
+
   return {
     zeroEvents,
     ProvideZero,
@@ -341,5 +352,6 @@ export function createZeroClient<
     usePermission,
     zero,
     preload,
+    getQuery,
   }
 }

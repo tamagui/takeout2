@@ -105,6 +105,7 @@ export function handleProcessExit({
     finalized = true
     process.off('SIGINT', sigintHandler)
     process.off('SIGTERM', sigtermHandler)
+    process.off('SIGHUP', sighupHandler)
     process.off('beforeExit', beforeExitHandler)
     process.exit = originalExit
 
@@ -127,6 +128,12 @@ export function handleProcessExit({
     })
   }
 
+  const sighupHandler = () => {
+    cleanup('SIGHUP').then(() => {
+      finalizeWithSignal('SIGHUP', 129)
+    })
+  }
+
   // intercept process.exit to ensure cleanup completes before exiting.
   // if cleanup is already running, this awaits the SAME promise instead of
   // early-returning and calling originalExit prematurely.
@@ -141,6 +148,7 @@ export function handleProcessExit({
   process.on('beforeExit', beforeExitHandler)
   process.on('SIGINT', sigintHandler)
   process.on('SIGTERM', sigtermHandler)
+  process.on('SIGHUP', sighupHandler)
 
   const exit = async (code: number = 0) => {
     await cleanup('SIGTERM')

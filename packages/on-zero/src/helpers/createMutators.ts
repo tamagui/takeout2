@@ -150,7 +150,8 @@ export function createMutators<Models extends GenericModels>({
     return async (...args: Args): Promise<void> => {
       // args[0] is tx, args[1] is the mutation args
       // auto-validate with generated valibot schema first
-      if (validator) {
+      // skip validation for null/undefined args (void mutations send null from zero)
+      if (validator && args[1] != null) {
         const valibot = await import('valibot')
         valibot.parse(validator, args[1])
       }

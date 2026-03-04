@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
-import { basename, resolve } from 'node:path'
+import { basename, dirname, resolve } from 'node:path'
 
 const hash = (s: string) => createHash('sha256').update(s).digest('hex')
 
@@ -209,36 +209,7 @@ import * as Queries from './groupedQueries'
 
       const queryDefs = fileQueries
         .map((q) => {
-          const lines = q.valibotCode.split('\n').filter((l) => l.trim())
-          const schemaLineIndex = lines.findIndex((l) =>
-            l.startsWith('export const QueryParams')
-          )
-
-          let validatorDef = ''
-          if (schemaLineIndex !== -1) {
-            const schemaLines: string[] = []
-            let openBraces = 0
-            let started = false
-
-            for (let i = schemaLineIndex; i < lines.length; i++) {
-              const line = lines[i]!
-              const cleaned = started
-                ? line
-                : line.replace('export const QueryParams = ', '')
-              schemaLines.push(cleaned)
-              started = true
-
-              openBraces += (cleaned.match(/\{/g) || []).length
-              openBraces -= (cleaned.match(/\}/g) || []).length
-              openBraces += (cleaned.match(/\(/g) || []).length
-              openBraces -= (cleaned.match(/\)/g) || []).length
-
-              if (openBraces === 0 && schemaLines.length > 0) {
-                break
-              }
-            }
-            validatorDef = schemaLines.join('\n')
-          }
+          const validatorDef = q.valibotCode.trim()
 
           if (q.params === 'void' || !validatorDef) {
             return `  ${q.name}: defineQuery(() => Queries.${file}.${q.name}()),`
@@ -303,7 +274,12 @@ function createTypeResolver(
   if (configPath) {
     const configFile = ts.readConfigFile(configPath, ts.sys.readFile)
     if (configFile.config) {
-      const parsed = ts.parseJsonConfigFileContent(configFile.config, ts.sys, dir)
+      // use tsconfig's directory as base for path resolution (not the models dir)
+      const parsed = ts.parseJsonConfigFileContent(
+        configFile.config,
+        ts.sys,
+        dirname(configPath)
+      )
       compilerOptions = { ...compilerOptions, ...parsed.options }
     }
   }
@@ -336,19 +312,17 @@ function createTypeResolver(
   return {
     program,
     checker,
-    // resolve a type annotation node to its expanded string form
-    resolveType(node: import('typescript').TypeNode): string | null {
+    // resolve a type annotation node to a ts.Type
+    resolveType(node: import('typescript').TypeNode): import('typescript').Type | null {
       try {
-        const type = checker.getTypeFromTypeNode(node)
-        const expanded = checker.typeToString(
-          type,
-          undefined,
-          ts.TypeFormatFlags.NoTruncation | ts.TypeFormatFlags.InTypeAlias
-        )
-        return expanded
+        return checker.getTypeFromTypeNode(node)
       } catch {
         return null
       }
+    },
+    // convert a resolved type to valibot code
+    typeToValibot(type: import('typescript').Type): string {
+      return tsTypeToValibot(ts, checker, type)
     },
   }
 }
@@ -360,8 +334,8 @@ function resolveParamType(
   sourceFile: import('typescript').SourceFile,
   exportName: string,
   paramIndex: number
-): string | null {
-  let result: string | null = null
+): import('typescript').Type | null {
+  let result: import('typescript').Type | null = null
 
   ts.forEachChild(sourceFile, (node) => {
     if (result) return
@@ -389,8 +363,8 @@ function resolveMutationParamTypes(
   ts: typeof import('typescript'),
   resolver: ReturnType<typeof createTypeResolver>,
   sourceFile: import('typescript').SourceFile
-): Map<string, string> {
-  const resolved = new Map<string, string>()
+): Map<string, import('typescript').Type> {
+  const resolved = new Map<string, import('typescript').Type>()
 
   ts.forEachChild(sourceFile, (node) => {
     if (!ts.isVariableStatement(node)) return
@@ -459,7 +433,8 @@ function extractMutationsFromModel(
   _fileName: string,
   silent: boolean,
   typeToValibot: (typeString: string) => string | null,
-  resolvedTypes?: Map<string, string>
+  resolvedTypes?: Map<string, import('typescript').Type>,
+  resolvedTypeToValibot?: (type: import('typescript').Type) => string
 ): ModelMutations | null {
   let mutateNode: import('typescript').CallExpression | null = null
 
@@ -544,11 +519,11 @@ function extractMutationsFromModel(
 
       let valibotCode = typeToValibot(paramType)
 
-      // if typebox-codegen failed (unresolved reference), try pre-resolved types
-      if (!valibotCode && resolvedTypes) {
-        const expanded = resolvedTypes.get(name)
-        if (expanded && expanded !== paramType) {
-          valibotCode = typeToValibot(expanded)
+      // if direct parse failed (unresolved reference), use checker-resolved types
+      if (!valibotCode && resolvedTypes && resolvedTypeToValibot) {
+        const resolvedType = resolvedTypes.get(name)
+        if (resolvedType) {
+          valibotCode = resolvedTypeToValibot(resolvedType)
         }
       }
 
@@ -643,7 +618,7 @@ function columnTypeToValibot(col: SchemaColumn): string {
     default:
       base = 'v.unknown()'
   }
-  return col.optional ? `v.optional(${base})` : base
+  return col.optional ? `v.optional(v.nullable(${base}))` : base
 }
 
 function schemaColumnsToValibot(
@@ -739,36 +714,210 @@ ${modelDefs}
 `
 }
 
-// extract the valibot expression from generated code like "export const MutationParams = v.object({...})"
+// returns as-is since output is already a valibot expression
 function extractValibotExpression(valibotCode: string): string {
-  const lines = valibotCode.split('\n').filter((l) => l.trim())
-  const schemaLineIndex = lines.findIndex((l) =>
-    l.startsWith('export const MutationParams')
-  )
+  return valibotCode.trim() || 'v.unknown()'
+}
 
-  if (schemaLineIndex === -1) return 'v.unknown()'
+// simple string-based type parser for inline type annotations from source text
+// handles: primitives, inline objects { ... }, arrays, unions
+// returns null for type references that need the TS checker
+function parseTypeString(type: string): string | null {
+  type = type.trim()
 
-  const schemaLines: string[] = []
-  let openBraces = 0
-  let started = false
+  // primitives
+  if (type === 'string') return 'v.string()'
+  if (type === 'number') return 'v.number()'
+  if (type === 'boolean') return 'v.boolean()'
+  if (type === 'void' || type === 'undefined') return 'v.void_()'
+  if (type === 'null') return 'v.null_()'
+  if (type === 'any' || type === 'unknown') return 'v.unknown()'
 
-  for (let i = schemaLineIndex; i < lines.length; i++) {
-    const line = lines[i]!
-    const cleaned = started ? line : line.replace('export const MutationParams = ', '')
-    schemaLines.push(cleaned)
-    started = true
-
-    openBraces += (cleaned.match(/\{/g) || []).length
-    openBraces -= (cleaned.match(/\}/g) || []).length
-    openBraces += (cleaned.match(/\(/g) || []).length
-    openBraces -= (cleaned.match(/\)/g) || []).length
-
-    if (openBraces === 0 && schemaLines.length > 0) {
-      break
+  // inline object: { key: type; ... }
+  if (type.startsWith('{') && type.endsWith('}')) {
+    const inner = type.slice(1, -1).trim()
+    if (!inner) return 'v.object({})'
+    // normalize newlines/commas to semicolons for splitting
+    const normalized = inner.replace(/\n/g, '; ').replace(/;\s*;/g, ';')
+    const entries: string[] = []
+    for (const part of normalized.split(';')) {
+      const trimmed = part.trim().replace(/,\s*$/, '')
+      if (!trimmed) continue
+      const match = trimmed.match(/^(?:readonly\s+)?(\w+)(\?)?:\s*(.+)$/)
+      if (!match) continue
+      const [, name, opt, typeStr] = match
+      const parsed = parseTypeString(typeStr!.trim())
+      if (!parsed) return null // can't resolve inner type
+      let val = parsed
+      if (opt) val = `v.optional(${val})`
+      entries.push(`${name}: ${val}`)
     }
+    if (entries.length === 0) return 'v.object({})'
+    return `v.object({\n    ${entries.join(',\n    ')},\n  })`
   }
 
-  return schemaLines.join('\n')
+  // array: T[]
+  if (type.endsWith('[]')) {
+    const inner = parseTypeString(type.slice(0, -2).trim())
+    return inner ? `v.array(${inner})` : null
+  }
+
+  // unrecognized (type reference, complex generic, etc)
+  return null
+}
+
+// convert a ts.Type to valibot code by walking the type checker AST
+function tsTypeToValibot(
+  ts: typeof import('typescript'),
+  checker: import('typescript').TypeChecker,
+  type: import('typescript').Type,
+  seen?: Set<import('typescript').Type>
+): string {
+  // prevent infinite recursion on circular types
+  // only track structured types (objects, intersections) — not primitives/unions
+  if (!seen) seen = new Set()
+  const flags = type.getFlags()
+  if (flags & (ts.TypeFlags.Object | ts.TypeFlags.Intersection)) {
+    if (seen.has(type)) return 'v.unknown()'
+    seen.add(type)
+  }
+
+  const recurse = (t: import('typescript').Type) => tsTypeToValibot(ts, checker, t, seen)
+
+  // primitives
+  if (flags & ts.TypeFlags.String) return 'v.string()'
+  if (flags & ts.TypeFlags.Number) return 'v.number()'
+  if (flags & ts.TypeFlags.Boolean) return 'v.boolean()'
+  if (flags & ts.TypeFlags.Void || flags & ts.TypeFlags.Undefined) return 'v.void_()'
+  if (flags & ts.TypeFlags.Null) return 'v.null_()'
+  if (flags & ts.TypeFlags.Any || flags & ts.TypeFlags.Unknown) return 'v.unknown()'
+  if (flags & ts.TypeFlags.Never) return 'v.never()'
+
+  // string/number/boolean literals
+  if (flags & ts.TypeFlags.StringLiteral) {
+    return `v.literal(${JSON.stringify((type as import('typescript').StringLiteralType).value)})`
+  }
+  if (flags & ts.TypeFlags.NumberLiteral) {
+    return `v.literal(${(type as import('typescript').NumberLiteralType).value})`
+  }
+  if (flags & ts.TypeFlags.BooleanLiteral) {
+    const name = (type as any).intrinsicName
+    return `v.literal(${name === 'true'})`
+  }
+
+  // union
+  if (type.isUnion()) {
+    const members = type.types
+    const hasNull = members.some((t) => t.getFlags() & ts.TypeFlags.Null)
+    const hasUndefined = members.some(
+      (t) => t.getFlags() & (ts.TypeFlags.Undefined | ts.TypeFlags.Void)
+    )
+    const rest = members.filter(
+      (t) =>
+        !(t.getFlags() & (ts.TypeFlags.Null | ts.TypeFlags.Undefined | ts.TypeFlags.Void))
+    )
+    if (
+      rest.length === 2 &&
+      rest.every((t) => t.getFlags() & ts.TypeFlags.BooleanLiteral)
+    ) {
+      let inner = 'v.boolean()'
+      if (hasNull) inner = `v.nullable(${inner})`
+      if (hasUndefined) inner = `v.optional(${inner})`
+      return inner
+    }
+
+    if (rest.length === 0) return 'v.unknown()'
+
+    let inner =
+      rest.length === 1
+        ? recurse(rest[0]!)
+        : `v.union([${rest.map((t) => recurse(t)).join(', ')}])`
+
+    if (hasNull) inner = `v.nullable(${inner})`
+    if (hasUndefined) inner = `v.optional(${inner})`
+    return inner
+  }
+
+  // resolve symbol property type with fallbacks
+  const resolveSymbolType = (prop: import('typescript').Symbol) => {
+    if (prop.valueDeclaration)
+      return checker.getTypeOfSymbolAtLocation(prop, prop.valueDeclaration)
+    if ((prop as any).declarations?.[0])
+      return checker.getTypeOfSymbolAtLocation(prop, (prop as any).declarations[0])
+    return checker.getDeclaredTypeOfSymbol(prop)
+  }
+
+  // intersection - use checker's merged properties directly
+  if (type.isIntersection()) {
+    const props = type.getProperties()
+    if (props.length === 0) return 'v.object({})'
+    const entries: string[] = []
+    for (const prop of props) {
+      const propType = resolveSymbolType(prop)
+      const isOptional = !!(prop.getFlags() & ts.SymbolFlags.Optional)
+      let val = recurse(propType)
+      if (isOptional && !val.startsWith('v.optional(')) {
+        val = `v.optional(${val})`
+      }
+      entries.push(`${prop.getName()}: ${val}`)
+    }
+    return `v.object({\n    ${entries.join(',\n    ')},\n  })`
+  }
+
+  // object type with properties
+  const props = type.getProperties()
+  if (
+    props.length > 0 &&
+    (type.getFlags() & ts.TypeFlags.Object || (type as any).objectFlags)
+  ) {
+    const objectFlags = (type as import('typescript').ObjectType).objectFlags ?? 0
+
+    // array
+    if (objectFlags & ts.ObjectFlags.Reference) {
+      const typeRef = type as import('typescript').TypeReference
+      const symbol = type.getSymbol()
+      const name = symbol?.getName()
+      if (
+        (name === 'Array' || name === 'ReadonlyArray') &&
+        typeRef.typeArguments?.length === 1
+      ) {
+        return `v.array(${recurse(typeRef.typeArguments[0]!)})`
+      }
+    }
+
+    // tuple
+    if (objectFlags & ts.ObjectFlags.Tuple) {
+      const typeRef = type as import('typescript').TypeReference
+      const typeArgs = typeRef.typeArguments || []
+      return `v.tuple([${typeArgs.map((t) => recurse(t)).join(', ')}])`
+    }
+
+    // regular object
+    const entries: string[] = []
+    for (const prop of props) {
+      const propType = resolveSymbolType(prop)
+      const isOptional = !!(prop.getFlags() & ts.SymbolFlags.Optional)
+      let val = recurse(propType)
+      if (isOptional && !val.startsWith('v.optional(')) {
+        val = `v.optional(${val})`
+      }
+      entries.push(`${prop.getName()}: ${val}`)
+    }
+    if (entries.length === 0) return 'v.object({})'
+    return `v.object({\n    ${entries.join(',\n    ')},\n  })`
+  }
+
+  // index signature / Record type
+  const stringIndex = type.getStringIndexType()
+  if (stringIndex) {
+    return `v.record(v.string(), ${recurse(stringIndex)})`
+  }
+  const numberIndex = type.getNumberIndexType()
+  if (numberIndex) {
+    return `v.record(v.number(), ${recurse(numberIndex)})`
+  }
+
+  return 'v.unknown()'
 }
 
 export interface GenerateOptions {
@@ -834,21 +983,15 @@ export async function generate(options: GenerateOptions): Promise<GenerateResult
   let queryCount = 0
   let mutationCount = 0
 
-  // lazy-load typescript + typebox-codegen (shared by queries and mutations)
+  // lazy-load typescript
   const ts = await import('typescript')
-  const { ModelToValibot } = await import('@sinclair/typebox-codegen/model/index.js')
-  const { TypeScriptToModel } =
-    await import('@sinclair/typebox-codegen/typescript/index.js')
 
-  // shared helper: convert a type string to valibot code via typebox-codegen
-  const typeToValibot = (
-    paramType: string,
-    typeName = 'MutationParams'
-  ): string | null => {
+  // lightweight string-based parser for inline type annotations from source text
+  // handles simple cases: primitives, inline objects, arrays
+  // returns null for type references that need the checker to resolve
+  const typeToValibot = (paramType: string): string | null => {
     try {
-      const typeString = `type ${typeName} = ${paramType}`
-      const model = TypeScriptToModel.Generate(typeString)
-      return ModelToValibot.Generate(model)
+      return parseTypeString(paramType.trim())
     } catch {
       return null
     }
@@ -915,28 +1058,22 @@ export async function generate(options: GenerateOptions): Promise<GenerateResult
                 paramType = param.type?.getText(sourceFile) || 'unknown'
               }
 
-              let valibotCode: string | null = null
-              try {
-                const typeString = `type QueryParams = ${paramType}`
-                const model = TypeScriptToModel.Generate(typeString)
-                valibotCode = ModelToValibot.Generate(model)
-              } catch {
-                // typebox-codegen failed — try TypeChecker resolution
-                if (params.length > 0 && params[0]!.type) {
-                  const resolver = getQueryResolver()
-                  const resolverSourceFile = resolver.program.getSourceFile(filePath)
-                  if (resolverSourceFile) {
-                    // find the matching param node in the resolver's AST
-                    const expanded = resolveParamType(
-                      ts,
-                      resolver,
-                      resolverSourceFile,
-                      name,
-                      0
-                    )
-                    if (expanded) {
-                      valibotCode = typeToValibot(expanded, 'QueryParams')
-                    }
+              let valibotCode = typeToValibot(paramType)
+
+              // if direct parse failed (unresolved reference), use TypeChecker
+              if (!valibotCode && params.length > 0 && params[0]!.type) {
+                const resolver = getQueryResolver()
+                const resolverSourceFile = resolver.program.getSourceFile(filePath)
+                if (resolverSourceFile) {
+                  const resolvedType = resolveParamType(
+                    ts,
+                    resolver,
+                    resolverSourceFile,
+                    name,
+                    0
+                  )
+                  if (resolvedType) {
+                    valibotCode = resolver.typeToValibot(resolvedType)
                   }
                 }
               }
@@ -1025,14 +1162,26 @@ export async function generate(options: GenerateOptions): Promise<GenerateResult
 
   // second pass: resolve imported types using TypeChecker
   if (unresolvedModels.length > 0) {
-    // build resolver with all model files (need full context for imports)
-    const allFiles = readdirSync(modelsDir)
-      .filter((f) => f.endsWith('.ts'))
-      .map((f) => ({
-        path: resolve(modelsDir, f),
-        content: readFileSync(resolve(modelsDir, f), 'utf-8'),
-      }))
-    const modelResolver = createTypeResolver(ts, allFiles, modelsDir)
+    // build resolver with all ts files under baseDir for full import resolution
+    // (model files may import types from generated files, shared types, etc)
+    const collectTsFiles = (dir: string): Array<{ path: string; content: string }> => {
+      const results: Array<{ path: string; content: string }> = []
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        const fullPath = resolve(dir, entry.name)
+        if (entry.isDirectory() && entry.name !== 'node_modules') {
+          results.push(...collectTsFiles(fullPath))
+        } else if (
+          entry.isFile() &&
+          entry.name.endsWith('.ts') &&
+          !entry.name.endsWith('.d.ts')
+        ) {
+          results.push({ path: fullPath, content: readFileSync(fullPath, 'utf-8') })
+        }
+      }
+      return results
+    }
+    const allFiles = collectTsFiles(baseDir)
+    const modelResolver = createTypeResolver(ts, allFiles, baseDir)
 
     for (const { baseName, filePath } of unresolvedModels) {
       const resolverSourceFile = modelResolver.program.getSourceFile(filePath)
@@ -1060,7 +1209,8 @@ export async function generate(options: GenerateOptions): Promise<GenerateResult
         filePath,
         !!silent,
         typeToValibot,
-        resolvedTypes
+        resolvedTypes,
+        modelResolver.typeToValibot
       )
 
       if (result) {

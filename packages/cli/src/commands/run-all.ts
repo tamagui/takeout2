@@ -17,49 +17,53 @@ export const runAllCommand = defineCommand({
     },
   },
   run: async () => {
-    // Get all arguments after 'run-all'
     const scriptArgs = process.argv.slice(3)
     const usePty = scriptArgs.includes('--pty')
     const filteredArgs = scriptArgs.filter((a) => a !== '--pty')
 
-    // Find the project root by looking for package.json with workspaces or takeout field
-    let currentDir = process.cwd()
-    let projectRoot = ''
-
-    while (currentDir !== parse(currentDir).root) {
-      const packageJsonPath = resolve(currentDir, 'package.json')
-      if (existsSync(packageJsonPath)) {
-        try {
-          const pkg = JSON.parse(readFileSync(packageJsonPath, 'utf8'))
-          if (pkg.workspaces || pkg.takeout) {
-            projectRoot = currentDir
-            break
-          }
-        } catch {}
+    if (usePty) {
+      // pty mode still needs node + node-pty subprocess
+      const projectRoot = findProjectRoot()
+      if (!projectRoot) {
+        console.error('Could not find project root')
+        process.exit(1)
       }
-      currentDir = resolve(currentDir, '..')
+
+      const localScriptsPath = resolve(projectRoot, 'packages/scripts/src/run-pty.mjs')
+      const scriptPath = existsSync(localScriptsPath)
+        ? localScriptsPath
+        : resolve(projectRoot, 'node_modules/@take-out/scripts/src/run-pty.mjs')
+
+      const child = spawn('node', [scriptPath, ...filteredArgs], {
+        stdio: 'inherit',
+        shell: false,
+      })
+
+      const code = await new Promise<number>((resolve) => {
+        child.on('exit', (code) => resolve(code || 0))
+      })
+      process.exit(code)
+    } else {
+      // direct import — no subprocess layer
+      const { runParallelScripts, parseRunArgs } = await import('@take-out/scripts')
+      await runParallelScripts(parseRunArgs(filteredArgs))
     }
-
-    if (!projectRoot) {
-      console.error('Could not find project root')
-      process.exit(1)
-    }
-
-    // check if local packages/scripts exists (takeout monorepo), otherwise use installed package
-    const scriptFile = usePty ? 'run-pty.mjs' : 'run.ts'
-    const localScriptsPath = resolve(projectRoot, `packages/scripts/src/${scriptFile}`)
-    const scriptPath = existsSync(localScriptsPath)
-      ? localScriptsPath
-      : resolve(projectRoot, `node_modules/@take-out/scripts/src/${scriptFile}`)
-
-    const child = spawn(usePty ? 'node' : 'bun', [scriptPath, ...filteredArgs], {
-      stdio: 'inherit',
-      shell: false,
-    })
-
-    const code = await new Promise<number>((resolve) => {
-      child.on('exit', (code) => resolve(code || 0))
-    })
-    process.exit(code)
   },
 })
+
+function findProjectRoot(): string {
+  let currentDir = process.cwd()
+  while (currentDir !== parse(currentDir).root) {
+    const packageJsonPath = resolve(currentDir, 'package.json')
+    if (existsSync(packageJsonPath)) {
+      try {
+        const pkg = JSON.parse(readFileSync(packageJsonPath, 'utf8'))
+        if (pkg.workspaces || pkg.takeout) {
+          return currentDir
+        }
+      } catch {}
+    }
+    currentDir = resolve(currentDir, '..')
+  }
+  return ''
+}

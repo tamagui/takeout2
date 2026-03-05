@@ -10,6 +10,7 @@ import { join, relative, resolve } from 'node:path'
 
 import { handleProcessExit } from '@take-out/scripts/helpers/handleProcessExit'
 
+import { flattenScripts } from './helpers/resolveScript'
 import { getIsExiting } from './helpers/run'
 import { checkNodeVersion } from './node-version-check'
 
@@ -28,38 +29,6 @@ const reset = '\x1b[0m'
 // eslint-disable-next-line no-control-regex
 const ansiPattern = /\x1b\[[0-9;]*m/g
 
-const args = process.argv.slice(2)
-const ownFlags = ['--no-root', '--bun', '--watch', '--flags=last']
-const runCommands: string[] = []
-const forwardArgs: string[] = []
-
-for (let i = 0; i < args.length; i++) {
-  const arg = args[i]!
-
-  if (arg.startsWith('--')) {
-    if (ownFlags.includes(arg)) continue
-    forwardArgs.push(arg)
-    const nextArg = args[i + 1]
-    if (nextArg && !nextArg.startsWith('--')) {
-      forwardArgs.push(nextArg)
-      i++
-    }
-  } else {
-    runCommands.push(arg)
-  }
-}
-
-const noRoot = args.includes('--no-root')
-const runBun = args.includes('--bun')
-const watch = args.includes('--watch')
-const flagsLast = args.includes('--flags=last')
-
-const MAX_RESTARTS = 3
-
-const parentRunningScripts = process.env.BUN_RUN_SCRIPTS
-  ? process.env.BUN_RUN_SCRIPTS.split(',')
-  : []
-
 interface ManagedProcess {
   proc: ReturnType<typeof spawn>
   name: string
@@ -68,22 +37,6 @@ interface ManagedProcess {
   extraArgs: string[]
   index: number
   shortcut: string
-}
-
-const managedProcesses: ManagedProcess[] = []
-const { addChildProcess, exit } = handleProcessExit()
-
-function getPrefix(index: number): string {
-  const managed = managedProcesses[index]
-  if (!managed) return ''
-  const color = colors[index % colors.length]
-  const sc = managed.shortcut || String(index + 1)
-  return `${color}${sc} ${managed.prefixLabel}${reset}`
-}
-
-if (runCommands.length === 0) {
-  console.error('Please provide at least one script name to run')
-  exit(1)
 }
 
 async function readPackageJson(directoryPath: string) {
@@ -216,97 +169,7 @@ async function mapWorkspacesToScripts(
   return workspaceScriptMap
 }
 
-const runScript = async (
-  name: string,
-  cwd = '.',
-  prefixLabel: string = name,
-  restarts = 0,
-  extraArgs: string[] = [],
-  managedIndex?: number
-) => {
-  const index = managedIndex ?? managedProcesses.length
-
-  const runArgs = ['run', '--silent', runBun ? '--bun' : '', name, ...extraArgs].filter(
-    Boolean
-  )
-
-  const allRunningScripts = [...parentRunningScripts, ...runCommands].join(',')
-
-  const proc = spawn('bun', runArgs, {
-    stdio: ['ignore', 'pipe', 'pipe'],
-    shell: false,
-    env: {
-      ...process.env,
-      FORCE_COLOR: '3',
-      BUN_RUN_PARENT_SCRIPT: name,
-      BUN_RUN_SCRIPTS: allRunningScripts,
-      TKO_SILENT: '1',
-    } as any,
-    cwd: resolve(cwd),
-  })
-
-  const managed: ManagedProcess = {
-    proc,
-    name,
-    cwd,
-    prefixLabel,
-    extraArgs,
-    index,
-    shortcut: '',
-  }
-
-  if (managedIndex !== undefined) {
-    managedProcesses[managedIndex] = managed
-  } else {
-    managedProcesses.push(managed)
-  }
-
-  addChildProcess(proc)
-
-  proc.stdout!.on('data', (data) => {
-    if (getIsExiting()) return
-    const lines = data.toString().split('\n')
-    for (const line of lines) {
-      const stripped = line.replace(ansiPattern, '')
-      if (stripped.startsWith('$ ')) continue
-      if (line) console.info(`${getPrefix(index)} ${line}`)
-    }
-  })
-
-  proc.stderr!.on('data', (data) => {
-    if (getIsExiting()) return
-    const lines = data.toString().split('\n')
-    for (const line of lines) {
-      const stripped = line.replace(ansiPattern, '')
-      if (stripped.startsWith('$ ')) continue
-      if (line) console.error(`${getPrefix(index)} ${line}`)
-    }
-  })
-
-  proc.on('error', (error) => {
-    console.error(`${getPrefix(index)} Failed to start: ${error.message}`)
-  })
-
-  proc.on('close', (code) => {
-    if (getIsExiting()) return
-
-    if (code && code !== 0) {
-      console.error(`${getPrefix(index)} Process exited with code ${code}`)
-
-      if (watch && restarts < MAX_RESTARTS) {
-        const newRestarts = restarts + 1
-        console.info(`Restarting process ${name} (${newRestarts}/${MAX_RESTARTS} times)`)
-        runScript(name, cwd, prefixLabel, newRestarts, extraArgs, index)
-      } else {
-        exit(1)
-      }
-    }
-  })
-
-  return proc
-}
-
-function computeShortcuts() {
+function computeShortcuts(managedProcesses: ManagedProcess[]) {
   const initials = managedProcesses.map((p) => {
     const words = p.prefixLabel
       .toLowerCase()
@@ -350,28 +213,216 @@ function computeShortcuts() {
   }
 }
 
-async function main() {
-  checkNodeVersion().catch((err) => {
-    console.error(err.message)
+// --- exported interface for CLI direct-import ---
+
+export interface RunParallelScriptsOptions {
+  commands: string[]
+  noRoot?: boolean
+  flagsLast?: boolean
+  runBun?: boolean
+  watch?: boolean
+  forwardArgs?: string[]
+}
+
+export async function runParallelScripts(
+  options: RunParallelScriptsOptions
+): Promise<void> {
+  const {
+    commands: runCommands,
+    noRoot = false,
+    flagsLast = false,
+    runBun = false,
+    watch = false,
+    forwardArgs = [],
+  } = options
+
+  const MAX_RESTARTS = 3
+
+  const parentRunningScripts = process.env.BUN_RUN_SCRIPTS
+    ? process.env.BUN_RUN_SCRIPTS.split(',')
+    : []
+
+  const managedProcesses: ManagedProcess[] = []
+  const { addChildProcess, exit } = handleProcessExit()
+
+  function getPrefix(index: number): string {
+    const managed = managedProcesses[index]
+    if (!managed) return ''
+    const color = colors[index % colors.length]
+    const sc = managed.shortcut || String(index + 1)
+    return `${color}${sc} ${managed.prefixLabel}${reset}`
+  }
+
+  if (runCommands.length === 0) {
+    console.error('Please provide at least one script name to run')
     exit(1)
-  })
+    return
+  }
+
+  // spawns a single script process, optionally running a command directly via bash
+  const runScript = async (
+    name: string,
+    cwd = '.',
+    prefixLabel: string = name,
+    restarts = 0,
+    extraArgs: string[] = [],
+    managedIndex?: number,
+    directCommand?: string
+  ) => {
+    const index = managedIndex ?? managedProcesses.length
+
+    const allRunningScripts = [...parentRunningScripts, ...runCommands].join(',')
+
+    let proc: ReturnType<typeof spawn>
+
+    if (directCommand) {
+      // run the resolved command directly via bash, skipping the bun run layer
+      const command = extraArgs.length
+        ? `${directCommand} ${extraArgs.join(' ')}`
+        : directCommand
+      proc = spawn('bash', ['-c', command], {
+        stdio: ['ignore', 'pipe', 'pipe'],
+        shell: false,
+        detached: true,
+        env: {
+          ...process.env,
+          FORCE_COLOR: '3',
+          BUN_RUN_PARENT_SCRIPT: name,
+          BUN_RUN_SCRIPTS: allRunningScripts,
+          TKO_SILENT: '1',
+        } as any,
+        cwd: resolve(cwd),
+      })
+    } else {
+      const runArgs = [
+        'run',
+        '--silent',
+        runBun ? '--bun' : '',
+        name,
+        ...extraArgs,
+      ].filter(Boolean)
+      proc = spawn('bun', runArgs, {
+        stdio: ['ignore', 'pipe', 'pipe'],
+        shell: false,
+        detached: true,
+        env: {
+          ...process.env,
+          FORCE_COLOR: '3',
+          BUN_RUN_PARENT_SCRIPT: name,
+          BUN_RUN_SCRIPTS: allRunningScripts,
+          TKO_SILENT: '1',
+        } as any,
+        cwd: resolve(cwd),
+      })
+    }
+
+    const managed: ManagedProcess = {
+      proc,
+      name,
+      cwd,
+      prefixLabel,
+      extraArgs,
+      index,
+      shortcut: '',
+    }
+
+    if (managedIndex !== undefined) {
+      managedProcesses[managedIndex] = managed
+    } else {
+      managedProcesses.push(managed)
+    }
+
+    addChildProcess(proc)
+
+    proc.stdout!.on('data', (data) => {
+      if (getIsExiting()) return
+      const lines = data.toString().split('\n')
+      for (const line of lines) {
+        const stripped = line.replace(ansiPattern, '')
+        if (stripped.startsWith('$ ')) continue
+        if (line) console.info(`${getPrefix(index)} ${line}`)
+      }
+    })
+
+    proc.stderr!.on('data', (data) => {
+      if (getIsExiting()) return
+      const lines = data.toString().split('\n')
+      for (const line of lines) {
+        const stripped = line.replace(ansiPattern, '')
+        if (stripped.startsWith('$ ')) continue
+        if (line) console.error(`${getPrefix(index)} ${line}`)
+      }
+    })
+
+    proc.on('error', (error) => {
+      console.error(`${getPrefix(index)} Failed to start: ${error.message}`)
+    })
+
+    proc.on('close', (code) => {
+      if (getIsExiting()) return
+
+      if (code && code !== 0) {
+        console.error(`${getPrefix(index)} Process exited with code ${code}`)
+
+        if (watch && restarts < MAX_RESTARTS) {
+          const newRestarts = restarts + 1
+          console.info(
+            `Restarting process ${name} (${newRestarts}/${MAX_RESTARTS} times)`
+          )
+          runScript(name, cwd, prefixLabel, newRestarts, extraArgs, index, directCommand)
+        } else {
+          exit(1)
+        }
+      }
+    })
+
+    return proc
+  }
 
   try {
+    checkNodeVersion().catch((err) => {
+      console.error(err.message)
+      exit(1)
+    })
+
     if (runCommands.length > 0) {
       const lastScript = runCommands[runCommands.length - 1]
 
       if (!noRoot) {
+        // read package.json scripts for flattening
+        const packageJson = await readPackageJson('.')
+        const pkgScripts = packageJson?.scripts ?? {}
+
         const filteredCommands = runCommands.filter(
           (name) => !parentRunningScripts.includes(name)
         )
-        const scriptPromises = filteredCommands.map((name) => {
-          const scriptArgs = !flagsLast || name === lastScript ? forwardArgs : []
-          return runScript(name, '.', name, 0, scriptArgs)
+
+        // flatten tko run/run-all chains into leaf commands
+        const flattened = flattenScripts(filteredCommands, pkgScripts, {
+          runningScripts: parentRunningScripts,
+        })
+
+        const lastLeaf = flattened[flattened.length - 1]
+        const scriptPromises = flattened.map((leaf) => {
+          const scriptArgs = !flagsLast || leaf === lastLeaf ? forwardArgs : []
+          // known scripts: run command directly via bash (skip bun run layer)
+          // unknown scripts: fall through to bun run --silent
+          const directCommand = !leaf.isRaw ? leaf.command : undefined
+          return runScript(
+            leaf.name,
+            '.',
+            leaf.name,
+            0,
+            scriptArgs,
+            undefined,
+            directCommand
+          )
         })
 
         await Promise.all(scriptPromises)
       }
 
+      // workspace scripts still use bun run (they need workspace cwd)
       const workspaceScriptMap = await mapWorkspacesToScripts(runCommands)
 
       for (const [workspace, { scripts, packageName }] of workspaceScriptMap.entries()) {
@@ -396,7 +447,7 @@ async function main() {
     if (managedProcesses.length === 0) {
       exit(0)
     } else {
-      computeShortcuts()
+      computeShortcuts(managedProcesses)
     }
   } catch (error) {
     console.error(`Error running scripts: ${error}`)
@@ -404,7 +455,43 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error(`Error running scripts: ${error}`)
-  exit(1)
-})
+// --- CLI entry point (only runs when executed directly, not when imported) ---
+
+const ownFlags = ['--no-root', '--bun', '--watch', '--flags=last']
+
+export function parseRunArgs(args: string[]): RunParallelScriptsOptions {
+  const commands: string[] = []
+  const forwardArgs: string[] = []
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i]!
+
+    if (arg.startsWith('--')) {
+      if (ownFlags.includes(arg)) continue
+      forwardArgs.push(arg)
+      const nextArg = args[i + 1]
+      if (nextArg && !nextArg.startsWith('--')) {
+        forwardArgs.push(nextArg)
+        i++
+      }
+    } else {
+      commands.push(arg)
+    }
+  }
+
+  return {
+    commands,
+    noRoot: args.includes('--no-root'),
+    runBun: args.includes('--bun'),
+    watch: args.includes('--watch'),
+    flagsLast: args.includes('--flags=last'),
+    forwardArgs,
+  }
+}
+
+if (typeof Bun !== 'undefined' && Bun.main === import.meta.path) {
+  runParallelScripts(parseRunArgs(process.argv.slice(2))).catch((error) => {
+    console.error(`Error running scripts: ${error}`)
+    process.exit(1)
+  })
+}

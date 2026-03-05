@@ -365,11 +365,7 @@ export function createZeroClient<
     whenDisabled?: 'empty' | 'last-value'
   }) {
     const mode: QueryControlMode = action === 'enable' ? false : whenDisabled
-    return (
-      <DisabledContext.Provider value={mode}>
-        {children}
-      </DisabledContext.Provider>
-    )
+    return <DisabledContext.Provider value={mode}>{children}</DisabledContext.Provider>
   }
 
   return {

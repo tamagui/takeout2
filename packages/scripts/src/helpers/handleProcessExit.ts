@@ -1,3 +1,6 @@
+import { execSync } from 'node:child_process'
+import { appendFileSync, rmSync } from 'node:fs'
+
 import {
   addProcessHandler,
   setExitCleanupState,
@@ -13,19 +16,76 @@ interface HandleProcessExitReturn {
   exit: (code?: number) => Promise<void>
 }
 
+const pidFilePath = `/tmp/tko-run-${process.pid}.pids`
+
+function writePidFile(pid: number) {
+  try {
+    appendFileSync(pidFilePath, `${pid}\n`)
+  } catch {}
+}
+
+function removePidFile() {
+  try {
+    rmSync(pidFilePath, { force: true })
+  } catch {}
+}
+
+// find descendant pids that survived the group kill
+function findStragglers(trackedPids: number[]): number[] {
+  try {
+    const output = execSync('ps -eo pid,ppid', { encoding: 'utf-8', timeout: 2000 })
+    const lines = output.trim().split('\n').slice(1) // skip header
+
+    const parentToChildren = new Map<number, number[]>()
+    for (const line of lines) {
+      const parts = line.trim().split(/\s+/)
+      if (parts.length < 2) continue
+      const pid = parseInt(parts[0]!, 10)
+      const ppid = parseInt(parts[1]!, 10)
+      if (isNaN(pid) || isNaN(ppid)) continue
+      if (!parentToChildren.has(ppid)) parentToChildren.set(ppid, [])
+      parentToChildren.get(ppid)!.push(pid)
+    }
+
+    // walk from each tracked pid to find all descendants
+    const descendants = new Set<number>()
+    const queue = [...trackedPids]
+    while (queue.length > 0) {
+      const current = queue.pop()!
+      const children = parentToChildren.get(current)
+      if (!children) continue
+      for (const child of children) {
+        if (!descendants.has(child)) {
+          descendants.add(child)
+          queue.push(child)
+        }
+      }
+    }
+    return [...descendants]
+  } catch {
+    return []
+  }
+}
+
+// kill entire process group to prevent orphaned descendants
 function killProcess(
   pid: number,
   signal: NodeJS.Signals = 'SIGTERM',
   forceful: boolean = false
 ): void {
+  // kill process group first (negative pid), then direct process
+  try {
+    process.kill(-pid, signal)
+  } catch (_) {}
   try {
     process.kill(pid, signal)
-  } catch (_) {
-    // process already gone
-  }
+  } catch (_) {}
 
   if (forceful && signal !== 'SIGKILL') {
     setTimeout(() => {
+      try {
+        process.kill(-pid, 'SIGKILL')
+      } catch (_) {}
       try {
         process.kill(pid, 'SIGKILL')
       } catch (_) {}
@@ -90,10 +150,24 @@ export function handleProcessExit({
         killProcess(proc.pid, 'SIGKILL')
       }
     }
+
+    // straggler walk: find any descendants that survived the group kill
+    const trackedPids = processes.map((p) => p.pid).filter(Boolean) as number[]
+    if (trackedPids.length > 0) {
+      const stragglers = findStragglers(trackedPids)
+      for (const pid of stragglers) {
+        try {
+          process.kill(pid, 'SIGKILL')
+        } catch {}
+      }
+    }
+
+    removePidFile()
   }
 
   const addChildProcess = (proc: ProcessType) => {
     processes.push(proc)
+    if (proc.pid) writePidFile(proc.pid)
   }
 
   addProcessHandler(addChildProcess)

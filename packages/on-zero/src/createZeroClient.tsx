@@ -12,7 +12,7 @@ import {
 } from 'react'
 
 import { createPermissions } from './createPermissions'
-import { createUseQuery } from './createUseQuery'
+import { createUseQuery, type QueryControlMode } from './createUseQuery'
 import { createMutators } from './helpers/createMutators'
 import { getAuth } from './helpers/getAuth'
 import { getAllMutationsPermissions, getMutationsPermissions } from './modelRegistry'
@@ -156,7 +156,7 @@ export function createZeroClient<
   // register for global run() helper
   setCustomQueries(customQueries)
 
-  const DisabledContext = createContext(false)
+  const DisabledContext = createContext<QueryControlMode>(false)
 
   let latestZeroInstance: ZeroInstance | null = null
 
@@ -190,14 +190,15 @@ export function createZeroClient<
     enabled = typeof objOrId !== 'undefined',
     debug = false
   ): boolean | null {
-    const disabled = use(DisabledContext)
+    const disableMode = use(DisabledContext)
+    const lastRef = useRef<boolean | null>(null)
     const tableStr = table as string
     const checkFn = permissionCheckFns[tableStr]
 
     const [data, status] = useQuery(
       checkFn as any,
       { objOrId: objOrId as any },
-      { enabled: Boolean(!disabled && enabled && objOrId && checkFn) }
+      { enabled: Boolean(!disableMode && enabled && objOrId && checkFn) }
     )
 
     if (debug) {
@@ -207,9 +208,18 @@ export function createZeroClient<
     if (!objOrId) return false
 
     // null while loading, then server's authoritative answer
-    if (status.type === 'unknown') return null
+    const result = status.type === 'unknown' ? null : Boolean(data)
 
-    return Boolean(data)
+    if (!disableMode) {
+      lastRef.current = result
+      return result
+    }
+
+    if (disableMode === 'last-value') {
+      return lastRef.current
+    }
+
+    return null
   }
 
   const ProvideZero = ({
@@ -345,9 +355,27 @@ export function createZeroClient<
     return resolveQuery({ customQueries, fn, params })
   }
 
+  function ControlQueries({
+    children,
+    action = 'disable',
+    whenDisabled = 'empty',
+  }: {
+    children: ReactNode
+    action?: 'enable' | 'disable'
+    whenDisabled?: 'empty' | 'last-value'
+  }) {
+    const mode: QueryControlMode = action === 'enable' ? false : whenDisabled
+    return (
+      <DisabledContext.Provider value={mode}>
+        {children}
+      </DisabledContext.Provider>
+    )
+  }
+
   return {
     zeroEvents,
     ProvideZero,
+    ControlQueries,
     useQuery,
     usePermission,
     zero,

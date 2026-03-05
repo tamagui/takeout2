@@ -1,5 +1,5 @@
 import { useQuery as zeroUseQuery } from '@rocicorp/zero/react'
-import { use, useMemo, type Context } from 'react'
+import { use, useMemo, useRef, type Context } from 'react'
 
 import { useZeroDebug } from './helpers/useZeroDebug'
 import { resolveQuery, type PlainQueryFn } from './resolveQuery'
@@ -10,6 +10,9 @@ import type {
   Query,
   Schema as ZeroSchema,
 } from '@rocicorp/zero'
+
+// false = enabled, 'empty' = disabled (return null), 'last-value' = disabled (return cached)
+export type QueryControlMode = false | 'empty' | 'last-value'
 
 export type UseQueryOptions = {
   enabled?: boolean | undefined
@@ -42,11 +45,12 @@ export function createUseQuery<Schema extends ZeroSchema>({
   DisabledContext,
   customQueries,
 }: {
-  DisabledContext: Context<boolean>
+  DisabledContext: Context<QueryControlMode>
   customQueries: AnyQueryRegistry
 }): UseQueryHook<Schema> {
   function useQuery(...args: any[]): any {
-    const disabled = use(DisabledContext)
+    const disableMode = use(DisabledContext)
+    const lastRef = useRef<any>(EMPTY_RESPONSE)
     const [fn, paramsOrOptions, optionsArg] = args
 
     const { queryRequest, options } = useMemo(() => {
@@ -74,11 +78,16 @@ export function createUseQuery<Schema extends ZeroSchema>({
         useZeroDebug(queryRequest, options, out)
     }
 
-    if (disabled) {
-      return EMPTY_RESPONSE
+    if (!disableMode) {
+      lastRef.current = out
+      return out
     }
 
-    return out
+    if (disableMode === 'last-value') {
+      return lastRef.current
+    }
+
+    return EMPTY_RESPONSE
   }
 
   return useQuery as UseQueryHook<Schema>

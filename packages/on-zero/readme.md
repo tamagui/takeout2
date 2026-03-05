@@ -749,6 +749,39 @@ for ad-hoc queries that don't use query functions:
 const user = await zeroServer.query((q) => q.user.where('id', userId).one())
 ```
 
+**controlling queries with `ControlQueries`:**
+
+disable all `useQuery` and `usePermission` calls within a subtree. useful for
+hiding screens, background tabs, or any UI where you want to pause syncing:
+
+```tsx
+import { ControlQueries } from '~/zero/client'
+
+// disable queries, returns null for all useQuery/usePermission calls
+<ControlQueries action="disable">
+  <ExpensiveScreen />
+</ControlQueries>
+
+// disable but keep returning the last value (no flash to empty)
+<ControlQueries action="disable" whenDisabled="last-value">
+  <ExpensiveScreen />
+</ControlQueries>
+
+// re-enable inside a disabled subtree
+<ControlQueries action="disable" whenDisabled="last-value">
+  <ControlQueries action="enable">
+    <AlwaysLiveWidget />
+  </ControlQueries>
+</ControlQueries>
+```
+
+props:
+
+- `action` — `'enable' | 'disable'` (default `'disable'`)
+- `whenDisabled` — `'empty' | 'last-value'` (default `'empty'`)
+  - `'empty'` — queries return `[null, { type: 'unknown' }]`
+  - `'last-value'` — queries return their most recent result
+
 **batch processing:**
 
 ```ts

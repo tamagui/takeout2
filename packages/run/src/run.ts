@@ -8,10 +8,9 @@ import { spawn } from 'node:child_process'
 import fs from 'node:fs'
 import { join, relative, resolve } from 'node:path'
 
-import { handleProcessExit } from '@take-out/scripts/helpers/handleProcessExit'
-
+import { handleProcessExit } from './helpers/handleProcessExit'
+import { getIsExiting } from './helpers/process-state'
 import { flattenScripts } from './helpers/resolveScript'
-import { getIsExiting } from './helpers/run'
 import { checkNodeVersion } from './node-version-check'
 
 const colors = [
@@ -267,7 +266,8 @@ export async function runParallelScripts(
     restarts = 0,
     extraArgs: string[] = [],
     managedIndex?: number,
-    directCommand?: string
+    directCommand?: string,
+    deferredChildren?: import('./helpers/resolveScript').FlattenedScript[]
   ) => {
     const index = managedIndex ?? managedProcesses.length
 
@@ -373,6 +373,19 @@ export async function runParallelScripts(
         } else {
           exit(1)
         }
+      } else if (deferredChildren && deferredChildren.length > 0) {
+        // command succeeded — spawn deferred parallel scripts
+        for (const deferred of deferredChildren) {
+          runScript(
+            deferred.name,
+            '.',
+            deferred.name,
+            0,
+            [],
+            undefined,
+            !deferred.isRaw ? deferred.command : undefined
+          )
+        }
       }
     })
 
@@ -415,7 +428,8 @@ export async function runParallelScripts(
             0,
             scriptArgs,
             undefined,
-            directCommand
+            directCommand,
+            leaf.deferredScripts
           )
         })
 

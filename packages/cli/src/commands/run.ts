@@ -129,7 +129,7 @@ export const runCommand = defineCommand({
     }
 
     // fall back to runParallelScripts for package.json scripts (direct import, no subprocess)
-    const { runParallelScripts, parseRunArgs } = await import('@take-out/scripts')
+    const { runParallelScripts, parseRunArgs } = await import('@take-out/run')
     await runParallelScripts(parseRunArgs(scriptArgs))
   },
 })

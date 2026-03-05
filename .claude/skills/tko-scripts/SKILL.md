@@ -118,7 +118,6 @@ run with `bun tko <command>` or `bun tko <script-name>`.
   release - publish takeout packages to npm [--patch, --minor, --major, --canary, --rerun, --republish, --finish, --skip-finish, --dry-run, --skip-test, --skip-build, --skip-version, --dirty, --tamagui-git-user, --sync-on-zero, --skip-on-zero-sync, --undocumented, --skip-all]
   cmd
   ensure-port - ensure a port is available, exit with error if in use [--auto-kill]
-  run
   exec-with-env
   node-version-check
 

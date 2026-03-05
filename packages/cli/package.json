@@ -52,6 +52,7 @@
   "dependencies": {
     "@clack/prompts": "^0.8.2",
     "@take-out/docs": "workspace:*",
+    "@take-out/run": "workspace:*",
     "@take-out/scripts": "workspace:*",
     "citty": "^0.1.6",
     "picocolors": "^1.1.1"

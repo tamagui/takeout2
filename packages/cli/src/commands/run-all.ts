@@ -29,10 +29,10 @@ export const runAllCommand = defineCommand({
         process.exit(1)
       }
 
-      const localScriptsPath = resolve(projectRoot, 'packages/scripts/src/run-pty.mjs')
-      const scriptPath = existsSync(localScriptsPath)
-        ? localScriptsPath
-        : resolve(projectRoot, 'node_modules/@take-out/scripts/src/run-pty.mjs')
+      const localRunPath = resolve(projectRoot, 'packages/run/src/run-pty.mjs')
+      const scriptPath = existsSync(localRunPath)
+        ? localRunPath
+        : resolve(projectRoot, 'node_modules/@take-out/run/src/run-pty.mjs')
 
       const child = spawn('node', [scriptPath, ...filteredArgs], {
         stdio: 'inherit',
@@ -45,7 +45,7 @@ export const runAllCommand = defineCommand({
       process.exit(code)
     } else {
       // direct import — no subprocess layer
-      const { runParallelScripts, parseRunArgs } = await import('@take-out/scripts')
+      const { runParallelScripts, parseRunArgs } = await import('@take-out/run')
       await runParallelScripts(parseRunArgs(filteredArgs))
     }
   },

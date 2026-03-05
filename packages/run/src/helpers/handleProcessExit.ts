@@ -6,7 +6,7 @@ import {
   setExitCleanupState,
   type ProcessHandler,
   type ProcessType,
-} from './run'
+} from './process-state'
 
 type ExitCallback = (info: { signal: NodeJS.Signals | string }) => void | Promise<void>
 

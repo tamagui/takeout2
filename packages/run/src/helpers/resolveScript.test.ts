@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { flattenScripts, type FlattenedScript } from './resolveScript'
+import { flattenScripts, splitCompound } from './resolveScript'
 
 // scripts modeled after the real chat package.json
 const scripts: Record<string, string> = {
@@ -38,14 +38,39 @@ describe('flattenScripts', () => {
     ])
   })
 
-  it('passes through shell compounds as leaves', () => {
+  it('parses compound and inlines bun script references', () => {
+    // backend:delayed = "sleep 5 && bun backend"
+    // backend = "bun tko run backend:up backend:migrate-then-zero jobs" (tko run)
+    // since "bun backend" is last segment and resolves to tko run, it becomes deferredScripts
     const result = flattenScripts(['backend:delayed'], scripts)
     expect(result).toEqual([
-      { name: 'backend:delayed', command: 'sleep 5 && bun backend', isRaw: false },
+      {
+        name: 'backend:delayed',
+        command: 'sleep 5',
+        isRaw: false,
+        deferredScripts: [
+          {
+            name: 'backend:up',
+            command: 'bun env:dev docker compose up pgdb minio',
+            isRaw: false,
+          },
+          {
+            name: 'backend:migrate-then-zero',
+            command:
+              'ALLOW_MISSING_ENV=1 bun run:dev scripts/dev/migrate.ts && bun env:dev docker compose up zero',
+            isRaw: false,
+          },
+          {
+            name: 'jobs',
+            command: 'ALLOW_MISSING_ENV=1 bun run:dev scripts/dev/jobs.ts',
+            isRaw: false,
+          },
+        ],
+      },
     ])
   })
 
-  it('resolves bun tko run into child scripts', () => {
+  it('resolves bun tko run into child scripts, inlines compounds', () => {
     const result = flattenScripts(['backend'], scripts)
     expect(result).toEqual([
       {
@@ -55,7 +80,9 @@ describe('flattenScripts', () => {
       },
       {
         name: 'backend:migrate-then-zero',
-        command: 'bun backend:migrate && bun env:dev docker compose up zero',
+        // "bun backend:migrate" inlined to its command, "bun env:dev docker compose up zero" not a known script
+        command:
+          'ALLOW_MISSING_ENV=1 bun run:dev scripts/dev/migrate.ts && bun env:dev docker compose up zero',
         isRaw: false,
       },
       {
@@ -66,11 +93,23 @@ describe('flattenScripts', () => {
     ])
   })
 
-  it('resolves tko run-all (without bun prefix)', () => {
+  it('resolves tko run-all and parses compounds within children', () => {
     const result = flattenScripts(['frontend'], scripts)
     expect(result).toEqual([
       { name: 'dev:kill-orphans', command: 'tko dev kill-orphans', isRaw: false },
-      { name: 'watch-lazy', command: 'sleep 8 && bun watch', isRaw: false },
+      {
+        name: 'watch-lazy',
+        command: 'sleep 8',
+        isRaw: false,
+        deferredScripts: [
+          { name: 'types:watch', command: 'bun check types --watch', isRaw: false },
+          // build:watch → tko run --no-root watch → recurses into watch's children
+          { name: 'types:watch', command: 'bun check types --watch', isRaw: false },
+          { name: 'build:watch', command: 'tko run --no-root watch', isRaw: false },
+          { name: 'apps:watch', command: 'tko apps build -- --watch', isRaw: false },
+          { name: 'apps:watch', command: 'tko apps build -- --watch', isRaw: false },
+        ],
+      },
       { name: 'dev:tunnel', command: 'tko dev tunnel --setup', isRaw: false },
       {
         name: 'one:dev',
@@ -143,7 +182,8 @@ describe('flattenScripts', () => {
     expect(result).toEqual([
       {
         name: 'backend:migrate-then-zero',
-        command: 'bun backend:migrate && bun env:dev docker compose up zero',
+        command:
+          'ALLOW_MISSING_ENV=1 bun run:dev scripts/dev/migrate.ts && bun env:dev docker compose up zero',
         isRaw: false,
       },
       {
@@ -178,10 +218,112 @@ describe('flattenScripts', () => {
       c: 'echo c',
       d: 'echo d',
     }
-    // both a and b reference "shared", if we flatten [a, b] we should not duplicate shared
     const result = flattenScripts(['a', 'b'], dupeScripts)
     const names = result.map((r) => r.name)
-    // shared appears from a's resolution, then from b's resolution it should be skipped
     expect(names).toEqual(['shared', 'c', 'shared', 'd'])
+  })
+
+  it('inlines simple bun script in compound middle segment', () => {
+    const s: Record<string, string> = {
+      setup: 'bun migrate && bun serve',
+      migrate: 'drizzle-kit push',
+      serve: 'bun run:dev server.ts',
+    }
+    const result = flattenScripts(['setup'], s)
+    expect(result).toEqual([
+      {
+        name: 'setup',
+        command: 'drizzle-kit push && bun run:dev server.ts',
+        isRaw: false,
+      },
+    ])
+  })
+
+  it('leaves non-bun compound segments untouched', () => {
+    const s: Record<string, string> = {
+      task: 'sleep 5 && echo done',
+    }
+    const result = flattenScripts(['task'], s)
+    expect(result).toEqual([
+      { name: 'task', command: 'sleep 5 && echo done', isRaw: false },
+    ])
+  })
+
+  it('handles semicolons as compound operators', () => {
+    const s: Record<string, string> = {
+      task: 'echo start; bun build; echo end',
+      build: 'tsc --noEmit',
+    }
+    const result = flattenScripts(['task'], s)
+    expect(result).toEqual([
+      { name: 'task', command: 'echo start ; tsc --noEmit ; echo end', isRaw: false },
+    ])
+  })
+
+  it('passes extra args through when inlining bun references', () => {
+    const s: Record<string, string> = {
+      task: 'bun build --watch && echo done',
+      build: 'tsc',
+    }
+    const result = flattenScripts(['task'], s)
+    expect(result).toEqual([
+      { name: 'task', command: 'tsc --watch && echo done', isRaw: false },
+    ])
+  })
+})
+
+describe('splitCompound', () => {
+  it('returns null for simple commands', () => {
+    expect(splitCompound('echo hello')).toBeNull()
+    expect(splitCompound('bun run dev')).toBeNull()
+  })
+
+  it('splits on &&', () => {
+    expect(splitCompound('sleep 5 && echo done')).toEqual({
+      segments: ['sleep 5', 'echo done'],
+      operators: ['&&'],
+    })
+  })
+
+  it('splits on ||', () => {
+    expect(splitCompound('test -f file || echo missing')).toEqual({
+      segments: ['test -f file', 'echo missing'],
+      operators: ['||'],
+    })
+  })
+
+  it('splits on ;', () => {
+    expect(splitCompound('echo a; echo b')).toEqual({
+      segments: ['echo a', 'echo b'],
+      operators: [';'],
+    })
+  })
+
+  it('handles mixed operators', () => {
+    expect(splitCompound('a && b || c; d')).toEqual({
+      segments: ['a', 'b', 'c', 'd'],
+      operators: ['&&', '||', ';'],
+    })
+  })
+
+  it('respects double quotes', () => {
+    expect(splitCompound('echo "a && b" && echo c')).toEqual({
+      segments: ['echo "a && b"', 'echo c'],
+      operators: ['&&'],
+    })
+  })
+
+  it('respects single quotes', () => {
+    expect(splitCompound("echo 'a && b' && echo c")).toEqual({
+      segments: ["echo 'a && b'", 'echo c'],
+      operators: ['&&'],
+    })
+  })
+
+  it('handles escaped characters', () => {
+    expect(splitCompound('echo a\\&\\& && echo b')).toEqual({
+      segments: ['echo a\\&\\&', 'echo b'],
+      operators: ['&&'],
+    })
   })
 })

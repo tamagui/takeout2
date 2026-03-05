@@ -2,12 +2,12 @@
   "name": "@take-out/scripts",
   "version": "0.1.39",
   "type": "module",
-  "main": "./src/run.ts",
+  "main": "./src/cmd.ts",
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./src/run.ts",
-      "default": "./src/run.ts"
+      "types": "./src/cmd.ts",
+      "default": "./src/cmd.ts"
     },
     "./package.json": "./package.json",
     "./helpers/*": {
@@ -31,6 +31,7 @@
     "@clack/prompts": "^0.8.2",
     "@lydell/node-pty": "^1.2.0-beta.3",
     "@take-out/helpers": "workspace:*",
+    "@take-out/run": "workspace:*",
     "picocolors": "^1.1.1"
   },
   "peerDependencies": {

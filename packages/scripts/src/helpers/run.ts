@@ -1,23 +1,17 @@
-import { spawn, type ChildProcess } from 'node:child_process'
+import { spawn } from 'node:child_process'
 import { cpus } from 'node:os'
+
+import {
+  getIsExiting,
+  notifyProcessHandlers,
+  type ProcessHandler,
+  type ProcessType,
+} from '@take-out/run/helpers/process-state'
 
 import type { Timer } from '@take-out/helpers'
 
-export type ProcessType = ChildProcess
-export type ProcessHandler = (process: ProcessType) => void
-
-// track if we're in cleanup state (another process failed)
-let isInExitCleanup = false
-
-export function setExitCleanupState(state: boolean) {
-  isInExitCleanup = state
-}
-
-export function getIsExiting() {
-  return isInExitCleanup
-}
-
-const processHandlers = new Set<ProcessHandler>()
+export type { ProcessHandler, ProcessType }
+export { getIsExiting }
 
 const colors = [
   '\x1b[36m', // cyan
@@ -105,7 +99,7 @@ export async function run(
         shell.unref()
       }
 
-      processHandlers.forEach((cb) => cb(shell))
+      notifyProcessHandlers(shell)
 
       if (timeout) {
         timeoutId = setTimeout(() => {
@@ -206,7 +200,7 @@ export async function run(
             ? `Command timed out after ${timeout}ms: ${command}`
             : `Command failed with exit code ${exitCode}: ${command}`
 
-        if (!silent && !isInExitCleanup) {
+        if (!silent && !getIsExiting()) {
           console.error(`run() error: ${errorMsg}: ${stderr || ''}`)
         }
 
@@ -218,7 +212,7 @@ export async function run(
       return { stdout, stderr, exitCode }
     } catch (error) {
       clearTimeout(timeoutId)
-      if (!silent && !isInExitCleanup) {
+      if (!silent && !getIsExiting()) {
         // only show the error message, not the full object if it's our error
         if (error instanceof Error && (error as any).cause?.exitCode !== undefined) {
           // this is our controlled error, already logged above
@@ -233,10 +227,6 @@ export async function run(
       throw error
     }
   }
-}
-
-export const addProcessHandler = (cb: ProcessHandler) => {
-  processHandlers.add(cb)
 }
 
 export async function waitForRun(name: string) {

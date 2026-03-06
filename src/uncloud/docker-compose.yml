@@ -80,14 +80,20 @@ services:
       ZERO_UPSTREAM_DB: ${ZERO_UPSTREAM_DB:-postgresql://user:password@pgdb:5432/postgres}
       ZERO_CVR_DB: ${ZERO_CVR_DB:-postgresql://user:password@pgdb:5432/zero_cvr}
       ZERO_CHANGE_DB: ${ZERO_CHANGE_DB:-postgresql://user:password@pgdb:5432/zero_cdb}
-    command: ["node", "/app/src/database/migrate-dist.js"]
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /tmp/.done"]
+      interval: 2s
+      timeout: 2s
+      retries: 1
+      start_period: 60s
+    command: ["sh", "-c", "node /app/src/database/migrate-dist.js && touch /tmp/.done && sleep infinity"]
 
   zero:
     image: "rocicorp/zero:${ZERO_VERSION:-error-run-bun-tko-run-update-local-env}"
     restart: always
     depends_on:
       migrate:
-        condition: service_completed_successfully
+        condition: service_healthy
     x-ports:
       - ${VITE_ZERO_HOSTNAME:-zero-takeout.uncld.dev}:4848/https
     environment:

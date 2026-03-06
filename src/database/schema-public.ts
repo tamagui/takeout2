@@ -8,17 +8,23 @@ import {
   unique,
 } from 'drizzle-orm/pg-core'
 
-export const userPublic = pgTable('userPublic', {
-  id: text('id').primaryKey(),
-  name: text('name'),
-  username: text('username'),
-  image: text('image'),
-  joinedAt: timestamp('joinedAt', { mode: 'string' }).defaultNow().notNull(),
-  hasOnboarded: boolean('hasOnboarded').notNull().default(false),
-  whitelisted: boolean('whitelisted').notNull().default(false),
-  migrationVersion: integer('migrationVersion').notNull().default(0),
-  postsCount: integer('postsCount').notNull().default(0),
-})
+export const userPublic = pgTable(
+  'userPublic',
+  {
+    id: text('id').primaryKey(),
+    name: text('name'),
+    username: text('username'),
+    image: text('image'),
+    joinedAt: timestamp('joinedAt', { mode: 'string' }).defaultNow().notNull(),
+    hasOnboarded: boolean('hasOnboarded').notNull().default(false),
+    whitelisted: boolean('whitelisted').notNull().default(false),
+    migrationVersion: integer('migrationVersion').notNull().default(0),
+    postsCount: integer('postsCount').notNull().default(0),
+  },
+  (table) => [
+    index('userPublic_username_idx').on(table.username),
+  ]
+)
 
 export const userState = pgTable('userState', {
   userId: text('userId').primaryKey(),
@@ -46,6 +52,7 @@ export const post = pgTable(
   (table) => [
     index('post_userId_idx').on(table.userId),
     index('post_createdAt_idx').on(table.createdAt),
+    index('post_createdAt_id_desc_idx').on(table.createdAt, table.id),
   ]
 )
 
@@ -60,6 +67,7 @@ export const comment = pgTable(
   },
   (table) => [
     index('comment_postId_idx').on(table.postId),
+    index('comment_postId_createdAt_idx').on(table.postId, table.createdAt),
     index('comment_userId_idx').on(table.userId),
   ]
 )
@@ -158,6 +166,8 @@ export const notification = pgTable(
   (table) => [
     index('notification_userId_idx').on(table.userId),
     index('notification_userId_read_idx').on(table.userId, table.read),
+    index('notification_userId_read_createdAt_idx').on(table.userId, table.read, table.createdAt),
+    index('notification_actorId_idx').on(table.actorId),
     index('notification_createdAt_idx').on(table.createdAt),
   ]
 )

@@ -218,7 +218,9 @@ Migrations: test migrations locally before production, use transactions for data
 migrations.
 
 Query Performance: use indexes for frequently queried columns, monitor slow
-queries via Aurora logs, use EXPLAIN ANALYZE for query optimization.
+queries via Aurora logs, use EXPLAIN ANALYZE for query optimization. for
+Zero-specific index debugging, see the performance troubleshooting section in
+the Zero guide (./zero.md) and run `bun ./scripts/zero/analyze-indexes.ts`.
 
 Security: never log sensitive data, use parameterized queries to prevent SQL
 injection, keep connection strings in environment variables.

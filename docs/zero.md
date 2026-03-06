@@ -382,6 +382,59 @@ query runs against local cache. design queries with same relations so cache hits
 
 add `?debug=2` to url for detailed zero logs.
 
+### performance troubleshooting
+
+Zero logs warnings when queries are slow on the client-side SQLite replica:
+
+- **"table-source.next took too long... Are you missing an index?"** - a single row
+  fetch took >2ms (threshold: `slowRowThreshold`). usually means a full table scan.
+- **slow hydrate warning** - query materialization took >100ms (`slowHydrateThreshold`).
+- **slow materialize warning** - client-side query took >5s (`slowMaterializeThreshold`).
+
+these are sampled (1 in 5000 requests), so seeing even one means it's happening often.
+
+**how Zero handles indexes:** Zero replicates ALL postgres indexes to the client SQLite
+replica automatically, as long as they're not expression-based or partial indexes, and the
+columns are in the publication. if your postgres has the right indexes, SQLite will too.
+
+### analyze-indexes script
+
+run the diagnostic script to audit indexes and query performance:
+
+```bash
+bun ./scripts/zero/analyze-indexes.ts
+```
+
+this script:
+- lists all postgres indexes and which ones Zero replicates to SQLite
+- diffs postgres vs SQLite replica indexes to find gaps
+- shows table stats (row counts, dead rows, bloat)
+- identifies sequential scan hotspots (tables doing full scans)
+- runs EXPLAIN ANALYZE on actual app query patterns
+- recommends missing composite indexes based on query shapes
+
+run it periodically or when you see slowdown warnings. common fixes:
+- add composite indexes for multi-column WHERE + ORDER BY patterns
+- add indexes on relationship foreign keys (e.g. `actorId` for `related('actor')`)
+- add indexes on columns used in `serverWhere` / `exists()` filters
+
+### index tips for Zero queries
+
+Zero translates ZQL queries to SQL on both postgres (server) and SQLite (client).
+indexes matter on both sides:
+
+```ts
+// this needs index on (userId) AND (createdAt) - ideally composite (userId, createdAt)
+zql.post.where('userId', id).orderBy('createdAt', 'desc').limit(20)
+
+// this needs composite (userId, read) - already have notification_userId_read_idx
+zql.notification.where('userId', id).where('read', false)
+
+// exists() subqueries need indexes on the filtered column
+q.not(q.exists('authorBlockedBy', (b) => b.where('blockerId', auth.id)))
+// needs index on block(blockerId)
+```
+
 ## soft deletes
 
 ```ts

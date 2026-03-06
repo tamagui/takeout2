@@ -1,6 +1,6 @@
 {
-  "id": "124ffeb9-2676-4313-990f-dc58fe97e342",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "45777b2b-8a2d-4ee5-8261-999a1584c740",
+  "prevId": "124ffeb9-2676-4313-990f-dc58fe97e342",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -557,6 +557,27 @@
           "method": "btree",
           "with": {}
         },
+        "comment_postId_createdAt_idx": {
+          "name": "comment_postId_createdAt_idx",
+          "columns": [
+            {
+              "expression": "postId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "createdAt",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "comment_userId_idx": {
           "name": "comment_userId_idx",
           "columns": [
@@ -897,6 +918,48 @@
           "method": "btree",
           "with": {}
         },
+        "notification_userId_read_createdAt_idx": {
+          "name": "notification_userId_read_createdAt_idx",
+          "columns": [
+            {
+              "expression": "userId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "read",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "createdAt",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "notification_actorId_idx": {
+          "name": "notification_actorId_idx",
+          "columns": [
+            {
+              "expression": "actorId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "notification_createdAt_idx": {
           "name": "notification_createdAt_idx",
           "columns": [
@@ -1009,6 +1072,27 @@
           "columns": [
             {
               "expression": "createdAt",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "post_createdAt_id_desc_idx": {
+          "name": "post_createdAt_id_desc_idx",
+          "columns": [
+            {
+              "expression": "createdAt",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -1227,7 +1311,23 @@
           "default": 0
         }
       },
-      "indexes": {},
+      "indexes": {
+        "userPublic_username_idx": {
+          "name": "userPublic_username_idx",
+          "columns": [
+            {
+              "expression": "username",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},

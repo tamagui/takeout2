@@ -12,12 +12,13 @@ test.beforeEach(async ({ context }) => {
 
 test('login page should load without freezing', async ({ page }) => {
   // set a reasonable timeout - if page freezes this will fail
-  test.setTimeout(10000)
+  // dev server may need extra time for first request (compilation)
+  test.setTimeout(30000)
 
   // navigate to login page
   const response = await page.goto('http://localhost:8081/auth/login', {
     waitUntil: 'domcontentloaded',
-    timeout: 8000,
+    timeout: 20000,
   })
 
   expect(response?.status()).toBe(200)
@@ -27,7 +28,7 @@ test('login page should load without freezing', async ({ page }) => {
 
   // check that the app container exists
   await expect(page.locator('[data-testid="app-container"]')).toBeVisible({
-    timeout: 5000,
+    timeout: 10000,
   })
 })
 

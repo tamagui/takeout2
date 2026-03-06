@@ -1,7 +1,5 @@
 ---
-name: takeout-release
-description: Release and publish workflow for Takeout packages. npm publish, version bump, patch release, minor release, major release, canary release, publishing packages, tagging, git tag.
-dev: true
+description: Release and publish workflow for Takeout packages
 ---
 
 # Release

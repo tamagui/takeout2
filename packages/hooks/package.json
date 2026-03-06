@@ -1,6 +1,6 @@
 {
   "name": "@take-out/hooks",
-  "version": "0.1.41",
+  "version": "0.1.42",
   "sideEffects": false,
   "source": "src/index.ts",
   "type": "module",

@@ -39,7 +39,8 @@ await cmd`Analyze Zero indexes and query performance against the dev database`.r
     console.info('\n--- zero publication indexes ---')
     console.info(`  publication: ${publication}`)
 
-    const pubIndexes = await pool.query(`
+    const pubIndexes = await pool.query(
+      `
       WITH indexed_columns AS (
         SELECT
           pg_indexes.tablename,
@@ -71,7 +72,9 @@ await cmd`Analyze Zero indexes and query performance against the dev database`.r
         ORDER BY pg_indexes.tablename, pg_indexes.indexname
       )
       SELECT * FROM indexed_columns
-    `, [publication])
+    `,
+      [publication]
+    )
 
     let replicatedCount = 0
     let skippedCount = 0
@@ -88,7 +91,9 @@ await cmd`Analyze Zero indexes and query performance against the dev database`.r
       if (willReplicate) replicatedCount++
       else skippedCount++
 
-      const cols = Array.isArray(row.columns) ? row.columns.join(', ') : String(row.columns)
+      const cols = Array.isArray(row.columns)
+        ? row.columns.join(', ')
+        : String(row.columns)
       console.info(
         `  ${status} ${row.tablename}.${row.indexname} [${row.index_type}] (${cols}) ${reason}`
       )
@@ -102,11 +107,13 @@ await cmd`Analyze Zero indexes and query performance against the dev database`.r
       const { Database } = await import('bun:sqlite')
       const db = new Database(replicaFile, { readonly: true })
 
-      const sqliteIndexes = db.query(`
+      const sqliteIndexes = db
+        .query(`
         SELECT name, tbl_name, sql FROM sqlite_master
         WHERE type = 'index' AND sql IS NOT NULL
         ORDER BY tbl_name, name
-      `).all() as { name: string; tbl_name: string; sql: string }[]
+      `)
+        .all() as { name: string; tbl_name: string; sql: string }[]
 
       if (sqliteIndexes.length === 0) {
         console.info('  (no indexes found - replica may not exist yet)')
@@ -130,7 +137,9 @@ await cmd`Analyze Zero indexes and query performance against the dev database`.r
         )
         if (!found) {
           missingCount++
-          console.info(`  ❌ ${row.tablename}.${row.indexname} (${row.columns.join(', ')})`)
+          console.info(
+            `  ❌ ${row.tablename}.${row.indexname} (${row.columns.join(', ')})`
+          )
         }
       }
       if (missingCount === 0) {
@@ -271,7 +280,9 @@ await cmd`Analyze Zero indexes and query performance against the dev database`.r
         if (seqScanMatch) {
           console.info(`  ⚠️  sequential scan detected (${seqScanMatch.length}x)`)
         }
-        console.info(`  planning: ${planningTime || '?'}ms, execution: ${executionTime || '?'}ms`)
+        console.info(
+          `  planning: ${planningTime || '?'}ms, execution: ${executionTime || '?'}ms`
+        )
 
         // print abbreviated plan
         for (const line of plan.split('\n')) {

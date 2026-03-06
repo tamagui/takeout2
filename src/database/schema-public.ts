@@ -21,9 +21,7 @@ export const userPublic = pgTable(
     migrationVersion: integer('migrationVersion').notNull().default(0),
     postsCount: integer('postsCount').notNull().default(0),
   },
-  (table) => [
-    index('userPublic_username_idx').on(table.username),
-  ]
+  (table) => [index('userPublic_username_idx').on(table.username)]
 )
 
 export const userState = pgTable('userState', {
@@ -166,7 +164,11 @@ export const notification = pgTable(
   (table) => [
     index('notification_userId_idx').on(table.userId),
     index('notification_userId_read_idx').on(table.userId, table.read),
-    index('notification_userId_read_createdAt_idx').on(table.userId, table.read, table.createdAt),
+    index('notification_userId_read_createdAt_idx').on(
+      table.userId,
+      table.read,
+      table.createdAt
+    ),
     index('notification_actorId_idx').on(table.actorId),
     index('notification_createdAt_idx').on(table.createdAt),
   ]

@@ -148,7 +148,7 @@ export function mutations<
           }
         }
 
-        if (action !== 'insert') {
+        if (action !== 'insert' && action !== 'upsert') {
           await runServerPermissionCheck()
         }
 
@@ -162,7 +162,7 @@ export function mutations<
           await ctx.tx.mutate[tableName as TableName]![action](obj)
         }
 
-        if (action === 'insert') {
+        if (action === 'insert' || action === 'upsert') {
           await runServerPermissionCheck()
         }
       }

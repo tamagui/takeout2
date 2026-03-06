@@ -1,6 +1,6 @@
 import { mapObject, time } from '@take-out/helpers'
 
-import { getAuthData, getEnvironment } from '../state'
+import { getAuthData } from '../state'
 import { runWithContext } from './mutatorContext'
 
 import type {
@@ -54,7 +54,7 @@ export function createMutators<Models extends GenericModels>({
         tx,
         // on client, read authData dynamically to avoid stale closure during auth transitions
         // (ZeroProvider recreates Zero instance in useEffect, but mutations can run before that)
-        authData: getEnvironment() === 'client' ? getAuthData() : authData,
+        authData: environment === 'client' ? getAuthData() : authData,
         environment,
         can,
         server:
@@ -88,13 +88,13 @@ export function createMutators<Models extends GenericModels>({
       const startTime = performance.now()
 
       try {
-        if (debug && getEnvironment() === 'server') {
+        if (debug && environment === 'server') {
           console.info(`[mutator] ${name} start`)
         }
         const result = await fn(...args)
         const duration = (performance.now() - startTime).toFixed(2)
         if (debug) {
-          if (getEnvironment() === 'client') {
+          if (environment === 'client') {
             console.groupCollapsed(`[mutator] ${name} completed in ${duration}ms`)
             console.info('→', args[1])
             console.info('←', result)
@@ -158,7 +158,7 @@ export function createMutators<Models extends GenericModels>({
       // then run user-provided validation hook as escape hatch
       if (validateMutation) {
         await validateMutation({
-          authData: getEnvironment() === 'client' ? getAuthData() : authData,
+          authData: environment === 'client' ? getAuthData() : authData,
           tableName,
           mutatorName,
           args: args[1],

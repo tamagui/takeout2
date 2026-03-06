@@ -131,6 +131,12 @@ services:
     depends_on:
       minio:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /tmp/.done"]
+      interval: 2s
+      timeout: 2s
+      retries: 1
+      start_period: 30s
     entrypoint: >
       /bin/sh -c "
         until mc alias set local http://minio:9000 minio minio_password; do
@@ -139,7 +145,9 @@ services:
         done &&
         mc mb --ignore-existing local/chat &&
         mc anonymous set download local/chat &&
-        echo '✅ MinIO chat bucket ready and public';
+        echo '✅ MinIO chat bucket ready and public' &&
+        touch /tmp/.done &&
+        sleep infinity;
       "
 
   web:

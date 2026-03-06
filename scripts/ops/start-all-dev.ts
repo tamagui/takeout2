@@ -6,7 +6,7 @@ await cmd`Start backend and frontend in dev mode for quick integration testing`.
   async ({ run }) => {
     const { getTestEnv } = await import('@take-out/scripts/helpers/get-test-env')
     const { handleProcessExit } =
-      await import('@take-out/scripts/helpers/handleProcessExit')
+      await import('@take-out/run/helpers/handleProcessExit')
     const { waitForPort } = await import('@take-out/scripts/helpers/wait-for-port')
 
     handleProcessExit()

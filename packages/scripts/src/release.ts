@@ -340,7 +340,7 @@ await cmd`publish takeout packages to npm`
 
         if (!skipTest) {
           await run(`bun lint`)
-          await run(`bun check:all`)
+          await run(`bun check`)
           // only in packages
           // await run(`bun test`)
         }

@@ -7,7 +7,7 @@ import { cmd } from './cmd'
 await cmd`set up cloudflare dev tunnel for local development`
   .args('--port number')
   .run(async ({ args, run, os, path }) => {
-    const { handleProcessExit } = await import('./helpers/handleProcessExit')
+    const { handleProcessExit } = await import('@take-out/run/helpers/handleProcessExit')
 
     handleProcessExit()
 

@@ -21,7 +21,7 @@ even if you're just exploring for info, many of our skills with takeout-* are ju
 
 after completing work:
 
-- small changes: `bun check:all`
+- small changes: `bun check`
 - larger changes: `bun ops release --dry-run`
 
 ## testing

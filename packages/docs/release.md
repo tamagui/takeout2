@@ -22,7 +22,7 @@ bun ./packages/scripts/src/release.ts --canary   # canary with timestamp
 1. syncs on-zero from github (if ~/github/on-zero exists)
 2. ensures on main branch, pulls latest
 3. runs `bun install`, `bun clean`, `bun run build`
-4. runs `bun lint` and `bun check:all`
+4. runs `bun lint` and `bun check`
 5. bumps version in ALL workspace package.json files
 6. converts `workspace:*` deps to real versions for publishing
 7. packs each package with `bun pm pack`

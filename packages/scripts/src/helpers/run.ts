@@ -219,7 +219,7 @@ export async function run(
         } else {
           console.error(`Error running command: ${command}`, error)
         }
-      } else if (!silent && isInExitCleanup) {
+      } else if (!silent && getIsExiting()) {
         // simple message when being killed due to another error
         const shortCmd = command.split(' ')[0]
         console.error(`${shortCmd} exiting due to earlier error`)

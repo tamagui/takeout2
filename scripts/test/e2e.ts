@@ -10,7 +10,7 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
     const { sleep, time } = await import('@take-out/helpers')
     const { getTestEnv } = await import('@take-out/scripts/helpers/get-test-env')
     const { handleProcessExit } =
-      await import('@take-out/scripts/helpers/handleProcessExit')
+      await import('@take-out/run/helpers/handleProcessExit')
     const { run, printTiming, runInline, runParallel, waitForRun } =
       await import('@take-out/scripts/helpers/run')
     const { waitForPort } = await import('@take-out/scripts/helpers/wait-for-port')
@@ -60,7 +60,7 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
           name: 'checks',
           condition: () => !skipChecks,
           async fn() {
-            await run('bun check:all', {
+            await run('bun check', {
               prefix: 'checks',
               timeout: time.ms.minutes(3),
               timing: 'bun check',

@@ -96,12 +96,12 @@ find the right tool without asking.
 ## Verification
 
 Session hooks ensure agents know to verify their work. The core guidelines load
-automatically and include explicit verification steps—run `bun check:all` for
+automatically and include explicit verification steps—run `bun check` for
 quick checks, `bun ops release --dry-run` for the full pipeline (see
 [Releasing](/docs/releasing) for details).
 
 ```bash
-bun check:all        # types, lint, tests
+bun check        # types, lint, tests
 bun ops release --dry-run # full CI pipeline locally
 ```
 

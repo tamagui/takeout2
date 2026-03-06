@@ -44,7 +44,7 @@ export function createMutators<Models extends GenericModels>({
 }): GetZeroMutators<Models> {
   const serverActions = createServerActions?.()
 
-  const modelMutators = mapObject(models, (val) => val.mutate) as {
+  const modelMutators = mapObject(models, (val) => val.mutate || {}) as {
     [K in keyof typeof models]: (typeof models)[K]['mutate']
   }
 

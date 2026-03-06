@@ -41,6 +41,14 @@ bun backend      # start docker services (postgres, zero, minio)
 bun dev          # start web dev server at http://localhost:8081
 ```
 
+## Reporting Issues
+
+Use `/report-issue` in Claude Code to file a bug on the takeout2 repo. It
+gathers system info (node, bun, os, git commit, docker status) and opens a
+well-formatted GitHub issue. Requires the
+[GitHub CLI](https://cli.github.com/) (`gh`) - the command will help you
+install it if needed.
+
 ## Getting Familiar
 
 This repo is an entire startup in a box, so it will take a little time to get

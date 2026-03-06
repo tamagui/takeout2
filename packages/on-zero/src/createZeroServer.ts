@@ -16,7 +16,7 @@ import {
 import { runWithQueryContext } from './helpers/queryContext'
 import { getMutationsPermissions } from './modelRegistry'
 import { setCustomQueries } from './run'
-import { getZQL, setSchema } from './state'
+import { getZQL, setEnvironment, setSchema } from './state'
 import { setRunner } from './zeroRunner'
 
 import type {
@@ -120,6 +120,7 @@ export function createZeroServer<
   defaultMutateAuthData?: MutateAuthData
 }) {
   setSchema(schema)
+  setEnvironment('server')
 
   const dbString = assertString(database, `createZeroServer "database"`)
 

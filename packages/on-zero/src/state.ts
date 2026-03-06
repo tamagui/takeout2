@@ -5,6 +5,7 @@ import type { AuthData, QueryBuilder } from './types'
 let schema: Schema | null = null
 let zql: QueryBuilder | null = null
 let authData: AuthData | null | undefined
+let environment: 'client' | 'server' | null = null
 
 const errMessage = `Haven't called createZeroClient or createZeroServer yet!`
 
@@ -29,4 +30,10 @@ export const getAuthData = () => {
 
 export const setAuthData = (_: AuthData) => {
   authData = _
+}
+
+export const getEnvironment = () => environment
+
+export const setEnvironment = (env: 'client' | 'server') => {
+  environment = env
 }

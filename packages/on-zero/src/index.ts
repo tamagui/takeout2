@@ -5,6 +5,7 @@ export * from './helpers/createMutators'
 export * from './helpers/ensureLoggedIn'
 export * from './helpers/mutatorContext'
 export { ensureAuth, getAuth } from './helpers/getAuth'
+export { setEnvironment } from './state'
 
 export * from './createZeroClient'
 export * from './createUseQuery'

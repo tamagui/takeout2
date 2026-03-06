@@ -19,7 +19,7 @@ import { getAllMutationsPermissions, getMutationsPermissions } from './modelRegi
 import { registerQuery } from './queryRegistry'
 import { resolveQuery, type PlainQueryFn } from './resolveQuery'
 import { setCustomQueries } from './run'
-import { setAuthData, setSchema } from './state'
+import { setAuthData, setEnvironment, setSchema } from './state'
 import { getRawWhere, setEvaluatingPermission } from './where'
 import { setRunner } from './zeroRunner'
 import { zql } from './zql'
@@ -56,6 +56,7 @@ export function createZeroClient<
   type TableName = keyof Schema['tables'] & string
 
   setSchema(schema)
+  setEnvironment('client')
 
   const permissionsHelpers = createPermissions<Schema>({
     schema,

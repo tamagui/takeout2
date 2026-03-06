@@ -9,10 +9,9 @@ test.describe('query()', () => {
     await loginAsDemo(page)
 
     // wait for zero to initialize and expose Dev globals
-    await page.waitForFunction(
-      () => typeof (window as any).Dev?.run === 'function',
-      { timeout: 15000 }
-    )
+    await page.waitForFunction(() => typeof (window as any).Dev?.run === 'function', {
+      timeout: 15000,
+    })
 
     const user = await page.evaluate(async () => {
       const { run, userByUsername } = (window as any).Dev

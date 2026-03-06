@@ -10,8 +10,7 @@ await cmd`Run full CI/CD pipeline: test, build prod, deploy`
   )
   .run(async ({ args, run }) => {
     const { time } = await import('@take-out/helpers')
-    const { handleProcessExit } =
-      await import('@take-out/run/helpers/handleProcessExit')
+    const { handleProcessExit } = await import('@take-out/run/helpers/handleProcessExit')
     const { printTiming, runParallel } = await import('@take-out/scripts/helpers/run')
     const sst = await import('../sst/helpers/deploy')
     const uncloud = await import('../uncloud/helpers/deploy')

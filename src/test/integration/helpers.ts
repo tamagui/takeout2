@@ -48,12 +48,15 @@ export async function loginAsDemo(page: Page, pathname = '/') {
     throw new Error(`Demo login failed after ${result.attempt} attempts`)
   }
 
-  console.info(`✅ Logged in via ${result.step} (status: ${result.status})${result.attempt ? ` (attempt ${result.attempt + 1})` : ''}`)
+  console.info(
+    `✅ Logged in via ${result.step} (status: ${result.status})${result.attempt ? ` (attempt ${result.attempt + 1})` : ''}`
+  )
 
   // navigate to home feed (cookie is set, so we'll be authenticated)
-  const target = pathname !== '/' && pathname !== '/home' && pathname !== '/home/feed'
-    ? pathname
-    : '/home/feed'
+  const target =
+    pathname !== '/' && pathname !== '/home' && pathname !== '/home/feed'
+      ? pathname
+      : '/home/feed'
 
   await page.goto(`${BASE_URL}${target}`, {
     waitUntil: 'domcontentloaded',

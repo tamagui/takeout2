@@ -44,9 +44,10 @@ export function createMutators<Models extends GenericModels>({
 }): GetZeroMutators<Models> {
   const serverActions = createServerActions?.()
 
-  const modelMutators = mapObject(models, (val) => val.mutate || {}) as {
-    [K in keyof typeof models]: (typeof models)[K]['mutate']
-  }
+  const modelMutators = mapObject(models, (val) => val.mutate || {}) as Record<
+    string,
+    Record<string, any>
+  >
 
   function withContext<Args extends any[]>(fn: (...args: Args) => Promise<void>) {
     return async (tx: Transaction, ...args: Args): Promise<void> => {

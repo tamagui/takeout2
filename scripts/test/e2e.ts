@@ -9,8 +9,7 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
   .run(async ({ args }) => {
     const { sleep, time } = await import('@take-out/helpers')
     const { getTestEnv } = await import('@take-out/scripts/helpers/get-test-env')
-    const { handleProcessExit } =
-      await import('@take-out/run/helpers/handleProcessExit')
+    const { handleProcessExit } = await import('@take-out/run/helpers/handleProcessExit')
     const { run, printTiming, runInline, runParallel, waitForRun } =
       await import('@take-out/scripts/helpers/run')
     const { waitForPort } = await import('@take-out/scripts/helpers/wait-for-port')

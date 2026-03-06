@@ -25,7 +25,7 @@ await cmd`bootstrap project workspace and build initial packages`.run(
         await $`cd packages/helpers && bun run build`
 
         // then build all other packages in parallel
-        await $`bun ./packages/scripts/src/run.ts build --no-root`
+        await $`bun ./packages/run/src/run.ts build --no-root`
       }
     }
 

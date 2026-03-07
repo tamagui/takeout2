@@ -57,7 +57,17 @@ export function createPermissions<Schema extends ZeroSchema>({
     }
 
     const primaryKeys = tableSchema.primaryKey
-    const permissionReturn = permissionWhere(eb, authData)
+
+    let permissionReturn: PermissionReturn
+    try {
+      permissionReturn = permissionWhere(eb, authData)
+    } catch (err) {
+      // treat throws as deny — ensure() is the idiomatic "deny if falsy" pattern
+      if (process.env.NODE_ENV === 'development' && !(err instanceof EnsureError)) {
+        console.warn(`[permission] ${tableName} threw:`, err)
+      }
+      return eb.cmpLit(true, '=', false)
+    }
 
     if (permissionReturn == null) {
       throw new Error(`No permission defined for ${tableName}`)

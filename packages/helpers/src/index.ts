@@ -81,6 +81,7 @@ export * from './storage/driver'
 export type { StorageDriver } from './storage/types'
 
 // server
+export * from './server/isServerRuntime'
 export * from './server/ensureEnv'
 export * from './server/getHeaders'
 export * from './server/prettyPrintRequest'

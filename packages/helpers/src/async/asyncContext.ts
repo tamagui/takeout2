@@ -1,3 +1,5 @@
+import { isServerRuntime } from '../server/isServerRuntime'
+
 interface AsyncContext<T> {
   get(): T | undefined
   run<R>(value: T, fn: () => R | Promise<R>): Promise<R>
@@ -31,7 +33,7 @@ async function getNodeAsyncLocalStorage(): Promise<AsyncLocalStorageConstructor 
 }
 
 export function createAsyncContext<T>(): AsyncContext<T> {
-  if (process.env.VITE_ENVIRONMENT === 'ssr') {
+  if (isServerRuntime()) {
     let storage: NodeAsyncLocalStorage<T> | null = null
 
     getNodeAsyncLocalStorage().then((AsyncLocalStorage) => {

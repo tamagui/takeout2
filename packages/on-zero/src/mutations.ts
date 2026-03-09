@@ -1,3 +1,4 @@
+import { isServer } from './constants'
 import { getDidRunPermissionCheck } from './helpers/didRunPermissionCheck'
 import { setMutationsPermissions } from './modelRegistry'
 
@@ -143,7 +144,7 @@ export function mutations<
           }
 
           // only validate on the server
-          if (process.env.VITE_ENVIRONMENT === 'ssr') {
+          if (isServer) {
             await ctx.can(permissions, obj)
           }
         }

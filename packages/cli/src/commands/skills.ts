@@ -8,210 +8,17 @@ import {
   mkdirSync,
   readdirSync,
   readFileSync,
+  readlinkSync,
   rmSync,
   symlinkSync,
   unlinkSync,
   writeFileSync,
 } from 'node:fs'
 import { createRequire } from 'node:module'
-import { dirname, join, relative } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { dirname, join, relative, resolve } from 'node:path'
 
 import { defineCommand } from 'citty'
 import pc from 'picocolors'
-
-import {
-  type ScriptMetadata,
-  discoverScripts,
-  getAllScriptMetadata,
-  getLocalScriptsDir,
-} from '../utils/script-utils'
-
-// --- shared helpers ---
-
-const BUILTIN_COMMANDS: Array<{ name: string; description: string }> = [
-  { name: 'onboard', description: 'setup wizard for new projects' },
-  { name: 'docs', description: 'view documentation' },
-  { name: 'env:setup', description: 'setup environment variables' },
-  { name: 'run', description: 'run scripts in parallel' },
-  { name: 'script', description: 'manage and run scripts' },
-  { name: 'sync', description: 'sync fork with upstream takeout' },
-  { name: 'changed', description: 'show changes since last sync' },
-  { name: 'skills', description: 'manage claude code skills' },
-  { name: 'completion', description: 'shell completion setup' },
-]
-
-function findScriptsPackageRoot(): string | null {
-  try {
-    const resolved = import.meta.resolve('@take-out/scripts/package.json')
-    const packageJsonPath = fileURLToPath(new URL(resolved))
-    return join(packageJsonPath, '..', 'src')
-  } catch {
-    return null
-  }
-}
-
-// --- summary skill generation ---
-
-function buildSummaryDescription(
-  localScripts: Map<string, string>,
-  builtInScripts: Map<string, string>
-): string {
-  const categories = new Set<string>()
-  const keywords = new Set<string>()
-
-  for (const [name] of [...localScripts, ...builtInScripts]) {
-    keywords.add(name)
-    if (name.includes('/')) {
-      categories.add(name.split('/')[0]!)
-    }
-  }
-
-  for (const cmd of BUILTIN_COMMANDS) {
-    keywords.add(cmd.name)
-  }
-
-  const categoryList = [...categories].sort().join(', ')
-
-  return (
-    `CLI scripts and commands reference for the tko (takeout) CLI. ` +
-    `Use when the user asks to run scripts, manage the project, or needs to know what commands are available. ` +
-    `tko, takeout, CLI, scripts, commands, bun tko, project tasks, automation, ` +
-    `${categoryList}, ${[...keywords].sort().join(', ')}`
-  ).slice(0, 2048)
-}
-
-function buildSummaryContent(
-  localScripts: Map<string, string>,
-  builtInScripts: Map<string, string>,
-  metadata: Map<string, ScriptMetadata>
-): string {
-  const description = buildSummaryDescription(localScripts, builtInScripts)
-
-  const lines: string[] = []
-  lines.push('---')
-  lines.push('name: tko-scripts')
-  lines.push(`description: ${description}`)
-  lines.push('---')
-  lines.push('')
-  lines.push('# tko CLI - scripts & commands')
-  lines.push('')
-  lines.push('run with `bun tko <command>` or `bun tko <script-name>`.')
-  lines.push('')
-
-  // built-in commands
-  lines.push('## built-in commands')
-  lines.push('')
-  for (const cmd of BUILTIN_COMMANDS) {
-    lines.push(`  ${cmd.name} - ${cmd.description}`)
-  }
-  lines.push('')
-
-  // helper to group and format scripts
-  const formatSection = (title: string, scripts: Map<string, string>) => {
-    if (scripts.size === 0) return
-
-    const categories = new Map<string, Array<string>>()
-    const rootScripts: string[] = []
-
-    for (const [name] of scripts) {
-      if (name.includes('/')) {
-        const category = name.split('/')[0]!
-        if (!categories.has(category)) {
-          categories.set(category, [])
-        }
-        categories.get(category)!.push(name)
-      } else {
-        rootScripts.push(name)
-      }
-    }
-
-    lines.push(`## ${title}`)
-    lines.push('')
-
-    for (const name of rootScripts) {
-      const meta = metadata.get(name)
-      const desc = meta?.description ? ` - ${meta.description}` : ''
-      const args = meta?.args?.length ? ` [${meta.args.join(', ')}]` : ''
-      lines.push(`  ${name}${desc}${args}`)
-    }
-
-    for (const [category, categoryScripts] of categories) {
-      lines.push('')
-      lines.push(`  ${category}/`)
-      for (const name of categoryScripts) {
-        const shortName = name.substring(category.length + 1)
-        const meta = metadata.get(name)
-        const desc = meta?.description ? ` - ${meta.description}` : ''
-        const args = meta?.args?.length ? ` [${meta.args.join(', ')}]` : ''
-        lines.push(`    ${shortName}${desc}${args}`)
-      }
-    }
-
-    lines.push('')
-  }
-
-  formatSection('local scripts', localScripts)
-  formatSection('built-in scripts', builtInScripts)
-
-  // usage
-  lines.push('## usage')
-  lines.push('')
-  lines.push('```bash')
-  lines.push('bun tko <command>           # run a built-in command')
-  lines.push('bun tko <script-name>       # execute direct script')
-  lines.push(
-    'bun tko <group> <script>    # execute nested script (e.g. bun tko aws health)'
-  )
-  lines.push('bun tko run s1 s2 s3        # run multiple scripts in parallel')
-  lines.push('bun tko script new <path>   # create a new script')
-  lines.push('```')
-  lines.push('')
-
-  return lines.join('\n')
-}
-
-async function generateSummary(cwd: string): Promise<boolean> {
-  const skillsDir = join(cwd, '.claude', 'skills')
-  const skillName = 'tko-scripts'
-  const skillDir = join(skillsDir, skillName)
-  const skillFile = join(skillDir, 'SKILL.md')
-
-  // discover all scripts
-  const localScripts = discoverScripts(getLocalScriptsDir())
-  const builtInDir = findScriptsPackageRoot()
-  const builtInScripts = builtInDir ? discoverScripts(builtInDir) : new Map()
-
-  const allScripts = new Map([...localScripts, ...builtInScripts])
-  const metadata = await getAllScriptMetadata(allScripts)
-
-  const totalScripts = localScripts.size + builtInScripts.size
-  console.info(
-    pc.dim(
-      `found ${totalScripts} scripts (${localScripts.size} local, ${builtInScripts.size} built-in) + ${BUILTIN_COMMANDS.length} commands`
-    )
-  )
-
-  const content = buildSummaryContent(localScripts, builtInScripts, metadata)
-
-  // check if unchanged
-  try {
-    const existing = readFileSync(skillFile, 'utf-8')
-    if (existing === content) {
-      console.info(`  ${pc.dim('tko-scripts')} ${pc.dim('unchanged')}`)
-      return false
-    }
-  } catch {
-    // doesn't exist yet
-  }
-
-  if (!existsSync(skillDir)) {
-    mkdirSync(skillDir, { recursive: true })
-  }
-  writeFileSync(skillFile, content)
-  console.info(`  ${pc.green('✓')} tko-scripts`)
-  return true
-}
 
 // --- doc skills generation ---
 
@@ -312,16 +119,17 @@ function collectAllDocs(
 async function generateDocSkills(
   cwd: string,
   clean: boolean
-): Promise<{ symlinked: number; generated: number; unchanged: number }> {
+): Promise<{ symlinked: number; generated: number; unchanged: number; removed: number }> {
   const skillsDir = join(cwd, '.claude', 'skills')
   const docs = collectAllDocs(cwd)
+  const localDocsDir = join(cwd, 'docs')
+  const expectedSkillNames = new Set<string>()
 
   if (docs.length === 0) {
     console.info(pc.yellow('no documentation files found'))
-    return { symlinked: 0, generated: 0, unchanged: 0 }
+  } else {
+    console.info(pc.dim(`found ${docs.length} documentation files`))
   }
-
-  console.info(pc.dim(`found ${docs.length} documentation files`))
 
   if (clean && existsSync(skillsDir)) {
     const existing = readdirSync(skillsDir)
@@ -339,6 +147,7 @@ async function generateDocSkills(
   let symlinked = 0
   let generated = 0
   let unchanged = 0
+  let removed = 0
   const isDev = !!process.env.IS_TAMAGUI_DEV
 
   for (const doc of docs) {
@@ -352,6 +161,7 @@ async function generateDocSkills(
       if (!nameMatch) continue
 
       const skillName = nameMatch[1]!.trim()
+      expectedSkillNames.add(skillName)
       const skillDir = join(skillsDir, skillName)
       const skillFile = join(skillDir, 'SKILL.md')
 
@@ -390,6 +200,7 @@ async function generateDocSkills(
     } else {
       const baseName = toSkillName(doc.name)
       const skillName = `${SKILL_PREFIX}${baseName}`
+      expectedSkillNames.add(skillName)
       const skillDir = join(skillsDir, skillName)
       const skillFile = join(skillDir, 'SKILL.md')
 
@@ -438,33 +249,45 @@ ${content}
     }
   }
 
-  return { symlinked, generated, unchanged }
+  for (const dir of readdirSync(skillsDir)) {
+    if (expectedSkillNames.has(dir)) continue
+
+    const skillDir = join(skillsDir, dir)
+    const skillFile = join(skillDir, 'SKILL.md')
+
+    let shouldRemove = dir.startsWith(SKILL_PREFIX)
+
+    if (!shouldRemove) {
+      try {
+        const stat = lstatSync(skillFile)
+        if (stat.isSymbolicLink()) {
+          const linkTarget = readlinkSync(skillFile)
+          const resolvedTarget = resolve(skillDir, linkTarget)
+          shouldRemove =
+            resolvedTarget.startsWith(`${localDocsDir}/`) ||
+            (!!DOCS_DIR && resolvedTarget.startsWith(`${DOCS_DIR}/`))
+        }
+      } catch {
+        // ignore unrelated skill directories
+      }
+    }
+
+    if (!shouldRemove) continue
+
+    rmSync(skillDir, { recursive: true, force: true })
+    removed++
+    console.info(`  ${pc.red('✕')} ${dir} ${pc.dim('(removed stale skill)')}`)
+  }
+
+  return { symlinked, generated, unchanged, removed }
 }
 
 // --- commands ---
 
-const scriptsCommand = defineCommand({
-  meta: {
-    name: 'scripts',
-    description: 'Generate a skill summarizing all tko scripts and commands',
-  },
-  async run() {
-    const cwd = process.cwd()
-
-    console.info()
-    console.info(pc.bold(pc.cyan('Generate scripts skill')))
-    console.info()
-
-    await generateSummary(cwd)
-
-    console.info()
-  },
-})
-
 const generateCommand = defineCommand({
   meta: {
     name: 'generate',
-    description: 'Generate all Claude Code skills (doc skills + summary)',
+    description: 'Generate Claude Code skills from documentation',
   },
   args: {
     clean: {
@@ -489,6 +312,7 @@ const generateCommand = defineCommand({
     let symlinked = 0
     let generated = 0
     let unchanged = 0
+    let removed = 0
 
     // 1. doc skills (unless skipped)
     if (!args['skip-internal-docs']) {
@@ -496,11 +320,9 @@ const generateCommand = defineCommand({
       symlinked = docStats.symlinked
       generated = docStats.generated
       unchanged = docStats.unchanged
+      removed = docStats.removed
       console.info()
     }
-
-    // 2. scripts summary skill
-    await generateSummary(cwd)
 
     // summary
     console.info()
@@ -511,6 +333,7 @@ const generateCommand = defineCommand({
         `  ${pc.yellow(`${generated} generated`)} ${pc.dim('(add frontmatter to enable symlink)')}`
       )
     if (unchanged > 0) console.info(`  ${pc.dim(`${unchanged} unchanged`)}`)
+    if (removed > 0) console.info(`  ${pc.red(`${removed} removed`)}`)
     console.info(pc.dim(`  skills in ${skillsDir}`))
     console.info()
   },
@@ -523,6 +346,5 @@ export const skillsCommand = defineCommand({
   },
   subCommands: {
     generate: generateCommand,
-    scripts: scriptsCommand,
   },
 })

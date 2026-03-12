@@ -508,6 +508,39 @@ export const mutate = mutations(schema, perm, {
     expect(content).not.toMatch(/rename:[\s\S]*count/)
   })
 
+  test('skips symbol-keyed properties when resolving imported mutation param types', async () => {
+    writeFileSync(
+      join(testDir, 'models/types.ts'),
+      `
+export type WeirdParams = {
+  id: string
+  [Symbol.iterator]?: () => Iterator<string>
+}
+`
+    )
+
+    writeFileSync(
+      join(testDir, 'models/item.ts'),
+      `
+import { mutations } from 'on-zero'
+import type { WeirdParams } from './types'
+
+export const mutate = mutations({
+  run: async ({ tx }, params: WeirdParams) => {
+    await tx.mutate.item.delete({ id: params.id })
+  },
+})
+`
+    )
+
+    await generate({ dir: testDir, silent: true })
+
+    const content = readFileSync(join(testDir, 'generated/syncedMutations.ts'), 'utf-8')
+    expect(content).toContain('run')
+    expect(content).toContain('id: v.string()')
+    expect(content).not.toContain('__@iterator')
+  })
+
   test('resolves imported types in query params', async () => {
     writeFileSync(
       join(testDir, 'models/post.ts'),

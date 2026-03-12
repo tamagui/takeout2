@@ -629,6 +629,16 @@ function columnTypeToValibot(col: SchemaColumn): string {
   return col.optional ? `v.optional(v.nullable(${base}))` : base
 }
 
+function shouldSkipObjectKey(name: string): boolean {
+  // TypeScript exposes symbol keys as synthetic names like "__@iterator@851".
+  // These cannot come from JSON mutation payloads and break codegen if emitted.
+  return name.startsWith('__@')
+}
+
+function formatObjectKey(name: string): string {
+  return /^[$A-Z_a-z][$\w]*$/.test(name) ? name : JSON.stringify(name)
+}
+
 function schemaColumnsToValibot(
   columns: Record<string, SchemaColumn>,
   primaryKeys: string[],
@@ -640,22 +650,29 @@ function schemaColumnsToValibot(
     // only PKs
     for (const pk of primaryKeys) {
       const col = columns[pk]
-      if (col) entries.push(`${pk}: ${columnTypeToValibot({ ...col, optional: false })}`)
+      if (col)
+        entries.push(
+          `${formatObjectKey(pk)}: ${columnTypeToValibot({ ...col, optional: false })}`
+        )
     }
   } else if (mode === 'update') {
     // PKs required, rest optional
     for (const [name, col] of Object.entries(columns)) {
       const isPK = primaryKeys.includes(name)
       if (isPK) {
-        entries.push(`${name}: ${columnTypeToValibot({ ...col, optional: false })}`)
+        entries.push(
+          `${formatObjectKey(name)}: ${columnTypeToValibot({ ...col, optional: false })}`
+        )
       } else {
-        entries.push(`${name}: ${columnTypeToValibot({ ...col, optional: true })}`)
+        entries.push(
+          `${formatObjectKey(name)}: ${columnTypeToValibot({ ...col, optional: true })}`
+        )
       }
     }
   } else {
     // insert: all columns as-is
     for (const [name, col] of Object.entries(columns)) {
-      entries.push(`${name}: ${columnTypeToValibot(col)}`)
+      entries.push(`${formatObjectKey(name)}: ${columnTypeToValibot(col)}`)
     }
   }
 
@@ -758,7 +775,7 @@ function parseTypeString(type: string): string | null {
       if (!parsed) return null // can't resolve inner type
       let val = parsed
       if (opt) val = `v.optional(${val})`
-      entries.push(`${name}: ${val}`)
+      entries.push(`${formatObjectKey(name)}: ${val}`)
     }
     if (entries.length === 0) return 'v.object({})'
     return `v.object({\n    ${entries.join(',\n    ')},\n  })`
@@ -861,14 +878,17 @@ function tsTypeToValibot(
     if (props.length === 0) return 'v.object({})'
     const entries: string[] = []
     for (const prop of props) {
+      const name = prop.getName()
+      if (shouldSkipObjectKey(name)) continue
       const propType = resolveSymbolType(prop)
       const isOptional = !!(prop.getFlags() & ts.SymbolFlags.Optional)
       let val = recurse(propType)
       if (isOptional && !val.startsWith('v.optional(')) {
         val = `v.optional(${val})`
       }
-      entries.push(`${prop.getName()}: ${val}`)
+      entries.push(`${formatObjectKey(name)}: ${val}`)
     }
+    if (entries.length === 0) return 'v.object({})'
     return `v.object({\n    ${entries.join(',\n    ')},\n  })`
   }
 
@@ -903,13 +923,15 @@ function tsTypeToValibot(
     // regular object
     const entries: string[] = []
     for (const prop of props) {
+      const name = prop.getName()
+      if (shouldSkipObjectKey(name)) continue
       const propType = resolveSymbolType(prop)
       const isOptional = !!(prop.getFlags() & ts.SymbolFlags.Optional)
       let val = recurse(propType)
       if (isOptional && !val.startsWith('v.optional(')) {
         val = `v.optional(${val})`
       }
-      entries.push(`${prop.getName()}: ${val}`)
+      entries.push(`${formatObjectKey(name)}: ${val}`)
     }
     if (entries.length === 0) return 'v.object({})'
     return `v.object({\n    ${entries.join(',\n    ')},\n  })`

@@ -1,6 +1,6 @@
 {
   "name": "create-takeout",
-  "version": "0.1.45-1773289062029",
+  "version": "0.1.46",
   "description": "Create a new Takeout app",
   "bin": "./run.js",
   "main": "dist/index.js",

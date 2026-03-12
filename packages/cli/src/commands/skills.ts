@@ -49,36 +49,6 @@ function isDevOnly(content: string): boolean {
   return /\bdev:\s*true\b/.test(frontmatter)
 }
 
-function extractDocMeta(content: string): { title: string; description: string } {
-  const lines = content.split('\n')
-  let title = ''
-  let description = ''
-
-  let startLine = 0
-  if (lines[0]?.trim() === '---') {
-    for (let i = 1; i < lines.length; i++) {
-      if (lines[i]?.trim() === '---') {
-        startLine = i + 1
-        break
-      }
-    }
-  }
-
-  for (let i = startLine; i < lines.length; i++) {
-    const trimmed = lines[i]?.trim() || ''
-    if (!title && trimmed.startsWith('# ')) {
-      title = trimmed.slice(2).trim()
-      continue
-    }
-    if (title && trimmed && !trimmed.startsWith('#')) {
-      description = trimmed
-      break
-    }
-  }
-
-  return { title, description }
-}
-
 function toSkillName(name: string): string {
   return name
     .toLowerCase()
@@ -120,7 +90,13 @@ function collectAllDocs(
 async function generateDocSkills(
   cwd: string,
   clean: boolean
-): Promise<{ symlinked: number; generated: number; unchanged: number; removed: number }> {
+): Promise<{
+  symlinked: number
+  generated: number
+  unchanged: number
+  removed: number
+  skipped: number
+}> {
   const skillsDir = join(cwd, '.claude', 'skills')
   const docs = collectAllDocs(cwd)
   const localDocsDir = join(cwd, 'docs')
@@ -149,6 +125,7 @@ async function generateDocSkills(
   let generated = 0
   let unchanged = 0
   let removed = 0
+  let skipped = 0
   const isDev = !!process.env.IS_TAMAGUI_DEV
 
   for (const doc of docs) {
@@ -199,54 +176,13 @@ async function generateDocSkills(
         `  ${pc.green('⟷')} ${skillName} ${sourceLabel} ${pc.dim('(symlink)')}`
       )
     } else {
-      const baseName = toSkillName(doc.name)
-      const skillName = `${SKILL_PREFIX}${baseName}`
-      expectedSkillNames.add(skillName)
-      const skillDir = join(skillsDir, skillName)
-      const skillFile = join(skillDir, 'SKILL.md')
-
-      if (!existsSync(skillDir)) {
-        mkdirSync(skillDir, { recursive: true })
+      if (!hasFrontmatter) {
+        skipped++
+        console.info(
+          `  ${pc.yellow('!')} skipped ${pc.dim(doc.name)} ${pc.dim('(missing skill frontmatter)')}`
+        )
+        continue
       }
-
-      const { title, description } = extractDocMeta(content)
-      const skillDescription = description
-        ? `${title}. ${description}`.slice(0, 1024)
-        : title.slice(0, 1024)
-
-      const skillContent = `---
-name: ${skillName}
-description: ${skillDescription}
----
-
-${content}
-`
-
-      let shouldWrite = true
-      try {
-        const stat = lstatSync(skillFile)
-        if (stat.isSymbolicLink()) {
-          unlinkSync(skillFile)
-        } else {
-          const existing = readFileSync(skillFile, 'utf-8')
-          if (existing === skillContent) {
-            unchanged++
-            shouldWrite = false
-          }
-        }
-      } catch {
-        // nothing exists
-      }
-
-      if (!shouldWrite) continue
-
-      writeFileSync(skillFile, skillContent)
-      generated++
-
-      const sourceLabel = doc.source === 'local' ? pc.blue('local') : pc.dim('package')
-      console.info(
-        `  ${pc.green('✓')} ${skillName} ${sourceLabel} ${pc.dim('(generated)')}`
-      )
     }
   }
 
@@ -255,6 +191,14 @@ ${content}
 
     const skillDir = join(skillsDir, dir)
     const skillFile = join(skillDir, 'SKILL.md')
+
+    if (dir.startsWith(SKILL_PREFIX)) {
+      rmSync(skillDir, { recursive: true, force: true })
+      removed++
+      console.info(`  ${pc.red('✕')} ${dir} ${pc.dim('(removed stale generated skill)')}`)
+      continue
+    }
+
     let shouldUnlink = false
 
     try {
@@ -280,7 +224,7 @@ ${content}
     console.info(`  ${pc.red('✕')} ${dir} ${pc.dim('(removed stale symlink)')}`)
   }
 
-  return { symlinked, generated, unchanged, removed }
+  return { symlinked, generated, unchanged, removed, skipped }
 }
 
 // --- commands ---
@@ -314,6 +258,7 @@ const generateCommand = defineCommand({
     let generated = 0
     let unchanged = 0
     let removed = 0
+    let skipped = 0
 
     // 1. doc skills (unless skipped)
     if (!args['skip-internal-docs']) {
@@ -322,6 +267,7 @@ const generateCommand = defineCommand({
       generated = docStats.generated
       unchanged = docStats.unchanged
       removed = docStats.removed
+      skipped = docStats.skipped
       console.info()
     }
 
@@ -332,6 +278,10 @@ const generateCommand = defineCommand({
     if (generated > 0)
       console.info(
         `  ${pc.yellow(`${generated} generated`)} ${pc.dim('(add frontmatter to enable symlink)')}`
+      )
+    if (skipped > 0)
+      console.info(
+        `  ${pc.yellow(`${skipped} skipped`)} ${pc.dim('(missing skill frontmatter)')}`
       )
     if (unchanged > 0) console.info(`  ${pc.dim(`${unchanged} unchanged`)}`)
     if (removed > 0) console.info(`  ${pc.red(`${removed} removed`)}`)

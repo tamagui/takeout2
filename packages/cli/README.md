@@ -88,8 +88,8 @@ takeout skills generate --clean  # clean and regenerate
 The `skills generate` command generates Claude Code skills from your documentation:
 
 1. scans docs from both `./docs/` (local) and package docs
-2. for docs with YAML frontmatter, creates symlinks to `.claude/skills/`
-3. for docs without frontmatter, generates skill files with auto-extracted metadata
+2. only docs with YAML frontmatter containing `name` and `description` become skills
+3. those docs are symlinked into `.claude/skills/`
 
 **adding frontmatter to docs (recommended):**
 
@@ -104,8 +104,8 @@ description: What this skill does. Keywords for when Claude should use it.
 content here...
 ```
 
-docs with frontmatter get symlinked directly - edit the source and the skill
-updates automatically. docs without frontmatter get generated copies.
+docs with frontmatter get symlinked directly, so edits to the source doc update
+the skill automatically. docs without that frontmatter are skipped.
 
 **regenerating skills:**
 

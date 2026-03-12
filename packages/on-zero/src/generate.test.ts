@@ -270,7 +270,7 @@ export const mutate = mutations(schema, perm)
     expect(content).toContain('delete:')
   })
 
-  test('skips models without export const mutate', async () => {
+  test('treats models without export const mutate as empty mutations', async () => {
     writeFileSync(
       join(testDir, 'models/readonly.ts'),
       `
@@ -285,6 +285,9 @@ export const schema = table('readonly').columns({
 
     const result = await generate({ dir: testDir, silent: true })
     expect(result.mutationCount).toBe(0)
+
+    const content = readFileSync(join(testDir, 'generated/syncedMutations.ts'), 'utf-8')
+    expect(content).toContain('readonly: {')
   })
 
   test('extracts custom mutations from bare mutations({})', async () => {

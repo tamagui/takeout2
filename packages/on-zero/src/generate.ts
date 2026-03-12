@@ -430,7 +430,7 @@ function extractMutationsFromModel(
   ts: typeof import('typescript'),
   sourceFile: ReturnType<typeof ts.createSourceFile>,
   content: string,
-  _fileName: string,
+  fileName: string,
   silent: boolean,
   typeToValibot: (typeString: string) => string | null,
   resolvedTypes?: Map<string, import('typescript').Type>,
@@ -450,7 +450,15 @@ function extractMutationsFromModel(
     }
   })
 
-  if (!mutateNode) return null
+  if (!mutateNode) {
+    return {
+      modelName: basename(fileName, '.ts'),
+      hasCRUD: false,
+      columns: {},
+      primaryKeys: [],
+      custom: [],
+    }
+  }
 
   const call = mutateNode as import('typescript').CallExpression
   const args = call.arguments
@@ -1124,7 +1132,6 @@ export async function generate(options: GenerateOptions): Promise<GenerateResult
 
     try {
       const content = readFileSync(filePath, 'utf-8')
-      if (!content.includes('export const mutate')) continue
 
       mutationFiles.push({ path: filePath, content, baseName: fileBaseName })
 

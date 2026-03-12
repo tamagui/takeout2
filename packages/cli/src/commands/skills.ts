@@ -10,6 +10,7 @@ import {
   readFileSync,
   readlinkSync,
   rmSync,
+  rmdirSync,
   symlinkSync,
   unlinkSync,
   writeFileSync,
@@ -254,29 +255,29 @@ ${content}
 
     const skillDir = join(skillsDir, dir)
     const skillFile = join(skillDir, 'SKILL.md')
+    let shouldUnlink = false
 
-    let shouldRemove = dir.startsWith(SKILL_PREFIX)
-
-    if (!shouldRemove) {
-      try {
-        const stat = lstatSync(skillFile)
-        if (stat.isSymbolicLink()) {
-          const linkTarget = readlinkSync(skillFile)
-          const resolvedTarget = resolve(skillDir, linkTarget)
-          shouldRemove =
-            resolvedTarget.startsWith(`${localDocsDir}/`) ||
-            (!!DOCS_DIR && resolvedTarget.startsWith(`${DOCS_DIR}/`))
-        }
-      } catch {
-        // ignore unrelated skill directories
+    try {
+      const stat = lstatSync(skillFile)
+      if (stat.isSymbolicLink()) {
+        const linkTarget = readlinkSync(skillFile)
+        const resolvedTarget = resolve(skillDir, linkTarget)
+        shouldUnlink =
+          resolvedTarget.startsWith(`${localDocsDir}/`) ||
+          (!!DOCS_DIR && resolvedTarget.startsWith(`${DOCS_DIR}/`))
       }
+    } catch {
+      // ignore unrelated skill directories
     }
 
-    if (!shouldRemove) continue
+    if (!shouldUnlink) continue
 
-    rmSync(skillDir, { recursive: true, force: true })
+    unlinkSync(skillFile)
+    if (readdirSync(skillDir).length === 0) {
+      rmdirSync(skillDir)
+    }
     removed++
-    console.info(`  ${pc.red('✕')} ${dir} ${pc.dim('(removed stale skill)')}`)
+    console.info(`  ${pc.red('✕')} ${dir} ${pc.dim('(removed stale symlink)')}`)
   }
 
   return { symlinked, generated, unchanged, removed }

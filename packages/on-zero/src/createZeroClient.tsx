@@ -19,7 +19,7 @@ import { getAllMutationsPermissions, getMutationsPermissions } from './modelRegi
 import { registerQuery } from './queryRegistry'
 import { resolveQuery, type PlainQueryFn } from './resolveQuery'
 import { setCustomQueries } from './run'
-import { setAuthData, setEnvironment, setSchema } from './state'
+import { getEnvironment, setAuthData, setEnvironment, setSchema } from './state'
 import { getRawWhere, setEvaluatingPermission } from './where'
 import { setRunner } from './zeroRunner'
 import { zql } from './zql'
@@ -56,7 +56,12 @@ export function createZeroClient<
   type TableName = keyof Schema['tables'] & string
 
   setSchema(schema)
-  setEnvironment('client')
+
+  // only set environment to 'client' if server hasn't already claimed it
+  // (during SSR, createZeroServer runs first and sets 'server')
+  if (getEnvironment() === null) {
+    setEnvironment('client')
+  }
 
   const permissionsHelpers = createPermissions<Schema>({
     schema,

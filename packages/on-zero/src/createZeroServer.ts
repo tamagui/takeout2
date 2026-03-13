@@ -17,6 +17,7 @@ import { runWithQueryContext } from './helpers/queryContext'
 import { getMutationsPermissions } from './modelRegistry'
 import { setCustomQueries } from './run'
 import { getZQL, setEnvironment, setSchema } from './state'
+import { setEvaluatingPermission } from './where'
 import { setRunner } from './zeroRunner'
 
 import type {
@@ -225,17 +226,24 @@ export function createZeroServer<
               if (!perm) {
                 throw new Error(`[permission] no permission defined for table: ${table}`)
               }
-              return (getZQL() as any)[table]
-                .where((eb: any) => {
-                  return permissions.buildPermissionQuery(
-                    authData,
-                    eb,
-                    perm,
-                    objOrId,
-                    table
-                  )
-                })
-                .one()
+              // wrap with setEvaluatingPermission so serverWhere evaluates
+              // even when environment is 'client' (SSR hydration)
+              setEvaluatingPermission(true)
+              try {
+                return (getZQL() as any)[table]
+                  .where((eb: any) => {
+                    return permissions.buildPermissionQuery(
+                      authData,
+                      eb,
+                      perm,
+                      objOrId,
+                      table
+                    )
+                  })
+                  .one()
+              } finally {
+                setEvaluatingPermission(false)
+              }
             }
 
             // run validation hook if provided (must be sync - throw to reject)

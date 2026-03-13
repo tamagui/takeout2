@@ -1,39 +1,53 @@
 import { createBuilder, type Schema } from '@rocicorp/zero'
+import { globalValue } from '@take-out/helpers'
 
 import type { AuthData, QueryBuilder } from './types'
 
-let schema: Schema | null = null
-let zql: QueryBuilder | null = null
-let authData: AuthData | null | undefined
-let environment: 'client' | 'server' | null = null
+type State = {
+  schema: Schema | null
+  zql: QueryBuilder | null
+  authData: AuthData | null | undefined
+  environment: 'client' | 'server' | null
+}
+
+const getState = () =>
+  globalValue<State>('on-zero:state', () => ({
+    schema: null,
+    zql: null,
+    authData: undefined,
+    environment: null,
+  }))
 
 const errMessage = `Haven't called createZeroClient or createZeroServer yet!`
 
 export const getZQL = () => {
+  const { zql } = getState()
   if (!zql) throw new Error(errMessage)
   return zql
 }
 
 export const getSchema = () => {
+  const { schema } = getState()
   if (!schema) throw new Error(errMessage)
   return schema
 }
 
 export const setSchema = (_: Schema) => {
-  schema = _
-  zql = createBuilder(_) as QueryBuilder
+  const state = getState()
+  state.schema = _
+  state.zql = createBuilder(_) as QueryBuilder
 }
 
 export const getAuthData = () => {
-  return authData || null
+  return getState().authData || null
 }
 
 export const setAuthData = (_: AuthData) => {
-  authData = _
+  getState().authData = _
 }
 
-export const getEnvironment = () => environment
+export const getEnvironment = () => getState().environment
 
 export const setEnvironment = (env: 'client' | 'server') => {
-  environment = env
+  getState().environment = env
 }

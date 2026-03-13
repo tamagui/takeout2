@@ -71,6 +71,76 @@ async function cleanupTestBlocks() {
   await pool.query(`DELETE FROM block WHERE id LIKE 'test-block-%'`)
 }
 
+test.describe('SSR Permissions', () => {
+  test.afterEach(async () => {
+    await cleanupTestBlocks()
+  })
+
+  test('serverWhere filters blocked users posts during SSR render', async ({ page }) => {
+    test.setTimeout(60000)
+
+    // login to get demo user id
+    await loginAsDemo(page)
+    await page.goto(`${BASE_URL}/home/feed`, { waitUntil: 'domcontentloaded' })
+    await page.waitForTimeout(2000)
+
+    await openTestUI(page)
+    await page.waitForFunction(
+      () => {
+        const el = document.querySelector('[data-testid="zt-user-id"]')
+        return el && el.textContent && el.textContent !== '—'
+      },
+      { timeout: 5000 }
+    )
+    const demoUserId = await getTestValue(page, 'user-id')
+    expect(demoUserId).toBeTruthy()
+
+    // first, verify SSR without block shows all seed posts
+    const ssrUrl = `${BASE_URL}/test/ssr-permissions?viewerId=${demoUserId}`
+    const responseBefore = await page.goto(ssrUrl, { waitUntil: 'domcontentloaded' })
+    const htmlBefore = await responseBefore?.text()
+
+    expect(htmlBefore).toContain(SEED_POST_1)
+    expect(htmlBefore).toContain(SEED_POST_2)
+
+    // now block seed-user-1
+    const blockId = await insertBlock(demoUserId, SEED_USER_1)
+
+    // fetch SSR page again - serverWhere should filter out blocked user's posts
+    const responseAfter = await page.goto(ssrUrl, { waitUntil: 'domcontentloaded' })
+    const htmlAfter = await responseAfter?.text()
+
+    // seed-post-1 should NOT appear (owner is blocked)
+    expect(htmlAfter).not.toContain(SEED_POST_1)
+
+    // seed-post-2 should still appear (owner is not blocked)
+    expect(htmlAfter).toContain(SEED_POST_2)
+
+    // clean up
+    await deleteBlock(blockId)
+
+    // verify SSR shows the post again after unblock
+    const responseUnblocked = await page.goto(ssrUrl, { waitUntil: 'domcontentloaded' })
+    const htmlUnblocked = await responseUnblocked?.text()
+
+    expect(htmlUnblocked).toContain(SEED_POST_1)
+    expect(htmlUnblocked).toContain(SEED_POST_2)
+  })
+
+  test('serverWhere returns all posts for anonymous viewer', async ({ page }) => {
+    test.setTimeout(30000)
+
+    // SSR without viewerId should return all posts (anonymous has no blocks)
+    const ssrUrl = `${BASE_URL}/test/ssr-permissions`
+    const response = await page.goto(ssrUrl, { waitUntil: 'domcontentloaded' })
+    const html = await response?.text()
+
+    // both seed posts should be visible for anonymous
+    expect(html).toContain(SEED_POST_1)
+    expect(html).toContain(SEED_POST_2)
+  })
+})
+
 test.describe('Permissions', () => {
   test.afterEach(async () => {
     await cleanupTestBlocks()

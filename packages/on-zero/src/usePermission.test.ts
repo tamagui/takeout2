@@ -1,9 +1,9 @@
-import { describe, expect, test } from 'vitest'
 import { boolean, string, table } from '@rocicorp/zero'
+import { describe, expect, test } from 'vitest'
 
-import { setEnvironment, setSchema } from './state'
-import { registerQuery, getQueryName } from './queryRegistry'
 import { getMutationsPermissions, setMutationsPermissions } from './modelRegistry'
+import { registerQuery, getQueryName } from './queryRegistry'
+import { setEnvironment, setSchema } from './state'
 
 describe('usePermission _uid query identity', () => {
   // the core bug: zero-cache deduplicates custom queries by name+args.

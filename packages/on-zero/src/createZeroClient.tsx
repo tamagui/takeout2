@@ -196,9 +196,14 @@ export function createZeroClient<
     const tableStr = table as string
     const checkFn = permissionCheckFns[tableStr]
 
+    // include auth user ID in query args so zero-cache creates per-user
+    // permission views (prevents dedup across different auth contexts)
+    const auth = getAuth()
+    const _uid = auth?.id || 'anon'
+
     const [data, status] = useQuery(
       checkFn as any,
-      { objOrId: objOrId as any },
+      { objOrId: objOrId as any, _uid },
       { enabled: Boolean(!disableMode && enabled && objOrId && checkFn) }
     )
 

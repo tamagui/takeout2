@@ -669,12 +669,20 @@ const auth = ensureAuth() // AuthData (throws if not authenticated)
 await zeroServer.mutate.user.insert(user)
 
 // with explicit auth (optional - authData auto-resolves from context)
-await zeroServer.mutate.user.insert(user, { id: userId, email })
+await zeroServer.mutate.user.insert(user, { authData: { id: userId, email } })
+
+// await async tasks (effects) before returning
+await zeroServer.mutate.user.insert(user, { awaitEffects: true })
 ```
+
+the second argument is an options object:
+
+- `authData` — override auth for this call (optional, auto-resolves from context)
+- `awaitEffects` — if `true`, awaits async tasks before returning (default: fire-and-forget)
 
 authData is automatically resolved in this order:
 
-1. explicit `authData` argument (if passed)
+1. explicit `authData` in options (if passed)
 2. current mutation context (inside a mutation)
 3. auth scope (inside asyncTasks - automatically inherited)
 4. `defaultMutateAuthData` from `createZeroServer` config (defaults to `{}`)

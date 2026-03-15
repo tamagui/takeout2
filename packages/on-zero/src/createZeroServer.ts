@@ -39,14 +39,19 @@ import type { TransactionProviderInput } from '@rocicorp/zero/pg'
 
 type MutateAuthData = Pick<AuthData, 'email' | 'id'> & Partial<AuthData>
 
+type MutateOptions = {
+  authData?: MutateAuthData
+  awaitEffects?: boolean
+}
+
 type ServerMutate<Models extends GenericModels> = {
   [Key in keyof Models]: {
     [K in keyof Models[Key]['mutate']]: Models[Key]['mutate'][K] extends (
       ctx: MutatorContext,
       arg: infer Arg
     ) => any
-      ? (arg: Arg, authData?: MutateAuthData) => Promise<void>
-      : (authData?: MutateAuthData) => Promise<void>
+      ? (arg: Arg, options?: MutateOptions) => Promise<void>
+      : (options?: MutateOptions) => Promise<void>
   }
 }
 
@@ -180,10 +185,11 @@ export function createZeroServer<
 
     // now finish
     if (!skipAsyncTasks && asyncTasks.length) {
-      Promise.all(asyncTasks.map((task) => runWithAuthScope(authData, task)))
-        .catch((err) => {
+      Promise.all(asyncTasks.map((task) => runWithAuthScope(authData, task))).catch(
+        (err) => {
           console.error(`[push] async tasks failed`, err)
-        })
+        }
+      )
     }
 
     return {
@@ -263,8 +269,10 @@ export function createZeroServer<
     modelName: string,
     mutatorName: string,
     mutatorArg: unknown,
-    authData?: MutateAuthData
+    options?: MutateOptions
   ) {
+    let authData = options?.authData
+
     // auto-resolve authData from mutation context or auth scope
     if (!authData) {
       const scoped = getScopedAuthData()
@@ -301,10 +309,16 @@ export function createZeroServer<
 
     if (asyncTasks.length) {
       const resolvedAuth = authData ?? null
-      Promise.all(asyncTasks.map((t) => runWithAuthScope(resolvedAuth, t)))
-        .catch((err) => {
+      const promise = Promise.all(
+        asyncTasks.map((t) => runWithAuthScope(resolvedAuth, t))
+      )
+      if (options?.awaitEffects) {
+        await promise
+      } else {
+        promise.catch((err) => {
           console.error(`[mutate] async tasks failed`, err)
         })
+      }
     }
   }
 
@@ -315,8 +329,8 @@ export function createZeroServer<
         {},
         {
           get(_, mutatorName: string) {
-            return (arg: unknown, authData?: MutateAuthData) =>
-              runMutate(modelName, mutatorName, arg, authData)
+            return (arg: unknown, options?: MutateOptions) =>
+              runMutate(modelName, mutatorName, arg, options)
           },
         }
       )

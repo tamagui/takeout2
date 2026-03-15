@@ -16,6 +16,7 @@ import { useNotificationListener } from '~/features/notification/useNotification
 import { Button } from '../buttons/Button'
 import { Z_INDICES } from '../constants'
 import Glint from '../effects/Glint'
+import { XIcon } from '../icons/phosphor/XIcon'
 
 export {
   hideNotification,
@@ -148,6 +149,18 @@ const NotificationToast = ({
             </Toast.Description>
           )}
         </YStack>
+
+        <Toast.Close asChild="except-style">
+          <Button
+            position="absolute"
+            t="$3"
+            r="$3"
+            z={100}
+            size="tiny"
+            circular
+            icon={XIcon}
+          />
+        </Toast.Close>
 
         {action && (
           <XStack gap="$2" self="flex-end">

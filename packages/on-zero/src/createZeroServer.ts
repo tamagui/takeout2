@@ -5,7 +5,7 @@ import { zeroNodePg } from '@rocicorp/zero/server/adapters/pg'
 import { assertString } from '@take-out/helpers'
 import { Pool } from 'pg'
 
-import { createPermissions } from './createPermissions'
+import { PermissionError, createPermissions } from './createPermissions'
 import { createMutators } from './helpers/createMutators'
 import {
   getScopedAuthData,
@@ -350,7 +350,9 @@ export function createZeroServer<
       const output = await zeroDb.transaction(query, dummyTransactionInput)
       return output
     } catch (err) {
-      console.error(`Error running transaction(): ${err}`)
+      if (!(err instanceof PermissionError)) {
+        console.error(`Error running transaction(): ${err}`)
+      }
       throw err
     }
   }

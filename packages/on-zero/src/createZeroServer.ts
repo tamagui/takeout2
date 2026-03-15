@@ -2,7 +2,7 @@ import { mustGetQuery } from '@rocicorp/zero'
 import { PushProcessor } from '@rocicorp/zero/pg'
 import { handleQueryRequest as zeroHandleQueryRequest } from '@rocicorp/zero/server'
 import { zeroNodePg } from '@rocicorp/zero/server/adapters/pg'
-import { assertString, randomId } from '@take-out/helpers'
+import { assertString } from '@take-out/helpers'
 import { Pool } from 'pg'
 
 import { createPermissions } from './createPermissions'
@@ -180,14 +180,9 @@ export function createZeroServer<
 
     // now finish
     if (!skipAsyncTasks && asyncTasks.length) {
-      const id = randomId()
-      console.info(`[push] complete, running async tasks ${asyncTasks.length} id ${id}`)
       Promise.all(asyncTasks.map((task) => runWithAuthScope(authData, task)))
-        .then(() => {
-          console.info(`[push] async tasks complete ${id}`)
-        })
         .catch((err) => {
-          console.error(`[push] error: async tasks failed 😞`, err)
+          console.error(`[push] async tasks failed`, err)
         })
     }
 
@@ -305,15 +300,10 @@ export function createZeroServer<
     })
 
     if (asyncTasks.length) {
-      const id = randomId()
       const resolvedAuth = authData ?? null
-      console.info(`[mutate] running async tasks ${asyncTasks.length} id ${id}`)
       Promise.all(asyncTasks.map((t) => runWithAuthScope(resolvedAuth, t)))
-        .then(() => {
-          console.info(`[mutate] async tasks complete ${id}`)
-        })
         .catch((err) => {
-          console.error(`[mutate] error: async tasks failed`, err)
+          console.error(`[mutate] async tasks failed`, err)
         })
     }
   }

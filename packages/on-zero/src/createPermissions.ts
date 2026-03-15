@@ -14,6 +14,13 @@ import type {
   Schema as ZeroSchema,
 } from '@rocicorp/zero'
 
+export class PermissionError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'PermissionError'
+  }
+}
+
 export function createPermissions<Schema extends ZeroSchema>({
   environment,
   schema,
@@ -137,7 +144,7 @@ export function createPermissions<Schema extends ZeroSchema>({
         if (process.env.NODE_ENV === 'development' && query) {
           msg += `\n ${prettyFormatZeroQuery(query)}`
         }
-        throw new Error(msg)
+        throw new PermissionError(msg)
       }
 
       throw new Error(`Error running permission ${errorTitle}\n${err}`)

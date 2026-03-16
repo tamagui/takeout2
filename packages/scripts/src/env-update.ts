@@ -6,7 +6,16 @@ import path from 'node:path'
 import { cmd } from './cmd'
 import { resolveDepVersion } from './helpers/resolve-dep-version'
 
-const DEFAULT_PATTERNS = ['**/*.yml', '.env*', 'src/**/*.ts']
+const PRESETS: Record<string, string[]> = {
+  takeout: [
+    '.github/workflows/*.yml',
+    'src/uncloud/*.yml',
+    '.env*',
+    'src/env.ts',
+    'src/constants/env-server.ts',
+    'src/server/env-server.ts',
+  ],
+}
 
 const IGNORE_DIRS = new Set([
   'node_modules',
@@ -19,7 +28,7 @@ const IGNORE_DIRS = new Set([
 ])
 
 await cmd`sync environment variables from package.json to matching files`
-  .args('[FILES]')
+  .args('--preset string')
   .run(async ({ args }) => {
     const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf-8'))
     const envVars = packageJson.env as Record<string, boolean | string>
@@ -56,7 +65,6 @@ await cmd`sync environment variables from package.json to matching files`
         if (IGNORE_DIRS.has(part)) return true
       }
       for (const pattern of gitignorePatterns) {
-        // simple prefix/exact match (covers most .gitignore lines)
         if (filePath.startsWith(pattern) || parts.some((p) => p === pattern)) {
           return true
         }
@@ -64,29 +72,33 @@ await cmd`sync environment variables from package.json to matching files`
       return false
     }
 
-    // simple glob: supports *.ext, **/*.ext, dir/**/*.ext, .prefix*
+    // simple glob: supports *.ext, dir/*.ext, dir/**/*.ext, .prefix*
     function expandPattern(pattern: string): string[] {
       const results: string[] = []
 
       if (!pattern.includes('*')) {
-        // exact path
         if (fs.existsSync(pattern)) results.push(pattern)
         return results
       }
 
       const isRecursive = pattern.includes('**')
       const parts = pattern.split('**/')
-      const baseDir = parts.length > 1 ? (parts[0]!.replace(/\/$/, '') || '.') : '.'
-      const filePattern = parts.length > 1 ? parts[1]! : pattern
+      const baseDir = parts.length > 1 ? parts[0]!.replace(/\/$/, '') || '.' : '.'
+      const filePattern =
+        parts.length > 1
+          ? parts[1]!
+          : pattern.includes('/')
+            ? pattern.split('/').pop()!
+            : pattern
 
-      // build a simple matcher from the file pattern
-      // handles: *.yml, *.ts, .env*
+      // for non-recursive patterns with a dir prefix like "src/uncloud/*.yml"
+      const nonRecursiveDir =
+        !isRecursive && pattern.includes('/')
+          ? pattern.slice(0, pattern.lastIndexOf('/'))
+          : null
+
       const matchRe = new RegExp(
-        '^' +
-          filePattern
-            .replace(/\./g, '\\.')
-            .replace(/\*/g, '[^/]*') +
-          '$'
+        '^' + filePattern.replace(/\./g, '\\.').replace(/\*/g, '[^/]*') + '$'
       )
 
       function walk(dir: string) {
@@ -107,13 +119,26 @@ await cmd`sync environment variables from package.json to matching files`
         }
       }
 
-      walk(baseDir)
+      walk(nonRecursiveDir || baseDir)
       return results
     }
 
-    const patterns: string[] = args.rest.length
-      ? args.rest
-      : packageJson.envUpdateFiles || DEFAULT_PATTERNS
+    // resolve file list: --preset > CLI args > package.json config > preset:takeout
+    let patterns: string[]
+    if (args.preset) {
+      const preset = PRESETS[args.preset]
+      if (!preset) {
+        console.error(
+          `Unknown preset: ${args.preset}\nAvailable: ${Object.keys(PRESETS).join(', ')}`
+        )
+        process.exit(1)
+      }
+      patterns = preset
+    } else if (args.rest.length) {
+      patterns = args.rest
+    } else {
+      patterns = packageJson.envUpdateFiles || PRESETS.takeout!
+    }
 
     // expand all patterns
     const files: string[] = []
@@ -157,13 +182,13 @@ await cmd`sync environment variables from package.json to matching files`
       endMarker: string,
       newSection: string
     ): string {
-      return content.replace(
-        new RegExp(
-          `${escapeRegExp(startMarker)}(.|\n)*?${escapeRegExp(endMarker)}`,
-          'gm'
-        ),
-        `${startMarker}\n${newSection}\n${endMarker}`
+      const re = new RegExp(
+        `^([ \\t]*)${escapeRegExp(startMarker)}(.|\n)*?${escapeRegExp(endMarker)}`,
+        'gm'
       )
+      return content.replace(re, (_match, indent) => {
+        return `${indent}${startMarker}\n${newSection}\n${indent}${endMarker}`
+      })
     }
 
     function applyYamlMarkers(filePath: string, content: string): string {
@@ -193,7 +218,7 @@ await cmd`sync environment variables from package.json to matching files`
         })
         .join('\n')
 
-      return replaceMarkerSection(content, yamlStart, yamlEnd, `${envLines}\n${indent}`)
+      return replaceMarkerSection(content, yamlStart, yamlEnd, envLines)
     }
 
     function applyJsMarkers(_filePath: string, content: string): string {

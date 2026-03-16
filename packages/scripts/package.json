@@ -35,7 +35,7 @@
     "picocolors": "^1.1.1"
   },
   "peerDependencies": {
-    "vxrn": "^1.10.2"
+    "vxrn": "*"
   },
   "peerDependenciesMeta": {
     "vxrn": {
@@ -43,6 +43,6 @@
     }
   },
   "devDependencies": {
-    "vxrn": "1.10.2"
+    "vxrn": "*"
   }
 }

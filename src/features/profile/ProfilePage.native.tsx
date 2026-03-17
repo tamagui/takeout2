@@ -6,7 +6,7 @@ import Animated from 'react-native-reanimated'
 import { Spinner, useWindowDimensions, YStack } from 'tamagui'
 
 import { sharedTransition } from '~/helpers/animation/sharedTransition'
-import { useUser } from '~/hooks/useUser'
+import { useUserById } from '~/features/user/useUserById'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { PageLayout } from '~/interface/pages/PageLayout'
 import { H5 } from '~/interface/text/Headings'
@@ -24,7 +24,7 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
   const { width } = useWindowDimensions()
   const columnWidth = (width - 28 - COLUMN_GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS
 
-  const [user] = useUser(userId)
+  const [user] = useUserById(userId)
   const { posts, isLoading, isLoadingMore, loadMore, refresh } = usePostsByUserId(userId)
 
   const postsCount = posts?.length || 0

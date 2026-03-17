@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { Spinner, YStack } from 'tamagui'
 
-import { useUser } from '~/hooks/useUser'
+import { useUserById } from '~/features/user/useUserById'
 import { HeadInfo } from '~/interface/app/HeadInfo'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { galleryEmitter } from '~/interface/gallery/galleryEmitter'
@@ -16,7 +16,7 @@ import { useProfilePosts } from './useProfilePosts'
 import type { ProfilePageProps } from './types'
 
 export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => {
-  const [user] = useUser(userId)
+  const [user] = useUserById(userId)
   const { posts, isLoading, currentPage, hasMore, nextPage, prevPage } = useProfilePosts({
     userId,
     pageSize: 12,

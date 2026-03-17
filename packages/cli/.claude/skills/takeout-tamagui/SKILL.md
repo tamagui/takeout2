@@ -1,1 +1,0 @@
-../../../../docs/tamagui.md

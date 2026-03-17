@@ -34,6 +34,17 @@ jobs:
       - name: Install
         uses: ./.github/actions/install
 
+      - name: Get Playwright version
+        id: playwright-version
+        shell: bash
+        run: echo "version=$(bunx playwright --version 2>/dev/null || echo 'unknown')" >> $GITHUB_OUTPUT
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+
       - name: Setup Origin CA Certs
         if: github.ref == 'refs/heads/main'
         run: |

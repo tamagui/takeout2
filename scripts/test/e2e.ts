@@ -73,7 +73,7 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
           async fn() {
             await run('bunx playwright install --with-deps chromium', {
               prefix: 'playwright',
-              timeout: time.ms.minutes(5),
+              timeout: time.ms.minutes(10),
               timing: 'playwright install',
             })
           },

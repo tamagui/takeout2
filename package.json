@@ -77,7 +77,6 @@
     "@hot-updater/react-native": "^0.25.8",
     "@hot-updater/supabase": "0.25.8",
     "@legendapp/list": "^2.0.18",
-    "@lydell/node-pty": "1.2.0-beta.7",
     "@op-engineering/op-sqlite": "^15.0.7",
     "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-native-menu/menu": "^2.0.0",
@@ -155,7 +154,6 @@
   },
   "devDependencies": {
     "@aws-sdk/client-ecr": "^3.859.0",
-    "@clack/prompts": "^0.11.0",
     "@dotenvx/dotenvx": "^1.44.1",
     "@playwright/test": "^1.55.0",
     "@take-out/cli": "workspace:*",

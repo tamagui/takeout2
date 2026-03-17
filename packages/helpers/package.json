@@ -4,6 +4,7 @@
   "sideEffects": false,
   "type": "module",
   "source": "src/index.ts",
+  "types": "./types/index.d.ts",
   "main": "dist/cjs",
   "module": "dist/esm",
   "files": [

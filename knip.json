@@ -21,17 +21,14 @@
       "ignore": ["src/data/generated/**", "**/*.d.ts"],
       "ignoreDependencies": [
         "@types/*",
-        "@react-native-menu/menu",
         "jsonwebtoken",
         "motion",
         "postmark",
-        "react-native-ios-context-menu",
-        "react-native-ios-utilities",
-        "zeego"
+        "chrome-devtools-mcp",
+        "xcodebuildmcp"
       ]
     },
     "packages/cli": {
-      "entry": ["src/cli.ts"],
       "project": ["src/**/*.ts"],
       "ignoreDependencies": ["bun-types"]
     },
@@ -43,7 +40,6 @@
       "project": ["src/**/*.ts"]
     },
     "packages/postgres": {
-      "entry": ["src/cli.ts"],
       "project": ["src/**/*.ts"]
     },
     "packages/better-auth-utils": {
@@ -51,11 +47,14 @@
     },
     "packages/on-zero": {
       "entry": ["src/index.ts", "src/cli.ts", "src/server.ts"],
-      "project": ["src/**/*.ts"],
-      "ignoreDependencies": ["valibot", "@sinclair/typebox"]
+      "project": ["src/**/*.ts"]
     },
     "packages/native-hot-update": {
       "project": ["src/**/*.ts"]
+    },
+    "packages/run": {
+      "entry": ["src/*.{ts,mjs}"],
+      "project": ["src/**/*.{ts,mjs}"]
     },
     "packages/scripts": {
       "entry": ["src/*.ts", "src/helpers/*.ts"],

@@ -72,7 +72,6 @@
   },
   "dependencies": {
     "@take-out/helpers": "workspace:*",
-    "@sinclair/typebox-codegen": "^0.11.1",
     "chokidar": "^4.0.3",
     "citty": "^0.1.6",
     "valibot": "^1.1.0"

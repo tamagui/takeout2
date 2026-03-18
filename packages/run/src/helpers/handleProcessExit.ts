@@ -31,34 +31,27 @@ function removePidFile() {
 }
 
 // find descendant pids that survived the group kill
+// uses pgrep -P instead of ps (ps is a setuid binary blocked by sandbox-exec)
 function findStragglers(trackedPids: number[]): number[] {
   try {
-    const output = execSync('ps -eo pid,ppid', { encoding: 'utf-8', timeout: 2000 })
-    const lines = output.trim().split('\n').slice(1) // skip header
-
-    const parentToChildren = new Map<number, number[]>()
-    for (const line of lines) {
-      const parts = line.trim().split(/\s+/)
-      if (parts.length < 2) continue
-      const pid = parseInt(parts[0]!, 10)
-      const ppid = parseInt(parts[1]!, 10)
-      if (isNaN(pid) || isNaN(ppid)) continue
-      if (!parentToChildren.has(ppid)) parentToChildren.set(ppid, [])
-      parentToChildren.get(ppid)!.push(pid)
-    }
-
-    // walk from each tracked pid to find all descendants
     const descendants = new Set<number>()
     const queue = [...trackedPids]
     while (queue.length > 0) {
       const current = queue.pop()!
-      const children = parentToChildren.get(current)
-      if (!children) continue
-      for (const child of children) {
-        if (!descendants.has(child)) {
-          descendants.add(child)
-          queue.push(child)
+      try {
+        const output = execSync(`pgrep -P ${current}`, {
+          encoding: 'utf-8',
+          timeout: 2000,
+        })
+        for (const line of output.trim().split('\n')) {
+          const pid = parseInt(line, 10)
+          if (!isNaN(pid) && !descendants.has(pid)) {
+            descendants.add(pid)
+            queue.push(pid)
+          }
         }
+      } catch {
+        // pgrep exits 1 when no children found, that's fine
       }
     }
     return [...descendants]

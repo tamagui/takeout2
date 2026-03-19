@@ -1,7 +1,7 @@
 import { mustGetQuery } from '@rocicorp/zero'
 import { PushProcessor } from '@rocicorp/zero/pg'
 import { handleQueryRequest as zeroHandleQueryRequest } from '@rocicorp/zero/server'
-import { zeroNodePg } from '@rocicorp/zero/server/adapters/pg'
+import { zeroNodePg, type NodePgTransaction } from '@rocicorp/zero/server/adapters/pg'
 import { assertString } from '@take-out/helpers'
 import { Pool } from 'pg'
 
@@ -78,6 +78,7 @@ export function createZeroServer<
 >({
   createServerActions,
   database,
+  pool: externalPool,
   schema,
   models,
   queries,
@@ -88,9 +89,15 @@ export function createZeroServer<
   defaultMutateAuthData = {} as MutateAuthData,
 }: {
   /**
-   * The DB connection string, same as ZERO_UPSTREAM_DB
+   * Optional pre-built Pool-like object (e.g. PGlite wrapper for Cloudflare Workers).
+   * When provided, `database` is not required.
    */
-  database: string
+  pool?: NodePgTransaction
+  /**
+   * The DB connection string, same as ZERO_UPSTREAM_DB.
+   * Not required when `pool` is provided.
+   */
+  database?: string
   schema: Schema
   models: Models
   createServerActions: () => ServerActions
@@ -128,24 +135,28 @@ export function createZeroServer<
   setSchema(schema)
   setEnvironment('server')
 
-  const dbString = assertString(database, `createZeroServer "database"`)
-
-  const pool = new Pool({
-    connectionString: dbString,
-    // handle self-signed certificates in production
-    ssl: dbString.includes('sslmode=require') ? { rejectUnauthorized: false } : undefined,
-  })
-
-  // prevent unhandled 'error' events from crashing the process
-  // when postgres kills idle-in-transaction connections
-  pool.on('error', (error) => {
-    console.error(`[on-zero] pool error`, error.message)
-  })
-  pool.on('connect', (client) => {
-    client.on('error', (error) => {
-      console.error(`[on-zero] client error`, error.message)
+  let pool: NodePgTransaction
+  if (externalPool) {
+    pool = externalPool
+  } else {
+    const dbString = assertString(database, `createZeroServer "database"`)
+    const pgPool = new Pool({
+      connectionString: dbString,
+      // handle self-signed certificates in production
+      ssl: dbString.includes('sslmode=require')
+        ? { rejectUnauthorized: false }
+        : undefined,
     })
-  })
+    pgPool.on('error', (error) => {
+      console.error(`[on-zero] pool error`, error.message)
+    })
+    pgPool.on('connect', (client) => {
+      client.on('error', (error) => {
+        console.error(`[on-zero] client error`, error.message)
+      })
+    })
+    pool = pgPool
+  }
 
   const zeroDb = zeroNodePg(schema, pool)
 

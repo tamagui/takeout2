@@ -151,7 +151,7 @@ Monitors the deployment and exits when all services are healthy or on timeout.
    */
   async function monitor() {
     const startTime = Date.now()
-    const expectedServices = ['web', 'zero', 'minio']
+    const expectedServices = ['web', 'zero']
 
     console.info('waiting for services to become healthy...')
     console.info('')

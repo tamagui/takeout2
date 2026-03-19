@@ -103,10 +103,8 @@ describe('flattenScripts', () => {
         isRaw: false,
         deferredScripts: [
           { name: 'types:watch', command: 'bun check types --watch', isRaw: false },
-          // build:watch → tko run --no-root watch → recurses into watch's children
-          { name: 'types:watch', command: 'bun check types --watch', isRaw: false },
+          // build:watch → tko run --no-root watch → treated as leaf (no root expansion)
           { name: 'build:watch', command: 'tko run --no-root watch', isRaw: false },
-          { name: 'apps:watch', command: 'tko apps build -- --watch', isRaw: false },
           { name: 'apps:watch', command: 'tko apps build -- --watch', isRaw: false },
         ],
       },
@@ -121,15 +119,11 @@ describe('flattenScripts', () => {
 
   it('resolves nested tko run chains', () => {
     // watch -> tko run types:watch build:watch apps:watch
-    // build:watch -> tko run --no-root watch -> watch is visited (cycle), emits as leaf
+    // build:watch -> tko run --no-root watch -> treated as leaf (no root expansion)
     const result = flattenScripts(['watch'], scripts)
     expect(result).toEqual([
       { name: 'types:watch', command: 'bun check types --watch', isRaw: false },
-      {
-        name: 'watch',
-        command: 'tko run types:watch build:watch apps:watch',
-        isRaw: false,
-      },
+      { name: 'build:watch', command: 'tko run --no-root watch', isRaw: false },
       { name: 'apps:watch', command: 'tko apps build -- --watch', isRaw: false },
     ])
   })
@@ -161,10 +155,10 @@ describe('flattenScripts', () => {
     expect(result).toEqual([{ name: 'a', command: 'tko run b', isRaw: false }])
   })
 
-  it('strips --flags=last, --no-root, --pty from tko commands when extracting children', () => {
+  it('strips --flags=last and --pty from tko commands when extracting children', () => {
     // verify flags like --flags=last don't appear as script names
     const simpleScripts: Record<string, string> = {
-      parent: 'bun tko run-all --flags=last --no-root --pty child1 child2',
+      parent: 'bun tko run-all --flags=last --pty child1 child2',
       child1: 'echo one',
       child2: 'echo two',
     }
@@ -172,6 +166,23 @@ describe('flattenScripts', () => {
     expect(result).toEqual([
       { name: 'child1', command: 'echo one', isRaw: false },
       { name: 'child2', command: 'echo two', isRaw: false },
+    ])
+  })
+
+  it('treats --no-root tko run as a leaf command (no root expansion)', () => {
+    const simpleScripts: Record<string, string> = {
+      parent: 'bun tko run-all --no-root --flags=last child1 child2',
+      child1: 'echo one',
+      child2: 'echo two',
+    }
+    const result = flattenScripts(['parent'], simpleScripts)
+    // --no-root means this runs in workspace packages only, don't expand against root
+    expect(result).toEqual([
+      {
+        name: 'parent',
+        command: 'bun tko run-all --no-root --flags=last child1 child2',
+        isRaw: false,
+      },
     ])
   })
 

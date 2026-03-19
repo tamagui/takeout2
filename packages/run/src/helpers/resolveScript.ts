@@ -20,20 +20,27 @@ const TKO_RUN_RE = /^(?:bun\s+)?tko\s+(run(?:-all)?)\s+(.+)$/
  * parse a tko run/run-all command string, extracting script names and flags
  * returns null if the command is not a tko run/run-all pattern
  */
-function parseTkoRun(command: string): { scriptNames: string[] } | null {
+function parseTkoRun(
+  command: string
+): { scriptNames: string[]; noRoot: boolean } | null {
   const match = command.match(TKO_RUN_RE)
   if (!match) return null
 
   const argsPart = match[2]!
   const args = argsPart.split(/\s+/)
   const scriptNames: string[] = []
+  let noRoot = false
 
   for (const arg of args) {
+    if (arg === '--no-root') {
+      noRoot = true
+      continue
+    }
     if (arg.startsWith('--')) continue
     scriptNames.push(arg)
   }
 
-  return { scriptNames }
+  return { scriptNames, noRoot }
 }
 
 /**
@@ -143,6 +150,12 @@ export function flattenScripts(
     // try to parse as tko run/run-all
     const parsed = parseTkoRun(scriptCommand)
     if (parsed) {
+      // --no-root means this will be handled by a separate tko process
+      // scoped to workspace packages — don't resolve against root scripts
+      if (parsed.noRoot) {
+        results.push({ name, command: scriptCommand, isRaw: false })
+        return
+      }
       visited.add(name)
       for (const childName of parsed.scriptNames) {
         resolve(childName, visited)
@@ -165,7 +178,10 @@ export function flattenScripts(
           const innerCommand = packageJsonScripts[bunMatch.name]!
           const innerParsed = parseTkoRun(innerCommand)
 
-          if (innerParsed && isLast) {
+          if (innerParsed && innerParsed.noRoot) {
+            // --no-root: keep as-is, will be handled by separate tko process
+            resolvedSegments.push(segment)
+          } else if (innerParsed && isLast) {
             // last segment is a tko run → defer its children for parallel spawn
             deferredScripts = flattenScripts(
               innerParsed.scriptNames,

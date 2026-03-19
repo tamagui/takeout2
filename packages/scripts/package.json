@@ -32,16 +32,5 @@
     "@take-out/helpers": "workspace:*",
     "@take-out/run": "workspace:*",
     "picocolors": "^1.1.1"
-  },
-  "peerDependencies": {
-    "vxrn": "*"
-  },
-  "peerDependenciesMeta": {
-    "vxrn": {
-      "optional": true
-    }
-  },
-  "devDependencies": {
-    "vxrn": "*"
   }
 }

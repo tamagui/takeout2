@@ -1,12 +1,12 @@
 import fs from 'node:fs'
 import { join } from 'node:path'
 
-import { loadEnv as vxrnLoadEnv } from 'vxrn/loadEnv'
-
 export async function loadEnv(
   environment: 'development' | 'production' | 'dev-prod',
   options?: { optional?: string[]; envPath?: string }
 ) {
+  const { loadEnv: vxrnLoadEnv } = await import('vxrn/loadEnv')
+
   // loads env into process.env
   await vxrnLoadEnv(environment)
 

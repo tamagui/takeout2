@@ -428,7 +428,7 @@ await cmd`upgrade packages by name or pattern`
 
     // sync resolved $dep: values (like ZERO_VERSION) to all env targets
     if (
-      Object.values(packageJson.env || {}).some(
+      Object.values(rootPackageJson.env || {}).some(
         (v: any) => typeof v === 'string' && v.startsWith('$dep:')
       )
     ) {

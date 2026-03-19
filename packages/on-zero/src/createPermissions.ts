@@ -1,4 +1,4 @@
-import { ensure, EnsureError } from '@take-out/helpers'
+import { ensure } from '@take-out/helpers'
 
 import { setDidRunPermissionCheck } from './helpers/didRunPermissionCheck'
 import { mutatorContext } from './helpers/mutatorContext'
@@ -70,7 +70,11 @@ export function createPermissions<Schema extends ZeroSchema>({
       permissionReturn = permissionWhere(eb, authData)
     } catch (err) {
       // treat throws as deny — ensure() is the idiomatic "deny if falsy" pattern
-      if (process.env.NODE_ENV === 'development' && !(err instanceof EnsureError)) {
+      // use .name check instead of instanceof — resilient to duplicate module instances from bundlers
+      if (
+        process.env.NODE_ENV === 'development' &&
+        (err as any)?.name !== 'EnsureError'
+      ) {
         console.warn(`[permission] ${tableName} threw:`, err)
       }
       return eb.cmpLit(true, '=', false)
@@ -139,7 +143,7 @@ export function createPermissions<Schema extends ZeroSchema>({
     } catch (err) {
       const errorTitle = `${tableName} with auth id: ${authData?.id}`
 
-      if (err instanceof EnsureError) {
+      if ((err as any)?.name === 'EnsureError') {
         let msg = `[permission] 🚫 Not Allowed: ${errorTitle}`
         if (process.env.NODE_ENV === 'development' && query) {
           msg += `\n ${prettyFormatZeroQuery(query)}`

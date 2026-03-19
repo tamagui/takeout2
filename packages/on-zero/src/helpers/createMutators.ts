@@ -1,6 +1,5 @@
 import { mapObject, time } from '@take-out/helpers'
 
-import { PermissionError } from '../createPermissions'
 import { getAuthData } from '../state'
 import { runWithContext } from './mutatorContext'
 
@@ -109,7 +108,7 @@ export function createMutators<Models extends GenericModels>({
       } catch (error) {
         if (debug) {
           const duration = (performance.now() - startTime).toFixed(2)
-          if (error instanceof PermissionError) {
+          if ((error as any)?.name === 'PermissionError') {
             console.info(`[mutator] ${name} denied (${duration}ms)`)
           } else {
             console.groupCollapsed(`[mutator] ${name} failed after ${duration}ms`)

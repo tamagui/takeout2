@@ -426,10 +426,14 @@ await cmd`upgrade packages by name or pattern`
 
     await updatePackages(packagesByWorkspace, rootDir, packageJsonFiles)
 
-    // special handling for zero - update ZERO_VERSION in .env
-    if (packagePatterns.includes('@rocicorp/zero')) {
-      console.info('\n🔄 Updating local env for Zero...')
-      await $`bun tko run generate-env`
+    // sync resolved $dep: values (like ZERO_VERSION) to all env targets
+    if (
+      Object.values(packageJson.env || {}).some(
+        (v: any) => typeof v === 'string' && v.startsWith('$dep:')
+      )
+    ) {
+      console.info('\n🔄 Syncing env variables...')
+      await $`bun tko run env-update`
     }
 
     console.info('\n🎉 Dependency update complete!')

@@ -8,7 +8,7 @@ await cmd`npm postinstall tasks`.run(async ({ $, fs }) => {
   await $`bun run ${buildInitialLocation}`
 
   await Promise.all([
-    $`bun tko run generate-env`,
+    $`bun tko run env-update`,
     $`bun run one patch`,
     // regenerate claude code skills from docs (skills dir is gitignored)
     $`bun tko skills generate`,

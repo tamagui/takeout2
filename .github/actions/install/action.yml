@@ -30,4 +30,4 @@ runs:
 
     - name: Generate Environment
       shell: bash
-      run: bun tko run generate-env
+      run: bun tko run env-update

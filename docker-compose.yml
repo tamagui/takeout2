@@ -30,7 +30,7 @@ services:
       # -c log_duration=on
       # -c log_line_prefix='%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
     volumes:
-      - ./.docker/pgdb:/var/lib/postgresql/data
+      - pgdb_data:/var/lib/postgresql/data
       - ./src/database/:/docker-entrypoint-initdb.d
 
   migrate:
@@ -58,7 +58,7 @@ services:
         condition: service_healthy
     env_file: .env
     volumes:
-      - ./.docker/zero:/app
+      - zero_data:/app
     working_dir: /app
     extra_hosts:
       # maps host.docker.internal to the host gateway IP on Linux
@@ -89,7 +89,7 @@ services:
       - "${VITE_PORT_MINIO:-9200}:9000"
       - "${VITE_PORT_MINIO_CONSOLE:-9201}:9001"
     volumes:
-      - ./.docker/minio:/data
+      - minio_data:/data
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 1s
@@ -120,3 +120,8 @@ services:
         touch /tmp/.done &&
         sleep infinity;
       "
+
+volumes:
+  pgdb_data:
+  zero_data:
+  minio_data:

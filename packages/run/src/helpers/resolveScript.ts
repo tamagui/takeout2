@@ -20,9 +20,7 @@ const TKO_RUN_RE = /^(?:bun\s+)?tko\s+(run(?:-all)?)\s+(.+)$/
  * parse a tko run/run-all command string, extracting script names and flags
  * returns null if the command is not a tko run/run-all pattern
  */
-function parseTkoRun(
-  command: string
-): { scriptNames: string[]; noRoot: boolean } | null {
+function parseTkoRun(command: string): { scriptNames: string[]; noRoot: boolean } | null {
   const match = command.match(TKO_RUN_RE)
   if (!match) return null
 

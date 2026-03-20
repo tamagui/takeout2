@@ -59,13 +59,12 @@ const post = {
     v.object({
       pageSize: v.number(),
       cursor: v.optional(
-        v.union([
+        v.nullable(
           v.object({
             id: v.string(),
             createdAt: v.number(),
-          }),
-          v.null(),
-        ])
+          })
+        )
       ),
     }),
     ({ args }) => Queries.post.feedPosts(args)
@@ -94,13 +93,12 @@ const post = {
       userId: v.optional(v.string()),
       pageSize: v.number(),
       cursor: v.optional(
-        v.union([
+        v.nullable(
           v.object({
             id: v.string(),
             createdAt: v.number(),
-          }),
-          v.null(),
-        ])
+          })
+        )
       ),
     }),
     ({ args }) => Queries.post.postsPaginated(args)
@@ -110,13 +108,12 @@ const post = {
       searchText: v.string(),
       pageSize: v.number(),
       cursor: v.optional(
-        v.union([
+        v.nullable(
           v.object({
             id: v.string(),
             createdAt: v.number(),
-          }),
-          v.null(),
-        ])
+          })
+        )
       ),
     }),
     ({ args }) => Queries.post.searchPosts(args)

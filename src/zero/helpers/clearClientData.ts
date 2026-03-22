@@ -30,7 +30,8 @@ export const clearClientData = async () => {
           return new Promise<void>((resolve, reject) => {
             const deleteReq = indexedDB.deleteDatabase(db.name!)
             deleteReq.onsuccess = () => resolve()
-            deleteReq.onerror = () => reject(deleteReq.error)
+            deleteReq.onerror = () =>
+              reject(deleteReq.error ?? new Error('failed to delete database'))
             deleteReq.onblocked = () => reject(new Error('database deletion blocked'))
           })
         }),

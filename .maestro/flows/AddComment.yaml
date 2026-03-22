@@ -1,0 +1,27 @@
+appId: dev.tamagui.takeout.dev
+tags:
+  - feed
+---
+- runFlow: Login.yaml
+# wait for feed to load with seed posts
+- extendedWaitUntil:
+    visible: 'morning coffee vibes'
+    timeout: 30000
+# tap on the first post to open detail
+- tapOn: 'morning coffee vibes'
+# wait for post detail page to load
+- extendedWaitUntil:
+    visible: 'morning coffee vibes'
+    timeout: 10000
+# tap the comment input
+- tapOn:
+    id: 'comment-input'
+# type a comment
+- inputText: 'test comment from maestro'
+# tap submit
+- tapOn:
+    id: 'comment-submit'
+# verify the comment appears
+- extendedWaitUntil:
+    visible: 'test comment from maestro'
+    timeout: 5000

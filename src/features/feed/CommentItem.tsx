@@ -18,6 +18,7 @@ export const CommentItem = memo(
   ({ image, username, content, createdAt, index }: CommentItemProps) => {
     return (
       <XStack
+        testID="comment-item"
         data-testid="comment-item"
         data-comment-content={content}
         transition={[

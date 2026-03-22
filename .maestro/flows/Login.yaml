@@ -1,0 +1,20 @@
+appId: dev.tamagui.takeout.dev
+tags:
+  - auth
+---
+- runFlow: OpenApp.yaml
+# wait for login page to load
+- extendedWaitUntil:
+    visible: 'Login as Demo User'
+    timeout: 30000
+# tap demo login button
+- tapOn:
+    id: 'login-as-demo'
+# wait for redirect to home feed
+- extendedWaitUntil:
+    visible: '.*'
+    timeout: 30000
+# give zero sync a moment to populate
+- swipe:
+    direction: DOWN
+    duration: 500

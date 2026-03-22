@@ -83,7 +83,14 @@ export default {
     },
     primaryColor: '#e6dac1',
     plugins: [
+      // 'vxrn/expo-plugin', // disabled: breaks PlatformConstants TurboModule on RN 0.83
       'expo-web-browser',
+      [
+        'expo-dev-client',
+        {
+          addGeneratedScheme: !!IS_DEV,
+        },
+      ],
       'expo-font',
       'react-native-bottom-tabs',
       [

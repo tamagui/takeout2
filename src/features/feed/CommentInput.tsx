@@ -112,6 +112,7 @@ export function CommentInput({
               maxH={100}
               rows={2}
               verticalAlign="top"
+              testID="comment-input"
             />
 
             <YStack key="send-button">
@@ -121,6 +122,7 @@ export function CommentInput({
                 bg="$color6"
                 disabled={isSubmitting || !content.trim()}
                 onPress={onSubmit}
+                testID="comment-submit"
               >
                 {isSubmitting ? (
                   <Spinner size="small" color="$color" />

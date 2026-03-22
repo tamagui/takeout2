@@ -44,6 +44,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
       rounded={25}
 
       overflow="hidden"
+      testID={`post-card-${post.id}`}
       data-testid={`post-card-${post.id}`}
       py="$4"
       px="$3.5"

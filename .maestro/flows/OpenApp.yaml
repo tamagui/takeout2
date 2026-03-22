@@ -1,0 +1,9 @@
+appId: dev.tamagui.takeout.dev
+tags:
+  - util
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: '.*'
+    timeout: 60000

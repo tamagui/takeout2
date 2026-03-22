@@ -28,6 +28,7 @@ export const LoginDemoButton = () => {
       disabled={loading}
       width="100%"
       data-testid="login-as-demo"
+      testID="login-as-demo"
       pressStyle={{ scale: 0.97 }}
       transition="200ms"
       enterStyle={{ opacity: 0, scale: 0.95 }}

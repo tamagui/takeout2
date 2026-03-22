@@ -1,15 +1,21 @@
 {
   "name": "@take-out/native-hot-update",
   "version": "0.2.10",
-  "type": "module",
-  "sideEffects": false,
-  "source": "src/index.ts",
   "main": "dist/cjs",
   "module": "dist/esm",
-  "publishConfig": {
-    "access": "public"
+  "devDependencies": {
+    "@tamagui/build": "2.0.0-rc.29",
+    "@types/react": "^18.3.18",
+    "react": "*",
+    "react-native": "*",
+    "react-native-mmkv": "^3.1.0",
+    "typescript": "^5.7.3"
   },
-  "types": "./src/index.ts",
+  "peerDependencies": {
+    "expo-application": "*",
+    "react": "*",
+    "react-native": "*"
+  },
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -31,6 +37,14 @@
     "dist",
     "src"
   ],
+  "peerDependenciesMeta": {
+    "react-native-mmkv": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tamagui-build --skip-types",
     "watch": "tamagui-build --skip-types --watch",
@@ -39,25 +53,8 @@
     "lint": "oxlint src",
     "check": "tsc --noEmit"
   },
-  "dependencies": {
-    "@hot-updater/react-native": "0.25.6"
-  },
-  "peerDependencies": {
-    "expo-application": "*",
-    "react": "*",
-    "react-native": "*"
-  },
-  "peerDependenciesMeta": {
-    "react-native-mmkv": {
-      "optional": true
-    }
-  },
-  "devDependencies": {
-    "@tamagui/build": "2.0.0-rc.29",
-    "@types/react": "^18.3.18",
-    "react": "*",
-    "react-native": "*",
-    "react-native-mmkv": "^3.1.0",
-    "typescript": "^5.7.3"
-  }
+  "sideEffects": false,
+  "source": "src/index.ts",
+  "type": "module",
+  "types": "./src/index.ts"
 }

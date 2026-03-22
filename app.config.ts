@@ -83,7 +83,6 @@ export default {
     },
     primaryColor: '#e6dac1',
     plugins: [
-      'vxrn/expo-plugin',
       'expo-web-browser',
       'expo-font',
       'react-native-bottom-tabs',
@@ -93,12 +92,6 @@ export default {
           ios: {
             deploymentTarget: '17.0',
           },
-        },
-      ],
-      [
-        'expo-dev-client',
-        {
-          addGeneratedScheme: !!IS_DEV,
         },
       ],
       [

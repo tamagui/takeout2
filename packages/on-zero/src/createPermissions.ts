@@ -30,11 +30,7 @@ export function createPermissions<Schema extends ZeroSchema>({
   schema: Schema
   adminRoleMode?: AdminRoleMode
 }) {
-  type PermissionReturn = Condition | boolean
-  type PermissionsWhere<Table extends TableName = TableName> = Where<
-    Table,
-    PermissionReturn
-  >
+  type PermissionsWhere<Table extends TableName = TableName> = Where<Table>
 
   function buildPermissionQuery<PermissionWhere extends PermissionsWhere>(
     authData: AuthData | null,

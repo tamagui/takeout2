@@ -37,7 +37,8 @@
       "import": "./dist/esm/constants/*.mjs",
       "require": "./dist/cjs/constants/*.cjs"
     },
-    "./withOpSqliteStatic": "./src/withOpSqliteStatic.cjs"
+    "./withOpSqliteStatic": "./src/withOpSqliteStatic.cjs",
+    "./withExpoModulesCoreSwift6Fix": "./src/withExpoModulesCoreSwift6Fix.cjs"
   },
   "scripts": {
     "build": "tamagui-build --skip-native --skip-types",

@@ -1,6 +1,7 @@
 import { useZero } from '@rocicorp/zero/react'
 import { createZeroClient, run } from 'on-zero'
 import {
+  Component,
   memo,
   useCallback,
   useEffect,
@@ -41,7 +42,7 @@ export const {
   groupedQueries,
 })
 
-export const ProvideZero = ({ children }: { children: ReactNode }) => {
+const ProvideZeroImpl = ({ children }: { children: ReactNode }) => {
   const auth = useAuth()
   const userId = auth?.user?.id || 'anon'
   const [zeroDisabledByError, setZeroDisabledByError] = useState(false)
@@ -94,7 +95,7 @@ export const ProvideZero = ({ children }: { children: ReactNode }) => {
       kvStore={kvStore}
       authData={stableAuthData}
       cacheURL={ZERO_SERVER_URL}
-      batchViewUpdates={unstable_batchedUpdates}
+      {...(unstable_batchedUpdates ? { batchViewUpdates: unstable_batchedUpdates } : {})}
       onClientStateNotFound={useCallback((reason?: string) => {
         const description =
           reason ||
@@ -129,6 +130,37 @@ export const ProvideZero = ({ children }: { children: ReactNode }) => {
     </ProvideZeroWithoutAuth>
   )
 }
+
+// error boundary to catch and log what's crashing inside ProvideZero
+class ZeroErrorBoundary extends Component<
+  { children: ReactNode },
+  { error: Error | null }
+> {
+  state = { error: null as Error | null }
+
+  static getDerivedStateFromError(error: Error) {
+    return { error }
+  }
+
+  componentDidCatch(error: Error, info: any) {
+    console.error('[zero] error boundary caught:', error.message, info?.componentStack)
+  }
+
+  render() {
+    if (this.state.error) {
+      // render children WITHOUT zero wrapping so app still works
+      console.error('[zero] rendering without zero due to error:', this.state.error.message)
+      return this.props.children
+    }
+    return this.props.children
+  }
+}
+
+export const ProvideZero = ({ children }: { children: ReactNode }) => (
+  <ZeroErrorBoundary>
+    <ProvideZeroImpl>{children}</ProvideZeroImpl>
+  </ZeroErrorBoundary>
+)
 
 let lastConnectionState: 'disconnected' | 'connected' | 'idle' = 'idle'
 

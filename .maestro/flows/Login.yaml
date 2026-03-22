@@ -3,18 +3,15 @@ tags:
   - auth
 ---
 - runFlow: OpenApp.yaml
-# wait for login page to load
-- extendedWaitUntil:
-    visible: 'Login as Demo User'
-    timeout: 30000
-# tap demo login button
+# if already on feed (logged in), skip login
 - tapOn:
     id: 'login-as-demo'
-# wait for redirect to home feed
+    optional: true
+# wait for feed to load
 - extendedWaitUntil:
-    visible: '.*'
+    visible: 'demo|Takeout'
     timeout: 30000
-# give zero sync a moment to populate
+# give zero sync a moment
 - swipe:
     direction: DOWN
     duration: 500

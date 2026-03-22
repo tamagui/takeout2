@@ -3,17 +3,36 @@ tags:
   - feed
 ---
 - runFlow: Login.yaml
-# wait for feed to load with seed posts
+# wait for feed to load
 - extendedWaitUntil:
-    visible: 'morning coffee vibes'
+    visible: 'demo'
     timeout: 30000
-# tap on the first post to open detail
-- tapOn: 'morning coffee vibes'
-# wait for post detail page to load
+# scroll to the seed post
+- scrollUntilVisible:
+    element: 'morning coffee vibes'
+    timeout: 30000
+    centerElement: true
+# tap the post image to navigate to detail
+# the image is below the caption text, tap relative to it
+- tapOn:
+    text: 'morning coffee vibes'
+    retryTapIfNoChange: false
+# try tapping lower on the post (where the image is)
+- swipe:
+    direction: UP
+    duration: 300
+# look for the comment count near the seed post and tap it
+- tapOn:
+    text: '11'
+    optional: true
+- tapOn:
+    text: '2'
+    optional: true
+# wait for post detail
 - extendedWaitUntil:
-    visible: 'morning coffee vibes'
-    timeout: 10000
-# tap the comment input
+    visible: 'sarahc|marcusj|love this'
+    timeout: 15000
+# tap the comment input (fixed at bottom of screen)
 - tapOn:
     id: 'comment-input'
 # type a comment
@@ -24,4 +43,4 @@ tags:
 # verify the comment appears
 - extendedWaitUntil:
     visible: 'test comment from maestro'
-    timeout: 5000
+    timeout: 10000

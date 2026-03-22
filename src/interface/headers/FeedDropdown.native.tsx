@@ -353,10 +353,10 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
   return (
     <>
       <Animated.View
-        style={[StyleSheet.absoluteFill, { zIndex: 998 }, animatedBackdropStyle]}
+        style={[{ position: 'absolute' as const, top: 0, left: 0, right: 0, bottom: 0 }, { zIndex: 998 }, animatedBackdropStyle]}
       >
         <BlurView intensity={20} position="absolute" inset={0} />
-        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
+        <Pressable style={{ position: 'absolute' as const, top: 0, left: 0, right: 0, bottom: 0 }} onPress={onClose} />
       </Animated.View>
 
       <Animated.View

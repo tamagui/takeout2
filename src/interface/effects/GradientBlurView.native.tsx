@@ -41,12 +41,12 @@ export const GradientBlurView = ({
           <LinearGradient
             locations={locations as unknown as readonly [number, number, ...number[]]}
             colors={colors as unknown as readonly [string, string, ...string[]]}
-            style={StyleSheet.absoluteFill}
+            style={{ position: 'absolute' as const, top: 0, left: 0, right: 0, bottom: 0 }}
           />
         }
-        style={StyleSheet.absoluteFill}
+        style={{ position: 'absolute' as const, top: 0, left: 0, right: 0, bottom: 0 }}
       >
-        <BlurView intensity={intensity} tint={tint} style={StyleSheet.absoluteFill} />
+        <BlurView intensity={intensity} tint={tint} style={{ position: 'absolute' as const, top: 0, left: 0, right: 0, bottom: 0 }} />
       </MaskedView>
     </View>
   )

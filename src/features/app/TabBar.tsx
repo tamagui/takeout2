@@ -331,12 +331,12 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
     <>
       <Animated.View
         style={[
-          { ...StyleSheet.absoluteFill, zIndex: 5 },
+          { ...{ position: 'absolute' as const, top: 0, left: 0, right: 0, bottom: 0 }, zIndex: 5 },
           animatedBackdropBlurStyle,
         ]}
       >
-        <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFill} />
-        <Pressable style={StyleSheet.absoluteFill} onPress={collapseMenu} />
+        <BlurView intensity={30} tint="dark" style={{ position: 'absolute' as const, top: 0, left: 0, right: 0, bottom: 0 }} />
+        <Pressable style={{ position: 'absolute' as const, top: 0, left: 0, right: 0, bottom: 0 }} onPress={collapseMenu} />
       </Animated.View>
 
       <Animated.View

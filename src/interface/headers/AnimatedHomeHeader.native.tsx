@@ -116,7 +116,7 @@ export const AnimatedHomeHeader = memo(({ scrollY }: AnimatedHomeHeaderProps) =>
         style={[
           { backgroundColor: theme.background04.val },
           { paddingTop: insets.top, height: totalHeaderHeight, zIndex: 999 },
-          StyleSheet.absoluteFill,
+          { position: 'absolute' as const, top: 0, left: 0, right: 0, bottom: 0 },
           animatedHeaderStyle,
         ]}
       >

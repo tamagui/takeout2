@@ -4,7 +4,7 @@ import { createEmitter } from '@take-out/helpers'
 import {
   createContext,
   memo,
-  use,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -196,7 +196,7 @@ export function createZeroClient<
     enabled = typeof objOrId !== 'undefined',
     debug = false,
   ): boolean | null {
-    const disableMode = use(DisabledContext)
+    const disableMode = useContext(DisabledContext)
     const lastRef = useRef<boolean | null>(null)
     const tableStr = table as string
     const checkFn = permissionCheckFns[tableStr]

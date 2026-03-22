@@ -1,3 +1,4 @@
+'use no memo'
 import { createBetterAuthClient } from '@take-out/better-auth-utils'
 import { href } from 'one'
 import { useMemo } from 'react'

@@ -42,7 +42,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
     <FastSquircleView
       mt="$3"
       rounded={25}
-      cornerSmoothing={1}
+
       overflow="hidden"
       data-testid={`post-card-${post.id}`}
       py="$4"
@@ -84,7 +84,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
           rounded={16}
           overflow="hidden"
           style={[{ aspectRatio: Math.max(aspectRatio, 0.8) }]}
-          cornerSmoothing={1}
+    
         >
           <Animated.Image
             source={{ uri: post.image }}

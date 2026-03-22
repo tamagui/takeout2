@@ -1,4 +1,3 @@
-import { GlassContainer } from 'expo-glass-effect'
 import { memo, useState } from 'react'
 import { AnimatePresence, Input, View, XStack, YStack } from 'tamagui'
 
@@ -49,7 +48,7 @@ export const AIChatInput = memo(
     }
 
     return (
-      <GlassContainer spacing={10}>
+      <View>
         <XStack p="$2" gap="$2" items="flex-end">
           <GlassView
             borderRadius={22}
@@ -159,7 +158,7 @@ export const AIChatInput = memo(
             </View>
           </GlassView>
         </XStack>
-      </GlassContainer>
+      </View>
     )
   },
 )

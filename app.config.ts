@@ -88,16 +88,9 @@ export default {
       'expo-font',
       'react-native-bottom-tabs',
       [
-        'expo-plugin-ios-static-libraries',
-        {
-          libraries: ['RNPermissions', 'op-sqlite'],
-        },
-      ],
-      [
         'expo-build-properties',
         {
           ios: {
-            useFrameworks: 'static',
             deploymentTarget: '17.0',
           },
         },

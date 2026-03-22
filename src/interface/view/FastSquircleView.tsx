@@ -1,6 +1,4 @@
-import SquircleView from 'react-native-fast-squircle'
-import { styled } from 'tamagui'
+import { styled, View } from 'tamagui'
 
-export const FastSquircleView = styled(SquircleView, {
-  cornerSmoothing: 1,
-})
+// stub: react-native-fast-squircle removed (incompatible with RN 0.83)
+export const FastSquircleView = styled(View, {})

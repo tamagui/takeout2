@@ -1,5 +1,4 @@
 import { isAndroid } from '@take-out/helpers'
-import { GlassView as ExpoGlassView, isLiquidGlassAvailable } from 'expo-glass-effect'
 import { memo } from 'react'
 import { View } from 'tamagui'
 
@@ -14,32 +13,11 @@ export const GlassView = memo(
     tint,
     containerStyle,
     children,
-    glassEffectStyle = 'clear',
     isFallback,
     backgroundColor = 'rgba(255, 255, 255, 0.05)',
-    tintColor,
     isInteractive = true,
   }: GlassViewProps) => {
-    // use expo-glass-effect for iOS 26+
-    if (isLiquidGlassAvailable() && !isFallback) {
-      return (
-        <ExpoGlassView
-          glassEffectStyle={glassEffectStyle}
-          isInteractive={isInteractive}
-          tintColor={tintColor}
-          style={[
-            {
-              borderRadius,
-            },
-            containerStyle as any,
-          ]}
-        >
-          {children}
-        </ExpoGlassView>
-      )
-    }
-
-    // android fallback - just use simple View (blur doesn't work on android)
+    // android fallback
     if (isAndroid) {
       return (
         <View bg="$color4" style={[{ borderRadius, overflow: 'hidden' }, containerStyle]}>
@@ -48,7 +26,7 @@ export const GlassView = memo(
       )
     }
 
-    // fallback to expo-blur for older iOS versions
+    // expo-blur fallback
     return (
       <BlurView
         intensity={intensity}
@@ -57,7 +35,6 @@ export const GlassView = memo(
           {
             overflow: 'hidden',
             borderRadius,
-            // subtle outer shadow for depth
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 1 },
             shadowOpacity: 0.05,
@@ -69,7 +46,6 @@ export const GlassView = memo(
       >
         {children}
 
-        {/* glass overlay layer with gradient-like effect */}
         <View
           position="absolute"
           z={1}

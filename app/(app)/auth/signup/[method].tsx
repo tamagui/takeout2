@@ -38,7 +38,7 @@ export const SignupPage = memo(() => {
     switch (method) {
       case 'email':
         return 'Continue with Email'
-      default:
+      case undefined:
         return 'Sign Up'
     }
   }
@@ -47,8 +47,9 @@ export const SignupPage = memo(() => {
     switch (method) {
       case 'email':
         return 'Sign in or sign up with your email.'
+      case undefined:
+        return ''
     }
-    return ''
   }
 
   const handleContinue = useEvent(async () => {

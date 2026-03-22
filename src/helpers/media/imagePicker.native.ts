@@ -11,7 +11,7 @@ export const pickImageFromLibrary = async (
   if (Platform.OS === 'web') {
     // Expo image picker works on web too
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images' as ImagePicker.MediaType],
       allowsEditing,
       aspect: [1, 1],
       quality: 0.8,
@@ -43,7 +43,7 @@ export const pickImageFromLibrary = async (
 
   // launch image picker
   const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    mediaTypes: ['images' as ImagePicker.MediaType],
     allowsEditing,
     aspect: [1, 1],
     quality: 0.8,
@@ -88,7 +88,7 @@ export const takePhotoWithCamera = async (
 
   // launch camera
   const result = await ImagePicker.launchCameraAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    mediaTypes: ['images' as ImagePicker.MediaType],
     allowsEditing,
     aspect: [1, 1],
     quality: 0.8,

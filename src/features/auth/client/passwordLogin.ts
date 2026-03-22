@@ -34,11 +34,6 @@ export async function passwordLogin(
         }
       }
 
-      default:
-        return {
-          data: null,
-          error: { code: 'INVALID_METHOD', message: 'Invalid method' },
-        }
     }
   })()
 

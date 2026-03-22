@@ -623,8 +623,6 @@ function columnTypeToValibot(col: SchemaColumn): string {
     case 'enum':
       base = 'v.string()'
       break
-    default:
-      base = 'v.unknown()'
   }
   return col.optional ? `v.optional(v.nullable(${base}))` : base
 }

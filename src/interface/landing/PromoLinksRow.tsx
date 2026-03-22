@@ -82,7 +82,7 @@ export function PromoLinksRow() {
 
         <Tooltip.Content
           theme="accent"
-          enableAnimationForPositionChange
+          animatePosition
           transition="medium"
           rounded="$3"
           px="$2.5"

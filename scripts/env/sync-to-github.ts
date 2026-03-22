@@ -226,7 +226,7 @@ await cmd`Sync env variables to GitHub repository secrets`.run(
       console.info(pc.bold(pc.green(`New secrets (${newVars.length}):`)))
       for (const { key, value, isSensitive, source } of newVars) {
         const displayValue = isSensitive
-          ? pc.gray(`${'*'.repeat(Math.min(value.length, 40))}`)
+          ? pc.gray('*'.repeat(Math.min(value.length, 40)))
           : pc.gray(value.length > 50 ? value.substring(0, 47) + '...' : value)
         const sourceTag = source === '.env.ios' ? pc.yellow(' [ios]') : ''
         console.info(

@@ -13,7 +13,7 @@ export const IS_SAFARI: boolean =
   isTauri ||
   (typeof navigator !== 'undefined' &&
     /Version\/[\d.]+.*Safari/.test(navigator.userAgent) &&
-    /Apple Computer/.test(navigator.vendor))
+    navigator.vendor.includes('Apple Computer'))
 
 export { isAndroid, isBrowser, isIos, isServer, isWeb } from '@tamagui/constants'
 

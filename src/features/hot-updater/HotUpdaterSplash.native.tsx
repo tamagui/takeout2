@@ -34,7 +34,7 @@ const resolver: HotUpdaterResolver = {
       })
       clearTimeout(timeoutId)
       if (response.status !== 200) return null
-      return response.json()
+      return await response.json()
     } catch {
       clearTimeout(timeoutId)
       return null

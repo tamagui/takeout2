@@ -176,7 +176,7 @@ const useSearchKeyboard = ({
       }
 
       if (
-        (isOpen && event.keyCode === 27) ||
+        (isOpen && event.key === 'Escape') ||
         (event.key === 'k' && (event.metaKey || event.ctrlKey)) ||
         (!isFocusedSomewhere(event) && event.key === '/' && !isOpen)
       ) {

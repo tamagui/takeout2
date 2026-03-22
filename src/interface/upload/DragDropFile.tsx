@@ -265,7 +265,7 @@ export const DropOverlay: Component<{ hidden: boolean }> = memo(({ hidden }) => 
 export type DropFile = {
   id: string
   name: string
-  contents: Uint8Array<ArrayBufferLike>
+  contents: Uint8Array
   preview?: string
 }
 
@@ -417,7 +417,7 @@ export const useDragDrop = ({
 }
 
 async function fileLikeToDataURI(
-  file: File | { name: string; contents: Uint8Array<ArrayBufferLike> },
+  file: File | { name: string; contents: Uint8Array },
 ) {
   const contents =
     'contents' in file ? file.contents : new Uint8Array(await file.arrayBuffer())

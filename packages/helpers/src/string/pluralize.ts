@@ -7,7 +7,10 @@ export function pluralize(count: number, singular: string, plural: string): stri
       return `${count} ${singular}`
     case 'other':
       return `${count} ${plural}`
-    default:
+    case 'zero':
+    case 'two':
+    case 'few':
+    case 'many':
       throw new Error(
         `Can't pluralize: ${grammaticalNumber} for ${count} / ${singular} / ${plural}`,
       )

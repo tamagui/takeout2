@@ -33,7 +33,7 @@ await cmd`Add a Phosphor icon to the project`.run(async ({ fs, path }) => {
       throw new Error(`Failed to fetch icon: ${url} (${response.status})`)
     }
 
-    return await response.text()
+    return response.text()
   }
 
   function extractPathData(svg: string): string[] {

@@ -54,7 +54,7 @@ export const useNotificationStatus = () => {
     if (status.granted) {
       setIsToggleActive(true)
       if (user?.id) {
-        await registerDevice(user.id).catch((err) => {
+        await registerDevice(user.id).catch((err: unknown) => {
           console.error('failed to register device:', err)
         })
       }

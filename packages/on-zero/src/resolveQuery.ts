@@ -16,7 +16,7 @@ export function resolveQuery<Schema extends ZeroSchema>({
   params,
 }: {
   customQueries: AnyQueryRegistry
-  fn: PlainQueryFn<any, Query<any, Schema, any>>
+  fn: PlainQueryFn<any, Query<any>>
   params?: any
 }) {
   const queryName = getQueryName(fn)

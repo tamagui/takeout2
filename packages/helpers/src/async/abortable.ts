@@ -15,7 +15,7 @@ export function abortable<T>(
     const value = cb()
 
     if (value instanceof Promise) {
-      return value.catch((err) => {
+      return value.catch((err: unknown) => {
         if (didAbort(err, options)) {
           return undefined
         }

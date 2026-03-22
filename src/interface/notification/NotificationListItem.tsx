@@ -25,7 +25,7 @@ const getNotificationIcon = (type: NotificationType) => {
   switch (type) {
     case 'comment':
       return ChatCircleIcon
-    default:
+    case 'system':
       return BellIcon
   }
 }

@@ -55,7 +55,7 @@ export const Splash = memo(({ onAnimationEnd, isReady }: SplashProps) => {
     <Animated.View
       exiting={FadeOut}
       style={[
-        StyleSheet.absoluteFillObject,
+        StyleSheet.absoluteFill,
         {
           zIndex: 1000,
           backgroundColor: '#e6dac1',

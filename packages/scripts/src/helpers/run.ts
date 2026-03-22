@@ -35,7 +35,7 @@ const running: Record<string, Promise<unknown> | undefined | null> = {}
 export async function runInline(name: string, cb: () => Promise<void>) {
   const promise = cb()
   running[name] = promise
-  return await promise
+  return promise
 }
 
 export async function run(
@@ -293,7 +293,7 @@ export async function runParallel(
           )
           executing.delete(taskPromise)
         },
-        (error) => {
+        (error: unknown) => {
           const duration = Date.now() - startTime
           console.error(`✗ task: ${task.name} failed after ${formatDuration(duration)}`)
           executing.delete(taskPromise)

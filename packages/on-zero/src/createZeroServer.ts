@@ -197,7 +197,7 @@ export function createZeroServer<
     // now finish
     if (!skipAsyncTasks && asyncTasks.length) {
       Promise.all(asyncTasks.map((task) => runWithAuthScope(authData, task))).catch(
-        (err) => {
+        (err: unknown) => {
           console.error(`[push] async tasks failed`, err)
         },
       )
@@ -326,7 +326,7 @@ export function createZeroServer<
       if (options?.awaitEffects) {
         await promise
       } else {
-        promise.catch((err) => {
+        promise.catch((err: unknown) => {
           console.error(`[mutate] async tasks failed`, err)
         })
       }

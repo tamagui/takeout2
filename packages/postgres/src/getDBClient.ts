@@ -103,7 +103,7 @@ export async function queryDb(
   queryText: string,
   params?: any[],
   options: GetDBClientOptions = {},
-): Promise<pg.QueryResult<any>> {
+): Promise<pg.QueryResult> {
   let client: PoolClient | null = null
 
   try {

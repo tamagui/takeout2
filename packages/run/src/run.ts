@@ -393,8 +393,8 @@ export async function runParallelScripts(
   }
 
   try {
-    checkNodeVersion().catch((err) => {
-      console.error(err.message)
+    checkNodeVersion().catch((err: unknown) => {
+      console.error((err as Error).message)
       exit(1)
     })
 
@@ -504,7 +504,7 @@ export function parseRunArgs(args: string[]): RunParallelScriptsOptions {
 }
 
 if (typeof Bun !== 'undefined' && Bun.main === import.meta.path) {
-  runParallelScripts(parseRunArgs(process.argv.slice(2))).catch((error) => {
+  runParallelScripts(parseRunArgs(process.argv.slice(2))).catch((error: unknown) => {
     console.error(`Error running scripts: ${error}`)
     process.exit(1)
   })

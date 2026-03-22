@@ -61,7 +61,7 @@ export async function main() {
 }
 
 if (PROCESS_ENV.RUN) {
-  main().catch((err) => {
+  main().catch((err: unknown) => {
     console.error('Migration failed:', err)
     process.exit(1)
   })

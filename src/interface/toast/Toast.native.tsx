@@ -54,7 +54,7 @@ function getThemeForType(type?: ToastType): ThemeName | null {
     case 'success':
       return 'green'
     case 'info':
-    default:
+    case undefined:
       return null
   }
 }

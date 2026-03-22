@@ -46,8 +46,8 @@ export async function checkNodeVersion() {
 
 if (import.meta.main) {
   await cmd`verify node version matches project requirements`.run(async () => {
-    checkNodeVersion().catch((e: any) => {
-      console.error(e.message)
+    checkNodeVersion().catch((e: unknown) => {
+      console.error((e as Error).message)
       process.exit(1)
     })
   })

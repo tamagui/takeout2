@@ -149,7 +149,10 @@ class ZeroErrorBoundary extends Component<
   render() {
     if (this.state.error) {
       // render children WITHOUT zero wrapping so app still works
-      console.error('[zero] rendering without zero due to error:', this.state.error.message)
+      console.error(
+        '[zero] rendering without zero due to error:',
+        this.state.error.message,
+      )
       return this.props.children
     }
     return this.props.children

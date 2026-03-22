@@ -16,7 +16,7 @@ export class PostHog implements PostHogInstance {
       return this.instance
     }
     if (this.initPromise) {
-      return await this.initPromise
+      return this.initPromise
     }
 
     if (DEBUG_LEVEL > 1) {

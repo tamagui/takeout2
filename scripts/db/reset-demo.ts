@@ -153,8 +153,8 @@ await cmd`Reset demo database to seed state`.run(async () => {
     process.exit(0)
   }
 
-  resetDemo().catch((err) => {
-    console.error('reset failed:', err)
+  resetDemo().catch((err: unknown) => {
+    console.error('reset failed:', err instanceof Error ? err.message : err)
     process.exit(1)
   })
 })

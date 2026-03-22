@@ -70,6 +70,12 @@ export const showError = (error: unknown, title?: string) => {
       case 'NOT_FOUND':
         finalTitle = 'Not Found'
         break
+      case 'VALIDATION_ERROR':
+        finalTitle = 'Validation Error'
+        break
+      case 'INTERNAL_ERROR':
+        finalTitle = 'Internal Error'
+        break
     }
   }
 

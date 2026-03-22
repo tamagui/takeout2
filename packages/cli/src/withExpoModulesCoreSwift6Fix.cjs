@@ -35,7 +35,7 @@ function withExpoModulesCoreSwift6Fix(config) {
           build_config.build_settings['SWIFT_STRICT_CONCURRENCY'] = 'minimal'
           flags = build_config.build_settings['OTHER_SWIFT_FLAGS'] || '$(inherited)'
           unless flags.include?('IsolatedConformances')
-            build_config.build_settings['OTHER_SWIFT_FLAGS'] = "\#{flags} -enable-upcoming-feature IsolatedConformances"
+            build_config.build_settings['OTHER_SWIFT_FLAGS'] = "#{flags} -enable-upcoming-feature IsolatedConformances"
           end
         end
       end
@@ -43,7 +43,7 @@ function withExpoModulesCoreSwift6Fix(config) {
 `
       const updated = podfile.replace(
         /(post_install do \|installer\|.*?)(^\s+end\s*\nend)/ms,
-        `$1${workaround}$2`
+        `$1${workaround}$2`,
       )
 
       if (updated !== podfile) {

@@ -101,7 +101,7 @@ export const ExpandedMenuItem = memo(
         >
           <Animated.View
             style={[
-              StyleSheet.absoluteFillObject,
+              StyleSheet.absoluteFill,
               { backgroundColor: '#FFFFFF', borderRadius: 99 },
 
               animatedSelectionStyle,

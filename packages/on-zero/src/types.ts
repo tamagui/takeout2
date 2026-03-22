@@ -45,6 +45,7 @@ export type TableName = keyof Schema['tables'] extends string
   ? keyof Schema['tables']
   : string
 
+// eslint-disable-next-line typescript-eslint/no-unnecessary-type-arguments
 export type Transaction = ZeroTransaction<Schema>
 
 export type AuthData =
@@ -87,6 +88,7 @@ type GetModelMutators<Models extends GenericModels> = {
 export type GenericModels = {
   [key: string]: {
     mutate?: Record<string, (ctx: MutatorContext, obj?: any) => Promise<any>>
+    // eslint-disable-next-line typescript-eslint/no-unnecessary-type-arguments
     permissions?: Where<any, Condition | boolean>
   }
 }

@@ -5,7 +5,7 @@ import { sleep } from './sleep'
  * Two helpers wrapping requestIdleCallback in async, abortable.
  */
 
-type CallbackFn = (...args: any[]) => any | (() => any)
+type CallbackFn = (...args: any[]) => any
 type CallbackerFn = (cb: CallbackFn) => void
 
 const idleCb: CallbackerFn =

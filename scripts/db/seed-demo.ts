@@ -206,8 +206,8 @@ await cmd`Seed database with demo users and posts`.run(async () => {
     process.exit(0)
   }
 
-  seed().catch((err) => {
-    console.error('seed failed:', err)
+  seed().catch((err: unknown) => {
+    console.error('seed failed:', err instanceof Error ? err.message : err)
     process.exit(1)
   })
 })

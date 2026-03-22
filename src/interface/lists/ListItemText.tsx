@@ -66,7 +66,7 @@ export const ListItemText = forwardRef<TamaguiElement, ListItemTextProps>(
               onEditComplete?.(value)
             }
           }}
-          onKeyPress={(e) => {
+          onKeyDown={(e) => {
             if (e.nativeEvent.key === 'Escape') {
               setEditing?.(false)
               onEditCancel?.()

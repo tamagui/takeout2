@@ -18,7 +18,7 @@ import {
 import type { AttachmentType } from './types'
 
 export function getFileType(filename: string): AttachmentType {
-  const ext = filename.toLowerCase().split('.').pop()
+  const ext = filename.toLowerCase().split('.').pop() ?? ''
   switch (ext) {
     case 'jpg':
     case 'jpeg':
@@ -119,7 +119,7 @@ export function validateFile(file: File): { valid: boolean; error?: string } {
 }
 
 export function getFileIcon(filename: string, size?: number) {
-  const ext = filename.toLowerCase().split('.').pop()
+  const ext = filename.toLowerCase().split('.').pop() ?? ''
   const iconProps = { size: size || 16 }
 
   switch (ext) {

@@ -153,25 +153,6 @@ export default {
         },
       },
 
-      ...(process.env.ANALYZE
-        ? [
-            visualizer({
-              filename: 'bundle_stats.html',
-              open: false,
-              gzipSize: true,
-              brotliSize: true,
-              emitFile: true,
-            }),
-            visualizer({
-              filename: 'bundle_stats.json',
-              template: 'raw-data',
-              gzipSize: true,
-              brotliSize: true,
-              emitFile: true,
-            }),
-          ]
-        : []),
-
       build: {
         api: {
           config: {
@@ -189,5 +170,24 @@ export default {
         },
       },
     }),
+
+    ...(process.env.ANALYZE
+      ? [
+          visualizer({
+            filename: 'bundle_stats.html',
+            open: false,
+            gzipSize: true,
+            brotliSize: true,
+            emitFile: true,
+          }),
+          visualizer({
+            filename: 'bundle_stats.json',
+            template: 'raw-data',
+            gzipSize: true,
+            brotliSize: true,
+            emitFile: true,
+          }),
+        ]
+      : []),
   ],
 } satisfies UserConfig

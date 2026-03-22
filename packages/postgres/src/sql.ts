@@ -8,7 +8,7 @@ export type SqlQuery = {
 }
 
 export const createSql = (pool: Pool) => {
-  return (strings: TemplateStringsArray, ...values: any[]): Promise<QueryResult<any>> => {
+  return (strings: TemplateStringsArray, ...values: any[]): Promise<QueryResult> => {
     const text = strings.reduce((result, str, i) => {
       return result + str + (i < values.length ? `$${i + 1}` : '')
     }, '')
@@ -31,7 +31,7 @@ export const setDefaultPool = (pool: Pool) => {
 export const sql = (
   strings: TemplateStringsArray,
   ...values: any[]
-): Promise<QueryResult<any>> => {
+): Promise<QueryResult> => {
   if (!defaultPool) {
     throw new Error('No default pool set. Call setDefaultPool() first or use createSql()')
   }

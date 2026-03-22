@@ -30,6 +30,10 @@ class Logger {
     }
 
     switch (level) {
+      case 'debug':
+        // debug logs not tracked
+        break
+
       case 'info':
         analytics.track('log_info', {
           message,

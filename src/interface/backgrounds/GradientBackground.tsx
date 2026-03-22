@@ -48,7 +48,7 @@ export const GradientBackground = ({
               ? require('../../../assets/background-dark.png')
               : require('../../../assets/background-light.png')
           }
-          style={[StyleSheet.absoluteFillObject, { zIndex: -2 }]}
+          style={[StyleSheet.absoluteFill, { zIndex: -2 }]}
           resizeMode="cover"
         />
         <GradientBlurView width={width} height={height / 1.5} />

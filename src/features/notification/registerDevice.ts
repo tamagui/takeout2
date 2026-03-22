@@ -4,4 +4,7 @@ export const registerDevice = async (_userId: string) => ({
   error: 'unsupported-device',
 })
 
-export const disableDevicePush = async (_userId: string, _platform: 'ios' | 'android') => {}
+export const disableDevicePush = async (
+  _userId: string,
+  _platform: 'ios' | 'android',
+) => {}

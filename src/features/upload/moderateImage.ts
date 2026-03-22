@@ -81,7 +81,7 @@ export async function moderateImageFromUrl(imageUrl: string): Promise<Moderation
   try {
     const response = await fetch(imageUrl)
     const arrayBuffer = await response.arrayBuffer()
-    return moderateImage(new Uint8Array(arrayBuffer))
+    return await moderateImage(new Uint8Array(arrayBuffer))
   } catch (error) {
     console.error('[moderateImageFromUrl] fetch error:', error)
     return { safe: true, blockedLabels: [], allLabels: [] }

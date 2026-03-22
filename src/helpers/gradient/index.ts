@@ -27,7 +27,7 @@ function easeGradient({
 
   const initialLocations = Object.keys(colorStops)
     .map((key) => Number(key))
-    .sort()
+    .sort((a, b) => a - b)
 
   const totalColorStops = initialLocations.length
 

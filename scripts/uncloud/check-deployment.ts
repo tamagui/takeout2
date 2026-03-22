@@ -1,16 +1,16 @@
 #!/usr/bin/env bun
 
 import { cmd } from '@take-out/cli'
-import {
-  checkRestartLoops,
-  getContainerStatus as getContainerStatusHelper,
-  checkContainerHealth as checkContainerHealthHelper,
-  checkHttpHealth as checkHttpHealthHelper,
-  getContainerLogs as getContainerLogsHelper,
-  type SSHContext,
-} from '@take-out/scripts/helpers/deploy-health'
 
 await cmd`Check deployment health`.run(async ({ $, fs }) => {
+  const {
+    checkRestartLoops,
+    getContainerStatus: getContainerStatusHelper,
+    checkContainerHealth: checkContainerHealthHelper,
+    checkHttpHealth: checkHttpHealthHelper,
+    getContainerLogs: getContainerLogsHelper,
+  } = await import('@take-out/scripts/helpers/deploy-health')
+  type SSHContext = import('@take-out/scripts/helpers/deploy-health').SSHContext
   const TIMEOUT = 5 * 60 * 1000 // 5 minutes
   const CHECK_INTERVAL = 10000 // 10 seconds
   const PROGRESS_UPDATE_INTERVAL = 30000 // 30 seconds for progress updates
@@ -379,7 +379,7 @@ Monitors the deployment and exits when all services are healthy or on timeout.
   }
 
   // run monitoring
-  await monitor().catch((error) => {
+  await monitor().catch((error: unknown) => {
     console.error('❌ Monitoring failed:', error)
     process.exit(1)
   })

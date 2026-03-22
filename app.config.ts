@@ -39,7 +39,7 @@ export default {
           return ' (Dev)'
         case 'preview':
           return ' (Preview)'
-        default:
+        case 'production':
           return ''
       }
     })()}`,

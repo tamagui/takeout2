@@ -31,7 +31,6 @@ export function createPermissions<Schema extends ZeroSchema>({
   adminRoleMode?: AdminRoleMode
 }) {
   type PermissionReturn = Condition | boolean
-
   type PermissionsWhere<Table extends TableName = TableName> = Where<
     Table,
     PermissionReturn
@@ -65,7 +64,7 @@ export function createPermissions<Schema extends ZeroSchema>({
 
     const primaryKeys = tableSchema.primaryKey
 
-    let permissionReturn: PermissionReturn
+    let permissionReturn: Condition | boolean
     try {
       permissionReturn = permissionWhere(eb, authData)
     } catch (err) {

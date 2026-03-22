@@ -153,16 +153,6 @@ async function validateLoginOtpCodeInfinite(
       }
     }
 
-    default: {
-      return {
-        success: false,
-        error: {
-          code: 'INVALID_METHOD',
-          title: 'Invalid Method',
-          message: `The method "${method}" is not supported.`,
-        },
-      }
-    }
   }
 }
 
@@ -193,11 +183,6 @@ export async function otpLogin(
         })
       }
 
-      default:
-        return {
-          data: null,
-          error: { code: 'INVALID_METHOD', message: 'Invalid method' },
-        }
     }
   })()
 

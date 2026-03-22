@@ -8,7 +8,7 @@ import {
   type ProcessType,
 } from './process-state'
 
-type ExitCallback = (info: { signal: NodeJS.Signals | string }) => void | Promise<void>
+type ExitCallback = (info: { signal: string }) => void | Promise<void>
 
 interface HandleProcessExitReturn {
   addChildProcess: ProcessHandler
@@ -101,7 +101,7 @@ export function handleProcessExit({
   const processes: ProcessType[] = []
   let cleanupPromise: Promise<void> | null = null
 
-  const cleanup = (signal: NodeJS.Signals | string = 'SIGTERM'): Promise<void> => {
+  const cleanup = (signal: string = 'SIGTERM'): Promise<void> => {
     // return existing cleanup promise if already running, so process.exit
     // override waits for the real cleanup instead of exiting early
     if (cleanupPromise) return cleanupPromise
@@ -110,7 +110,7 @@ export function handleProcessExit({
     return cleanupPromise
   }
 
-  const doCleanup = async (signal: NodeJS.Signals | string) => {
+  const doCleanup = async (signal: string) => {
     setExitCleanupState(true)
 
     if (onExit) {

@@ -331,7 +331,7 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
     <>
       <Animated.View
         style={[
-          { ...StyleSheet.absoluteFillObject, zIndex: 5 },
+          { ...StyleSheet.absoluteFill, zIndex: 5 },
           animatedBackdropBlurStyle,
         ]}
       >

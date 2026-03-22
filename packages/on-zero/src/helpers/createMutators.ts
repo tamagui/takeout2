@@ -66,6 +66,7 @@ export function createMutators<Models extends GenericModels>({
             : undefined,
       }
 
+      // eslint-disable-next-line typescript-eslint/return-await
       return await runWithContext(mutationContext, () => {
         // @ts-expect-error type shenanigan
         // map to our mutations() helper

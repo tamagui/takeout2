@@ -23,8 +23,8 @@ async function ensureEnv() {
   if (envLoaded) return
   envLoaded = true
   const { loadEnv } = await import('@take-out/scripts/helpers/env-load')
-  await loadEnv('production').catch((err) => {
-    console.warn('warning: could not load production env:', err?.message || err)
+  await loadEnv('production').catch((err: unknown) => {
+    console.warn('warning: could not load production env:', err instanceof Error ? err.message : err)
   })
 }
 

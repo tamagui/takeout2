@@ -195,7 +195,7 @@ export const GlobalTooltipProvider = ({
         rounded="$2"
         animateOnly={['transform', 'opacity', 'width', 'height']}
         // TODO this would make them really nice but it needs to avoid animation when re-targeting
-        enableAnimationForPositionChange
+        animatePosition
         transition={disabled ? null : animationClamped('quickerLessBouncy')}
         $theme-dark={{
           shadowColor: '$shadow4',

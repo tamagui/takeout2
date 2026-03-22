@@ -193,10 +193,16 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
     dispose?.()
 
     dispose = authClient.useSession.subscribe(async (props) => {
+      if (!props.isPending) clearTimeout(loadingTimeout)
       const { data: dataGeneric, isPending, error } = props
 
       if (error) {
         onAuthError?.(error)
+        // if no persisted session, transition to logged-out instead of staying loading
+        const hasPersistedSession = !!keysStorage.get()?.session
+        if (!hasPersistedSession) {
+          setState({ state: 'logged-out', session: null, user: null })
+        }
         scheduleAuthRetry(retryDelay)
         return
       }

@@ -135,6 +135,9 @@
     "**/dist/**",
     "**/.docker/**",
     "**/.dist/**",
-    "packages/run/src/run-pty.mjs"
+    "packages/run/src/run-pty.mjs",
+    "src/data/generated/**",
+    "**/.frontend.tsx",
+    "**/.backend.tsx"
   ]
 }

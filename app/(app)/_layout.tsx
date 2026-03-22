@@ -1,5 +1,5 @@
-import { Protected, Redirect, Slot, Stack, usePathname } from 'one'
-import { Configuration, isWeb, SizableText } from 'tamagui'
+import { Redirect, Slot, Stack, usePathname } from 'one'
+import { Configuration, SizableText } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
 import { ZeroTestUI } from '~/features/devtools/ZeroTestUI'
@@ -32,49 +32,46 @@ export function AppLayout() {
     )
   }
 
-  // Redirect for auth routing
-  if (isWeb) {
-    if (!isLoggedIn && pathname.startsWith('/home')) {
-      return <Redirect href="/auth/login" />
-    }
-    if (isLoggedIn && pathname.startsWith('/auth')) {
-      return <Redirect href="/home/feed" />
-    }
+  // redirect for auth routing (works on both web and native)
+  if (!isLoggedIn && pathname.startsWith('/home')) {
+    return <Redirect href="/auth/login" />
+  }
+  if (isLoggedIn && pathname.startsWith('/auth')) {
+    return <Redirect href="/home/feed" />
   }
 
   return (
     // our app is SPA from here on down, avoid extra work by disabling SSR
     <Configuration disableSSR animationDriver={animationsApp}>
-      <ProvideZero>
-        <WidgetSetup />
+      {process.env.VITE_NATIVE ? (
         <ToastProvider>
           <NotificationProvider>
-            {!process.env.VITE_NATIVE ? (
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                animation: 'none',
+              }}
+            >
+              <Stack.Screen name="auth" />
+              <Stack.Screen name="home" />
+            </Stack>
+          </NotificationProvider>
+        </ToastProvider>
+      ) : (
+        <ProvideZero>
+          <WidgetSetup />
+          <ToastProvider>
+            <NotificationProvider>
               <DragDropFile>
                 <Gallery />
                 <Slot />
               </DragDropFile>
-            ) : (
-              // Stack transition animation on native
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  animation: 'none',
-                }}
-              >
-                <Protected guard={!isLoggedIn}>
-                  <Stack.Screen name="auth" />
-                </Protected>
-                <Protected guard={isLoggedIn}>
-                  <Stack.Screen name="home" />
-                </Protected>
-              </Stack>
-            )}
-          </NotificationProvider>
-          <Dialogs />
-        </ToastProvider>
-        <ZeroTestUI />
-      </ProvideZero>
+            </NotificationProvider>
+            <Dialogs />
+          </ToastProvider>
+          <ZeroTestUI />
+        </ProvideZero>
+      )}
     </Configuration>
   )
 }

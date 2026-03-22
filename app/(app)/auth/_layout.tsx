@@ -5,18 +5,7 @@ import { Onboarding } from '~/features/onboarding'
 
 export function AuthAndOnboardingLayout() {
   if (process.env.VITE_NATIVE) {
-    return (
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-        initialRouteName="login"
-      >
-        <Stack.Screen name="login" />
-        <Stack.Screen name="signup/[method]" />
-        <Stack.Screen name="signup/otp" />
-      </Stack>
-    )
+    return <Slot />
   }
 
   return (

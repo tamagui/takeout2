@@ -70,7 +70,7 @@ export const mutate = mutations(schema, permissions, {
 
     await tx.mutate.userPublic.update(updateData)
 
-    if (environment === 'server' && server) {
+    if (process.env.VITE_ENVIRONMENT === 'ssr' && server) {
       const fieldsUpdated = Object.keys(user).filter((key) => key !== 'id')
       server.asyncTasks.push(() =>
         server.actions.analyticsActions().logEvent(authData.id, 'profile_updated', {

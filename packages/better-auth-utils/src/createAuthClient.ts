@@ -193,7 +193,6 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
     dispose?.()
 
     dispose = authClient.useSession.subscribe(async (props) => {
-      if (!props.isPending) clearTimeout(loadingTimeout)
       const { data: dataGeneric, isPending, error } = props
 
       if (error) {

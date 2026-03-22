@@ -1,6 +1,10 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "import", "typescript"],
+  "plugins": [
+    "react",
+    "import",
+    "typescript"
+  ],
   "jsPlugins": [
     "./scripts/check/helpers/ssr-guards.js",
     "./scripts/check/helpers/script-imports.js",
@@ -52,9 +56,14 @@
     "oxc/const-comparisons": "off",
     "react-hooks/exhaustive-deps": "warn",
     "react-hooks/rules-of-hooks": "error",
-    "react/jsx-curly-brace-presence": ["warn", { "props": "never", "children": "never" }],
+    "react/jsx-curly-brace-presence": [
+      "warn",
+      {
+        "props": "never",
+        "children": "never"
+      }
+    ],
     "react/jsx-no-constructed-context-values": "warn",
-
     "typescript/no-for-in-array": "warn",
     "typescript/no-array-delete": "warn",
     "typescript/no-meaningless-void-operator": "warn",
@@ -79,7 +88,6 @@
     "typescript/no-deprecated": "warn",
     "typescript/restrict-plus-operands": "warn",
     "typescript/use-unknown-in-catch-callback-variable": "warn",
-
     "typescript/no-floating-promises": "off",
     "typescript/no-misused-promises": "off",
     "typescript/await-thenable": "off",
@@ -100,7 +108,10 @@
       }
     },
     {
-      "files": ["**/*.native.tsx", "**/*.native.ts"],
+      "files": [
+        "**/*.native.tsx",
+        "**/*.native.ts"
+      ],
       "rules": {
         "no-restricted-imports": "off"
       }
@@ -123,6 +134,7 @@
     "**/android/**",
     "**/dist/**",
     "**/.docker/**",
-    "**/.dist/**"
+    "**/.dist/**",
+    "packages/run/src/run-pty.mjs"
   ]
 }

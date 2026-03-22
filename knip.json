@@ -21,9 +21,16 @@
       "ignore": ["src/data/generated/**", "**/*.d.ts"],
       "ignoreDependencies": [
         "@types/*",
+        "@lydell/node-pty-darwin-arm64",
+        "@vxrn/compiler",
+        "@vxrn/resolve",
+        "@vxrn/tslib-lite",
+        "@vxrn/use-isomorphic-layout-effect",
+        "@vxrn/vite-plugin-metro",
         "jsonwebtoken",
         "motion",
         "postmark",
+        "react-native-launch-arguments",
         "chrome-devtools-mcp",
         "xcodebuildmcp"
       ]

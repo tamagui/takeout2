@@ -94,7 +94,6 @@
     "@hot-updater/react-native": "0.25.8",
     "@hot-updater/supabase": "0.25.8",
     "@legendapp/list": "2.0.19",
-    "@lydell/node-pty-darwin-arm64": "^1.2.0-beta.10",
     "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-native-menu/menu": "^2.0.0",
     "@react-navigation/bottom-tabs": "^7.10.1",

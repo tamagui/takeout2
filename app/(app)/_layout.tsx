@@ -56,6 +56,7 @@ export function AppLayout() {
               <Stack.Screen name="home" />
             </Stack>
           </NotificationProvider>
+          <Dialogs />
         </ToastProvider>
       ) : (
         <ProvideZero>

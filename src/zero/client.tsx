@@ -133,7 +133,7 @@ const ProvideZeroImpl = ({ children }: { children: ReactNode }) => {
 
 // error boundary to catch and log what's crashing inside ProvideZero
 class ZeroErrorBoundary extends Component<
-  { children: ReactNode },
+  { children: ReactNode; fallback: ReactNode },
   { error: Error | null }
 > {
   state = { error: null as Error | null }
@@ -148,19 +148,15 @@ class ZeroErrorBoundary extends Component<
 
   render() {
     if (this.state.error) {
-      // render children WITHOUT zero wrapping so app still works
-      console.error(
-        '[zero] rendering without zero due to error:',
-        this.state.error.message,
-      )
-      return this.props.children
+      // render fallback (children without zero) so app still works
+      return this.props.fallback
     }
     return this.props.children
   }
 }
 
 export const ProvideZero = ({ children }: { children: ReactNode }) => (
-  <ZeroErrorBoundary>
+  <ZeroErrorBoundary fallback={children}>
     <ProvideZeroImpl>{children}</ProvideZeroImpl>
   </ZeroErrorBoundary>
 )

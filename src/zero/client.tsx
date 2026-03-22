@@ -10,7 +10,9 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { debounce } from 'tamagui'
+import { debounce, SizableText, YStack } from 'tamagui'
+
+import { Button } from '~/interface/buttons/Button'
 
 import { dropAllDatabases } from '@rocicorp/zero'
 import { ZERO_SERVER_URL } from '~/constants/urls'
@@ -131,9 +133,8 @@ const ProvideZeroImpl = ({ children }: { children: ReactNode }) => {
   )
 }
 
-// error boundary to catch and log what's crashing inside ProvideZero
 class ZeroErrorBoundary extends Component<
-  { children: ReactNode; fallback: ReactNode },
+  { children: ReactNode },
   { error: Error | null }
 > {
   state = { error: null as Error | null }
@@ -148,15 +149,35 @@ class ZeroErrorBoundary extends Component<
 
   render() {
     if (this.state.error) {
-      // render fallback (children without zero) so app still works
-      return this.props.fallback
+      return (
+        <ZeroErrorFallback
+          error={this.state.error}
+          onRetry={() => this.setState({ error: null })}
+        />
+      )
     }
     return this.props.children
   }
 }
 
+function ZeroErrorFallback({ error, onRetry }: { error: Error; onRetry: () => void }) {
+  return (
+    <YStack flex={1} items="center" justify="center" gap="$4" px="$6">
+      <SizableText size="$7" fontWeight="700" color="$color12">
+        Sync Error
+      </SizableText>
+      <SizableText size="$4" color="$color10" text="center">
+        {error.message}
+      </SizableText>
+      <Button size="large" theme="accent" onPress={onRetry}>
+        Retry
+      </Button>
+    </YStack>
+  )
+}
+
 export const ProvideZero = ({ children }: { children: ReactNode }) => (
-  <ZeroErrorBoundary fallback={children}>
+  <ZeroErrorBoundary>
     <ProvideZeroImpl>{children}</ProvideZeroImpl>
   </ZeroErrorBoundary>
 )

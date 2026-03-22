@@ -5,7 +5,7 @@ import {
   type Href,
   type LinkProps as OneLinkProps,
 } from 'one'
-import { isWeb, SizableText, useDebounce, View, type SizableTextProps } from 'tamagui'
+import { isWeb, Text, useDebounce, View, type SizableTextProps } from 'tamagui'
 
 import { ArrowUpRightIcon } from '~/interface/icons/phosphor/ArrowUpRightIcon'
 
@@ -151,7 +151,7 @@ export const Link = ({
     )
 
   const linkElement = (
-    <SizableText
+    <Text
       render="a"
       target={target}
       disabled={!!disabled}
@@ -159,12 +159,6 @@ export const Link = ({
       asChild={asChild ? 'except-style' : false}
       className="t_Link"
       cursor="pointer"
-      $platform-web={{
-        color: 'inherit',
-        fontSize: 'inherit',
-        fontWeight: 'inherit',
-        lineHeight: 'inherit',
-      }}
       focusVisibleStyle={{
         outlineWidth: 2,
         outlineColor: '$color02',
@@ -181,7 +175,7 @@ export const Link = ({
       onPress={handlePress}
     >
       {childrenElements}
-    </SizableText>
+    </Text>
   )
 
   return wrapWithTooltip(linkElement, {

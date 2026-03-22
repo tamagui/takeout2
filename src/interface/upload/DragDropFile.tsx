@@ -416,9 +416,7 @@ export const useDragDrop = ({
   }
 }
 
-async function fileLikeToDataURI(
-  file: File | { name: string; contents: Uint8Array },
-) {
+async function fileLikeToDataURI(file: File | { name: string; contents: Uint8Array }) {
   const contents =
     'contents' in file ? file.contents : new Uint8Array(await file.arrayBuffer())
   return arrayBufferToDataURL(contents, getFileType(file.name))

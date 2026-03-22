@@ -152,7 +152,6 @@ async function validateLoginOtpCodeInfinite(
           }
       }
     }
-
   }
 }
 
@@ -182,7 +181,6 @@ export async function otpLogin(
           code: otp,
         })
       }
-
     }
   })()
 

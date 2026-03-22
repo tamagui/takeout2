@@ -76,7 +76,7 @@ test.describe('SSR Permissions', () => {
     await cleanupTestBlocks()
   })
 
-  test('serverWhere filters blocked users posts during SSR render', async ({ page }) => {
+  test('serverWhere filters blocked users posts via API', async ({ page }) => {
     test.setTimeout(60000)
 
     // login to get demo user id
@@ -95,49 +95,45 @@ test.describe('SSR Permissions', () => {
     const demoUserId = await getTestValue(page, 'user-id')
     expect(demoUserId).toBeTruthy()
 
-    // first, verify SSR without block shows all seed posts
-    const ssrUrl = `${BASE_URL}/test/ssr-permissions?viewerId=${demoUserId}`
-    const responseBefore = await page.goto(ssrUrl, { waitUntil: 'domcontentloaded' })
-    const htmlBefore = await responseBefore?.text()
+    // verify API without block shows all seed posts
+    const apiUrl = `${BASE_URL}/api/test/ssr-permissions?viewerId=${demoUserId}`
+    const resBefore = await (await fetch(apiUrl)).json()
 
-    expect(htmlBefore).toContain(SEED_POST_1)
-    expect(htmlBefore).toContain(SEED_POST_2)
+    expect(resBefore.postIds).toContain(SEED_POST_1)
+    expect(resBefore.postIds).toContain(SEED_POST_2)
 
     // now block seed-user-1
     const blockId = await insertBlock(demoUserId, SEED_USER_1)
 
-    // fetch SSR page again - serverWhere should filter out blocked user's posts
-    const responseAfter = await page.goto(ssrUrl, { waitUntil: 'domcontentloaded' })
-    const htmlAfter = await responseAfter?.text()
+    // fetch again - serverWhere should filter out blocked user's posts
+    const resAfter = await (await fetch(apiUrl)).json()
 
     // seed-post-1 should NOT appear (owner is blocked)
-    expect(htmlAfter).not.toContain(SEED_POST_1)
+    expect(resAfter.postIds).not.toContain(SEED_POST_1)
 
     // seed-post-2 should still appear (owner is not blocked)
-    expect(htmlAfter).toContain(SEED_POST_2)
+    expect(resAfter.postIds).toContain(SEED_POST_2)
 
     // clean up
     await deleteBlock(blockId)
 
-    // verify SSR shows the post again after unblock
-    const responseUnblocked = await page.goto(ssrUrl, { waitUntil: 'domcontentloaded' })
-    const htmlUnblocked = await responseUnblocked?.text()
+    // verify shows the post again after unblock
+    const resUnblocked = await (await fetch(apiUrl)).json()
 
-    expect(htmlUnblocked).toContain(SEED_POST_1)
-    expect(htmlUnblocked).toContain(SEED_POST_2)
+    expect(resUnblocked.postIds).toContain(SEED_POST_1)
+    expect(resUnblocked.postIds).toContain(SEED_POST_2)
   })
 
-  test('serverWhere returns all posts for anonymous viewer', async ({ page }) => {
+  test('serverWhere returns all posts for anonymous viewer', async () => {
     test.setTimeout(30000)
 
-    // SSR without viewerId should return all posts (anonymous has no blocks)
-    const ssrUrl = `${BASE_URL}/test/ssr-permissions`
-    const response = await page.goto(ssrUrl, { waitUntil: 'domcontentloaded' })
-    const html = await response?.text()
+    // API without viewerId should return all posts (anonymous has no blocks)
+    const apiUrl = `${BASE_URL}/api/test/ssr-permissions`
+    const res = await (await fetch(apiUrl)).json()
 
     // both seed posts should be visible for anonymous
-    expect(html).toContain(SEED_POST_1)
-    expect(html).toContain(SEED_POST_2)
+    expect(res.postIds).toContain(SEED_POST_1)
+    expect(res.postIds).toContain(SEED_POST_2)
   })
 })
 

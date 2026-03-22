@@ -1,5 +1,5 @@
 import { useQuery as zeroUseQuery } from '@rocicorp/zero/react'
-import { use, useMemo, useRef, type Context } from 'react'
+import { useContext, useMemo, useRef, type Context } from 'react'
 
 import { useZeroDebug } from './helpers/useZeroDebug'
 import { resolveQuery, type PlainQueryFn } from './resolveQuery'
@@ -49,7 +49,7 @@ export function createUseQuery<Schema extends ZeroSchema>({
   customQueries: AnyQueryRegistry
 }): UseQueryHook<Schema> {
   function useQuery(...args: any[]): any {
-    const disableMode = use(DisabledContext)
+    const disableMode = useContext(DisabledContext)
     const lastRef = useRef<any>(EMPTY_RESPONSE)
     const [fn, paramsOrOptions, optionsArg] = args
 

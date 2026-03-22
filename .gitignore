@@ -63,3 +63,5 @@ src/uncloud/certs/origin.*
 src/uncloud/Caddyfile
 # hot-updater
 .hot-updater/output
+.maestro-debug/
+scripts/test/

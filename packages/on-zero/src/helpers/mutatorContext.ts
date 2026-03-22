@@ -22,7 +22,7 @@ export function isInZeroMutation() {
 
 export function runWithContext<T>(
   context: MutatorContext,
-  fn: () => T | Promise<T>
+  fn: () => T | Promise<T>,
 ): Promise<T> {
   return asyncContext.run(context, fn)
 }
@@ -37,7 +37,7 @@ export function getScopedAuthData(): AuthData | null | undefined {
 
 export function runWithAuthScope<T>(
   authData: AuthData | null,
-  fn: () => T | Promise<T>
+  fn: () => T | Promise<T>,
 ): Promise<T> {
   return authScopeContext.run(authData, fn)
 }

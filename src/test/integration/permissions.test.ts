@@ -58,7 +58,7 @@ async function insertBlock(blockerId: string, blockedId: string): Promise<string
   await pool.query(
     `INSERT INTO block (id, "blockerId", "blockedId", "createdAt")
      VALUES ($1, $2, $3, NOW())`,
-    [id, blockerId, blockedId]
+    [id, blockerId, blockedId],
   )
   return id
 }
@@ -90,7 +90,7 @@ test.describe('SSR Permissions', () => {
         const el = document.querySelector('[data-testid="zt-user-id"]')
         return el && el.textContent && el.textContent !== '—'
       },
-      { timeout: 5000 }
+      { timeout: 5000 },
     )
     const demoUserId = await getTestValue(page, 'user-id')
     expect(demoUserId).toBeTruthy()
@@ -168,7 +168,7 @@ test.describe('Permissions', () => {
         const el = document.querySelector('[data-testid="zt-user-id"]')
         return el && el.textContent && el.textContent !== '—'
       },
-      { timeout: 5000 }
+      { timeout: 5000 },
     )
 
     const demoUserId = await getTestValue(page, 'user-id')
@@ -225,7 +225,7 @@ test.describe('Permissions', () => {
         const el = document.querySelector('[data-testid="zt-perm-seed-post-1"]')
         return el && el.textContent !== 'null' && el.textContent !== '—'
       },
-      { timeout: 5000 }
+      { timeout: 5000 },
     )
 
     // seed-post-1 is owned by seed-user-1, not demo user -> should be false
@@ -256,7 +256,7 @@ test.describe('Permissions', () => {
         const el = document.querySelector('[data-testid="zt-user-id"]')
         return el && el.textContent && el.textContent !== '—'
       },
-      { timeout: 5000 }
+      { timeout: 5000 },
     )
 
     const demoUserId = await getTestValue(page, 'user-id')
@@ -275,7 +275,7 @@ test.describe('Permissions', () => {
         'test post for permissions',
         false,
         0,
-      ]
+      ],
     )
 
     // wait for the post to appear
@@ -287,7 +287,7 @@ test.describe('Permissions', () => {
         const el = document.querySelector('[data-testid="zt-perm-own-post"]')
         return el && el.textContent !== 'null' && el.textContent !== '—'
       },
-      { timeout: 5000 }
+      { timeout: 5000 },
     )
 
     // permission on own post should be true
@@ -314,7 +314,7 @@ test.describe('Permissions', () => {
         const el = document.querySelector('[data-testid="zt-user-id"]')
         return el && el.textContent && el.textContent !== '—'
       },
-      { timeout: 5000 }
+      { timeout: 5000 },
     )
 
     const demoUserId = await getTestValue(page, 'user-id')

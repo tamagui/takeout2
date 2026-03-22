@@ -67,7 +67,7 @@ const SettingRow = memo(
     }
 
     return null
-  }
+  },
 )
 
 const LogoAndVersion = memo(() => {

@@ -15,7 +15,7 @@ async function getRequiredNodeVersion() {
   try {
     const nodeVersionContent = await fs.promises.readFile(
       path.join(process.cwd(), '.node-version'),
-      'utf-8'
+      'utf-8',
     )
     return `v${nodeVersionContent.trim()}`
   } catch {}
@@ -23,7 +23,7 @@ async function getRequiredNodeVersion() {
   // fallback to package.json engines.node
   try {
     const packageJson = JSON.parse(
-      await fs.promises.readFile(path.join(process.cwd(), 'package.json'), 'utf-8')
+      await fs.promises.readFile(path.join(process.cwd(), 'package.json'), 'utf-8'),
     )
     return packageJson?.engines?.node ? `v${packageJson.engines.node}` : null
   } catch {
@@ -38,7 +38,7 @@ export async function checkNodeVersion() {
   if (requiredNodeVersion) {
     if (currentNodeVersion !== requiredNodeVersion) {
       throw new Error(
-        `\u001b[33mWarning: Incorrect Node.js version. Expected ${requiredNodeVersion} but got ${currentNodeVersion}\u001b[0m`
+        `\u001b[33mWarning: Incorrect Node.js version. Expected ${requiredNodeVersion} but got ${currentNodeVersion}\u001b[0m`,
       )
     }
   }

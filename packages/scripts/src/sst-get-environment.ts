@@ -18,7 +18,7 @@ export function getEnvironment(resourceName: string) {
   const state = JSON.parse(result.stdout || '{}')
 
   const resource = state.latest.resources.find(
-    (x: any) => x.outputs?._dev?.title === resourceName
+    (x: any) => x.outputs?._dev?.title === resourceName,
   )
 
   if (!resource) {

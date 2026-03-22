@@ -12,7 +12,7 @@ export async function clearIndexedDB(): Promise<void> {
           })
         }
         return Promise.resolve()
-      })
+      }),
     )
   }
 }

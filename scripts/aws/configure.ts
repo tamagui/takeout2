@@ -141,7 +141,7 @@ await cmd`AWS CloudWatch configuration`
 
           if (dryRun) {
             console.info(
-              `[DRY RUN] Would delete and recreate: ${logGroupName} with ${retentionDays} day retention`
+              `[DRY RUN] Would delete and recreate: ${logGroupName} with ${retentionDays} day retention`,
             )
           } else {
             console.info(`Processing: ${logGroupName}`)
@@ -172,11 +172,11 @@ await cmd`AWS CloudWatch configuration`
 
           if (dryRun) {
             console.info(
-              `[DRY RUN] Would update retention for ${logGroupName}: ${currentRetention || 'Never expire'} → ${targetRetention} days`
+              `[DRY RUN] Would update retention for ${logGroupName}: ${currentRetention || 'Never expire'} → ${targetRetention} days`,
             )
           } else {
             console.info(
-              `Updating retention for ${logGroupName}: ${currentRetention || 'Never expire'} → ${targetRetention} days`
+              `Updating retention for ${logGroupName}: ${currentRetention || 'Never expire'} → ${targetRetention} days`,
             )
           }
 

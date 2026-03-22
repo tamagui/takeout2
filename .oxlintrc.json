@@ -1,7 +1,17 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "import"],
+  "plugins": ["react", "import", "typescript"],
+  "jsPlugins": [
+    "./scripts/check/helpers/ssr-guards.js",
+    "./scripts/check/helpers/script-imports.js",
+    "./scripts/check/helpers/middleware-imports.js"
+  ],
   "rules": {
+    "ssr-guards/run-call": "warn",
+    "ssr-guards/async-tasks": "warn",
+    "ssr-guards/no-early-return": "warn",
+    "script-imports/no-top-level": "warn",
+    "middleware-imports/no-top-level-runtime-imports": "warn",
     "import/no-cycle": "error",
     "no-restricted-imports": [
       "error",
@@ -42,7 +52,41 @@
     "oxc/const-comparisons": "off",
     "react-hooks/exhaustive-deps": "warn",
     "react-hooks/rules-of-hooks": "error",
-    "react/jsx-curly-brace-presence": ["warn", { "props": "never", "children": "never" }]
+    "react/jsx-curly-brace-presence": ["warn", { "props": "never", "children": "never" }],
+    "react/jsx-no-constructed-context-values": "warn",
+
+    "typescript/no-for-in-array": "warn",
+    "typescript/no-array-delete": "warn",
+    "typescript/no-meaningless-void-operator": "warn",
+    "typescript/no-unsafe-unary-minus": "warn",
+    "typescript/no-unnecessary-type-conversion": "warn",
+    "typescript/require-array-sort-compare": "warn",
+    "typescript/prefer-find": "warn",
+    "typescript/prefer-includes": "warn",
+    "typescript/no-unsafe-enum-comparison": "warn",
+    "typescript/no-duplicate-type-constituents": "warn",
+    "typescript/no-redundant-type-constituents": "warn",
+    "typescript/no-misused-spread": "warn",
+    "typescript/no-implied-eval": "warn",
+    "typescript/only-throw-error": "off",
+    "typescript/prefer-optional-chain": "off",
+    "typescript/switch-exhaustiveness-check": "warn",
+    "typescript/return-await": "warn",
+    "typescript/no-unnecessary-template-expression": "warn",
+    "typescript/prefer-string-starts-ends-with": "warn",
+    "typescript/no-unnecessary-type-arguments": "warn",
+    "typescript/prefer-promise-reject-errors": "off",
+    "typescript/no-deprecated": "warn",
+    "typescript/restrict-plus-operands": "warn",
+    "typescript/use-unknown-in-catch-callback-variable": "warn",
+
+    "typescript/no-floating-promises": "off",
+    "typescript/no-misused-promises": "off",
+    "typescript/await-thenable": "off",
+    "typescript/no-unnecessary-type-assertion": "off",
+    "typescript/restrict-template-expressions": "off",
+    "typescript/no-base-to-string": "off",
+    "typescript/unbound-method": "off"
   },
   "overrides": [
     {
@@ -54,9 +98,17 @@
       "rules": {
         "no-restricted-imports": "off"
       }
+    },
+    {
+      "files": ["**/*.native.tsx", "**/*.native.ts"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
     }
   ],
   "ignorePatterns": [
+    "**/.claude/**",
+    "**/*.generated.js",
     "**/.tamagui/**",
     "**/tmp-data/**",
     "**/.build/**",
@@ -64,7 +116,7 @@
     "**/.sst/**",
     "**/.output/**",
     "**/migrations/meta/**",
-    "**/migrate-dist.js",
+    "src/database/migrations/**",
     "**/themes-out.ts",
     "**/*.d.ts",
     "**/ios/**",

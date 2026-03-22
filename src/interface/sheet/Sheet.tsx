@@ -18,7 +18,7 @@ export const Sheet = forwardRef<SheetRef, SheetProps>(
       snapPoints,
       contentStyle,
     },
-    ref
+    ref,
   ) => {
     const [internalOpen, setInternalOpen] = useState(false)
     const isControlled = controlledOpen !== undefined
@@ -75,5 +75,5 @@ export const Sheet = forwardRef<SheetRef, SheetProps>(
         </TamaguiSheet.Frame>
       </TamaguiSheet>
     )
-  }
+  },
 )

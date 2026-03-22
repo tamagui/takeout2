@@ -33,7 +33,7 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
     try {
       await run(
         `${ssh} "docker tag takeout-web:latest takeout-web:previous 2>/dev/null || true"`,
-        { silent: true }
+        { silent: true },
       )
       console.info(colors.gray('  tagged current image as takeout-web:previous'))
     } catch {
@@ -71,7 +71,7 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
 
       const { stdout: ready } = await run(
         `${ssh} "docker exec ${containerId} pg_isready -U takeout 2>&1 || echo NOT_READY"`,
-        { captureOutput: true, silent: true }
+        { captureOutput: true, silent: true },
       )
 
       if (ready.includes('NOT_READY')) {
@@ -82,7 +82,7 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
       console.info(colors.gray('  pgdb: issuing CHECKPOINT before stop...'))
       await run(
         `${ssh} "docker exec ${containerId} psql -U takeout -d postgres -c 'CHECKPOINT;'"`,
-        { silent: true }
+        { silent: true },
       )
 
       console.info(colors.gray('  stopping pgdb gracefully (60s timeout)...'))
@@ -102,7 +102,7 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
 
     if (!DEPLOY_HOST) {
       throw new Error(
-        'DEPLOY_HOST not set\n\nFor local use, run: bun tko onboard\nFor CI, ensure DEPLOY_HOST is in GitHub secrets'
+        'DEPLOY_HOST not set\n\nFor local use, run: bun tko onboard\nFor CI, ensure DEPLOY_HOST is in GitHub secrets',
       )
     }
 
@@ -110,7 +110,7 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
     const deployDb = process.env.DEPLOY_DB
     if (!deployDb) {
       throw new Error(
-        'DEPLOY_DB not set\n\nFor uncloud deployment, set DEPLOY_DB in .env.production\nExample: postgresql://user:pass@host:port/dbname?sslmode=require\n\nRun: bun tko onboard to configure'
+        'DEPLOY_DB not set\n\nFor uncloud deployment, set DEPLOY_DB in .env.production\nExample: postgresql://user:pass@host:port/dbname?sslmode=require\n\nRun: bun tko onboard to configure',
       )
     }
 
@@ -133,29 +133,31 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
 
     if (envUpstream && getHost(envUpstream) !== deployDbHost) {
       console.warn(
-        colors.yellow(`⚠️  ZERO_UPSTREAM_DB in env has different host than DEPLOY_DB`)
+        colors.yellow(`⚠️  ZERO_UPSTREAM_DB in env has different host than DEPLOY_DB`),
       )
       console.warn(
-        colors.yellow(`   env: ${getHost(envUpstream)}, deploy_db: ${deployDbHost}`)
+        colors.yellow(`   env: ${getHost(envUpstream)}, deploy_db: ${deployDbHost}`),
       )
       console.warn(colors.yellow(`   using derived value from DEPLOY_DB`))
     }
     if (envCvr && getHost(envCvr) !== deployDbHost) {
       console.warn(
-        colors.yellow(`⚠️  ZERO_CVR_DB in env has different host than DEPLOY_DB`)
+        colors.yellow(`⚠️  ZERO_CVR_DB in env has different host than DEPLOY_DB`),
       )
       console.warn(colors.yellow(`   using derived value from DEPLOY_DB`))
     }
     if (envChange && getHost(envChange) !== deployDbHost) {
       console.warn(
-        colors.yellow(`⚠️  ZERO_CHANGE_DB in env has different host than DEPLOY_DB`)
+        colors.yellow(`⚠️  ZERO_CHANGE_DB in env has different host than DEPLOY_DB`),
       )
       console.warn(colors.yellow(`   using derived value from DEPLOY_DB`))
     }
 
     console.info(`✅ zero databases configured`)
     console.info(
-      colors.gray(`   upstream: ${deployDb.split('@')[1]?.split('/')[0] || 'configured'}`)
+      colors.gray(
+        `   upstream: ${deployDb.split('@')[1]?.split('/')[0] || 'configured'}`,
+      ),
     )
 
     console.info(`✅ deploy host: ${DEPLOY_HOST}`)
@@ -204,10 +206,10 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
 
       // upload certificates to /etc/uncloud/certs
       await run(
-        `scp -i ${sshKey} -o StrictHostKeyChecking=no ${resolvedCert} ${host}:/etc/uncloud/certs/origin.pem`
+        `scp -i ${sshKey} -o StrictHostKeyChecking=no ${resolvedCert} ${host}:/etc/uncloud/certs/origin.pem`,
       )
       await run(
-        `scp -i ${sshKey} -o StrictHostKeyChecking=no ${resolvedKey} ${host}:/etc/uncloud/certs/origin.key`
+        `scp -i ${sshKey} -o StrictHostKeyChecking=no ${resolvedKey} ${host}:/etc/uncloud/certs/origin.key`,
       )
 
       // copy to caddy volume mount path (accessible at /config/certs inside container)
@@ -218,12 +220,12 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
       // set permissions
       await run(
         `${ssh} "chmod 600 /etc/uncloud/certs/origin.key /var/lib/uncloud/caddy/certs/origin.key"`,
-        { silent: true }
+        { silent: true },
       )
 
       console.info(colors.green('✓ origin ca certificates uploaded'))
       console.info(
-        colors.gray('  certs available at /config/certs inside caddy container')
+        colors.gray('  certs available at /config/certs inside caddy container'),
       )
     } catch (err) {
       console.warn(colors.yellow('⚠️  failed to upload origin ca certs'))
@@ -248,8 +250,8 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
     if (domains.length === 0) {
       console.warn(
         colors.yellow(
-          '⚠️  no custom domains configured (VITE_WEB_HOSTNAME, VITE_ZERO_HOSTNAME)'
-        )
+          '⚠️  no custom domains configured (VITE_WEB_HOSTNAME, VITE_ZERO_HOSTNAME)',
+        ),
       )
       console.warn(colors.gray("   caddy will use let's encrypt for tls"))
       return
@@ -263,7 +265,7 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
       '',
       ...domains.map(
         (domain) =>
-          `${domain} {\n\ttls /config/certs/origin.pem /config/certs/origin.key\n}`
+          `${domain} {\n\ttls /config/certs/origin.pem /config/certs/origin.key\n}`,
       ),
       '',
     ].join('\n')
@@ -288,8 +290,8 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
       console.warn(colors.gray(`   ${err instanceof Error ? err.message : err}`))
       console.warn(
         colors.gray(
-          '   you may need to run: uc caddy deploy --caddyfile src/uncloud/Caddyfile'
-        )
+          '   you may need to run: uc caddy deploy --caddyfile src/uncloud/Caddyfile',
+        ),
       )
     }
   }

@@ -4,7 +4,7 @@ import { cmd } from '@take-out/cli'
 
 await cmd`Check node and bun versions before install`.run(async ({ fs, path }) => {
   const packageJson = JSON.parse(
-    await fs.promises.readFile(path.join(import.meta.dir, '../package.json'), 'utf-8')
+    await fs.promises.readFile(path.join(import.meta.dir, '../package.json'), 'utf-8'),
   )
 
   const errors: string[] = []

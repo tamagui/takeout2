@@ -37,7 +37,7 @@ export const mutate = mutations(schema, permissions, {
             'Content violates community guidelines',
             {
               flaggedWords: profanityCheck.flaggedWords,
-            }
+            },
           )
         }
       }
@@ -50,7 +50,7 @@ export const mutate = mutations(schema, permissions, {
         server.actions.analyticsActions().logEvent(authData.id, 'post_created', {
           postId: post.id,
           hasImage: Boolean(post.image),
-        })
+        }),
       )
     }
   },
@@ -67,7 +67,7 @@ export const mutate = mutations(schema, permissions, {
             postId: obj.id,
             postAge: post?.createdAt ? Date.now() - post.createdAt : undefined,
             hasImage: Boolean(post?.image),
-          })
+          }),
         )
       }
     }

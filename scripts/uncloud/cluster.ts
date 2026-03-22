@@ -41,7 +41,7 @@ await cmd`Manage encrypted cluster config`.run(async ({ run, os, path }) => {
     console.info('encrypting...')
     await run(
       `openssl enc -aes-256-cbc -salt -pbkdf2 -in ${CONFIG_ARCHIVE} -out ${ENCRYPTED_CONFIG_PATH} -pass pass:${password}`,
-      { silent: true }
+      { silent: true },
     )
 
     // cleanup
@@ -70,7 +70,7 @@ await cmd`Manage encrypted cluster config`.run(async ({ run, os, path }) => {
     try {
       await run(
         `openssl enc -aes-256-cbc -d -pbkdf2 -in ${ENCRYPTED_CONFIG_PATH} -out ${CONFIG_ARCHIVE} -pass pass:${password}`,
-        { silent: true }
+        { silent: true },
       )
     } catch {
       console.error('❌ decryption failed - wrong password?')

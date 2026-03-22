@@ -17,7 +17,7 @@ export function envFileExists(cwd: string, filename = '.env'): boolean {
 export function copyEnvFile(
   cwd: string,
   source: string,
-  target: string
+  target: string,
 ): { success: boolean; error?: string } {
   const sourcePath = join(cwd, source)
   const targetPath = join(cwd, target)
@@ -45,7 +45,7 @@ export function updateEnvVariable(
   cwd: string,
   key: string,
   value: string,
-  filename = '.env'
+  filename = '.env',
 ): { success: boolean; error?: string } {
   const envPath = join(cwd, filename)
 
@@ -108,7 +108,7 @@ export function createEnvLocal(cwd: string): { success: boolean; error?: string 
 export function readEnvVariable(
   cwd: string,
   key: string,
-  filename = '.env'
+  filename = '.env',
 ): string | null {
   const envPath = join(cwd, filename)
 

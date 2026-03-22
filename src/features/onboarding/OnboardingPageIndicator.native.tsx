@@ -47,7 +47,7 @@ function IndicatorDot({
     const backgroundColor = interpolateColor(
       distance,
       [0, 1],
-      [activeColor, inactiveColor]
+      [activeColor, inactiveColor],
     )
 
     const scale = interpolate(distance, [0, 0.2, 1], [1, 1.15, 1], Extrapolation.CLAMP)

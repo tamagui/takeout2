@@ -46,7 +46,7 @@ function parseTkoRun(command: string): { scriptNames: string[]; noRoot: boolean 
  * returns null if no operators found (command is not a compound).
  */
 export function splitCompound(
-  command: string
+  command: string,
 ): { segments: string[]; operators: string[] } | null {
   const segments: string[] = []
   const operators: string[] = []
@@ -106,7 +106,7 @@ export function splitCompound(
  */
 function matchBunRun(
   segment: string,
-  scripts: Record<string, string>
+  scripts: Record<string, string>,
 ): { name: string; args: string[] } | null {
   const parts = segment.trim().split(/\s+/)
   if (parts[0] !== 'bun' || parts.length < 2) return null
@@ -123,7 +123,7 @@ function matchBunRun(
 export function flattenScripts(
   commands: string[],
   packageJsonScripts: Record<string, string>,
-  options?: FlattenOptions
+  options?: FlattenOptions,
 ): FlattenedScript[] {
   const runningScripts = new Set(options?.runningScripts ?? [])
   const results: FlattenedScript[] = []
@@ -184,7 +184,7 @@ export function flattenScripts(
             deferredScripts = flattenScripts(
               innerParsed.scriptNames,
               packageJsonScripts,
-              options
+              options,
             )
           } else if (innerParsed && !isLast) {
             // non-last segment is a tko run — can't inline parallel, keep as bun run

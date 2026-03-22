@@ -36,7 +36,7 @@ export const useTimer = (): UseTimerReturn => {
         }, 1000)
       }
     },
-    [clearTimer]
+    [clearTimer],
   )
 
   const pauseTimer = useCallback(() => {
@@ -75,6 +75,6 @@ export const useTimer = (): UseTimerReturn => {
       resume: resumeTimer,
       clear: clearTimer,
     }),
-    [timerCount, clearTimer, pauseTimer, resetTimer, resumeTimer]
+    [timerCount, clearTimer, pauseTimer, resetTimer, resumeTimer],
   )
 }

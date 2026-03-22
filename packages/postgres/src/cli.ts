@@ -102,7 +102,7 @@ const psql = defineCommand({
     const connectionString = args.connectionString || process.env.ZERO_UPSTREAM_DB
     if (!connectionString) {
       console.error(
-        'No connection string provided. Set ZERO_UPSTREAM_DB or pass --connectionString'
+        'No connection string provided. Set ZERO_UPSTREAM_DB or pass --connectionString',
       )
       process.exit(1)
     }
@@ -127,7 +127,7 @@ const pgDump = defineCommand({
     const connectionString = args.connectionString || process.env.ZERO_UPSTREAM_DB
     if (!connectionString) {
       console.error(
-        'No connection string provided. Set ZERO_UPSTREAM_DB or pass --connectionString'
+        'No connection string provided. Set ZERO_UPSTREAM_DB or pass --connectionString',
       )
       process.exit(1)
     }

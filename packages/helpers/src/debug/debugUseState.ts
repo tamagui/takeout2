@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 
 export function useDebugState<T>(
-  useState: [T, React.Dispatch<React.SetStateAction<T>>]
+  useState: [T, React.Dispatch<React.SetStateAction<T>>],
 ): [T, React.Dispatch<React.SetStateAction<T>>] {
   const [state, setState] = useState
 
@@ -28,7 +28,7 @@ export function useDebugState<T>(
         setState(newValue)
       }
     },
-    [setState, state]
+    [setState, state],
   )
 
   return [state, wrappedSetState]

@@ -35,5 +35,5 @@ export const PostImage = memo(
         }
       />
     )
-  }
+  },
 )

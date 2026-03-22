@@ -1,53 +1,34 @@
-import { createMiddleware } from 'one'
+import type { Middleware } from 'one'
 
-import { analytics } from '~/features/analytics/analytics'
-
-/**
- * Example middleware for now just reports errors to analytics
- * Can be used for private beta redirects or any sort of middleware
- */
-
-export default createMiddleware(async ({ request, next }) => {
+const middleware: Middleware = async ({ request, next }) => {
   const response = await next()
 
   if (response && response.status >= 400) {
-    const url = new URL(request.url)
-    const endpoint = url.pathname
-    const method = request.method
-
-    let responseBody: Record<string, unknown> | null = null
-    let errorCode: string | undefined
-    let errorMessage: string | undefined
-
-    try {
-      const contentType = response.headers.get('content-type')
-      if (contentType?.includes('application/json')) {
-        const clonedResponse = response.clone()
-        responseBody = (await clonedResponse.json()) as Record<string, unknown>
-
-        if (typeof responseBody.error === 'string') {
-          errorMessage = responseBody.error
-        }
-        if (typeof responseBody.code === 'string') {
-          errorCode = responseBody.code
-        }
-        if (typeof responseBody.message === 'string') {
-          errorMessage = responseBody.message
-        }
-      }
-    } catch (error) {
-      console.error('Failed to parse error response body:', error)
-    }
-
-    analytics.track('api_error', {
-      status: response.status,
-      errorCode,
-      errorMessage: errorMessage || `HTTP ${response.status}`,
-      endpoint,
-      method,
-      responseBody,
-    })
+    await trackApiError(response, request, new URL(request.url).pathname)
   }
 
   return response
-})
+}
+
+async function trackApiError(response: Response, request: Request, pathname: string) {
+  try {
+    const contentType = response.headers.get('content-type')
+    if (!contentType?.includes('application/json')) return
+
+    const body = await response.clone().json()
+    const { analytics } = await import('~/features/analytics/analytics')
+
+    analytics.track('api_error', {
+      status: response.status,
+      errorCode: body.code,
+      errorMessage: body.error || body.message,
+      endpoint: pathname,
+      method: request.method,
+      responseBody: body,
+    })
+  } catch {
+    // ignore parse errors
+  }
+}
+
+export default middleware

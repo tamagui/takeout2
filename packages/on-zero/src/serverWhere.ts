@@ -5,7 +5,7 @@ import type { Condition } from '@rocicorp/zero'
 
 export function serverWhere<Table extends TableName, Builder extends Where<Table>>(
   tableName: Table,
-  builder: Builder
+  builder: Builder,
 ): Where<Table, Condition>
 
 export function serverWhere<
@@ -15,7 +15,7 @@ export function serverWhere<
 
 export function serverWhere<Table extends TableName, Builder extends Where<Table>>(
   a: Table | Builder,
-  b?: Builder
+  b?: Builder,
 ): Where<Table, any> | Builder {
   return where(a as any, b as any, true)
 }

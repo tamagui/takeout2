@@ -29,7 +29,7 @@ export const schema = table('post', {
   title: string(),
   published: boolean(),
 })
-`
+`,
     )
 
     writeFileSync(
@@ -42,7 +42,7 @@ export const schema = table('comment', {
   postId: string(),
   body: string(),
 })
-`
+`,
     )
 
     const result = await generate({ dir: testDir, silent: true })
@@ -65,17 +65,17 @@ export const schema = table('comment', {
     // check types.ts content
     const typesContent = readFileSync(join(testDir, 'generated/types.ts'), 'utf-8')
     expect(typesContent).toContain(
-      'export type Post = TableInsertRow<typeof schema.post>'
+      'export type Post = TableInsertRow<typeof schema.post>',
     )
     expect(typesContent).toContain(
-      'export type Comment = TableInsertRow<typeof schema.comment>'
+      'export type Comment = TableInsertRow<typeof schema.comment>',
     )
 
     // check tables.ts content
     const tablesContent = readFileSync(join(testDir, 'generated/tables.ts'), 'utf-8')
     expect(tablesContent).toContain("export { schema as post } from '../models/post'")
     expect(tablesContent).toContain(
-      "export { schema as comment } from '../models/comment'"
+      "export { schema as comment } from '../models/comment'",
     )
   })
 
@@ -83,7 +83,7 @@ export const schema = table('comment', {
     // need at least one model
     writeFileSync(
       join(testDir, 'models/post.ts'),
-      `export const schema = table('post', { id: string() })`
+      `export const schema = table('post', { id: string() })`,
     )
 
     writeFileSync(
@@ -97,7 +97,7 @@ export const postById = ({ id }: { id: string }) => zero.query.post.where('id', 
 
 export const postsByAuthor = ({ authorId, limit }: { authorId: string; limit?: number }) =>
   zero.query.post.where('authorId', authorId).limit(limit ?? 10)
-`
+`,
     )
 
     const result = await generate({ dir: testDir, silent: true })
@@ -111,14 +111,14 @@ export const postsByAuthor = ({ authorId, limit }: { authorId: string; limit?: n
     // check groupedQueries.ts
     const groupedContent = readFileSync(
       join(testDir, 'generated/groupedQueries.ts'),
-      'utf-8'
+      'utf-8',
     )
     expect(groupedContent).toContain("export * as post from '../queries/post'")
 
     // check syncedQueries.ts has validators
     const syncedContent = readFileSync(
       join(testDir, 'generated/syncedQueries.ts'),
-      'utf-8'
+      'utf-8',
     )
     expect(syncedContent).toContain('allPosts: defineQuery')
     expect(syncedContent).toContain('postById: defineQuery')
@@ -129,7 +129,7 @@ export const postsByAuthor = ({ authorId, limit }: { authorId: string; limit?: n
   test('skips permission exports in queries', async () => {
     writeFileSync(
       join(testDir, 'models/post.ts'),
-      `export const schema = table('post', { id: string() })`
+      `export const schema = table('post', { id: string() })`,
     )
 
     writeFileSync(
@@ -137,7 +137,7 @@ export const postsByAuthor = ({ authorId, limit }: { authorId: string; limit?: n
       `
 export const permission = () => ({ canRead: true })
 export const allPosts = () => zero.query.post
-`
+`,
     )
 
     const result = await generate({ dir: testDir, silent: true })
@@ -146,7 +146,7 @@ export const allPosts = () => zero.query.post
 
     const syncedContent = readFileSync(
       join(testDir, 'generated/syncedQueries.ts'),
-      'utf-8'
+      'utf-8',
     )
     expect(syncedContent).toContain('allPosts')
     expect(syncedContent).not.toContain('permission:')
@@ -155,7 +155,7 @@ export const allPosts = () => zero.query.post
   test('handles user model special case (userPublic)', async () => {
     writeFileSync(
       join(testDir, 'models/user.ts'),
-      `export const schema = table('user', { id: string(), name: string() })`
+      `export const schema = table('user', { id: string(), name: string() })`,
     )
 
     await generate({ dir: testDir, silent: true })
@@ -171,7 +171,7 @@ export const allPosts = () => zero.query.post
   test('runs after command when files change', async () => {
     writeFileSync(
       join(testDir, 'models/post.ts'),
-      `export const schema = table('post', { id: string() })`
+      `export const schema = table('post', { id: string() })`,
     )
 
     // use a command that creates a marker file
@@ -189,7 +189,7 @@ export const allPosts = () => zero.query.post
   test('does not regenerate when nothing changed', async () => {
     writeFileSync(
       join(testDir, 'models/post.ts'),
-      `export const schema = table('post', { id: string() })`
+      `export const schema = table('post', { id: string() })`,
     )
 
     const first = await generate({ dir: testDir, silent: true })
@@ -220,7 +220,7 @@ export const mutate = mutations(schema, perm, {
     await tx.mutate.post.update({ id, archived: true })
   },
 })
-`
+`,
     )
 
     const result = await generate({ dir: testDir, silent: true })
@@ -252,7 +252,7 @@ export const schema = table('task').columns({
 const perm = serverWhere('task', () => true)
 
 export const mutate = mutations(schema, perm)
-`
+`,
     )
 
     const result = await generate({ dir: testDir, silent: true })
@@ -280,7 +280,7 @@ export const schema = table('readonly').columns({
   id: string(),
   name: string(),
 }).primaryKey('id')
-`
+`,
     )
 
     const result = await generate({ dir: testDir, silent: true })
@@ -301,7 +301,7 @@ export const mutate = mutations({
     await tx.mutate.admin.delete({ id: targetId })
   },
 })
-`
+`,
     )
 
     const result = await generate({ dir: testDir, silent: true })
@@ -330,7 +330,7 @@ export const mutate = mutations(schema, perm, {
     // no second param
   },
 })
-`
+`,
     )
 
     const result = await generate({ dir: testDir, silent: true })
@@ -359,7 +359,7 @@ export const mutate = mutations(schema, perm, {
     await tx.mutate.user.update({ id: userId })
   },
 })
-`
+`,
     )
 
     const result = await generate({ dir: testDir, silent: true })
@@ -380,7 +380,7 @@ export const mutate = mutations({
     for (const { id } of ids) await tx.mutate.batch.delete({ id })
   },
 })
-`
+`,
     )
 
     const result = await generate({ dir: testDir, silent: true })
@@ -409,7 +409,7 @@ export const mutate = mutations(schema, perm, {
     await tx.mutate.item.update({ id, name })
   },
 })
-`
+`,
     )
 
     const first = await generate({ dir: testDir, silent: true })
@@ -432,7 +432,7 @@ export type ArchiveParams = {
   reason: string
   archived: boolean
 }
-`
+`,
     )
 
     writeFileSync(
@@ -447,7 +447,7 @@ export const mutate = mutations({
     await tx.mutate.post.update(params)
   },
 })
-`
+`,
     )
 
     const result = await generate({ dir: testDir, silent: true })
@@ -470,7 +470,7 @@ export type Item = {
   description: string
   count: number
 }
-`
+`,
     )
 
     writeFileSync(
@@ -494,7 +494,7 @@ export const mutate = mutations(schema, perm, {
     await tx.mutate.item.update(updates)
   },
 })
-`
+`,
     )
 
     const result = await generate({ dir: testDir, silent: true })
@@ -516,7 +516,7 @@ export type WeirdParams = {
   id: string
   [Symbol.iterator]?: () => Iterator<string>
 }
-`
+`,
     )
 
     writeFileSync(
@@ -530,7 +530,7 @@ export const mutate = mutations({
     await tx.mutate.item.delete({ id: params.id })
   },
 })
-`
+`,
     )
 
     await generate({ dir: testDir, silent: true })
@@ -544,7 +544,7 @@ export const mutate = mutations({
   test('resolves imported types in query params', async () => {
     writeFileSync(
       join(testDir, 'models/post.ts'),
-      `export const schema = table('post', { id: string() })`
+      `export const schema = table('post', { id: string() })`,
     )
 
     writeFileSync(
@@ -554,7 +554,7 @@ export type PostFilter = {
   authorId: string
   published: boolean
 }
-`
+`,
     )
 
     writeFileSync(
@@ -563,7 +563,7 @@ export type PostFilter = {
 import type { PostFilter } from './types'
 
 export const filteredPosts = (filter: PostFilter) => zero.query.post
-`
+`,
     )
 
     const result = await generate({ dir: testDir, silent: true })

@@ -5,11 +5,11 @@ type AbortableOptions = { message?: string }
 export function abortable<T>(cb: () => T, options?: AbortableOptions): T | undefined
 export function abortable<T>(
   cb: () => Promise<T>,
-  options?: AbortableOptions
+  options?: AbortableOptions,
 ): Promise<T | undefined>
 export function abortable<T>(
   cb: () => T | Promise<T>,
-  options?: AbortableOptions
+  options?: AbortableOptions,
 ): T | undefined | Promise<T | undefined> {
   try {
     const value = cb()

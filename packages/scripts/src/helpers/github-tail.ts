@@ -23,7 +23,7 @@ function getFailedStepLogs(jobId: string, stepName: string): string {
         encoding: 'utf-8',
         shell: '/bin/bash',
         maxBuffer: 10 * 1024 * 1024,
-      }
+      },
     )
     return logs
   } catch {
@@ -43,7 +43,7 @@ async function watchJob(
   runId: string,
   jobId: string,
   jobName: string,
-  showOnlyFailed: boolean
+  showOnlyFailed: boolean,
 ) {
   try {
     const jobsJson = execSync(`gh run view ${runId} --json jobs`, {
@@ -114,7 +114,7 @@ async function watchJob(
             job.steps?.filter((s: any) => s.conclusion === 'failure') || []
           if (failedSteps.length > 0) {
             console.info(
-              `Failed steps: ${failedSteps.map((s: any) => s.name).join(', ')}\n`
+              `Failed steps: ${failedSteps.map((s: any) => s.name).join(', ')}\n`,
             )
 
             for (const step of failedSteps) {
@@ -161,7 +161,7 @@ export async function githubTail(options: GithubTailOptions = {}) {
 
     let runsJson = execSync(
       `gh run list --commit ${latestCommit} --json databaseId,name,status,conclusion --limit 5`,
-      { encoding: 'utf-8' }
+      { encoding: 'utf-8' },
     )
     let runs = JSON.parse(runsJson)
     let ciRun = runs.find((r: any) => r.name === workflowName)
@@ -176,7 +176,7 @@ export async function githubTail(options: GithubTailOptions = {}) {
 
       runsJson = execSync(
         `gh run list --commit ${latestCommit} --json databaseId,name,status,conclusion --limit 5`,
-        { encoding: 'utf-8' }
+        { encoding: 'utf-8' },
       )
       runs = JSON.parse(runsJson)
       ciRun = runs.find((r: any) => r.name === workflowName)
@@ -185,7 +185,7 @@ export async function githubTail(options: GithubTailOptions = {}) {
         console.info('No CI run for remote HEAD, getting latest CI run...')
         runsJson = execSync(
           `gh run list --workflow=${workflowName} --json databaseId,name,status,conclusion,headSha --limit 1`,
-          { encoding: 'utf-8' }
+          { encoding: 'utf-8' },
         )
         runs = JSON.parse(runsJson)
         ciRun = runs[0]
@@ -216,7 +216,7 @@ export async function githubTail(options: GithubTailOptions = {}) {
     }
 
     console.info(
-      `\nJob: ${buildJob.name} - ${buildJob.status} (${buildJob.conclusion || 'in progress'})`
+      `\nJob: ${buildJob.name} - ${buildJob.status} (${buildJob.conclusion || 'in progress'})`,
     )
     console.info('─'.repeat(80))
 

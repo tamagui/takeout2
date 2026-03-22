@@ -17,7 +17,7 @@ function isAlive(pid: number): boolean {
 async function waitForCondition(
   fn: () => boolean,
   timeoutMs = 5000,
-  intervalMs = 50
+  intervalMs = 50,
 ): Promise<boolean> {
   const start = Date.now()
   while (Date.now() - start < timeoutMs) {
@@ -57,14 +57,14 @@ afterEach(async () => {
 function makeChildScript(pidFile: string, opts?: { grandchild?: boolean }): string {
   const path = join(
     tmpDir,
-    `child-${Date.now()}-${Math.random().toString(36).slice(2)}.sh`
+    `child-${Date.now()}-${Math.random().toString(36).slice(2)}.sh`,
   )
   if (opts?.grandchild) {
     const gcPidFile = pidFile.replace('.pid', '-gc.pid')
     // use a separate script for grandchild to avoid escaping issues
     const gcScript = join(
       tmpDir,
-      `gc-${Date.now()}-${Math.random().toString(36).slice(2)}.sh`
+      `gc-${Date.now()}-${Math.random().toString(36).slice(2)}.sh`,
     )
     writeFileSync(gcScript, `#!/bin/bash\necho $$ > ${gcPidFile}\nsleep 999\n`, {
       mode: 0o755,
@@ -74,7 +74,7 @@ function makeChildScript(pidFile: string, opts?: { grandchild?: boolean }): stri
       `#!/bin/bash\necho $$ > ${pidFile}\nbash ${gcScript} &\nsleep 999\n`,
       {
         mode: 0o755,
-      }
+      },
     )
   } else {
     writeFileSync(path, `#!/bin/bash\necho $$ > ${pidFile}\nsleep 999\n`, { mode: 0o755 })
@@ -91,7 +91,7 @@ function createParentScript(opts: {
 }): string {
   const scriptPath = join(
     tmpDir,
-    `parent-${Date.now()}-${Math.random().toString(36).slice(2)}.ts`
+    `parent-${Date.now()}-${Math.random().toString(36).slice(2)}.ts`,
   )
   writeFileSync(
     scriptPath,
@@ -112,7 +112,7 @@ for (const script of scripts) {
 }
 
 setInterval(() => {}, 60000)
-`
+`,
   )
   return scriptPath
 }
@@ -148,7 +148,7 @@ describe('process cleanup', { timeout: 15_000 }, () => {
 
     const allDead = await waitForCondition(
       () => !isAlive(parentPid) && childPids.every((p) => !isAlive(p)),
-      5000
+      5000,
     )
     expect(allDead).toBe(true)
   })
@@ -170,7 +170,7 @@ describe('process cleanup', { timeout: 15_000 }, () => {
 
     const allDead = await waitForCondition(
       () => !isAlive(parentPid) && !isAlive(childPid),
-      5000
+      5000,
     )
     expect(allDead).toBe(true)
   })
@@ -192,7 +192,7 @@ describe('process cleanup', { timeout: 15_000 }, () => {
 
     const allDead = await waitForCondition(
       () => !isAlive(parentPid) && !isAlive(childPid),
-      5000
+      5000,
     )
     expect(allDead).toBe(true)
   })
@@ -220,7 +220,7 @@ describe('process cleanup', { timeout: 15_000 }, () => {
 
     const allDead = await waitForCondition(
       () => !isAlive(childPid) && !isAlive(gcPid),
-      5000
+      5000,
     )
     expect(allDead).toBe(true)
   })

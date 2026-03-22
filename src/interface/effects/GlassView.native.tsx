@@ -83,5 +83,5 @@ export const GlassView = memo(
         />
       </BlurView>
     )
-  }
+  },
 )

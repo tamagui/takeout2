@@ -33,7 +33,7 @@ await cmd`wait for dev server to be available`.run(async () => {
     }
 
     process.stdout.write(
-      `Waiting to start dev watch until after dev server (wait ${CHECK_INTERVAL / 1000}s)...\n`
+      `Waiting to start dev watch until after dev server (wait ${CHECK_INTERVAL / 1000}s)...\n`,
     )
   }
 

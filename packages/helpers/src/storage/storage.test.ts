@@ -65,7 +65,7 @@ describe('storage driver system', () => {
 
     it('should handle JSON serialization', () => {
       const storage = createStorage<'obj', { name: string; count: number }>(
-        `test-${Date.now()}-3`
+        `test-${Date.now()}-3`,
       )
       const obj = { name: 'test', count: 42 }
       storage.set('obj', obj)

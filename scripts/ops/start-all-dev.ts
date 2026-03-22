@@ -27,5 +27,5 @@ await cmd`Start backend and frontend in dev mode for quick integration testing`.
     await run(`bun ops run-frontend --dev`, {
       env: testEnv,
     })
-  }
+  },
 )

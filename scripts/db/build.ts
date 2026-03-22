@@ -7,9 +7,13 @@ await cmd`Build migrations for production (generates SQL + bundles for docker)`.
     // generate drizzle SQL from schema
     await $`bun drizzle-kit generate --config ./src/database/drizzle.config.ts`
 
+    // sync directory migrations to flat .ts wrappers
+    const { syncDrizzleMigrations } = await import('../migrate/sync-drizzle')
+    await syncDrizzleMigrations()
+
     // bundle migrate.ts for production use
     await $`cd src/database && bun vite build`
 
     console.info('✅ migrations built')
-  }
+  },
 )

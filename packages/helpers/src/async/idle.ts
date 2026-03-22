@@ -27,7 +27,7 @@ export type IdleOptions = {
 
 export const idle = async (
   options?: IdleOptions,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ): Promise<void> => {
   const { max, min, fully } = options || {}
 

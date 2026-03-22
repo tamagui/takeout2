@@ -86,7 +86,7 @@ async function findPackageJsonDirs(basePath: string, maxDepth = 3): Promise<stri
         (entry) =>
           entry.isDirectory() &&
           !entry.name.startsWith('.') &&
-          entry.name !== 'node_modules'
+          entry.name !== 'node_modules',
       )
       .map(async (dir) => {
         const path = join(basePath, dir.name)
@@ -133,7 +133,7 @@ async function findWorkspaceDirectories(): Promise<string[]> {
 
 async function findAvailableScripts(
   directoryPath: string,
-  scriptNames: string[]
+  scriptNames: string[],
 ): Promise<string[]> {
   const packageJson = await readPackageJson(directoryPath)
 
@@ -142,12 +142,12 @@ async function findAvailableScripts(
   }
 
   return scriptNames.filter(
-    (scriptName) => typeof packageJson.scripts?.[scriptName] === 'string'
+    (scriptName) => typeof packageJson.scripts?.[scriptName] === 'string',
   )
 }
 
 async function mapWorkspacesToScripts(
-  scriptNames: string[]
+  scriptNames: string[],
 ): Promise<Map<string, { scripts: string[]; packageName: string }>> {
   const workspaceDirs = await findWorkspaceDirectories()
   const workspaceScriptMap = new Map<string, { scripts: string[]; packageName: string }>()
@@ -224,7 +224,7 @@ export interface RunParallelScriptsOptions {
 }
 
 export async function runParallelScripts(
-  options: RunParallelScriptsOptions
+  options: RunParallelScriptsOptions,
 ): Promise<void> {
   const {
     commands: runCommands,
@@ -267,7 +267,7 @@ export async function runParallelScripts(
     extraArgs: string[] = [],
     managedIndex?: number,
     directCommand?: string,
-    deferredChildren?: import('./helpers/resolveScript').FlattenedScript[]
+    deferredChildren?: import('./helpers/resolveScript').FlattenedScript[],
   ) => {
     const index = managedIndex ?? managedProcesses.length
 
@@ -367,7 +367,7 @@ export async function runParallelScripts(
         if (watch && restarts < MAX_RESTARTS) {
           const newRestarts = restarts + 1
           console.info(
-            `Restarting process ${name} (${newRestarts}/${MAX_RESTARTS} times)`
+            `Restarting process ${name} (${newRestarts}/${MAX_RESTARTS} times)`,
           )
           runScript(name, cwd, prefixLabel, newRestarts, extraArgs, index, directCommand)
         } else {
@@ -383,7 +383,7 @@ export async function runParallelScripts(
             0,
             [],
             undefined,
-            !deferred.isRaw ? deferred.command : undefined
+            !deferred.isRaw ? deferred.command : undefined,
           )
         }
       }
@@ -407,7 +407,7 @@ export async function runParallelScripts(
         const pkgScripts = packageJson?.scripts ?? {}
 
         const filteredCommands = runCommands.filter(
-          (name) => !parentRunningScripts.includes(name)
+          (name) => !parentRunningScripts.includes(name),
         )
 
         // flatten tko run/run-all chains into leaf commands
@@ -429,7 +429,7 @@ export async function runParallelScripts(
             scriptArgs,
             undefined,
             directCommand,
-            leaf.deferredScripts
+            leaf.deferredScripts,
           )
         })
 
@@ -441,7 +441,7 @@ export async function runParallelScripts(
 
       for (const [workspace, { scripts, packageName }] of workspaceScriptMap.entries()) {
         const filteredScripts = scripts.filter(
-          (scriptName) => !parentRunningScripts.includes(scriptName)
+          (scriptName) => !parentRunningScripts.includes(scriptName),
         )
         const workspaceScriptPromises = filteredScripts.map((scriptName) => {
           const scriptArgs = !flagsLast || scriptName === lastScript ? forwardArgs : []
@@ -450,7 +450,7 @@ export async function runParallelScripts(
             workspace,
             `${packageName} ${scriptName}`,
             0,
-            scriptArgs
+            scriptArgs,
           )
         })
 

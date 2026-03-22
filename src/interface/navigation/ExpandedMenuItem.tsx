@@ -51,24 +51,24 @@ export const ExpandedMenuItem = memo(
         animationProgress.value,
         [itemStartThreshold, itemEndThreshold],
         [0, 1],
-        Extrapolation.CLAMP
+        Extrapolation.CLAMP,
       )
 
       const opacity = interpolate(
         itemProgress,
         [0, 0.5, 1],
         [0, 0.8, 1],
-        Extrapolation.CLAMP
+        Extrapolation.CLAMP,
       )
 
       const translateY = withSpring(
         interpolate(itemProgress, [0, 1], [40, 0], Extrapolation.CLAMP),
-        SPRING_CONFIG
+        SPRING_CONFIG,
       )
 
       const scale = withSpring(
         interpolate(itemProgress, [0, 0.8, 1], [0.7, 1.02, 1], Extrapolation.CLAMP),
-        SPRING_CONFIG
+        SPRING_CONFIG,
       )
 
       const isInteractive = animationProgress.value > 0.7
@@ -123,5 +123,5 @@ export const ExpandedMenuItem = memo(
         </MenuPressable>
       </Animated.View>
     )
-  }
+  },
 )

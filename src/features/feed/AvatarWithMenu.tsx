@@ -98,5 +98,5 @@ export const AvatarWithMenu = memo(
         </Menu.Portal>
       </Menu>
     )
-  }
+  },
 )

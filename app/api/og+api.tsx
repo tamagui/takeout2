@@ -13,7 +13,7 @@ let jetBrainsMonoData: ArrayBuffer | null = null
 async function getInterTight(): Promise<ArrayBuffer> {
   if (interTightData) return interTightData
   const response = await fetch(
-    'https://fonts.gstatic.com/s/intertight/v9/NGSnv5HMAFg6IuGlBNMjxJEL2VmU3NS7Z2mj6AiqXA.ttf'
+    'https://fonts.gstatic.com/s/intertight/v9/NGSnv5HMAFg6IuGlBNMjxJEL2VmU3NS7Z2mj6AiqXA.ttf',
   )
   interTightData = await response.arrayBuffer()
   return interTightData
@@ -22,7 +22,7 @@ async function getInterTight(): Promise<ArrayBuffer> {
 async function getJetBrainsMono(): Promise<ArrayBuffer> {
   if (jetBrainsMonoData) return jetBrainsMonoData
   const response = await fetch(
-    'https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8L6tjPQ.ttf'
+    'https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8L6tjPQ.ttf',
   )
   jetBrainsMonoData = await response.arrayBuffer()
   return jetBrainsMonoData
@@ -159,7 +159,7 @@ export const GET: Endpoint = async (request) => {
             style: 'normal',
           },
         ],
-      }
+      },
     )
 
     const resvg = new Resvg(svg, {

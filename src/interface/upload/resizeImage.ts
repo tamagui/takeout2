@@ -80,7 +80,7 @@ export function resizeImage(file: File, options: ResizeOptions = {}): Promise<Bl
           }
         },
         file.type,
-        quality
+        quality,
       )
     }
 
@@ -95,7 +95,7 @@ export function resizeImage(file: File, options: ResizeOptions = {}): Promise<Bl
 
 export async function shouldResizeImage(
   file: File,
-  options: ResizeOptions = {}
+  options: ResizeOptions = {},
 ): Promise<boolean> {
   const { maxWidth = 1200, maxHeight = 1200, maxSizeInBytes = 1024 * 1024 } = options
 
@@ -114,7 +114,7 @@ export async function shouldResizeImage(
 
 export async function processImageForUpload(
   file: File,
-  options: ResizeOptions = {}
+  options: ResizeOptions = {},
 ): Promise<File | Blob> {
   if (!file.type.match(/^image\/(jpeg|png|webp)/)) {
     return file
@@ -144,7 +144,7 @@ export function formatFileSize(bytes: number): string {
 
 export async function prepareImageForUpload(
   upload: FileUpload,
-  options: ResizeOptions = {}
+  options: ResizeOptions = {},
 ): Promise<File | Blob> {
   if (!upload.type?.startsWith('image')) {
     return upload.file

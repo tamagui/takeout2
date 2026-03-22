@@ -31,7 +31,7 @@ const gh = JSON.parse(githubContextJson)
             .filter((value, index, arr) => {
               return arr.indexOf(value) === index
             })
-            .join(', ')})`
+            .join(', ')})`,
         )
       })
 
@@ -57,7 +57,7 @@ const gh = JSON.parse(githubContextJson)
     case 'pull_request': {
       const lines = []
       lines.push(
-        `Build for PR #${gh.event.pull_request.number}: ${gh.event.pull_request.title} (by ${gh.event.pull_request.user.login}) [${gh.event.pull_request.base.ref} ← ${gh.event.pull_request.head.ref}]`
+        `Build for PR #${gh.event.pull_request.number}: ${gh.event.pull_request.title} (by ${gh.event.pull_request.user.login}) [${gh.event.pull_request.base.ref} ← ${gh.event.pull_request.head.ref}]`,
       )
       lines.push('')
       const prSummary =
@@ -67,7 +67,7 @@ const gh = JSON.parse(githubContextJson)
       lines.push('')
       const commits = getCommitsBetween(
         gh.event.pull_request.base.sha,
-        gh.event.pull_request.head.sha
+        gh.event.pull_request.head.sha,
       )
       commits.forEach((commit) => {
         lines.push(` • [${commit.hash.slice(0, 8)}] ${commit.message}`)
@@ -88,7 +88,7 @@ const gh = JSON.parse(githubContextJson)
         const prNumber = branchName.slice(3)
         const prDetails = await fetchPRDetails(prNumber)
         lines.push(
-          `Build for PR #${prNumber}: ${prDetails.title} (PR by ${prDetails.user.login}, build triggered by ${triggeredBy}) [${prDetails.base.ref} ← ${prDetails.head.ref}]`
+          `Build for PR #${prNumber}: ${prDetails.title} (PR by ${prDetails.user.login}, build triggered by ${triggeredBy}) [${prDetails.base.ref} ← ${prDetails.head.ref}]`,
         )
         if (notes) {
           lines.push(`Notes: ${notes}`)
@@ -126,7 +126,7 @@ const gh = JSON.parse(githubContextJson)
           .filter((value, index, arr) => {
             return arr.indexOf(value) === index
           })
-          .join(', ')})`
+          .join(', ')})`,
       )
 
       return lines.join('\n')
@@ -156,7 +156,7 @@ const gh = JSON.parse(githubContextJson)
           .filter((value, index, arr) => {
             return arr.indexOf(value) === index
           })
-          .join(', ')})`
+          .join(', ')})`,
       )
 
       return lines.join('\n')

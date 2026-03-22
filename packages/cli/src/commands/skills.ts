@@ -59,7 +59,7 @@ function toSkillName(name: string): string {
 }
 
 function collectAllDocs(
-  cwd: string
+  cwd: string,
 ): Array<{ name: string; path: string; source: 'package' | 'local' }> {
   const docs: Array<{ name: string; path: string; source: 'package' | 'local' }> = []
   const seen = new Set<string>()
@@ -89,7 +89,7 @@ function collectAllDocs(
 
 async function generateDocSkills(
   cwd: string,
-  clean: boolean
+  clean: boolean,
 ): Promise<{
   symlinked: number
   generated: number
@@ -173,13 +173,13 @@ async function generateDocSkills(
 
       const sourceLabel = doc.source === 'local' ? pc.blue('local') : pc.dim('package')
       console.info(
-        `  ${pc.green('⟷')} ${skillName} ${sourceLabel} ${pc.dim('(symlink)')}`
+        `  ${pc.green('⟷')} ${skillName} ${sourceLabel} ${pc.dim('(symlink)')}`,
       )
     } else {
       if (!hasFrontmatter) {
         skipped++
         console.info(
-          `  ${pc.yellow('!')} skipped ${pc.dim(doc.name)} ${pc.dim('(missing skill frontmatter)')}`
+          `  ${pc.yellow('!')} skipped ${pc.dim(doc.name)} ${pc.dim('(missing skill frontmatter)')}`,
         )
         continue
       }
@@ -277,11 +277,11 @@ const generateCommand = defineCommand({
     if (symlinked > 0) console.info(`  ${pc.green(`${symlinked} symlinked`)}`)
     if (generated > 0)
       console.info(
-        `  ${pc.yellow(`${generated} generated`)} ${pc.dim('(add frontmatter to enable symlink)')}`
+        `  ${pc.yellow(`${generated} generated`)} ${pc.dim('(add frontmatter to enable symlink)')}`,
       )
     if (skipped > 0)
       console.info(
-        `  ${pc.yellow(`${skipped} skipped`)} ${pc.dim('(missing skill frontmatter)')}`
+        `  ${pc.yellow(`${skipped} skipped`)} ${pc.dim('(missing skill frontmatter)')}`,
       )
     if (unchanged > 0) console.info(`  ${pc.dim(`${unchanged} unchanged`)}`)
     if (removed > 0) console.info(`  ${pc.red(`${removed} removed`)}`)

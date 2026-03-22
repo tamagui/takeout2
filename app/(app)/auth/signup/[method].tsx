@@ -66,7 +66,7 @@ export const SignupPage = memo(() => {
 
       if (success) {
         router.push(
-          `/auth/signup/otp?method=${method}&value=${encodeURIComponent(inputValue)}`
+          `/auth/signup/otp?method=${method}&value=${encodeURIComponent(inputValue)}`,
         )
         return
       }

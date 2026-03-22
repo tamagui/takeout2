@@ -28,7 +28,7 @@ export async function saveRemoteImage(imageUrl: string): Promise<boolean> {
  */
 export async function saveRemoteImageWithProxy(
   imageUrl: string,
-  proxyUrl?: string
+  proxyUrl?: string,
 ): Promise<boolean> {
   const finalUrl = proxyUrl ? `${proxyUrl}${encodeURIComponent(imageUrl)}` : imageUrl
   return saveRemoteImage(finalUrl)

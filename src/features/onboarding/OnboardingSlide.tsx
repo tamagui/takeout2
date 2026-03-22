@@ -8,7 +8,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { SizableText, View, YStack } from 'tamagui'
 
-import Glint from '~/interface/effects/Glint'
+import { Glint } from '~/interface/effects/Glint'
 
 import { GRID_ROTATIONS, LAYOUT_CONFIGS } from './onboardingConfig'
 

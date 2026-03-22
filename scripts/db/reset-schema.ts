@@ -14,7 +14,7 @@ await cmd`Reset migrations to a fresh state from current schema files`.run(
     console.info('\n⚠️  WARNING: This will delete all existing migrations!')
     console.info('Only use this if you have modified the schema and want a fresh start.')
     console.info(
-      'Your database should be empty or you should drop/recreate it after this.\n'
+      'Your database should be empty or you should drop/recreate it after this.\n',
     )
 
     // prompt for confirmation
@@ -53,7 +53,7 @@ await cmd`Reset migrations to a fresh state from current schema files`.run(
       {
         cwd: rootDir,
         stdio: 'inherit',
-      }
+      },
     )
 
     if (result.status !== 0) {
@@ -65,7 +65,7 @@ await cmd`Reset migrations to a fresh state from current schema files`.run(
 
     // find the generated file (drizzle uses 0000_random_name.sql)
     const newFiles = (await fs.promises.readdir(migrationsDir)).filter((f) =>
-      f.endsWith('.sql')
+      f.endsWith('.sql'),
     )
     if (newFiles.length !== 1) {
       console.error('Expected exactly one SQL file, found:', newFiles)
@@ -90,12 +90,12 @@ await cmd`Reset migrations to a fresh state from current schema files`.run(
     // rename snapshot
     const metaDir = path.join(migrationsDir, 'meta')
     const snapshots = (await fs.promises.readdir(metaDir)).filter((f) =>
-      f.endsWith('_snapshot.json')
+      f.endsWith('_snapshot.json'),
     )
     if (snapshots.length === 1) {
       await fs.promises.rename(
         path.join(metaDir, snapshots[0]!),
-        path.join(metaDir, '0001_snapshot.json')
+        path.join(metaDir, '0001_snapshot.json'),
       )
     }
 
@@ -119,15 +119,15 @@ export async function up(client: PoolClient) {
 
     await fs.promises.writeFile(
       path.join(migrationsDir, '0001_initial_schema.ts'),
-      tsWrapper
+      tsWrapper,
     )
 
     console.info('\n✅ Done! Your migrations have been reset.')
     console.info('\nNext steps:')
     console.info(
-      '  1. If you have custom triggers or functions, add them to the .sql file'
+      '  1. If you have custom triggers or functions, add them to the .sql file',
     )
     console.info('  2. Drop and recreate your database (or use a fresh one)')
     console.info('  3. Run: bun db:migrate')
-  }
+  },
 )

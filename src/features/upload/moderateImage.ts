@@ -57,7 +57,7 @@ export async function moderateImage(imageBytes: Uint8Array): Promise<ModerationR
       const parentName = label.ParentName || ''
       const labelName = label.Name || ''
       return BLOCKED_CATEGORIES.some(
-        (cat) => parentName.includes(cat) || labelName.includes(cat)
+        (cat) => parentName.includes(cat) || labelName.includes(cat),
       )
     })
 

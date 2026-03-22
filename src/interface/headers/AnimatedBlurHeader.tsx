@@ -91,5 +91,5 @@ export const AnimatedBlurHeader = memo(
         </XStack>
       </View>
     )
-  }
+  },
 )

@@ -18,7 +18,7 @@ export function createBatchQuery(server: ServerWithQuery) {
       chunk: number
       pause?: number
       stopAfter?: number
-    } = { chunk: 20 }
+    } = { chunk: 20 },
   ) {
     let hasMore = true
     let last: Item | null = null

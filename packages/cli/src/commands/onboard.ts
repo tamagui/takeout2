@@ -140,8 +140,8 @@ export const onboardCommand = defineCommand({
 
       console.info(
         pc.gray(
-          "We've included a variety of packages we found useful building apps with this stack:"
-        )
+          "We've included a variety of packages we found useful building apps with this stack:",
+        ),
       )
       console.info(pc.gray('  • @take-out/cli - CLI tools and onboarding'))
       console.info(pc.gray('  • @take-out/helpers - Utility functions'))
@@ -153,7 +153,7 @@ export const onboardCommand = defineCommand({
 
       const shouldEject = await confirmContinue(
         'Eject from monorepo setup? (removes ./packages, uses published versions)',
-        true
+        true,
       )
 
       if (shouldEject) {
@@ -238,7 +238,7 @@ export const onboardCommand = defineCommand({
 
       if (!hasRequired) {
         showWarning(
-          'Some required prerequisites are missing. You can continue, but setup may fail.'
+          'Some required prerequisites are missing. You can continue, but setup may fail.',
         )
         const shouldContinue = await confirmContinue('Continue anyway?', false)
         if (!shouldContinue) {
@@ -262,7 +262,7 @@ export const onboardCommand = defineCommand({
 
       const shouldCustomize = await confirmContinue(
         'Customize project name and bundle identifier?',
-        false
+        false,
       )
 
       if (shouldCustomize) {
@@ -288,14 +288,14 @@ export const onboardCommand = defineCommand({
       showInfo('Default web port: 8081 (TAMA in T9)')
       const shouldCustomizePort = await confirmContinue(
         'Customize web server port?',
-        false
+        false,
       )
 
       if (shouldCustomizePort) {
         const newPort = await promptText(
           'Web server port:',
           '8081',
-          '3000, 8080, 8081, etc.'
+          '3000, 8080, 8081, etc.',
         )
 
         if (newPort && newPort !== '8081') {
@@ -334,7 +334,7 @@ export const onboardCommand = defineCommand({
 
       const shouldConfigureCI = await confirmContinue(
         'Configure GitHub Actions CI runners?',
-        true
+        true,
       )
 
       if (shouldConfigureCI) {
@@ -342,7 +342,7 @@ export const onboardCommand = defineCommand({
       } else {
         showInfo('Skipping CI runner configuration')
         showWarning(
-          'Default CI uses ARM64 Docker builds. If not using ARM runners, update scripts/web/build-docker.ts'
+          'Default CI uses ARM64 Docker builds. If not using ARM runners, update scripts/web/build-docker.ts',
         )
       }
 
@@ -379,8 +379,8 @@ export const onboardCommand = defineCommand({
 
       console.info(
         pc.gray(
-          "We've included a variety of packages we found useful building apps with this stack:"
-        )
+          "We've included a variety of packages we found useful building apps with this stack:",
+        ),
       )
       console.info(pc.gray('  • @take-out/cli - CLI tools and onboarding'))
       console.info(pc.gray('  • @take-out/helpers - Utility functions'))
@@ -391,23 +391,23 @@ export const onboardCommand = defineCommand({
       console.info()
       console.info(pc.gray('These packages are included locally for two reasons:'))
       console.info(
-        pc.gray('  1. You can see their source and decide if you want to keep them')
+        pc.gray('  1. You can see their source and decide if you want to keep them'),
       )
       console.info(
-        pc.gray('  2. Anyone can easily submit fixes or improvements back to our repo')
+        pc.gray('  2. Anyone can easily submit fixes or improvements back to our repo'),
       )
       console.info()
       console.info(
         pc.gray(
-          "Over time we'll publish new versions. You can sync with 'bun tko sync' (monorepo)"
-        )
+          "Over time we'll publish new versions. You can sync with 'bun tko sync' (monorepo)",
+        ),
       )
       console.info(pc.gray("or if you eject, use 'bun up takeout' for package updates."))
       console.info()
 
       const shouldEject = await confirmContinue(
         'Eject from monorepo setup? (removes ./packages, uses published versions)',
-        false
+        false,
       )
 
       if (shouldEject) {
@@ -510,19 +510,19 @@ async function customizeProject(cwd: string): Promise<void> {
   const slug = await promptText(
     'Project slug (URL-friendly):',
     projectName.toLowerCase().replace(/\s+/g, '-'),
-    'my-awesome-app'
+    'my-awesome-app',
   )
 
   const bundleId = await promptText(
     'Bundle identifier:',
     `com.${slug}.app`,
-    'com.example.app'
+    'com.example.app',
   )
 
   const domain = await promptText(
     'Development domain:',
     'localhost:8081',
-    'localhost:8081'
+    'localhost:8081',
   )
 
   // Update package.json
@@ -591,8 +591,8 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   console.info()
   console.info(
     pc.gray(
-      'Uncloud provides:\n  • Managed PostgreSQL with logical replication\n  • Free subdomain (your-app.uncld.dev)\n  • Automatic SSL certificates\n  • Easy scaling'
-    )
+      'Uncloud provides:\n  • Managed PostgreSQL with logical replication\n  • Free subdomain (your-app.uncld.dev)\n  • Automatic SSL certificates\n  • Easy scaling',
+    ),
   )
   console.info()
 
@@ -615,7 +615,7 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
         label: 'ARM64 (Apple Silicon)',
         hint: 'Hetzner ARM, Oracle ARM, Bare metal ARM servers',
       },
-    ]
+    ],
   )
 
   if (architecture === 'cancel') {
@@ -653,7 +653,7 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
     const appName = await promptText(
       'App name for subdomain:',
       defaultAppName,
-      defaultAppName
+      defaultAppName,
     )
     domain = `https://${appName}.uncld.dev`
     zeroUrl = `https://zero-${appName}.uncld.dev`
@@ -661,12 +661,12 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
     domain = await promptText(
       'Enter your custom domain:',
       undefined,
-      'https://yourapp.com'
+      'https://yourapp.com',
     )
     zeroUrl = await promptText(
       'Enter your Zero sync domain:',
       undefined,
-      'https://zero.yourapp.com'
+      'https://zero.yourapp.com',
     )
     console.info()
     showWarning('Custom domain setup requires DNS configuration after deployment')
@@ -693,13 +693,13 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   const dbHost = await promptText(
     'Database host (e.g., db-xxx.ondigitalocean.com):',
     undefined,
-    'localhost'
+    'localhost',
   )
   const dbPort = await promptText('Database port:', '5432', '5432')
   const dbName = await promptText(
     'Main database name (will derive Zero databases from this):',
     'postgres',
-    'postgres'
+    'postgres',
   )
 
   // Construct database URL (deployment script will derive Zero databases from this)
@@ -762,7 +762,7 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   const sshKeyPath = await promptText(
     'Path to SSH private key:',
     `${homedir()}/.ssh/id_rsa`,
-    `${homedir()}/.ssh/id_rsa`
+    `${homedir()}/.ssh/id_rsa`,
   )
 
   if (sshKeyPath) {
@@ -773,8 +773,8 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
       console.info()
       showInfo(
         pc.gray(
-          "For CI/CD, you'll need to add the SSH private key content as a GitHub secret"
-        )
+          "For CI/CD, you'll need to add the SSH private key content as a GitHub secret",
+        ),
       )
       showInfo(pc.gray('The sync script will help with this'))
     } else {
@@ -793,18 +793,18 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   console.info(pc.gray(`  ${deployHost} (cluster subdomain from Uncloud DNS)`))
   console.info()
   console.info(
-    pc.gray('You can optionally configure custom domains (e.g., app.yourdomain.com) by:')
+    pc.gray('You can optionally configure custom domains (e.g., app.yourdomain.com) by:'),
   )
   console.info(pc.gray('  1. Adding CNAME records in your DNS provider'))
   console.info(pc.gray(`  2. Pointing to your cluster subdomain`))
   console.info(
-    pc.gray('  3. Setting VITE_WEB_HOSTNAME and VITE_ZERO_HOSTNAME in .env.production')
+    pc.gray('  3. Setting VITE_WEB_HOSTNAME and VITE_ZERO_HOSTNAME in .env.production'),
   )
   console.info()
 
   const configureCustomDomain = await confirmContinue(
     'Configure custom domain now?',
-    false
+    false,
   )
 
   if (configureCustomDomain) {
@@ -816,27 +816,27 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
     const clusterSubdomain = await promptText(
       'Enter your cluster subdomain from uc dns show:',
       '',
-      ''
+      '',
     )
 
     if (clusterSubdomain) {
       console.info()
       showInfo('DNS Setup Instructions:')
       console.info(
-        pc.gray('Add these CNAME records in your DNS provider (e.g., Cloudflare):')
+        pc.gray('Add these CNAME records in your DNS provider (e.g., Cloudflare):'),
       )
       console.info()
 
       const webDomain = await promptText(
         'Custom domain for web app (e.g., app.yourdomain.com):',
         '',
-        ''
+        '',
       )
 
       const zeroDomain = await promptText(
         'Custom domain for zero sync (e.g., zero.yourdomain.com):',
         '',
-        ''
+        '',
       )
 
       if (webDomain) {
@@ -866,7 +866,7 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
         console.info()
         showInfo('SSL Certificate Options')
         console.info(
-          pc.gray("By default, Caddy will use Let's Encrypt for SSL certificates.")
+          pc.gray("By default, Caddy will use Let's Encrypt for SSL certificates."),
         )
         console.info(pc.gray('If using Cloudflare, you can use Origin CA instead to:'))
         console.info(pc.gray("  • Bypass Let's Encrypt rate limits"))
@@ -875,7 +875,7 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
 
         const useOriginCA = await confirmContinue(
           'Use Cloudflare Origin CA? (requires Cloudflare account)',
-          false
+          false,
         )
 
         if (useOriginCA) {
@@ -885,8 +885,8 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
           console.info(pc.gray('2. Click "Create Certificate"'))
           console.info(
             pc.gray(
-              `3. Add hostnames: ${webDomain}${zeroDomain ? `, ${zeroDomain}` : ''}`
-            )
+              `3. Add hostnames: ${webDomain}${zeroDomain ? `, ${zeroDomain}` : ''}`,
+            ),
           )
           console.info(pc.gray('4. Choose 15 year validity'))
           console.info(pc.gray('5. Save certificate to: certs/origin.pem'))
@@ -896,13 +896,13 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
           const certPath = await promptText(
             'Path to Origin CA certificate:',
             'certs/origin.pem',
-            'certs/origin.pem'
+            'certs/origin.pem',
           )
 
           const keyPath = await promptText(
             'Path to Origin CA private key:',
             'certs/origin.key',
-            'certs/origin.key'
+            'certs/origin.key',
           )
 
           if (certPath && keyPath) {
@@ -945,7 +945,7 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   console.info()
   const syncToGitHub = await confirmContinue(
     'Sync environment to GitHub secrets for CI/CD?',
-    true
+    true,
   )
 
   if (syncToGitHub) {
@@ -992,8 +992,8 @@ async function setupSSTDeployment(cwd: string): Promise<void> {
   console.info()
   console.info(
     pc.gray(
-      'SST provides:\n  • AWS infrastructure (ECS, Aurora, ALB)\n  • Auto-scaling\n  • Full control over resources\n  • Higher setup complexity'
-    )
+      'SST provides:\n  • AWS infrastructure (ECS, Aurora, ALB)\n  • Auto-scaling\n  • Full control over resources\n  • Higher setup complexity',
+    ),
   )
   console.info()
 
@@ -1002,7 +1002,7 @@ async function setupSSTDeployment(cwd: string): Promise<void> {
   showInfo('AWS ECS Architecture')
   console.info(pc.gray('AWS Graviton (ARM64) is ~40% cheaper than x86_64'))
   console.info(
-    pc.gray('Both have excellent performance, ARM recommended for cost savings')
+    pc.gray('Both have excellent performance, ARM recommended for cost savings'),
   )
   console.info()
 
@@ -1019,7 +1019,7 @@ async function setupSSTDeployment(cwd: string): Promise<void> {
         label: 'AMD64/x86_64 (Intel/AMD)',
         hint: 'Standard option if you need specific x86 dependencies',
       },
-    ]
+    ],
   )
 
   if (architecture === 'cancel') {
@@ -1034,7 +1034,7 @@ async function setupSSTDeployment(cwd: string): Promise<void> {
 
   const shouldContinue = await confirmContinue(
     'Continue with AWS SST setup? (requires AWS account)',
-    false
+    false,
   )
 
   if (!shouldContinue) {
@@ -1066,11 +1066,11 @@ async function setupSSTDeployment(cwd: string): Promise<void> {
     const archValue = architecture === 'arm64' ? 'arm64' : 'x86_64'
     sstConfig = sstConfig.replace(
       /architecture:\s*['"]arm64['"]/g,
-      `architecture: '${archValue}'`
+      `architecture: '${archValue}'`,
     )
     sstConfig = sstConfig.replace(
       /architecture:\s*['"]x86_64['"]/g,
-      `architecture: '${archValue}'`
+      `architecture: '${archValue}'`,
     )
 
     writeFileSync(sstConfigPath, sstConfig)
@@ -1103,7 +1103,7 @@ async function setupSSTDeployment(cwd: string): Promise<void> {
   console.info()
   const syncToGitHub = await confirmContinue(
     'Sync environment to GitHub secrets for CI/CD?',
-    true
+    true,
   )
 
   if (syncToGitHub) {
@@ -1119,7 +1119,7 @@ async function setupSSTDeployment(cwd: string): Promise<void> {
 
   console.info()
   showInfo(
-    'For complete AWS deployment guide, see: https://docs.yourapp.com/deployment/sst'
+    'For complete AWS deployment guide, see: https://docs.yourapp.com/deployment/sst',
   )
 }
 
@@ -1129,8 +1129,8 @@ async function configureCIRunners(cwd: string): Promise<void> {
   console.info(
     pc.gray(
       'Your project uses ARM64 (Apple Silicon) architecture for Docker builds.\n' +
-        'GitHub Actions requires compatible runners for CI/CD to work properly.'
-    )
+        'GitHub Actions requires compatible runners for CI/CD to work properly.',
+    ),
   )
   console.info()
 
@@ -1157,13 +1157,13 @@ async function configureCIRunners(cwd: string): Promise<void> {
         label: 'Configure Later',
         hint: 'Skip for now (CI will fail until configured)',
       },
-    ]
+    ],
   )
 
   if (runnerChoice === 'cancel' || runnerChoice === 'skip') {
     showInfo('Skipping CI runner configuration')
     showWarning(
-      'CI/CD will fail until you configure runners. Update .github/workflows/ci.yml'
+      'CI/CD will fail until you configure runners. Update .github/workflows/ci.yml',
     )
     return
   }
@@ -1195,7 +1195,7 @@ async function configureCIRunners(cwd: string): Promise<void> {
       // Update CI to use GitHub ARM runners
       ciContent = ciContent.replace(
         /runs-on:.*warp-ubuntu-latest-arm64.*/,
-        'runs-on: ubuntu-24.04-arm'
+        'runs-on: ubuntu-24.04-arm',
       )
       writeFileSync(ciConfigPath, ciContent)
 
@@ -1207,7 +1207,7 @@ async function configureCIRunners(cwd: string): Promise<void> {
       // Update CI to use standard GitHub runners
       ciContent = ciContent.replace(
         /runs-on:.*warp-ubuntu-latest-arm64.*/,
-        'runs-on: ubuntu-latest'
+        'runs-on: ubuntu-latest',
       )
       writeFileSync(ciConfigPath, ciContent)
 
@@ -1219,7 +1219,7 @@ async function configureCIRunners(cwd: string): Promise<void> {
       showSuccess('✓ Updated CI to use free GitHub x64 runners')
       showSuccess('✓ Updated Docker builds to x64 architecture')
       showWarning(
-        "Note: Docker images built on x64 won't run on ARM64 machines without emulation"
+        "Note: Docker images built on x64 won't run on ARM64 machines without emulation",
       )
     }
 
@@ -1228,7 +1228,7 @@ async function configureCIRunners(cwd: string): Promise<void> {
   } catch (error) {
     showError('Failed to update CI configuration')
     showInfo(
-      'Please manually update .github/workflows/ci.yml and scripts/web/build-docker.ts'
+      'Please manually update .github/workflows/ci.yml and scripts/web/build-docker.ts',
     )
   }
 }
@@ -1279,10 +1279,10 @@ async function startServices(cwd: string): Promise<void> {
 async function replacePortInProject(
   cwd: string,
   oldPort: string,
-  newPort: string
+  newPort: string,
 ): Promise<void> {
   const spinner = showSpinner(
-    `Replacing port ${oldPort} with ${newPort} throughout project...`
+    `Replacing port ${oldPort} with ${newPort} throughout project...`,
   )
 
   // directories to skip

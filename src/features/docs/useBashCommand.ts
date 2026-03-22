@@ -150,7 +150,7 @@ type UseBashCommandOutputs = {
 
 export function useBashCommand(
   node: ReactNode,
-  className: string = 'language-bash'
+  className: string = 'language-bash',
 ): UseBashCommandOutputs {
   const bashText = getBashText(node).trim()
   const isBash = className === 'language-bash'

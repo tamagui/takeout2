@@ -409,7 +409,7 @@ export default $config({
         // Wait for replication-manager to come up first, for breaking changes
         // to replication-manager interface.
         dependsOn: [zeroReplication],
-      }
+      },
     )
 
     // lambda can't access AWS_ stuff for some reason so remove it:

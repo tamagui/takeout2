@@ -30,7 +30,7 @@ export const useProfileEdit = () => {
     { username: debouncedUsername },
     {
       enabled: isUsernameValid && debouncedUsername !== user?.username,
-    }
+    },
   )
 
   const trimmedUsername = username.trim().toLowerCase()

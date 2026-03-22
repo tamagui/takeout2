@@ -116,7 +116,7 @@ async function findWorkspaceScripts(scripts) {
 
 function spawnScript(name, cwd, label, extraArgs, index) {
   const runArgs = ['run', '--silent', runBun ? '--bun' : '', name, ...extraArgs].filter(
-    Boolean
+    Boolean,
   )
   const terminal = pty.spawn('bun', runArgs, {
     cwd: resolve(cwd),
@@ -204,7 +204,7 @@ function showDashboard() {
     .join('  ')
   console.log(`\n${tabs}`)
   console.log(
-    `${dim}press shortcut to focus, r+shortcut restart, k+shortcut kill, ctrl+c exit${reset}\n`
+    `${dim}press shortcut to focus, r+shortcut restart, k+shortcut kill, ctrl+c exit${reset}\n`,
   )
 }
 
@@ -341,7 +341,7 @@ async function main() {
             name,
             '.',
             name,
-            !flagsLast || name === lastScript ? forwardArgs : []
+            !flagsLast || name === lastScript ? forwardArgs : [],
           )
         }
       }
@@ -355,7 +355,7 @@ async function main() {
         script,
         dir,
         `${name} ${script}`,
-        !flagsLast || script === lastScript ? forwardArgs : []
+        !flagsLast || script === lastScript ? forwardArgs : [],
       )
     }
   }

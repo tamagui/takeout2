@@ -65,7 +65,7 @@ test('login page does not redirect infinitely', async ({ page }) => {
 
   // filter to only login-related navigations
   const loginNavigations = navigations.filter(
-    (url) => url.includes('/auth/login') || url.includes('/home')
+    (url) => url.includes('/auth/login') || url.includes('/home'),
   )
 
   // allow up to 20 navigations (SPA may have initial load, SSR hydration, auth checks, etc)

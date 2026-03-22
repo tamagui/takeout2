@@ -2,7 +2,6 @@
 // server-side query definitions with validators
 import { defineQuery, defineQueries } from '@rocicorp/zero'
 import * as v from 'valibot'
-
 import * as Queries from './groupedQueries'
 
 const block = {
@@ -11,7 +10,7 @@ const block = {
       userId: v.string(),
       limit: v.optional(v.number()),
     }),
-    ({ args }) => Queries.block.blockedByUser(args)
+    ({ args }) => Queries.block.blockedByUser(args),
   ),
 }
 
@@ -21,7 +20,7 @@ const comment = {
       postId: v.string(),
       limit: v.optional(v.number()),
     }),
-    ({ args }) => Queries.comment.commentsByPostId(args)
+    ({ args }) => Queries.comment.commentsByPostId(args),
   ),
 }
 
@@ -31,26 +30,26 @@ const notification = {
       userId: v.string(),
       sinceTime: v.number(),
     }),
-    ({ args }) => Queries.notification.newNotificationsSince(args)
+    ({ args }) => Queries.notification.newNotificationsSince(args),
   ),
   unreadNotificationCount: defineQuery(
     v.object({
       userId: v.string(),
     }),
-    ({ args }) => Queries.notification.unreadNotificationCount(args)
+    ({ args }) => Queries.notification.unreadNotificationCount(args),
   ),
   unreadNotifications: defineQuery(
     v.object({
       userId: v.string(),
     }),
-    ({ args }) => Queries.notification.unreadNotifications(args)
+    ({ args }) => Queries.notification.unreadNotifications(args),
   ),
   userNotifications: defineQuery(
     v.object({
       userId: v.string(),
       pageSize: v.optional(v.number()),
     }),
-    ({ args }) => Queries.notification.userNotifications(args)
+    ({ args }) => Queries.notification.userNotifications(args),
   ),
 }
 
@@ -63,30 +62,30 @@ const post = {
           v.object({
             id: v.string(),
             createdAt: v.number(),
-          })
-        )
+          }),
+        ),
       ),
     }),
-    ({ args }) => Queries.post.feedPosts(args)
+    ({ args }) => Queries.post.feedPosts(args),
   ),
   postById: defineQuery(
     v.object({
       postId: v.string(),
     }),
-    ({ args }) => Queries.post.postById(args)
+    ({ args }) => Queries.post.postById(args),
   ),
   postDetail: defineQuery(
     v.object({
       postId: v.string(),
     }),
-    ({ args }) => Queries.post.postDetail(args)
+    ({ args }) => Queries.post.postDetail(args),
   ),
   postsByUserId: defineQuery(
     v.object({
       userId: v.string(),
       limit: v.optional(v.number()),
     }),
-    ({ args }) => Queries.post.postsByUserId(args)
+    ({ args }) => Queries.post.postsByUserId(args),
   ),
   postsPaginated: defineQuery(
     v.object({
@@ -97,11 +96,11 @@ const post = {
           v.object({
             id: v.string(),
             createdAt: v.number(),
-          })
-        )
+          }),
+        ),
       ),
     }),
-    ({ args }) => Queries.post.postsPaginated(args)
+    ({ args }) => Queries.post.postsPaginated(args),
   ),
   searchPosts: defineQuery(
     v.object({
@@ -112,11 +111,11 @@ const post = {
           v.object({
             id: v.string(),
             createdAt: v.number(),
-          })
-        )
+          }),
+        ),
       ),
     }),
-    ({ args }) => Queries.post.searchPosts(args)
+    ({ args }) => Queries.post.searchPosts(args),
   ),
 }
 
@@ -125,19 +124,19 @@ const user = {
     v.object({
       userId: v.string(),
     }),
-    ({ args }) => Queries.user.userById(args)
+    ({ args }) => Queries.user.userById(args),
   ),
   userByUsername: defineQuery(
     v.object({
       username: v.string(),
     }),
-    ({ args }) => Queries.user.userByUsername(args)
+    ({ args }) => Queries.user.userByUsername(args),
   ),
   userWithState: defineQuery(
     v.object({
       userId: v.string(),
     }),
-    ({ args }) => Queries.user.userWithState(args)
+    ({ args }) => Queries.user.userWithState(args),
   ),
 }
 

@@ -42,7 +42,7 @@ export const useZeroDebug = (query: Query<any, any, any>, options: any, results:
     if (shouldLog) {
       if (COLLAPSED) {
         console.groupCollapsed(
-          `${isPermissionQuery ? `👮‍♂️` : `✨`}${prettyFormatZeroQuery(query, 'minimal')}`
+          `${isPermissionQuery ? `👮‍♂️` : `✨`}${prettyFormatZeroQuery(query, 'minimal')}`,
         )
         console.info(id, prettyFormatZeroQuery(query, 'full'))
         console.info('cached result', results)
@@ -80,7 +80,7 @@ export const useZeroDebug = (query: Query<any, any, any>, options: any, results:
             table,
             changeCount: history.changeCount,
             recentAsts: history.asts,
-          }
+          },
         )
       }
     }

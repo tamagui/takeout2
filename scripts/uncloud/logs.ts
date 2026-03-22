@@ -27,7 +27,7 @@ await cmd`View logs from production deployment`.run(async ({ run }) => {
 
   const target = services.length > 0 ? services.join(', ') : 'all services'
   console.info(
-    `📜 viewing logs for ${target}${follow ? ' (following)' : ''}${machine ? ` on ${machine}` : ''}...\n`
+    `📜 viewing logs for ${target}${follow ? ' (following)' : ''}${machine ? ` on ${machine}` : ''}...\n`,
   )
 
   try {

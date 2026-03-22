@@ -125,6 +125,10 @@ export const authServer = betterAuth({
     }),
   ],
 
+  logger: {
+    level: 'warn',
+  },
+
   account: {
     accountLinking: {
       allowDifferentEmails: true,

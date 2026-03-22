@@ -161,5 +161,5 @@ export const AIChatInput = memo(
         </XStack>
       </GlassContainer>
     )
-  }
+  },
 )

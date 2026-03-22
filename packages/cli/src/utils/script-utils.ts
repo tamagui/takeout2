@@ -19,7 +19,7 @@ export function getLocalScriptsDir(): string {
 
 // batch extract metadata for all scripts via import interception
 export async function getAllScriptMetadata(
-  scripts: Map<string, string>
+  scripts: Map<string, string>,
 ): Promise<Map<string, ScriptMetadata>> {
   const collected = new Map<string, { description: string; args?: string }>()
   let currentName = ''

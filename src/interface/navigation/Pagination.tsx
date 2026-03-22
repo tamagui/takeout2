@@ -48,5 +48,5 @@ export const Pagination = memo(
         </Button>
       </XStack>
     )
-  }
+  },
 )

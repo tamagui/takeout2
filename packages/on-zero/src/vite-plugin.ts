@@ -30,7 +30,7 @@ function createOnZeroHmrPlugin(hmrInclude: string[] = []): Plugin {
       if (code.includes('import.meta.hot.invalidate')) {
         transformed = transformed.replace(
           /if\s*\(invalidateMessage\)\s*import\.meta\.hot\.invalidate\(invalidateMessage\);?/g,
-          '/* on-zero: HMR invalidate disabled */'
+          '/* on-zero: HMR invalidate disabled */',
         )
       }
 

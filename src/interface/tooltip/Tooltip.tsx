@@ -41,7 +41,7 @@ export type TooltipWrapperProps = {
 
 export function wrapWithTooltip(
   content: ReactElement,
-  { tooltip, tooltipDelayed, tooltipPlacement, popover }: TooltipWrapperProps
+  { tooltip, tooltipDelayed, tooltipPlacement, popover }: TooltipWrapperProps,
 ): ReactElement {
   if (!tooltip) {
     return content
@@ -75,7 +75,7 @@ const globalTooltip = createEmitter<TooltipProps>(
   {},
   {
     comparator: isEqualIdentity,
-  }
+  },
 )
 
 export const Tooltip: React.FC<TooltipProps> = memo((props) => {
@@ -174,7 +174,6 @@ export const GlobalTooltipProvider = ({
       }}
       {...tooltipProps}
       {...(disabled ? { open: false } : null)}
-      // @ts-expect-error
       zIndex={Z_INDICES.tooltip}
     >
       {providerChildren}

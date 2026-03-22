@@ -14,7 +14,7 @@ export async function buildWeb(): Promise<void> {
 
 export async function buildDockerImage(
   imageName = 'takeout-web:latest',
-  platform = process.env.DEPLOYMENT_ARCH || 'linux/amd64'
+  platform = process.env.DEPLOYMENT_ARCH || 'linux/amd64',
 ): Promise<void> {
   console.info('\n🐳 building docker image...\n')
   console.info(`platform: ${platform}`)

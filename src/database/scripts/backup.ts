@@ -23,7 +23,7 @@ async function checkDatabaseConnection(): Promise<boolean> {
     `pg_isready -d ${Resource.Postgres2.database} -h ${Resource.Postgres2.host} -U ${Resource.Postgres2.username}`,
     {
       timeout: time.ms.seconds(5),
-    }
+    },
   )
 
   return out.exitCode === 0
@@ -82,7 +82,7 @@ export async function backupDatabase() {
           PGCONNECT_TIMEOUT: '10',
         } as any,
         stdio: 'inherit',
-      }
+      },
     )
 
     let timeoutId: Timer
@@ -151,7 +151,7 @@ export async function backupDatabase() {
         'git-sha': process.env.GITHUB_SHA || 'unknown',
       },
       StorageClass: 'STANDARD_IA', // infrequent access for cost savings
-    })
+    }),
   )
 
   console.info(`✅ Uploaded to S3: s3://${BUCKET_NAME}/${s3Key}`)

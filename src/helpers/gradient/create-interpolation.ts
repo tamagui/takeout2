@@ -5,7 +5,7 @@ const AnimatedInterpolation = Animated.Interpolation
 type ColorInterpolateFunction = (input: number) => string
 
 function createInterpolation(
-  config: Animated.InterpolationConfigType
+  config: Animated.InterpolationConfigType,
 ): ColorInterpolateFunction {
   if (AnimatedInterpolation.__createInterpolation) {
     return AnimatedInterpolation.__createInterpolation(config)

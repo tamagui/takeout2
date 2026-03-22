@@ -1,22 +1,22 @@
 import { getDBClient } from '@take-out/postgres/getDBClient'
 import { migrate } from '@take-out/postgres/migrate'
+import { getTableName } from 'drizzle-orm'
+import { PgTable } from 'drizzle-orm/pg-core'
 
 import { ZERO_CHANGE_DB, ZERO_CVR_DB, ZERO_UPSTREAM_DB } from '~/server/env-server'
+
+import * as schemaPrivate from './schema-private'
 
 const migrationsTS = import.meta.glob(`./migrations/*.ts`)
 
 // vite tries to eval this at build time :/
 const PROCESS_ENV = globalThis['process']['env']
 
-// tables from schema-private.ts excluded from zero's replication publication.
-// must stay in sync - if you add/remove a table in schema-private.ts, update this list
+// derive private table names from schema-private.ts — no manual list to maintain
 const PRIVATE_TABLES = [
-  'user',
-  'account',
-  'session',
-  'jwks',
-  'verification',
-  'whitelist',
+  ...Object.values(schemaPrivate)
+    .filter((v) => v instanceof PgTable)
+    .map((t) => getTableName(t as PgTable)),
   'migrations',
 ]
 
@@ -25,7 +25,7 @@ async function ensureZeroPublication() {
   try {
     const { rows } = await client.query(
       `SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename NOT IN (${PRIVATE_TABLES.map((_, i) => `$${i + 1}`).join(', ')})`,
-      PRIVATE_TABLES
+      PRIVATE_TABLES,
     )
     if (!rows.length) return
     const tableList = rows.map((r: any) => `"${r.tablename}"`).join(', ')
@@ -85,7 +85,7 @@ async function waitForDatabase(connectionString: string, maxRetries = 30) {
     } catch (err) {
       const delay = Math.min(1000 * 1.5 ** i, 10000)
       console.info(
-        `⏳ waiting for database... attempt ${i + 1}/${maxRetries} (retry in ${delay}ms)`
+        `⏳ waiting for database... attempt ${i + 1}/${maxRetries} (retry in ${delay}ms)`,
       )
       await new Promise((resolve) => setTimeout(resolve, delay))
     }

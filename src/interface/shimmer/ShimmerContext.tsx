@@ -29,7 +29,7 @@ const ShimmerProvider: FunctionComponent<ShimmerProviderProps> = ({ children }) 
       increaseActiveShimmers: noop,
       decreaseActiveShimmers: noop,
     }),
-    []
+    [],
   )
 
   return (

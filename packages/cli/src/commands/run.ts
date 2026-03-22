@@ -51,7 +51,7 @@ export const runCommand = defineCommand({
             ([name, path]) => ({
               name: name.replace(`${firstArg}/`, ''),
               path,
-            })
+            }),
           )
 
           await runScriptsInParallel(scriptsToRun, {

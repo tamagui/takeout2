@@ -40,7 +40,7 @@ export const alertController = {
     title: string,
     message?: string,
     onConfirm?: () => void,
-    onCancel?: () => void
+    onCancel?: () => void,
   ) => {
     alertController.show({
       title,

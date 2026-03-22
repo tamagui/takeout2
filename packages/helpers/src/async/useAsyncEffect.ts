@@ -22,7 +22,7 @@ type AsyncEffectOptions = {
 export function useAsyncEffect(
   cb: AsyncEffectCallback,
   deps: any[] = [],
-  options?: AsyncEffectOptions
+  options?: AsyncEffectOptions,
 ): void {
   useAsyncEffectImpl(false, cb, deps, options)
 }
@@ -30,7 +30,7 @@ export function useAsyncEffect(
 export function useAsyncLayoutEffect(
   cb: AsyncEffectCallback,
   deps: any[] = [],
-  options?: AsyncEffectOptions
+  options?: AsyncEffectOptions,
 ): void {
   useAsyncEffectImpl(true, cb, deps, options)
 }
@@ -39,7 +39,7 @@ function useAsyncEffectImpl(
   isLayoutEffect: boolean,
   cb: AsyncEffectCallback,
   deps: any[] = [],
-  options: AsyncEffectOptions = EMPTY_OBJECT
+  options: AsyncEffectOptions = EMPTY_OBJECT,
 ): void {
   const effectHook = isLayoutEffect ? useLayoutEffect : useEffect
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -52,7 +52,7 @@ function useAsyncEffectImpl(
       cb,
       deps,
       options.circuitBreakAfter,
-      options.circuitBreakPeriod
+      options.circuitBreakPeriod,
     )
     const controller = new AbortController()
     const signal = controller.signal
@@ -87,7 +87,7 @@ let checkEffectLoop: (
   cb: AsyncEffectCallback,
   deps: any[],
   circuitBreakAfter?: number,
-  circuitBreakPeriod?: number
+  circuitBreakPeriod?: number,
 ) => void
 
 function formatDeps(deps: any[]): string {
@@ -100,7 +100,7 @@ function formatDeps(deps: any[]): string {
         if (v instanceof Error) return `[Error: ${v.message}]`
         return v
       },
-      2
+      2,
     )
   } catch {
     return `[${deps.length} deps - not serializable]`
@@ -115,7 +115,7 @@ if (process.env.NODE_ENV === 'development') {
     cb: AsyncEffectCallback,
     deps: any[],
     circuitBreakAfter: number = 20,
-    circuitBreakPeriod: number = 1000
+    circuitBreakPeriod: number = 1000,
   ) => {
     const now = Date.now()
     const runs = effectRunCounts.get(effectId) || []
@@ -143,7 +143,7 @@ if (process.env.NODE_ENV === 'development') {
       }
     } else if (runCount > circuitBreakAfter / 2) {
       console.warn(
-        `⚠️ useAsyncEffect potential loop: Effect ran ${runCount} times in <${circuitBreakPeriod}ms`
+        `⚠️ useAsyncEffect potential loop: Effect ran ${runCount} times in <${circuitBreakPeriod}ms`,
       )
       console.warn('Effect function:', cb.toString().slice(0, 500))
       console.warn('Dependencies:', formatDeps(deps))

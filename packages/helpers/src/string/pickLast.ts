@@ -1,6 +1,6 @@
 export function pickLast<T extends string | null | undefined>(
   a: T,
-  b: T
+  b: T,
 ): T extends string ? string : T {
   if (a == null && b == null) return undefined as any
   if (a == null) return b as any

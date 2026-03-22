@@ -130,7 +130,7 @@ class LitePostHog implements PostHogInstance {
 
   async captureException(
     error: Error,
-    properties?: Record<string, unknown>
+    properties?: Record<string, unknown>,
   ): Promise<void> {
     await this.capture('error_occurred', {
       error_name: error.name,

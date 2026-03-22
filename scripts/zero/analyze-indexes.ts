@@ -73,7 +73,7 @@ await cmd`Analyze Zero indexes and query performance against the dev database`.r
       )
       SELECT * FROM indexed_columns
     `,
-      [publication]
+      [publication],
     )
 
     let replicatedCount = 0
@@ -95,7 +95,7 @@ await cmd`Analyze Zero indexes and query performance against the dev database`.r
         ? row.columns.join(', ')
         : String(row.columns)
       console.info(
-        `  ${status} ${row.tablename}.${row.indexname} [${row.index_type}] (${cols}) ${reason}`
+        `  ${status} ${row.tablename}.${row.indexname} [${row.index_type}] (${cols}) ${reason}`,
       )
     }
 
@@ -133,12 +133,12 @@ await cmd`Analyze Zero indexes and query performance against the dev database`.r
         if (row.is_expression || row.is_partial) continue
         const sqliteNames = sqliteByTable[row.tablename] || []
         const found = sqliteNames.some(
-          (n) => n === row.indexname || n.includes(row.indexname)
+          (n) => n === row.indexname || n.includes(row.indexname),
         )
         if (!found) {
           missingCount++
           console.info(
-            `  ❌ ${row.tablename}.${row.indexname} (${row.columns.join(', ')})`
+            `  ❌ ${row.tablename}.${row.indexname} (${row.columns.join(', ')})`,
           )
         }
       }
@@ -173,7 +173,7 @@ await cmd`Analyze Zero indexes and query performance against the dev database`.r
       const deadPct =
         row.row_count > 0 ? ((row.dead_rows / row.row_count) * 100).toFixed(1) : '0'
       console.info(
-        `  ${row.table_name}: ${row.row_count} rows (${row.dead_rows} dead, ${deadPct}% bloat)`
+        `  ${row.table_name}: ${row.row_count} rows (${row.dead_rows} dead, ${deadPct}% bloat)`,
       )
     }
 
@@ -198,7 +198,7 @@ await cmd`Analyze Zero indexes and query performance against the dev database`.r
     for (const row of seqScans.rows) {
       const flag = row.seq_pct > 50 && row.seq_scan > 10 ? '⚠️ ' : '  '
       console.info(
-        `${flag}${row.table_name}: seq=${row.seq_scan} idx=${row.idx_scan || 0} (${row.seq_pct}% sequential)`
+        `${flag}${row.table_name}: seq=${row.seq_scan} idx=${row.idx_scan || 0} (${row.seq_pct}% sequential)`,
       )
     }
 
@@ -220,7 +220,7 @@ await cmd`Analyze Zero indexes and query performance against the dev database`.r
     for (const row of indexUsage.rows) {
       const flag = row.scans === 0 ? '⚠️  UNUSED ' : '  '
       console.info(
-        `${flag}${row.table_name}.${row.index_name}: ${row.scans} scans, ${row.rows_read} rows read (${row.index_size})`
+        `${flag}${row.table_name}.${row.index_name}: ${row.scans} scans, ${row.rows_read} rows read (${row.index_size})`,
       )
     }
 
@@ -281,7 +281,7 @@ await cmd`Analyze Zero indexes and query performance against the dev database`.r
           console.info(`  ⚠️  sequential scan detected (${seqScanMatch.length}x)`)
         }
         console.info(
-          `  planning: ${planningTime || '?'}ms, execution: ${executionTime || '?'}ms`
+          `  planning: ${planningTime || '?'}ms, execution: ${executionTime || '?'}ms`,
         )
 
         // print abbreviated plan
@@ -308,11 +308,11 @@ await cmd`Analyze Zero indexes and query performance against the dev database`.r
 
     // check if username has an index (used in userByUsername query)
     const usernameIdx = pgIndexes.rows.find(
-      (r) => r.tablename === 'userPublic' && r.indexdef?.includes('username')
+      (r) => r.tablename === 'userPublic' && r.indexdef?.includes('username'),
     )
     if (!usernameIdx) {
       recommendations.push(
-        'CREATE INDEX "userPublic_username_idx" ON "userPublic" ("username") -- userByUsername query does full scan'
+        'CREATE INDEX "userPublic_username_idx" ON "userPublic" ("username") -- userByUsername query does full scan',
       )
     }
 
@@ -322,11 +322,11 @@ await cmd`Analyze Zero indexes and query performance against the dev database`.r
         r.tablename === 'notification' &&
         r.indexdef?.includes('userId') &&
         r.indexdef?.includes('read') &&
-        r.indexdef?.includes('createdAt')
+        r.indexdef?.includes('createdAt'),
     )
     if (!notifTriple) {
       recommendations.push(
-        'CREATE INDEX "notification_userId_read_createdAt_idx" ON notification ("userId", read, "createdAt" DESC) -- newNotificationsSince triple filter'
+        'CREATE INDEX "notification_userId_read_createdAt_idx" ON notification ("userId", read, "createdAt" DESC) -- newNotificationsSince triple filter',
       )
     }
 
@@ -336,11 +336,11 @@ await cmd`Analyze Zero indexes and query performance against the dev database`.r
         r.tablename === 'post' &&
         r.indexdef?.includes('createdAt') &&
         r.indexdef?.includes('id') &&
-        r.indexdef?.includes('DESC')
+        r.indexdef?.includes('DESC'),
     )
     if (!postComposite) {
       recommendations.push(
-        'CREATE INDEX "post_createdAt_id_desc_idx" ON post ("createdAt" DESC, id DESC) -- feed pagination cursor'
+        'CREATE INDEX "post_createdAt_id_desc_idx" ON post ("createdAt" DESC, id DESC) -- feed pagination cursor',
       )
     }
 
@@ -349,21 +349,21 @@ await cmd`Analyze Zero indexes and query performance against the dev database`.r
       (r) =>
         r.tablename === 'comment' &&
         r.indexdef?.includes('postId') &&
-        r.indexdef?.includes('createdAt')
+        r.indexdef?.includes('createdAt'),
     )
     if (!commentCreatedAt) {
       recommendations.push(
-        'CREATE INDEX "comment_postId_createdAt_idx" ON comment ("postId", "createdAt" ASC) -- comments ordered by time'
+        'CREATE INDEX "comment_postId_createdAt_idx" ON comment ("postId", "createdAt" ASC) -- comments ordered by time',
       )
     }
 
     // check notification actorId (used in related('actor'))
     const notifActorIdx = pgIndexes.rows.find(
-      (r) => r.tablename === 'notification' && r.indexdef?.includes('actorId')
+      (r) => r.tablename === 'notification' && r.indexdef?.includes('actorId'),
     )
     if (!notifActorIdx) {
       recommendations.push(
-        'CREATE INDEX "notification_actorId_idx" ON notification ("actorId") -- actor relationship lookup'
+        'CREATE INDEX "notification_actorId_idx" ON notification ("actorId") -- actor relationship lookup',
       )
     }
 
@@ -384,5 +384,5 @@ await cmd`Analyze Zero indexes and query performance against the dev database`.r
 
     await pool.end()
     console.info('\ndone.\n')
-  }
+  },
 )

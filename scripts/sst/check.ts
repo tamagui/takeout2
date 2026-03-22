@@ -153,11 +153,11 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
       try {
         const clustersJson = execSync(
           `AWS_PROFILE=${PROFILE} aws ecs list-clusters --region ${REGION} --output json`,
-          { encoding: 'utf-8', stdio: 'pipe' }
+          { encoding: 'utf-8', stdio: 'pipe' },
         )
         const clusters = JSON.parse(clustersJson)
         const clusterArn = clusters.clusterArns?.find((arn: string) =>
-          arn.includes('start-dot-chat-production')
+          arn.includes('start-dot-chat-production'),
         )
         if (clusterArn) {
           const clusterName = clusterArn.split('/').pop()
@@ -202,26 +202,26 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
         // find start-dot-chat production cluster
         const clusterArns =
           clusters?.clusterArns?.filter((arn: string) =>
-            arn.includes('start-dot-chat-production')
+            arn.includes('start-dot-chat-production'),
           ) || []
 
         // check which cluster has active services
         for (const clusterArn of clusterArns) {
           const clusterName = clusterArn.split('/').pop()
           const servicesJson = run(
-            `aws ecs list-services --cluster ${clusterName} --region ${REGION} --output json`
+            `aws ecs list-services --cluster ${clusterName} --region ${REGION} --output json`,
           )
           const servicesData = parseJson<any>(servicesJson)
 
           if (servicesData?.serviceArns?.length > 0) {
             // check if any service has desired count > 0
             const serviceDetailsJson = run(
-              `aws ecs describe-services --cluster ${clusterName} --services ${servicesData.serviceArns.join(' ')} --region ${REGION} --output json`
+              `aws ecs describe-services --cluster ${clusterName} --services ${servicesData.serviceArns.join(' ')} --region ${REGION} --output json`,
             )
             const serviceDetails = parseJson<any>(serviceDetailsJson)
 
             const hasActiveServices = serviceDetails?.services?.some(
-              (s: any) => s.desiredCount > 0 || s.runningCount > 0
+              (s: any) => s.desiredCount > 0 || s.runningCount > 0,
             )
 
             if (hasActiveServices) {
@@ -276,11 +276,11 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
       // try to find Aurora cluster dynamically
       try {
         const clustersJson = run(
-          `aws rds describe-db-clusters --region ${REGION} --output json`
+          `aws rds describe-db-clusters --region ${REGION} --output json`,
         )
         const clusters = parseJson<any>(clustersJson)
         const auroraCluster = clusters?.DBClusters?.find((cluster: any) =>
-          cluster.DBClusterIdentifier.includes('start-dot-chat-production')
+          cluster.DBClusterIdentifier.includes('start-dot-chat-production'),
         )
         if (auroraCluster) {
           AURORA_CLUSTER_ID = auroraCluster.DBClusterIdentifier
@@ -317,7 +317,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
       // get target health
       const healthJson = run(
-        `aws elbv2 describe-target-health --target-group-arn ${targetGroupArn} --region ${REGION} --output json`
+        `aws elbv2 describe-target-health --target-group-arn ${targetGroupArn} --region ${REGION} --output json`,
       )
 
       const healthData = parseJson<any>(healthJson)
@@ -346,10 +346,10 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
             const code = codeMatch[1]
             if (code === '302') {
               console.info(
-                `        ⚠️  302 redirect - app is redirecting the health check path`
+                `        ⚠️  302 redirect - app is redirecting the health check path`,
               )
               console.info(
-                `        💡 Fix: Check middleware auth rules or configure correct health path`
+                `        💡 Fix: Check middleware auth rules or configure correct health path`,
               )
             } else if (code === '404') {
               console.info(`        ⚠️  404 not found - health endpoint doesn't exist`)
@@ -368,7 +368,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
             // get task details
             const taskJson = run(
-              `aws ecs describe-tasks --cluster ${CLUSTER_NAME} --tasks ${taskId} --region ${REGION} --output json 2>/dev/null || echo '{}'`
+              `aws ecs describe-tasks --cluster ${CLUSTER_NAME} --tasks ${taskId} --region ${REGION} --output json 2>/dev/null || echo '{}'`,
             )
             const taskData = parseJson<any>(taskJson)
 
@@ -392,7 +392,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
       // check target group health check configuration
       const targetGroupJson = run(
-        `aws elbv2 describe-target-groups --target-group-arns ${targetGroupArn} --region ${REGION} --output json`
+        `aws elbv2 describe-target-groups --target-group-arns ${targetGroupArn} --region ${REGION} --output json`,
       )
 
       const targetGroupData = parseJson<any>(targetGroupJson)
@@ -410,13 +410,13 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
       // get deregistration delay from attributes
       const attributesJson = run(
-        `aws elbv2 describe-target-group-attributes --target-group-arn ${targetGroupArn} --region ${REGION} --output json`
+        `aws elbv2 describe-target-group-attributes --target-group-arn ${targetGroupArn} --region ${REGION} --output json`,
       )
 
       const attributesData = parseJson<any>(attributesJson)
       if (attributesData?.Attributes) {
         const deregDelay = attributesData.Attributes.find(
-          (a: any) => a.Key === 'deregistration_delay.timeout_seconds'
+          (a: any) => a.Key === 'deregistration_delay.timeout_seconds',
         )?.Value
         if (deregDelay) {
           console.info(`     Deregistration delay: ${deregDelay}s`)
@@ -427,7 +427,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
   async function getServiceStatus(serviceName: string): Promise<ServiceStatus | null> {
     const serviceJson = run(
-      `aws ecs describe-services --cluster ${CLUSTER_NAME} --services ${serviceName} --region ${REGION} --output json`
+      `aws ecs describe-services --cluster ${CLUSTER_NAME} --services ${serviceName} --region ${REGION} --output json`,
     )
 
     const serviceData = parseJson<any>(serviceJson)
@@ -438,7 +438,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
     // log detailed deployment info in verbose mode for debugging
     if (VERBOSE_MODE && service.deployments?.length > 1) {
       const primaryDeployment = service.deployments.find(
-        (d: any) => d.status === 'PRIMARY'
+        (d: any) => d.status === 'PRIMARY',
       )
       const activeDeployment = service.deployments.find((d: any) => d.status === 'ACTIVE')
 
@@ -448,13 +448,13 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
         primaryDeployment.runningCount < primaryDeployment.desiredCount
       ) {
         console.info(
-          `\n⚠️  ${serviceName}: New deployment struggling - ${primaryDeployment.runningCount}/${primaryDeployment.desiredCount} tasks running`
+          `\n⚠️  ${serviceName}: New deployment struggling - ${primaryDeployment.runningCount}/${primaryDeployment.desiredCount} tasks running`,
         )
         console.info(`   Health checks may be failing for the new deployment`)
 
         // get the task definition to check health check configuration
         const taskDefJson = run(
-          `aws ecs describe-task-definition --task-definition ${activeDeployment.taskDefinition} --region ${REGION} --output json`
+          `aws ecs describe-task-definition --task-definition ${activeDeployment.taskDefinition} --region ${REGION} --output json`,
         )
         const taskDefData = parseJson<any>(taskDefJson)
 
@@ -463,17 +463,17 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
             taskDefData.taskDefinition.containerDefinitions?.[0]?.healthCheck
           if (healthCheck) {
             console.info(
-              `   Health check command: ${JSON.stringify(healthCheck.command)}`
+              `   Health check command: ${JSON.stringify(healthCheck.command)}`,
             )
             console.info(
-              `   Health check interval: ${healthCheck.interval}s, timeout: ${healthCheck.timeout}s`
+              `   Health check interval: ${healthCheck.interval}s, timeout: ${healthCheck.timeout}s`,
             )
             console.info(
-              `   Retries: ${healthCheck.retries}, start period: ${healthCheck.startPeriod}s`
+              `   Retries: ${healthCheck.retries}, start period: ${healthCheck.startPeriod}s`,
             )
           } else {
             console.info(
-              `   No container health check configured (using load balancer health checks)`
+              `   No container health check configured (using load balancer health checks)`,
             )
           }
         }
@@ -506,7 +506,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
     // check for recently stopped tasks
     const stoppedTasksJson = run(
-      `aws ecs list-tasks --cluster ${CLUSTER_NAME} --service-name ${serviceName} --desired-status STOPPED --region ${REGION} --output json`
+      `aws ecs list-tasks --cluster ${CLUSTER_NAME} --service-name ${serviceName} --desired-status STOPPED --region ${REGION} --output json`,
     )
 
     const stoppedTasksData = parseJson<any>(stoppedTasksJson)
@@ -517,7 +517,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
       const recentStoppedArns = stoppedTasksData.taskArns.slice(0, 3)
       for (const taskArn of recentStoppedArns) {
         const taskJson = run(
-          `aws ecs describe-tasks --cluster ${CLUSTER_NAME} --tasks ${taskArn} --region ${REGION} --output json`
+          `aws ecs describe-tasks --cluster ${CLUSTER_NAME} --tasks ${taskArn} --region ${REGION} --output json`,
         )
         const taskData = parseJson<any>(taskJson)
         if (taskData?.tasks?.[0]) {
@@ -552,11 +552,11 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
   async function getTaskLogs(
     serviceName: string,
     taskId: string,
-    lines: number = 50
+    lines: number = 50,
   ): Promise<string[]> {
     // dynamically discover the log group for this service
     const logGroupsJson = run(
-      `aws logs describe-log-groups --region ${REGION} --log-group-name-prefix "/sst/cluster/${CLUSTER_NAME}" --output json`
+      `aws logs describe-log-groups --region ${REGION} --log-group-name-prefix "/sst/cluster/${CLUSTER_NAME}" --output json`,
     )
 
     const logGroupsData = parseJson<any>(logGroupsJson)
@@ -564,7 +564,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
     // find log group that contains the service name
     const logGroup = logGroupsData.logGroups.find((lg: any) =>
-      lg.logGroupName.includes(serviceName)
+      lg.logGroupName.includes(serviceName),
     )
 
     if (!logGroup) {
@@ -579,14 +579,14 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
     // first, find the log stream
     const streamsJson = run(
-      `aws logs describe-log-streams --log-group-name ${logGroupName} --log-stream-name-prefix "${logStreamPrefix}" --region ${REGION} --output json --max-items 1`
+      `aws logs describe-log-streams --log-group-name ${logGroupName} --log-stream-name-prefix "${logStreamPrefix}" --region ${REGION} --output json --max-items 1`,
     )
 
     const streamsData = parseJson<any>(streamsJson)
     if (!streamsData?.logStreams?.[0]) {
       // try without the prefix if exact match fails
       const allStreamsJson = run(
-        `aws logs describe-log-streams --log-group-name ${logGroupName} --region ${REGION} --output json --order-by LastEventTime --descending --max-items 5`
+        `aws logs describe-log-streams --log-group-name ${logGroupName} --region ${REGION} --output json --order-by LastEventTime --descending --max-items 5`,
       )
       const allStreamsData = parseJson<any>(allStreamsJson)
       if (!allStreamsData?.logStreams?.[0]) return []
@@ -594,7 +594,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
       // find a stream that contains the task id
       const matchingStream =
         allStreamsData.logStreams.find((s: any) =>
-          s.logStreamName.includes(taskId.split('-')[0])
+          s.logStreamName.includes(taskId.split('-')[0]),
         ) || allStreamsData.logStreams[0]
 
       if (!matchingStream) return []
@@ -602,7 +602,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
       // get logs from the stream
       const logsJson = run(
-        `aws logs get-log-events --log-group-name ${logGroupName} --log-stream-name "${streamName}" --region ${REGION} --output json --limit ${lines}`
+        `aws logs get-log-events --log-group-name ${logGroupName} --log-stream-name "${streamName}" --region ${REGION} --output json --limit ${lines}`,
       )
 
       const logsData = parseJson<any>(logsJson)
@@ -613,7 +613,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
     // get logs from the stream
     const logsJson = run(
-      `aws logs get-log-events --log-group-name ${logGroupName} --log-stream-name "${streamName}" --region ${REGION} --output json --limit ${lines}`
+      `aws logs get-log-events --log-group-name ${logGroupName} --log-stream-name "${streamName}" --region ${REGION} --output json --limit ${lines}`,
     )
 
     const logsData = parseJson<any>(logsJson)
@@ -625,7 +625,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
     try {
       const clusterJson = run(
-        `aws rds describe-db-clusters --db-cluster-identifier ${AURORA_CLUSTER_ID} --region ${REGION} --output json`
+        `aws rds describe-db-clusters --db-cluster-identifier ${AURORA_CLUSTER_ID} --region ${REGION} --output json`,
       )
 
       const clusterData = parseJson<any>(clusterJson)
@@ -638,7 +638,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
         cluster.DBClusterMembers?.map((member: any) => {
           // get detailed instance info
           const instanceJson = run(
-            `aws rds describe-db-instances --db-instance-identifier ${member.DBInstanceIdentifier} --region ${REGION} --output json`
+            `aws rds describe-db-instances --db-instance-identifier ${member.DBInstanceIdentifier} --region ${REGION} --output json`,
           )
           const instanceData = parseJson<any>(instanceJson)
           const instance = instanceData?.DBInstances?.[0]
@@ -673,11 +673,11 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
   async function getRunningTaskLogs(
     serviceName: string,
-    lines: number = 5
+    lines: number = 5,
   ): Promise<string[]> {
     // get the service details to find running tasks
     const serviceJson = run(
-      `aws ecs describe-services --cluster ${CLUSTER_NAME} --services ${serviceName} --region ${REGION} --output json`
+      `aws ecs describe-services --cluster ${CLUSTER_NAME} --services ${serviceName} --region ${REGION} --output json`,
     )
 
     const serviceData = parseJson<any>(serviceJson)
@@ -687,7 +687,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
     // get the latest deployment's task definition - prefer PRIMARY (new) over ACTIVE (old being phased out)
     const primaryDeployment = service.deployments?.find(
-      (d: any) => d.status === 'PRIMARY'
+      (d: any) => d.status === 'PRIMARY',
     )
     const activeDeployment = service.deployments?.find((d: any) => d.status === 'ACTIVE')
 
@@ -699,14 +699,14 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
     // list ALL tasks for this service (including stopped ones recently)
     const allTasksJson = run(
-      `aws ecs list-tasks --cluster ${CLUSTER_NAME} --service-name ${serviceName} --region ${REGION} --output json`
+      `aws ecs list-tasks --cluster ${CLUSTER_NAME} --service-name ${serviceName} --region ${REGION} --output json`,
     )
 
     const allTasksData = parseJson<any>(allTasksJson)
 
     // also check recently stopped tasks for the new deployment
     const stoppedTasksJson = run(
-      `aws ecs list-tasks --cluster ${CLUSTER_NAME} --service-name ${serviceName} --desired-status STOPPED --max-items 5 --region ${REGION} --output json`
+      `aws ecs list-tasks --cluster ${CLUSTER_NAME} --service-name ${serviceName} --desired-status STOPPED --max-items 5 --region ${REGION} --output json`,
     )
 
     const stoppedTasksData = parseJson<any>(stoppedTasksJson)
@@ -719,7 +719,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
     // get details of all tasks
     const taskDetailsJson = run(
-      `aws ecs describe-tasks --cluster ${CLUSTER_NAME} --tasks ${allTaskArns.join(' ')} --region ${REGION} --output json`
+      `aws ecs describe-tasks --cluster ${CLUSTER_NAME} --tasks ${allTaskArns.join(' ')} --region ${REGION} --output json`,
     )
 
     const taskDetailsData = parseJson<any>(taskDetailsJson)
@@ -727,7 +727,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
     // find a task that matches the latest deployment's task definition
     const newDeploymentTask = taskDetailsData.tasks.find(
-      (task: any) => task.taskDefinitionArn === latestDeployment.taskDefinition
+      (task: any) => task.taskDefinitionArn === latestDeployment.taskDefinition,
     )
 
     if (!newDeploymentTask) {
@@ -741,7 +741,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
       }
       // try to get logs from any running task as fallback
       const anyRunningTask = taskDetailsData.tasks.find(
-        (t: any) => t.lastStatus === 'RUNNING'
+        (t: any) => t.lastStatus === 'RUNNING',
       )
       if (anyRunningTask) {
         const taskId = anyRunningTask.taskArn.split('/').pop()
@@ -765,7 +765,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
   }
 
   async function waitForDeploymentStability(
-    timeout: number = MAX_WAIT_TIME
+    timeout: number = MAX_WAIT_TIME,
   ): Promise<DeploymentReport> {
     if (VERBOSE_MODE) {
       console.info('🔍 Checking deployment status...\n')
@@ -795,11 +795,11 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
     // helper function to check if deployment is complete
     const checkDeploymentComplete = () => {
       const healthyServices = lastStatus.filter(
-        (s) => s.runningCount === s.desiredCount && s.runningCount > 0
+        (s) => s.runningCount === s.desiredCount && s.runningCount > 0,
       )
       const allServicesHealthy = healthyServices.length === lastStatus.length
       const hasNoFailedDeployments = !lastStatus.some((s) =>
-        s.deployments.some((d) => d.rolloutState === 'FAILED' || d.status === 'FAILED')
+        s.deployments.some((d) => d.rolloutState === 'FAILED' || d.status === 'FAILED'),
       )
       const hasNoActiveDeployments = !lastStatus.some((s) => s.deployments.length > 1)
       const auroraHealthy = !lastAuroraStatus || lastAuroraStatus.status === 'available'
@@ -824,7 +824,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
       const elapsedSeconds = Math.round((Date.now() - startTime) / 1000)
       console.info(`\n✅ [${elapsedSeconds}s] All services are healthy and stable!`)
       console.info(
-        `✅ ${healthyServices.length}/${lastStatus.length} services running successfully`
+        `✅ ${healthyServices.length}/${lastStatus.length} services running successfully`,
       )
       if (lastAuroraStatus && lastAuroraStatus.status === 'available') {
         console.info(`✅ Aurora cluster is available`)
@@ -861,7 +861,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
               ? '✅'
               : '⏳'
           console.info(
-            `  ${icon} ${service.name}: ${service.runningCount}/${service.desiredCount} tasks`
+            `  ${icon} ${service.name}: ${service.runningCount}/${service.desiredCount} tasks`,
           )
         }
 
@@ -892,7 +892,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
         // check if all instances are available
         const unhealthyInstances = auroraStatus.instances.filter(
-          (i) => i.status !== 'available'
+          (i) => i.status !== 'available',
         )
         if (unhealthyInstances.length > 0) {
           auroraHealthy = false
@@ -917,7 +917,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
             status.runningCount === status.desiredCount && status.runningCount > 0
           const hasMultipleDeployments = status.deployments.length > 1
           const hasFailedDeployment = status.deployments.some(
-            (d) => d.rolloutState === 'FAILED' || d.status === 'FAILED'
+            (d) => d.rolloutState === 'FAILED' || d.status === 'FAILED',
           )
 
           if (hasMultipleDeployments) {
@@ -932,7 +932,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
           if (!isHealthy) {
             if (status.runningCount === 0 && status.desiredCount > 0) {
               serviceProblems.push(
-                `${serviceName}: no tasks running (0/${status.desiredCount})`
+                `${serviceName}: no tasks running (0/${status.desiredCount})`,
               )
             }
           }
@@ -942,11 +942,11 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
             for (const task of status.stoppedTasks) {
               if (task.stoppedReason?.includes('Essential container in task exited')) {
                 const hasExecError = task.containerLogs?.some((log) =>
-                  log.includes('Exec format error')
+                  log.includes('Exec format error'),
                 )
                 if (hasExecError) {
                   issues.push(
-                    `❌ Service ${serviceName} has exec format error (architecture mismatch)`
+                    `❌ Service ${serviceName} has exec format error (architecture mismatch)`,
                   )
                   serviceProblems.push(`${serviceName}: architecture mismatch`)
 
@@ -966,7 +966,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
               }
             }
           }
-        })
+        }),
       )
 
       lastStatus = services
@@ -983,10 +983,10 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
             console.info('\n🚀 New deployment detected!')
             console.info(`  ${service.name}: v${initialVersion} → v${newVersion}`)
             console.info(
-              '  Another deployment was started - exiting in favor of the newer one.\n'
+              '  Another deployment was started - exiting in favor of the newer one.\n',
             )
             console.info(
-              '✅ Current deployment appears stable, deferring to new deployment.\n'
+              '✅ Current deployment appears stable, deferring to new deployment.\n',
             )
 
             // return success since the current state is likely stable enough for a new deploy
@@ -1015,12 +1015,12 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
           if (deploymentCount > 1) {
             stateChanges.push(
-              `🔄 ${service.name}: rolling update progress - ${service.runningCount}/${service.desiredCount} tasks`
+              `🔄 ${service.name}: rolling update progress - ${service.runningCount}/${service.desiredCount} tasks`,
             )
           } else if (wasRunning !== nowRunning) {
             const icon = service.runningCount > Number(wasRunning) ? '↗️' : '↘️'
             stateChanges.push(
-              `${icon} ${service.name}: task count changed from ${wasRunning} to ${service.runningCount}`
+              `${icon} ${service.name}: task count changed from ${wasRunning} to ${service.runningCount}`,
             )
           }
         }
@@ -1032,7 +1032,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
         const currentAuroraState = `${auroraStatus.status}:${auroraStatus.instances.map((i) => i.status).join(',')}`
         if (previousAuroraState && previousAuroraState !== currentAuroraState) {
           stateChanges.push(
-            `🗄️ Aurora: ${auroraStatus.status} (instances: ${auroraStatus.instances.map((i) => `${i.role}:${i.status}`).join(', ')})`
+            `🗄️ Aurora: ${auroraStatus.status} (instances: ${auroraStatus.instances.map((i) => `${i.role}:${i.status}`).join(', ')})`,
           )
         }
         previousAuroraState = currentAuroraState
@@ -1059,17 +1059,17 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
       if (!VERBOSE_MODE && Date.now() - lastStateChangeTime > 30000) {
         const elapsedSeconds = Math.round((Date.now() - startTime) / 1000)
         const healthyCount = lastStatus.filter(
-          (s) => s.runningCount === s.desiredCount && s.runningCount > 0
+          (s) => s.runningCount === s.desiredCount && s.runningCount > 0,
         ).length
         const deployingCount = lastStatus.filter((s) => s.deployments.length > 1).length
 
         if (deployingCount > 0) {
           console.info(
-            `⏳ [${elapsedSeconds}s] ${healthyCount}/${lastStatus.length} services healthy, ${deployingCount} still updating...`
+            `⏳ [${elapsedSeconds}s] ${healthyCount}/${lastStatus.length} services healthy, ${deployingCount} still updating...`,
           )
         } else {
           console.info(
-            `⏳ [${elapsedSeconds}s] ${healthyCount}/${lastStatus.length} services healthy, finalizing...`
+            `⏳ [${elapsedSeconds}s] ${healthyCount}/${lastStatus.length} services healthy, finalizing...`,
           )
         }
         lastStateChangeTime = Date.now()
@@ -1114,7 +1114,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
         for (const service of services) {
           const status = service.runningCount === service.desiredCount ? '✅' : '⏳'
           console.info(
-            `${status} ${service.name}: ${service.runningCount}/${service.desiredCount} tasks running`
+            `${status} ${service.name}: ${service.runningCount}/${service.desiredCount} tasks running`,
           )
 
           if (service.deployments.length > 1) {
@@ -1122,7 +1122,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
             const activeDeploy = service.deployments.find((d) => d.status === 'ACTIVE')
             if (activeDeploy) {
               console.info(
-                `   📦 Active deployment: ${activeDeploy.runningCount}/${activeDeploy.desiredCount} tasks`
+                `   📦 Active deployment: ${activeDeploy.runningCount}/${activeDeploy.desiredCount} tasks`,
               )
               if (activeDeploy.rolloutState) {
                 console.info(`   🔄 Rollout state: ${activeDeploy.rolloutState}`)
@@ -1176,14 +1176,14 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
           if (auroraStatus.serverlessV2ScalingConfiguration) {
             console.info(
-              `   📊 Scaling: ${auroraStatus.serverlessV2ScalingConfiguration.minCapacity}-${auroraStatus.serverlessV2ScalingConfiguration.maxCapacity} ACU`
+              `   📊 Scaling: ${auroraStatus.serverlessV2ScalingConfiguration.minCapacity}-${auroraStatus.serverlessV2ScalingConfiguration.maxCapacity} ACU`,
             )
           }
 
           for (const instance of auroraStatus.instances) {
             const instanceIcon = instance.status === 'available' ? '✅' : '⏳'
             console.info(
-              `   ${instanceIcon} ${instance.role}: ${instance.instanceId} (${instance.status})`
+              `   ${instanceIcon} ${instance.role}: ${instance.instanceId} (${instance.status})`,
             )
           }
         }
@@ -1241,7 +1241,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
                   ) {
                     logs = recentStoppedTask.containerLogs.slice(-5)
                     console.info(
-                      `\n🔹 ${service.name} (from stopped task ${recentStoppedTask.taskArn}):`
+                      `\n🔹 ${service.name} (from stopped task ${recentStoppedTask.taskArn}):`,
                     )
                   }
                 }
@@ -1300,7 +1300,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
     for (const service of lastStatus) {
       console.info(
-        `\n🔹 ${service.name} (${service.runningCount}/${service.desiredCount} tasks):`
+        `\n🔹 ${service.name} (${service.runningCount}/${service.desiredCount} tasks):`,
       )
       console.info('-'.repeat(60))
 
@@ -1371,7 +1371,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
       console.info(`\n📦 Service: ${service.name}`)
       console.info(`   Task Definition: ${service.taskDefinition}`)
       console.info(
-        `   Status: ${service.runningCount}/${service.desiredCount} tasks running`
+        `   Status: ${service.runningCount}/${service.desiredCount} tasks running`,
       )
 
       if (service.deployments.length > 0) {
@@ -1379,7 +1379,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
         for (const deployment of service.deployments) {
           const marker = deployment.status === 'PRIMARY' ? '→' : ' '
           console.info(
-            `     ${marker} ${deployment.status}: ${deployment.runningCount}/${deployment.desiredCount} (${deployment.taskDefinition})`
+            `     ${marker} ${deployment.status}: ${deployment.runningCount}/${deployment.desiredCount} (${deployment.taskDefinition})`,
           )
           if (deployment.rolloutState) {
             console.info(`        Rollout: ${deployment.rolloutState}`)
@@ -1419,7 +1419,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
       if (report.aurora.serverlessV2ScalingConfiguration) {
         console.info(
-          `   Scaling: ${report.aurora.serverlessV2ScalingConfiguration.minCapacity}-${report.aurora.serverlessV2ScalingConfiguration.maxCapacity} ACU`
+          `   Scaling: ${report.aurora.serverlessV2ScalingConfiguration.minCapacity}-${report.aurora.serverlessV2ScalingConfiguration.maxCapacity} ACU`,
         )
       }
 
@@ -1427,7 +1427,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
         console.info(`   Instances:`)
         for (const instance of report.aurora.instances) {
           console.info(
-            `     ${instance.role === 'writer' ? '✍️' : '📖'} ${instance.instanceId}: ${instance.status}`
+            `     ${instance.role === 'writer' ? '✍️' : '📖'} ${instance.instanceId}: ${instance.status}`,
           )
           if (instance.endpoint) {
             console.info(`        Endpoint: ${instance.endpoint}`)
@@ -1454,7 +1454,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
     // check task definition images in parallel
     const checkPromises = SERVICES_TO_CHECK.map(async (serviceName) => {
       const serviceJson = run(
-        `aws ecs describe-services --cluster ${CLUSTER_NAME} --services ${serviceName} --region ${REGION} --output json`
+        `aws ecs describe-services --cluster ${CLUSTER_NAME} --services ${serviceName} --region ${REGION} --output json`,
       )
 
       const serviceData = parseJson<any>(serviceJson)
@@ -1462,7 +1462,7 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
 
       const taskDefArn = serviceData.services[0].taskDefinition
       const taskDefJson = run(
-        `aws ecs describe-task-definition --task-definition ${taskDefArn} --region ${REGION} --output json`
+        `aws ecs describe-task-definition --task-definition ${taskDefArn} --region ${REGION} --output json`,
       )
 
       const taskDefData = parseJson<any>(taskDefJson)
@@ -1505,12 +1505,12 @@ await cmd`SST deployment health check`.args('--verbose boolean').run(async ({ ar
         console.info(`  Status: ${auroraStatus.status}`)
         if (auroraStatus.serverlessV2ScalingConfiguration) {
           console.info(
-            `  Scaling: ${auroraStatus.serverlessV2ScalingConfiguration.minCapacity}-${auroraStatus.serverlessV2ScalingConfiguration.maxCapacity} ACU`
+            `  Scaling: ${auroraStatus.serverlessV2ScalingConfiguration.minCapacity}-${auroraStatus.serverlessV2ScalingConfiguration.maxCapacity} ACU`,
           )
         }
         if (auroraStatus.instances.length > 0) {
           console.info(
-            `  Instances: ${auroraStatus.instances.length} (${auroraStatus.instances.map((i) => i.role).join(', ')})`
+            `  Instances: ${auroraStatus.instances.length} (${auroraStatus.instances.map((i) => i.role).join(', ')})`,
           )
         }
       }

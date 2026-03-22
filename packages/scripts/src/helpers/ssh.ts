@@ -16,7 +16,7 @@ async function sleep(ms: number) {
 export async function testSSHConnection(
   host: string,
   sshKey: string,
-  options?: { retries?: number; retryDelayMs?: number }
+  options?: { retries?: number; retryDelayMs?: number },
 ): Promise<void> {
   const maxRetries = options?.retries ?? 3
   const retryDelay = options?.retryDelayMs ?? 5000
@@ -29,7 +29,7 @@ export async function testSSHConnection(
     try {
       await run(
         `ssh -i ${sshKey} -o StrictHostKeyChecking=no -o ConnectTimeout=10 ${host} "echo 'SSH connection successful'"`,
-        { silent: attempt > 1 }
+        { silent: attempt > 1 },
       )
       console.info('✅ ssh connection verified')
       return
@@ -37,7 +37,7 @@ export async function testSSHConnection(
       lastError = err as Error
       if (attempt < maxRetries) {
         console.info(
-          `  ssh attempt ${attempt}/${maxRetries} failed, retrying in ${retryDelay / 1000}s...`
+          `  ssh attempt ${attempt}/${maxRetries} failed, retrying in ${retryDelay / 1000}s...`,
         )
         await sleep(retryDelay)
       }
@@ -45,6 +45,6 @@ export async function testSSHConnection(
   }
 
   throw new Error(
-    `cannot connect to ${host} after ${maxRetries} attempts - check ssh key: ${sshKey}`
+    `cannot connect to ${host} after ${maxRetries} attempts - check ssh key: ${sshKey}`,
   )
 }

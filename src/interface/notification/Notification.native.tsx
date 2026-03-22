@@ -43,7 +43,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
           haptic: 'success',
           duration: 3000,
         })
-      }
+      },
     )
 
     // handle notification tap (when app was in background)
@@ -58,7 +58,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
         } else {
           router.push('/home/notification')
         }
-      }
+      },
     )
 
     return () => {

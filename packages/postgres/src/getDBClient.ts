@@ -60,7 +60,7 @@ export async function getDBClient(options: GetDBClientOptions = {}): Promise<Poo
 async function tryToGetNewClientFromPool(
   providedPool: Pool | undefined,
   connectionString: string | undefined,
-  retries: number
+  retries: number,
 ): Promise<PoolClient> {
   const { default: retry } = await import('async-retry')
   const clientFromPool = await retry(
@@ -93,7 +93,7 @@ async function tryToGetNewClientFromPool(
       minTimeout: 300,
       factor: 2,
       maxTimeout: 8000,
-    }
+    },
   )
 
   return clientFromPool
@@ -102,7 +102,7 @@ async function tryToGetNewClientFromPool(
 export async function queryDb(
   queryText: string,
   params?: any[],
-  options: GetDBClientOptions = {}
+  options: GetDBClientOptions = {},
 ): Promise<pg.QueryResult<any>> {
   let client: PoolClient | null = null
 
@@ -110,7 +110,7 @@ export async function queryDb(
     client = await tryToGetNewClientFromPool(
       options.pool,
       options.connectionString,
-      options.retries || 8
+      options.retries || 8,
     )
     return await client.query(queryText, params)
   } catch (error) {
@@ -123,7 +123,7 @@ export async function queryDb(
     if (client && options.connectionString) {
       const tooManyConnections = await checkForTooManyConnections(
         client,
-        options.connectionString
+        options.connectionString,
       )
 
       if (tooManyConnections) {
@@ -144,7 +144,7 @@ export async function queryDb(
 
 async function checkForTooManyConnections(
   client: PoolClient,
-  connectionString: string
+  connectionString: string,
 ): Promise<boolean> {
   const poolCache = cache.get(createPoolKey(connectionString))
   if (!poolCache) return false
@@ -174,7 +174,7 @@ async function checkForTooManyConnections(
     (poolCache.maxConnections - poolCache.reservedConnections) * maxConnectionsTolerance
   ) {
     console.warn(
-      `Too many connections detected: ${poolCache.openedConnections}/${poolCache.maxConnections - poolCache.reservedConnections}`
+      `Too many connections detected: ${poolCache.openedConnections}/${poolCache.maxConnections - poolCache.reservedConnections}`,
     )
     return true
   }
@@ -185,7 +185,7 @@ async function checkForTooManyConnections(
 async function getConnectionLimits(client: PoolClient): Promise<[number, number]> {
   const maxConnectionsResult = await client.query('SHOW max_connections')
   const reservedConnectionResult = await client.query(
-    'SHOW superuser_reserved_connections'
+    'SHOW superuser_reserved_connections',
   )
 
   return [
@@ -196,17 +196,17 @@ async function getConnectionLimits(client: PoolClient): Promise<[number, number]
 
 async function getOpenedConnections(
   client: PoolClient,
-  connectionString: string
+  connectionString: string,
 ): Promise<number> {
   // For Aurora/RDS, we need to get the database name from connection string
   const dbName = new URL(connectionString).pathname.slice(1)
   const openConnectionsResult = await client.query(
     'SELECT numbackends as opened_connections FROM pg_stat_database WHERE datname = $1',
-    [dbName]
+    [dbName],
   )
   const result = Number.parseInt(
     openConnectionsResult.rows[0]?.opened_connections || 0,
-    10
+    10,
   )
   return result
 }
@@ -247,7 +247,7 @@ async function tryToGetNewClient(connectionString: string): Promise<pg.Client> {
       minTimeout: 100,
       factor: 2,
       maxTimeout: 5000,
-    }
+    },
   )
 
   return client

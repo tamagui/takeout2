@@ -17,7 +17,7 @@ export function setCustomQueries(queries: AnyQueryRegistry) {
 function getCustomQueries(): AnyQueryRegistry {
   if (!customQueriesRef) {
     throw new Error(
-      'Custom queries not initialized. Ensure createZeroClient or createZeroServer has been called.'
+      'Custom queries not initialized. Ensure createZeroClient or createZeroServer has been called.',
     )
   }
   return customQueriesRef
@@ -31,7 +31,7 @@ export function run<
   TReturn,
 >(
   query: Query<TTable, Schema, TReturn>,
-  mode?: 'complete'
+  mode?: 'complete',
 ): Promise<HumanReadable<TReturn>>
 
 export function run<
@@ -42,7 +42,7 @@ export function run<
 >(
   fn: PlainQueryFn<TArg, Query<TTable, Schema, TReturn>>,
   params: TArg,
-  mode?: 'complete'
+  mode?: 'complete',
 ): Promise<HumanReadable<TReturn>>
 
 export function run<
@@ -51,13 +51,13 @@ export function run<
   TReturn,
 >(
   fn: PlainQueryFn<void, Query<TTable, Schema, TReturn>>,
-  mode?: 'complete'
+  mode?: 'complete',
 ): Promise<HumanReadable<TReturn>>
 
 export function run(
   queryOrFn: any,
   paramsOrMode?: any,
-  modeArg?: 'complete'
+  modeArg?: 'complete',
 ): Promise<any> {
   const hasParams = modeArg !== undefined || (paramsOrMode && paramsOrMode !== 'complete')
   const params = hasParams ? paramsOrMode : undefined

@@ -1,6 +1,6 @@
 export function decorateObject<T extends Record<string, any>>(
   obj: T,
-  decorator: (fn: Function) => Function
+  decorator: (fn: Function) => Function,
 ): T {
   const decorated = {} as T
 

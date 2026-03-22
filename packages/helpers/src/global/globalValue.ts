@@ -23,7 +23,7 @@ export function globalValue<T>(
   factory: () => T,
   opts?: {
     warnMessage?: string
-  }
+  },
 ): T {
   const symbolKey = Symbol.for(key)
   const g = globalThis as Record<symbol, unknown>

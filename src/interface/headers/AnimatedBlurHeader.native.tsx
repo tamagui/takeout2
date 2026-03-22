@@ -58,7 +58,7 @@ export const AnimatedBlurHeader = memo(
         scrollY.value,
         [BLUR_START_SCROLL, BLUR_END_SCROLL],
         [0, 1],
-        Extrapolation.CLAMP
+        Extrapolation.CLAMP,
       )
       return { opacity }
     })
@@ -116,5 +116,5 @@ export const AnimatedBlurHeader = memo(
         </XStack>
       </Animated.View>
     )
-  }
+  },
 )

@@ -15,7 +15,7 @@ export async function uploadToS3(
     body,
     contentType,
     isPublic = false,
-  }: UploadParams & { isPublic?: boolean }
+  }: UploadParams & { isPublic?: boolean },
 ): Promise<UploadResult> {
   const uploadParams = {
     Bucket: bucket,

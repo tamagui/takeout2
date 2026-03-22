@@ -25,13 +25,13 @@ test.describe('Comment Flow', () => {
 
     // verify comment appears (zero is near instant)
     await expect(
-      page.getByTestId('comment-item').filter({ hasText: commentText })
+      page.getByTestId('comment-item').filter({ hasText: commentText }),
     ).toBeVisible({ timeout: 500 })
 
     // verify comment doesn't revert after a second
     await page.waitForTimeout(1000)
     await expect(
-      page.getByTestId('comment-item').filter({ hasText: commentText })
+      page.getByTestId('comment-item').filter({ hasText: commentText }),
     ).toBeVisible({ timeout: 500 })
 
     // wait for sync then navigate fresh to verify persistence

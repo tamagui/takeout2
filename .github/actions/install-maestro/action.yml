@@ -1,28 +1,33 @@
 name: 'Install Maestro'
-description: 'Install Maestro'
+description: 'Install Maestro from a pinned GitHub release (avoids flaky get.maestro.mobile.dev)'
+inputs:
+  version:
+    description: 'Maestro release tag to install (e.g. cli-2.3.0)'
+    required: false
+    default: 'cli-2.3.0'
 runs:
   using: composite
   steps:
     - name: Install Maestro
       shell: bash
+      env:
+        MAESTRO_VERSION: ${{ inputs.version }}
       run: |
-        retries=0
-        maestro_executable_path="$HOME/.maestro/bin/maestro"
+        maestro_bin="$HOME/.maestro/bin/maestro"
 
-        # Loop until the maestro binary exists or retries exceed the limit
-        while [ ! -f "$maestro_executable_path" ]; do
-          if [ "$retries" -gt 5 ]; then
-            echo "Error: Reached max retry limit. Unable to install maestro."
-            exit 1
-          fi
+        if [ -f "$maestro_bin" ]; then
+          echo "Maestro already installed at $maestro_bin"
+          exit 0
+        fi
 
-          echo "Maestro not found at $maestro_executable_path. Installing..."
+        echo "Installing Maestro ${MAESTRO_VERSION}..."
+        curl -fsSL \
+          "https://github.com/mobile-dev-inc/maestro/releases/download/${MAESTRO_VERSION}/maestro.zip" \
+          -o /tmp/maestro.zip
 
-          # Run the installation command
-          curl -fsSL "https://get.maestro.mobile.dev" | bash
+        unzip -q /tmp/maestro.zip -d /tmp/maestro-extract
+        mv /tmp/maestro-extract/maestro "$HOME/.maestro"
+        rm -f /tmp/maestro.zip
 
-          # Increment retries
-          retries=$((retries + 1))
-        done
-
-        echo "Maestro installed successfully!"
+        echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+        echo "Maestro installed successfully at $maestro_bin"

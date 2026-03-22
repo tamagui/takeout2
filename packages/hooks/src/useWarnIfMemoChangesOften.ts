@@ -16,7 +16,7 @@ export const useWarnIfMemoChangesOften =
             if (countRef.current > threshold) {
               const warningName = name || 'Memoized value'
               console.warn(
-                `🔄 ${warningName} is changing too often! Changed ${countRef.current} times (threshold: ${threshold})`
+                `🔄 ${warningName} is changing too often! Changed ${countRef.current} times (threshold: ${threshold})`,
               )
             }
           }

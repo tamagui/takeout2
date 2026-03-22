@@ -17,17 +17,17 @@ export function setEvaluatingPermission(value: boolean) {
 export function where<Table extends TableName, Builder extends Where<Table>>(
   tableName: Table,
   builder: Builder,
-  isServerOnly?: boolean
+  isServerOnly?: boolean,
 ): Where<Table, Condition>
 
 export function where<Table extends TableName, Builder extends Where = Where<Table>>(
-  builder: Builder
+  builder: Builder,
 ): Where<Table, Condition>
 
 export function where<Table extends TableName, Builder extends Where<Table>>(
   a: Table | Builder,
   b?: Builder,
-  isServerOnly = false
+  isServerOnly = false,
 ): Where<Table, any> | Builder {
   const whereFn = (b || a) as any
 
@@ -62,12 +62,12 @@ export function where<Table extends TableName, Builder extends Where<Table>>(
 
 const WhereTableNameMap = globalValue(
   `on-zero:where-name`,
-  () => new WeakMap<Where, TableName>()
+  () => new WeakMap<Where, TableName>(),
 )
 
 const WhereRawBuilderMap = globalValue(
   `on-zero:where-raw`,
-  () => new WeakMap<Where, Where>()
+  () => new WeakMap<Where, Where>(),
 )
 
 export function getWhereTableName(where: Where) {

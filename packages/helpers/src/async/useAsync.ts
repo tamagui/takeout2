@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 
 export function useAsync<T>(
   promiseFn: () => Promise<T>,
-  args: any[]
+  args: any[],
 ): [T, 'loading' | 'idle' | 'error', Error | null] {
   const [data, setData] = useState<T | null>(null)
   const [error, setError] = useState<Error | null>(null)

@@ -28,7 +28,7 @@ export const mutate = mutations(schema, permissions, {
       postId: string
       reason: string
       details?: string
-    }
+    },
   ) => {
     if (!authData) throw new Error('Not authenticated')
 
@@ -52,7 +52,7 @@ export const mutate = mutations(schema, permissions, {
       userId: string
       reason: string
       details?: string
-    }
+    },
   ) => {
     if (!authData) throw new Error('Not authenticated')
 

@@ -62,7 +62,7 @@ await cmd`Build with analyzer, run Lighthouse, open reports and site`.run(
     console.info(`✅ Done! Server running at http://localhost:${port} (ctrl+c to stop)\n`)
 
     await server.exited
-  }
+  },
 )
 
 async function analyzeRoute(targetRoute: string, serverPort: number) {
@@ -125,7 +125,7 @@ async function analyzeRoute(targetRoute: string, serverPort: number) {
 
   for (const [pkg, { size, gzip }] of sorted.slice(0, 30)) {
     console.info(
-      pkg.slice(0, 44).padEnd(45) + fmt(size).padStart(12) + fmt(gzip).padStart(12)
+      pkg.slice(0, 44).padEnd(45) + fmt(size).padStart(12) + fmt(gzip).padStart(12),
     )
   }
 
@@ -141,7 +141,7 @@ function extractModules(
   nodes: ModuleNode[],
   nodeParts: Record<string, { renderedLength: number; gzipLength: number }>,
   packages: Map<string, { size: number; gzip: number }>,
-  path = ''
+  path = '',
 ) {
   for (const node of nodes) {
     const fullPath = path ? `${path}/${node.name}` : node.name

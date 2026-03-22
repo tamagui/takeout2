@@ -15,7 +15,7 @@ import {
 import { isNative } from '~/constants/platform'
 
 import { GlassView } from '../effects/GlassView'
-import Glint from '../effects/Glint'
+import { Glint } from '../effects/Glint'
 import {
   heavyImpact,
   lightImpact,
@@ -358,7 +358,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonProps>(
       tooltipPlacement,
       ...rest
     },
-    ref
+    ref,
   ) => {
     const handleHaptic = () => {
       if (!haptic) return
@@ -487,7 +487,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonProps>(
       tooltipPlacement,
       popover,
     })
-  }
+  },
 )
 
 const buttonFrameVariants = {

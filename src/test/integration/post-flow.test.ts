@@ -54,7 +54,7 @@ test.describe('Post Flow', () => {
         const btn = document.querySelector('[data-testid="create-post-submit"]')
         return btn && !btn.hasAttribute('disabled')
       },
-      { timeout: 30000 }
+      { timeout: 30000 },
     )
 
     await submitButton.click()

@@ -99,7 +99,7 @@ type InferUser<T> = T extends { createUser?: (user: User) => infer R }
   : User
 
 export function createBetterAuthClient<const Opts extends BetterAuthClientProps<any>>(
-  options: Opts
+  options: Opts,
 ): BetterAuthClientReturn<InferUser<Opts>, ReturnType<typeof createAuthClient<Opts>>> {
   type TUser = InferUser<Opts>
   const {
@@ -146,7 +146,7 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
   const authState = createEmitter<AuthState<TUser>>(
     'authState',
     stateStorage.get() || empty,
-    { comparator: isEqualDeepLite }
+    { comparator: isEqualDeepLite },
   )
 
   const authClientVersion = createEmitter<number>('authClientVersion', 0)

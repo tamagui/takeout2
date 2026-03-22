@@ -120,7 +120,7 @@ function TitleTicker({ slides, scrollPosition }: TitleTickerProps) {
       scrollPosition.value,
       [0, slides.length - 1],
       [0, -(slides.length - 1) * TITLE_HEIGHT],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     )
     return {
       transform: [{ translateY }],

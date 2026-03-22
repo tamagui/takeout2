@@ -8,7 +8,7 @@ export const useLazyValue = <T>(
   {
     immediateFirstUpdate,
     ...idleOptions
-  }: IdleOptions & { immediateFirstUpdate?: boolean } = {}
+  }: IdleOptions & { immediateFirstUpdate?: boolean } = {},
 ): T => {
   const [lazyValue, setLazyValue] = useState(value)
 
@@ -24,7 +24,7 @@ export const useLazyValue = <T>(
         setLazyValue(value)
       })
     },
-    [value]
+    [value],
   )
 
   return lazyValue

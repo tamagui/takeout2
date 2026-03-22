@@ -36,7 +36,7 @@ export function useGoBackToHome() {
     1000,
     {
       leading: true,
-    }
+    },
   )
 
   return goBackToHome

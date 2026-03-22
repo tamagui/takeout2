@@ -12,7 +12,7 @@ type KeyType<T> = string | string[] | WithId | WithId[] | readonly WithId[] | un
  */
 export function useEffectOnceGlobally<T extends KeyType<T>>(
   key: T,
-  callback: T extends undefined ? () => void : (value: NonNullable<T>) => void
+  callback: T extends undefined ? () => void : (value: NonNullable<T>) => void,
 ) {
   const keyString = !key
     ? undefined

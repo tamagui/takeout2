@@ -7,7 +7,7 @@ import type { Analytics, AnalyticsEvent, EventProperties } from './types'
 class WebAnalytics implements Analytics {
   track<T extends AnalyticsEvent['type']>(
     event: T,
-    properties: EventProperties<T>
+    properties: EventProperties<T>,
   ): void {
     postHog.capture(event, properties as any)
   }

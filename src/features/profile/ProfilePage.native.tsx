@@ -70,7 +70,7 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
         </YStack>
       )
     },
-    [columnWidth]
+    [columnWidth],
   )
 
   const keyExtractor = useCallback((_item: any, index: number) => `column-${index}`, [])

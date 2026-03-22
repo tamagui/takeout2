@@ -30,7 +30,7 @@ export async function subset({
       const fileBaseName = basename(file).replace(/\..*/, '')
       const outPath = join(outputDir, fileBaseName + `.${targetFormat}`)
       await writeFile(outPath, buffer)
-    })
+    }),
   )
 }
 

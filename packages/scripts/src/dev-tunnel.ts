@@ -65,7 +65,7 @@ await cmd`set up cloudflare dev tunnel for local development`
         const match1 = output.match(/Created tunnel .+ with id ([a-f0-9-]+)/i)
         const match2 = output.match(/Tunnel ([a-f0-9-]+) created/i)
         const match3 = output.match(
-          /([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i
+          /([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i,
         )
 
         const tunnelId = match1?.[1] || match2?.[1] || match3?.[1]
@@ -83,7 +83,7 @@ await cmd`set up cloudflare dev tunnel for local development`
           try {
             const { stdout } = await run(
               `cloudflared tunnel list --name ${tunnelName} --output json`,
-              { captureOutput: true }
+              { captureOutput: true },
             )
             const tunnels = JSON.parse(stdout)
             if (tunnels.length > 0) {
@@ -137,7 +137,7 @@ await cmd`set up cloudflare dev tunnel for local development`
           {
             captureOutput: true,
             silent: true,
-          }
+          },
         )
 
         try {
@@ -145,7 +145,7 @@ await cmd`set up cloudflare dev tunnel for local development`
           const hostname = info.hostname || `${tunnelId}.cfargotunnel.com`
           fs.writeFileSync(
             path.join(TUNNEL_CONFIG_DIR, 'tunnel-url.txt'),
-            `https://${hostname}`
+            `https://${hostname}`,
           )
         } catch (e) {
           // use fallback url already saved

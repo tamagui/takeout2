@@ -16,7 +16,7 @@ await cmd`Add a Phosphor icon to the project`.run(async ({ fs, path }) => {
 
   async function fetchPhosphorIcon(
     name: string,
-    weight: Weight = 'regular'
+    weight: Weight = 'regular',
   ): Promise<string> {
     // convert PascalCase to kebab-case
     const kebabName = name
@@ -130,11 +130,11 @@ ${pathsCode}
 
       console.info(`✓ Created ${filename}`)
       console.info(
-        `  Import: import { ${pascalName}Icon } from '~/interface/icons/phosphor/${pascalName}Icon'`
+        `  Import: import { ${pascalName}Icon } from '~/interface/icons/phosphor/${pascalName}Icon'`,
       )
     } catch (error) {
       console.error(
-        `✗ Failed to add icon: ${error instanceof Error ? error.message : String(error)}`
+        `✗ Failed to add icon: ${error instanceof Error ? error.message : String(error)}`,
       )
       process.exit(1)
     }
@@ -144,7 +144,7 @@ ${pathsCode}
   const cliArgs = process.argv.slice(2)
   if (cliArgs.length === 0) {
     console.error(
-      'Usage: bun tko icon add-phosphor <IconName> [--weight=regular|bold|duotone|fill|light|thin]'
+      'Usage: bun tko icon add-phosphor <IconName> [--weight=regular|bold|duotone|fill|light|thin]',
     )
     console.error('')
     console.error('Examples:')

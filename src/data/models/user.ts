@@ -75,7 +75,7 @@ export const mutate = mutations(schema, permissions, {
       server.asyncTasks.push(() =>
         server.actions.analyticsActions().logEvent(authData.id, 'profile_updated', {
           fieldsUpdated,
-        })
+        }),
       )
     }
   },

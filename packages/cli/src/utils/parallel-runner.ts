@@ -81,7 +81,7 @@ export async function runScriptsInParallel(
     title?: string
     onError?: 'continue' | 'exit'
     maxParallelism?: number
-  } = {}
+  } = {},
 ): Promise<void> {
   const { title, onError = 'exit', maxParallelism = cpus().length } = options
 

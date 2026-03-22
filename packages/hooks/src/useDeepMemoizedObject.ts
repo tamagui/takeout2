@@ -8,7 +8,7 @@ export interface Options {
 
 export function shouldBeImmutable(
   path: string[],
-  immutableToNestedChanges?: ImmutableToNestedChanges
+  immutableToNestedChanges?: ImmutableToNestedChanges,
 ): boolean {
   if (!immutableToNestedChanges) return false
 
@@ -69,7 +69,7 @@ function deepMemoizeWithTracking<T>(
   previous: T,
   path: string[],
   immutableToNestedChanges?: ImmutableToNestedChanges,
-  parentIsImmutable: boolean = false
+  parentIsImmutable: boolean = false,
 ): MemoResult<T> {
   if (current === previous) {
     return { value: previous, hasChanges: false, hasImmutableMutation: false }
@@ -107,7 +107,7 @@ function deepMemoizeWithTracking<T>(
         previous[i],
         itemPath,
         immutableToNestedChanges,
-        false
+        false,
       )
       memoizedArray[i] = result.value
       if (result.hasChanges) {
@@ -152,7 +152,7 @@ function deepMemoizeWithTracking<T>(
       previousValue,
       propPath,
       immutableToNestedChanges,
-      shouldMutateInPlace
+      shouldMutateInPlace,
     )
 
     memoizedObject[key] = result.value
@@ -191,14 +191,14 @@ export function deepMemoize<T>(
   current: T,
   previous: T,
   path: string[] = [],
-  immutableToNestedChanges?: ImmutableToNestedChanges
+  immutableToNestedChanges?: ImmutableToNestedChanges,
 ): T {
   const result = deepMemoizeWithTracking(
     current,
     previous,
     path,
     immutableToNestedChanges,
-    false
+    false,
   )
 
   // If root has immutable mutation but no changes, we need to force a new reference
@@ -222,7 +222,7 @@ export function useDeepMemoizedObject<T>(value: T, options?: Options): T {
     value,
     previousValueRef.current,
     [],
-    options?.immutableToNestedChanges
+    options?.immutableToNestedChanges,
   )
 
   previousValueRef.current = memoizedValue

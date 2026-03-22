@@ -31,7 +31,7 @@ export const loader = route.createLoader(async ({ request }) => {
         .orderBy('createdAt', 'desc')
         .limit(50)
         .related('user', (q) => q.one()),
-    authData
+    authData,
   )
 
   return {

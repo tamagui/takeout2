@@ -21,7 +21,7 @@ export const userPublic = pgTable(
     migrationVersion: integer('migrationVersion').notNull().default(0),
     postsCount: integer('postsCount').notNull().default(0),
   },
-  (table) => [index('userPublic_username_idx').on(table.username)]
+  (table) => [index('userPublic_username_idx').on(table.username)],
 )
 
 export const userState = pgTable('userState', {
@@ -51,7 +51,7 @@ export const post = pgTable(
     index('post_userId_idx').on(table.userId),
     index('post_createdAt_idx').on(table.createdAt),
     index('post_createdAt_id_desc_idx').on(table.createdAt, table.id),
-  ]
+  ],
 )
 
 export const comment = pgTable(
@@ -67,7 +67,7 @@ export const comment = pgTable(
     index('comment_postId_idx').on(table.postId),
     index('comment_postId_createdAt_idx').on(table.postId, table.createdAt),
     index('comment_userId_idx').on(table.userId),
-  ]
+  ],
 )
 
 export const block = pgTable(
@@ -82,7 +82,7 @@ export const block = pgTable(
     unique('block_blocker_blocked_unique').on(table.blockerId, table.blockedId),
     index('block_blockerId_idx').on(table.blockerId),
     index('block_blockedId_idx').on(table.blockedId),
-  ]
+  ],
 )
 
 export const report = pgTable(
@@ -104,7 +104,7 @@ export const report = pgTable(
     index('report_reportedUserId_idx').on(table.reportedUserId),
     index('report_reportedPostId_idx').on(table.reportedPostId),
     index('report_status_idx').on(table.status),
-  ]
+  ],
 )
 
 export const device = pgTable(
@@ -125,7 +125,7 @@ export const device = pgTable(
   (table) => [
     index('device_userId_idx').on(table.userId),
     index('device_pushToken_idx').on(table.pushToken),
-  ]
+  ],
 )
 
 export const invite = pgTable(
@@ -145,7 +145,7 @@ export const invite = pgTable(
   (table) => [
     unique('invite_code_idx').on(table.code),
     index('invite_email_idx').on(table.email),
-  ]
+  ],
 )
 
 export const notification = pgTable(
@@ -167,9 +167,9 @@ export const notification = pgTable(
     index('notification_userId_read_createdAt_idx').on(
       table.userId,
       table.read,
-      table.createdAt
+      table.createdAt,
     ),
     index('notification_actorId_idx').on(table.actorId),
     index('notification_createdAt_idx').on(table.createdAt),
-  ]
+  ],
 )

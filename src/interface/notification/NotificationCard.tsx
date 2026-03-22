@@ -76,5 +76,5 @@ export const NotificationCard = memo(
         </GlassView>
       </YStack>
     )
-  }
+  },
 )

@@ -67,7 +67,7 @@ function readTakeoutConfig(): TakeoutConfig | null {
 }
 
 function parseConventionalCommit(
-  message: string
+  message: string,
 ): { type: string; scope?: string; message: string; breaking: boolean } | null {
   // match conventional commit format: type(scope)!: message or type!: message
   const match = message.match(/^(\w+)(?:\(([^)]+)\))?(!)?: (.+)$/)
@@ -126,7 +126,7 @@ function getCommitsBetween(fromSha: string, toRef: string): CommitInfo[] {
     // format: hash|date|message
     const result = execSync(
       `git log ${fromSha}..${toRef} --pretty=format:"%H|%ad|%s" --date=short 2>/dev/null`,
-      { encoding: 'utf-8', maxBuffer: 10 * 1024 * 1024 }
+      { encoding: 'utf-8', maxBuffer: 10 * 1024 * 1024 },
     )
 
     const lines = result.trim().split('\n').filter(Boolean)
@@ -183,7 +183,7 @@ function formatChangelog(commits: CommitInfo[]): void {
     for (const commit of breakingChanges) {
       const scope = commit.scope ? pc.cyan(`(${commit.scope})`) : ''
       console.info(
-        `    ${pc.red('!')} ${scope} ${commit.message} ${pc.dim(`(${commit.hash})`)}`
+        `    ${pc.red('!')} ${scope} ${commit.message} ${pc.dim(`(${commit.hash})`)}`,
       )
     }
   }
@@ -229,7 +229,7 @@ function formatChangelog(commits: CommitInfo[]): void {
     for (const commit of typeCommits) {
       const scope = commit.scope ? pc.cyan(`(${commit.scope}) `) : ''
       console.info(
-        `    ${pc.dim('-')} ${scope}${commit.message} ${pc.dim(`(${commit.hash})`)}`
+        `    ${pc.dim('-')} ${scope}${commit.message} ${pc.dim(`(${commit.hash})`)}`,
       )
     }
   }
@@ -300,8 +300,8 @@ export const changedCommand = defineCommand({
     console.info()
     console.info(
       pc.bold(
-        `${commits.length} commit${commits.length === 1 ? '' : 's'} since last sync:`
-      )
+        `${commits.length} commit${commits.length === 1 ? '' : 's'} since last sync:`,
+      ),
     )
 
     formatChangelog(commits)

@@ -43,7 +43,7 @@ const BlockedUserItem = memo(
         </Button>
       </ListItem>
     )
-  }
+  },
 )
 
 const EmptyState = memo(() => {
@@ -80,7 +80,7 @@ export const ProfileBlockedUsersPage = () => {
               onPress: () => unblockUser(user.id),
             },
           ],
-          { cancelable: true }
+          { cancelable: true },
         )
       } else {
         const confirmed = await dialogConfirm({
@@ -92,14 +92,14 @@ export const ProfileBlockedUsersPage = () => {
         }
       }
     },
-    [unblockUser]
+    [unblockUser],
   )
 
   const renderItem = useCallback(
     ({ item }: { item: User }) => (
       <BlockedUserItem user={item} onUnblock={handleUnblock} />
     ),
-    [handleUnblock]
+    [handleUnblock],
   )
 
   const keyExtractor = useCallback((item: User) => item.id, [])

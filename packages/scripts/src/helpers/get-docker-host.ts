@@ -15,7 +15,7 @@ export function getDockerHost(): string {
       // Get the host IP from docker network
       const result = execSync(
         "docker network inspect bridge --format '{{range .IPAM.Config}}{{.Gateway}}{{end}}'",
-        { encoding: 'utf-8' }
+        { encoding: 'utf-8' },
       ).trim()
 
       if (result) {

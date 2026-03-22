@@ -90,7 +90,7 @@ export const impact = async (style: ExpoHaptics.ImpactFeedbackStyle): Promise<vo
  * Generic notification with custom type
  */
 export const notification = async (
-  type: ExpoHaptics.NotificationFeedbackType
+  type: ExpoHaptics.NotificationFeedbackType,
 ): Promise<void> => {
   if (!isHapticsSupported) return
   await ExpoHaptics.notificationAsync(type)

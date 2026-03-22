@@ -49,7 +49,7 @@ export async function loginAsDemo(page: Page, pathname = '/') {
   }
 
   console.info(
-    `✅ Logged in via ${result.step} (status: ${result.status})${result.attempt ? ` (attempt ${result.attempt + 1})` : ''}`
+    `✅ Logged in via ${result.step} (status: ${result.status})${result.attempt ? ` (attempt ${result.attempt + 1})` : ''}`,
   )
 
   // navigate to home feed (cookie is set, so we'll be authenticated)

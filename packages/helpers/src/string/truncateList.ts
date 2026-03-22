@@ -15,7 +15,7 @@
 export const truncateList = (
   items: string[],
   maxItems: number,
-  separator: string = ', '
+  separator: string = ', ',
 ): string => {
   if (items.length <= maxItems) {
     return items.join(separator)

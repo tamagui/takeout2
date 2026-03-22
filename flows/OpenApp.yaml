@@ -1,0 +1,22 @@
+# launches the app without clearing state so Hermes bytecode cache persists.
+# dismisses system dialogs and waits for the app to be ready.
+appId: dev.tamagui.takeout.dev
+tag:
+  - util
+---
+- launchApp
+
+# dismiss any system dialogs (Apple Account Verification, etc.)
+- tapOn:
+    text: 'Not Now'
+    optional: true
+
+# if on dev builds - tap the dev server URL
+- tapOn:
+    text: http://.*
+    optional: true
+
+# wait for either the login screen or the feed (depending on auth state)
+- extendedWaitUntil:
+    visible: 'Takeout'
+    timeout: 60000

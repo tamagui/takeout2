@@ -82,7 +82,7 @@ describe('process cleanup', () => {
     writeFileSync(
       helperScript,
       `#!/bin/bash\necho $$ > ${grandchildPidFile}\nsleep 999\n`,
-      { mode: 0o755 }
+      { mode: 0o755 },
     )
 
     const parent = spawn('bash', ['-c', `bash ${helperScript} & wait`], {
@@ -117,7 +117,7 @@ describe('process cleanup', () => {
         'wait',
         '',
       ].join('\n'),
-      { mode: 0o755 }
+      { mode: 0o755 },
     )
 
     const parent = spawn('bash', [wrapperScript], {

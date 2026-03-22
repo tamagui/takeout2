@@ -4,7 +4,7 @@ import type { Query } from '@rocicorp/zero'
 
 export const prettyFormatZeroQuery = (
   query: Query<any, any, any>,
-  mode: 'full' | 'minimal' = 'full'
+  mode: 'full' | 'minimal' = 'full',
 ): string => {
   const astObject = query['_completeAst']?.()
 

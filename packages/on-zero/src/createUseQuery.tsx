@@ -29,13 +29,13 @@ export type UseQueryHook<Schema extends ZeroSchema> = {
   <TArg, TTable extends keyof Schema['tables'] & string, TReturn>(
     fn: PlainQueryFn<TArg, Query<TTable, Schema, TReturn>>,
     params: TArg,
-    options?: UseQueryOptions | boolean
+    options?: UseQueryOptions | boolean,
   ): QueryResult<TReturn>;
 
   // overload 2: plain function with no params
   <TTable extends keyof Schema['tables'] & string, TReturn>(
     fn: PlainQueryFn<void, Query<TTable, Schema, TReturn>>,
-    options?: UseQueryOptions | boolean
+    options?: UseQueryOptions | boolean,
   ): QueryResult<TReturn>
 }
 

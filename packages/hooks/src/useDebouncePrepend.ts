@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 export function useDebouncePrepend<T extends readonly { id: any }[]>(
   list: T,
-  delay: number
+  delay: number,
 ): T {
   const [current, setCurrent] = useState(list)
   const [previous, setPrevious] = useState(list)
@@ -40,7 +40,7 @@ export function useDebouncePrepend<T extends readonly { id: any }[]>(
         return newList
       })
     },
-    [previous, pendingUpdate, debouncedUpdate]
+    [previous, pendingUpdate, debouncedUpdate],
   )
 
   useEffect(() => {

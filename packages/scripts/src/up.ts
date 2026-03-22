@@ -19,7 +19,7 @@ await cmd`upgrade packages by name or pattern`
     const packagePatterns: string[] = []
     const rootDir = process.cwd()
     const rootPackageJson = JSON.parse(
-      fs.readFileSync(path.join(rootDir, 'package.json'), 'utf-8')
+      fs.readFileSync(path.join(rootDir, 'package.json'), 'utf-8'),
     )
     const upgradeSets: Record<string, string[]> = rootPackageJson.upgradeSets || {}
 
@@ -58,7 +58,7 @@ await cmd`upgrade packages by name or pattern`
       // check if it's a monorepo with workspaces
       try {
         const packageJson = JSON.parse(
-          fs.readFileSync(path.join(dir, 'package.json'), 'utf-8')
+          fs.readFileSync(path.join(dir, 'package.json'), 'utf-8'),
         )
         if (packageJson.workspaces) {
           let workspacePaths: string[] = []
@@ -172,7 +172,7 @@ await cmd`upgrade packages by name or pattern`
     function updatePackageJsonVersions(
       packageJsonPath: string,
       packagesToUpdate: string[],
-      versionMap: Map<string, string>
+      versionMap: Map<string, string>,
     ): number {
       const content = fs.readFileSync(packageJsonPath, 'utf-8')
       const packageJson = JSON.parse(content) as PackageJson
@@ -221,7 +221,7 @@ await cmd`upgrade packages by name or pattern`
     async function updatePackages(
       packagesByWorkspace: Map<string, { dir: string; packages: string[] }>,
       rootDir: string,
-      packageJsonFiles: string[]
+      packageJsonFiles: string[],
     ) {
       try {
         fs.rmSync(`node_modules/vite`, {
@@ -259,7 +259,7 @@ await cmd`upgrade packages by name or pattern`
               console.info(`  ⊘ ${pkg} not found, skipping`)
             }
           }
-        })
+        }),
       )
 
       if (versionMap.size === 0) {
@@ -280,7 +280,7 @@ await cmd`upgrade packages by name or pattern`
           const updates = updatePackageJsonVersions(
             packageJsonPath,
             packagesInWorkspace,
-            versionMap
+            versionMap,
           )
           if (updates > 0) {
             const name = getWorkspaceName(packageJsonPath, rootDir)
@@ -312,7 +312,7 @@ await cmd`upgrade packages by name or pattern`
           } catch (retryError: any) {
             const retryStderr = retryError.stderr?.toString() || retryError.message || ''
             console.error(
-              `🚨 'bun install' failed after cache clear: ${retryStderr.split('\n')[0]}`
+              `🚨 'bun install' failed after cache clear: ${retryStderr.split('\n')[0]}`,
             )
           }
         } else {
@@ -347,7 +347,7 @@ await cmd`upgrade packages by name or pattern`
     }
 
     console.info(
-      `Found ${workspacePackageNames.size} workspace packages to exclude from updates`
+      `Found ${workspacePackageNames.size} workspace packages to exclude from updates`,
     )
 
     // build map of packages to update per workspace
@@ -383,7 +383,7 @@ await cmd`upgrade packages by name or pattern`
       const exactPatterns = packagePatterns.filter((p) => !p.includes('*'))
       if (exactPatterns.length === 0) {
         console.info(
-          `Found 0 dependencies matching patterns: ${packagePatterns.join(', ')}`
+          `Found 0 dependencies matching patterns: ${packagePatterns.join(', ')}`,
         )
         console.info('No matching packages found to update.')
         return
@@ -415,7 +415,7 @@ await cmd`upgrade packages by name or pattern`
       fs.writeFileSync(rootPkgPath, JSON.stringify(rootPkg, null, 2) + '\n')
     } else {
       console.info(
-        `Found ${allMatchingDeps.size} dependencies matching patterns: ${packagePatterns.join(', ')}`
+        `Found ${allMatchingDeps.size} dependencies matching patterns: ${packagePatterns.join(', ')}`,
       )
       console.info(`Found matches in ${packagesByWorkspace.size} workspace(s)`)
     }
@@ -429,7 +429,7 @@ await cmd`upgrade packages by name or pattern`
     // sync resolved $dep: values (like ZERO_VERSION) to all env targets
     if (
       Object.values(rootPackageJson.env || {}).some(
-        (v: any) => typeof v === 'string' && v.startsWith('$dep:')
+        (v: any) => typeof v === 'string' && v.startsWith('$dep:'),
       )
     ) {
       console.info('\n🔄 Syncing env variables...')

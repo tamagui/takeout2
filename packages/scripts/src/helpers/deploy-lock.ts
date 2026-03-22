@@ -17,7 +17,7 @@ interface DeployLockOptions {
 
 export async function acquireDeployLock(
   ssh: string,
-  opts?: DeployLockOptions
+  opts?: DeployLockOptions,
 ): Promise<void> {
   const lockPath = opts?.path || DEFAULT_LOCK_PATH
   const maxAge = opts?.maxAgeMin || DEFAULT_MAX_AGE_MIN
@@ -40,14 +40,14 @@ export async function acquireDeployLock(
     throw new Error(
       `another deploy is in progress (${lockPath} exists on server). ` +
         `if stale, it will auto-expire after ${maxAge} minutes, ` +
-        `or remove manually: ${ssh} "rm -rf ${lockPath}"`
+        `or remove manually: ${ssh} "rm -rf ${lockPath}"`,
     )
   }
 }
 
 export async function releaseDeployLock(
   ssh: string,
-  opts?: DeployLockOptions
+  opts?: DeployLockOptions,
 ): Promise<void> {
   const lockPath = opts?.path || DEFAULT_LOCK_PATH
   try {

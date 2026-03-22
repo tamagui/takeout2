@@ -13,13 +13,13 @@ type CmdContext = {
 type Args<S extends string> = import('./helpers/args').Args<S>
 
 type RunFn<S extends string> = (
-  fn: (ctx: Prettify<{ args: Args<S> } & CmdContext>) => Promise<void> | void
+  fn: (ctx: Prettify<{ args: Args<S> } & CmdContext>) => Promise<void> | void,
 ) => Promise<void>
 
 let _interceptCmd: ((info: { description: string; args?: string }) => void) | undefined
 
 export function setInterceptCmd(
-  fn: ((info: { description: string; args?: string }) => void) | undefined
+  fn: ((info: { description: string; args?: string }) => void) | undefined,
 ) {
   _interceptCmd = fn
 }

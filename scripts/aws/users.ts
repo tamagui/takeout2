@@ -4,7 +4,7 @@ import { cmd } from '@take-out/cli'
 
 await cmd`AWS IAM Identity Center user management`
   .args(
-    '--email string --name string --display-name string --profile string --permission-set string --dry-run boolean'
+    '--email string --name string --display-name string --profile string --permission-set string --dry-run boolean',
   )
   .run(async ({ args, $ }) => {
     // configuration
@@ -88,7 +88,7 @@ await cmd`AWS IAM Identity Center user management`
 
       if (!awsProfile) {
         console.error(
-          `❌ Invalid profile: ${profile}. Use: ${Object.keys(AVAILABLE_PROFILES).join(', ')}`
+          `❌ Invalid profile: ${profile}. Use: ${Object.keys(AVAILABLE_PROFILES).join(', ')}`,
         )
         process.exit(1)
       }
@@ -115,7 +115,7 @@ await cmd`AWS IAM Identity Center user management`
 
       if (!awsProfile) {
         console.error(
-          `❌ Invalid profile: ${profile}. Use: ${Object.keys(AVAILABLE_PROFILES).join(', ')}`
+          `❌ Invalid profile: ${profile}. Use: ${Object.keys(AVAILABLE_PROFILES).join(', ')}`,
         )
         process.exit(1)
       }
@@ -196,7 +196,7 @@ await cmd`AWS IAM Identity Center user management`
 
       if (!awsProfile) {
         console.error(
-          `❌ Invalid profile: ${profile}. Use: ${Object.keys(AVAILABLE_PROFILES).join(', ')}`
+          `❌ Invalid profile: ${profile}. Use: ${Object.keys(AVAILABLE_PROFILES).join(', ')}`,
         )
         process.exit(1)
       }
@@ -239,7 +239,7 @@ await cmd`AWS IAM Identity Center user management`
 
       console.info('\n✅ User assignments removed!')
       console.info(
-        'Note: The user still exists in Identity Center but has no account access.'
+        'Note: The user still exists in Identity Center but has no account access.',
       )
     }
 

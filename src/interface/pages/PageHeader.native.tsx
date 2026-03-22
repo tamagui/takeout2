@@ -36,7 +36,7 @@ export const PageHeader = memo(
           headerTranslateY.value,
           [-headerHeight / 2, 0],
           [1, 0],
-          Extrapolation.CLAMP
+          Extrapolation.CLAMP,
         ),
       }
     })
@@ -46,7 +46,7 @@ export const PageHeader = memo(
         headerTranslateY.value,
         [-headerHeight / 2, 0],
         [0, 1],
-        Extrapolation.CLAMP
+        Extrapolation.CLAMP,
       )
 
       return {
@@ -122,5 +122,5 @@ export const PageHeader = memo(
         </Animated.View>
       </>
     )
-  }
+  },
 )

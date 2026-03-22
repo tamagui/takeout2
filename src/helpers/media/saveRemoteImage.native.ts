@@ -54,7 +54,7 @@ export async function saveRemoteImage(imageUrl: string): Promise<boolean> {
  * Save an image to the device's media library/gallery
  */
 export const saveImageToGallery = async (
-  uri: string
+  uri: string,
 ): Promise<MediaLibrary.Asset | null> => {
   try {
     const asset = await MediaLibrary.createAssetAsync(uri)
@@ -70,7 +70,7 @@ export const saveImageToGallery = async (
  */
 export async function saveRemoteImageWithProxy(
   imageUrl: string,
-  proxyUrl?: string
+  proxyUrl?: string,
 ): Promise<boolean> {
   const finalUrl = proxyUrl ? `${proxyUrl}${encodeURIComponent(imageUrl)}` : imageUrl
   return saveRemoteImage(finalUrl)

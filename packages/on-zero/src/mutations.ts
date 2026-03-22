@@ -28,7 +28,7 @@ const proxyRegistry: Map<string, any> =
 // returns the SAME proxy object on subsequent calls so HMR works
 function getOrCreateMutationProxy<T extends Record<string, Function>>(
   tableName: string,
-  implementations: T
+  implementations: T,
 ): T {
   // always update implementations (supports HMR)
   mutationRegistry.set(tableName, implementations)
@@ -104,11 +104,11 @@ type MutationsWithCRUD<Table extends GenericTable, Mutations extends MutationBui
 }
 
 export function mutations<Mutations extends MutationBuilders>(
-  mutations: Mutations
+  mutations: Mutations,
 ): Mutations
 export function mutations<Table extends GenericTable, Permissions extends Where>(
   table: Table,
-  permissions: Permissions
+  permissions: Permissions,
 ): MutationsWithCRUD<Table, {}>
 export function mutations<
   Table extends GenericTable,
@@ -117,7 +117,7 @@ export function mutations<
 >(
   table: Table,
   permissions: Permissions,
-  mutations: Mutations
+  mutations: Mutations,
 ): MutationsWithCRUD<Table, Mutations>
 // TODO we should enforece the CRUD mutations obj to the callier so they get it auto-typed
 export function mutations<

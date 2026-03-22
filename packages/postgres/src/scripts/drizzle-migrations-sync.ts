@@ -44,7 +44,7 @@ async function getHighestMigrationNumber(dir: string): Promise<number> {
  */
 async function renameNewDrizzleMigrations(
   migrationsPath: string,
-  sqlFiles: string[]
+  sqlFiles: string[],
 ): Promise<string[]> {
   const drizzlePattern = /^(\d{4})_[a-z]+_[a-z_]+\.sql$/
   const files = await readdir(migrationsPath)

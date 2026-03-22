@@ -11,7 +11,7 @@ import { useDocsMenu } from './useDocsMenu'
 import type { DocsSection } from './docsRoutes'
 
 const allItems = docsRoutes.flatMap((section, sectionIndex) =>
-  section.pages?.map((page, index) => ({ page, section, sectionIndex, index }))
+  section.pages?.map((page, index) => ({ page, section, sectionIndex, index })),
 )
 
 type Item = NonNullable<(typeof allItems)[0]>

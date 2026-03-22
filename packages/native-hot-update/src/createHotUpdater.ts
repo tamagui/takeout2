@@ -40,7 +40,7 @@ export function createHotUpdater(config: HotUpdaterConfig): HotUpdaterInstance {
 
   const handleUpdateDownloaded = (
     id: string,
-    options: { isPreRelease?: boolean } = {}
+    options: { isPreRelease?: boolean } = {},
   ) => {
     const appVersion = Application.nativeApplicationVersion
     if (appVersion) {
@@ -65,7 +65,7 @@ export function createHotUpdater(config: HotUpdaterConfig): HotUpdaterInstance {
       enabled?: boolean
       onUpdateDownloaded?: (info: UpdateInfo) => void
       onError?: (error: unknown) => void
-    } = {}
+    } = {},
   ) => {
     const {
       enabled = true,
@@ -139,7 +139,7 @@ export function createHotUpdater(config: HotUpdaterConfig): HotUpdaterInstance {
             ) {
               Alert.alert(
                 'Update Skipped',
-                'Skipped rollback because you are using a newer pre-release bundle.'
+                'Skipped rollback because you are using a newer pre-release bundle.',
               )
               setIsUserClearedForAccess(true)
               return
@@ -176,7 +176,7 @@ export function createHotUpdater(config: HotUpdaterConfig): HotUpdaterInstance {
               [
                 { text: 'Later', style: 'cancel' },
                 { text: 'Reload Now', onPress: () => HotUpdater.reload() },
-              ]
+              ],
             )
           }
         } catch (error) {
@@ -205,7 +205,7 @@ export function createHotUpdater(config: HotUpdaterConfig): HotUpdaterInstance {
    * Manually check for updates (for debug/testing).
    */
   const checkForUpdate = async (
-    options: { channel?: string; isPreRelease?: boolean } = {}
+    options: { channel?: string; isPreRelease?: boolean } = {},
   ) => {
     const { channel, isPreRelease = false } = options
 

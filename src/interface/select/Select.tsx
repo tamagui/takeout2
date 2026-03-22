@@ -87,7 +87,7 @@ export function Select({
         </Sheet>
       </Adapt>
 
-      <TamaguiSelect.Content zIndex={3_500_000}>
+      <TamaguiSelect.Content>
         <TamaguiSelect.ScrollUpButton
           items="center"
           justify="center"
@@ -125,7 +125,7 @@ export function Select({
                   </TamaguiSelect.Item>
                 )
               }),
-            [items]
+            [items],
           )}
 
           {/* Native gets an extra icon */}

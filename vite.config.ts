@@ -33,10 +33,6 @@ export default {
   },
 
   optimizeDeps: {
-    esbuildOptions: {
-      sourcemap: false,
-    },
-
     include: [
       'async-retry',
 
@@ -70,6 +66,8 @@ export default {
     // that esbuild can't handle - exclude from optimization
     exclude: [
       '@hot-updater/cli-tools',
+      'qrcode-terminal',
+      'oxc-parser',
       // we are avoiding reanimated on web - for many apps this may not be desirable
       // if you can live with motion/tamagui animations + one-off CSS, then its simpler
       // 'react-native-reanimated',
@@ -173,10 +171,6 @@ export default {
             }),
           ]
         : []),
-
-      deps: {
-        pg: true,
-      },
 
       build: {
         api: {

@@ -16,7 +16,7 @@ type Result =
 export function validateLoginOtpCode(
   method: 'email' | 'phone',
   to: string,
-  timeoutAfterMs = 8000
+  timeoutAfterMs = 8000,
 ): Promise<Result> {
   return Promise.race([
     validateLoginOtpCodeInfinite(method, to),
@@ -35,7 +35,7 @@ export function validateLoginOtpCode(
 
 async function validateLoginOtpCodeInfinite(
   method: 'email' | 'phone',
-  to: string
+  to: string,
 ): Promise<Result> {
   switch (method) {
     case 'email': {
@@ -172,7 +172,7 @@ async function validateLoginOtpCodeInfinite(
 export async function otpLogin(
   method: 'email' | 'phone',
   emailOrPhoneNumber: string,
-  otp: string
+  otp: string,
 ): Promise<Result> {
   const { data, error } = await (() => {
     switch (method) {

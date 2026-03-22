@@ -17,7 +17,7 @@ const permissions = serverWhere('block', (_, auth) => {
 export const mutate = mutations(schema, permissions, {
   insert: async (
     { tx, server },
-    data: { blockedId: string; id: string; createdAt: number }
+    data: { blockedId: string; id: string; createdAt: number },
   ) => {
     const authData = ensureLoggedIn()
 
@@ -30,7 +30,7 @@ export const mutate = mutations(schema, permissions, {
       server.asyncTasks.push(() =>
         server.actions.analyticsActions().logEvent(authData.id, 'user_blocked', {
           targetUserId: data.blockedId,
-        })
+        }),
       )
     }
   },
@@ -47,7 +47,7 @@ export const mutate = mutations(schema, permissions, {
       server.asyncTasks.push(() =>
         server.actions.analyticsActions().logEvent(authData.id, 'user_unblocked', {
           targetUserId: blockedUserId,
-        })
+        }),
       )
     }
   },

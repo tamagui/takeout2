@@ -16,7 +16,7 @@ import type { JSX, PropsWithChildren } from 'react'
 function useGet<A>(
   currentValue: A,
   initialValue?: any,
-  forwardToFunction?: boolean
+  forwardToFunction?: boolean,
 ): () => A {
   const curRef = React.useRef<any>(initialValue ?? currentValue)
 
@@ -29,7 +29,7 @@ function useGet<A>(
     forwardToFunction
       ? (...args) => curRef.current?.apply(null, args)
       : () => curRef.current,
-    [curRef, forwardToFunction]
+    [curRef, forwardToFunction],
   )
 }
 
@@ -78,7 +78,7 @@ this will emit the same value again, which can be desirable, but we warn to ensu
 
 - if you want this behavior, add { comparator: isEqualNever }
 - if you want only non-equal values: { comparator: isEqualIdentity }
-- if you want only deeply non-equal values: { comparator: isEqualDeep }`
+- if you want only deeply non-equal values: { comparator: isEqualDeep }`,
           )
         }
       }
@@ -110,7 +110,7 @@ this will emit the same value again, which can be desirable, but we warn to ensu
 export function createGlobalEmitter<T>(
   name: string,
   defaultValue: T,
-  options?: CreateEmitterOpts<T>
+  options?: CreateEmitterOpts<T>,
 ): Emitter<T> {
   return globalValue(name, () => createEmitter(name, defaultValue, options))
 }
@@ -118,7 +118,7 @@ export function createGlobalEmitter<T>(
 export function createEmitter<T>(
   name: string,
   defaultValue: T,
-  options?: CreateEmitterOpts<T>
+  options?: CreateEmitterOpts<T>,
 ): Emitter<T> {
   const existing = createOrUpdateCache(name, defaultValue) as T
   return new Emitter<T>(existing || defaultValue, { name, ...options })
@@ -130,7 +130,7 @@ export type EmitterType<E extends Emitter<any>> =
 export const useEmitter = <E extends Emitter<any>>(
   emitter: E,
   cb: (cb: EmitterType<E>) => void,
-  args?: any[]
+  args?: any[],
 ): void => {
   const getCallback = useGet(cb)
 
@@ -150,7 +150,7 @@ export const useEmitter = <E extends Emitter<any>>(
 
 export const useEmitterValue = <E extends Emitter<any>>(
   emitter: E,
-  options?: { disable?: boolean }
+  options?: { disable?: boolean },
 ): EmitterType<E> => {
   const disabled = options?.disable
 
@@ -204,7 +204,7 @@ export const useEmitterSelector = <E extends Emitter<any>, T extends EmitterType
     disable?: boolean
     lazy?: boolean
   },
-  args: any[] = EMPTY_ARRAY
+  args: any[] = EMPTY_ARRAY,
 ): R => {
   const [state, setState] = useState<R>(() => selector(emitter.value))
   const disabled = options?.disable
@@ -240,7 +240,7 @@ export const useEmitterSelector = <E extends Emitter<any>, T extends EmitterType
 export const useEmittersSelector = <const E extends readonly Emitter<any>[], R>(
   emitters: E,
   selector: (values: { [K in keyof E]: EmitterType<E[K]> }) => R,
-  options?: { disable?: boolean; isEqual?: (a: R, b: R) => boolean }
+  options?: { disable?: boolean; isEqual?: (a: R, b: R) => boolean },
 ): R => {
   const getSelector = useGet(selector)
   const disabled = options?.disable
@@ -290,23 +290,23 @@ export const useEmittersSelector = <const E extends readonly Emitter<any>[], R>(
 }
 
 export const createUseEmitter = <E extends Emitter<any>>(
-  emitter: E
+  emitter: E,
 ): ((cb: (val: EmitterType<E>) => void, args?: any[]) => void) => {
   return (cb: (val: EmitterType<E>) => void, args?: any[]) =>
     useEmitter(emitter, cb, args)
 }
 
 export const createUseSelector = <E extends Emitter<any>>(
-  emitter: E
+  emitter: E,
 ): (<R>(
   selector: (value: EmitterType<E>) => R,
   options?: { disable?: boolean; lazy?: boolean },
-  args?: any[]
+  args?: any[],
 ) => R) => {
   return <R,>(
     selector: (value: EmitterType<E>) => R,
     options?: { disable?: boolean; lazy?: boolean },
-    args?: any[]
+    args?: any[],
   ): R => {
     return useEmitterSelector(emitter, selector, options, args)
   }
@@ -315,7 +315,7 @@ export const createUseSelector = <E extends Emitter<any>>(
 export function createContextualEmitter<T>(
   name: string,
   defaultValue: T,
-  defaultOptions?: Omit<EmitterOptions<T>, 'name'>
+  defaultOptions?: Omit<EmitterOptions<T>, 'name'>,
 ): readonly [
   () => Emitter<T>,
   (props: PropsWithChildren<{ value?: T; silent?: boolean }>) => JSX.Element,
@@ -323,7 +323,7 @@ export function createContextualEmitter<T>(
   const id = Math.random().toString(36)
   const EmitterContext = createGlobalContext<Emitter<T> | null>(
     `contextual-emitter/${id}`,
-    null
+    null,
   )
 
   const useContextEmitter = () => {
@@ -342,7 +342,7 @@ export function createContextualEmitter<T>(
   const ProvideEmitter = (props: ProvideEmitterProps) => {
     const { children, value, silent } = props
     const [emitter] = useState(
-      () => new Emitter<T>(value ?? defaultValue, { name, silent, ...defaultOptions })
+      () => new Emitter<T>(value ?? defaultValue, { name, silent, ...defaultOptions }),
     )
 
     useLayoutEffect(() => {

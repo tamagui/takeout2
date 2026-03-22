@@ -35,15 +35,15 @@ export const Splash = memo(({ onAnimationEnd, isReady }: SplashProps) => {
             withTiming(-10, { duration: 70 }),
             withTiming(10, { duration: 70 }),
             withTiming(-5, { duration: 60 }),
-            withTiming(0, { duration: 60 })
-          )
-        )
+            withTiming(0, { duration: 60 }),
+          ),
+        ),
       )
       translateY.set(
         withDelay(
           1000,
-          withSequence(withTiming(-50), withTiming(Dimensions.get('window').height))
-        )
+          withSequence(withTiming(-50), withTiming(Dimensions.get('window').height)),
+        ),
       )
     }
     setTimeout(() => {

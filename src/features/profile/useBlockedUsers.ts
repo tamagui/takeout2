@@ -23,7 +23,7 @@ export function useBlockedUsers(options?: UseBlockedUsersOptions) {
     { userId: user?.id || '', limit: pageSize * (currentPage + 1) },
     {
       enabled: Boolean(user?.id),
-    }
+    },
   )
 
   useMemo(() => {

@@ -9,7 +9,7 @@ export interface UseWarnIfDepsChangeOptions {
 
 export function useWarnIfDepsChange<T extends readonly unknown[]>(
   deps: T,
-  options: UseWarnIfDepsChangeOptions
+  options: UseWarnIfDepsChangeOptions,
 ): void {
   const { maxChanges = 0, name, ignoreIndexBefore = 0 } = options
 
@@ -49,7 +49,7 @@ export function useWarnIfDepsChange<T extends readonly unknown[]>(
               `🔄 useWarnIfDepsChange "${name}" is changing too often! Changed ${changeCountRef.current} times (max: ${maxChanges})`,
               changedDeps,
               `\n id (${id}) at:`,
-              getCurrentComponentStack('short')
+              getCurrentComponentStack('short'),
             )
           }
         }

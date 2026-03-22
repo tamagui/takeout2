@@ -132,7 +132,7 @@ export const notificationRelationships = relationships(
       destSchema: tables.userPublic,
       destField: ['id'],
     }),
-  })
+  }),
 )
 
 export const allRelationships = [

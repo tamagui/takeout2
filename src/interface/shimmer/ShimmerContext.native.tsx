@@ -54,7 +54,7 @@ const ShimmerProvider: FunctionComponent<ShimmerProviderProps> = ({
         -1,
         false,
         undefined,
-        ReduceMotion.System
+        ReduceMotion.System,
       )
     }
 
@@ -79,7 +79,7 @@ const ShimmerProvider: FunctionComponent<ShimmerProviderProps> = ({
       increaseActiveShimmers,
       decreaseActiveShimmers,
     }),
-    [progress, gradientConfig, increaseActiveShimmers, decreaseActiveShimmers]
+    [progress, gradientConfig, increaseActiveShimmers, decreaseActiveShimmers],
   )
 
   return (

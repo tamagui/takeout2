@@ -16,7 +16,7 @@ export function useMemoStable<Value, T extends readonly unknown[]>(
   deps: T,
   options: UseMemoStableOptions = {
     name: `(untitled)`,
-  }
+  },
 ): Value {
   useWarnIfDepsChange(deps, options)
 

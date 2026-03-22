@@ -43,7 +43,7 @@ export function createPermissions<Schema extends ZeroSchema>({
     permissionWhere: PermissionWhere,
     // TODO until i can get a working PickPrimaryKeys<'message'>
     objOrId: Record<string, any> | string,
-    tableNameOverride?: TableName
+    tableNameOverride?: TableName,
   ) {
     // check admin bypass for queries
     const adminBypassQueries = adminRoleMode === 'all' || adminRoleMode === 'queries'
@@ -120,7 +120,7 @@ export function createPermissions<Schema extends ZeroSchema>({
     authData: AuthData | null,
     tableName: TableName,
     where: Where,
-    obj: any // TODO until i can get a working PickPrimaryKeys<'message'>
+    obj: any, // TODO until i can get a working PickPrimaryKeys<'message'>
   ): Promise<void> {
     // check admin bypass for mutations
     const adminBypassMutations = adminRoleMode === 'all' || adminRoleMode === 'mutations'

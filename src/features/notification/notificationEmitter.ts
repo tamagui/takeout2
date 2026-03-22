@@ -31,7 +31,7 @@ export const notificationEmitter = createEmitter<
 
 export const showNotification = (
   title: string,
-  { display = 'info', ...options }: Partial<Omit<NotificationI, 'title' | 'id'>> = {}
+  { display = 'info', ...options }: Partial<Omit<NotificationI, 'title' | 'id'>> = {},
 ) => {
   notificationEmitter.emit({
     type: 'show',

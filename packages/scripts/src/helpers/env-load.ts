@@ -3,7 +3,7 @@ import { join } from 'node:path'
 
 export async function loadEnv(
   environment: 'development' | 'production' | 'dev-prod',
-  options?: { optional?: string[]; envPath?: string }
+  options?: { optional?: string[]; envPath?: string },
 ) {
   const { loadEnv: vxrnLoadEnv } = await import('vxrn/loadEnv')
 

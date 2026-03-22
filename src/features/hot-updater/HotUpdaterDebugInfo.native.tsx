@@ -121,7 +121,7 @@ const CheckForUpdateButton = memo(() => {
         [
           { text: 'Later', style: 'cancel' },
           { text: 'Reload Now', onPress: () => HotUpdater.reload() },
-        ]
+        ],
       )
     } catch (err) {
       setStatus(`Error: ${err instanceof Error ? err.message : 'Unknown'}`)
@@ -192,5 +192,5 @@ const DebugRow = memo(
         {value}
       </SizableText>
     </XStack>
-  )
+  ),
 )

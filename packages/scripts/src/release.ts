@@ -13,7 +13,7 @@ await cmd`publish takeout packages to npm`
      --rerun boolean --republish boolean --finish boolean --skip-finish boolean
      --dry-run boolean --skip-test boolean --skip-build boolean --skip-version boolean
      --dirty boolean --tamagui-git-user boolean --sync-on-zero boolean --skip-on-zero-sync boolean
-     --undocumented boolean --skip-all boolean`
+     --undocumented boolean --skip-all boolean`,
   )
   .run(async ({ args, $, run, path, os }) => {
     const fs = (await import('fs-extra')).default
@@ -102,11 +102,11 @@ await cmd`publish takeout packages to npm`
       })
       await fs.copy(
         path.join(onZeroTakeout, 'cli.cjs'),
-        path.join(onZeroGithub, 'cli.cjs')
+        path.join(onZeroGithub, 'cli.cjs'),
       )
       await fs.copy(
         path.join(onZeroTakeout, 'tsconfig.json'),
-        path.join(onZeroGithub, 'tsconfig.json')
+        path.join(onZeroGithub, 'tsconfig.json'),
       )
 
       // update package.json preserving github-specific fields
@@ -117,7 +117,7 @@ await cmd`publish takeout packages to npm`
           Object.entries(deps || {}).map(([k, v]) => [
             k,
             v.startsWith('workspace:') ? `^${version}` : v,
-          ])
+          ]),
         )
       await fs.writeJSON(
         path.join(onZeroGithub, 'package.json'),
@@ -130,7 +130,7 @@ await cmd`publish takeout packages to npm`
           dependencies: convertDeps(takeoutPkg.dependencies),
           devDependencies: convertDeps(takeoutPkg.devDependencies),
         },
-        { spaces: 2 }
+        { spaces: 2 },
       )
 
       // only commit if there are actual changes
@@ -213,11 +213,11 @@ await cmd`publish takeout packages to npm`
               path: path.join(cwd, 'package.json'),
               directory: location,
             }
-          })
+          }),
       )
 
       const publishablePackages = allPackageJsons.filter(
-        (x) => !x.json.skipPublish && !x.json.private
+        (x) => !x.json.skipPublish && !x.json.private,
       )
 
       return { allPackageJsons, publishablePackages }
@@ -300,7 +300,7 @@ await cmd`publish takeout packages to npm`
 
       if (!finish) {
         console.info(
-          `Publishing in order:\n\n${packageJsons.map((x) => x.name).join('\n')}`
+          `Publishing in order:\n\n${packageJsons.map((x) => x.name).join('\n')}`,
         )
       }
 
@@ -314,7 +314,7 @@ await cmd`publish takeout packages to npm`
                 process.exit(1)
               }
             }
-          })
+          }),
         )
       }
 
@@ -397,7 +397,7 @@ await cmd`publish takeout packages to npm`
             }
 
             await writeJSON(pkgPath, next, { spaces: 2 })
-          })
+          }),
         )
       }
 
@@ -425,7 +425,7 @@ await cmd`publish takeout packages to npm`
                 {
                   cwd,
                   silent: true,
-                }
+                },
               )
             } else {
               await run(`bun pm pack --filename ${tgzPath}`, {
@@ -444,7 +444,7 @@ await cmd`publish takeout packages to npm`
           },
           {
             concurrency: 15,
-          }
+          },
         )
 
         console.info(`✅ ${dryRun ? '[dry-run] ' : ''}Published\n`)
@@ -463,7 +463,7 @@ await cmd`publish takeout packages to npm`
                 }
               }
               await writeJSON(pkgPath, current, { spaces: 2 })
-            })
+            }),
           )
         }
 

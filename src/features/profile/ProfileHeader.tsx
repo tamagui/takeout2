@@ -111,5 +111,5 @@ export const ProfileHeader = memo(
         </YStack>
       </View>
     )
-  }
+  },
 )

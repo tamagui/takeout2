@@ -1,22 +1,26 @@
-import { isNative } from '@take-out/helpers'
 import { styled, YStack } from 'tamagui'
 
-const Glint = styled(YStack, {
-  fullscreen: true,
+export const Glint = styled(YStack, {
+  position: 'absolute',
+  inset: 0,
   pointerEvents: 'none',
-  borderTopWidth: 0.5,
-  borderColor: '$white',
-  // Workaround for native
-  ...(isNative && {
-    borderTopWidth: 1,
-    borderLeftWidth: 1,
-    borderRightWidth: 1,
-  }),
 
-  z: 10,
+  borderTopWidth: 0.5,
+  borderTopColor: '$highlight1',
+  borderLeftColor: 'transparent',
+  borderRightColor: 'transparent',
+  borderBottomColor: 'transparent',
+
+  // Workaround for native
+  '$platform-native': {
+    borderLeftWidth: 0.5,
+    borderRightWidth: 0.5,
+  },
+
+  z: 100_000_000,
 
   '$theme-dark': {
-    opacity: 0.1,
+    opacity: 0.5,
   },
 
   '$theme-light': {
@@ -28,19 +32,13 @@ const Glint = styled(YStack, {
       true: {
         // safari bugs if you have different color bottom border so just use shadow
         '$theme-dark': {
-          shadowRadius: 2,
-          shadowOffset: { height: 2, width: 0 },
-          shadowColor: '$shadow4',
+          boxShadow: '0 0.5px 0.5px 1px $shadow4',
         },
 
         '$theme-light': {
-          shadowRadius: 4,
-          shadowOffset: { height: 2, width: 0 },
-          shadowColor: '$shadow2',
+          boxShadow: '0 0.5px 2px $shadow3',
         },
       },
     },
   } as const,
 })
-
-export default Glint

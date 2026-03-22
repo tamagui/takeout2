@@ -15,7 +15,7 @@ export const useUser = () => {
     { userId },
     {
       enabled: !!userId,
-    }
+    },
   )
 
   return {

@@ -22,7 +22,8 @@ export const createPool = (connectionString?: string) => {
 
 export const createDb = () => {
   const pool = createPool()
-  return drizzle(pool, {
+  return drizzle({
+    client: pool,
     schema,
     logger: false,
   })

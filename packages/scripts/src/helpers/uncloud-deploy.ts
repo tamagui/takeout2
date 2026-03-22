@@ -52,17 +52,17 @@ export async function verifyDatabaseConfig(): Promise<{
 
   if (deployHost && upstreamHost && deployHost !== upstreamHost) {
     errors.push(
-      `ZERO_UPSTREAM_DB host (${upstreamHost}) does not match DEPLOY_DB host (${deployHost})`
+      `ZERO_UPSTREAM_DB host (${upstreamHost}) does not match DEPLOY_DB host (${deployHost})`,
     )
   }
   if (deployHost && cvrHost && deployHost !== cvrHost) {
     errors.push(
-      `ZERO_CVR_DB host (${cvrHost}) does not match DEPLOY_DB host (${deployHost})`
+      `ZERO_CVR_DB host (${cvrHost}) does not match DEPLOY_DB host (${deployHost})`,
     )
   }
   if (deployHost && changeHost && deployHost !== changeHost) {
     errors.push(
-      `ZERO_CHANGE_DB host (${changeHost}) does not match DEPLOY_DB host (${deployHost})`
+      `ZERO_CHANGE_DB host (${changeHost}) does not match DEPLOY_DB host (${deployHost})`,
     )
   }
 
@@ -78,7 +78,7 @@ export async function installUncloudCLI(version = '0.16.0') {
     console.info(`  installing uncloud cli v${version}...`)
     await run(
       `curl -fsS https://get.uncloud.run/install.sh | sh -s -- --version ${version}`,
-      { timeout: time.ms.seconds(30) }
+      { timeout: time.ms.seconds(30) },
     )
     console.info('  ✓ uncloud cli installed')
   }

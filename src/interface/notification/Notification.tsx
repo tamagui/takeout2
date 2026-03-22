@@ -15,7 +15,7 @@ import { useNotificationListener } from '~/features/notification/useNotification
 
 import { Button } from '../buttons/Button'
 import { Z_INDICES } from '../constants'
-import Glint from '../effects/Glint'
+import { Glint } from '../effects/Glint'
 import { XIcon } from '../icons/phosphor/XIcon'
 
 export {

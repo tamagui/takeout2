@@ -23,7 +23,7 @@ import type { LegendListProps } from '@legendapp/list'
 import type { Post } from '~/data/types'
 
 const AnimatedLegendList = Animated.createAnimatedComponent(
-  LegendList
+  LegendList,
 ) as React.ComponentType<
   LegendListProps<Post> & { onScroll?: any } & React.RefAttributes<LegendListRef>
 >

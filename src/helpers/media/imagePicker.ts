@@ -13,7 +13,7 @@ export type ImagePickerResult = {
 }
 
 export const pickImageFromLibrary = async (
-  _allowsEditing = true
+  _allowsEditing = true,
 ): Promise<ImagePickerResult | null> => {
   // never called on web - web uses native file input
   console.warn('pickImageFromLibrary called on web - this should not happen')
@@ -21,7 +21,7 @@ export const pickImageFromLibrary = async (
 }
 
 export const takePhotoWithCamera = async (
-  _allowsEditing = true
+  _allowsEditing = true,
 ): Promise<ImagePickerResult | null> => {
   // never called on web
   console.warn('takePhotoWithCamera called on web - this should not happen')

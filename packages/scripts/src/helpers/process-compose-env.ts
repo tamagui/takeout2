@@ -28,7 +28,7 @@ function yamlSafe(value: string): string {
 export function processComposeEnv(
   composeFile: string,
   outputFile: string,
-  envVars: Record<string, string | undefined>
+  envVars: Record<string, string | undefined>,
 ): void {
   let content = fs.readFileSync(composeFile, 'utf-8')
 
@@ -39,11 +39,11 @@ export function processComposeEnv(
       const value = envVars[varName]
       if (value) {
         console.info(
-          `  ${varName}: ${value.slice(0, 50)}${value.length > 50 ? '...' : ''}`
+          `  ${varName}: ${value.slice(0, 50)}${value.length > 50 ? '...' : ''}`,
         )
       }
       return value ? yamlSafe(value) : defaultValue
-    }
+    },
   )
 
   // replace standalone ${VAR} patterns

@@ -6,7 +6,7 @@ import type { Pool } from 'pg'
 export type ServerHelpers = {
   sql: ReturnType<typeof createSql>
   getDBClient: (
-    options?: Omit<GetDBClientOptions, 'pool' | 'connectionString'>
+    options?: Omit<GetDBClientOptions, 'pool' | 'connectionString'>,
   ) => ReturnType<typeof getDBClient>
 }
 

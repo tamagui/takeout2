@@ -108,7 +108,6 @@ export function CommentInput({
               value={content}
               onChange={(e) => setContent((e.target as HTMLInputElement).value)}
               maxLength={500}
-              maxHeight={100}
               minH={44}
               maxH={100}
               rows={2}

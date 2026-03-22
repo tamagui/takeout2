@@ -93,7 +93,7 @@ async function getSSHCmd(): Promise<string> {
 
 async function rollbackToPrevious(): Promise<boolean> {
   console.info(
-    pc.yellow('\n⚠️  health check failed, attempting rollback to previous image...')
+    pc.yellow('\n⚠️  health check failed, attempting rollback to previous image...'),
   )
 
   const ssh = await getSSHCmd()
@@ -102,7 +102,7 @@ async function rollbackToPrevious(): Promise<boolean> {
     // check if :previous image exists
     const { stdout } = await run(
       `${ssh} "docker image inspect takeout-web:previous >/dev/null 2>&1 && echo EXISTS || echo NONE"`,
-      { captureOutput: true, silent: true }
+      { captureOutput: true, silent: true },
     )
 
     if (stdout.trim() !== 'EXISTS') {
@@ -129,7 +129,7 @@ async function rollbackToPrevious(): Promise<boolean> {
   } catch (err) {
     console.error(
       pc.red('  rollback also failed:'),
-      err instanceof Error ? err.message : err
+      err instanceof Error ? err.message : err,
     )
     return false
   }
@@ -147,7 +147,7 @@ export async function runDeploymentWithRollback(): Promise<void> {
       // production is restored but CI should still fail
       throw new Error(
         'deployment health check failed. rolled back to previous image successfully, ' +
-          'but failing CI so the broken build is investigated.'
+          'but failing CI so the broken build is investigated.',
       )
     }
 
@@ -177,7 +177,7 @@ export function showDeploymentInfo() {
     console.info(pc.bold('access your app:'))
     console.info(pc.cyan(`  web app:     https://${deployHost}`))
     console.info(
-      pc.cyan(`  ssh:         ssh ${process.env.DEPLOY_USER || 'root'}@${deployHost}`)
+      pc.cyan(`  ssh:         ssh ${process.env.DEPLOY_USER || 'root'}@${deployHost}`),
     )
     console.info()
     console.info(pc.gray('useful commands:'))

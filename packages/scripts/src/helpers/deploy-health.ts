@@ -28,7 +28,7 @@ export interface ContainerInfo {
  */
 export async function checkRestartLoops(
   ctx: SSHContext,
-  options?: { excludePatterns?: string[] }
+  options?: { excludePatterns?: string[] },
 ): Promise<{
   hasLoop: boolean
   services: string[]
@@ -67,7 +67,7 @@ export async function checkRestartLoops(
  */
 export async function getContainerStatus(
   ctx: SSHContext,
-  options?: { verbose?: boolean }
+  options?: { verbose?: boolean },
 ): Promise<Map<string, ContainerInfo>> {
   const { sshOpts, deployUser, deployHost, $ } = ctx
   try {
@@ -135,7 +135,7 @@ export async function getContainerStatus(
  */
 export async function checkContainerHealth(
   ctx: SSHContext,
-  containerId: string
+  containerId: string,
 ): Promise<'healthy' | 'checking' | 'unhealthy'> {
   const { sshOpts, deployUser, deployHost, $ } = ctx
   try {
@@ -168,7 +168,7 @@ export async function checkContainerHealth(
  */
 export async function checkHttpHealth(
   ctx: SSHContext,
-  options?: { endpoint?: string; containerFilter?: string }
+  options?: { endpoint?: string; containerFilter?: string },
 ): Promise<{
   healthy: boolean
   status?: number
@@ -213,7 +213,7 @@ export async function checkHttpHealth(
 export async function getContainerLogs(
   ctx: SSHContext,
   containerId: string,
-  lines = 20
+  lines = 20,
 ): Promise<string[]> {
   const { sshOpts, deployUser, deployHost, $ } = ctx
   try {

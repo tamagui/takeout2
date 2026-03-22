@@ -12,7 +12,7 @@ export async function processInChunks<T extends QueryResultRow = QueryResultRow>
   client: PoolClient,
   query: string,
   processor: (rows: T[]) => Promise<void>,
-  options: ChunkedQueryOptions = {}
+  options: ChunkedQueryOptions = {},
 ): Promise<void> {
   const { chunkSize = 1000, onProgress } = options
   let offset = 0
@@ -59,7 +59,7 @@ export async function updateInChunks<T extends QueryResultRow & { id: string }>(
   tableName: string,
   selectQuery: string,
   transformer: (row: T) => Promise<Partial<T> | null>,
-  options: ChunkedQueryOptions = {}
+  options: ChunkedQueryOptions = {},
 ): Promise<number> {
   let totalUpdated = 0
 
@@ -84,7 +84,7 @@ export async function updateInChunks<T extends QueryResultRow & { id: string }>(
         }
       }
     },
-    options
+    options,
   )
 
   return totalUpdated

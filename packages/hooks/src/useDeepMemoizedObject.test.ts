@@ -4,7 +4,7 @@ import { deepMemoize, type Options } from './useDeepMemoizedObject'
 
 function testMemoization<T>(
   initialValue: T,
-  options?: Options
+  options?: Options,
 ): { current: T; update: (value: T) => void } {
   let previousValue = initialValue
 
@@ -17,7 +17,7 @@ function testMemoization<T>(
         value,
         previousValue,
         [],
-        options?.immutableToNestedChanges
+        options?.immutableToNestedChanges,
       )
     },
   }
@@ -123,33 +123,33 @@ describe('useDeepMemoizedObject', () => {
     expect(secondResult.server.channels).not.toBe(firstResult.server.channels)
     expect(secondResult.server.channels[0]).not.toBe(firstResult.server.channels[0])
     expect(secondResult.server.channels[0]!.messages).not.toBe(
-      firstResult.server.channels[0]!.messages
+      firstResult.server.channels[0]!.messages,
     )
 
     expect(secondResult.server.channels[0]!.messages[0]).toBe(
-      firstResult.server.channels[0]!.messages[0]
+      firstResult.server.channels[0]!.messages[0],
     )
     expect(secondResult.server.channels[0]!.messages[1]).toBe(
-      firstResult.server.channels[0]!.messages[1]
+      firstResult.server.channels[0]!.messages[1],
     )
     expect(secondResult.server.channels[0]!.messages[2]).not.toBe(
-      firstResult.server.channels[0]!.messages[2]
+      firstResult.server.channels[0]!.messages[2],
     )
 
     expect(secondResult.server.channels[0]!.messages[2]!.reactions).not.toBe(
-      firstResult.server.channels[0]!.messages[2]!.reactions
+      firstResult.server.channels[0]!.messages[2]!.reactions,
     )
     expect(secondResult.server.channels[0]!.messages[2]!.reactions![0]).toBe(
-      firstResult.server.channels[0]!.messages[2]!.reactions![0]
+      firstResult.server.channels[0]!.messages[2]!.reactions![0],
     )
     expect(secondResult.server.channels[0]!.messages[2]!.reactions![1]).toBe(
-      firstResult.server.channels[0]!.messages[2]!.reactions![1]
+      firstResult.server.channels[0]!.messages[2]!.reactions![1],
     )
     expect(secondResult.server.channels[0]!.messages[2]!.reactions![2]).not.toBe(
-      firstResult.server.channels[0]!.messages[2]!.reactions![2]
+      firstResult.server.channels[0]!.messages[2]!.reactions![2],
     )
     expect(secondResult.server.channels[0]!.messages[2]!.reactions![3]).toBe(
-      firstResult.server.channels[0]!.messages[2]!.reactions![3]
+      firstResult.server.channels[0]!.messages[2]!.reactions![3],
     )
   })
 
@@ -213,11 +213,11 @@ describe('useDeepMemoizedObject', () => {
     expect(secondResult.server.channels[0]!.messages).not.toBe(originalMessages)
     expect(secondResult.server.channels[0]!.messages[5]).not.toBe(originalMessage5)
     expect(secondResult.server.channels[0]!.messages[5]!.reactions).not.toBe(
-      originalReactions
+      originalReactions,
     )
     // Verify the actual change was applied
     expect(secondResult.server.channels[0]!.messages[5]!.reactions![2]!.updatedAt).toBe(
-      '2024-01-02'
+      '2024-01-02',
     )
   })
 

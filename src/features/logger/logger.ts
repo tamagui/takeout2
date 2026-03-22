@@ -61,9 +61,13 @@ class Logger {
               logLevel: level,
             },
           },
-          'medium'
+          'medium',
         )
         break
+      }
+
+      case 'debug': {
+        // nothing
       }
     }
   }

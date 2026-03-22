@@ -64,7 +64,7 @@ function findStragglers(trackedPids: number[]): number[] {
 function killProcess(
   pid: number,
   signal: NodeJS.Signals = 'SIGTERM',
-  forceful: boolean = false
+  forceful: boolean = false,
 ): void {
   // kill process group first (negative pid), then direct process
   try {

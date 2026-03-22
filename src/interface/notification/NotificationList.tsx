@@ -39,7 +39,7 @@ export const NotificationList = memo(
         }
         onNotificationPress?.(notification)
       },
-      [handleMarkRead, onNotificationPress]
+      [handleMarkRead, onNotificationPress],
     )
 
     const renderItem = useCallback(
@@ -56,7 +56,7 @@ export const NotificationList = memo(
           onPress={() => handlePress(item)}
         />
       ),
-      [handlePress]
+      [handlePress],
     )
 
     const keyExtractor = useCallback((item: NotificationWithActor) => item.id, [])
@@ -89,5 +89,5 @@ export const NotificationList = memo(
         showsVerticalScrollIndicator={false}
       />
     )
-  }
+  },
 )

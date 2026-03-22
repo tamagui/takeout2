@@ -9,7 +9,7 @@ interface WaitForPortOptions {
 
 export async function waitForPort(
   port: number,
-  options: WaitForPortOptions = {}
+  options: WaitForPortOptions = {},
 ): Promise<void> {
   const {
     host = '127.0.0.1',

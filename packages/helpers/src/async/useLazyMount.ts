@@ -19,7 +19,7 @@ export const useLazyMount = (props: LazyMountProps = { max: 100 }): boolean => {
     },
     [
       // no need for deps it only ever mounts once
-    ]
+    ],
   )
 
   return mounted

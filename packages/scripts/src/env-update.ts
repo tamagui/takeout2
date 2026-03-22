@@ -98,7 +98,7 @@ await cmd`sync environment variables from package.json to matching files`
           : null
 
       const matchRe = new RegExp(
-        '^' + filePattern.replace(/\./g, '\\.').replace(/\*/g, '[^/]*') + '$'
+        '^' + filePattern.replace(/\./g, '\\.').replace(/\*/g, '[^/]*') + '$',
       )
 
       function walk(dir: string) {
@@ -129,7 +129,7 @@ await cmd`sync environment variables from package.json to matching files`
       const preset = PRESETS[args.preset]
       if (!preset) {
         console.error(
-          `Unknown preset: ${args.preset}\nAvailable: ${Object.keys(PRESETS).join(', ')}`
+          `Unknown preset: ${args.preset}\nAvailable: ${Object.keys(PRESETS).join(', ')}`,
         )
         process.exit(1)
       }
@@ -198,11 +198,11 @@ await cmd`sync environment variables from package.json to matching files`
       content: string,
       startMarker: string,
       endMarker: string,
-      newSection: string
+      newSection: string,
     ): string {
       const re = new RegExp(
         `^([ \\t]*)${escapeRegExp(startMarker)}(.|\n)*?${escapeRegExp(endMarker)}`,
-        'gm'
+        'gm',
       )
       return content.replace(re, (_match, indent) => {
         return `${indent}${startMarker}\n${newSection}\n${indent}${endMarker}`
@@ -211,7 +211,7 @@ await cmd`sync environment variables from package.json to matching files`
 
     function applyYamlMarkers(filePath: string, content: string): string {
       const markerMatch = content.match(
-        new RegExp(`^(\\s*)${escapeRegExp(yamlStart)}`, 'm')
+        new RegExp(`^(\\s*)${escapeRegExp(yamlStart)}`, 'm'),
       )
       const indent = markerMatch?.[1] || '      '
 
@@ -261,7 +261,7 @@ await cmd`sync environment variables from package.json to matching files`
           lines.push(`${key}=${dep}`)
         } else if (typeof value === 'string' && value.startsWith('$dep:')) {
           console.warn(
-            `could not resolve dependency version for ${value.slice('$dep:'.length)}`
+            `could not resolve dependency version for ${value.slice('$dep:'.length)}`,
           )
         } else if (typeof value === 'string' && value !== '') {
           lines.push(`${key}=${value}`)

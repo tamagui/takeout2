@@ -29,7 +29,7 @@ export function useProfilePosts({
       pageSize,
       cursor: isWeb ? null : cursor, // web fetches fresh each page
     },
-    { enabled: Boolean(userId) }
+    { enabled: Boolean(userId) },
   )
 
   // native: accumulate posts for infinite scroll

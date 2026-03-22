@@ -147,7 +147,7 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
         navigation.navigate(route)
       }
     },
-    [navigation]
+    [navigation],
   )
 
   const expandMenu = useCallback(() => {
@@ -217,13 +217,13 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
       animationProgress.value,
       [0, 0.5, 1],
       [1, 0.5, 1],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     )
     const translateY = interpolate(
       animationProgress.value,
       [0, 0.5, 1],
       [0, -10, -20],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     )
     return {
       transform: [{ scale }, { translateY }],
@@ -235,13 +235,13 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
       animationProgress.value,
       [0, 0.4, 0.7, 1],
       [50, 50, 150, 200],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     )
     const borderRadius = interpolate(
       animationProgress.value,
       [0, 0.2, 1],
       [25, 50, 32],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     )
     return {
       height,
@@ -255,7 +255,7 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
       animationProgress.value,
       [0, 0.25, 0.4],
       [1, 0.2, 0],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     )
     return {
       opacity,
@@ -268,7 +268,7 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
       animationProgress.value,
       [0, 0.4, 1],
       [0, 0.5, 1],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     )
     return {
       opacity,
@@ -292,13 +292,13 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
       tabBarVisibility.value,
       [0, 1],
       [100, 0],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     )
     const opacity = interpolate(
       tabBarVisibility.value,
       [0, 0.5, 1],
       [0, 0.5, 1],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     )
     return {
       transform: [{ translateY }],

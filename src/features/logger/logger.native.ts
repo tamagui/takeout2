@@ -60,7 +60,7 @@ class Logger {
               platform: 'react-native',
             },
           },
-          'medium'
+          'medium',
         )
         break
       }

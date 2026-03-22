@@ -3,7 +3,7 @@
  */
 export function parseEnvFile(
   content: string,
-  options?: { allowedKeys?: string[] }
+  options?: { allowedKeys?: string[] },
 ): Record<string, string> {
   const result: Record<string, string> = {}
   const lines = content.split('\n')

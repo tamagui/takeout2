@@ -18,7 +18,7 @@ export async function checkUncloudCLI(): Promise<void> {
     console.info(`✅ uncloud cli installed (${stdout.trim()})`)
   } catch {
     throw new Error(
-      `uncloud cli not found - install: curl -fsS https://get.uncloud.run/install.sh | sh`
+      `uncloud cli not found - install: curl -fsS https://get.uncloud.run/install.sh | sh`,
     )
   }
 }
@@ -61,7 +61,7 @@ contexts:
 export async function initUncloud(
   host: string,
   sshKey: string,
-  options: { noDNS?: boolean; noCaddy?: boolean; context?: string } = {}
+  options: { noDNS?: boolean; noCaddy?: boolean; context?: string } = {},
 ): Promise<void> {
   console.info('\n🚀 initializing uncloud...\n')
 
@@ -116,7 +116,7 @@ export async function initUncloud(
 
 export async function pushImage(
   imageName: string,
-  config?: UncloudConfig
+  config?: UncloudConfig,
 ): Promise<void> {
   console.info('\n📤 pushing image to cluster...\n')
 
@@ -126,7 +126,7 @@ export async function pushImage(
 
 export async function deployStack(
   composeFile: string,
-  options?: { profile?: string } & UncloudConfig
+  options?: { profile?: string } & UncloudConfig,
 ): Promise<void> {
   console.info('\n📦 deploying stack...\n')
 
@@ -159,7 +159,7 @@ export async function showContainers(config?: UncloudConfig): Promise<void> {
 
 export async function startService(
   service?: string,
-  config?: UncloudConfig
+  config?: UncloudConfig,
 ): Promise<void> {
   const target = service || 'all services'
   console.info(`\n▶️  starting ${target}...\n`)
@@ -174,7 +174,7 @@ export async function startService(
 
 export async function stopService(
   service?: string,
-  config?: UncloudConfig
+  config?: UncloudConfig,
 ): Promise<void> {
   const target = service || 'all services'
   console.info(`\n⏹️  stopping ${target}...\n`)

@@ -21,7 +21,7 @@ export async function buildAndPushDockerImage() {
 
   if (!accountId) {
     console.warn(
-      `⚠️ No accountId - maybe running locally, falling back to sst building image`
+      `⚠️ No accountId - maybe running locally, falling back to sst building image`,
     )
     return
   }
@@ -43,7 +43,7 @@ export async function buildAndPushDockerImage() {
     await ecrClient.send(
       new CreateRepositoryCommand({
         repositoryName,
-      })
+      }),
     )
     console.info(`Created ECR repository: ${repositoryName}`)
   } catch (error: any) {
@@ -62,7 +62,7 @@ export async function buildAndPushDockerImage() {
 
   // decode the token (it's base64 encoded username:password)
   const decodedToken = Buffer.from(authData.authorizationToken, 'base64').toString(
-    'utf-8'
+    'utf-8',
   )
   const [username, password] = decodedToken.split(':')
 
@@ -86,7 +86,7 @@ export async function buildAndPushDockerImage() {
   console.info('Logging into ECR...')
   await run(
     `echo "${password}" | docker login --username ${username} --password-stdin ${ecrRegistry}`,
-    { timeout: time.ms.minutes(1), silent: true }
+    { timeout: time.ms.minutes(1), silent: true },
   )
 
   console.info(`Pushing image to ECR...`)
@@ -100,7 +100,7 @@ export async function buildAndPushDockerImage() {
     new DescribeImagesCommand({
       repositoryName,
       imageIds: [{ imageTag }],
-    })
+    }),
   )
 
   const imageDigest = describeResponse.imageDetails?.[0]?.imageDigest
@@ -183,7 +183,7 @@ async function getAwsAccountId(): Promise<string> {
     {
       captureOutput: true,
       timeout: time.ms.minutes(1),
-    }
+    },
   )
   return stdout.trim()
 }

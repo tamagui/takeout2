@@ -18,7 +18,7 @@ interface SetupOptions {
 
 export async function setupProductionEnv(
   cwd: string,
-  options: SetupOptions = {}
+  options: SetupOptions = {},
 ): Promise<boolean> {
   const envFile = options.envFile || '.env.production'
   const fullPath = resolve(cwd, envFile)
@@ -28,7 +28,7 @@ export async function setupProductionEnv(
     console.info('\n' + pc.yellow('Setup interrupted. You can resume anytime with:'))
     console.info(pc.cyan('  bun takeout env:setup'))
     console.info(
-      pc.gray('\nNote: All environment variables are optional for local development.')
+      pc.gray('\nNote: All environment variables are optional for local development.'),
     )
     process.exit(0)
   }
@@ -89,7 +89,7 @@ export async function setupProductionEnv(
       if (clack.isCancel(setupProd) || !setupProd) {
         clack.note(
           `You can set up production environment later with:\n${pc.cyan('bun takeout env:setup')}`,
-          pc.yellow('Skipping production setup')
+          pc.yellow('Skipping production setup'),
         )
         process.removeListener('SIGINT', cleanup)
         process.removeListener('SIGTERM', cleanup)
@@ -123,14 +123,14 @@ export async function setupProductionEnv(
     if (configuredVars.length > 0) {
       clack.outro(pc.green('✓ Environment setup complete!'))
       console.info(
-        pc.gray(`\nConfigured ${configuredVars.length} variables in ${envFile}`)
+        pc.gray(`\nConfigured ${configuredVars.length} variables in ${envFile}`),
       )
 
       if (skippedVars.length > 0) {
         console.info(
           pc.yellow(
-            `\nNote: Some required variables were skipped. You'll need to configure these before deploying:`
-          )
+            `\nNote: Some required variables were skipped. You'll need to configure these before deploying:`,
+          ),
         )
         skippedVars.forEach((v) => console.info(pc.gray(`  - ${v}`)))
       }
@@ -163,7 +163,7 @@ async function setupCategory(
   category: EnvCategory,
   envFile: string,
   cwd: string,
-  options: SetupOptions
+  options: SetupOptions,
 ): Promise<boolean> {
   const spinner = clack.spinner()
 
@@ -200,7 +200,7 @@ async function setupCategory(
 async function setupVariable(
   variable: EnvVariable,
   envFile: string,
-  cwd: string
+  cwd: string,
 ): Promise<void> {
   // check if already configured
   const existingValue = readEnvVariable(cwd, variable.key, envFile)

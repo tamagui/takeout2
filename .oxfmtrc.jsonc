@@ -6,30 +6,20 @@
   "semi": false,
   "singleQuote": true,
   "jsxSingleQuote": false,
-  "trailingComma": "es5",
+  "trailingComma": "all",
   "endOfLine": "lf",
-  "experimentalSortImports": {
+  "sortImports": {
     "groups": [
-      // side effects first
-      ["side-effect", "side-effect-style"],
-      // node builtins
+      ["side_effect", "side_effect_style"],
       ["builtin"],
-      // external packages
       ["external"],
-      // internal aliases (~)
       ["internal"],
-      // parent/sibling
       ["parent", "sibling", "index"],
-      // types
-      ["builtin-type", "external-type", "internal-type", "parent-type", "sibling-type", "index-type"],
-      // styles
+      ["type"],
       ["style"],
-      // unknown/other
       ["unknown"]
     ],
-    "newlinesBetween": true,
-    "order": "asc",
-    "ignoreCase": true
+    "newlinesBetween": false
   },
   "ignorePatterns": [
     "**/generated-new.ts",
@@ -47,16 +37,13 @@
     "**/.vscode/**",
     "**/.claude/**",
     "**/migrations/meta/**",
-    "**/migrate-dist.js",
+    "**/*.generated.**",
     "**/themes-out.ts",
     "**/*.d.ts",
     "**/ios/**",
     "**/android/**",
     "**/dist/**",
     "**/tamagui.css",
-    "**/.ultra.cache.json",
-    "**/tsconfig.json",
-    "**/bun.lock",
-    "**/*.lock"
+    "**/.ultra.cache.json"
   ]
 }

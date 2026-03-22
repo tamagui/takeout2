@@ -153,7 +153,7 @@ await cmd`Seed database with demo users and posts`.run(async () => {
         `INSERT INTO "user" (id, name, username, email, "emailVerified", image, role)
          VALUES ($1, $2, $3, $4, $5, $6, $7)
          ON CONFLICT (id) DO NOTHING`,
-        [u.id, u.name, u.username, u.email, true, u.image, 'user']
+        [u.id, u.name, u.username, u.email, true, u.image, 'user'],
       )
 
       // insert into public user table
@@ -161,7 +161,7 @@ await cmd`Seed database with demo users and posts`.run(async () => {
         `INSERT INTO "userPublic" (id, name, username, image, "joinedAt", "hasOnboarded", whitelisted, "migrationVersion", "postsCount")
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
          ON CONFLICT (id) DO NOTHING`,
-        [u.id, u.name, u.username, u.image, now, true, true, 0, postsCount]
+        [u.id, u.name, u.username, u.image, now, true, true, 0, postsCount],
       )
 
       // insert user state
@@ -169,7 +169,7 @@ await cmd`Seed database with demo users and posts`.run(async () => {
         `INSERT INTO "userState" ("userId", "darkMode", locale, "timeZone", "onlineStatus")
          VALUES ($1, $2, $3, $4, $5)
          ON CONFLICT ("userId") DO NOTHING`,
-        [u.id, false, 'en', 'UTC', 'online']
+        [u.id, false, 'en', 'UTC', 'online'],
       )
 
       console.info(`  created user: ${u.username}`)
@@ -182,7 +182,7 @@ await cmd`Seed database with demo users and posts`.run(async () => {
         `INSERT INTO post (id, "userId", image, "imageWidth", "imageHeight", caption, "hiddenByAdmin", "createdAt", "commentCount")
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
          ON CONFLICT (id) DO UPDATE SET "imageWidth" = $4, "imageHeight" = $5`,
-        [p.id, p.userId, p.image, p.imageWidth, p.imageHeight, p.caption, false, now, 0]
+        [p.id, p.userId, p.image, p.imageWidth, p.imageHeight, p.caption, false, now, 0],
       )
 
       console.info(`  created post: ${p.id}`)
@@ -195,7 +195,7 @@ await cmd`Seed database with demo users and posts`.run(async () => {
         `INSERT INTO comment (id, "postId", "userId", content, "createdAt")
          VALUES ($1, $2, $3, $4, $5)
          ON CONFLICT (id) DO NOTHING`,
-        [c.id, c.postId, c.userId, c.content, now]
+        [c.id, c.postId, c.userId, c.content, now],
       )
 
       console.info(`  created comment: ${c.id}`)

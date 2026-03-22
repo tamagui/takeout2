@@ -4,7 +4,7 @@ import { createPool } from './createPool'
 
 export const createDb = <TSchema extends Record<string, unknown>>(
   connectionString: string,
-  schema: TSchema
+  schema: TSchema,
 ): NodePgDatabase<TSchema> => {
   const pool = createPool(connectionString)
   return drizzle(pool, {

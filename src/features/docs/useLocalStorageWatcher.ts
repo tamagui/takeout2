@@ -16,7 +16,7 @@ export function useLocalStorageWatcher(key: string, defaultValue: string) {
         setStorageItem(e.detail.newValue || defaultValue)
       }
     },
-    [key, defaultValue]
+    [key, defaultValue],
   )
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export function useLocalStorageWatcher(key: string, defaultValue: string) {
         window.removeEventListener('storage', handleStorageChange)
         window.removeEventListener(
           'localStorageChange',
-          handleStorageChange as EventListener
+          handleStorageChange as EventListener,
         )
       }
     }
@@ -49,7 +49,7 @@ export function useLocalStorageWatcher(key: string, defaultValue: string) {
             oldValue: storageItem,
             newValue: newValue,
           },
-        })
+        }),
       )
       setStorageItem(newValue)
     },

@@ -24,7 +24,7 @@ export function resolveQuery<Schema extends ZeroSchema>({
     const fnName = fn?.name || 'anonymous'
     throw new Error(
       `Query function '${fnName}' not registered. ` +
-        `Ensure it is exported from a queries file and passed to createZeroClient via groupedQueries.`
+        `Ensure it is exported from a queries file and passed to createZeroClient via groupedQueries.`,
     )
   }
 
@@ -36,7 +36,7 @@ export function resolveQuery<Schema extends ZeroSchema>({
   if (!customQuery) {
     throw new Error(
       `CustomQuery '${queryName}' not found. ` +
-        `Check that the query is exported and the namespace/name matches.`
+        `Check that the query is exported and the namespace/name matches.`,
     )
   }
 

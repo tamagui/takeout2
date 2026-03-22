@@ -22,7 +22,7 @@ export const popoverEmitter = createEmitter<{
   { state: 'closed', name: '' },
   {
     silent: true,
-  }
+  },
 )
 
 export type PopoverName = 'menu' | 'user-profile' | 'post-actions'

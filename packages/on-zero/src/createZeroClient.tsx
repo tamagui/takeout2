@@ -81,7 +81,7 @@ export function createZeroClient<
       registerQuery(fn, `${namespace}.${name}`)
       // wrap each plain function in defineQuery
       wrappedNamespaces[namespace][name] = defineQuery(({ args }: { args: any }) =>
-        fn(args)
+        fn(args),
       )
     }
   }
@@ -116,7 +116,7 @@ export function createZeroClient<
                 eb,
                 rawPerm || ((e: any) => e.and()),
                 args.objOrId,
-                table
+                table,
               )
             } finally {
               setEvaluatingPermission(false)
@@ -140,7 +140,7 @@ export function createZeroClient<
             eb,
             perm || ((e: any) => e.and()),
             args.objOrId,
-            table
+            table,
           )
         })
         .one()
@@ -172,7 +172,7 @@ export function createZeroClient<
     get(_, key) {
       if (latestZeroInstance === null) {
         throw new Error(
-          `Zero instance not initialized. Ensure ZeroProvider is mounted before accessing 'zero'.`
+          `Zero instance not initialized. Ensure ZeroProvider is mounted before accessing 'zero'.`,
         )
       }
       return Reflect.get(latestZeroInstance, key, latestZeroInstance)
@@ -194,7 +194,7 @@ export function createZeroClient<
     table: TableName | (string & {}),
     objOrId: string | Partial<Row<any>> | undefined,
     enabled = typeof objOrId !== 'undefined',
-    debug = false
+    debug = false,
   ): boolean | null {
     const disableMode = use(DisabledContext)
     const lastRef = useRef<boolean | null>(null)
@@ -209,7 +209,7 @@ export function createZeroClient<
     const [data, status] = useQuery(
       checkFn as any,
       { objOrId: objOrId as any, _uid },
-      { enabled: Boolean(!disableMode && enabled && objOrId && checkFn) }
+      { enabled: Boolean(!disableMode && enabled && objOrId && checkFn) },
     )
 
     if (debug) {
@@ -327,7 +327,7 @@ export function createZeroClient<
       }, [state, zeroEvents])
 
       return null
-    }
+    },
   )
 
   // preload data for a query into cache without materializing
@@ -335,16 +335,16 @@ export function createZeroClient<
   function preload<TArg, TTable extends keyof Schema['tables'] & string, TReturn>(
     fn: PlainQueryFn<TArg, Query<TTable, Schema, TReturn>>,
     params: TArg,
-    options?: PreloadOptions
+    options?: PreloadOptions,
   ): { cleanup: () => void; complete: Promise<void> }
   function preload<TTable extends keyof Schema['tables'] & string, TReturn>(
     fn: PlainQueryFn<void, Query<TTable, Schema, TReturn>>,
-    options?: PreloadOptions
+    options?: PreloadOptions,
   ): { cleanup: () => void; complete: Promise<void> }
   function preload(
     fnArg: any,
     paramsOrOptions?: any,
-    optionsArg?: PreloadOptions
+    optionsArg?: PreloadOptions,
   ): { cleanup: () => void; complete: Promise<void> } {
     const hasParams =
       optionsArg !== undefined || (paramsOrOptions && !('ttl' in paramsOrOptions))
@@ -357,10 +357,10 @@ export function createZeroClient<
 
   function getQuery<TArg, TTable extends keyof Schema['tables'] & string, TReturn>(
     fn: PlainQueryFn<TArg, Query<TTable, Schema, TReturn>>,
-    params: TArg
+    params: TArg,
   ): ReturnType<typeof resolveQuery<Schema>>
   function getQuery<TTable extends keyof Schema['tables'] & string, TReturn>(
-    fn: PlainQueryFn<void, Query<TTable, Schema, TReturn>>
+    fn: PlainQueryFn<void, Query<TTable, Schema, TReturn>>,
   ): ReturnType<typeof resolveQuery<Schema>>
   function getQuery(fn: any, params?: any) {
     return resolveQuery({ customQueries, fn, params })

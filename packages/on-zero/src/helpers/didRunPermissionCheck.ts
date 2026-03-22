@@ -4,7 +4,7 @@ import type { MutatorContext } from '../types'
 
 const PermissionCheckRan = globalValue(
   `on-zero:permissions-check`,
-  () => new WeakMap<MutatorContext, boolean>()
+  () => new WeakMap<MutatorContext, boolean>(),
 )
 
 export const getDidRunPermissionCheck = (ctx: MutatorContext) => {

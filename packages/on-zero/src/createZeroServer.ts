@@ -48,7 +48,7 @@ type ServerMutate<Models extends GenericModels> = {
   [Key in keyof Models]: {
     [K in keyof Models[Key]['mutate']]: Models[Key]['mutate'][K] extends (
       ctx: MutatorContext,
-      arg: infer Arg
+      arg: infer Arg,
     ) => any
       ? (arg: Arg, options?: MutateOptions) => Promise<void>
       : (options?: MutateOptions) => Promise<void>
@@ -199,7 +199,7 @@ export function createZeroServer<
       Promise.all(asyncTasks.map((task) => runWithAuthScope(authData, task))).catch(
         (err) => {
           console.error(`[push] async tasks failed`, err)
-        }
+        },
       )
     }
 
@@ -219,7 +219,7 @@ export function createZeroServer<
     if (!queries) {
       throw new Error(
         'No queries registered with createZeroServer. ' +
-          'Pass the syncedQueries registry to createZeroServer via the queries option.'
+          'Pass the syncedQueries registry to createZeroServer via the queries option.',
       )
     }
 
@@ -249,7 +249,7 @@ export function createZeroServer<
                       eb,
                       perm,
                       objOrId,
-                      table
+                      table,
                     )
                   })
                   .one()
@@ -267,8 +267,8 @@ export function createZeroServer<
             return query.fn({ args, ctx: authData })
           },
           schema,
-          request
-        )
+          request,
+        ),
     )
 
     return {
@@ -280,7 +280,7 @@ export function createZeroServer<
     modelName: string,
     mutatorName: string,
     mutatorArg: unknown,
-    options?: MutateOptions
+    options?: MutateOptions,
   ) {
     let authData = options?.authData
 
@@ -321,7 +321,7 @@ export function createZeroServer<
     if (asyncTasks.length) {
       const resolvedAuth = authData ?? null
       const promise = Promise.all(
-        asyncTasks.map((t) => runWithAuthScope(resolvedAuth, t))
+        asyncTasks.map((t) => runWithAuthScope(resolvedAuth, t)),
       )
       if (options?.awaitEffects) {
         await promise
@@ -343,7 +343,7 @@ export function createZeroServer<
             return (arg: unknown, options?: MutateOptions) =>
               runMutate(modelName, mutatorName, arg, options)
           },
-        }
+        },
       )
     },
   })
@@ -370,7 +370,7 @@ export function createZeroServer<
 
   function query<R>(
     cb: (q: QueryBuilder) => Query<any, Schema, R>,
-    authData?: AuthData | null
+    authData?: AuthData | null,
   ): Promise<HumanReadable<R>> {
     const run = () =>
       transaction(async (tx) => {

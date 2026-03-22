@@ -1,29 +1,18 @@
-import { isWeb } from 'tamagui'
-
 import { postHog } from '../../posthog/posthog'
-
 import type { ErrorReport } from './types'
 
 let ogWindowErrorHandler: OnErrorEventHandler | null = null
-let ogUnhandledRejectionHandler: ((event: PromiseRejectionEvent) => void) | null = null
 let handlersSetup = false
 
 export function initializeErrorHandling(): void {
-  if (process.env.NODE_ENV === 'development') {
-    // avoid all error tracking in development
-    return
-  }
-
-  if (!isWeb) {
-    // TODO we need to setup native
-    return
-  }
-
   if (handlersSetup) {
     return
   }
 
-  setupWebHandlers()
+  if (process.env.NODE_ENV !== 'development') {
+    setupWebHandlers()
+  }
+
   setupNodeHandlers()
   handlersSetup = true
 }
@@ -31,8 +20,6 @@ export function initializeErrorHandling(): void {
 export function processError(report: ErrorReport): void {
   const { error, context = {}, severity = 'medium', tags } = report
 
-  // in dev mode, just log to console instead of sending to PostHog
-  // only send to PostHog in production
   postHog.captureException(error, {
     ...tags,
     severity,
@@ -75,10 +62,6 @@ function setupWebHandlers(): void {
     return false
   }
 
-  if (!ogUnhandledRejectionHandler) {
-    ogUnhandledRejectionHandler = window.onunhandledrejection
-  }
-
   window.addEventListener('unhandledrejection', (event: PromiseRejectionEvent) => {
     const error =
       event.reason instanceof Error ? event.reason : new Error(String(event.reason))
@@ -97,30 +80,25 @@ function setupWebHandlers(): void {
 }
 
 function setupNodeHandlers() {
-  if (process.env.VITE_ENVIRONMENT === 'ssr') {
-    if (typeof process !== 'undefined') {
-      process.on('unhandledRejection', (reason, promise) => {
-        processError({
-          error: new Error(`Unhandled rejection at ${promise} ${reason}`),
-          severity: 'high',
-        })
-      })
-    }
-  }
-}
+  if (typeof window !== 'undefined') return
 
-export function teardownErrorHandling(): void {
-  if (typeof window !== 'undefined') {
-    if (ogWindowErrorHandler !== null) {
-      window.onerror = ogWindowErrorHandler
-      ogWindowErrorHandler = null
-    }
+  process.on('uncaughtException', (error) => {
+    console.error(`[uncaughtException]`, error)
+    processError({
+      error,
+      severity: 'critical',
+      tags: { source: 'uncaught_exception' },
+    })
+    // don't exit - keep the server alive for recoverable errors like pg-protocol parser crashes
+  })
 
-    if (ogUnhandledRejectionHandler !== null) {
-      window.onunhandledrejection = ogUnhandledRejectionHandler
-      ogUnhandledRejectionHandler = null
-    }
-  }
-
-  handlersSetup = false
+  process.on('unhandledRejection', (reason) => {
+    const error = reason instanceof Error ? reason : new Error(String(reason))
+    console.error(`[unhandledRejection]`, error)
+    processError({
+      error,
+      severity: 'high',
+      tags: { source: 'unhandled_rejection' },
+    })
+  })
 }

@@ -66,10 +66,10 @@ const DialogComponent = ({
         },
         {
           signal,
-        }
+        },
       )
     },
-    [open]
+    [open],
   )
 
   return (

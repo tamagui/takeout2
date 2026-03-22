@@ -119,7 +119,7 @@ const newCommand = defineCommand({
     // check if file exists
     if (existsSync(fullPath)) {
       console.error(
-        pc.red(`✗ Script already exists: ${relative(process.cwd(), fullPath)}`)
+        pc.red(`✗ Script already exists: ${relative(process.cwd(), fullPath)}`),
       )
       process.exit(1)
     }
@@ -218,8 +218,8 @@ const ejectCommand = defineCommand({
     if (!sourceScriptsDir) {
       console.error(
         pc.red(
-          '✗ Built-in scripts package (@take-out/scripts) not found or not installed'
-        )
+          '✗ Built-in scripts package (@take-out/scripts) not found or not installed',
+        ),
       )
       console.info()
       console.info(pc.dim('Install with: bun add -d @take-out/scripts'))

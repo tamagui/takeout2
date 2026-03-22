@@ -144,7 +144,7 @@ export async function migrate(options: MigrateOptions) {
           console.error(`Failed to load TypeScript migration ${name}:`, error)
           throw error
         }
-      })
+      }),
     ).then((migrations) => migrations.filter(Boolean) as Migration[])
 
     // combine TypeScript and SQL migrations, sorted by name to ensure correct order
@@ -178,7 +178,7 @@ export async function migrate(options: MigrateOptions) {
             ]
             if (duplicateErrorCodes.includes(e?.code)) {
               console.info(
-                `[migrate] ${migration.name}: ${e.message} (${e.code}), recording as applied`
+                `[migrate] ${migration.name}: ${e.message} (${e.code}), recording as applied`,
               )
             } else {
               // any other error should fail the migration

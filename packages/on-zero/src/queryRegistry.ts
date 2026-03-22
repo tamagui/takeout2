@@ -5,7 +5,7 @@ import { globalValue } from '@take-out/helpers'
 
 const queryNameRegistry = globalValue(
   `on-zero:query-name`,
-  () => new WeakMap<Function, string>()
+  () => new WeakMap<Function, string>(),
 )
 
 export function registerQuery(fn: Function, name: string) {

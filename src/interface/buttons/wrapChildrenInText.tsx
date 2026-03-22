@@ -12,7 +12,7 @@ export function wrapChildrenInText(
   propsIn: Props & {
     unstyled?: boolean
   },
-  extraProps?: Record<string, any>
+  extraProps?: Record<string, any>,
 ) {
   const {
     children,
@@ -61,7 +61,7 @@ export function wrapChildrenInText(
 
 function unwrapFragments(
   nodes: React.ReactNode[],
-  allPrimitives = true
+  allPrimitives = true,
 ): [React.ReactNode[], boolean] {
   const flattened = nodes.flatMap((node: any) => {
     if (isReactFragment(node)) {
@@ -79,7 +79,7 @@ function unwrapFragments(
 
 function mapText(
   nodes: React.ReactNode[],
-  mapper: (child: React.ReactNode, index: number) => React.ReactNode
+  mapper: (child: React.ReactNode, index: number) => React.ReactNode,
 ): React.ReactNode {
   const [flattened, allPrimitives] = unwrapFragments(nodes)
 

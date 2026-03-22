@@ -1,8 +1,7 @@
 import { AbortError, createGlobalContext, isWeb, useAsyncEffect } from '@take-out/helpers'
 import { useContext, useEffect, useState } from 'react'
 import { useEvent } from 'tamagui'
-
-import { SERVER_URL } from '~/constants/urls'
+import { showToast } from '~/interface/toast/Toast'
 
 import { getFileType, isImageFile, isVideoFile, validateFile } from './helpers'
 import { prepareImageForUpload } from './resizeImage'
@@ -16,11 +15,11 @@ interface UploadResponse {
   thumbnail?: string | null
 }
 
-export const uploadEndpoint = `${SERVER_URL}/api/file/upload`
+export const uploadEndpoint = '/api/file/upload'
 
 export function uploadFileData(
   fileData: File | Blob,
-  onProgress: (percent: number) => void
+  onProgress: (percent: number) => void,
 ): Promise<UploadResponse> {
   return new Promise((resolve, reject) => {
     const formData = new FormData()
@@ -37,16 +36,25 @@ export function uploadFileData(
     }
 
     xhr.onload = () => {
-      try {
-        const response: UploadResponse = JSON.parse(xhr.response)
-        if (xhr.status === 200) {
+      if (xhr.status === 200) {
+        try {
+          const response: UploadResponse = JSON.parse(xhr.response)
           resolve(response)
-        } else {
-          // parse error from response body (e.g., moderation failures return 400)
-          reject(new Error(response.error || `Upload failed with status: ${xhr.status}`))
+        } catch (e) {
+          reject(new Error('Failed to parse server response.', { cause: e }))
         }
-      } catch (e) {
-        reject(new Error('Failed to parse server response.', { cause: e }))
+      } else {
+        // try to parse server error message
+        let errorMessage = `Upload failed with status: ${xhr.status}`
+        try {
+          const errorResponse = JSON.parse(xhr.response)
+          if (errorResponse.error) {
+            errorMessage = errorResponse.error
+          }
+        } catch {
+          // use default error message
+        }
+        reject(new Error(errorMessage))
       }
     }
 
@@ -160,6 +168,14 @@ export const useUploadFiles = ({
     }
 
     const newUploads = files.map(getUpload)
+
+    // show toast for any validation errors
+    for (const upload of newUploads) {
+      if (upload.status === 'error' && upload.error) {
+        showToast(upload.error, { type: 'error' })
+      }
+    }
+
     setUploads(newUploads)
     const toProcess = newUploads.filter((u) => u.status === 'uploading' && u.file)
     setUploadsToProcess(toProcess)
@@ -175,7 +191,7 @@ export const useUploadFiles = ({
         }
 
         setUploads((current) =>
-          current.map((u) => (u.uid === uid ? { ...u, ...updates } : u))
+          current.map((u) => (u.uid === uid ? { ...u, ...updates } : u)),
         )
       }
 
@@ -211,18 +227,22 @@ export const useUploadFiles = ({
           }
         } catch (err) {
           if (err instanceof AbortError) {
-            console.info('Upload aborted')
+            if (process.env.NODE_ENV === 'development') {
+              console.info('Upload aborted')
+            }
             break
           }
 
+          const errorMessage = err instanceof Error ? err.message : `${err}`
+          showToast(errorMessage, { type: 'error' })
           updateFile(upload.uid, {
-            error: err instanceof Error ? err.message : `${err}`,
+            error: errorMessage,
             status: 'error',
           })
         }
       }
     },
-    [uploadsToProcess, JSON.stringify(resize)]
+    [uploadsToProcess, JSON.stringify(resize)],
   )
 
   return {

@@ -12,7 +12,7 @@ export default defineConfig({
 
   define: {
     'process.env.GIT_SHA': JSON.stringify(
-      execSync('git rev-parse HEAD').toString().trim()
+      execSync('git rev-parse HEAD').toString().trim(),
     ),
   },
 

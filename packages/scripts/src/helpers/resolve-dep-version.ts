@@ -3,7 +3,7 @@
  */
 export function resolveDepVersion(
   value: string | boolean,
-  dependencies: Record<string, string> | undefined
+  dependencies: Record<string, string> | undefined,
 ): string | undefined {
   if (typeof value !== 'string' || !value.startsWith('$dep:')) return undefined
   const depName = value.slice('$dep:'.length)

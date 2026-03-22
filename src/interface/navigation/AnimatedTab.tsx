@@ -43,13 +43,13 @@ export const AnimatedTab = memo(
         animationProgress.value,
         [0, 0.25, 0.4],
         [1, 0.5, 0],
-        Extrapolation.CLAMP
+        Extrapolation.CLAMP,
       )
       const counterScale = interpolate(
         animationProgress.value,
         [0, 0.5, 1],
         [1, 0.5, 1],
-        Extrapolation.CLAMP
+        Extrapolation.CLAMP,
       )
       const iconScale = interpolate(focusProgress.value, [0, 1], [1, 1.1])
       return {
@@ -76,5 +76,5 @@ export const AnimatedTab = memo(
         </Animated.View>
       </Button>
     )
-  }
+  },
 )

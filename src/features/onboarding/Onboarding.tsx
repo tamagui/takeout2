@@ -8,7 +8,7 @@ import {
   type ThemeName,
 } from 'tamagui'
 
-import Glint from '~/interface/effects/Glint'
+import { Glint } from '~/interface/effects/Glint'
 
 import { OnboardingActionButton } from './OnboardingActionButton'
 import { GRID_ROTATIONS, LAYOUT_CONFIGS } from './onboardingConfig'

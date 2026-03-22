@@ -12,7 +12,7 @@ await cmd`pull environment variables from SST production`.run(async ({ path }) =
   const envFilePath = path.join(rootDir, '.env.production')
   if (fs.existsSync(envFilePath)) {
     console.error(
-      '❌ Error: .env.production already exists. Please remove or rename it first.'
+      '❌ Error: .env.production already exists. Please remove or rename it first.',
     )
     process.exit(1)
   }
@@ -21,7 +21,7 @@ await cmd`pull environment variables from SST production`.run(async ({ path }) =
   const envVarsNeeded = packageJson.env ? Object.keys(packageJson.env) : []
   if (!envVarsNeeded.length) {
     console.error(
-      `❌ Error: No environment variables specified in package.json 'env' array.`
+      `❌ Error: No environment variables specified in package.json 'env' array.`,
     )
     process.exit(1)
   }
@@ -49,7 +49,7 @@ await cmd`pull environment variables from SST production`.run(async ({ path }) =
     fs.writeFileSync(envFilePath, envFileContent)
 
     console.info(
-      `✅ Success! ${foundCount} environment variables written to .env.production`
+      `✅ Success! ${foundCount} environment variables written to .env.production`,
     )
   } catch (error) {
     console.error('❌ Error fetching environment variables:', error)

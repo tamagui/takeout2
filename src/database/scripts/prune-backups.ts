@@ -12,7 +12,7 @@ export async function pruneBackups(
   options?: {
     region?: string
     dryRun?: boolean
-  }
+  },
 ): Promise<{ kept: string[]; deleted: string[] }> {
   const region = options?.region ?? 'us-west-1'
   const dryRun = options?.dryRun ?? false
@@ -37,7 +37,7 @@ export async function pruneBackups(
         Bucket: bucketName,
         Prefix: prefix,
         ContinuationToken: continuationToken,
-      })
+      }),
     )
 
     if (response.Contents) {
@@ -166,11 +166,11 @@ export async function pruneBackups(
               Objects: batch.map((key) => ({ Key: key })),
               Quiet: true,
             },
-          })
+          }),
         )
 
         console.info(
-          `   Deleted batch ${Math.floor(i / 1000) + 1}/${Math.ceil(toDelete.length / 1000)}`
+          `   Deleted batch ${Math.floor(i / 1000) + 1}/${Math.ceil(toDelete.length / 1000)}`,
         )
       }
 

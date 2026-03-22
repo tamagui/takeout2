@@ -49,7 +49,7 @@ export async function run(
     detached?: boolean
     timeout?: number
     timing?: boolean | string
-  }
+  },
 ) {
   const { env, cwd, silent, captureOutput, prefix, detached, timeout, timing } =
     options || {}
@@ -63,7 +63,7 @@ export async function run(
       const result = await promise
       const duration = Date.now() - startTime
       console.info(
-        `\x1b[32m✓\x1b[0m \x1b[35m${name}\x1b[0m completed in \x1b[33m${formatDuration(duration)}\x1b[0m`
+        `\x1b[32m✓\x1b[0m \x1b[35m${name}\x1b[0m completed in \x1b[33m${formatDuration(duration)}\x1b[0m`,
       )
       return result
     } catch (error) {
@@ -124,7 +124,7 @@ export async function run(
 
       const processStream = (
         stream: NodeJS.ReadableStream | null,
-        isStderr: boolean
+        isStderr: boolean,
       ): Promise<string> => {
         return new Promise((resolve) => {
           if (effectiveSilent && !captureOutput) {
@@ -253,7 +253,7 @@ export async function printTiming<T>(name: string, fn: () => Promise<T>): Promis
     const result = await fn()
     const duration = Date.now() - startTime
     console.info(
-      `\x1b[32m✓\x1b[0m \x1b[35m${name}\x1b[0m completed in \x1b[33m${formatDuration(duration)}\x1b[0m`
+      `\x1b[32m✓\x1b[0m \x1b[35m${name}\x1b[0m completed in \x1b[33m${formatDuration(duration)}\x1b[0m`,
     )
     return result
   } catch (error) {
@@ -265,7 +265,7 @@ export async function printTiming<T>(name: string, fn: () => Promise<T>): Promis
 
 export async function runParallel(
   tasks: Array<{ name: string; fn: () => Promise<void>; condition?: () => boolean }>,
-  options?: { maxParallelism?: number }
+  options?: { maxParallelism?: number },
 ) {
   const activeTasks = tasks.filter((task) => !task.condition || task.condition())
 
@@ -289,7 +289,7 @@ export async function runParallel(
         () => {
           const duration = Date.now() - startTime
           console.info(
-            `\x1b[32m✓\x1b[0m task: \x1b[35m${task.name}\x1b[0m completed in \x1b[33m${formatDuration(duration)}\x1b[0m`
+            `\x1b[32m✓\x1b[0m task: \x1b[35m${task.name}\x1b[0m completed in \x1b[33m${formatDuration(duration)}\x1b[0m`,
           )
           executing.delete(taskPromise)
         },
@@ -298,7 +298,7 @@ export async function runParallel(
           console.error(`✗ task: ${task.name} failed after ${formatDuration(duration)}`)
           executing.delete(taskPromise)
           throw error
-        }
+        },
       )
 
       results.push(taskPromise)
@@ -313,7 +313,7 @@ export async function runParallel(
 
     const totalDuration = Date.now() - taskStartTime
     console.info(
-      `\nAll parallel tasks completed successfully in ${formatDuration(totalDuration)}`
+      `\nAll parallel tasks completed successfully in ${formatDuration(totalDuration)}`,
     )
   } catch (error) {
     const totalDuration = Date.now() - taskStartTime

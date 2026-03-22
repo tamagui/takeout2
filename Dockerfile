@@ -1,30 +1,36 @@
-# we build web app outside docker and then just install here
-# its generally faster and easier to debug
+# multi-stage build: install deps in isolated stage, copy to slim runtime
 
-FROM node:24-slim
+FROM oven/bun:1.3.9 AS bun-base
 
-# for healthchecks and bun installation
-RUN apt-get update && apt-get install -y \
-  curl \
-  unzip \
-  && rm -rf /var/lib/apt/lists/*
+FROM node:24-slim AS prod-deps
+
+# copy bun from official image (avoids flaky curl install)
+COPY --from=bun-base /usr/local/bin/bun /usr/local/bin/bun
+COPY --from=bun-base /usr/local/bin/bunx /usr/local/bin/bunx
 
 WORKDIR /app
 
-# copy package.json first to extract bun version
-COPY package.json bun.lock vite.config.ts ./
-
-# install bun version from packageManager field in package.json
-RUN BUN_VERSION=$(grep -o '"packageManager": *"bun@[^"]*"' package.json | grep -o '[0-9][0-9.]*') \
-  && curl -fsSL https://bun.sh/install | bash -s "bun-v${BUN_VERSION}"
-ENV PATH="/root/.bun/bin:${PATH}"
+COPY package.json bun.lock ./
 COPY packages ./packages
 
 # skip postinstall during docker build (it's dev-only setup)
-# BUN BUG just started happening: https://github.com/oven-sh/bun/issues/19088
-# RUN bun install --production --frozen-lockfile --ignore-scripts
 RUN bun install --ignore-scripts
 
+# rebuild native modules for linux
+RUN bun rebuild oxc-parser 2>/dev/null || true
+
+FROM node:24-slim AS runtime
+
+RUN apt-get update && apt-get install -y \
+  curl \
+  && rm -rf /var/lib/apt/lists/*
+
+COPY --from=bun-base /usr/local/bin/bun /usr/local/bin/bun
+COPY --from=bun-base /usr/local/bin/bunx /usr/local/bin/bunx
+
+WORKDIR /app
+
+COPY --from=prod-deps /app/node_modules ./node_modules
 COPY . .
 
 RUN test -d dist || (echo "dist/ not found, did you build the app before building docker?" && exit 1)

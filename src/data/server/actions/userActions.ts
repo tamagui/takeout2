@@ -147,7 +147,7 @@ async function validateUsername(username?: string, excludeUserId?: string) {
   // Check if username matches allowed pattern (alphanumeric, underscore, hyphen)
   if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
     throw new Error(
-      'Username can only contain letters, numbers, underscores, and hyphens'
+      'Username can only contain letters, numbers, underscores, and hyphens',
     )
   }
 
@@ -201,7 +201,7 @@ async function whitelistUsers(emails: string[]) {
     }
 
     console.info(
-      `Whitelisted ${inserted.length} new users (${uniqueEmails.length - inserted.length} already existed)`
+      `Whitelisted ${inserted.length} new users (${uniqueEmails.length - inserted.length} already existed)`,
     )
   } catch (error) {
     console.error('Failed to whitelistUsers', error)

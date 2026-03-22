@@ -1,9 +1,13 @@
 import { showToast } from '~/interface/toast/Toast'
 
-import { zero } from '../client'
-
 export const clearClientData = async () => {
   try {
+    // close zero gracefully so pending mutations can flush (lazy import to avoid cycle)
+    const { zero } = await import('../client')
+    if (zero && typeof zero.close === 'function') {
+      await zero.close().catch(() => {})
+    }
+
     // Get all IndexedDB databases
     const databases = await indexedDB.databases()
 
@@ -29,12 +33,12 @@ export const clearClientData = async () => {
             deleteReq.onerror = () => reject(deleteReq.error)
             deleteReq.onblocked = () => reject(new Error('database deletion blocked'))
           })
-        })
+        }),
       )
 
       const dbNames = zeroAndReplicacheDatabases.map((db) => db.name).join(', ')
       showToast(
-        `Cleared ${zeroAndReplicacheDatabases.length} Zero/Replicache databases: ${dbNames}`
+        `Cleared ${zeroAndReplicacheDatabases.length} Zero/Replicache databases: ${dbNames}`,
       )
     } else {
       // Fallback: clear all IndexedDB databases
@@ -48,14 +52,9 @@ export const clearClientData = async () => {
               deleteReq.onblocked = () => reject(new Error('database deletion blocked'))
             })
           }
-        })
+        }),
       )
       showToast('Cleared all IndexedDB databases')
-    }
-
-    // Close the zero connection before reloading
-    if (zero && typeof (zero as any).close === 'function') {
-      await (zero as any).close()
     }
 
     // Reload the page to reinitialize Zero

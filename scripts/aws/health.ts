@@ -38,7 +38,7 @@ await cmd`AWS health monitoring`.run(async ({ $ }) => {
     try {
       // get all clusters
       const clustersJson = run(
-        `aws ecs list-clusters --region ${AWS_REGION} --output json`
+        `aws ecs list-clusters --region ${AWS_REGION} --output json`,
       )
       const clustersData = parseJson<any>(clustersJson)
 
@@ -53,19 +53,19 @@ await cmd`AWS health monitoring`.run(async ({ $ }) => {
       const activeClusters: string[] = []
       for (const clusterName of productionClusters) {
         const servicesJson = run(
-          `aws ecs list-services --cluster ${clusterName} --region ${AWS_REGION} --output json`
+          `aws ecs list-services --cluster ${clusterName} --region ${AWS_REGION} --output json`,
         )
         const servicesData = parseJson<any>(servicesJson)
 
         if (servicesData?.serviceArns?.length > 0) {
           // check if any service has desired count > 0
           const serviceDetailsJson = run(
-            `aws ecs describe-services --cluster ${clusterName} --services ${servicesData.serviceArns.join(' ')} --region ${AWS_REGION} --output json`
+            `aws ecs describe-services --cluster ${clusterName} --services ${servicesData.serviceArns.join(' ')} --region ${AWS_REGION} --output json`,
           )
           const serviceDetails = parseJson<any>(serviceDetailsJson)
 
           const hasActiveServices = serviceDetails?.services?.some(
-            (s: any) => s.desiredCount > 0 || s.runningCount > 0
+            (s: any) => s.desiredCount > 0 || s.runningCount > 0,
           )
 
           if (hasActiveServices) {
@@ -114,7 +114,7 @@ await cmd`AWS health monitoring`.run(async ({ $ }) => {
             (e: any) =>
               e.message.includes('failed') ||
               e.message.includes('unhealthy') ||
-              e.message.includes('stopped')
+              e.message.includes('stopped'),
           )
 
           if (hasRecentFailures) {
@@ -126,7 +126,7 @@ await cmd`AWS health monitoring`.run(async ({ $ }) => {
                 event.message.includes('stopped')
               ) {
                 console.info(
-                  `   ${new Date(event.createdAt).toLocaleTimeString()}: ${event.message.substring(0, 100)}`
+                  `   ${new Date(event.createdAt).toLocaleTimeString()}: ${event.message.substring(0, 100)}`,
                 )
               }
             }
@@ -156,7 +156,7 @@ await cmd`AWS health monitoring`.run(async ({ $ }) => {
 
               if (recentRestarts.length > 3) {
                 console.info(
-                  `🔄 ${serviceName}: ${recentRestarts.length} restarts in last hour`
+                  `🔄 ${serviceName}: ${recentRestarts.length} restarts in last hour`,
                 )
                 // show stop reasons
                 const stopReasons = new Map<string, number>()
@@ -169,7 +169,7 @@ await cmd`AWS health monitoring`.run(async ({ $ }) => {
                 })
               } else if (recentRestarts.length > 0) {
                 console.info(
-                  `✅ ${serviceName}: ${recentRestarts.length} restart(s) in last hour (within normal range)`
+                  `✅ ${serviceName}: ${recentRestarts.length} restart(s) in last hour (within normal range)`,
                 )
               } else {
                 console.info(`✅ ${serviceName}: No restarts in last hour`)
@@ -197,7 +197,7 @@ await cmd`AWS health monitoring`.run(async ({ $ }) => {
       // find log groups for this cluster
       try {
         const logGroupsJson = run(
-          `aws logs describe-log-groups --region ${AWS_REGION} --log-group-name-prefix "/sst/cluster/${cluster}" --output json`
+          `aws logs describe-log-groups --region ${AWS_REGION} --log-group-name-prefix "/sst/cluster/${cluster}" --output json`,
         )
         const logGroupsData = parseJson<any>(logGroupsJson)
 
@@ -220,7 +220,7 @@ await cmd`AWS health monitoring`.run(async ({ $ }) => {
     }
 
     console.info(
-      `\n📊 Checking log ingestion for ${criticalLogGroups.length} log groups...`
+      `\n📊 Checking log ingestion for ${criticalLogGroups.length} log groups...`,
     )
 
     for (const logGroup of criticalLogGroups) {
@@ -236,15 +236,15 @@ await cmd`AWS health monitoring`.run(async ({ $ }) => {
         if (mb > 1000) {
           // alert if more than 1GB/hour
           console.info(
-            `📊 High log ingestion: ${logGroup.split('/').pop()} - ${(mb / 1024).toFixed(2)}GB/hour`
+            `📊 High log ingestion: ${logGroup.split('/').pop()} - ${(mb / 1024).toFixed(2)}GB/hour`,
           )
         } else if (mb > 100) {
           console.info(
-            `📊 Log ingestion: ${logGroup.split('/').pop()} - ${mb.toFixed(0)}MB/hour`
+            `📊 Log ingestion: ${logGroup.split('/').pop()} - ${mb.toFixed(0)}MB/hour`,
           )
         } else if (mb > 0) {
           console.info(
-            `📊 Log ingestion: ${logGroup.split('/').pop()} - ${mb.toFixed(1)}MB/hour`
+            `📊 Log ingestion: ${logGroup.split('/').pop()} - ${mb.toFixed(1)}MB/hour`,
           )
         }
       } catch (e) {}

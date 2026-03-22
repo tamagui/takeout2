@@ -13,7 +13,7 @@ type Result =
 export async function passwordLogin(
   type: 'email' | 'phone',
   emailOrPhoneNumber: string,
-  password: string
+  password: string,
 ): Promise<Result> {
   const { data, error } = await (() => {
     switch (type) {

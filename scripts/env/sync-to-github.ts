@@ -109,7 +109,7 @@ await cmd`Sync env variables to GitHub repository secrets`.run(
     if (!iosOnly) {
       const packagePath = path.resolve(cwd, 'package.json')
       const packageJson: PackageJson = JSON.parse(
-        await fs.promises.readFile(packagePath, 'utf-8')
+        await fs.promises.readFile(packagePath, 'utf-8'),
       )
 
       if (!packageJson.env) {
@@ -178,24 +178,24 @@ await cmd`Sync env variables to GitHub repository secrets`.run(
     // check for placeholder values
     const forceYes = cliArgs.includes('--force')
     const placeholderVars = filteredVars.filter(
-      (v) => v.value.includes('your-') || v.value.includes('your_')
+      (v) => v.value.includes('your-') || v.value.includes('your_'),
     )
     if (placeholderVars.length > 0 && !forceYes) {
       console.info('')
       console.info(
-        pc.red('⚠️  Found placeholder values that look like they were never configured:')
+        pc.red('⚠️  Found placeholder values that look like they were never configured:'),
       )
       for (const { key, value } of placeholderVars) {
         console.info(pc.yellow(`  ${key} = ${value}`))
       }
       console.info('')
       console.info(
-        pc.gray('These would overwrite real secrets in GitHub with placeholder values.')
+        pc.gray('These would overwrite real secrets in GitHub with placeholder values.'),
       )
       console.info(pc.gray('Either:'))
       console.info(pc.gray('  1. Update .env.production with real values'))
       console.info(
-        pc.gray('  2. Sync only specific vars: bun tko env/sync-to-github VAR1 VAR2')
+        pc.gray('  2. Sync only specific vars: bun tko env/sync-to-github VAR1 VAR2'),
       )
       console.info(pc.gray('  3. Force anyway with --force (dangerous!)'))
       console.info('')
@@ -230,7 +230,7 @@ await cmd`Sync env variables to GitHub repository secrets`.run(
           : pc.gray(value.length > 50 ? value.substring(0, 47) + '...' : value)
         const sourceTag = source === '.env.ios' ? pc.yellow(' [ios]') : ''
         console.info(
-          `  ${pc.green('+')} ${pc.cyan(key.padEnd(38))} ${displayValue}${sourceTag}`
+          `  ${pc.green('+')} ${pc.cyan(key.padEnd(38))} ${displayValue}${sourceTag}`,
         )
       }
       console.info('')
@@ -365,7 +365,7 @@ await cmd`Sync env variables to GitHub repository secrets`.run(
       clack.outro(pc.green('All variables synced successfully!'))
       console.info('')
       console.info(
-        pc.gray('Your GitHub Actions workflows now have access to these secrets')
+        pc.gray('Your GitHub Actions workflows now have access to these secrets'),
       )
       console.info(pc.gray('Next: git push to trigger CI/CD deployment'))
     } else {
@@ -373,5 +373,5 @@ await cmd`Sync env variables to GitHub repository secrets`.run(
       console.info('')
       console.info(pc.gray('Check the errors above and try again'))
     }
-  }
+  },
 )

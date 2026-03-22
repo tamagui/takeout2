@@ -76,7 +76,7 @@ export function createMutators<Models extends GenericModels>({
 
   function withDevelopmentLogging<Args extends any[]>(
     name: string,
-    fn: (...args: Args) => Promise<void>
+    fn: (...args: Args) => Promise<void>,
   ) {
     if (process.env.NODE_ENV !== 'development' && !process.env.IS_TESTING) {
       return fn
@@ -127,7 +127,7 @@ export function createMutators<Models extends GenericModels>({
     fn: (...args: Args) => Promise<void>,
     // don't want this too high - zero runs mutations in order and waits for the last to finish it seems
     // so if one mutation gets stuck it will just sit there
-    timeoutMs: number = time.ms.minutes(1)
+    timeoutMs: number = time.ms.minutes(1),
   ) {
     return async (...args: Args): Promise<void> => {
       const timeoutPromise = new Promise<never>((_, reject) => {
@@ -143,7 +143,7 @@ export function createMutators<Models extends GenericModels>({
   function withValidation<Args extends any[]>(
     tableName: string,
     mutatorName: string,
-    fn: (...args: Args) => Promise<void>
+    fn: (...args: Args) => Promise<void>,
   ) {
     const validator = mutationValidators?.[tableName]?.[mutatorName]
 
@@ -190,9 +190,9 @@ export function createMutators<Models extends GenericModels>({
             withValidation(
               moduleName,
               name,
-              withContext((...args: any[]) => getDynamicFn()(...args))
-            )
-          )
+              withContext((...args: any[]) => getDynamicFn()(...args)),
+            ),
+          ),
         )
       }
     }

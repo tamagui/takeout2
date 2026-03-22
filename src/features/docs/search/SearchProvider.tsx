@@ -73,7 +73,7 @@ export const SearchProvider = memo(({ children }: { children: React.ReactNode })
       onClose,
       onInput,
     }),
-    [isOpen, onOpen, onClose, onInput]
+    [isOpen, onOpen, onClose, onInput],
   )
 
   useEffect(() => {
@@ -134,7 +134,7 @@ export const SearchProvider = memo(({ children }: { children: React.ReactNode })
                 })
             }}
           />,
-          document.body
+          document.body,
         )}
     </>
   )

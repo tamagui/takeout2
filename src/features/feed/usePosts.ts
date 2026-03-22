@@ -110,7 +110,7 @@ export function usePostsByUserId(userId: string, pageSize = 12) {
       pageSize,
       cursor,
     },
-    { enabled: Boolean(userId) }
+    { enabled: Boolean(userId) },
   )
 
   // accumulate posts when new data arrives
@@ -182,7 +182,7 @@ export function usePostsSearch(pageSize = 12) {
       pageSize,
       cursor,
     },
-    { enabled: Boolean(debouncedSearchText) }
+    { enabled: Boolean(debouncedSearchText) },
   )
 
   // accumulate posts when new data arrives

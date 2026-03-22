@@ -14,7 +14,7 @@ export function isInQueryContext() {
 
 export function runWithQueryContext<T>(
   context: { authData: AuthData | null },
-  fn: () => T | Promise<T>
+  fn: () => T | Promise<T>,
 ): Promise<T> {
   return asyncContext.run(context, fn)
 }

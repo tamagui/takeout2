@@ -14,7 +14,7 @@ export const useNotificationListener = () => {
   const [notifications] = useQuery(
     newNotificationsSince,
     { userId: user?.id ?? '', sinceTime: mountTimeRef.current },
-    { enabled: Boolean(user?.id) }
+    { enabled: Boolean(user?.id) },
   )
 
   useEffect(() => {

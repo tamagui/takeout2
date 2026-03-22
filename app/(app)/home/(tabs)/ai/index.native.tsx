@@ -32,7 +32,7 @@ const EmptyState = memo(
         </SizableText>
       </YStack>
     </Animated.View>
-  )
+  ),
 )
 
 const MessageBubble = memo(({ message }: { message: Message }) => {
@@ -100,14 +100,14 @@ export const AIPage = memo(() => {
 
   const renderItem = useCallback(
     ({ item }: { item: Message }) => <MessageBubble message={item} />,
-    []
+    [],
   )
 
   const keyExtractor = useCallback((item: Message) => item.id, [])
 
   const ListEmptyComponent = useCallback(
     () => <EmptyState style={emptyStateStyle} sparklesStyle={sparklesAnimatedStyle} />,
-    [emptyStateStyle, sparklesAnimatedStyle]
+    [emptyStateStyle, sparklesAnimatedStyle],
   )
 
   return (

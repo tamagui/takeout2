@@ -33,7 +33,7 @@ export function formatDateRelative(date: Date | string | number): string {
       new Intl.DateTimeFormat('en', {
         hour: 'numeric',
         minute: 'numeric',
-      }).format(messageDate)
+      }).format(messageDate),
     )
   }
 
@@ -43,7 +43,7 @@ export function formatDateRelative(date: Date | string | number): string {
       new Intl.DateTimeFormat('en', {
         hour: 'numeric',
         minute: 'numeric',
-      }).format(messageDate)
+      }).format(messageDate),
     )
   }
 
@@ -55,7 +55,7 @@ export function formatDateRelative(date: Date | string | number): string {
         day: 'numeric',
         hour: 'numeric',
         minute: 'numeric',
-      }).format(messageDate)
+      }).format(messageDate),
     )
   }
 
@@ -67,6 +67,6 @@ export function formatDateRelative(date: Date | string | number): string {
       year: 'numeric',
       hour: 'numeric',
       minute: 'numeric',
-    }).format(messageDate)
+    }).format(messageDate),
   )
 }

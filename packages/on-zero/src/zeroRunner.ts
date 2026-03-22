@@ -11,7 +11,7 @@ export type { RunOptions }
 
 export type ZeroRunner = <TReturn>(
   query: Query<any, ZeroSchema, TReturn>,
-  options?: RunOptions
+  options?: RunOptions,
 ) => Promise<HumanReadable<TReturn>>
 
 let runner: ZeroRunner | null = null
@@ -27,7 +27,7 @@ export function getRunner(): ZeroRunner {
 
   if (!runner) {
     throw new Error(
-      'Zero runner not initialized. Ensure ProvideZero is mounted (client) or createZeroServer is called (server).'
+      'Zero runner not initialized. Ensure ProvideZero is mounted (client) or createZeroServer is called (server).',
     )
   }
 

@@ -42,7 +42,7 @@ function getSyncPrompt(): string {
     throw new Error('Could not find sync-prompt.md in packages/docs')
   } catch (error) {
     throw new Error(
-      `Could not load sync prompt: ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Could not load sync prompt: ${error instanceof Error ? error.message : 'Unknown error'}`,
     )
   }
 }
@@ -230,8 +230,8 @@ export const syncCommand = defineCommand({
         if (!isAuto) {
           console.info(
             pc.dim(
-              'Note: Claude Code will run in headless mode and make changes automatically.'
-            )
+              'Note: Claude Code will run in headless mode and make changes automatically.',
+            ),
           )
           console.info(pc.dim('You will be asked to confirm important decisions.'))
           console.info()

@@ -11,7 +11,7 @@ export interface MultipassConfig {
 
 export function createMultipassConfig(
   name: string,
-  sshKeyPath?: string
+  sshKeyPath?: string,
 ): MultipassConfig {
   return {
     vmName: name,
@@ -70,7 +70,7 @@ packages:
 
   try {
     await run(
-      `multipass launch --name ${config.vmName} --cpus 4 --memory 4G --disk 20G --cloud-init ${cloudInitPath}`
+      `multipass launch --name ${config.vmName} --cpus 4 --memory 4G --disk 20G --cloud-init ${cloudInitPath}`,
     )
   } finally {
     await run(`rm -f ${cloudInitPath}`, { silent: true })
@@ -127,14 +127,14 @@ export async function setupVMSSH(config: MultipassConfig): Promise<void> {
     captureOutput: true,
   })
   await run(
-    `multipass exec ${config.vmName} -- sh -c 'mkdir -p ~/.ssh && echo "${pubKey.trim()}" >> ~/.ssh/authorized_keys'`
+    `multipass exec ${config.vmName} -- sh -c 'mkdir -p ~/.ssh && echo "${pubKey.trim()}" >> ~/.ssh/authorized_keys'`,
   )
   console.info('✅ ssh key configured')
 }
 
 export async function setupPortForward(
   config: MultipassConfig,
-  ports: { local: number; containerName: string; containerPort: number }[]
+  ports: { local: number; containerName: string; containerPort: number }[],
 ): Promise<void> {
   console.info('\n🌐 setting up port forwarding...\n')
 
@@ -148,7 +148,7 @@ export async function setupPortForward(
   for (const { local, containerName, containerPort } of ports) {
     const { stdout: containerIP } = await run(
       `multipass exec ${config.vmName} -- sudo docker inspect $(multipass exec ${config.vmName} -- sudo docker ps -q -f name=${containerName}) -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'`,
-      { silent: true, captureOutput: true }
+      { silent: true, captureOutput: true },
     )
     console.info(`${containerName} container: ${containerIP.trim()}:${containerPort}`)
     forwards.push(`-L ${local}:${containerIP.trim()}:${containerPort}`)
@@ -167,7 +167,7 @@ export async function setupPortForward(
 
   await run(
     `ssh -i ${config.sshKeyPath} -o StrictHostKeyChecking=no -f -N ${forwards.join(' ')} ubuntu@${ip}`,
-    { silent: true }
+    { silent: true },
   )
 
   console.info('✅ port forwarding active')

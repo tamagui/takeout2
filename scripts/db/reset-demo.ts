@@ -47,7 +47,7 @@ await cmd`Reset demo database to seed state`.run(async () => {
     console.info('\ndeleting user-created comments...')
     const commentsResult = await pool.query(
       `DELETE FROM comment WHERE id != ALL($1::text[]) RETURNING id`,
-      [SEED_COMMENT_IDS]
+      [SEED_COMMENT_IDS],
     )
     console.info(`  deleted ${commentsResult.rowCount} comments`)
 
@@ -55,7 +55,7 @@ await cmd`Reset demo database to seed state`.run(async () => {
     console.info('deleting user-created posts...')
     const postsResult = await pool.query(
       `DELETE FROM post WHERE id != ALL($1::text[]) RETURNING id`,
-      [SEED_POST_IDS]
+      [SEED_POST_IDS],
     )
     console.info(`  deleted ${postsResult.rowCount} posts`)
 
@@ -69,7 +69,7 @@ await cmd`Reset demo database to seed state`.run(async () => {
     const usersToKeep = [...SEED_USER_IDS, DEMO_USER_ID]
     const userStatesResult = await pool.query(
       `DELETE FROM "userState" WHERE "userId" != ALL($1::text[]) RETURNING "userId"`,
-      [usersToKeep]
+      [usersToKeep],
     )
     console.info(`  deleted ${userStatesResult.rowCount} user states`)
 
@@ -77,7 +77,7 @@ await cmd`Reset demo database to seed state`.run(async () => {
     console.info('deleting public user profiles...')
     const userPublicResult = await pool.query(
       `DELETE FROM "userPublic" WHERE id != ALL($1::text[]) RETURNING id`,
-      [usersToKeep]
+      [usersToKeep],
     )
     console.info(`  deleted ${userPublicResult.rowCount} public user profiles`)
 
@@ -85,7 +85,7 @@ await cmd`Reset demo database to seed state`.run(async () => {
     console.info('deleting sessions...')
     const sessionsResult = await pool.query(
       `DELETE FROM session WHERE "userId" != ALL($1::text[]) RETURNING id`,
-      [usersToKeep]
+      [usersToKeep],
     )
     console.info(`  deleted ${sessionsResult.rowCount} sessions`)
 
@@ -93,7 +93,7 @@ await cmd`Reset demo database to seed state`.run(async () => {
     console.info('deleting accounts...')
     const accountsResult = await pool.query(
       `DELETE FROM account WHERE "userId" != ALL($1::text[]) RETURNING id`,
-      [usersToKeep]
+      [usersToKeep],
     )
     console.info(`  deleted ${accountsResult.rowCount} accounts`)
 
@@ -101,7 +101,7 @@ await cmd`Reset demo database to seed state`.run(async () => {
     console.info('deleting user records...')
     const usersResult = await pool.query(
       `DELETE FROM "user" WHERE id != ALL($1::text[]) RETURNING id`,
-      [usersToKeep]
+      [usersToKeep],
     )
     console.info(`  deleted ${usersResult.rowCount} user records`)
 

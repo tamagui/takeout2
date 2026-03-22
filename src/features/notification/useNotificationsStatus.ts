@@ -30,7 +30,7 @@ export const useNotificationStatus = () => {
         [
           { text: 'Cancel', style: 'cancel' },
           { text: 'Open Settings', onPress: openSettings },
-        ]
+        ],
       )
       return
     }
@@ -44,7 +44,7 @@ export const useNotificationStatus = () => {
         [
           { text: 'Cancel', style: 'cancel' },
           { text: 'Open Settings', onPress: openSettings },
-        ]
+        ],
       )
       return
     }

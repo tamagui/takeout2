@@ -8,7 +8,7 @@ import { join } from 'node:path'
 
 export function updatePackageJson(
   cwd: string,
-  updates: { name?: string; description?: string }
+  updates: { name?: string; description?: string },
 ): { success: boolean; error?: string } {
   const packagePath = join(cwd, 'package.json')
 
@@ -35,7 +35,7 @@ export function updatePackageJson(
 
 export function updateAppConfig(
   cwd: string,
-  updates: { name?: string; slug?: string; bundleId?: string }
+  updates: { name?: string; slug?: string; bundleId?: string },
 ): { success: boolean; error?: string } {
   const configPath = join(cwd, 'app.config.ts')
 
@@ -60,12 +60,12 @@ export function updateAppConfig(
       // Update iOS bundle identifier
       content = content.replace(
         /(bundleIdentifier:\s*['"])([^'"]+)(['"])/,
-        `$1${updates.bundleId}$3`
+        `$1${updates.bundleId}$3`,
       )
       // Update Android package
       content = content.replace(
         /(package:\s*['"])([^'"]+)(['"])/,
-        `$1${updates.bundleId}$3`
+        `$1${updates.bundleId}$3`,
       )
     }
 
@@ -122,7 +122,7 @@ export function markOnboarded(cwd: string): { success: boolean; error?: string }
  */
 export function updatePackageJsonEnv(
   cwd: string,
-  platform: 'sst' | 'uncloud'
+  platform: 'sst' | 'uncloud',
 ): { success: boolean; error?: string } {
   const packagePath = join(cwd, 'package.json')
 
@@ -176,7 +176,7 @@ export interface EjectResult {
  */
 export async function ejectFromMonorepo(
   cwd: string,
-  options: EjectOptions = {}
+  options: EjectOptions = {},
 ): Promise<EjectResult> {
   const { dryRun = false } = options
   const packagePath = join(cwd, 'package.json')

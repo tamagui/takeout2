@@ -2,7 +2,7 @@ import { EnsureError } from '../error/errors'
 
 export function ensureExists<T>(
   value: T | undefined | null,
-  msg = ''
+  msg = '',
 ): asserts value is T {
   if (value === undefined || value === null) {
     throw new EnsureError(`Invalid nullish value (${value}): ${msg}`)
@@ -11,7 +11,7 @@ export function ensureExists<T>(
 
 export function ensure<T>(
   value: T,
-  msg = ''
+  msg = '',
 ): asserts value is Exclude<T, null | undefined | false> {
   if (!value) {
     throw new EnsureError(`ensure() invalid: (${value}): ${msg} ${new Error().stack}`)

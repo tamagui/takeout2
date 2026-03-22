@@ -42,7 +42,7 @@ export type AuthServer = {
 export async function getAuthDataFromRequest(
   authServer: AuthServer,
   req: Request,
-  tokenOptions?: ValidateTokenOptions
+  tokenOptions?: ValidateTokenOptions,
 ): Promise<AuthData | null> {
   // from react native, better auth doesnt send cookie but insteead only the Authorization
   // but better auth wants to find the cookie here, so re-route it:
@@ -98,7 +98,7 @@ export async function getAuthDataFromRequest(
 
 export async function validateToken(
   token: string,
-  options?: ValidateTokenOptions
+  options?: ValidateTokenOptions,
 ): Promise<JWTPayload> {
   const {
     baseUrl = process.env.ONE_SERVER_URL,
@@ -134,7 +134,7 @@ export async function validateToken(
 
 export async function isValidJWT(
   token: string,
-  options: ValidateTokenOptions
+  options: ValidateTokenOptions,
 ): Promise<boolean> {
   try {
     await validateToken(token, options)

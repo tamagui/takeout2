@@ -52,7 +52,7 @@ export default async function handler(req: Request) {
   } catch (error) {
     return Response.json(
       { error: 'Failed to upload file', details: `${error}` },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

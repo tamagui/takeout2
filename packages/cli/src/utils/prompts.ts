@@ -13,9 +13,9 @@ export function displayWelcome(projectName = 'Takeout'): void {
   console.info()
   p.note(
     pc.dim(
-      "You can re-run 'bun onboard' anytime to reconfigure or skip to specific steps.\nNo need to decide everything upfront!"
+      "You can re-run 'bun onboard' anytime to reconfigure or skip to specific steps.\nNo need to decide everything upfront!",
     ),
-    pc.cyan('Tip')
+    pc.cyan('Tip'),
   )
 }
 
@@ -49,7 +49,7 @@ export function displayPortConflicts(conflicts: PortCheck[]): void {
 
 export async function confirmContinue(
   message: string,
-  defaultValue = true
+  defaultValue = true,
 ): Promise<boolean> {
   const result = await p.confirm({
     message,
@@ -67,7 +67,7 @@ export async function confirmContinue(
 export async function promptText(
   message: string,
   defaultValue?: string,
-  placeholder?: string
+  placeholder?: string,
 ): Promise<string> {
   const result = await p.text({
     message,
@@ -98,7 +98,7 @@ export async function promptPassword(message: string): Promise<string> {
 
 export async function promptSelect<T extends string>(
   message: string,
-  options: { value: T; label: string; hint?: string }[]
+  options: { value: T; label: string; hint?: string }[],
 ): Promise<T | 'cancel'> {
   const result = await p.select({
     message,
@@ -155,7 +155,7 @@ export async function promptStartStep(): Promise<
 
 export async function promptOldSelect<T extends string>(
   message: string,
-  options: { value: T; label: string; hint?: string }[]
+  options: { value: T; label: string; hint?: string }[],
 ): Promise<T> {
   const result = await p.select<string>({
     message,

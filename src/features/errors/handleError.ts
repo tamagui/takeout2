@@ -5,7 +5,7 @@ import type { ErrorContext } from './types'
 export function handleError(
   error: Error,
   context?: Partial<ErrorContext>,
-  severity?: 'low' | 'medium' | 'high' | 'critical'
+  severity?: 'low' | 'medium' | 'high' | 'critical',
 ): void {
   processError({
     error,

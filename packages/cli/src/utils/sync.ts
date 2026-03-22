@@ -25,7 +25,7 @@ export function getFileHash(filePath: string): string {
 
 export function compareFiles(
   sourcePath: string,
-  targetPath: string
+  targetPath: string,
 ): 'new' | 'modified' | 'identical' {
   if (!existsSync(targetPath)) {
     return 'new'

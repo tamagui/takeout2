@@ -18,12 +18,13 @@ export async function clearIndexedDB() {
           return new Promise<void>((resolve, reject) => {
             const deleteReq = indexedDB.deleteDatabase(db.name!)
             deleteReq.onsuccess = () => resolve()
-            deleteReq.onerror = () => reject(deleteReq.error)
+            deleteReq.onerror = () =>
+              reject(deleteReq.error ?? new Error('failed to delete database'))
             deleteReq.onblocked = () => reject(new Error('database deletion blocked'))
           })
         }
         return Promise.resolve()
-      })
+      }),
     )
   }
 }
@@ -45,7 +46,7 @@ export async function clearServiceWorkers() {
 export async function clearCookies() {
   document.cookie.split(';').forEach((cookie) => {
     const eqPos = cookie.indexOf('=')
-    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie
+    const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie
     // eslint-disable-next-line no-document-cookie
     document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`
     // eslint-disable-next-line no-document-cookie
@@ -127,7 +128,7 @@ export async function clearAllDataAndStorages() {
   const failures = results.filter((r) => !r.success)
   if (failures.length > 0) {
     throw new Error(
-      `failed to clear some storage types: ${failures.map((f) => f.type).join(', ')}`
+      `failed to clear some storage types: ${failures.map((f) => f.type).join(', ')}`,
     )
   }
 

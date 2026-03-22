@@ -119,5 +119,5 @@ export const NotificationListItem = memo(
         </YStack>
       </XStack>
     )
-  }
+  },
 )

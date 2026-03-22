@@ -2,7 +2,7 @@ const currentYear = new Date().getFullYear()
 
 export function formatDate(
   date: Date,
-  options?: { daySuffix?: boolean }
+  options?: { daySuffix?: boolean },
 ): [string, string] | [string, string, string] {
   const months = [
     'January',

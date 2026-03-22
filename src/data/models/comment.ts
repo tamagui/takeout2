@@ -31,7 +31,7 @@ export const mutate = mutations(schema, permissions, {
             'Comment violates community guidelines',
             {
               flaggedWords: profanityCheck.flaggedWords,
-            }
+            },
           )
         }
       }

@@ -7,7 +7,7 @@ export const analyticsActions = () => {
     logEvent: async <T extends AnalyticsEvent['type']>(
       userId: string,
       event: T,
-      properties: EventProperties<T>
+      properties: EventProperties<T>,
     ) => {
       // add userId to properties for consistent tracking
       const enrichedProperties = {

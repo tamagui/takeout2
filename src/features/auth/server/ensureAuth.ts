@@ -1,3 +1,4 @@
+import { ADMIN_WHITELIST } from '~/server/constants-server'
 import { authServer } from './authServer'
 
 export class NotAuthorizedError extends Error {}
@@ -8,30 +9,34 @@ export async function ensureAuth(req: Request, role?: 'admin') {
   })
 
   if (!session) {
-    console.warn(`Not authorized: ${req.url}, no session`)
-    for (const [key, value] of req.headers.entries()) {
-      console.warn(`header: ${key} = ${value}`)
-    }
+    console.warn(`Unauthenticated request: ${req.url}`)
     throw Response.json(
       {
         error: `Not authorized`,
       },
       {
         status: 401,
-      }
+      },
     )
   }
 
-  if (role && session.user.role !== role) {
-    console.warn(`Not authorized: ${req.url}, not role ${role}`)
-    throw Response.json(
-      {
-        error: `Not authorized`,
-      },
-      {
-        status: 403,
-      }
-    )
+  if (role === 'admin') {
+    const isAdmin =
+      session.user.role === 'admin' ||
+      (session.user.email ? ADMIN_WHITELIST.has(session.user.email) : false)
+    if (!isAdmin) {
+      console.warn(
+        `Forbidden: ${req.url}, required role: ${role}, user role: ${session.user.role}`,
+      )
+      throw Response.json(
+        {
+          error: `Forbidden`,
+        },
+        {
+          status: 403,
+        },
+      )
+    }
   }
 
   return session

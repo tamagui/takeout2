@@ -177,7 +177,7 @@ const ToastBanner = memo(({ toast, onHide }: ToastBannerProps) => {
           }
         })
       }
-    }
+    },
   )
 
   // reset on hide - animate out first, then remove
@@ -196,10 +196,10 @@ const ToastBanner = memo(({ toast, onHide }: ToastBannerProps) => {
             if (finished) {
               scheduleOnRN(hide)
             }
-          }
+          },
         )
       }
-    }
+    },
   )
 
   // expand/collapse animation
@@ -214,7 +214,7 @@ const ToastBanner = memo(({ toast, onHide }: ToastBannerProps) => {
         translateY.value = withSpring(0)
         toggleExpand(false)
       }
-    }
+    },
   )
 
   const animatedStyle = useAnimatedStyle(() => {

@@ -32,7 +32,7 @@ export const Sheet = forwardRef<SheetRef, SheetProps>(
           pressBehavior="close"
         />
       ),
-      []
+      [],
     )
 
     const handleSheetChanges = useCallback(
@@ -43,7 +43,7 @@ export const Sheet = forwardRef<SheetRef, SheetProps>(
           onClose?.()
         }
       },
-      [onClose, onOpenChange]
+      [onClose, onOpenChange],
     )
 
     return (
@@ -102,5 +102,5 @@ export const Sheet = forwardRef<SheetRef, SheetProps>(
         </BottomSheetView>
       </BottomSheet>
     )
-  }
+  },
 )

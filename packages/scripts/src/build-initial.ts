@@ -93,5 +93,5 @@ await cmd`bootstrap project workspace and build initial packages`.run(
         console.info(`→ Created symlink: ${source} ⇢ ${target}`)
       }
     }
-  }
+  },
 )

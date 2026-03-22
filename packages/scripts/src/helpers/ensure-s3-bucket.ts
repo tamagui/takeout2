@@ -11,7 +11,7 @@ export async function ensureS3Bucket(
   options?: {
     region?: string
     retentionDays?: number
-  }
+  },
 ): Promise<void> {
   const region = options?.region ?? 'us-west-1'
   const retentionDays = options?.retentionDays ?? 30
@@ -41,7 +41,7 @@ export async function ensureS3Bucket(
               LocationConstraint: region as any,
             },
           }),
-        })
+        }),
       )
 
       // enable versioning for safety
@@ -51,7 +51,7 @@ export async function ensureS3Bucket(
           VersioningConfiguration: {
             Status: 'Enabled',
           },
-        })
+        }),
       )
 
       // set lifecycle policy to automatically delete old backups
@@ -75,11 +75,11 @@ export async function ensureS3Bucket(
               },
             ],
           },
-        })
+        }),
       )
 
       console.info(
-        `✅ S3 bucket created with ${retentionDays} day retention: ${bucketName}`
+        `✅ S3 bucket created with ${retentionDays} day retention: ${bucketName}`,
       )
     } else {
       throw error

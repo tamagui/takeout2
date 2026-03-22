@@ -82,7 +82,7 @@ describe('auth initialization requirements', () => {
 
       const storagePath = resolve(
         process.cwd(),
-        'src/features/storage/setupStorage.native.ts'
+        'src/features/storage/setupStorage.native.ts',
       )
       expect(existsSync(storagePath)).toBe(true)
 
@@ -102,7 +102,7 @@ describe('auth initialization requirements', () => {
 
       const clientPath = resolve(
         process.cwd(),
-        'src/features/auth/client/platformClient.native.ts'
+        'src/features/auth/client/platformClient.native.ts',
       )
       expect(existsSync(clientPath)).toBe(true)
 
@@ -126,7 +126,7 @@ describe('regression: d75c598 storage change', () => {
 
     const clientPath = resolve(
       process.cwd(),
-      'src/features/auth/client/platformClient.native.ts'
+      'src/features/auth/client/platformClient.native.ts',
     )
     const platformClient = readFileSync(clientPath, 'utf-8')
 

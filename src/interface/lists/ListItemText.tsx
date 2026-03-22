@@ -89,7 +89,7 @@ export const ListItemText = forwardRef<TamaguiElement, ListItemTextProps>(
         {children}
       </ListItemTextFrame>
     )
-  }
+  },
 )
 
 export const ListItemTextFrame = styled(Text, {

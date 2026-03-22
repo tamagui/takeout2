@@ -5,7 +5,7 @@ export * from 'react-native-svg'
 
 // add missing filter components for web that aren't in @tamagui/react-native-svg
 export const Filter = forwardRef<SVGFilterElement, ComponentProps<'filter'>>(
-  (props, ref) => createElement('filter', { ...props, ref })
+  (props, ref) => createElement('filter', { ...props, ref }),
 )
 
 export const FeGaussianBlur = forwardRef<

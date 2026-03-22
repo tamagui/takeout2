@@ -143,7 +143,7 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
           break
       }
     },
-    [onClose, router]
+    [onClose, router],
   )
 
   const handleRemoveItem = useCallback((id: string) => {
@@ -244,7 +244,7 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
       isOpen.value,
       [0, 0.5, 1],
       [0, 0.5, 1],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     )
     const scale = interpolate(isOpen.value, [0, 1], [0.95, 1], Extrapolation.CLAMP)
 
@@ -252,14 +252,14 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
       expansion.value,
       [0, 1, 2],
       [COLLAPSED_HEIGHT, EXPANDED_HEIGHT, FULLSCREEN_HEIGHT],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     )
 
     const borderRadius = interpolate(
       expansion.value,
       [1, 2],
       [24, 0],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     )
 
     return {
@@ -285,7 +285,7 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
       expansion.value,
       [0, 1, 2],
       [COLLAPSED_HEIGHT, EXPANDED_HEIGHT, FULLSCREEN_HEIGHT],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     )
     const opacity = interpolate(isOpen.value, [0, 0.5, 1], [0, 0, 1], Extrapolation.CLAMP)
     return {
@@ -301,19 +301,19 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
       fullscreenProgress.value,
       [0, 1],
       [baseWidth, 28],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     )
     const height = interpolate(
       fullscreenProgress.value,
       [0, 1],
       [4, 28],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     )
     const borderRadius = interpolate(
       fullscreenProgress.value,
       [0, 1],
       [2, 14],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     )
     return { width, height, borderRadius }
   })
@@ -323,13 +323,13 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
       fullscreenProgress.value,
       [0.3, 0.7],
       [0, 1],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     )
     const scale = interpolate(
       fullscreenProgress.value,
       [0.3, 0.7],
       [0.5, 1],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     )
     return { opacity, transform: [{ scale }] }
   })
@@ -516,19 +516,19 @@ const QuickMenuIcon = ({ item, index, isOpen, onPress }: QuickMenuIconProps) => 
       isOpen.value,
       [itemStart, itemEnd],
       [0, 1],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     )
 
     const scale = withSpring(
       interpolate(itemProgress, [0, 0.8, 1], [0.6, 1.05, 1], Extrapolation.CLAMP),
-      SPRING_CONFIG
+      SPRING_CONFIG,
     )
 
     const opacity = interpolate(
       itemProgress,
       [0, 0.5, 1],
       [0, 0.7, 1],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     )
 
     return {
@@ -612,7 +612,7 @@ const QuickMenuRow = ({ item, onPress, onRemove, onSwipeableRef }: QuickMenuRowP
     (_prog: SharedValue<number>, drag: SharedValue<number>) => {
       return <RightAction drag={drag} onRemove={handleRemove} />
     },
-    [handleRemove]
+    [handleRemove],
   )
 
   return (

@@ -9,7 +9,7 @@ export function pluralize(count: number, singular: string, plural: string): stri
       return `${count} ${plural}`
     default:
       throw new Error(
-        `Can't pluralize: ${grammaticalNumber} for ${count} / ${singular} / ${plural}`
+        `Can't pluralize: ${grammaticalNumber} for ${count} / ${singular} / ${plural}`,
       )
   }
 }

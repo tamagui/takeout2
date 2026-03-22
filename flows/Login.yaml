@@ -1,0 +1,27 @@
+# logs in as the demo user via the "Login as Demo User" quick-login button.
+# the demo button is only visible in dev/demo builds (isDemoMode = true).
+# credentials: demo@takeout.tamagui.dev / demopassword123
+appId: dev.tamagui.takeout.dev
+tags:
+  - auth
+---
+- runFlow: OpenApp.yaml
+
+# dismiss onboarding if shown on first native launch (swipe through all slides or tap skip)
+- tapOn:
+    text: 'Skip'
+    optional: true
+
+# wait for login screen buttons to appear
+- assertVisible: 'Continue with Email'
+
+# tap the demo login button (fastest path - no OTP or password entry required)
+- tapOn: 'Login as Demo User'
+
+# wait for the feed header to appear, confirming successful login
+- extendedWaitUntil:
+    visible: 'Takeout'
+    timeout: 30000
+
+# confirm we are no longer on the login screen
+- assertNotVisible: 'Continue with Email'

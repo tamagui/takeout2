@@ -6,7 +6,7 @@ import { cmd } from './cmd'
 
 export async function execWithEnvironment(
   environment: 'development' | 'production',
-  command: string
+  command: string,
 ) {
   const { spawnSync } = await import('node:child_process')
   const { loadEnv } = await import('./helpers/env-load')
@@ -25,7 +25,7 @@ export async function execWithEnvironment(
   }
 
   console.info(
-    `($): ${command} | env ${environment} ${USE_LOCAL_SERVER ? '| using local endpoints' : ''}`
+    `($): ${command} | env ${environment} ${USE_LOCAL_SERVER ? '| using local endpoints' : ''}`,
   )
 
   const devEnv = USE_LOCAL_SERVER ? await loadEnv('development') : null
@@ -53,9 +53,9 @@ if (import.meta.main) {
     async () => {
       const result = await execWithEnvironment(
         (process.env.NODE_ENV as 'development' | 'production') || 'development',
-        process.argv.slice(3).join(' ')
+        process.argv.slice(3).join(' '),
       )
       process.exit(result.status ?? 1)
-    }
+    },
   )
 }

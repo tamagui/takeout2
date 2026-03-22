@@ -1,0 +1,23 @@
+# cold start with clearState to prime Hermes bytecode cache.
+# subsequent test launches skip clearState so bytecode cache persists = fast restarts.
+appId: dev.tamagui.takeout.dev
+tag:
+  - util
+---
+- launchApp:
+    clearState: true
+
+# dismiss any system dialogs (Apple Account Verification, etc.)
+- tapOn:
+    text: 'Not Now'
+    optional: true
+
+# if on dev builds - tap the dev server URL
+- tapOn:
+    text: http://.*
+    optional: true
+
+# wait for the login screen to load (60s for CI where bundle download can be slow)
+- extendedWaitUntil:
+    visible: 'Continue with Email'
+    timeout: 60000

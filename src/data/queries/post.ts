@@ -57,7 +57,7 @@ export const feedPosts = (props: {
       q
         .orderBy('createdAt', 'desc')
         .limit(1)
-        .related('user', (u) => u.one())
+        .related('user', (u) => u.one()),
     )
 
   if (props.cursor) {
@@ -77,7 +77,7 @@ export const postDetail = (props: { postId: string }) => {
       q
         .orderBy('createdAt', 'asc')
         .limit(50)
-        .related('user', (u) => u.one())
+        .related('user', (u) => u.one()),
     )
 }
 

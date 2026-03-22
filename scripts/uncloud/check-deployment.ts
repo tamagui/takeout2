@@ -174,7 +174,7 @@ Monitors the deployment and exits when all services are healthy or on timeout.
 
     const initialHttpHealth = await checkHttpHealth()
     console.info(
-      `http health: ${initialHttpHealth.healthy ? '✅' : '❌'} ${initialHttpHealth.message || ''}`
+      `http health: ${initialHttpHealth.healthy ? '✅' : '❌'} ${initialHttpHealth.message || ''}`,
     )
     console.info('')
 
@@ -193,7 +193,7 @@ Monitors the deployment and exits when all services are healthy or on timeout.
         state.healthy = await checkContainerHealth(container.id)
         const icon = state.healthy ? '✅' : '⏳'
         console.info(
-          `  ${icon} ${serviceName}: ${state.status} (${state.healthy ? 'healthy' : 'checking...'})`
+          `  ${icon} ${serviceName}: ${state.status} (${state.healthy ? 'healthy' : 'checking...'})`,
         )
         if (!state.healthy) {
           allInitiallyHealthy = false
@@ -211,7 +211,7 @@ Monitors the deployment and exits when all services are healthy or on timeout.
     // only wait for grace period if services aren't already healthy
     if (!allInitiallyHealthy) {
       console.info(
-        `waiting ${HEALTH_CHECK_GRACE_PERIOD / 1000}s for docker health check grace period...`
+        `waiting ${HEALTH_CHECK_GRACE_PERIOD / 1000}s for docker health check grace period...`,
       )
       await new Promise((resolve) => setTimeout(resolve, HEALTH_CHECK_GRACE_PERIOD))
     } else {
@@ -259,7 +259,7 @@ Monitors the deployment and exits when all services are healthy or on timeout.
         if (container?.id) {
           state.healthy = await checkContainerHealth(container.id)
           console.info(
-            `  ${serviceName}: ${state.healthy ? '✅ healthy' : '⏳ checking'}`
+            `  ${serviceName}: ${state.healthy ? '✅ healthy' : '⏳ checking'}`,
           )
 
           // in verbose mode, show why service is unhealthy
@@ -289,7 +289,7 @@ Monitors the deployment and exits when all services are healthy or on timeout.
       // Log significant changes only
       if (hasChanges) {
         const changedServices = Array.from(serviceStates.values()).filter(
-          (s) => s.lastChange && currentTime - s.lastChange < CHECK_INTERVAL * 2
+          (s) => s.lastChange && currentTime - s.lastChange < CHECK_INTERVAL * 2,
         )
         if (changedServices.length > 0) {
           for (const state of changedServices) {
@@ -308,7 +308,7 @@ Monitors the deployment and exits when all services are healthy or on timeout.
           .map((s) => s.name)
         if (unhealthyServices.length > 0) {
           console.info(
-            `  [${elapsedSeconds}s] waiting for: ${unhealthyServices.join(', ')}`
+            `  [${elapsedSeconds}s] waiting for: ${unhealthyServices.join(', ')}`,
           )
         }
       }
@@ -317,7 +317,7 @@ Monitors the deployment and exits when all services are healthy or on timeout.
       if (allHealthy) {
         consecutiveHealthyChecks++
         console.info(
-          `  ✅ all healthy (${consecutiveHealthyChecks}/2 consecutive checks)`
+          `  ✅ all healthy (${consecutiveHealthyChecks}/2 consecutive checks)`,
         )
 
         // Require 2 consecutive healthy checks for stability
@@ -350,10 +350,10 @@ Monitors the deployment and exits when all services are healthy or on timeout.
     const unhealthyServices = Array.from(serviceStates.values()).filter((s) => !s.healthy)
 
     console.error(
-      `\n❌ deployment health check timed out after ${TIMEOUT / 1000 / 60} minutes`
+      `\n❌ deployment health check timed out after ${TIMEOUT / 1000 / 60} minutes`,
     )
     console.error(
-      `\nunhealthy services: ${unhealthyServices.map((s) => s.name).join(', ')}`
+      `\nunhealthy services: ${unhealthyServices.map((s) => s.name).join(', ')}`,
     )
     console.error()
 

@@ -53,7 +53,7 @@ type DropAreaValue = {
 
 const DropAreaContext = createGlobalContext<DropAreaValue | null>(
   'upload/drop-area',
-  null
+  null,
 )
 
 /**
@@ -85,7 +85,7 @@ export const DropAreaFrame = ({ children }: { children: any }) => {
  */
 export const useDropArea = (
   { onDropped, active = true }: DropAreaProps = {},
-  isFrame = false
+  isFrame = false,
 ): DropAreaValue => {
   const context = use(DropAreaContext)
 
@@ -177,7 +177,7 @@ export const DragDropFile = (props: { children: any }) => {
             ...upload,
             preview: existingUpload?.preview || upload.preview,
           }
-        })
+        }),
       )
     },
   })
@@ -210,14 +210,14 @@ export const DragDropFile = (props: { children: any }) => {
                   preview,
                 },
               ]
-            }
+            },
           )
 
           setUploading(attachmentFiles)
           uploadFiles.handleUpload(attachmentFiles.map((f) => f.file))
         }
       },
-      [uploadFiles, hasChildrenDropAreas]
+      [uploadFiles, hasChildrenDropAreas],
     ),
   })
 
@@ -335,7 +335,7 @@ export const useDragDrop = ({
           y: e.clientY,
         })
       },
-      { signal }
+      { signal },
     )
 
     node.addEventListener(
@@ -351,7 +351,7 @@ export const useDragDrop = ({
           type: 'cancel',
         })
       },
-      { signal }
+      { signal },
     )
 
     node.addEventListener(
@@ -389,7 +389,7 @@ export const useDragDrop = ({
           files,
         })
       },
-      { signal }
+      { signal },
     )
 
     return () => controller.abort()
@@ -417,7 +417,7 @@ export const useDragDrop = ({
 }
 
 async function fileLikeToDataURI(
-  file: File | { name: string; contents: Uint8Array<ArrayBufferLike> }
+  file: File | { name: string; contents: Uint8Array<ArrayBufferLike> },
 ) {
   const contents =
     'contents' in file ? file.contents : new Uint8Array(await file.arrayBuffer())

@@ -204,7 +204,7 @@ class ShimmerManager {
         gl.FLOAT, // type of data in buffer
         false, // normalize
         0, // stride
-        0 // offset in buffer
+        0, // offset in buffer
       )
 
       // Set uniforms
@@ -254,7 +254,7 @@ class ShimmerManager {
 
   private createProgram(
     vertexShader: WebGLShader,
-    fragmentShader: WebGLShader
+    fragmentShader: WebGLShader,
   ): WebGLProgram {
     const gl = this.gl!
     const program = gl.createProgram()
@@ -314,7 +314,7 @@ class ShimmerManager {
 
 export const useShimmerEffect = (
   canvasRef: React.RefObject<HTMLCanvasElement | null>,
-  options: ShimmerOptions = { cols: 200, rows: 10, width: 1000, height: 200 }
+  options: ShimmerOptions = { cols: 200, rows: 10, width: 1000, height: 200 },
 ) => {
   const callbackRef = useRef<Function | null>(null)
 

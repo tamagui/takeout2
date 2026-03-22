@@ -47,5 +47,5 @@ export const CommentItem = memo(
         </YStack>
       </XStack>
     )
-  }
+  },
 )

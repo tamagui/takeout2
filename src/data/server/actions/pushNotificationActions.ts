@@ -65,7 +65,7 @@ export const sendPushToUser = async (
   userId: string,
   title: string,
   body?: string,
-  data?: Record<string, unknown>
+  data?: Record<string, unknown>,
 ) => {
   const db = getDb()
 
@@ -77,8 +77,8 @@ export const sendPushToUser = async (
       and(
         eq(device.userId, userId),
         eq(device.pushEnabled, true),
-        ne(device.platform, 'web')
-      )
+        ne(device.platform, 'web'),
+      ),
     )
 
   const tokens = devices.filter((d) => d.pushToken).map((d) => d.pushToken as string)
@@ -95,7 +95,7 @@ export const sendExpoPush = async (
   pushTokens: string[],
   title: string,
   body?: string,
-  data?: Record<string, unknown>
+  data?: Record<string, unknown>,
 ): Promise<{ sent: number; tickets: ExpoPushTicket[] }> => {
   if (pushTokens.length === 0) {
     return { sent: 0, tickets: [] }

@@ -37,7 +37,7 @@ function findScriptsPackageRoot(): string | null {
 function formatScriptList(
   title: string,
   scripts: Map<string, string>,
-  metadata: Map<string, ScriptMetadata>
+  metadata: Map<string, ScriptMetadata>,
 ): void {
   if (scripts.size === 0) return
 
@@ -127,7 +127,7 @@ export async function listAllScripts(includeCommands = true) {
     console.info(pc.yellow('No scripts found'))
     console.info()
     console.info(
-      pc.dim(`Create scripts in ${relative(process.cwd(), getLocalScriptsDir())}/`)
+      pc.dim(`Create scripts in ${relative(process.cwd(), getLocalScriptsDir())}/`),
     )
     console.info(pc.dim(`Or install @take-out/scripts package for built-in scripts`))
   }
@@ -135,13 +135,13 @@ export async function listAllScripts(includeCommands = true) {
   console.info()
   console.info(pc.bold('Usage:'))
   console.info(
-    `  ${pc.cyan('tko <command>')}           ${pc.dim('Run a built-in command')}`
+    `  ${pc.cyan('tko <command>')}           ${pc.dim('Run a built-in command')}`,
   )
   console.info(
-    `  ${pc.cyan('tko <script-name>')}       ${pc.dim('Execute direct script')}`
+    `  ${pc.cyan('tko <script-name>')}       ${pc.dim('Execute direct script')}`,
   )
   console.info(
-    `  ${pc.cyan('tko <group> <script>')}    ${pc.dim('Execute nested script')}`
+    `  ${pc.cyan('tko <group> <script>')}    ${pc.dim('Execute nested script')}`,
   )
   console.info(`  ${pc.cyan('tko script new <path>')}   ${pc.dim('Create a new script')}`)
   console.info()

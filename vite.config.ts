@@ -15,19 +15,6 @@ export default {
     ],
   },
 
-  environments: {
-    client: {
-      build: {
-        rollupOptions: {
-          output: {
-            // reduce parallel modulepreloads, helps web LCP
-            experimentalMinChunkSize: 30_000,
-          },
-        },
-      },
-    },
-  },
-
   server: {
     allowedHosts: ['host.docker.internal'],
   },

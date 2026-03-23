@@ -1,6 +1,6 @@
 import { useRouter } from 'one'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
-import { Dimensions, StyleSheet } from 'react-native'
+import { Dimensions } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import ReanimatedSwipeable, {
   type SwipeableMethods,
@@ -38,13 +38,10 @@ import { CaretDownIcon } from '../icons/phosphor/CaretDownIcon'
 import { TrashIcon } from '../icons/phosphor/TrashIcon'
 import { XIcon } from '../icons/phosphor/XIcon'
 import { showToast } from '../toast/helpers'
-import { FastSquircleView } from '../view/FastSquircleView'
 
 import type { IconComponent } from '~/interface/icons/types'
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window')
-
-const FastSquircleViewAnimated = Animated.createAnimatedComponent(FastSquircleView)
 
 const COLLAPSED_HEIGHT = 220
 const EXPANDED_HEIGHT = SCREEN_HEIGHT * 0.6
@@ -545,7 +542,7 @@ const QuickMenuIcon = ({ item, index, isOpen, onPress }: QuickMenuIconProps) => 
   })
 
   return (
-    <FastSquircleViewAnimated style={animatedStyle}>
+    <Animated.View style={animatedStyle}>
       <Pressable
         onPress={onPress}
         width={48}
@@ -557,7 +554,7 @@ const QuickMenuIcon = ({ item, index, isOpen, onPress }: QuickMenuIconProps) => 
       >
         <Icon size={24} color="$color12" />
       </Pressable>
-    </FastSquircleViewAnimated>
+    </Animated.View>
   )
 }
 
@@ -574,7 +571,18 @@ const RightAction = ({ drag, onRemove }: RightActionProps) => {
   })
 
   return (
-    <Animated.View style={[styles.rightAction, animatedStyle]}>
+    <Animated.View
+      style={[
+        {
+          width: 80,
+          height: '100%',
+          backgroundColor: '#ef4444',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        animatedStyle,
+      ]}
+    >
       <Pressable
         onPress={onRemove}
         width={80}
@@ -624,7 +632,7 @@ const QuickMenuRow = ({ item, onPress, onRemove, onSwipeableRef }: QuickMenuRowP
 
   return (
     <Animated.View style={{ width: '100%' }} layout={LinearTransition.springify()}>
-      <FastSquircleView rounded={16} overflow="hidden">
+      <View rounded={16} overflow="hidden">
         <ReanimatedSwipeable
           ref={swipeableRef}
           friction={2}
@@ -650,17 +658,7 @@ const QuickMenuRow = ({ item, onPress, onRemove, onSwipeableRef }: QuickMenuRowP
             </SizableText>
           </Pressable>
         </ReanimatedSwipeable>
-      </FastSquircleView>
+      </View>
     </Animated.View>
   )
 }
-
-const styles = StyleSheet.create({
-  rightAction: {
-    width: 80,
-    height: '100%',
-    backgroundColor: '#ef4444',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-})

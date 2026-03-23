@@ -2,13 +2,12 @@ import { formatDistanceToNow } from '@take-out/helpers'
 import { router } from 'one'
 import { memo, useState } from 'react'
 import Animated, { SharedTransition } from 'react-native-reanimated'
-import { SizableText, XStack, YStack } from 'tamagui'
+import { SizableText, View, XStack, YStack } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
 import { Link } from '~/interface/app/Link'
 import { Pressable } from '~/interface/buttons/Pressable'
 import { ChatCircleDotsIcon } from '~/interface/icons/phosphor/ChatCircleDotsIcon'
-import { FastSquircleView } from '~/interface/view/FastSquircleView'
 
 import { AvatarWithMenu } from './AvatarWithMenu'
 import { PostActionMenu } from './PostActionMenu'
@@ -39,7 +38,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
   }
 
   return (
-    <FastSquircleView
+    <View
       mt="$3"
       rounded={25}
       overflow="hidden"
@@ -79,7 +78,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
       )}
 
       <Pressable onPress={handleImagePress}>
-        <FastSquircleView
+        <View
           width="100%"
           rounded={16}
           overflow="hidden"
@@ -102,7 +101,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
                   }
             }
           />
-        </FastSquircleView>
+        </View>
       </Pressable>
 
       <XStack items="center" gap="$3" p="$2">
@@ -122,6 +121,6 @@ export const PostCard = memo(({ post }: PostCardProps) => {
           </Link>
         )}
       </XStack>
-    </FastSquircleView>
+    </View>
   )
 })

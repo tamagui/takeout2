@@ -86,21 +86,55 @@ export const LoginPage = () => {
   }
 
   return (
-    <YStack flex={1} items="center" justify="center" gap="$4" px="$6" pt={insets.top}>
-      <SizableText size="$9" fontWeight="700" color="$color12">
-        {APP_NAME}
-      </SizableText>
-      <SizableText size="$4" color="$color10" text="center">
-        Sign in to continue to your account
-      </SizableText>
-      <YStack width="100%" gap="$4" mt="$4">
-        {loginButtons}
-      </YStack>
-    </YStack>
-  )
-}
+    <PageLayout useImage useInsets={false}>
+      <View flex={1}>
+        <View flex={1} items="center" justify="center" pt={insets.top} px="$6">
+          <View
+            mb="$5"
+            transition="300ms"
+            enterStyle={{ opacity: 0, scale: 0.9, y: -20 }}
+          >
+            <Image src={require('../../../assets/logo.png')} width={60} height={60} />
+          </View>
 
-/* original onboarding overlay — disabled while debugging native render
+          <YStack
+            items="center"
+            gap="$2"
+            transition="300ms"
+            enterStyle={{ opacity: 0, y: 10 }}
+          >
+            <SizableText
+              size="$9"
+              fontFamily="$heading"
+              text="center"
+              color="$color12"
+              fontWeight="700"
+            >
+              {APP_NAME}
+            </SizableText>
+            <SizableText size="$4" color="$color10" text="center" maxW={280}>
+              Sign in to continue to your account
+            </SizableText>
+          </YStack>
+        </View>
+
+        <View transition="300ms" enterStyle={{ opacity: 0, y: 30 }}>
+          <GlassView
+            borderRadius={32}
+            intensity={60}
+            containerStyle={{
+              borderBottomLeftRadius: 0,
+              borderBottomRightRadius: 0,
+              paddingBottom: insets.bottom + 16,
+            }}
+          >
+            <YStack px="$5" pt="$6" gap="$4">
+              {loginButtons}
+            </YStack>
+          </GlassView>
+        </View>
+      </View>
+
       <AnimatePresence>
         {showOnboarding && (
           <View
@@ -121,4 +155,4 @@ export const LoginPage = () => {
       </AnimatePresence>
     </PageLayout>
   )
-*/
+}

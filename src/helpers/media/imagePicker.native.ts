@@ -5,13 +5,13 @@ import { Alert, Platform } from 'react-native'
 export type ImagePickerResult = ImagePicker.ImagePickerResult
 
 export const pickImageFromLibrary = async (
-  allowsEditing = true,
+  allowsEditing = true
 ): Promise<ImagePickerResult | null> => {
   // Web implementation using expo-image-picker
   if (Platform.OS === 'web') {
     // Expo image picker works on web too
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images' as ImagePicker.MediaType],
+      mediaTypes: 'images',
       allowsEditing,
       aspect: [1, 1],
       quality: 0.8,
@@ -36,14 +36,14 @@ export const pickImageFromLibrary = async (
           text: 'OK',
           style: 'cancel',
         },
-      ],
+      ]
     )
     return null
   }
 
   // launch image picker
   const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ['images' as ImagePicker.MediaType],
+    mediaTypes: 'images',
     allowsEditing,
     aspect: [1, 1],
     quality: 0.8,
@@ -60,7 +60,7 @@ export const pickImageFromLibrary = async (
 }
 
 export const takePhotoWithCamera = async (
-  allowsEditing = true,
+  allowsEditing = true
 ): Promise<ImagePickerResult | null> => {
   // Web doesn't support camera directly via expo-image-picker
   if (Platform.OS === 'web') {
@@ -81,14 +81,14 @@ export const takePhotoWithCamera = async (
           text: 'OK',
           style: 'cancel',
         },
-      ],
+      ]
     )
     return null
   }
 
   // launch camera
   const result = await ImagePicker.launchCameraAsync({
-    mediaTypes: ['images' as ImagePicker.MediaType],
+    mediaTypes: 'images',
     allowsEditing,
     aspect: [1, 1],
     quality: 0.8,

@@ -48,7 +48,6 @@ export default {
     scheme: appId,
     version,
     runtimeVersion: version, // must be set to use hot-updater "appVersion" update strategy
-    newArchEnabled: true,
     platforms: ['ios', 'android', 'web'],
     userInterfaceStyle: 'automatic',
     icon: getAppIcon(),
@@ -83,6 +82,7 @@ export default {
     },
     primaryColor: '#e6dac1',
     plugins: [
+      'vxrn/expo-plugin',
       'expo-web-browser',
       'expo-font',
       'react-native-bottom-tabs',

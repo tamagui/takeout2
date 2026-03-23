@@ -4,18 +4,19 @@
  * Integration tests verify blocked users' posts don't appear in the SSR HTML.
  */
 
-import { zql } from 'on-zero'
 import { createRoute, useLoader } from 'one'
 import { Text, YStack } from 'tamagui'
-
-import { notBlockedByViewer } from '~/data/where/notBlockedByViewer'
-import { zeroServer } from '~/zero/server'
 
 import type { AuthData } from 'on-zero'
 
 const route = createRoute<'/test/ssr-permissions'>()
 
 export const loader = route.createLoader(async ({ request }) => {
+  // dynamic imports to prevent metro from bundling server-only modules into native
+  const { zql } = await import('on-zero')
+  const { notBlockedByViewer } = await import('~/data/where/notBlockedByViewer')
+  const { zeroServer } = await import('~/zero/server')
+
   const url = new URL(request!.url)
   const viewerId = url.searchParams.get('viewerId')
 

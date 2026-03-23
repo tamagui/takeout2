@@ -99,6 +99,20 @@ export default {
     ),
 
     one({
+      // reanimated 4.2.x dev-only error false positive: _requiresAnimatedComponent getter
+      // throws when any code calls Object.keys() on animated style (tamagui does this)
+      // fixed in reanimated 4.3.0 (PR #8990) - remove this patch when upgrading
+      // see: https://github.com/software-mansion/react-native-reanimated/issues/8799
+      patches: {
+        'react-native-reanimated': {
+          'lib/module/hook/useAnimatedStyle.js': (contents) =>
+            contents?.replace(
+              /throw new ReanimatedError\(\s*'Perhaps you are trying to pass an animated style[^)]+\);/g,
+              'return true;',
+            ),
+        },
+      },
+
       setupFile: {
         client: './src/setupClient.ts',
         native: './src/setupNative.ts',

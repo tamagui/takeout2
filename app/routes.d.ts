@@ -72,7 +72,6 @@ declare module 'one' {
         | `/home/settings/edit-profile`
         | `/privacy-policy`
         | `/terms-of-service`
-        | `/test/ssr-permissions`
       DynamicRoutes: 
         | `/(app)/auth/signup/${OneRouter.SingleRoutePart<T>}`
         | `/(app)/home/(tabs)/feed/post/${OneRouter.SingleRoutePart<T>}`

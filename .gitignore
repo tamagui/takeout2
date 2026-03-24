@@ -22,7 +22,7 @@ dist
 # generated claude skills from packages/docs (run `bun tko skills generate` to regenerate)
 .claude/skills/takeout-*
 # used for syncing with upstream
-.cluade/sync
+.claude/sync
 
 .env
 .env.production

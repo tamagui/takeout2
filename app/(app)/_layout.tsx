@@ -40,7 +40,9 @@ export function AppLayout() {
     return <Redirect href="/home/feed" />
   }
   // redirect bare /home to /home/feed (no index page exists for /home)
-  if (pathname === '/home') {
+  // use window.location.pathname for exact match — usePathname() can return
+  // /home momentarily during hydration before nested routes resolve
+  if (typeof window !== 'undefined' && window.location.pathname === '/home') {
     return <Redirect href="/home/feed" />
   }
 

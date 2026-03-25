@@ -1,17 +1,11 @@
-import { Redirect, Slot, Stack, usePathname } from 'one'
+import { Slot, Stack } from 'one'
 
 import { notificationPromptStorage } from '~/features/notification/notificationPromptStorage'
 import { ProvideZero } from '~/zero/client'
 
 export const AppLayout = () => {
-  const pathname = usePathname()
   // check if user has seen the notification prompt (sync read from MMKV)
   const hasSeenNotificationPrompt = notificationPromptStorage.get() === true
-
-  // redirect bare /home to /home/feed on web (native uses Stack initialRouteName)
-  if (!process.env.VITE_NATIVE && pathname === '/home') {
-    return <Redirect href="/home/feed" />
-  }
 
   return (
     <>

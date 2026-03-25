@@ -39,6 +39,10 @@ export function AppLayout() {
   if (isLoggedIn && pathname.startsWith('/auth')) {
     return <Redirect href="/home/feed" />
   }
+  // redirect bare /home to /home/feed (no index page exists for /home)
+  if (pathname === '/home') {
+    return <Redirect href="/home/feed" />
+  }
 
   return (
     // our app is SPA from here on down, avoid extra work by disabling SSR

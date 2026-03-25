@@ -74,7 +74,7 @@ export const NotificationPage = () => {
   const completeAndNavigate = () => {
     // mark as seen so we don't show again
     notificationPromptStorage.set(true)
-    router.replace('/home')
+    router.replace('/home/feed')
   }
 
   const handleAllowNotifications = async () => {

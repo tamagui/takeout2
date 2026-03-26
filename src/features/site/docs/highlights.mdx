@@ -38,6 +38,13 @@ Here's a sample of some interesting work done in Takeout:
    analyze web performance and lighthouse. Aliases to remove bloat.
 6. **Flexible deploy** - Deploy to a Hono server, or switch to Vercel or
    Cloudflare with a single line of config.
+7. **Intercepted modals** <ProBadge /> - Next.js-style parallel route modals
+   with `@modal/(.)` pattern for smooth enter/exit animations - tap a post in
+   the feed and it opens as an animated modal overlay.
+8. **20+ routes** <ProBadge /> - Full app with feed, profile, search, AI chat,
+   notifications, settings, onboarding, OTP signup, legal pages, docs, OG image
+   generation, and file upload APIs - versus just a feed tab and settings in
+   the free starter.
 
 ## [Tamagui](https://tamagui.dev)
 
@@ -52,6 +59,10 @@ Here's a sample of some interesting work done in Takeout:
    internal changes with 0 re-rendering, for much smoother feeling apps.
 5. **Best-in-class themes** - No re-render switch on web and native,
    SSR-friendly, unlimited sub-themes.
+6. **50+ native UI components** <ProBadge /> - Animated blur headers, glass
+   morphism effects, gradient blur views, native video player,
+   keyboard-aware scroll views, notification toasts, and many more
+   production-quality native components.
 
 ## [Zero](https://zero.rocicorp.dev)
 
@@ -68,17 +79,31 @@ Here's a sample of some interesting work done in Takeout:
    anonymous users.
 6. **Streamlined Deploy** <ProBadge /> - Automated restart and migrate progress
    for seamless deploys to production.
+7. **Complex permissions** <ProBadge /> - Role-based permission system with admin
+   bypass modes, query/mutation validation hooks, and per-table row-level
+   security across 8+ models.
+8. **Real-world patterns** <ProBadge /> - Batch queries, async task handling,
+   transaction support, and mutation context scoping demonstrated across a full
+   social app (posts, comments, notifications, moderation).
+9. **Full on-zero package** <ProBadge /> - A complete library with code
+   generation, Vite plugin, React hooks, and 11 helper utilities for building
+   production Zero apps.
 
 ## [Better Auth](https://www.better-auth.com)
 
 1. **Onboarding** <ProBadge /> - Full auth setup with onboarding flow, OTP,
    multi-step profile setup.
 2. **Zero Compatible** - Set up to work automatically with our Zero setup.
-3. **Phone-first signup** - generates temp email for phone-only users
+3. **Phone-first signup** <ProBadge /> - generates temp email for phone-only
+   users, with SMS OTP and region validation.
 4. **Public/private profile system** - works well with Zero by splitting public
    and private user information, then gluing together things nicely on the
    frontend.
 5. **Invite system** - whitelist + invite codes with use limits and expiration
+6. **OTP authentication** <ProBadge /> - Email and SMS OTP login flows with rate
+   limiting, exponential backoff, and dev-friendly OTP storage for testing.
+7. **Admin impersonation** <ProBadge /> - Sign in as any user for debugging and
+   support, with proper auth context handling.
 
 ## [Drizzle](https://orm.drizzle.team)
 
@@ -90,13 +115,25 @@ Here's a sample of some interesting work done in Takeout:
    Drizzle that lets you easily write custom up migrations alongside your
    auto-generated ones with a single command to create or run, and designed to
    build properly for Lambda environments if deploying with SST.
+5. **Optimized indexing** <ProBadge /> - 8+ carefully tuned database indexes
+   across all tables for fast queries on feeds, comments, profiles, and
+   moderation - versus just a single index in the free starter.
+6. **Production migration runner** <ProBadge /> - Pre-compiled migration runner
+   that works in Lambda environments, handles Zero's three databases
+   automatically, and is designed for zero-downtime deploys.
 
-## Uncloud
+## Uncloud <ProBadge />
 
 1. **Any VPS** - Deploy to any server with Docker and SSH access.
 2. **Rolling deploys** - new instances spin up before old ones terminate.
 3. **Encrypted config sharing** - team can share deployment credentials
    securely.
+4. **Production deploy tooling** - Full deploy orchestration with health checks,
+   cluster management, and log aggregation scripts.
+5. **Local deploy testing** - Deploy to a local Multipass VM to validate your
+   full production setup before going live.
+6. **Zero-downtime deploys** - Automated blue-green style deploys with instance
+   spin-up verification before cutover.
 
 ## AWS <ProBadge /> <WIPBadge />
 
@@ -108,7 +145,7 @@ Here's a sample of some interesting work done in Takeout:
    env-specific scripting.
 5. **Graviton support** - ARM64 builds for ~40% cost savings.
 
-## CI/CD
+## CI/CD <ProBadge />
 
 1. **Commit-gated native builds** - `native:` prefix in commit triggers
    expensive iOS/Android builds.
@@ -116,10 +153,14 @@ Here's a sample of some interesting work done in Takeout:
    including building and uploading images, running integration tests, and
    monitoring health of the final deploy.
 3. **Expo fingerprint caching** - JS-only changes skip native rebuild entirely.
-4. **Auto OTA deploys** <ProBadge /> - hot updates deploy automatically after CI
-   succeeds on main.
+4. **Auto OTA deploys** - hot updates deploy automatically after CI succeeds on
+   main.
+5. **Native CD pipelines** - Dedicated iOS and Android release workflows with
+   signed builds, TestFlight submission, and prebuilt library caching.
+6. **Hot update deploys** - Automated and manual hot update deployment workflows
+   for instant native patches.
 
-## Scripts
+## Scripts <ProBadge />
 
 1. **Tons of custom scripts** - A ton of Bun scripts from syncing environment,
    monitoring health and deploys, shelling into dev/prod servers/databases,
@@ -128,6 +169,10 @@ Here's a sample of some interesting work done in Takeout:
 1. **Parallel runner** - color-coded output with CPU-aware concurrency.
 1. **AI-assisted sync** - `tko sync` to sync with latest Takeout changes, loads
    prompt and spawns claude/cursor/aider.
+1. **Ops & deploy scripts** - Full release pipeline, hot update deploy, AWS/SST
+   checks, uncloud deploy orchestration, and production shell access.
+1. **Env management scripts** - Sync env vars to/from GitHub secrets,
+   pull from SST/production, and thread into every service automatically.
 
 ## Environment
 

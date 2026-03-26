@@ -98,21 +98,6 @@ export default {
               'return true;',
             ),
         },
-        // fix: vxrn expo-plugin generates `exec {}` which fails on Gradle 9 / RN 0.83
-        // Gradle 9 removed project.exec {} — use ExecOperations injection instead
-        // remove when vxrn fixes this upstream
-        vxrn: {
-          'expo-plugin.cjs': (contents) =>
-            contents
-              ?.replace(
-                /exec \{\s*\n\s+commandLine vxrnCli, "patch"\s*\n\s+\}/g,
-                `injected.execOps.exec {\n                commandLine "node", vxrnCli, "patch"\n            }`,
-              )
-              .replace(
-                'gradle.taskGraph.whenReady',
-                `interface InjectedExecOps {\n    @Inject\n    ExecOperations getExecOps()\n}\n\ndef injected = objects.newInstance(InjectedExecOps)\n\ngradle.taskGraph.whenReady`,
-              ),
-        },
       },
 
       setupFile: {

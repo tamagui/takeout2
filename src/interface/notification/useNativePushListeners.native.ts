@@ -1,10 +1,9 @@
+import * as Haptics from 'expo-haptics'
 import * as Notifications from 'expo-notifications'
 import { useRouter } from 'one'
-import { useEffect, type ReactNode } from 'react'
+import { useEffect } from 'react'
 
-import { showToast } from '../toast/helpers'
-
-import type { ToastOptions } from '../toast/types'
+import { toast } from '@tamagui/toast/v2'
 
 type NotificationData = {
   postId?: string
@@ -22,31 +21,24 @@ Notifications.setNotificationHandler({
   }),
 })
 
-export const showNotification = (title: string, options?: ToastOptions) => {
-  showToast(title, options)
-}
-
-export const hideNotification = () => {}
-
-export const NotificationProvider = ({ children }: { children: ReactNode }) => {
+export const useNativePushListeners = () => {
   const router = useRouter()
 
   useEffect(() => {
-    // handle foreground notifications - show custom toast
     const foregroundSubscription = Notifications.addNotificationReceivedListener(
       (notification) => {
         const { title, body } = notification.request.content
         const data = notification.request.content.data as NotificationData | undefined
-        console.log('notification received', title, body, data)
-        showNotification(title || 'New notification', {
-          message: body || undefined,
-          haptic: 'success',
+        console.info('notification received', title, body, data)
+
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+        toast(title || 'New notification', {
+          description: body || undefined,
           duration: 3000,
         })
       },
     )
 
-    // handle notification tap (when app was in background)
     const responseSubscription = Notifications.addNotificationResponseReceivedListener(
       (response) => {
         const data = response.notification.request.content.data as
@@ -66,6 +58,4 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
       responseSubscription.remove()
     }
   }, [router])
-
-  return children
 }

@@ -108,7 +108,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <Toast
-      position={isWeb ? 'top-right' : "top-center"}
+      position={isWeb ? 'top-right' : 'top-center'}
       duration={3000}
       visibleToasts={4}
       gap={12}

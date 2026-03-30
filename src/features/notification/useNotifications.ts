@@ -32,5 +32,7 @@ export const useUnreadNotificationCount = (userId: string) => {
     { enabled: Boolean(userId) },
   )
 
-  return notifications?.length ?? 0
+  // derive a primitive to avoid re-rendering subscribers when array ref changes but count is same
+  const count = notifications?.length ?? 0
+  return count
 }

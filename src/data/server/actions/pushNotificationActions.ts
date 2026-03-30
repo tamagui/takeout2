@@ -37,25 +37,25 @@ export const createNotification = async (params: CreateNotificationParams) => {
 
   const notificationId = crypto.randomUUID()
 
-  // insert notification into database (zero will sync to all clients)
-  await db.insert(notification).values({
-    id: notificationId,
-    userId,
-    actorId,
-    type,
-    title,
-    body,
-    data: data ? JSON.stringify(data) : undefined,
-    read: false,
-    createdAt: new Date().toISOString(),
-  })
-
-  // send push notification to native devices only (ios/android)
-  await sendPushToUser(userId, title, body, {
-    notificationId,
-    type,
-    ...data,
-  })
+  // insert notification and send push in parallel — push doesn't depend on insert
+  await Promise.all([
+    db.insert(notification).values({
+      id: notificationId,
+      userId,
+      actorId,
+      type,
+      title,
+      body,
+      data: data ? JSON.stringify(data) : undefined,
+      read: false,
+      createdAt: new Date().toISOString(),
+    }),
+    sendPushToUser(userId, title, body, {
+      notificationId,
+      type,
+      ...data,
+    }),
+  ])
 
   return notificationId
 }
@@ -163,21 +163,21 @@ export const notifyCommentOnPost = async (params: {
   const { postId, commentId, commenterId, commentContent } = params
   const db = getDb()
 
-  const [postRow] = await db
-    .select({ userId: post.userId })
-    .from(post)
-    .where(eq(post.id, postId))
+  const [postResult, commenterResult] = await Promise.all([
+    db.select({ userId: post.userId }).from(post).where(eq(post.id, postId)),
+    db
+      .select({ name: userPublic.name, username: userPublic.username })
+      .from(userPublic)
+      .where(eq(userPublic.id, commenterId)),
+  ])
 
+  const [postRow] = postResult
   if (!postRow) return
 
   const postOwnerId = postRow.userId
-
   if (postOwnerId === commenterId) return
 
-  const [commenter] = await db
-    .select({ name: userPublic.name, username: userPublic.username })
-    .from(userPublic)
-    .where(eq(userPublic.id, commenterId))
+  const [commenter] = commenterResult
 
   const commenterName = commenter?.name || commenter?.username || 'Someone'
   const truncatedContent =

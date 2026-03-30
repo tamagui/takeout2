@@ -20,6 +20,20 @@ type NotificationListProps = {
   pageSize?: number
 }
 
+const LoadingState = (
+  <YStack flex={1} items="center" justify="center" py="$8">
+    <Spinner />
+  </YStack>
+)
+
+const EmptyState = (
+  <YStack flex={1} items="center" justify="center" py="$8">
+    <SizableText size="$4" color="$color10">
+      No notifications yet
+    </SizableText>
+  </YStack>
+)
+
 export const NotificationList = memo(
   ({ onNotificationPress, pageSize = 50 }: NotificationListProps) => {
     const { user } = useAuth()
@@ -61,25 +75,8 @@ export const NotificationList = memo(
 
     const keyExtractor = useCallback((item: NotificationWithActor) => item.id, [])
 
-    const isLoading = status.type === 'unknown'
-
-    if (isLoading) {
-      return (
-        <YStack flex={1} items="center" justify="center" py="$8">
-          <Spinner />
-        </YStack>
-      )
-    }
-
-    if (!notifications || notifications.length === 0) {
-      return (
-        <YStack flex={1} items="center" justify="center" py="$8">
-          <SizableText size="$4" color="$color10">
-            No notifications yet
-          </SizableText>
-        </YStack>
-      )
-    }
+    if (status.type === 'unknown') return LoadingState
+    if (!notifications || notifications.length === 0) return EmptyState
 
     return (
       <LegendList

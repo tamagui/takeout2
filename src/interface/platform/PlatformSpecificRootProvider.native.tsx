@@ -3,6 +3,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { LogBox } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { KeyboardProvider } from 'react-native-keyboard-controller'
+import { PortalProvider } from 'react-native-teleport'
 
 import { useAuth } from '~/features/auth/client/authClient'
 
@@ -37,16 +38,18 @@ export function PlatformSpecificRootProvider({ children }: { children: ReactNode
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <KeyboardProvider>
-        {showSplash && (
-          <Splash
-            isReady={true}
-            onAnimationEnd={() => {
-              splashHasBeenShown = true
-              setShowSplash(false)
-            }}
-          />
-        )}
-        {children}
+        <PortalProvider>
+          {showSplash && (
+            <Splash
+              isReady={true}
+              onAnimationEnd={() => {
+                splashHasBeenShown = true
+                setShowSplash(false)
+              }}
+            />
+          )}
+          {children}
+        </PortalProvider>
       </KeyboardProvider>
     </GestureHandlerRootView>
   )

@@ -1,10 +1,9 @@
+import { toast } from '@tamagui/toast/v2'
 import { useEffect, useRef } from 'react'
 
 import { newNotificationsSince } from '~/data/queries/notification'
 import { useAuth } from '~/features/auth/client/authClient'
 import { useQuery } from '~/zero/client'
-
-import { showNotification } from './notificationEmitter'
 
 export const useNotificationListener = () => {
   const { user } = useAuth()
@@ -24,9 +23,9 @@ export const useNotificationListener = () => {
       if (seenIdsRef.current.has(notification.id)) continue
       seenIdsRef.current.add(notification.id)
 
-      showNotification('New notification', {
+      toast('New notification', {
         description: notification.body ?? undefined,
-        toastOptions: { duration: 3000 },
+        duration: 3000,
       })
     }
   }, [notifications])

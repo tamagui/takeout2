@@ -92,7 +92,14 @@ export default {
       // see: https://github.com/software-mansion/react-native-reanimated/issues/8799
       patches: {
         'react-native-reanimated': {
+          // web (vite resolves lib/module)
           'lib/module/hook/useAnimatedStyle.js': (contents) =>
+            contents?.replace(
+              /throw new ReanimatedError\(\s*'Perhaps you are trying to pass an animated style[^)]+\);/g,
+              'return true;',
+            ),
+          // native (metro resolves src/ via react-native field)
+          'src/hook/useAnimatedStyle.ts': (contents) =>
             contents?.replace(
               /throw new ReanimatedError\(\s*'Perhaps you are trying to pass an animated style[^)]+\);/g,
               'return true;',

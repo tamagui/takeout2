@@ -1,0 +1,141 @@
+Takeout Proprietary License
+
+Copyright (c) 2024-present Tamagui LLC. All rights reserved.
+
+NOTICE: This software and all associated source code, documentation, and assets
+("Software") are the proprietary property of Tamagui LLC. The Software is NOT
+open source and is NOT licensed under MIT, Apache, or any other permissive or
+copyleft license, except where individual packages within this repository
+explicitly state otherwise in their own LICENSE file.
+
+By purchasing, accessing, or using the Software, you agree to the following
+terms.
+
+
+1. GRANT OF LICENSE
+
+Tamagui LLC grants you ("Licensee") a non-exclusive, non-transferable,
+revocable license to use the Software subject to the terms below.
+
+This license is granted per project. Each license covers exactly one project,
+defined as:
+
+  - One public web domain (e.g., myapp.com)
+  - One iOS App Store application
+  - One Android Play Store application
+
+Additional projects require additional licenses.
+
+
+2. SUBSCRIPTION AND PAYMENT
+
+The license requires an active paid subscription. The subscription is billed
+annually. Your license remains valid for as long as your subscription is
+current and in good standing.
+
+If your subscription lapses or is cancelled:
+
+  - You retain the right to use the version of the Software that was current
+    at the time of cancellation, solely for the project it was licensed to.
+  - You lose access to updates, new releases, and support.
+  - You may not begin new projects using the Software without renewing or
+    purchasing a new license.
+
+
+3. PERMITTED USE
+
+You may:
+
+  - Use the Software for one licensed project (commercial or non-commercial).
+  - Modify the Software for use within your licensed project.
+  - Allow team members working on your licensed project to access and use the
+    Software, provided they are added to your project team through the
+    appropriate dashboard.
+  - Deploy the Software as part of your licensed project's production
+    application.
+
+
+4. RESTRICTIONS
+
+You may not:
+
+  - Use the Software for any project other than the one specified in your
+    license.
+  - Redistribute, sublicense, sell, lease, or otherwise transfer the Software
+    or any portion thereof to any third party.
+  - Publish, open-source, or make publicly available the Software's source
+    code in whole or in substantial part.
+  - Use the Software to create a competing product, template, starter kit, or
+    component library.
+  - Remove or alter any proprietary notices, labels, or marks on the Software.
+  - Share account credentials with individuals outside your project team.
+  - Circumvent any technical measures that control access to the Software.
+
+
+5. OWNERSHIP
+
+The Software, including all intellectual property rights therein, remains the
+exclusive property of Tamagui LLC. This license does not convey any ownership
+interest in the Software. All rights not expressly granted are reserved.
+
+
+6. TEAM MEMBERS
+
+Your license includes access for team members working on the licensed project
+at no additional per-seat cost. All team members must be registered through the
+project dashboard. Team members may only use the Software for the licensed
+project.
+
+
+7. NO WARRANTY
+
+THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. TAMAGUI LLC DOES NOT
+WARRANT THAT THE SOFTWARE WILL BE ERROR-FREE OR UNINTERRUPTED.
+
+
+8. LIMITATION OF LIABILITY
+
+IN NO EVENT SHALL TAMAGUI LLC BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL,
+CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING OUT OF OR RELATED TO YOUR USE OF
+THE SOFTWARE, REGARDLESS OF THE CAUSE OF ACTION OR THE THEORY OF LIABILITY.
+TAMAGUI LLC'S TOTAL LIABILITY SHALL NOT EXCEED THE AMOUNT PAID BY LICENSEE FOR
+THE LICENSE DURING THE TWELVE (12) MONTHS PRECEDING THE CLAIM.
+
+
+9. TERMINATION
+
+Tamagui LLC may terminate this license immediately if you breach any of these
+terms. Upon termination:
+
+  - You must cease all use of the Software.
+  - You must destroy all copies of the Software in your possession.
+  - Sections 4, 5, 7, 8, and 10 survive termination.
+
+
+10. GENERAL
+
+This license is governed by the laws of the State of California, without
+regard to conflict of law principles. Any disputes arising under this license
+shall be resolved in the courts located in California.
+
+This license constitutes the entire agreement between you and Tamagui LLC
+regarding the Software and supersedes all prior agreements and understandings.
+
+If any provision of this license is found to be unenforceable, the remaining
+provisions shall continue in full force and effect.
+
+
+11. OPEN SOURCE PACKAGES
+
+Certain packages within this repository may be independently licensed under
+open source licenses (e.g., MIT). Those packages will contain their own
+LICENSE file, and the terms of that file govern the use of that specific
+package. This proprietary license applies to all other code in this
+repository.
+
+
+12. CONTACT
+
+For licensing inquiries, contact support@tamagui.dev.

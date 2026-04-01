@@ -92,16 +92,21 @@ export default {
         // objects ($$typeof, constructor, etc) triggering fake API calls and
         // 404 loops on native. fix: return undefined when path doesn't exist
         // in routes. see: better-auth/better-auth#6938
+        // better-auth's proxy returns recursive proxies for ALL property access,
+        // including introspection keys ($$typeof, constructor, toJSON). react 19.2
+        // / rn 0.83 introspect objects more aggressively, triggering fake API calls.
+        // extend existing then/catch/finally guard with common introspection keys.
+        // see: better-auth/better-auth#6938
         'better-auth': {
           'dist/shared/better-auth.RKafzlkP.mjs': (contents) =>
             contents?.replace(
-              'return createProxy(fullPath);',
-              'if (current === void 0) return void 0;\n        return createProxy(fullPath);',
+              'if (prop === "then" || prop === "catch" || prop === "finally")',
+              'if (prop === "then" || prop === "catch" || prop === "finally" || prop === "$$$$typeof" || prop === "constructor" || prop === "toJSON" || prop === "nodeType")',
             ),
           'dist/shared/better-auth.8HJ5v58s.cjs': (contents) =>
             contents?.replace(
-              'return createProxy(fullPath);',
-              'if (current === void 0) return void 0;\n        return createProxy(fullPath);',
+              'if (prop === "then" || prop === "catch" || prop === "finally")',
+              'if (prop === "then" || prop === "catch" || prop === "finally" || prop === "$$$$typeof" || prop === "constructor" || prop === "toJSON" || prop === "nodeType")',
             ),
         },
       },

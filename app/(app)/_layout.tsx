@@ -44,20 +44,23 @@ export function AppLayout() {
     // our app is SPA from here on down, avoid extra work by disabling SSR
     <Configuration disableSSR animationDriver={animationsApp}>
       {process.env.VITE_NATIVE ? (
-        <ToastProvider>
-          <NotificationProvider>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                animation: 'none',
-              }}
-            >
-              <Stack.Screen name="auth" />
-              <Stack.Screen name="home" />
-            </Stack>
-          </NotificationProvider>
-          <Dialogs />
-        </ToastProvider>
+        <ProvideZero>
+          <WidgetSetup />
+          <ToastProvider>
+            <NotificationProvider>
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  animation: 'none',
+                }}
+              >
+                <Stack.Screen name="auth" />
+                <Stack.Screen name="home" />
+              </Stack>
+            </NotificationProvider>
+            <Dialogs />
+          </ToastProvider>
+        </ProvideZero>
       ) : (
         <ProvideZero>
           <WidgetSetup />

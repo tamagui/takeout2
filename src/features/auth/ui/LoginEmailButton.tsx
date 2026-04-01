@@ -12,6 +12,7 @@ export const LoginEmailButton = () => {
         haptic
         width="100%"
         icon={EnvelopeSimpleIcon}
+        height={48}
       >
         Continue with Email
       </Button>

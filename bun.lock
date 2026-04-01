@@ -141,7 +141,7 @@
     },
     "packages/better-auth-utils": {
       "name": "@take-out/better-auth-utils",
-      "version": "0.3.0",
+      "version": "0.3.0-1775080946479",
       "dependencies": {
         "@take-out/helpers": "workspace:*",
         "jose": "^6.0.10",
@@ -161,7 +161,7 @@
     },
     "packages/cli": {
       "name": "@take-out/cli",
-      "version": "0.3.0",
+      "version": "0.3.0-1775080946479",
       "bin": {
         "takeout": "./src/cli.ts",
         "tko": "./src/cli.ts",
@@ -190,7 +190,7 @@
     },
     "packages/create-takeout": {
       "name": "create-takeout",
-      "version": "0.3.0",
+      "version": "0.3.0-1775080946479",
       "bin": "./run.js",
       "dependencies": {
         "citty": "^0.1.6",
@@ -205,15 +205,15 @@
     },
     "packages/docs": {
       "name": "@take-out/docs",
-      "version": "0.3.0",
+      "version": "0.3.0-1775080946479",
     },
     "packages/env": {
       "name": "@take-out/env",
-      "version": "0.3.0",
+      "version": "0.3.0-1775080946479",
     },
     "packages/helpers": {
       "name": "@take-out/helpers",
-      "version": "0.3.0",
+      "version": "0.3.0-1775080946479",
       "dependencies": {
         "@tamagui/constants": "2.0.0-rc.36",
         "dequal": "^2.0.3",
@@ -240,7 +240,7 @@
     },
     "packages/hooks": {
       "name": "@take-out/hooks",
-      "version": "0.3.0",
+      "version": "0.3.0-1775080946479",
       "dependencies": {
         "@take-out/helpers": "workspace:*",
       },
@@ -259,14 +259,14 @@
     },
     "packages/native": {
       "name": "@take-out/native",
-      "version": "0.3.0",
+      "version": "0.3.0-1775080946479",
       "peerDependencies": {
         "expo-crypto": "*",
       },
     },
     "packages/native-hot-update": {
       "name": "@take-out/native-hot-update",
-      "version": "0.3.0",
+      "version": "0.3.0-1775080946479",
       "devDependencies": {
         "@tamagui/build": "2.0.0-rc.36",
         "@types/react": "^18.3.18",
@@ -283,7 +283,7 @@
     },
     "packages/on-zero": {
       "name": "on-zero",
-      "version": "0.3.0",
+      "version": "0.3.0-1775080946479",
       "bin": {
         "on-zero": "./cli.cjs",
       },
@@ -291,7 +291,6 @@
         "@take-out/helpers": "workspace:*",
         "chokidar": "^4.0.3",
         "citty": "^0.1.6",
-        "drizzle-zero": "1.0.0-beta.0",
         "valibot": "^1.1.0",
       },
       "devDependencies": {
@@ -299,6 +298,7 @@
         "@types/node": "25.2.0",
         "@types/pg": "^8.11.10",
         "@types/react": "^19.0.0",
+        "drizzle-zero": "1.0.0-beta.0",
         "oxfmt": "^0.16.0",
         "oxlint": "^1.31.0",
         "react": "^19.0.0",
@@ -309,19 +309,21 @@
       "peerDependencies": {
         "@rocicorp/zero": ">=0.26.2",
         "drizzle-orm": ">=1.0.0 <2",
+        "drizzle-zero": ">=1.0.0-beta.0",
         "pg": ">=8.0.0",
         "react": "*",
         "react-native": "*",
       },
       "optionalPeers": [
         "drizzle-orm",
+        "drizzle-zero",
         "pg",
         "react-native",
       ],
     },
     "packages/postgres": {
       "name": "@take-out/postgres",
-      "version": "0.3.0",
+      "version": "0.3.0-1775080946479",
       "bin": {
         "postgres": "./cli.cjs",
       },
@@ -345,14 +347,14 @@
     },
     "packages/run": {
       "name": "@take-out/run",
-      "version": "0.3.0",
+      "version": "0.3.0-1775080946479",
       "dependencies": {
         "@lydell/node-pty": "^1.2.0-beta.3",
       },
     },
     "packages/scripts": {
       "name": "@take-out/scripts",
-      "version": "0.3.0",
+      "version": "0.3.0-1775080946479",
       "dependencies": {
         "@clack/prompts": "^0.8.2",
         "@take-out/helpers": "workspace:*",

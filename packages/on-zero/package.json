@@ -69,19 +69,24 @@
       "types": "./types/vite-plugin.d.ts",
       "import": "./dist/esm/vite-plugin.mjs",
       "require": "./dist/cjs/vite-plugin.cjs"
+    },
+    "./drizzle": {
+      "types": "./types/createSchemaFromDrizzle.d.ts",
+      "import": "./dist/esm/createSchemaFromDrizzle.mjs",
+      "require": "./dist/cjs/createSchemaFromDrizzle.cjs"
     }
   },
   "dependencies": {
     "@take-out/helpers": "workspace:*",
     "chokidar": "^4.0.3",
     "citty": "^0.1.6",
-    "drizzle-zero": "1.0.0-beta.0",
     "valibot": "^1.1.0"
   },
   "peerDependencies": {
     "pg": ">=8.0.0",
     "@rocicorp/zero": ">=0.26.2",
     "drizzle-orm": ">=1.0.0 <2",
+    "drizzle-zero": ">=1.0.0-beta.0",
     "react": "*",
     "react-native": "*"
   },
@@ -94,9 +99,13 @@
     },
     "drizzle-orm": {
       "optional": true
+    },
+    "drizzle-zero": {
+      "optional": true
     }
   },
   "devDependencies": {
+    "drizzle-zero": "1.0.0-beta.0",
     "@tamagui/build": "2.0.0-rc.36",
     "@types/node": "25.2.0",
     "@types/pg": "^8.11.10",

@@ -1150,14 +1150,21 @@ export async function generate(options: GenerateOptions): Promise<GenerateResult
       resolve(generatedDir, 'models.ts'),
       generateModelsFile(allModelFiles, modelsDirName),
     ),
-    writeFileIfChanged(
-      resolve(generatedDir, 'types.ts'),
-      generateTypesFile(filesWithSchema),
-    ),
-    writeFileIfChanged(
-      resolve(generatedDir, 'tables.ts'),
-      generateTablesFile(filesWithSchema, modelsDirName),
-    ),
+    // only generate types.ts and tables.ts when model files define schemas.
+    // when using drizzle-zero CLI for schema generation, these files are
+    // managed externally and should not be overwritten.
+    ...(filesWithSchema.length > 0
+      ? [
+          writeFileIfChanged(
+            resolve(generatedDir, 'types.ts'),
+            generateTypesFile(filesWithSchema),
+          ),
+          writeFileIfChanged(
+            resolve(generatedDir, 'tables.ts'),
+            generateTablesFile(filesWithSchema, modelsDirName),
+          ),
+        ]
+      : []),
     writeFileIfChanged(resolve(generatedDir, 'README.md'), generateReadmeFile()),
   ]
 

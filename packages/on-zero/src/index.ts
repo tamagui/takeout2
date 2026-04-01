@@ -17,6 +17,8 @@ export * from './where'
 export * from './serverWhere'
 export * from './zql'
 
-export * from './createSchemaFromDrizzle'
+// drizzle-zero re-exports moved to 'on-zero/drizzle' to avoid pulling
+// drizzle-zero + drizzle-orm/_relations into the main bundle
+// (breaks vite dep optimization under vxrn-web conditions)
 
 export type * from './types'

@@ -62,7 +62,8 @@
     "watch:types": "tko run typecheck --watch",
     "watch:zero:generate": "bun zero:generate --watch",
     "web": "tko web",
-    "zero:generate": "on-zero generate --after 'oxfmt src/data/generated'",
+    "zero:generate": "bun zero:schema && on-zero generate --after 'oxfmt src/data/generated'",
+    "zero:schema": "drizzle-zero generate --config drizzle-zero.config.ts --output src/data/generated/schema.ts --force --suppress-defaults-warning",
     "zero": "tko zero"
   },
   "overrides": {

@@ -251,6 +251,7 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
         await waitForRun('backend')
 
         await startFrontend()
+        await waitForPort(+(process.env.VITE_PORT_ZERO || 4848))
         await waitForPort(8081)
 
         const testEnv = await getTestEnv()

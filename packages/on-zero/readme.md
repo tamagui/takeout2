@@ -18,14 +18,14 @@ it provides a few things:
 
 - **generation** - cli with watch and generate commands
 - **queries** - convert plain TS query functions into validated synced queries
-- **mutations** - simply create CRUD queries with permissions
-- **models** - standardized co-locating schema/permissions/mutations
+- **mutations** - simply create CRUD mutations with permissions
+- **drizzle-zero** - derive zero schema + relationships from your drizzle schema
 - **permissions** - `serverWhere` for simple query-based permissions
 
 plus various hooks and helpers for react integration.
 
-models live alongside their permissions and mutations. queries are just
-functions that use a global `zql` builder.
+mutations live in `mutations/` with their permissions. queries are just
+functions that use a global `zql` builder. schema is derived from drizzle.
 
 ## queries
 
@@ -94,31 +94,21 @@ export const channelById = (props: { channelId: string }) => {
 permissions execute server-side only. on the client they automatically pass. the
 `serverWhere()` helper automatically accesses auth data via `getAuth()` so you don't need to pass it manually.
 
-## models
+## mutations
 
-models co-locate schema, permissions, and mutations in one file:
+mutations co-locate permissions and mutation handlers in one file. schema is
+derived from drizzle — no need to define it here.
 
 ```ts
-// src/data/models/message.ts
-import { number, string, table } from '@rocicorp/zero'
+// src/data/mutations/message.ts
 import { mutations, serverWhere } from 'on-zero'
 
-export const schema = table('message')
-  .columns({
-    id: string(),
-    content: string(),
-    authorId: string(),
-    channelId: string(),
-    createdAt: number(),
-  })
-  .primaryKey('id')
-
-export const permissions = serverWhere('message', (q, auth) => {
+const permissions = serverWhere('message', (q, auth) => {
   return q.cmp('authorId', auth?.id || '')
 })
 
-// CRUD mutations with permissions by passing schema + permissions:
-export const mutate = mutations(schema, permissions, {
+// pass table name as string — types are inferred from schema
+export const mutate = mutations('message', permissions, {
   async send(ctx, props: { content: string; channelId: string }) {
     await ctx.can(permissions, props)
 
@@ -191,11 +181,11 @@ export const myChannels = () => {
 }
 ```
 
-**for mutations:** define permissions in model files for CRUD operations:
+**for mutations:** define permissions in mutation files for CRUD operations:
 
 ```ts
-// src/data/models/message.ts
-export const permissions = serverWhere('message', (q, auth) => {
+// src/data/mutations/message.ts
+const permissions = serverWhere('message', (q, auth) => {
   return q.cmp('authorId', auth?.id || '')
 })
 ```
@@ -285,7 +275,7 @@ export const channelMessages = (props: { channelId: string }) => {
 
 ## generation
 
-on-zero auto-generates glue files that wire up your models, queries, and types.
+on-zero auto-generates glue files that wire up your mutations, queries, and types.
 
 ### vite plugin (recommended)
 
@@ -306,8 +296,8 @@ export default {
 **features:**
 
 - generates on dev server start
-- watches for model changes and regenerates
-- enables HMR for mutations (no page reload when editing models)
+- watches for mutation/query changes and regenerates
+- enables HMR for mutations (no page reload when editing mutation files)
 - generates before production builds
 
 **options:**
@@ -331,11 +321,12 @@ if you prefer CLI over the vite plugin:
 
 **`on-zero generate [dir]`**
 
-generates all files needed to connect your models and queries:
+generates all files needed to connect your mutations and queries:
 
-- `models.ts` - aggregates all model files into a single import
-- `types.ts` - generates TypeScript types from table schemas
-- `tables.ts` - exports table schemas (separate to avoid circular types)
+- `schema.ts` - zero schema derived from drizzle via drizzle-zero (tables +
+  relationships)
+- `models.ts` - aggregates all mutation files into a single import
+- `types.ts` - typescript types derived from the schema
 - `syncedQueries.ts` - generates synced query definitions with valibot
   validators
 - `syncedMutations.ts` - generates valibot validators for mutation args
@@ -343,8 +334,8 @@ generates all files needed to connect your models and queries:
 
 **options:**
 
-- `dir` - base directory containing `models/` and `queries/` folders (default:
-  `src/data`)
+- `dir` - base directory containing `mutations/` and `queries/` folders
+  (default: `src/data`)
 - `--watch` - watch for changes and regenerate automatically
 - `--after` - command to run after generation completes
 
@@ -367,18 +358,13 @@ bun on-zero generate --after "bun lint:fix"
 **types.ts:**
 
 ```ts
-import type { TableInsertRow, TableUpdateRow } from 'on-zero'
-import type * as schema from './tables'
+import type { Row } from '@rocicorp/zero'
+import type { schema } from './schema'
 
-export type Channel = TableInsertRow<typeof schema.channel>
-export type ChannelUpdate = TableUpdateRow<typeof schema.channel>
-```
+type Tables = typeof schema.tables
 
-**tables.ts:**
-
-```ts
-export { schema as channel } from '~/data/models/channel'
-export { schema as message } from '~/data/models/message'
+export type Channel = Row<Tables['channel']>
+export type ChannelUpdate = Partial<Channel> & Pick<Channel, 'id'>
 ```
 
 **syncedQueries.ts:**
@@ -408,22 +394,62 @@ export const latestMessages = syncedQuery(
 
 the generator:
 
-1. scans `models/` for files with `export const schema = table(...)`
+1. scans `mutations/` for files with `export const mutate`
 2. scans `queries/` for exported arrow functions
 3. parses TypeScript AST to extract parameter types
-4. converts types to valibot schemas using typebox-codegen
+4. converts types to valibot schemas
 5. wraps query functions in `syncedQuery()` with validators
 6. extracts mutation handler param types using the TS type checker (resolves
    imports, aliases, and cross-file references)
-7. generates `syncedMutations.ts` with valibot validators for CRUD and custom
-   mutation args
-8. handles special cases (void params, user → userPublic mapping)
-9. groups query imports by source file
+7. generates `syncedMutations.ts` with valibot validators for mutation args
 
-queries with no parameters get wrapped in `v.parser(v.tuple([]))` while queries
-with params get validators like `v.parser(v.tuple([v.object({ ... })]))`.
+when using drizzle-zero integration, `schema.ts` is generated from your drizzle
+schema using `generateDrizzleSchemaFile()` — it produces `table()` + 
+`relationships()` + `createSchema()` calls with full type inference.
 
 exports named `permission` are automatically skipped during query generation.
+
+### drizzle-zero integration
+
+on-zero can derive your zero schema (tables + relationships) from a drizzle
+schema via [drizzle-zero](https://github.com/rocicorp/drizzle-zero). this
+eliminates duplicate column definitions — drizzle is the single source of truth.
+
+```ts
+// generate-schema.ts (run at build/dev time)
+import { drizzleZeroConfig } from 'drizzle-zero'
+import { generateDrizzleSchemaFile } from 'on-zero'
+import * as drizzleSchema from './database/schema'
+import { relations } from './database/relations'
+
+const dzSchema = drizzleZeroConfig(
+  { ...drizzleSchema, relations },
+  {
+    tables: {
+      user: true,
+      post: true,
+      comment: true,
+    },
+    suppressDefaultsWarning: true,
+  },
+)
+
+// generates a typed schema.ts with createSchema() + relationships()
+const output = generateDrizzleSchemaFile(dzSchema)
+writeFileSync('src/data/generated/schema.ts', output)
+```
+
+the generated file uses zero's `table()` builder and `relationships()` function,
+giving full type inference for zql queries including nested `.related()` calls.
+
+mutations then reference tables by name:
+
+```ts
+export const mutate = mutations('post', permissions, { ... })
+```
+
+the `mutations()` string overload derives insert/update/delete types from the
+global schema type — no need to import table builders.
 
 ## setup
 
@@ -431,7 +457,7 @@ client:
 
 ```tsx
 import { createZeroClient } from 'on-zero'
-import { schema } from '~/data/schema'
+import { schema } from '~/data/generated/schema'
 import { models } from '~/data/generated/models'
 import * as groupedQueries from '~/data/generated/groupedQueries'
 
@@ -551,7 +577,7 @@ export const zeroServer = createZeroServer({
 this auto-validates args before every mutation runs. for a model like:
 
 ```ts
-export const mutate = mutations(schema, permissions, {
+export const mutate = mutations('message', permissions, {
   async send(ctx, props: { content: string; channelId: string }) {
     // ...
   },
@@ -615,7 +641,7 @@ type MutatorContext = {
 use it:
 
 ```ts
-export const mutate = mutations(schema, permissions, {
+export const mutate = mutations('message', permissions, {
   async archive(ctx, { messageId }) {
     await ctx.can(permissions, messageId)
     await ctx.tx.mutate.message.update({ id: messageId, archived: true })

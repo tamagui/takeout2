@@ -28,8 +28,8 @@ export const ScrollHeader = ({ children }: { children: ReactNode }) => {
       items="center"
       justify="center"
       width="100%"
+      position="fixed"
       $platform-web={{
-        position: 'fixed',
         maxW: '100vw',
       }}
     >

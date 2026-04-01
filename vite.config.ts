@@ -86,10 +86,6 @@ export default {
     ),
 
     one({
-      // reanimated 4.2.x dev-only error false positive: _requiresAnimatedComponent getter
-      // throws when any code calls Object.keys() on animated style (tamagui does this)
-      // fixed in reanimated 4.3.0 (PR #8990) - remove this patch when upgrading
-      // see: https://github.com/software-mansion/react-native-reanimated/issues/8799
       patches: {
         // better-auth's createDynamicPathProxy returns a recursive proxy for
         // unknown keys instead of undefined. react 19.2 / rn 0.83 introspect
@@ -106,20 +102,6 @@ export default {
             contents?.replace(
               'return createProxy(fullPath);',
               'if (current === void 0) return void 0;\n        return createProxy(fullPath);',
-            ),
-        },
-        'react-native-reanimated': {
-          // web (vite resolves lib/module)
-          'lib/module/hook/useAnimatedStyle.js': (contents) =>
-            contents?.replace(
-              /throw new ReanimatedError\(\s*'Perhaps you are trying to pass an animated style[^)]+\);/g,
-              'return true;',
-            ),
-          // native (metro resolves src/ via react-native field)
-          'src/hook/useAnimatedStyle.ts': (contents) =>
-            contents?.replace(
-              /throw new ReanimatedError\(\s*'Perhaps you are trying to pass an animated style[^)]+\);/g,
-              'return true;',
             ),
         },
       },

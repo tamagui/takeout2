@@ -4,7 +4,7 @@
   "main": "dist/cjs",
   "module": "dist/esm",
   "devDependencies": {
-    "@tamagui/build": "2.0.0-rc.34",
+    "@tamagui/build": "2.0.0-rc.35",
     "@types/react": "^18.3.18",
     "react": "*",
     "react-native": "*",

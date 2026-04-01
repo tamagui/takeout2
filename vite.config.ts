@@ -95,6 +95,26 @@ export default {
 
     one({
       patches: {
+        // rolldown tree-shaking bug: with sideEffects:false, rolldown drops
+        // motion-dom/scale-border-radius.mjs while keeping scale-correction.mjs
+        // that references correctBorderRadius from it. removing sideEffects:false
+        // prevents the incorrect tree-shaking on both client and server builds.
+        'motion-dom': {
+          'package.json': (contents) =>
+            contents?.replace('"sideEffects": false', '"sideEffects": true'),
+        },
+        'framer-motion': {
+          'package.json': (contents) =>
+            contents?.replace('"sideEffects": false', '"sideEffects": true'),
+        },
+        motion: {
+          'package.json': (contents) =>
+            contents?.replace('"sideEffects": false', '"sideEffects": true'),
+        },
+        'motion-utils': {
+          'package.json': (contents) =>
+            contents?.replace('"sideEffects": false', '"sideEffects": true'),
+        },
         // better-auth's createDynamicPathProxy returns a recursive proxy for
         // unknown keys instead of undefined. react 19.2 / rn 0.83 introspect
         // objects ($$typeof, constructor, etc) triggering fake API calls and

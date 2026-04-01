@@ -53,12 +53,12 @@ function writeFileIfChanged(filePath: string, content: string): boolean {
   return true
 }
 
-function generateModelsFile(modelFiles: string[]) {
+function generateModelsFile(modelFiles: string[], modelsDirName: string) {
   const modelNames = modelFiles.map((f) => basename(f, '.ts')).sort()
   const getImportName = (name: string) => (name === 'user' ? 'userPublic' : name)
 
   const imports = modelNames
-    .map((name) => `import * as ${getImportName(name)} from '../mutations/${name}'`)
+    .map((name) => `import * as ${getImportName(name)} from '../${modelsDirName}/${name}'`)
     .join('\n')
 
   const sortedByImportName = [...modelNames].sort((a, b) =>
@@ -84,13 +84,13 @@ function generateTypesFile(modelFiles: string[]) {
   return `import type { TableInsertRow, TableUpdateRow } from 'on-zero'\nimport type * as schema from './tables'\n\n${typeExports}\n`
 }
 
-function generateTablesFile(modelFiles: string[]) {
+function generateTablesFile(modelFiles: string[], modelsDirName: string) {
   const modelNames = modelFiles.map((f) => basename(f, '.ts')).sort()
   const getExportName = (name: string) => (name === 'user' ? 'userPublic' : name)
 
   const exports = modelNames
     .map(
-      (name) => `export { schema as ${getExportName(name)} } from '../mutations/${name}'`,
+      (name) => `export { schema as ${getExportName(name)} } from '../${modelsDirName}/${name}'`,
     )
     .join('\n')
 
@@ -600,11 +600,11 @@ function parseColumnType(initText: string): SchemaColumn {
   else if (initText.startsWith('json(') || initText.startsWith('json<')) type = 'json'
   else if (initText.startsWith('enumeration(')) type = 'enum'
 
-  return { type, optional }
+  return { type, optional, customType: undefined }
 }
 
 function columnTypeToValibot(col: SchemaColumn): string {
-  let base: string
+  let base = 'v.string()'
   switch (col.type) {
     case 'string':
       base = 'v.string()'
@@ -1122,7 +1122,9 @@ export async function generate(options: GenerateOptions): Promise<GenerateResult
   const baseDir = resolve(dir)
   // support both mutations/ (new) and models/ (legacy) directories
   const mutationsDir = resolve(baseDir, 'mutations')
-  const modelsDir = existsSync(mutationsDir) ? mutationsDir : resolve(baseDir, 'models')
+  const usesMutationsDir = existsSync(mutationsDir)
+  const modelsDir = usesMutationsDir ? mutationsDir : resolve(baseDir, 'models')
+  const modelsDirName = usesMutationsDir ? 'mutations' : 'models'
   const generatedDir = resolve(baseDir, 'generated')
   const queriesDir = resolve(baseDir, 'queries')
 
@@ -1143,7 +1145,7 @@ export async function generate(options: GenerateOptions): Promise<GenerateResult
   const writeResults = [
     writeFileIfChanged(
       resolve(generatedDir, 'models.ts'),
-      generateModelsFile(allModelFiles),
+      generateModelsFile(allModelFiles, modelsDirName),
     ),
     writeFileIfChanged(
       resolve(generatedDir, 'types.ts'),
@@ -1151,7 +1153,7 @@ export async function generate(options: GenerateOptions): Promise<GenerateResult
     ),
     writeFileIfChanged(
       resolve(generatedDir, 'tables.ts'),
-      generateTablesFile(filesWithSchema),
+      generateTablesFile(filesWithSchema, modelsDirName),
     ),
     writeFileIfChanged(resolve(generatedDir, 'README.md'), generateReadmeFile()),
   ]

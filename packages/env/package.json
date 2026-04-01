@@ -3,28 +3,36 @@
   "version": "0.3.0-1775085761548",
   "type": "module",
   "sideEffects": false,
-  "source": "src/index.ts",
-  "types": "types/index.d.ts",
-  "main": "dist/index.js",
+  "main": "dist/cjs",
+  "module": "dist/esm",
+  "types": "./types/index.d.ts",
   "files": [
     "src",
     "dist",
     "types"
   ],
   "exports": {
+    "./package.json": "./package.json",
     ".": {
+      "react-native": "./dist/esm/index.native.js",
       "types": "./types/index.d.ts",
-      "default": "./dist/index.js"
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs",
+      "default": "./dist/esm/index.mjs"
     },
     "./generate": {
       "types": "./src/generate.ts",
       "default": "./src/generate.ts"
-    },
-    "./package.json": "./package.json"
+    }
   },
   "scripts": {
-    "build": "tamagui-build"
+    "build": "tamagui-build",
+    "watch": "tamagui-build --watch",
+    "clean": "tamagui-build clean",
+    "clean:build": "tamagui-build clean:build"
   },
+  "author": "Nate Wienert",
+  "license": "MIT",
   "publishConfig": {
     "access": "public"
   }

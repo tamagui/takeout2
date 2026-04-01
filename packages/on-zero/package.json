@@ -35,13 +35,11 @@
   "scripts": {
     "build": "tamagui-build",
     "watch": "tamagui-build --watch",
+    "clean": "tamagui-build clean",
+    "clean:build": "tamagui-build clean:build",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "clean": "tamagui-build clean",
-    "clean:build": "tamagui-build clean:build",
-    "prepublishOnly": "bun run build",
-    "release": "bun ./scripts/release.ts",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
     "lint": "oxlint --import-plugin",
@@ -50,17 +48,14 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "react-native": {
-        "import": "./dist/esm/index.native.js",
-        "require": "./dist/cjs/index.native.js"
-      },
+      "react-native": "./dist/esm/index.native.js",
       "types": "./types/index.d.ts",
       "import": "./dist/esm/index.mjs",
       "require": "./dist/cjs/index.cjs",
       "default": "./dist/esm/index.mjs"
     },
     "./server": {
-      "react-native": "./src/server.native.ts",
+      "react-native": "./dist/esm/server.native.js",
       "types": "./types/server.d.ts",
       "import": "./dist/esm/server.mjs",
       "require": "./dist/cjs/server.cjs"

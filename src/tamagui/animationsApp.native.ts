@@ -1,5 +1,4 @@
-// de-opt to react-native for now, fixing issue with worklets
-import { createAnimations } from '@tamagui/animations-react-native'
+import { createAnimations } from '@tamagui/animations-reanimated'
 import { animationsReanimated } from '@tamagui/config/v5-reanimated'
 
 export const animationsApp = createAnimations({

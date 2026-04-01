@@ -65,7 +65,7 @@ export const NotificationList = memo(
           type={item.type as NotificationType}
           title={item.title ?? 'Notification'}
           body={item.body ?? undefined}
-          read={item.read}
+          read={item.read ?? false}
           createdAt={item.createdAt}
           onPress={() => handlePress(item)}
         />

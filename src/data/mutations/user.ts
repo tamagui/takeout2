@@ -1,28 +1,13 @@
-import { boolean, number, string, table } from '@rocicorp/zero'
 import { ensure } from '@take-out/helpers'
 import { mutations, serverWhere } from 'on-zero'
 
 import type { UserUpdate } from '../types'
 
-export const schema = table('userPublic')
-  .columns({
-    id: string(),
-    name: string().optional(),
-    username: string().optional(),
-    image: string().optional(),
-    joinedAt: number(),
-    hasOnboarded: boolean(),
-    whitelisted: boolean(),
-    migrationVersion: number(),
-    postsCount: number(),
-  })
-  .primaryKey('id')
-
 const permissions = serverWhere('userPublic', (_, auth) => {
   return _.or(_.cmpLit(auth?.role || '', '=', 'admin'), _.cmp('id', auth?.id || ''))
 })
 
-export const mutate = mutations(schema, permissions, {
+export const mutate = mutations('userPublic', permissions, {
   completeSignup: async ({ server, authData, tx }, userId: string) => {
     ensure(authData)
 

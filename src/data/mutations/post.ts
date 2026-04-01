@@ -1,4 +1,3 @@
-import { boolean, number, string, table } from '@rocicorp/zero'
 import { AppError } from '@take-out/helpers'
 import { mutations, serverWhere, zql } from 'on-zero'
 
@@ -6,26 +5,11 @@ import { checkProfanity } from '~/features/moderation/profanityFilter'
 
 import type { Post } from '../types'
 
-export const schema = table('post')
-  .columns({
-    id: string(),
-    userId: string(),
-    image: string(),
-    imageWidth: number().optional(),
-    imageHeight: number().optional(),
-    caption: string().optional(),
-    hiddenByAdmin: boolean(),
-    commentCount: number(),
-    createdAt: number(),
-    updatedAt: number().optional(),
-  })
-  .primaryKey('id')
-
 const permissions = serverWhere('post', (_, auth) => {
   return _.cmp('userId', auth?.id || '')
 })
 
-export const mutate = mutations(schema, permissions, {
+export const mutate = mutations('post', permissions, {
   insert: async ({ tx, environment, server, authData }, post: Post) => {
     // check caption for profanity on server
     if (process.env.VITE_ENVIRONMENT === 'ssr') {

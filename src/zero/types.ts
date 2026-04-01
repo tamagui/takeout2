@@ -1,4 +1,4 @@
-import type { schema } from '~/data/schema'
+import type { schema } from '~/data/generated/schema'
 import type { ServerActions } from '~/data/server/createServerActions'
 import type { AuthData } from '~/features/auth/types'
 

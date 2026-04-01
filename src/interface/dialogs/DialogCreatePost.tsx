@@ -108,7 +108,7 @@ export const DialogCreatePost = () => {
       return
     }
 
-    const trimmedCaption = caption.trim() || undefined
+    const trimmedCaption = caption.trim() || null
     const imageUrl = uploadedUrl || ''
     const postId = randomId()
 
@@ -119,9 +119,12 @@ export const DialogCreatePost = () => {
         userId,
         caption: trimmedCaption,
         image: imageUrl,
+        imageWidth: null,
+        imageHeight: null,
         hiddenByAdmin: false,
         commentCount: 0,
         createdAt: Date.now(),
+        updatedAt: Date.now(),
       })
 
       showToast('Post created successfully!', { type: 'success' })

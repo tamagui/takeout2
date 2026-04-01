@@ -4,7 +4,7 @@ import { createZeroServer } from 'on-zero/server'
 import { models } from '~/data/generated/models'
 import { mutationValidators } from '~/data/generated/syncedMutations'
 import { queries } from '~/data/generated/syncedQueries'
-import { schema } from '~/data/schema'
+import { schema } from '~/data/generated/schema'
 import { createServerActions } from '~/data/server/createServerActions'
 import { ZERO_UPSTREAM_DB } from '~/server/env-server'
 

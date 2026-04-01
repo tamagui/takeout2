@@ -14,7 +14,7 @@ export interface OnZeroPluginOptions extends Omit<GenerateOptions, 'dir' | 'sile
 }
 
 function createOnZeroHmrPlugin(hmrInclude: string[] = []): Plugin {
-  const hmrPaths = ['/models/', '/generated/', '/queries/', ...hmrInclude]
+  const hmrPaths = ['/mutations/', '/models/', '/generated/', '/queries/', ...hmrInclude]
 
   return {
     name: 'on-zero:hmr',

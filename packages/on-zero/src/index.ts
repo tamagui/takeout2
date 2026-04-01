@@ -17,4 +17,6 @@ export * from './where'
 export * from './serverWhere'
 export * from './zql'
 
+export * from './createSchemaFromDrizzle'
+
 export type * from './types'

@@ -75,11 +75,13 @@
     "@take-out/helpers": "workspace:*",
     "chokidar": "^4.0.3",
     "citty": "^0.1.6",
+    "drizzle-zero": "1.0.0-beta.0",
     "valibot": "^1.1.0"
   },
   "peerDependencies": {
     "pg": ">=8.0.0",
     "@rocicorp/zero": ">=0.26.2",
+    "drizzle-orm": ">=1.0.0 <2",
     "react": "*",
     "react-native": "*"
   },
@@ -88,6 +90,9 @@
       "optional": true
     },
     "pg": {
+      "optional": true
+    },
+    "drizzle-orm": {
       "optional": true
     }
   },

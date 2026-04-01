@@ -1,20 +1,10 @@
-import { number, string, table } from '@rocicorp/zero'
 import { ensureLoggedIn, mutations, serverWhere } from 'on-zero'
-
-export const schema = table('block')
-  .columns({
-    id: string(),
-    blockerId: string(),
-    blockedId: string(),
-    createdAt: number(),
-  })
-  .primaryKey('id')
 
 const permissions = serverWhere('block', (_, auth) => {
   return _.cmp('blockerId', auth?.id || '')
 })
 
-export const mutate = mutations(schema, permissions, {
+export const mutate = mutations('block', permissions, {
   insert: async (
     { tx, server },
     data: { blockedId: string; id: string; createdAt: number },

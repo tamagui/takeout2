@@ -15,7 +15,7 @@ export const userPublic = pgTable(
     name: text('name'),
     username: text('username'),
     image: text('image'),
-    joinedAt: timestamp('joinedAt', { mode: 'string' }).defaultNow().notNull(),
+    joinedAt: timestamp('joinedAt', { mode: 'string' }).notNull(),
     hasOnboarded: boolean('hasOnboarded').notNull().default(false),
     whitelisted: boolean('whitelisted').notNull().default(false),
     migrationVersion: integer('migrationVersion').notNull().default(0),
@@ -44,7 +44,7 @@ export const post = pgTable(
     caption: text('caption'),
     hiddenByAdmin: boolean('hiddenByAdmin').notNull().default(false),
     commentCount: integer('commentCount').notNull().default(0),
-    createdAt: timestamp('createdAt', { mode: 'string' }).defaultNow().notNull(),
+    createdAt: timestamp('createdAt', { mode: 'string' }).notNull(),
     updatedAt: timestamp('updatedAt', { mode: 'string' }),
   },
   (table) => [
@@ -61,7 +61,7 @@ export const comment = pgTable(
     postId: text('postId').notNull(),
     userId: text('userId').notNull(),
     content: text('content').notNull(),
-    createdAt: timestamp('createdAt', { mode: 'string' }).defaultNow().notNull(),
+    createdAt: timestamp('createdAt', { mode: 'string' }).notNull(),
   },
   (table) => [
     index('comment_postId_idx').on(table.postId),
@@ -76,7 +76,7 @@ export const block = pgTable(
     id: text('id').primaryKey(),
     blockerId: text('blockerId').notNull(), // user who blocks
     blockedId: text('blockedId').notNull(), // user being blocked
-    createdAt: timestamp('createdAt', { mode: 'string' }).defaultNow().notNull(),
+    createdAt: timestamp('createdAt', { mode: 'string' }).notNull(),
   },
   (table) => [
     unique('block_blocker_blocked_unique').on(table.blockerId, table.blockedId),
@@ -97,7 +97,7 @@ export const report = pgTable(
     status: text('status').notNull().default('pending'), // pending, reviewed, resolved
     reviewedBy: text('reviewedBy'),
     reviewedAt: timestamp('reviewedAt', { mode: 'string' }),
-    createdAt: timestamp('createdAt', { mode: 'string' }).defaultNow().notNull(),
+    createdAt: timestamp('createdAt', { mode: 'string' }).notNull(),
   },
   (table) => [
     index('report_reporterId_idx').on(table.reporterId),
@@ -119,7 +119,7 @@ export const device = pgTable(
     pushToken: text('pushToken'),
     pushEnabled: boolean('pushEnabled').notNull().default(false),
     lastActiveAt: timestamp('lastActiveAt', { mode: 'string' }),
-    createdAt: timestamp('createdAt', { mode: 'string' }).defaultNow().notNull(),
+    createdAt: timestamp('createdAt', { mode: 'string' }).notNull(),
     updatedAt: timestamp('updatedAt', { mode: 'string' }),
   },
   (table) => [
@@ -137,7 +137,7 @@ export const invite = pgTable(
     usedBy: text('usedBy'),
     usedAt: timestamp('usedAt', { mode: 'string' }),
     createdBy: text('createdBy'),
-    createdAt: timestamp('createdAt', { mode: 'string' }).defaultNow().notNull(),
+    createdAt: timestamp('createdAt', { mode: 'string' }).notNull(),
     expiresAt: timestamp('expiresAt', { mode: 'string' }),
     maxUses: integer('maxUses').notNull().default(1),
     useCount: integer('useCount').notNull().default(0),
@@ -159,7 +159,7 @@ export const notification = pgTable(
     body: text('body'),
     data: text('data'), // json string
     read: boolean('read').notNull().default(false),
-    createdAt: timestamp('createdAt', { mode: 'string' }).defaultNow().notNull(),
+    createdAt: timestamp('createdAt', { mode: 'string' }).notNull(),
   },
   (table) => [
     index('notification_userId_idx').on(table.userId),

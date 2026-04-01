@@ -1,27 +1,11 @@
-import { number, string, table } from '@rocicorp/zero'
 import { randomId } from '@take-out/helpers'
 import { mutations, serverWhere } from 'on-zero'
-
-export const schema = table('report')
-  .columns({
-    id: string(),
-    reporterId: string(),
-    reportedUserId: string().optional(),
-    reportedPostId: string().optional(),
-    reason: string(),
-    details: string().optional(),
-    status: string(), // pending, reviewed, resolved
-    reviewedBy: string().optional(),
-    reviewedAt: number().optional(),
-    createdAt: number(),
-  })
-  .primaryKey('id')
 
 const permissions = serverWhere('report', (_, auth) => {
   return _.cmp('reporterId', auth?.id || '')
 })
 
-export const mutate = mutations(schema, permissions, {
+export const mutate = mutations('report', permissions, {
   reportPost: async (
     { tx, authData },
     data: {

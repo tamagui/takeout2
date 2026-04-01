@@ -1,26 +1,15 @@
-import { number, string, table } from '@rocicorp/zero'
 import { AppError } from '@take-out/helpers'
 import { mutations, serverWhere } from 'on-zero'
 
 import { checkProfanity } from '~/features/moderation/profanityFilter'
 
-import type { Comment } from '../generated/types'
-
-export const schema = table('comment')
-  .columns({
-    id: string(),
-    postId: string(),
-    userId: string(),
-    content: string(),
-    createdAt: number(),
-  })
-  .primaryKey('id')
+import type { Comment } from '../types'
 
 const permissions = serverWhere('comment', (_, auth) => {
   return _.cmp('userId', auth?.id || '')
 })
 
-export const mutate = mutations(schema, permissions, {
+export const mutate = mutations('comment', permissions, {
   insert: async ({ tx, server, authData }, comment: Comment) => {
     if (process.env.VITE_ENVIRONMENT === 'ssr') {
       if (comment.content) {

@@ -4,12 +4,18 @@ import { setMutationsPermissions } from './modelRegistry'
 
 import type {
   MutatorContext,
+  Schema,
   TableInsertRow,
   TableName,
   TableUpdateRow,
   Where,
 } from './types'
 import type { TableBuilderWithColumns } from '@rocicorp/zero'
+
+// derive a TableBuilderWithColumns from the global schema by table name
+type SchemaTableBuilder<TName extends TableName> = TableBuilderWithColumns<
+  Schema['tables'][TName]
+>
 
 // HMR registry - stores mutation implementations and proxies by table name
 // allows hot-swapping implementations without changing object references
@@ -119,13 +125,33 @@ export function mutations<
   permissions: Permissions,
   mutations: Mutations,
 ): MutationsWithCRUD<Table, Mutations>
-// TODO we should enforece the CRUD mutations obj to the callier so they get it auto-typed
+// string-based overloads (for drizzle-zero derived schemas where table builders aren't available)
+export function mutations<TName extends TableName, Permissions extends Where>(
+  tableName: TName,
+  permissions: Permissions,
+): MutationsWithCRUD<SchemaTableBuilder<TName>, {}>
+export function mutations<
+  TName extends TableName,
+  Permissions extends Where,
+  Mutations extends MutationBuilders,
+>(
+  tableName: TName,
+  permissions: Permissions,
+  mutations: Mutations,
+): MutationsWithCRUD<SchemaTableBuilder<TName>, Mutations>
 export function mutations<
   Table extends GenericTable,
   Mutations extends Record<string, MutationBuilder>,
->(table: Table | Mutations, permissions?: Where, mutations?: Mutations): Mutations {
+>(
+  table: Table | string | Mutations,
+  permissions?: Where,
+  mutations?: Mutations,
+): Mutations {
   if (permissions) {
-    const tableName = (table as Table).schema.name as TableName
+    const tableName =
+      typeof table === 'string'
+        ? (table as TableName)
+        : ((table as Table).schema.name as TableName)
 
     const createCRUDMutation = (action: CRUDNames) => {
       return async (ctx: MutatorContext, obj: any) => {

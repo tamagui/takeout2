@@ -82,6 +82,36 @@ export const relations = defineRelations(schema, (r) => ({
       from: r.post.id,
       to: r.report.reportedPostId,
     }),
+    comments: r.many.comment({
+      from: r.post.id,
+      to: r.comment.postId,
+    }),
+    authorBlockedBy: r.many.block({
+      from: r.post.userId,
+      to: r.block.blockedId,
+    }),
+  },
+
+  comment: {
+    post: r.one.post({
+      from: r.comment.postId,
+      to: r.post.id,
+    }),
+    user: r.one.userPublic({
+      from: r.comment.userId,
+      to: r.userPublic.id,
+    }),
+  },
+
+  notification: {
+    user: r.one.userPublic({
+      from: r.notification.userId,
+      to: r.userPublic.id,
+    }),
+    actor: r.one.userPublic({
+      from: r.notification.actorId,
+      to: r.userPublic.id,
+    }),
   },
 
   block: {

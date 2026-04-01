@@ -58,7 +58,9 @@ function generateModelsFile(modelFiles: string[], modelsDirName: string) {
   const getImportName = (name: string) => (name === 'user' ? 'userPublic' : name)
 
   const imports = modelNames
-    .map((name) => `import * as ${getImportName(name)} from '../${modelsDirName}/${name}'`)
+    .map(
+      (name) => `import * as ${getImportName(name)} from '../${modelsDirName}/${name}'`,
+    )
     .join('\n')
 
   const sortedByImportName = [...modelNames].sort((a, b) =>
@@ -90,7 +92,8 @@ function generateTablesFile(modelFiles: string[], modelsDirName: string) {
 
   const exports = modelNames
     .map(
-      (name) => `export { schema as ${getExportName(name)} } from '../${modelsDirName}/${name}'`,
+      (name) =>
+        `export { schema as ${getExportName(name)} } from '../${modelsDirName}/${name}'`,
     )
     .join('\n')
 

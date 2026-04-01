@@ -1,6 +1,6 @@
 {
   "name": "@take-out/helpers",
-  "version": "0.3.0-1775080946479",
+  "version": "0.3.0-1775085761548",
   "sideEffects": false,
   "type": "module",
   "source": "src/index.ts",

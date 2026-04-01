@@ -1,6 +1,6 @@
 {
   "name": "@take-out/env",
-  "version": "0.3.0-1775080946479",
+  "version": "0.3.0-1775085761548",
   "type": "module",
   "sideEffects": false,
   "source": "src/index.ts",

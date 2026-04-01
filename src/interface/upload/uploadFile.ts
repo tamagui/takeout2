@@ -1,6 +1,7 @@
 import { AbortError, createGlobalContext, isWeb, useAsyncEffect } from '@take-out/helpers'
 import { useContext, useEffect, useState } from 'react'
 import { useEvent } from 'tamagui'
+import { API_URL } from '~/constants/urls'
 import { showToast } from '~/interface/toast/Toast'
 
 import { getFileType, isImageFile, isVideoFile, validateFile } from './helpers'
@@ -15,7 +16,7 @@ interface UploadResponse {
   thumbnail?: string | null
 }
 
-export const uploadEndpoint = '/api/file/upload'
+export const uploadEndpoint = `${API_URL}/file/upload`
 
 export function uploadFileData(
   fileData: File | Blob,

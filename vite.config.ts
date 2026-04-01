@@ -91,6 +91,23 @@ export default {
       // fixed in reanimated 4.3.0 (PR #8990) - remove this patch when upgrading
       // see: https://github.com/software-mansion/react-native-reanimated/issues/8799
       patches: {
+        // better-auth's createDynamicPathProxy returns a recursive proxy for
+        // unknown keys instead of undefined. react 19.2 / rn 0.83 introspect
+        // objects ($$typeof, constructor, etc) triggering fake API calls and
+        // 404 loops on native. fix: return undefined when path doesn't exist
+        // in routes. see: better-auth/better-auth#6938
+        'better-auth': {
+          'dist/shared/better-auth.RKafzlkP.mjs': (contents) =>
+            contents?.replace(
+              'return createProxy(fullPath);',
+              'if (current === void 0) return void 0;\n        return createProxy(fullPath);',
+            ),
+          'dist/shared/better-auth.8HJ5v58s.cjs': (contents) =>
+            contents?.replace(
+              'return createProxy(fullPath);',
+              'if (current === void 0) return void 0;\n        return createProxy(fullPath);',
+            ),
+        },
         'react-native-reanimated': {
           // web (vite resolves lib/module)
           'lib/module/hook/useAnimatedStyle.js': (contents) =>

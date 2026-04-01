@@ -34,7 +34,7 @@
         "@tamagui/menu": "2.0.0-rc.34",
         "@tamagui/native": "2.0.0-rc.34",
         "@tamagui/themes": "2.0.0-rc.34",
-        "@tamagui/toast": "2.0.0-rc.34",
+        "@tamagui/toast": "^2.0.0-rc.34",
         "@tamagui/vite-plugin": "2.0.0-rc.34",
         "@types/jsonwebtoken": "^9.0.10",
         "@vxrn/color-scheme": "1.13.3",

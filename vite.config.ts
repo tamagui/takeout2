@@ -76,6 +76,14 @@ export default {
       // og image generation - native node addons
       '@resvg/resvg-js',
       'satori',
+      // rolldown tree-shaking bug: with sideEffects:false, rolldown drops
+      // motion-dom/scale-border-radius.mjs (defines correctBorderRadius) while
+      // keeping scale-correction.mjs that references it. externalizing avoids
+      // the broken bundling and lets node resolve the correct import chain.
+      // motion is no-oped on SSR anyway (Configuration disableSSR in app layout)
+      'framer-motion',
+      'motion-dom',
+      'motion-utils',
     ],
   },
 

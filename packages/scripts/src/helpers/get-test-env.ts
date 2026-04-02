@@ -1,4 +1,3 @@
-import fs from 'node:fs'
 import { join } from 'node:path'
 
 import { loadEnv } from './env-load'
@@ -7,12 +6,10 @@ import { getDockerHost } from './get-docker-host'
 export async function getTestEnv() {
   const dockerHost = getDockerHost()
   const devEnv = await loadEnv('development')
-  const envPath =
-    ['src/constants/env-server', 'src/server/env-server']
-      .map((p) => join(process.cwd(), p))
-      .find((p) => fs.existsSync(p + '.ts')) ||
-    join(process.cwd(), 'src/constants/env-server')
-  const serverEnvFallback = await import(envPath)
+
+  // import src/env.ts for server env fallback values
+  const envModule = await import(join(process.cwd(), 'src/env.ts'))
+  const serverEnvFallback = envModule.server || {}
 
   // ports come from VITE_PORT_* in .env.development (loaded by loadEnv)
   const dbPort = process.env.VITE_PORT_POSTGRES || '5433'

@@ -6,7 +6,7 @@ import { mutationValidators } from '~/data/generated/syncedMutations'
 import { queries } from '~/data/generated/syncedQueries'
 import { schema } from '~/data/generated/schema'
 import { createServerActions } from '~/data/server/createServerActions'
-import { ZERO_UPSTREAM_DB } from '~/server/env-server'
+import { server } from '~/env'
 
 export const zeroServer = createZeroServer({
   schema,
@@ -14,7 +14,6 @@ export const zeroServer = createZeroServer({
   createServerActions,
   queries,
   mutations: mutationValidators,
-  // use imported value (bracket notation) to prevent build-time inlining
-  database: assertString(ZERO_UPSTREAM_DB, `no ZERO_UPSTREAM_DB`),
+  database: assertString(server.ZERO_UPSTREAM_DB, `ZERO_UPSTREAM_DB not set`),
   defaultAllowAdminRole: 'all',
 })

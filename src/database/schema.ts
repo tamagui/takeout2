@@ -82,14 +82,7 @@ export const whitelist = pgTable('whitelist', (t) => ({
 
 // public tables (synced to zero)
 
-import {
-  boolean,
-  index,
-  integer,
-  text,
-  timestamp,
-  unique,
-} from 'drizzle-orm/pg-core'
+import { boolean, index, integer, text, timestamp, unique } from 'drizzle-orm/pg-core'
 
 export const userPublic = pgTable(
   'userPublic',

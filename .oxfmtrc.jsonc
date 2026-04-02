@@ -26,7 +26,6 @@
     "**/generated-v2.ts",
     "**/.tamagui/**",
     "**/package.json",
-    "**/env-server.ts",
     ".docker/**",
     ".dist/**",
     "**/tmp-data/**",

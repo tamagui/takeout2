@@ -1,6 +1,6 @@
 import { isValidJWT } from '@take-out/better-auth-utils/server'
 
-import { ONE_SERVER_URL } from '~/server/env-server'
+import { server } from '~/env'
 
 import type { Endpoint } from 'one'
 
@@ -10,7 +10,7 @@ export const POST: Endpoint = async (req) => {
   if (body && typeof body.token === 'string') {
     try {
       const valid = await isValidJWT(body.token, {
-        baseUrl: ONE_SERVER_URL,
+        baseUrl: server.ONE_SERVER_URL,
         forceIssuer: process.env.FORCE_ISSUER,
       })
       return Response.json({ valid })

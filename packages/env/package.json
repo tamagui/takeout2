@@ -19,10 +19,6 @@
       "import": "./dist/esm/index.mjs",
       "require": "./dist/cjs/index.cjs",
       "default": "./dist/esm/index.mjs"
-    },
-    "./generate": {
-      "types": "./src/generate.ts",
-      "default": "./src/generate.ts"
     }
   },
   "scripts": {

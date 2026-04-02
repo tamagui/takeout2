@@ -52,31 +52,23 @@ echo '#!/usr/bin/env bun
 bun tko ensure-port 8081
 ```
 
-## env section
+## env vars
 
-the `env` object defines environment variables for the project. this is used by
-`bun tko env:update` to generate typed env files.
+environment variables are defined in `src/env.ts` using `createEnv` from
+`@take-out/env`. the `envVars` export is the complete registry used by
+`bun tko env:update` to sync CI yml, docker yml, and `.env` files.
 
-```json
-"env": {
-  "AWS_ACCESS_KEY_ID": "",
-  "BETTER_AUTH_SECRET": true,
-  "CLOUDFLARE_R2_ENDPOINT": "http://minio:9000/chat"
-}
-```
-
-values:
-
-- `""` - optional, no default
+- `expected` - required at runtime (no default)
 - `"value"` - optional with default value
-- `true` - required, must be set in .env files
+- `""` - optional, no default
 
-**never modify `/src/server/env-server.ts` directly** - it's auto-generated from
-this section.
+**never modify `src/env.ts` without understanding the structure** - it drives
+env sync across the project.
 
 to add a new env var:
 
-1. add to `env` section in package.json
+1. add to `envVars` in `src/env.ts` (or to the `base`/`production` sections of
+   `createEnv` if the app needs it at runtime)
 2. run `bun env:update`
 3. optionally add example value to `.env.development`
 
@@ -105,8 +97,8 @@ project-specific metadata for onboarding script etc:
 1. **adding scripts that should be in `./scripts/`** - if it's project-specific
    logic, put it in scripts folder
 
-2. **modifying env-server.ts directly** - always use `env` section +
-   `bun env:update`
+2. **modifying env sync outputs directly** - always update `envVars` in
+   `src/env.ts` + `bun env:update`
 
 3. **using full paths when tko works** - prefer `tko check types` over
    `bun ./scripts/check/types.ts`

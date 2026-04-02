@@ -4,14 +4,14 @@ import {
   type ModerationLabel,
 } from '@aws-sdk/client-rekognition'
 
-import { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } from '~/server/env-server'
+import { server } from '~/env'
 
 // rekognition client - use us-east-1 as it has best availability
 const rekognition = new RekognitionClient({
   region: 'us-east-1',
   credentials: {
-    accessKeyId: AWS_ACCESS_KEY_ID || '',
-    secretAccessKey: AWS_SECRET_ACCESS_KEY || '',
+    accessKeyId: server.AWS_ACCESS_KEY_ID || '',
+    secretAccessKey: server.AWS_SECRET_ACCESS_KEY || '',
   },
 })
 
@@ -38,7 +38,7 @@ export type ModerationResult = {
  */
 export async function moderateImage(imageBytes: Uint8Array): Promise<ModerationResult> {
   // skip if no credentials configured
-  if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
+  if (!server.AWS_ACCESS_KEY_ID || !server.AWS_SECRET_ACCESS_KEY) {
     console.warn('[moderateImage] AWS credentials not configured, skipping moderation')
     return { safe: true, blockedLabels: [], allLabels: [] }
   }

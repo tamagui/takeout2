@@ -28,7 +28,7 @@ complete overview of the e2e deployment system built for takeout.
 **auto-sync workflow**
 
 - `bun env:update` syncs to `.github/workflows/*.yml`
-- `bun env:update` syncs to `src/server/env-server.ts`
+- `bun env:update` reads `envVars` from `src/env.ts` and syncs to CI/docker
 - keeps everything in sync automatically
 
 **github secrets sync**
@@ -251,7 +251,7 @@ uc scale web 3    # 3 replicas across cluster
 ```
 package.json                                  # env section
 .github/workflows/ci.yml                      # auto-generated env vars
-src/server/env-server.ts                      # auto-generated validation
+src/env.ts                                    # env var definitions and validation
 scripts/ops/release.ts                             # deployment orchestration
 scripts/uncloud/helpers/deploy.ts             # uncloud-specific logic
 scripts/env/sync-to-github.ts                 # github secrets sync (NEW)
@@ -269,7 +269,7 @@ docs/deployment-uncloud.md                    # comprehensive guide (NEW)
 package.json (env section)
     ↓ (bun env:update)
     ├→ .github/workflows/ci.yml (auto-generated)
-    └→ src/server/env-server.ts (auto-generated)
+    └→ src/env.ts (envVars registry)
     ↓ (bun scripts/env/sync-to-github.ts)
 github secrets
     ↓

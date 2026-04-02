@@ -21,27 +21,55 @@ export function ensureEnv(name: string, defaultValue?: string): string {
   throw new Error(`Environment variable ${name} not set.`)
 }
 
+// --- expected sentinel ---
+
+/** marker for env vars that must be provided at runtime */
+export const expected: unique symbol = Symbol.for('take-out/env/expected')
+export type Expected = typeof expected
+
 // --- types ---
 
-type EnvConfig<TPorts extends Record<string, number>> = {
+type EnvValue = string | Expected
+
+type EnvConfig<
+  TPorts extends Record<string, number>,
+  TBase extends Record<string, EnvValue>,
+  TDev extends Record<string, EnvValue>,
+  TProd extends Record<string, EnvValue>,
+> = {
   /** base port numbers (before PORT_OFFSET) */
   ports: TPorts
   /** env vars shared across all modes */
-  base: Record<string, string>
+  base: TBase
   /** dev-mode env vars — function form receives computed ports */
-  development:
-    | ((ctx: { ports: Resolved<TPorts>; portOffset: number }) => Record<string, string>)
-    | Record<string, string>
+  development: ((ctx: { ports: Resolved<TPorts>; portOffset: number }) => TDev) | TDev
   /** production env vars */
-  production: Record<string, string>
+  production: TProd
 }
 
 type Resolved<T extends Record<string, number>> = { [K in keyof T]: number }
 
-type EnvResult<TPorts extends Record<string, number>> = {
-  env: Record<string, string>
+type AllKeys<TBase, TDev, TProd> =
+  | (keyof TBase & string)
+  | (keyof TDev & string)
+  | (keyof TProd & string)
+  | 'NODE_ENV'
+
+type EnvMap<TBase, TDev, TProd> = { [K in AllKeys<TBase, TDev, TProd>]: string }
+
+type EnvResult<
+  TPorts extends Record<string, number>,
+  TBase extends Record<string, EnvValue>,
+  TDev extends Record<string, EnvValue>,
+  TProd extends Record<string, EnvValue>,
+> = {
+  env: EnvMap<TBase, TDev, TProd>
+  /** server-only env — throws if accessed on client (typeof window !== 'undefined') */
+  server: EnvMap<TBase, TDev, TProd>
   ports: Resolved<TPorts>
   portOffset: number
+  /** raw config for tooling (env-update, generate) */
+  config: EnvConfig<TPorts, TBase, TDev, TProd>
   /** set env vars into process.env (skip keys already set) */
   apply: () => void
   /** write .env.development from current env (no-op if PORT_OFFSET is set) */
@@ -54,9 +82,12 @@ type EnvResult<TPorts extends Record<string, number>> = {
 
 const validEnvs = { development: true, production: true } as const
 
-export function createEnv<TPorts extends Record<string, number>>(
-  config: EnvConfig<TPorts>,
-): EnvResult<TPorts> {
+export function createEnv<
+  TPorts extends Record<string, number>,
+  TBase extends Record<string, EnvValue>,
+  TDev extends Record<string, EnvValue>,
+  TProd extends Record<string, EnvValue>,
+>(config: EnvConfig<TPorts, TBase, TDev, TProd>): EnvResult<TPorts, TBase, TDev, TProd> {
   const portOffset = Number(process.env.PORT_OFFSET || 0)
 
   // compute ports with offset
@@ -78,17 +109,37 @@ export function createEnv<TPorts extends Record<string, number>>(
   const modeEnv =
     typeof modeConfig === 'function' ? modeConfig({ ports, portOffset }) : modeConfig
 
-  const env: Record<string, string> = {
-    NODE_ENV,
+  // merge base + mode, mode wins
+  const merged: Record<string, EnvValue> = {
     ...config.base,
     ...modeEnv,
+  }
+
+  // resolve expected values and build final env
+  const env = { NODE_ENV } as { [K in AllKeys<TBase, TDev, TProd>]: string }
+
+  for (const [key, val] of Object.entries(merged)) {
+    if (val === expected) {
+      // check process.env for the value
+      const envVal = process.env[key]
+      if (envVal !== undefined && envVal !== '') {
+        ;(env as any)[key] = envVal
+      } else if (NODE_ENV === 'production') {
+        throw new Error(`expected env var ${key} to be set in production`)
+      } else {
+        console.warn(` - expected env ${key} not set`)
+        ;(env as any)[key] = ''
+      }
+    } else {
+      ;(env as any)[key] = val
+    }
   }
 
   function apply() {
     // don't overwrite when running inside vite SSR (VITE_ENVIRONMENT is set)
     if (process.env.VITE_ENVIRONMENT) return
     for (const [key, val] of Object.entries(env)) {
-      if (!process.env[key]) {
+      if (process.env[key] === undefined) {
         process.env[key] = val
       }
     }
@@ -127,8 +178,43 @@ export function createEnv<TPorts extends Record<string, number>>(
     }
   }
 
+  // server-only proxy — throws on client, reads live from process.env
+  // reading from process.env at access time prevents build-time inlining
+  // and ensures runtime env overrides take effect
+  const isClient = () => typeof (globalThis as any).window !== 'undefined'
+  const server = new Proxy(env, {
+    get(target, prop, receiver) {
+      if (typeof prop === 'string' && isClient()) {
+        throw new Error(`server env var ${prop} accessed on client`)
+      }
+      // prefer live process.env value over pre-resolved value
+      if (typeof prop === 'string' && process.env[prop] !== undefined) {
+        return process.env[prop]
+      }
+      return Reflect.get(target, prop, receiver)
+    },
+    ownKeys(target) {
+      if (isClient()) {
+        throw new Error('server env vars accessed on client')
+      }
+      return Reflect.ownKeys(target)
+    },
+    has(target, prop) {
+      if (isClient()) {
+        throw new Error('server env vars accessed on client')
+      }
+      return Reflect.has(target, prop)
+    },
+    getOwnPropertyDescriptor(target, prop) {
+      if (isClient()) {
+        throw new Error('server env vars accessed on client')
+      }
+      return Reflect.getOwnPropertyDescriptor(target, prop)
+    },
+  })
+
   // auto-apply on creation (matches existing behavior where importing env.ts has side effects)
   apply()
 
-  return { env, ports, portOffset, apply, writeDotEnv, run }
+  return { env, server, ports, portOffset, config, apply, writeDotEnv, run }
 }

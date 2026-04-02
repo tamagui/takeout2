@@ -130,11 +130,14 @@ export default function HomePage() { ... }
 
 ## Environment Variables
 
-Never modify `/src/server/env-server.ts` directly - it's auto-generated.
+Environment variables are defined in `src/env.ts` using `createEnv` from
+`@take-out/env`. Access server env vars via `import { server } from '~/env'`
+then `server.VARIABLE_NAME`.
 
 To add new environment variables:
 
-1. Add to the `env` section in `package.json`
+1. Add to `envVars` in `src/env.ts` (or to the `base`/`production` sections of
+   `createEnv` if the app needs it at runtime)
 2. Run `bun env:update`
 3. Optionally add an example value to `.env.development`
 

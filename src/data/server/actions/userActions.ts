@@ -1,7 +1,13 @@
 import { eq, ne, and } from 'drizzle-orm'
 
 import { pg } from '~/database'
-import { user as userTable, whitelist, post, userPublic, userState } from '~/database/schema'
+import {
+  user as userTable,
+  whitelist,
+  post,
+  userPublic,
+  userState,
+} from '~/database/schema'
 import { getIsAdmin } from '~/server/getIsAdmin'
 
 import type { AuthData } from '~/features/auth/types'

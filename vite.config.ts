@@ -76,6 +76,11 @@ export default {
       // og image generation - native node addons
       '@resvg/resvg-js',
       'satori',
+      // rolldown tree-shaking bug: drops AlgorithmId from @smithy re-exports
+      '@aws-sdk/client-s3',
+      '@aws-sdk/lib-storage',
+      '@aws-sdk/core',
+      '@aws-sdk/credential-provider-node',
       // rolldown tree-shaking bug: with sideEffects:false, rolldown drops
       // motion-dom/scale-border-radius.mjs (defines correctBorderRadius) while
       // keeping scale-correction.mjs that references it. externalizing avoids

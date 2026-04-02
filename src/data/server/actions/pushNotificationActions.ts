@@ -1,6 +1,6 @@
 import { and, eq, ne } from 'drizzle-orm'
 
-import { pg } from '~/database'
+import { pg } from '~/database/db'
 import { device, notification, post, userPublic } from '~/database/schema'
 
 const EXPO_PUSH_URL = 'https://exp.host/--/api/v2/push/send'

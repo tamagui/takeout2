@@ -249,3 +249,16 @@ export const notification = pgTable(
     index('notification_createdAt_idx').on(table.createdAt),
   ],
 )
+
+// tables synced to zero (everything else is private)
+export const zeroPublicTables = [
+  'userPublic',
+  'userState',
+  'post',
+  'comment',
+  'block',
+  'report',
+  'device',
+  'notification',
+  'invite',
+] as const

@@ -1,4 +1,4 @@
-import { sql } from '~/database'
+import { sql } from '~/database/db'
 import { handleError } from '~/features/errors/handleError'
 import { server } from '~/env'
 

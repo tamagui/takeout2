@@ -1,6 +1,6 @@
 import { eq, ne, and } from 'drizzle-orm'
 
-import { pg } from '~/database'
+import { pg } from '~/database/db'
 import {
   user as userTable,
   whitelist,

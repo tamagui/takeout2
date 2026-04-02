@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm'
 
 import { DEMO_EMAIL } from '~/constants/app'
-import { pg } from '~/database'
+import { pg } from '~/database/db'
 import { user as userTable, whitelist, userPublic, userState } from '~/database/schema'
 
 export async function afterCreateUser(user: { id: string; email: string }) {

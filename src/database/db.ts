@@ -5,31 +5,21 @@ import { createDatabase } from '@take-out/database'
 import { server } from '~/env'
 
 import * as schema from './schema'
+import { zeroPublicTables } from './schema'
 import { relations } from './relations'
 
 if (!server.ZERO_UPSTREAM_DB) {
   throw new Error('No db string connection found')
 }
 
-const db = createDatabase({
+export const db = createDatabase({
   connectionString: server.ZERO_UPSTREAM_DB,
   schema,
   relations,
   zero: {
     publicationName: 'zero_takeout',
-    publicTables: [
-      'userPublic',
-      'userState',
-      'post',
-      'comment',
-      'block',
-      'report',
-      'device',
-      'notification',
-      'invite',
-    ],
+    publicTables: [...zeroPublicTables],
   },
 })
 
-export const { pg, sql, getDBClient, pool, close, migrate: runMigrate } = db
-export { db }
+export const { pg, sql } = db

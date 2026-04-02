@@ -138,8 +138,8 @@ them in a transaction.
 For server-side code (API routes, server actions), use Drizzle ORM:
 
 ```ts
-import { pg } from '~/database'
-import { userPublic } from '~/database/schema-public'
+import { pg } from '~/database/db'
+import { userPublic } from '~/database/schema'
 import { eq } from 'drizzle-orm'
 
 const user = await pg.select().from(userPublic).where(eq(userPublic.id, userId))

@@ -4,7 +4,7 @@ import { betterAuth } from 'better-auth'
 import { admin, bearer, emailOTP, jwt, magicLink, phoneNumber } from 'better-auth/plugins'
 
 import { DOMAIN } from '~/constants/app'
-import { pool } from '~/database'
+import { db } from '~/database/db'
 import { ports, server } from '~/env'
 
 import { APP_SCHEME } from '../constants'
@@ -20,7 +20,7 @@ console.info(
 export const authServer = betterAuth({
   // using server.BETTER_AUTH_URL instead of baseUrl
 
-  database: pool,
+  database: db.pool,
 
   rateLimit: {
     enabled: process.env.NODE_ENV === 'production' && !process.env.IS_TESTING,

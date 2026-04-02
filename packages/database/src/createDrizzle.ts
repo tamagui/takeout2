@@ -67,7 +67,10 @@ type ExtractTable<TSchema, T extends TableName<TSchema>> = TSchema[T] extends Pg
   ? TSchema[T]
   : never
 
-export type DrizzleHelpers<TSchema extends Record<string, unknown> = Record<string, unknown>, TDb extends NodePgDatabase<any, any> = NodePgDatabase<TSchema>> = {
+export type DrizzleHelpers<
+  TSchema extends Record<string, unknown> = Record<string, unknown>,
+  TDb extends NodePgDatabase<any, any> = NodePgDatabase<TSchema>,
+> = {
   insertRow<T extends TableName<TSchema>>(
     tableName: T,
     values: InsertMap<TSchema>[T],
@@ -88,14 +91,15 @@ export function createDrizzle<
   TRelations extends AnyRelations = EmptyRelations,
 >(
   options: CreateDrizzleOptions<TSchema, TRelations>,
-): NodePgDatabase<TSchema, TRelations> & DrizzleHelpers<TSchema, NodePgDatabase<TSchema, TRelations>> {
+): NodePgDatabase<TSchema, TRelations> &
+  DrizzleHelpers<TSchema, NodePgDatabase<TSchema, TRelations>> {
   patchTimestampForZero()
 
   const instance = drizzle({
     client: options.pool,
     schema: options.schema as Record<string, unknown>,
     relations: options.relations,
-    logger: false,
+    logger: process.env.DEBUG_SQL === '1',
   } as any) as unknown as NodePgDatabase<TSchema, TRelations>
 
   const helpers: DrizzleHelpers<TSchema, NodePgDatabase<TSchema, TRelations>> = {

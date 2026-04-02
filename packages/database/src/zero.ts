@@ -1,5 +1,8 @@
 import { basename } from 'node:path'
 
+import { getTableName } from 'drizzle-orm'
+import { PgTable } from 'drizzle-orm/pg-core'
+
 import { getDBClient } from './getDBClient'
 
 import type { PoolClient } from 'pg'
@@ -138,6 +141,32 @@ export type TriggerDefinition = {
   sql: string
 }
 
+export function defineTrigger(name: string, sql: string): TriggerDefinition {
+  return { name, sql }
+}
+
+/** load trigger definitions from a glob result (import.meta.glob or loadTriggersFromDir) */
+export async function loadTriggers(
+  glob: Record<string, () => Promise<unknown>>,
+): Promise<TriggerDefinition[]> {
+  const triggers: TriggerDefinition[] = []
+  for (const [path, load] of Object.entries(glob).sort(([a], [b]) =>
+    a.localeCompare(b),
+  )) {
+    const mod = (await load()) as {
+      default?: TriggerDefinition
+      name?: string
+      sql?: string
+    }
+    if (mod.default) {
+      triggers.push(mod.default)
+    } else if (mod.sql) {
+      triggers.push({ name: mod.name || basename(path, '.ts'), sql: mod.sql })
+    }
+  }
+  return triggers
+}
+
 export async function ensureZeroTriggers(
   client: PoolClient,
   triggers: TriggerDefinition[],
@@ -158,6 +187,31 @@ export async function ensureZeroTriggers(
 export type SeedDefinition = {
   name: string
   sql: string
+}
+
+export function defineSeed(name: string, sql: string): SeedDefinition {
+  return { name, sql }
+}
+
+export async function loadSeeds(
+  glob: Record<string, () => Promise<unknown>>,
+): Promise<SeedDefinition[]> {
+  const seeds: SeedDefinition[] = []
+  for (const [path, load] of Object.entries(glob).sort(([a], [b]) =>
+    a.localeCompare(b),
+  )) {
+    const mod = (await load()) as {
+      default?: SeedDefinition
+      name?: string
+      sql?: string
+    }
+    if (mod.default) {
+      seeds.push(mod.default)
+    } else if (mod.sql) {
+      seeds.push({ name: mod.name || basename(path, '.ts'), sql: mod.sql })
+    }
+  }
+  return seeds
 }
 
 export async function ensureZeroSeeds(client: PoolClient, seeds: SeedDefinition[]) {
@@ -197,4 +251,29 @@ export function buildInitSql(options: InitSqlOptions): string {
   }
 
   return parts.join('\n\n')
+}
+
+// --- schema helpers ---
+
+const PRIVATE = Symbol.for('take-out/database/private')
+
+/** wrap pgTable to mark tables as private (excluded from zero replication) */
+export function privateTable<T extends (...args: any[]) => any>(createTable: T): T {
+  return ((...args: any[]) => {
+    const table = createTable(...args)
+    ;(table as any)[PRIVATE] = true
+    return table
+  }) as unknown as T
+}
+
+/** check if a table is marked as private */
+export function isPrivateTable(table: unknown): boolean {
+  return !!(table && typeof table === 'object' && PRIVATE in table)
+}
+
+/** derive public table names from a schema (all tables not marked private) */
+export function derivePublicTables(schema: Record<string, unknown>): string[] {
+  return Object.values(schema)
+    .filter((v) => v instanceof PgTable && !isPrivateTable(v))
+    .map((t) => getTableName(t as PgTable))
 }

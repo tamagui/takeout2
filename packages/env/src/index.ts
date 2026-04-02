@@ -46,8 +46,15 @@ type EnvConfig<
   ports: TPorts
   /** env vars shared across all modes */
   base: TBase
-  /** dev-mode env vars — function form receives computed ports */
-  development: ((ctx: { ports: Resolved<TPorts>; portOffset: number }) => TDev) | TDev
+  /** dev-mode env vars — function form receives computed ports + helpers */
+  development:
+    | ((ctx: {
+        ports: Resolved<TPorts>
+        portOffset: number
+        /** build a postgres connection string using ports.postgres */
+        pgUrl: (opts?: { database?: string; user?: string; password?: string }) => string
+      }) => TDev)
+    | TDev
   /** production env vars */
   production: TProd
 }
@@ -110,10 +117,22 @@ export function createEnv<
     throw new Error(`invalid NODE_ENV: ${rawEnv}`)
   }
 
+  // postgres connection string helper
+  const pgPort = (ports as Record<string, number>).postgres
+  const pgUrl = (opts?: { database?: string; user?: string; password?: string }) => {
+    const user = opts?.user || 'user'
+    const password = opts?.password || 'password'
+    const database = opts?.database || 'postgres'
+    const port = pgPort || 5432
+    return `postgresql://${user}:${password}@127.0.0.1:${port}/${database}`
+  }
+
   // resolve mode-specific env
   const modeConfig = config[NODE_ENV]
   const modeEnv =
-    typeof modeConfig === 'function' ? modeConfig({ ports, portOffset }) : modeConfig
+    typeof modeConfig === 'function'
+      ? modeConfig({ ports, portOffset, pgUrl })
+      : modeConfig
 
   // merge base + mode, mode wins
   const merged: Record<string, EnvValue> = {

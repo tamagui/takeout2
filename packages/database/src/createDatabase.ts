@@ -20,7 +20,7 @@ import type { AnyRelations, EmptyRelations } from 'drizzle-orm'
 
 export type DatabaseConfig<
   TSchema extends Record<string, unknown>,
-  TRelations extends AnyRelations = EmptyRelations,
+  TRelations extends AnyRelations | Record<string, unknown> = EmptyRelations,
 > = {
   connectionString: string
   schema: TSchema
@@ -63,7 +63,7 @@ export function createDatabase<
   const drizzle = createDrizzle({
     pool,
     schema,
-    relations,
+    relations: relations as TRelations & AnyRelations,
   })
 
   const { sql, getDBClient: getBoundDBClient } = createServerHelpers(pool)

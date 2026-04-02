@@ -44,7 +44,7 @@ const result = createEnv({
     ZERO_UPSTREAM_MAX_CONNS: '8',
   },
 
-  development: ({ ports, portOffset }) => ({
+  development: ({ ports, portOffset, pgUrl }) => ({
     ALLOW_MISSING_ENV: '1',
     BETTER_AUTH_SECRET: 'asjdbafbiasdjsadjasahjYVGHSVHFB',
     BETTER_AUTH_URL: `http://localhost:${ports.web}`,
@@ -61,11 +61,11 @@ const result = createEnv({
     VITE_PROTOCOL: 'http',
     VITE_WEB_HOSTNAME: `localhost:${ports.web}`,
     VITE_ZERO_HOSTNAME: `localhost:${ports.zero}`,
-    ZERO_CHANGE_DB: `postgresql://user:password@127.0.0.1:${ports.postgres}/zero_cdb`,
-    ZERO_CVR_DB: `postgresql://user:password@127.0.0.1:${ports.postgres}/zero_cvr`,
+    ZERO_CHANGE_DB: pgUrl({ database: 'zero_cdb' }),
+    ZERO_CVR_DB: pgUrl({ database: 'zero_cvr' }),
     ZERO_MUTATE_URL: `http://127.0.0.1:${ports.web}/api/zero/push`,
     ZERO_QUERY_URL: `http://127.0.0.1:${ports.web}/api/zero/pull`,
-    ZERO_UPSTREAM_DB: `postgresql://user:password@127.0.0.1:${ports.postgres}/postgres`,
+    ZERO_UPSTREAM_DB: pgUrl(),
   }),
 
   production: {

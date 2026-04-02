@@ -1,12 +1,13 @@
-// private tables (excluded from zero replication)
-
+import { derivePublicTables, privateTable } from '@take-out/database'
 import { pgTable } from 'drizzle-orm/pg-core'
 
 import type { InferSelectModel } from 'drizzle-orm'
 
+const pgPrivateTable = privateTable(pgTable)
+
 export type Whitelist = InferSelectModel<typeof whitelist>
 
-export const user = pgTable('user', (t) => ({
+export const user = pgPrivateTable('user', (t) => ({
   id: t.varchar('id').primaryKey(),
   username: t.varchar('username', { length: 200 }),
   name: t.varchar('name', { length: 200 }),
@@ -24,7 +25,7 @@ export const user = pgTable('user', (t) => ({
 
 export type UserPrivate = InferSelectModel<typeof user>
 
-export const account = pgTable('account', (t) => ({
+export const account = pgPrivateTable('account', (t) => ({
   id: t.text('id').primaryKey().notNull(),
   accountId: t.text('accountId').notNull(),
   providerId: t.text('providerId').notNull(),
@@ -43,7 +44,7 @@ export const account = pgTable('account', (t) => ({
   updatedAt: t.timestamp('updatedAt', { mode: 'string' }).notNull(),
 }))
 
-export const session = pgTable('session', (t) => ({
+export const session = pgPrivateTable('session', (t) => ({
   id: t.text('id').primaryKey().notNull(),
   expiresAt: t.timestamp('expiresAt', { mode: 'string' }).notNull(),
   token: t.text('token').notNull(),
@@ -58,14 +59,14 @@ export const session = pgTable('session', (t) => ({
   impersonatedBy: t.varchar('impersonatedBy'),
 }))
 
-export const jwks = pgTable('jwks', (t) => ({
+export const jwks = pgPrivateTable('jwks', (t) => ({
   id: t.text('id').primaryKey().notNull(),
   publicKey: t.text('publicKey').notNull(),
   privateKey: t.text('privateKey').notNull(),
   createdAt: t.timestamp('createdAt', { mode: 'string' }).notNull(),
 }))
 
-export const verification = pgTable('verification', (t) => ({
+export const verification = pgPrivateTable('verification', (t) => ({
   id: t.text('id').primaryKey().notNull(),
   identifier: t.text('identifier').notNull(),
   value: t.text('value').notNull(),
@@ -74,7 +75,7 @@ export const verification = pgTable('verification', (t) => ({
   updatedAt: t.timestamp('updatedAt', { mode: 'string' }),
 }))
 
-export const whitelist = pgTable('whitelist', (t) => ({
+export const whitelist = pgPrivateTable('whitelist', (t) => ({
   id: t.text('id').primaryKey().notNull(),
   email: t.varchar('email', { length: 200 }).notNull().unique(),
   createdAt: t.timestamp('createdAt', { mode: 'string' }).defaultNow(),
@@ -249,16 +250,3 @@ export const notification = pgTable(
     index('notification_createdAt_idx').on(table.createdAt),
   ],
 )
-
-// tables synced to zero (everything else is private)
-export const zeroPublicTables = [
-  'userPublic',
-  'userState',
-  'post',
-  'comment',
-  'block',
-  'report',
-  'device',
-  'notification',
-  'invite',
-] as const

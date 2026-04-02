@@ -96,7 +96,8 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
               })
 
               if (!devMode && !skipIntegration) {
-                // always dev build even non-dev mode
+                // clean dist to avoid stale build artifacts
+                await run(`rm -rf dist`, { silent: true })
                 await run(`bun web build`, {
                   prefix: 'web-build',
                   timeout: time.ms.minutes(5),

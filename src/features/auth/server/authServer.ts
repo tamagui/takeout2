@@ -20,7 +20,7 @@ export const authServer = betterAuth({
   database,
 
   rateLimit: {
-    enabled: process.env.NODE_ENV === 'production',
+    enabled: process.env.NODE_ENV === 'production' && !process.env.IS_TESTING,
     window: 60,
     max: 30, // per minute per IP
     customRules: {

@@ -4,7 +4,11 @@ export {
   type MigrateOptions,
 } from './createDatabase'
 export { createPool, type CreatePoolOptions } from './createPool'
-export { createDrizzle, type CreateDrizzleOptions } from './createDrizzle'
+export {
+  createDrizzle,
+  type CreateDrizzleOptions,
+  type DrizzleHelpers,
+} from './createDrizzle'
 export { createSql, type SqlQuery } from './sql'
 export { createServerHelpers, type ServerHelpers } from './createServerHelpers'
 export { getDBClient, queryDb, type GetDBClientOptions } from './getDBClient'

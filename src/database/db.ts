@@ -22,4 +22,4 @@ export const db = createDatabase({
   },
 })
 
-export const { pg, sql } = db
+export const { drizzle, sql } = db

@@ -16,25 +16,20 @@ import {
   type TriggerDefinition,
 } from './zero'
 
-export type DatabaseConfig<TSchema extends Record<string, unknown>> = {
+import type { AnyRelations, EmptyRelations } from 'drizzle-orm'
+
+export type DatabaseConfig<
+  TSchema extends Record<string, unknown>,
+  TRelations extends AnyRelations = EmptyRelations,
+> = {
   connectionString: string
-
-  /** all drizzle tables (public + private) */
   schema: TSchema
-  relations?: any
-
-  /** pool configuration overrides */
+  relations?: TRelations
   pool?: Omit<CreatePoolOptions, 'connectionString'>
-
-  /** zero-specific configuration */
   zero?: {
-    /** publication name, e.g. 'zero_takeout' or 'zero_chat' */
     publicationName: string
-    /** table names that are synced to zero (everything else is private) */
     publicTables: string[]
-    /** trigger definitions to apply on each migration run */
     triggers?: TriggerDefinition[]
-    /** seed definitions to apply on each migration run */
     seeds?: SeedDefinition[]
   }
 }
@@ -54,9 +49,10 @@ function stripQueryParams(connStr: string | undefined): string | undefined {
   return connStr.split('?')[0]
 }
 
-export function createDatabase<TSchema extends Record<string, unknown>>(
-  config: DatabaseConfig<TSchema>,
-) {
+export function createDatabase<
+  TSchema extends Record<string, unknown>,
+  TRelations extends AnyRelations = EmptyRelations,
+>(config: DatabaseConfig<TSchema, TRelations>) {
   const { connectionString, schema, relations, zero } = config
 
   const pool = createPool({
@@ -64,7 +60,7 @@ export function createDatabase<TSchema extends Record<string, unknown>>(
     ...config.pool,
   })
 
-  const pg = createDrizzle({
+  const drizzle = createDrizzle({
     pool,
     schema,
     relations,
@@ -72,7 +68,6 @@ export function createDatabase<TSchema extends Record<string, unknown>>(
 
   const { sql, getDBClient: getBoundDBClient } = createServerHelpers(pool)
 
-  // derive private table names: all tables minus zero's public tables
   const allTableNames = Object.values(schema)
     .filter((v): v is PgTable => v instanceof PgTable)
     .map((t) => getTableName(t))
@@ -137,7 +132,7 @@ export function createDatabase<TSchema extends Record<string, unknown>>(
 
   return {
     pool,
-    pg,
+    drizzle,
     sql,
     getDBClient: getBoundDBClient,
     close,

@@ -1,6 +1,6 @@
 import { eq, ne, and } from 'drizzle-orm'
 
-import { pg } from '~/database/db'
+import { drizzle } from '~/database/db'
 import {
   user as userTable,
   whitelist,
@@ -23,7 +23,7 @@ async function onboardUser(authData: AuthData, userId: string) {
   if (!authData) return
 
   const isAdmin = getIsAdmin(authData)
-  const db = pg
+  const db = drizzle
 
   // check if user exists in userPublic table
   const existingUser = await db
@@ -117,7 +117,7 @@ async function onboardUser(authData: AuthData, userId: string) {
 }
 
 async function deleteAccount(userId: string) {
-  const db = pg
+  const db = drizzle
 
   try {
     // delete all user-generated content
@@ -156,7 +156,7 @@ async function validateUsername(username?: string, excludeUserId?: string) {
     )
   }
 
-  const db = pg
+  const db = drizzle
 
   // Check if username is already taken by another user
   const whereCondition = excludeUserId
@@ -173,7 +173,7 @@ async function validateUsername(username?: string, excludeUserId?: string) {
 }
 
 async function whitelistUsers(emails: string[]) {
-  const db = pg
+  const db = drizzle
 
   const uniqueEmails = [...new Set(emails.map((e) => e.toLowerCase()))]
 

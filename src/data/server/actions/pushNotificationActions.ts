@@ -1,6 +1,6 @@
 import { and, eq, ne } from 'drizzle-orm'
 
-import { pg } from '~/database/db'
+import { drizzle } from '~/database/db'
 import { device, notification, post, userPublic } from '~/database/schema'
 
 const EXPO_PUSH_URL = 'https://exp.host/--/api/v2/push/send'
@@ -33,7 +33,7 @@ type ExpoPushTicket =
 // create in-app notification and send push to native devices
 export const createNotification = async (params: CreateNotificationParams) => {
   const { userId, actorId, type, title, body, data } = params
-  const db = pg
+  const db = drizzle
 
   const notificationId = crypto.randomUUID()
 
@@ -67,7 +67,7 @@ export const sendPushToUser = async (
   body?: string,
   data?: Record<string, unknown>,
 ) => {
-  const db = pg
+  const db = drizzle
 
   // get all devices with push enabled, excluding web
   const devices = await db
@@ -138,7 +138,7 @@ export const sendExpoPush = async (
 
 // mark notification as read
 export const markNotificationRead = async (notificationId: string, userId: string) => {
-  const db = pg
+  const db = drizzle
   await db
     .update(notification)
     .set({ read: true })
@@ -147,7 +147,7 @@ export const markNotificationRead = async (notificationId: string, userId: strin
 
 // mark all notifications as read for a user
 export const markAllNotificationsRead = async (userId: string) => {
-  const db = pg
+  const db = drizzle
   await db
     .update(notification)
     .set({ read: true })
@@ -161,7 +161,7 @@ export const notifyCommentOnPost = async (params: {
   commentContent: string
 }) => {
   const { postId, commentId, commenterId, commentContent } = params
-  const db = pg
+  const db = drizzle
 
   const [postResult, commenterResult] = await Promise.all([
     db.select({ userId: post.userId }).from(post).where(eq(post.id, postId)),

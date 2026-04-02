@@ -1,13 +1,11 @@
 import { and, eq, gt, gte, lt, lte, ne } from 'drizzle-orm'
-import { drizzle } from 'drizzle-orm/node-postgres'
+import { type NodePgDatabase, drizzle } from 'drizzle-orm/node-postgres'
 import { PgTimestampString } from 'drizzle-orm/pg-core'
 
-import type { InferInsertModel, SQL } from 'drizzle-orm'
+import type { AnyRelations, EmptyRelations, InferInsertModel, SQL } from 'drizzle-orm'
 import type { PgTable } from 'drizzle-orm/pg-core'
 import type { Pool } from 'pg'
 
-// zero uses epoch-ms numbers for timestamps, drizzle v2 only accepts string|Date.
-// patch once here so every pg.insert/update handles numbers automatically.
 let patched = false
 function patchTimestampForZero() {
   if (patched) return
@@ -21,10 +19,8 @@ function patchTimestampForZero() {
 
 const operators = { eq, ne, lt, lte, gt, gte } as const
 type Op = keyof typeof operators
-
 type WhereOp = Partial<Record<Op, any>>
 type WhereValue = string | number | boolean | null | WhereOp
-
 type WithSQL<T> = { [K in keyof T]: T[K] | SQL }
 
 type TableName<TSchema> = {
@@ -58,49 +54,61 @@ function resolveWhere(table: any, where: Record<string, WhereValue>) {
   return conditions.length === 1 ? conditions[0]! : and(...conditions)!
 }
 
-export type CreateDrizzleOptions<TSchema extends Record<string, unknown>> = {
+export type CreateDrizzleOptions<
+  TSchema extends Record<string, unknown>,
+  TRelations extends AnyRelations = EmptyRelations,
+> = {
   pool: Pool
   schema: TSchema
-  relations?: any
+  relations?: TRelations
 }
 
-export function createDrizzle<TSchema extends Record<string, unknown>>(
-  options: CreateDrizzleOptions<TSchema>,
-) {
+export type DrizzleHelpers<TSchema> = {
+  insertRow<T extends TableName<TSchema>>(
+    tableName: T,
+    values: InsertMap<TSchema>[T],
+  ): void
+  updateRow<T extends TableName<TSchema>>(
+    tableName: T,
+    where: WhereClause<TSchema, T>,
+    set: InsertMap<TSchema>[T],
+  ): void
+  deleteRow<T extends TableName<TSchema>>(
+    tableName: T,
+    where: WhereClause<TSchema, T>,
+  ): void
+}
+
+export function createDrizzle<
+  TSchema extends Record<string, unknown>,
+  TRelations extends AnyRelations = EmptyRelations,
+>(
+  options: CreateDrizzleOptions<TSchema, TRelations>,
+): NodePgDatabase<TSchema, TRelations> & DrizzleHelpers<TSchema> {
   patchTimestampForZero()
 
-  const instance = drizzle({
-    client: options.pool,
-    schema: options.schema as any,
+  const instance = drizzle(options.pool as any, {
+    schema: options.schema,
     relations: options.relations,
     logger: false,
-  } as any)
+  }) as unknown as NodePgDatabase<TSchema, TRelations>
 
-  const helpers = {
-    insertRow<T extends TableName<TSchema>>(tableName: T, values: InsertMap<TSchema>[T]) {
-      const table = options.schema[tableName]
-      return instance.insert(table as any).values(values as any)
+  const helpers: DrizzleHelpers<TSchema> = {
+    insertRow(tableName, values) {
+      const table = options.schema[tableName] as any
+      return instance.insert(table).values(values as Record<string, unknown>)
     },
-
-    updateRow<T extends TableName<TSchema>>(
-      tableName: T,
-      where: WhereClause<TSchema, T>,
-      set: InsertMap<TSchema>[T],
-    ) {
-      const table = options.schema[tableName]
+    updateRow(tableName, where, set) {
+      const table = options.schema[tableName] as any
       return instance
-        .update(table as any)
-        .set(set as any)
+        .update(table)
+        .set(set as Record<string, unknown>)
         .where(resolveWhere(table, where as Record<string, WhereValue>))
     },
-
-    deleteRow<T extends TableName<TSchema>>(
-      tableName: T,
-      where: WhereClause<TSchema, T>,
-    ) {
-      const table = options.schema[tableName]
+    deleteRow(tableName, where) {
+      const table = options.schema[tableName] as any
       return instance
-        .delete(table as any)
+        .delete(table)
         .where(resolveWhere(table, where as Record<string, WhereValue>))
     },
   }

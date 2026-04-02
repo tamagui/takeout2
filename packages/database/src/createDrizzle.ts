@@ -63,20 +63,24 @@ export type CreateDrizzleOptions<
   relations?: TRelations
 }
 
-export type DrizzleHelpers<TSchema> = {
+type ExtractTable<TSchema, T extends TableName<TSchema>> = TSchema[T] extends PgTable
+  ? TSchema[T]
+  : never
+
+export type DrizzleHelpers<TSchema extends Record<string, unknown> = Record<string, unknown>, TDb extends NodePgDatabase<any, any> = NodePgDatabase<TSchema>> = {
   insertRow<T extends TableName<TSchema>>(
     tableName: T,
     values: InsertMap<TSchema>[T],
-  ): void
+  ): ReturnType<ReturnType<TDb['insert']>['values']>
   updateRow<T extends TableName<TSchema>>(
     tableName: T,
     where: WhereClause<TSchema, T>,
     set: InsertMap<TSchema>[T],
-  ): void
+  ): ReturnType<ReturnType<ReturnType<TDb['update']>['set']>['where']>
   deleteRow<T extends TableName<TSchema>>(
     tableName: T,
     where: WhereClause<TSchema, T>,
-  ): void
+  ): ReturnType<ReturnType<TDb['delete']>['where']>
 }
 
 export function createDrizzle<
@@ -84,7 +88,7 @@ export function createDrizzle<
   TRelations extends AnyRelations = EmptyRelations,
 >(
   options: CreateDrizzleOptions<TSchema, TRelations>,
-): NodePgDatabase<TSchema, TRelations> & DrizzleHelpers<TSchema> {
+): NodePgDatabase<TSchema, TRelations> & DrizzleHelpers<TSchema, NodePgDatabase<TSchema, TRelations>> {
   patchTimestampForZero()
 
   const instance = drizzle(options.pool as any, {
@@ -93,7 +97,7 @@ export function createDrizzle<
     logger: false,
   }) as unknown as NodePgDatabase<TSchema, TRelations>
 
-  const helpers: DrizzleHelpers<TSchema> = {
+  const helpers: DrizzleHelpers<TSchema, NodePgDatabase<TSchema, TRelations>> = {
     insertRow(tableName, values) {
       const table = options.schema[tableName] as any
       return instance.insert(table).values(values as Record<string, unknown>)

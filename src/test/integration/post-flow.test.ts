@@ -6,8 +6,9 @@ import { expect, test } from '@playwright/test'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 import { loginAsDemo } from './helpers'
+import { ports } from '~/env'
 
-const BASE_URL = 'http://localhost:8081'
+const BASE_URL = `http://localhost:${ports.web}`
 
 // increase timeout for this test since it involves file uploads
 test.describe('Post Flow', () => {

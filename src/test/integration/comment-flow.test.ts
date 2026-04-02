@@ -1,8 +1,9 @@
 import { expect, test } from '@playwright/test'
+import { ports } from '~/env'
 
 import { loginAsDemo } from './helpers'
 
-const BASE_URL = 'http://localhost:8081'
+const BASE_URL = `http://localhost:${ports.web}`
 const SEED_POST_ID = 'seed-post-1'
 
 test.describe('Comment Flow', () => {

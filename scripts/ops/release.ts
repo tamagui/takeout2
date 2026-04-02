@@ -20,7 +20,7 @@ await cmd`Run full CI/CD pipeline: test, build prod, deploy`
     // --dry-run is an alias for --skip-deploy
     const skipDeploy = args.skipDeploy || args.dryRun
     const skipTests = args.skipTests || args.deployOnly || args.redeploy
-    const skipBuild = args.redeploy || args.retry
+    const skipBuild = args.redeploy
     const devMode = args.dev
 
     const deployPlatform = await detectDeploymentPlatform()
@@ -35,11 +35,14 @@ await cmd`Run full CI/CD pipeline: test, build prod, deploy`
       // step 1: run tests (unless --deploy-only or --skip-tests)
       if (!skipTests) {
         console.info('\n📋 running tests...')
-        await run(`bun tko test e2e${devMode ? ' --dev' : ''}`, {
-          prefix: 'test',
-          timeout: time.ms.minutes(20),
-          timing: 'tests',
-        })
+        await run(
+          `bun tko test e2e${devMode ? ' --dev' : ''}${args.retry ? '--retry' : ''}`,
+          {
+            prefix: 'test',
+            timeout: time.ms.minutes(20),
+            timing: 'tests',
+          },
+        )
       }
 
       // step 2: build prod + deploy env setup + push image
@@ -66,11 +69,13 @@ await cmd`Run full CI/CD pipeline: test, build prod, deploy`
                 timeout: time.ms.minutes(2),
                 timing: 'db:build',
               }),
-              run(`bun run web build`, {
-                prefix: 'web-build',
-                timeout: time.ms.minutes(5),
-                timing: 'web:build (prod)',
-              }),
+              args.retry
+                ? null
+                : run(`bun run web build`, {
+                    prefix: 'web-build',
+                    timeout: time.ms.minutes(5),
+                    timing: 'web:build (prod)',
+                  }),
             ])
             if (!skipDeploy) {
               await printTiming('prebuild docker image', () =>

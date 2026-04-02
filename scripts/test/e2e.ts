@@ -4,9 +4,10 @@ import { cmd } from '@take-out/cli'
 
 await cmd`Run checks, build with test env, and run all tests (unit + integration)`
   .args(
-    `--skip-checks boolean --skip-unit boolean --skip-integration boolean --dev boolean --start boolean --unit boolean --integration boolean --filter string`,
+    `--retry boolean --skip-checks boolean --skip-unit boolean --skip-integration boolean --dev boolean --start boolean --unit boolean --integration boolean --filter string`,
   )
   .run(async ({ args }) => {
+    const { ports } = await import('~/env')
     const { sleep, time } = await import('@take-out/helpers')
     const { getTestEnv } = await import('@take-out/scripts/helpers/get-test-env')
     const { handleProcessExit } = await import('@take-out/run/helpers/handleProcessExit')
@@ -34,6 +35,7 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
     const skipIntegration = args.skipIntegration || args.unit
     const devMode = args.dev || args.unit
     const startOnly = args.start
+    const retry = args.retry
 
     // filter from --filter or rest positional args
     const filter = args.filter || args.rest.join(' ')
@@ -89,7 +91,7 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
           name: 'build-and-test',
           fn: async () => {
             try {
-              if (!devMode && !skipIntegration) {
+              if (!retry && !devMode && !skipIntegration) {
                 // clean dist to avoid stale build artifacts
                 await run(`rm -rf dist`, { silent: true })
                 await run(`bun web build`, {
@@ -144,6 +146,13 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
 
     async function startBackend() {
       const testEnv = await getTestEnv()
+
+      // stop any other zero-cache containers that point at the same web port
+      // (e.g. chat's zero-cache also uses host.docker.internal:8081)
+      await run('docker ps -q --filter "ancestor=rocicorp/zero" | xargs -r docker stop', {
+        silent: true,
+      }).catch(() => {})
+
       if (!process.env.SKIP_BACKEND_CLEAN) {
         await run('docker compose down', { env: testEnv })
       }
@@ -181,7 +190,7 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
 
       // wait for postgres
       console.info('Waiting for postgres...')
-      await waitForPort(+(process.env.VITE_PORT_POSTGRES || 5433))
+      await waitForPort(ports.postgres)
 
       // run migrations natively
       console.info('Running migrations...')
@@ -226,8 +235,8 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
         await waitForRun('backend')
 
         await startFrontend()
-        await waitForPort(+(process.env.VITE_PORT_ZERO || 4848))
-        await waitForPort(8081)
+        await waitForPort(ports.zero)
+        await waitForPort(ports.web)
 
         const testEnv = await getTestEnv()
 

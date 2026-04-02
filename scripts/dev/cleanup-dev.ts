@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 
 import { $ } from 'bun'
+import { ports } from '~/env'
 
 const killedPids = new Set<string>()
 
@@ -74,7 +75,7 @@ async function cleanupPort(port: number) {
   } catch {}
 }
 
-await cleanupPort(8081)
+await cleanupPort(ports.web)
 await cleanupPattern('Onejs:dev')
 await cleanupPattern('Onejs:serve')
 await cleanupPattern('ops run-frontend')

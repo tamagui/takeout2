@@ -5,6 +5,7 @@ import { admin, bearer, emailOTP, jwt, magicLink, phoneNumber } from 'better-aut
 
 import { DOMAIN } from '~/constants/app'
 import { database } from '~/database/database'
+import { ports } from '~/env'
 import { BETTER_AUTH_SECRET, BETTER_AUTH_URL } from '~/server/env-server'
 
 import { APP_SCHEME } from '../constants'
@@ -55,8 +56,8 @@ export const authServer = betterAuth({
   trustedOrigins: [
     // match dev, prod, tauri
     `https://${DOMAIN}`,
-    `http://localhost:${process.env.VITE_PORT_WEB || '8081'}`,
-    `http://host.docker.internal:${process.env.VITE_PORT_WEB || '8081'}`,
+    `http://localhost:${ports.web}`,
+    `http://host.docker.internal:${ports.web}`,
     `${APP_SCHEME}://`,
   ],
 

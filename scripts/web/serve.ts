@@ -5,5 +5,6 @@
 import { cmd } from '@take-out/cli'
 
 await cmd`Serve web application`.args('--port number').run(async ({ args, $ }) => {
-  await $`bun one serve --port ${args.port || 8081}`
+  const { ports } = await import('~/env')
+  await $`bun one serve --port ${args.port || ports.web}`
 })

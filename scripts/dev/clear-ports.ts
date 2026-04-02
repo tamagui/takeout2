@@ -5,6 +5,8 @@
 import { cmd } from '@take-out/cli'
 
 await cmd`Clear all project ports`.run(async ({ $ }) => {
+  const { ports } = await import('~/env')
+
   async function killPort(port: number) {
     try {
       // sigterm first for graceful shutdown
@@ -20,10 +22,10 @@ await cmd`Clear all project ports`.run(async ({ $ }) => {
   }
 
   await Promise.all([
-    killPort(8081), // web server
-    killPort(5433), // postgres
-    killPort(4848), // zero
-    killPort(9200), // minio
-    killPort(9201), // minio console
+    killPort(ports.web), // web server
+    killPort(ports.postgres), // postgres
+    killPort(ports.zero), // zero
+    killPort(ports.minio), // minio
+    killPort(ports.minio + 1), // minio console
   ])
 })

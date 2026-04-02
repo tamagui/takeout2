@@ -4,6 +4,9 @@
  */
 
 import { test, expect } from '@playwright/test'
+import { ports } from '~/env'
+
+const BASE_URL = `http://localhost:${ports.web}`
 
 test.beforeEach(async ({ context }) => {
   // clear cookies and localStorage to simulate fresh user
@@ -16,7 +19,7 @@ test('login page should load without freezing', async ({ page }) => {
   test.setTimeout(30000)
 
   // navigate to login page
-  const response = await page.goto('http://localhost:8081/auth/login', {
+  const response = await page.goto(`${BASE_URL}/auth/login`, {
     waitUntil: 'domcontentloaded',
     timeout: 20000,
   })
@@ -35,7 +38,7 @@ test('login page should load without freezing', async ({ page }) => {
 test('login page shows login form elements', async ({ page }) => {
   test.setTimeout(15000)
 
-  await page.goto('http://localhost:8081/auth/login', {
+  await page.goto(`${BASE_URL}/auth/login`, {
     waitUntil: 'networkidle',
     timeout: 10000,
   })
@@ -56,7 +59,7 @@ test('login page does not redirect infinitely', async ({ page }) => {
     }
   })
 
-  await page.goto('http://localhost:8081/auth/login', {
+  await page.goto(`${BASE_URL}/auth/login`, {
     waitUntil: 'domcontentloaded',
   })
 

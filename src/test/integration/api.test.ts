@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
+import { ports } from '~/env'
 
-const BASE_URL = 'http://localhost:8081'
+const BASE_URL = `http://localhost:${ports.web}`
 
 test.describe('API Integration Tests', () => {
   test('health endpoint should return ok status', async ({ request }) => {

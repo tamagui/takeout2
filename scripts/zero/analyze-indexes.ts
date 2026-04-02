@@ -4,10 +4,12 @@ import { cmd } from '@take-out/cli'
 
 await cmd`Analyze Zero indexes and query performance against the dev database`.run(
   async () => {
+    const { ports } = await import('~/env')
     const { Pool } = await import('pg')
 
     const connStr =
-      process.env.ZERO_UPSTREAM_DB || 'postgresql://user:password@127.0.0.1:5433/postgres'
+      process.env.ZERO_UPSTREAM_DB ||
+      `postgresql://user:password@127.0.0.1:${ports.postgres}/postgres`
     const replicaFile = process.env.ZERO_REPLICA_FILE || '/tmp/takeout_replica.db'
     const publication = process.env.ZERO_APP_PUBLICATIONS || 'zero_takeout'
 

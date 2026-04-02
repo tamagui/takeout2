@@ -1,6 +1,7 @@
 import { test, expect, type Page } from '@playwright/test'
+import { ports } from '~/env'
 
-const BASE_URL = 'http://localhost:8081'
+const BASE_URL = `http://localhost:${ports.web}`
 
 test.describe('Basic Integration Tests', () => {
   let page: Page
@@ -13,7 +14,7 @@ test.describe('Basic Integration Tests', () => {
     await page.close()
   })
 
-  test('server should be running on port 8081', async () => {
+  test('server should be running', async () => {
     const response = await page.goto(`${BASE_URL}/auth/login`, {
       waitUntil: 'domcontentloaded',
     })

@@ -35,7 +35,7 @@
     "dev": "tko run-all --pty --flags=last watch watch:types watch:zero:generate one:dev",
     "dev:fresh": "bun backend:clean; bun dev --clean",
     "eas": "tko eas",
-    "env": "dotenvx run --overload -f .env .env.${NODE_ENV:-development} --",
+    "env": "bun src/env.ts --",
     "env:dev": "NODE_ENV=development bun env",
     "env:prod": "NODE_ENV=production bun env",
     "env:pull": "tko run env-pull",

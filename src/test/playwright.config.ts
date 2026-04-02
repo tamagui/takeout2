@@ -1,6 +1,8 @@
 import { cpus } from 'node:os'
 import { defineConfig, devices } from '@playwright/test'
 
+const PORT_WEB = Number(process.env.VITE_PORT_WEB || 8081)
+
 export default defineConfig({
   testDir: './integration',
   outputDir: './integration/.output/test-results',
@@ -14,7 +16,7 @@ export default defineConfig({
   maxFailures: 3,
   reporter: 'list',
   use: {
-    baseURL: 'http://localhost:8081',
+    baseURL: `http://localhost:${PORT_WEB}`,
     trace: 'on-first-retry',
   },
 

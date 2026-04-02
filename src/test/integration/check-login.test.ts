@@ -1,7 +1,10 @@
 import { test } from '@playwright/test'
+import { ports } from '~/env'
+
+const BASE_URL = `http://localhost:${ports.web}`
 
 test('check login page has demo button', async ({ page }) => {
-  await page.goto('http://localhost:8081/auth/login', { waitUntil: 'networkidle' })
+  await page.goto(`${BASE_URL}/auth/login`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(3000)
   await page.screenshot({ path: '/tmp/login-page.png', fullPage: true })
   console.info('Screenshot saved to /tmp/login-page.png')

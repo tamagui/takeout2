@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test'
+import { ports } from '~/env'
 
-const BASE_URL = 'http://localhost:8081'
+const BASE_URL = `http://localhost:${ports.web}`
 
 export async function loginAsDemo(page: Page, pathname = '/') {
   console.info('Logging in as demo user via API...')

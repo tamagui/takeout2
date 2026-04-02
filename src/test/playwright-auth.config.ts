@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
+const PORT_WEB = Number(process.env.VITE_PORT_WEB || 8081)
+
 /**
  * Playwright config for auth integration tests
  * No global setup - tests are independent
@@ -16,7 +18,7 @@ export default defineConfig({
   workers: 1,
   reporter: 'list',
   use: {
-    baseURL: 'http://localhost:8081',
+    baseURL: `http://localhost:${PORT_WEB}`,
     trace: 'on-first-retry',
   },
 

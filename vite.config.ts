@@ -1,5 +1,5 @@
 import { tamaguiAliases, tamaguiPlugin } from '@tamagui/vite-plugin'
-import { one } from 'one/vite'
+import { autoWarmPlugin, one } from 'one/vite'
 import { visualizer } from 'rollup-plugin-visualizer'
 
 import type { UserConfig } from 'vite'
@@ -20,34 +20,7 @@ export default {
   },
 
   optimizeDeps: {
-    include: [
-      'async-retry',
-
-      // vite optimizes deps dynamically as it finds them on client side nav
-      // problem is it hard-reloads the app, and that makes for a slow/bad initial DX
-      // so we are just telling it to optimize deps that almost always need it here:
-      // NOTE - this is specific to this app, specific to the pages that load in dev / deps
-      'better-auth/client',
-      'better-auth/client/plugins',
-      '@tamagui/toast',
-      '@tamagui/animate-presence',
-      '@tamagui/react-native-svg',
-      '@tamagui/linear-gradient',
-      '@rocicorp/zero',
-      '@rocicorp/zero/react',
-      'react-dom',
-      '@take-out/helpers',
-      '@legendapp/list',
-      'zeego/dropdown-menu',
-      'mdx-bundler/client',
-      'react-native',
-      // login/feed
-      'react/jsx-runtime',
-      'react-native-keyboard-controller',
-      '@tamagui/config/v5-motion',
-      '@tamagui/animations-motion',
-      '@tamagui/menu',
-    ],
+    include: ['async-retry'],
 
     // @hot-updater/cli-tools contains native .node binaries (oxc-transform)
     // that esbuild can't handle - exclude from optimization
@@ -93,6 +66,9 @@ export default {
   },
 
   plugins: [
+    // learns which deps you need optimized so dev mode gets faster
+    autoWarmPlugin('./warm-deps.generated.json'),
+
     tamaguiPlugin(
       // see tamagui.build.ts for configuration
       // this is what lets us nicely do commands like `bun tamagui generate-css`
@@ -100,26 +76,6 @@ export default {
 
     one({
       patches: {
-        // rolldown tree-shaking bug: with sideEffects:false, rolldown drops
-        // motion-dom/scale-border-radius.mjs while keeping scale-correction.mjs
-        // that references correctBorderRadius from it. removing sideEffects:false
-        // prevents the incorrect tree-shaking on both client and server builds.
-        'motion-dom': {
-          'package.json': (contents) =>
-            contents?.replace('"sideEffects": false', '"sideEffects": true'),
-        },
-        'framer-motion': {
-          'package.json': (contents) =>
-            contents?.replace('"sideEffects": false', '"sideEffects": true'),
-        },
-        motion: {
-          'package.json': (contents) =>
-            contents?.replace('"sideEffects": false', '"sideEffects": true'),
-        },
-        'motion-utils': {
-          'package.json': (contents) =>
-            contents?.replace('"sideEffects": false', '"sideEffects": true'),
-        },
         // better-auth's createDynamicPathProxy returns a recursive proxy for
         // unknown keys instead of undefined. react 19.2 / rn 0.83 introspect
         // objects ($$typeof, constructor, etc) triggering fake API calls and

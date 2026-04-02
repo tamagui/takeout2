@@ -91,11 +91,12 @@ export function createDrizzle<
 ): NodePgDatabase<TSchema, TRelations> & DrizzleHelpers<TSchema, NodePgDatabase<TSchema, TRelations>> {
   patchTimestampForZero()
 
-  const instance = drizzle(options.pool as any, {
-    schema: options.schema,
+  const instance = drizzle({
+    client: options.pool,
+    schema: options.schema as Record<string, unknown>,
     relations: options.relations,
     logger: false,
-  }) as unknown as NodePgDatabase<TSchema, TRelations>
+  } as any) as unknown as NodePgDatabase<TSchema, TRelations>
 
   const helpers: DrizzleHelpers<TSchema, NodePgDatabase<TSchema, TRelations>> = {
     insertRow(tableName, values) {

@@ -7,9 +7,9 @@ export const createDb = <TSchema extends Record<string, unknown>>(
   schema: TSchema,
 ): NodePgDatabase<TSchema> => {
   const pool = createPool({ connectionString })
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return drizzle(pool as any, {
-    schema,
+  return drizzle({
+    client: pool,
+    schema: schema as Record<string, unknown>,
     logger: false,
-  }) as unknown as NodePgDatabase<TSchema>
+  } as any) as unknown as NodePgDatabase<TSchema>
 }

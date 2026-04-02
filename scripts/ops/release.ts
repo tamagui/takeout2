@@ -6,7 +6,7 @@ type DeployPlatform = 'sst' | 'uncloud'
 
 await cmd`Run full CI/CD pipeline: test, build prod, deploy`
   .args(
-    `--skip-tests boolean --skip-deploy boolean --dry-run boolean --deploy-only boolean --redeploy boolean --dev boolean`,
+    `--skip-tests boolean --retry boolean --skip-deploy boolean --dry-run boolean --deploy-only boolean --redeploy boolean --dev boolean`,
   )
   .run(async ({ args, run }) => {
     const { time } = await import('@take-out/helpers')
@@ -20,7 +20,7 @@ await cmd`Run full CI/CD pipeline: test, build prod, deploy`
     // --dry-run is an alias for --skip-deploy
     const skipDeploy = args.skipDeploy || args.dryRun
     const skipTests = args.skipTests || args.deployOnly || args.redeploy
-    const skipBuild = args.redeploy
+    const skipBuild = args.redeploy || args.retry
     const devMode = args.dev
 
     const deployPlatform = await detectDeploymentPlatform()

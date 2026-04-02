@@ -40,27 +40,11 @@ services:
       - pgdb_data:/var/lib/postgresql/data
       - ./src/database/:/docker-entrypoint-initdb.d
 
-  migrate:
-    image: node:22.4-slim
-    depends_on:
-      pgdb:
-        condition: service_healthy
-    volumes:
-      - .:/app
-    working_dir: /app/src/database
-    environment:
-      - RUN=1
-      - ALLOW_MISSING_ENV=1
-      - ZERO_UPSTREAM_DB=postgresql://user:password@pgdb:5432/postgres
-      - ZERO_CVR_DB=postgresql://user:password@pgdb:5432/zero_cvr
-      - ZERO_CHANGE_DB=postgresql://user:password@pgdb:5432/zero_cdb
-    command: node migrate-dist.js
+  # migrations run natively via `bun migrate run` - no docker needed
 
   zero:
     image: "rocicorp/zero:${ZERO_VERSION:-error-run-bun-tko-run-env-update}"
     depends_on:
-      migrate:
-        condition: service_completed_successfully
       pgdb:
         condition: service_healthy
     volumes:

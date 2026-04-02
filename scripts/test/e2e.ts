@@ -89,12 +89,6 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
           name: 'build-and-test',
           fn: async () => {
             try {
-              await run(`bun tko db build`, {
-                prefix: 'migrations',
-                timeout: time.ms.minutes(2),
-                timing: 'db build',
-              })
-
               if (!devMode && !skipIntegration) {
                 // clean dist to avoid stale build artifacts
                 await run(`rm -rf dist`, { silent: true })
@@ -151,9 +145,9 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
     async function startBackend() {
       const testEnv = await getTestEnv()
       if (!process.env.SKIP_BACKEND_CLEAN) {
-        await run('bun backend:clean', { env: testEnv })
+        await run('docker compose down', { env: testEnv })
       }
-      void run('bun backend --no-color', {
+      void run('docker compose up --remove-orphans --no-color', {
         env: {
           ...testEnv,
           ZERO_LOG_LEVEL: 'warn',
@@ -183,48 +177,28 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
     }
 
     async function waitForBackend() {
-      console.info('Waiting for migrations to complete...')
       const testEnv = await getTestEnv()
 
-      for (let i = 0; i < 120; i++) {
-        await sleep(2000)
+      // wait for postgres
+      console.info('Waiting for postgres...')
+      await waitForPort(+(process.env.VITE_PORT_POSTGRES || 5433))
 
-        const { stdout } = await run(`docker compose ps --all --format json migrate`, {
-          env: testEnv,
-          silent: true,
-          captureOutput: true,
-        })
+      // run migrations natively
+      console.info('Running migrations...')
+      await run('bun backend:migrate', {
+        env: testEnv,
+        prefix: 'migrate',
+        timeout: time.ms.minutes(2),
+      })
+      console.info('✅ Migrations completed!')
 
-        try {
-          const status = JSON.parse(stdout)
-
-          if (status.State === 'exited') {
-            if (status.ExitCode === 0) {
-              console.info('✅ Migrations completed successfully!')
-              // seed demo data for tests
-              await run('bun scripts/db/seed-demo.ts', {
-                env: testEnv,
-                prefix: 'seed',
-                timeout: time.ms.minutes(1),
-              })
-              console.info('✅ Seed data loaded!')
-              return
-            }
-            throw new Error(`Migrations failed with exit code ${status.ExitCode}`)
-          }
-
-          if (i % 5 === 0) {
-            console.info(`Migrations still running...`)
-          }
-        } catch (err) {
-          if (`${err}`.includes('JSON Parse')) {
-            continue
-          }
-          throw err
-        }
-      }
-
-      throw new Error(`Migrations failed to complete within timeout`)
+      // seed demo data for tests
+      await run('bun scripts/db/seed-demo.ts', {
+        env: testEnv,
+        prefix: 'seed',
+        timeout: time.ms.minutes(1),
+      })
+      console.info('✅ Seed data loaded!')
     }
 
     async function runUnitTests() {

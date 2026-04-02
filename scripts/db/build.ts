@@ -11,9 +11,6 @@ await cmd`Build migrations for production (generates SQL + bundles for docker)`.
     const { syncDrizzleMigrations } = await import('../migrate/sync-drizzle')
     await syncDrizzleMigrations()
 
-    // bundle migrate.ts for production use
-    await $`cd src/database && bun vite build`
-
     console.info('✅ migrations built')
   },
 )

@@ -26,7 +26,8 @@ export async function ensureZeroPublication(options: ZeroPublicationOptions) {
       `SELECT tablename FROM pg_tables
        WHERE schemaname = 'public'
          AND tablename != ALL($1)
-         AND tablename NOT LIKE '_zero_%'`,
+         AND tablename NOT LIKE '_zero_%'
+         AND tablename != 'migrations'`,
       [privateTableNames],
     )
     const wantedSet = new Set(wanted.map((r: any) => r.tablename))

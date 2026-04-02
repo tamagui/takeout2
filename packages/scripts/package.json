@@ -1,6 +1,6 @@
 {
   "name": "@take-out/scripts",
-  "version": "0.3.1",
+  "version": "0.3.1-1775162051847",
   "type": "module",
   "main": "./src/cmd.ts",
   "sideEffects": false,

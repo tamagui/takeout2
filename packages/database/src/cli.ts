@@ -139,8 +139,8 @@ const pgDump = defineCommand({
 
 const main = defineCommand({
   meta: {
-    name: 'postgres',
-    description: 'PostgreSQL database utilities and migration tools',
+    name: 'database',
+    description: 'Database utilities and migration tools',
     version: '0.0.1',
   },
   subCommands: {

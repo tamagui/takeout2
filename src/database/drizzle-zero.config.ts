@@ -1,6 +1,6 @@
 import { drizzleZeroConfig } from 'drizzle-zero'
-import * as schema from './src/database/schema'
-import { relations } from './src/database/relations'
+import * as schema from './schema'
+import { relations } from './relations'
 
 export default drizzleZeroConfig(
   { ...schema, relations },

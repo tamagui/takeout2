@@ -22,3 +22,14 @@ export * from './zql'
 // (breaks vite dep optimization under vxrn-web conditions)
 
 export type * from './types'
+
+export {
+  clearZeroClientData,
+  type ClearZeroClientDataOptions,
+} from './helpers/clearZeroClientData'
+export {
+  showZeroClientErrorOnce,
+  resetShownZeroClientError,
+  type ShowZeroClientErrorOptions,
+  type ZeroClientErrorInfo,
+} from './helpers/showZeroClientError'

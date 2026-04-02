@@ -1,8 +1,7 @@
 import { eq, ne, and } from 'drizzle-orm'
 
-import { getDb } from '~/database'
-import { user as userTable, whitelist } from '~/database/schema-private'
-import { post, userPublic, userState } from '~/database/schema-public'
+import { pg } from '~/database'
+import { user as userTable, whitelist, post, userPublic, userState } from '~/database/schema'
 import { getIsAdmin } from '~/server/getIsAdmin'
 
 import type { AuthData } from '~/features/auth/types'
@@ -18,7 +17,7 @@ async function onboardUser(authData: AuthData, userId: string) {
   if (!authData) return
 
   const isAdmin = getIsAdmin(authData)
-  const db = getDb()
+  const db = pg
 
   // check if user exists in userPublic table
   const existingUser = await db
@@ -112,7 +111,7 @@ async function onboardUser(authData: AuthData, userId: string) {
 }
 
 async function deleteAccount(userId: string) {
-  const db = getDb()
+  const db = pg
 
   try {
     // delete all user-generated content
@@ -151,7 +150,7 @@ async function validateUsername(username?: string, excludeUserId?: string) {
     )
   }
 
-  const db = getDb()
+  const db = pg
 
   // Check if username is already taken by another user
   const whereCondition = excludeUserId
@@ -168,7 +167,7 @@ async function validateUsername(username?: string, excludeUserId?: string) {
 }
 
 async function whitelistUsers(emails: string[]) {
-  const db = getDb()
+  const db = pg
 
   const uniqueEmails = [...new Set(emails.map((e) => e.toLowerCase()))]
 

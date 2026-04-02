@@ -1,4 +1,4 @@
-# @take-out/postgres
+# @take-out/database
 
 PostgreSQL database utilities and migration system for vxrn applications.
 
@@ -19,7 +19,7 @@ not the most flexible abstraction, just meant to provide a starting point.
 ## Installation
 
 ```bash
-bun add @take-out/postgres
+bun add @take-out/database
 ```
 
 ## Usage
@@ -27,7 +27,7 @@ bun add @take-out/postgres
 ### Basic Setup
 
 ```typescript
-import { createPool, createDb } from '@take-out/postgres'
+import { createPool, createDb } from '@take-out/database'
 import * as schema from './schema'
 
 // create raw pg pool
@@ -40,7 +40,7 @@ const db = createDb(process.env.DATABASE_URL, schema)
 ### Connection Management
 
 ```typescript
-import { getDBClient, queryDb } from '@take-out/postgres/helpers'
+import { getDBClient, queryDb } from '@take-out/database/helpers'
 
 // get client with automatic retry and monitoring
 const client = await getDBClient()
@@ -57,7 +57,7 @@ const result = await queryDb('SELECT * FROM users WHERE id = $1', [userId])
 ### SQL Template Helper
 
 ```typescript
-import { sql } from '@take-out/postgres'
+import { sql } from '@take-out/database'
 
 const users = await sql<User>`
   SELECT * FROM users WHERE created_at > ${since}
@@ -67,7 +67,7 @@ const users = await sql<User>`
 ### Chunked Query Processing
 
 ```typescript
-import { processInChunks, updateInChunks } from '@take-out/postgres/helpers'
+import { processInChunks, updateInChunks } from '@take-out/database/helpers'
 
 // process large datasets in chunks
 await processInChunks(
@@ -92,7 +92,7 @@ The package includes a custom migration runner that supports both SQL and
 TypeScript migrations:
 
 ```typescript
-import { migrate } from '@take-out/postgres/migrate'
+import { migrate } from '@take-out/database/migrate'
 
 await migrate({
   connectionString: process.env.DATABASE_URL,

@@ -4,20 +4,23 @@ import { betterAuth } from 'better-auth'
 import { admin, bearer, emailOTP, jwt, magicLink, phoneNumber } from 'better-auth/plugins'
 
 import { DOMAIN } from '~/constants/app'
-import { database } from '~/database/database'
-import { ports } from '~/env'
-import { BETTER_AUTH_SECRET, BETTER_AUTH_URL } from '~/server/env-server'
+import { pool } from '~/database'
+import { ports, server } from '~/env'
 
 import { APP_SCHEME } from '../constants'
 import { afterCreateUser } from './afterCreateUser'
 import { storeOTP } from './lastOTP'
 
-console.info(`[better-auth] server`, BETTER_AUTH_SECRET.slice(0, 3), BETTER_AUTH_URL)
+console.info(
+  `[better-auth] server`,
+  server.BETTER_AUTH_SECRET.slice(0, 3),
+  server.BETTER_AUTH_URL,
+)
 
 export const authServer = betterAuth({
-  // using BETTER_AUTH_URL instead of baseUrl
+  // using server.BETTER_AUTH_URL instead of baseUrl
 
-  database,
+  database: pool,
 
   rateLimit: {
     enabled: process.env.NODE_ENV === 'production' && !process.env.IS_TESTING,
@@ -33,7 +36,7 @@ export const authServer = betterAuth({
 
   // cloudflare IP header + cross-subdomain cookies for zero.tamagui.dev
   advanced: {
-    ...(BETTER_AUTH_URL.includes(DOMAIN) && {
+    ...(server.BETTER_AUTH_URL.includes(DOMAIN) && {
       crossSubDomainCookies: {
         enabled: true,
         domain: '.tamagui.dev',

@@ -1,5 +1,5 @@
 {
-  "name": "@take-out/postgres",
+  "name": "@take-out/database",
   "version": "0.3.1",
   "sideEffects": false,
   "source": "src/index.ts",
@@ -8,7 +8,7 @@
   "type": "module",
   "types": "./src/index.ts",
   "bin": {
-    "postgres": "./cli.cjs"
+    "database": "./cli.cjs"
   },
   "files": [
     "src",
@@ -55,7 +55,7 @@
     "@tamagui/build": "2.0.0-rc.36",
     "@types/async-retry": "^1.4.8",
     "@types/node": "24.0.3",
-    "drizzle-orm": "^0.40.0",
+    "drizzle-orm": "1.0.0-beta.9-e89174b",
     "oxfmt": "^0.16.0",
     "oxlint": "^1.31.0"
   }

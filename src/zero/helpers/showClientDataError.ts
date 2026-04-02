@@ -1,13 +1,8 @@
+import { showZeroClientErrorOnce, resetShownZeroClientError } from 'on-zero'
+
 // lazy imports to avoid circular dependency with zero/client
 const getShowNotification = () =>
   import('~/interface/notification/Notification').then((m) => m.showNotification)
-
-const getClearClientData = () =>
-  import('~/zero/helpers/clearClientData').then((m) => m.clearClientData)
-
-const shownErrorKeys = new Set<string>()
-const LAST_RELOAD_AT_KEY = 'zero-client-data-last-reload-at'
-const REPEAT_WINDOW_MS = 3 * 60 * 1000
 
 type ShowClientDataErrorOptions = {
   key?: string
@@ -15,55 +10,35 @@ type ShowClientDataErrorOptions = {
   description: string
 }
 
-function getLastReloadAt() {
-  if (typeof window === 'undefined') return 0
-  const raw = window.localStorage.getItem(LAST_RELOAD_AT_KEY)
-  const parsed = Number(raw || 0)
-  return Number.isFinite(parsed) ? parsed : 0
-}
-
-function markErrorShown() {
-  if (typeof window === 'undefined') return
-  window.localStorage.setItem(LAST_RELOAD_AT_KEY, String(Date.now()))
-}
-
 export async function showClientDataErrorOnce({
-  key = 'client-data-error',
-  title = 'Data Error',
+  key,
+  title,
   description,
 }: ShowClientDataErrorOptions) {
-  if (shownErrorKeys.has(key)) {
-    return
-  }
-
-  shownErrorKeys.add(key)
-
-  const shouldShowClear = Date.now() - getLastReloadAt() <= REPEAT_WINDOW_MS
-
-  markErrorShown()
-
   const showNotification = await getShowNotification()
-  showNotification(title, {
+
+  showZeroClientErrorOnce({
+    key,
+    title,
     description,
-    display: 'error',
-    action: shouldShowClear
-      ? {
-          label: 'Reset',
-          async onPress() {
-            const clearClientData = await getClearClientData()
-            await clearClientData()
-          },
+    clearOptions: {
+      closeZero: async () => {
+        const { zero } = await import('../client')
+        if (zero && typeof zero.close === 'function') {
+          await zero.close()
         }
-      : {
-          label: 'Reload',
-          onPress() {
-            markErrorShown()
-            window.location.reload()
-          },
-        },
+      },
+    },
+    onError(info) {
+      showNotification(info.title, {
+        description: info.description,
+        display: 'error',
+        action: info.shouldOfferReset
+          ? { label: 'Reset', onPress: () => info.reset() }
+          : { label: 'Reload', onPress: () => info.reload() },
+      })
+    },
   })
 }
 
-export function resetShownClientDataError(key = 'client-data-error') {
-  shownErrorKeys.delete(key)
-}
+export { resetShownZeroClientError as resetShownClientDataError }

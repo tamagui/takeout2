@@ -24,9 +24,10 @@
         "@resvg/resvg-js": "^2.6.2",
         "@rocicorp/zero": "0.26.2",
         "@take-out/better-auth-utils": "workspace:*",
+        "@take-out/database": "workspace:*",
+        "@take-out/env": "workspace:*",
         "@take-out/helpers": "workspace:*",
         "@take-out/native-hot-update": "workspace:*",
-        "@take-out/postgres": "workspace:*",
         "@tamagui/config": "2.0.0-rc.36",
         "@tamagui/constants": "2.0.0-rc.36",
         "@tamagui/helpers-icon": "2.0.0-rc.36",
@@ -141,7 +142,7 @@
     },
     "packages/better-auth-utils": {
       "name": "@take-out/better-auth-utils",
-      "version": "0.3.0-1775080946479",
+      "version": "0.3.1",
       "dependencies": {
         "@take-out/helpers": "workspace:*",
         "jose": "^6.0.10",
@@ -161,7 +162,7 @@
     },
     "packages/cli": {
       "name": "@take-out/cli",
-      "version": "0.3.0-1775080946479",
+      "version": "0.3.1",
       "bin": {
         "takeout": "./src/cli.ts",
         "tko": "./src/cli.ts",
@@ -190,7 +191,7 @@
     },
     "packages/create-takeout": {
       "name": "create-takeout",
-      "version": "0.3.0-1775080946479",
+      "version": "0.3.1",
       "bin": "./run.js",
       "dependencies": {
         "citty": "^0.1.6",
@@ -203,17 +204,41 @@
         "typescript": "^5.0.0",
       },
     },
+    "packages/database": {
+      "name": "@take-out/database",
+      "version": "0.3.1",
+      "bin": {
+        "database": "./cli.cjs",
+      },
+      "dependencies": {
+        "@take-out/helpers": "workspace:*",
+        "async-retry": "^1.3.3",
+        "citty": "^0.1.6",
+      },
+      "devDependencies": {
+        "@tamagui/build": "2.0.0-rc.36",
+        "@types/async-retry": "^1.4.8",
+        "@types/node": "24.0.3",
+        "drizzle-orm": "1.0.0-beta.9-e89174b",
+        "oxfmt": "^0.16.0",
+        "oxlint": "^1.31.0",
+      },
+      "peerDependencies": {
+        "drizzle-orm": "*",
+        "pg": "^8.16.3",
+      },
+    },
     "packages/docs": {
       "name": "@take-out/docs",
-      "version": "0.3.0-1775080946479",
+      "version": "0.3.1",
     },
     "packages/env": {
       "name": "@take-out/env",
-      "version": "0.3.0-1775080946479",
+      "version": "0.3.1",
     },
     "packages/helpers": {
       "name": "@take-out/helpers",
-      "version": "0.3.0-1775080946479",
+      "version": "0.3.1",
       "dependencies": {
         "@tamagui/constants": "2.0.0-rc.36",
         "dequal": "^2.0.3",
@@ -240,7 +265,7 @@
     },
     "packages/hooks": {
       "name": "@take-out/hooks",
-      "version": "0.3.0-1775080946479",
+      "version": "0.3.1",
       "dependencies": {
         "@take-out/helpers": "workspace:*",
       },
@@ -259,14 +284,14 @@
     },
     "packages/native": {
       "name": "@take-out/native",
-      "version": "0.3.0-1775080946479",
+      "version": "0.3.1",
       "peerDependencies": {
         "expo-crypto": "*",
       },
     },
     "packages/native-hot-update": {
       "name": "@take-out/native-hot-update",
-      "version": "0.3.0-1775080946479",
+      "version": "0.3.1",
       "devDependencies": {
         "@tamagui/build": "2.0.0-rc.36",
         "@types/react": "^18.3.18",
@@ -283,7 +308,7 @@
     },
     "packages/on-zero": {
       "name": "on-zero",
-      "version": "0.3.0-1775080946479",
+      "version": "0.3.1",
       "bin": {
         "on-zero": "./cli.cjs",
       },
@@ -321,40 +346,16 @@
         "react-native",
       ],
     },
-    "packages/postgres": {
-      "name": "@take-out/postgres",
-      "version": "0.3.0-1775080946479",
-      "bin": {
-        "postgres": "./cli.cjs",
-      },
-      "dependencies": {
-        "@take-out/helpers": "workspace:*",
-        "async-retry": "^1.3.3",
-        "citty": "^0.1.6",
-      },
-      "devDependencies": {
-        "@tamagui/build": "2.0.0-rc.36",
-        "@types/async-retry": "^1.4.8",
-        "@types/node": "24.0.3",
-        "drizzle-orm": "^0.40.0",
-        "oxfmt": "^0.16.0",
-        "oxlint": "^1.31.0",
-      },
-      "peerDependencies": {
-        "drizzle-orm": "*",
-        "pg": "^8.16.3",
-      },
-    },
     "packages/run": {
       "name": "@take-out/run",
-      "version": "0.3.0-1775080946479",
+      "version": "0.3.1",
       "dependencies": {
         "@lydell/node-pty": "^1.2.0-beta.3",
       },
     },
     "packages/scripts": {
       "name": "@take-out/scripts",
-      "version": "0.3.0-1775080946479",
+      "version": "0.3.1",
       "dependencies": {
         "@clack/prompts": "^0.8.2",
         "@take-out/helpers": "workspace:*",
@@ -1884,6 +1885,8 @@
 
     "@take-out/cli": ["@take-out/cli@workspace:packages/cli"],
 
+    "@take-out/database": ["@take-out/database@workspace:packages/database"],
+
     "@take-out/docs": ["@take-out/docs@workspace:packages/docs"],
 
     "@take-out/env": ["@take-out/env@workspace:packages/env"],
@@ -1895,8 +1898,6 @@
     "@take-out/native": ["@take-out/native@workspace:packages/native"],
 
     "@take-out/native-hot-update": ["@take-out/native-hot-update@workspace:packages/native-hot-update"],
-
-    "@take-out/postgres": ["@take-out/postgres@workspace:packages/postgres"],
 
     "@take-out/run": ["@take-out/run@workspace:packages/run"],
 
@@ -5139,8 +5140,6 @@
     "@shuding/opentype.js/fflate": ["fflate@0.7.4", "", {}, "sha512-5u2V/CDW15QM1XbbgS+0DfPxVB+jUKhWEKuuFuHncbk3tEEqzmoXL+2KyOFuKGqOnmdIy0/davWF1CkuwtibCw=="],
 
     "@take-out/native-hot-update/@types/react": ["@types/react@18.3.26", "", { "dependencies": { "@types/prop-types": "*", "csstype": "^3.0.2" } }, "sha512-RFA/bURkcKzx/X9oumPG9Vp3D3JUgus/d0b67KB0t5S/raciymilkOa66olh78MUI92QLbEJevO7rvqU/kjwKA=="],
-
-    "@take-out/postgres/drizzle-orm": ["drizzle-orm@0.40.1", "", { "peerDependencies": { "@aws-sdk/client-rds-data": ">=3", "@cloudflare/workers-types": ">=4", "@electric-sql/pglite": ">=0.2.0", "@libsql/client": ">=0.10.0", "@libsql/client-wasm": ">=0.10.0", "@neondatabase/serverless": ">=0.10.0", "@op-engineering/op-sqlite": ">=2", "@opentelemetry/api": "^1.4.1", "@planetscale/database": ">=1", "@prisma/client": "*", "@tidbcloud/serverless": "*", "@types/better-sqlite3": "*", "@types/pg": "*", "@types/sql.js": "*", "@vercel/postgres": ">=0.8.0", "@xata.io/client": "*", "better-sqlite3": ">=7", "bun-types": "*", "expo-sqlite": ">=14.0.0", "gel": ">=2", "knex": "*", "kysely": "*", "mysql2": ">=2", "pg": ">=8", "postgres": ">=3", "sql.js": ">=1", "sqlite3": ">=5" }, "optionalPeers": ["@aws-sdk/client-rds-data", "@cloudflare/workers-types", "@electric-sql/pglite", "@libsql/client", "@libsql/client-wasm", "@neondatabase/serverless", "@op-engineering/op-sqlite", "@opentelemetry/api", "@planetscale/database", "@prisma/client", "@tidbcloud/serverless", "@types/better-sqlite3", "@types/pg", "@types/sql.js", "@vercel/postgres", "@xata.io/client", "better-sqlite3", "bun-types", "expo-sqlite", "gel", "knex", "kysely", "mysql2", "pg", "postgres", "sql.js", "sqlite3"] }, "sha512-aPNhtiJiPfm3qxz1czrnIDkfvkSdKGXYeZkpG55NPTVI186LmK2fBLMi4dsHpPHlJrZeQ92D322YFPHADBALew=="],
 
     "@tamagui/build/chokidar": ["chokidar@3.6.0", "", { "dependencies": { "anymatch": "~3.1.2", "braces": "~3.0.2", "glob-parent": "~5.1.2", "is-binary-path": "~2.1.0", "is-glob": "~4.0.1", "normalize-path": "~3.0.0", "readdirp": "~3.6.0" }, "optionalDependencies": { "fsevents": "~2.3.2" } }, "sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw=="],
 

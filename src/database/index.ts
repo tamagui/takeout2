@@ -1,39 +1,35 @@
-import { drizzle } from 'drizzle-orm/node-postgres'
-import { Pool } from 'pg'
+import 'server-only'
 
-import { ZERO_UPSTREAM_DB } from '~/server/env-server'
+import { createDatabase } from '@take-out/database'
 
-import * as schemaPrivate from './schema-private'
-import * as schemaPublic from './schema-public'
+import { server } from '~/env'
 
-const schema = {
-  ...schemaPublic,
-  ...schemaPrivate,
+import * as schema from './schema'
+import { relations } from './relations'
+
+if (!server.ZERO_UPSTREAM_DB) {
+  throw new Error('No db string connection found')
 }
 
-export const createPool = (connectionString?: string) => {
-  const connStr = connectionString || ZERO_UPSTREAM_DB
-  return new Pool({
-    connectionString: connStr,
-    // handle self-signed certificates in production
-    ssl: connStr?.includes('sslmode=require') ? { rejectUnauthorized: false } : undefined,
-  })
-}
+const db = createDatabase({
+  connectionString: server.ZERO_UPSTREAM_DB,
+  schema,
+  relations,
+  zero: {
+    publicationName: 'zero_takeout',
+    publicTables: [
+      'userPublic',
+      'userState',
+      'post',
+      'comment',
+      'block',
+      'report',
+      'device',
+      'notification',
+      'invite',
+    ],
+  },
+})
 
-export const createDb = () => {
-  const pool = createPool()
-  return drizzle({
-    client: pool,
-    schema,
-    logger: false,
-  })
-}
-
-let db: ReturnType<typeof createDb>
-
-export const getDb = () => {
-  if (!db) {
-    db = createDb()
-  }
-  return db
-}
+export const { pg, sql, getDBClient, pool, close, migrate: runMigrate } = db
+export { db }

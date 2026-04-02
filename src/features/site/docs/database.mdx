@@ -138,12 +138,11 @@ them in a transaction.
 For server-side code (API routes, server actions), use Drizzle ORM:
 
 ```ts
-import { getDb } from '~/database'
+import { pg } from '~/database'
 import { userPublic } from '~/database/schema-public'
 import { eq } from 'drizzle-orm'
 
-const db = getDb()
-const user = await db.select().from(userPublic).where(eq(userPublic.id, userId))
+const user = await pg.select().from(userPublic).where(eq(userPublic.id, userId))
 ```
 
 See the [Drizzle ORM docs](https://orm.drizzle.team/docs/select) for the full

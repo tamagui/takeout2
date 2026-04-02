@@ -73,11 +73,9 @@ to run integration tests manually (full setup):
 
 ## environment
 
-never modify `/src/server/env-server.ts` - it's auto-generated. to add env vars:
-
-1. add to `env` section in `package.json`
-2. run `bun env:update`
-3. optionally add example to `.env.development`
+env vars are defined in `src/env.ts` using `createEnv` from `@take-out/env`.
+use `expected` for required vars, strings for defaults. use `server.X` for
+server-only access (throws on client). run `bun env:update` to sync to CI/docker yml.
 
 ## database migrations
 

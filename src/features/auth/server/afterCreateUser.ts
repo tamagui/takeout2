@@ -1,13 +1,12 @@
 import { eq } from 'drizzle-orm'
 
 import { DEMO_EMAIL } from '~/constants/app'
-import { getDb } from '~/database'
-import { user as userTable, whitelist } from '~/database/schema-private'
-import { userPublic, userState } from '~/database/schema-public'
+import { pg } from '~/database'
+import { user as userTable, whitelist, userPublic, userState } from '~/database/schema'
 
 export async function afterCreateUser(user: { id: string; email: string }) {
   try {
-    const db = getDb()
+    const db = pg
     const userId = user.id
     const email = user.email
 

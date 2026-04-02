@@ -47,19 +47,18 @@ bun env:dev bunx postgres psql --query "SELECT * FROM users LIMIT 5"
 
 The codebase uses multiple query patterns depending on the use case.
 
-### Drizzle ORM via getDb()
+### Drizzle ORM via pg
 
 Standard ORM queries for type-safe database operations:
 
 ```typescript
-import { getDb } from '~/database'
+import { pg } from '~/database'
 import { users } from '~/database/schema-public'
 
-const db = getDb()
-const allUsers = await db.select().from(users)
+const allUsers = await pg.select().from(users)
 ```
 
-Location: src/database/index.ts:28
+Location: src/database/index.ts
 
 ### Direct SQL with Template Literals
 
@@ -82,7 +81,7 @@ Location: src/database/sql.ts:10
 For connection pooling and advanced PostgreSQL features:
 
 ```typescript
-import { getDBClient, queryDb } from '~/database/helpers'
+import { getDBClient } from '~/database'
 
 const client = await getDBClient()
 try {

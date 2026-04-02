@@ -1,6 +1,6 @@
-import { sql } from '~/database/helpers'
+import { sql } from '~/database'
 import { handleError } from '~/features/errors/handleError'
-import { ZERO_UPSTREAM_DB } from '~/server/env-server'
+import { server } from '~/env'
 
 import { migrations } from './migrations'
 
@@ -9,9 +9,9 @@ const ZERO_MIGRATION_PREFIX = `zero-migration-`
 export async function initializeZeroMigrations() {
   // skip migrations if database URL is a placeholder (e.g. during SSG builds)
   if (
-    !ZERO_UPSTREAM_DB ||
-    ZERO_UPSTREAM_DB.includes('@host:') ||
-    ZERO_UPSTREAM_DB.includes('your-')
+    !server.ZERO_UPSTREAM_DB ||
+    server.ZERO_UPSTREAM_DB.includes('@host:') ||
+    server.ZERO_UPSTREAM_DB.includes('your-')
   ) {
     console.info('[zero.migrate] skipping - database URL not configured')
     return

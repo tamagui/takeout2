@@ -10,6 +10,7 @@ tmp-data
 
 tmp
 dist
+migrate-dist.js
 .DS_Store
 .ultra.cache.json
 *.tsbuildinfo

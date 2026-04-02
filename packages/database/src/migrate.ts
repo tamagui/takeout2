@@ -32,6 +32,8 @@ export type MigrateOptions = {
   gitSha?: string
   cvrDb?: string
   changeDb?: string
+  /** skip process.exit after migrations (default: false) */
+  skipExit?: boolean
   /** default timeout for all migrations in ms (default: 5000) */
   defaultTimeout?: number
 }
@@ -67,6 +69,7 @@ export async function migrate(options: MigrateOptions) {
     gitSha,
     cvrDb,
     changeDb,
+    skipExit = false,
     defaultTimeout = DEFAULT_MIGRATION_TIMEOUT,
   } = options
 
@@ -221,7 +224,9 @@ export async function migrate(options: MigrateOptions) {
     }
   }
 
-  await exitProcess()
+  if (!skipExit) {
+    await exitProcess()
+  }
 }
 
 async function exitProcess() {

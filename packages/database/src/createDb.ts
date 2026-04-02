@@ -6,9 +6,10 @@ export const createDb = <TSchema extends Record<string, unknown>>(
   connectionString: string,
   schema: TSchema,
 ): NodePgDatabase<TSchema> => {
-  const pool = createPool(connectionString)
-  return drizzle(pool, {
+  const pool = createPool({ connectionString })
+  return drizzle({
+    client: pool,
     schema,
     logger: false,
-  }) as NodePgDatabase<TSchema>
+  } as any) as NodePgDatabase<TSchema>
 }

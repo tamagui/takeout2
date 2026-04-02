@@ -227,6 +227,7 @@ export async function ensureZeroSeeds(client: PoolClient, seeds: SeedDefinition[
 }
 
 // --- init sql for pglite/browser ---
+// todo: drizzleSchemaToSQL(schema) → string for browser pglite init (currently ddl is passed as string)
 
 export type InitSqlOptions = {
   /** DDL statements (CREATE TABLE, etc.) */

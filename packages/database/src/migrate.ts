@@ -12,6 +12,7 @@ import { readdirSync } from 'node:fs'
 import { basename, resolve } from 'node:path'
 
 import { getDBClient } from './getDBClient'
+import { ensureZeroDatabases } from './zero'
 
 import type { PoolClient } from 'pg'
 
@@ -33,19 +34,11 @@ export type MigrateOptions = {
   gitSha?: string
   cvrDb?: string
   changeDb?: string
-  /** skip process.exit after migrations (default: false) */
-  skipExit?: boolean
+  /** call process.exit(0) after migrations complete (default: false) */
+  forceExit?: boolean
   /** default timeout for all migrations in ms (default: 5000) */
   defaultTimeout?: number
 }
-
-// check if we're running in AWS Lambda or other serverless environment
-const isServerless = !!(
-  process.env.AWS_LAMBDA_FUNCTION_NAME ||
-  process.env.AWS_LAMBDA_RUNTIME_API ||
-  process.env.LAMBDA_RUNTIME_DIR ||
-  process.env.IS_SERVERLESS
-)
 
 async function withTimeout<T>(promise: Promise<T>, ms: number, name: string): Promise<T> {
   let timeoutId: ReturnType<typeof setTimeout>
@@ -67,47 +60,20 @@ export async function migrate(options: MigrateOptions) {
     migrationsGlob,
     createDatabases = [],
     onMigrationComplete,
+    forceExit = false,
     gitSha,
     cvrDb,
     changeDb,
-    skipExit = false,
     defaultTimeout = DEFAULT_MIGRATION_TIMEOUT,
   } = options
 
-  const client = await getDBClient({ connectionString })
-
-  const hasDB = async (name: string) => {
-    const result = !!(
-      await client.query(`
-        SELECT 1 FROM pg_database WHERE datname = '${name}'
-      `)
-    ).rows.length
-
-    return result
-  }
-
-  // create zero databases if specified
-  if (cvrDb || changeDb) {
-    if (!cvrDb) {
-      throw new Error(`Missing cvrDb`)
-    }
-
-    const zeroDBNames = [basename(cvrDb || ''), basename(changeDb || '')].filter(Boolean)
-
-    for (const name of zeroDBNames) {
-      if (!(await hasDB(name))) {
-        await client.query(`CREATE DATABASE ${name};`)
-      }
-    }
-  }
-
-  // create additional databases if specified
+  // create zero + additional databases before running migrations
+  await ensureZeroDatabases({ connectionString, cvrDb, changeDb })
   for (const dbUrl of createDatabases) {
-    const name = basename(dbUrl)
-    if (!(await hasDB(name))) {
-      await client.query(`CREATE DATABASE ${name};`)
-    }
+    await ensureZeroDatabases({ connectionString, cvrDb: dbUrl })
   }
+
+  const client = await getDBClient({ connectionString })
 
   try {
     await client.query('BEGIN')
@@ -225,8 +191,14 @@ export async function migrate(options: MigrateOptions) {
     }
   }
 
-  if (!skipExit) {
-    await exitProcess()
+  if (forceExit) {
+    // flush stdio before exiting — process.exit() doesn't wait for streams to drain
+    await new Promise<void>((resolve) => {
+      process.stderr.write('', () => {
+        process.stdout.write('', () => resolve())
+      })
+    })
+    process.exit(0)
   }
 }
 
@@ -240,18 +212,4 @@ export function loadMigrationsFromDir(
       .sort()
       .map((f) => [`./${f}`, () => import(resolve(dir, f))]),
   )
-}
-
-async function exitProcess() {
-  if (typeof process === 'undefined') return
-  // lambda was complaining about process.exit
-  if (isServerless) return
-  // flush stdio before exiting - process.exit() doesn't wait for streams to drain,
-  // which causes silent output loss in docker exec over ssh
-  await new Promise<void>((resolve) => {
-    process.stderr.write('', () => {
-      process.stdout.write('', () => resolve())
-    })
-  })
-  process.exit(0)
 }

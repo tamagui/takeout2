@@ -95,6 +95,7 @@ export function createDrizzle<
   DrizzleHelpers<TSchema, NodePgDatabase<TSchema, TRelations>> {
   patchTimestampForZero()
 
+  // drizzle v1 overloads don't support generic schema+relations together at the call site
   const instance = drizzle({
     client: options.pool,
     schema: options.schema as Record<string, unknown>,

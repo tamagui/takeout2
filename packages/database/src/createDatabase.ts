@@ -96,7 +96,6 @@ export function createDatabase<
       createDatabases: options.createDatabases,
       gitSha: options.gitSha,
       defaultTimeout: options.defaultTimeout,
-      skipExit: true,
       onMigrationComplete: async () => {
         if (zero) {
           await ensureZeroPublication({

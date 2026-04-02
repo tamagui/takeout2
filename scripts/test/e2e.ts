@@ -188,9 +188,9 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
     async function waitForBackend() {
       const testEnv = await getTestEnv()
 
-      // wait for postgres
+      // wait for postgres (CI needs longer — docker image pull + init)
       console.info('Waiting for postgres...')
-      await waitForPort(ports.postgres)
+      await waitForPort(ports.postgres, { timeoutMs: 120_000 })
 
       // run migrations natively
       console.info('Running migrations...')

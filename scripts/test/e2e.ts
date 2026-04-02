@@ -156,11 +156,10 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
       if (!process.env.SKIP_BACKEND_CLEAN) {
         await run('docker compose down', { env: testEnv })
       }
-      void run('docker compose up --remove-orphans --no-color', {
-        env: {
-          ...testEnv,
-          ZERO_LOG_LEVEL: 'warn',
-        },
+
+      // start pgdb + minio first (zero needs migrations to run before it starts)
+      void run('docker compose up pgdb minio minio-init --remove-orphans --no-color', {
+        env: testEnv,
         detached: true,
       })
     }
@@ -192,7 +191,7 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
       console.info('Waiting for postgres...')
       await waitForPort(ports.postgres, { timeoutMs: 120_000 })
 
-      // run migrations natively
+      // run migrations natively (before zero starts)
       console.info('Running migrations...')
       await run('bun backend:migrate', {
         env: testEnv,
@@ -200,6 +199,13 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
         timeout: time.ms.minutes(2),
       })
       console.info('✅ Migrations completed!')
+
+      // now start zero-cache (needs tables + publication from migrations)
+      console.info('Starting zero-cache...')
+      void run('docker compose up zero --remove-orphans --no-color', {
+        env: { ...testEnv, ZERO_LOG_LEVEL: 'warn' },
+        detached: true,
+      })
 
       // seed demo data for tests
       await run('bun scripts/db/seed-demo.ts', {

@@ -9,6 +9,10 @@ const result = createEnv({
   },
 
   base: {
+    APNS_ENDPOINT: 'https://api.sandbox.push.apple.com',
+    APNS_KEY: '',
+    APNS_KEY_ID: '',
+    APNS_TEAM_ID: '',
     AWS_ACCESS_KEY_ID: '',
     AWS_SECRET_ACCESS_KEY: '',
     BETTER_AUTH_SECRET: expected,
@@ -17,13 +21,27 @@ const result = createEnv({
     CLOUDFLARE_R2_ENDPOINT: expected,
     CLOUDFLARE_R2_PUBLIC_URL: expected,
     CLOUDFLARE_R2_SECRET_KEY: expected,
+    DEPLOY_DB: '',
+    DEPLOY_HOST: '',
+    DEPLOY_SSH_KEY: '',
+    DEPLOY_USER: 'root',
+    DEPLOYMENT_ARCH: 'linux/amd64',
+    DEPLOYMENT_PLATFORM: 'uncloud',
     ONE_SERVER_URL: expected,
     ONECHAT_GITHUB_CLIENT_ID: 'Iv23liNaYfNSauaySodL',
+    POSTMARK_SERVER_TOKEN: expected,
     VITE_DEMO_MODE: '1',
+    VITE_POSTHOG_API_KEY: '',
+    VITE_POSTHOG_HOST: '',
     ZERO_APP_ID: 'takeout',
     ZERO_APP_PUBLICATIONS: 'zero_takeout',
+    ZERO_CVR_MAX_CONNS: '4',
     ZERO_MUTATE_FORWARD_COOKIES: 'true',
+    ZERO_NUM_SYNC_WORKERS: '2',
+    ZERO_PER_USER_MUTATION_LIMIT_MAX: '30',
+    ZERO_PER_USER_MUTATION_LIMIT_WINDOW_MS: '60000',
     ZERO_QUERY_FORWARD_COOKIES: 'true',
+    ZERO_UPSTREAM_MAX_CONNS: '8',
   },
 
   development: ({ ports, portOffset }) => ({
@@ -67,33 +85,11 @@ const result = createEnv({
   },
 })
 
-// complete env var registry for CI/docker sync
-// `expected` = required at runtime (no default), string = optional/has default
-// env-update reads this to sync CI yml, docker yml, .env
+// env var registry for CI/docker sync (env-update reads this)
+// `expected` = required at runtime, string = has default
 export const envVars: Record<string, string | Expected> = {
-  // app vars (from createEnv config above)
   ...result.config.base,
   ...result.config.production,
-
-  // vars not in createEnv but needed in CI/docker
-  APNS_ENDPOINT: 'https://api.sandbox.push.apple.com',
-  APNS_KEY: '',
-  APNS_KEY_ID: '',
-  APNS_TEAM_ID: '',
-  DEPLOY_DB: '',
-  DEPLOY_HOST: '',
-  DEPLOY_SSH_KEY: '',
-  DEPLOY_USER: 'root',
-  DEPLOYMENT_ARCH: 'linux/amd64',
-  DEPLOYMENT_PLATFORM: 'uncloud',
-  POSTMARK_SERVER_TOKEN: expected,
-  VITE_POSTHOG_API_KEY: '',
-  VITE_POSTHOG_HOST: '',
-  ZERO_CVR_MAX_CONNS: '4',
-  ZERO_NUM_SYNC_WORKERS: '2',
-  ZERO_PER_USER_MUTATION_LIMIT_MAX: '30',
-  ZERO_PER_USER_MUTATION_LIMIT_WINDOW_MS: '60000',
-  ZERO_UPSTREAM_MAX_CONNS: '8',
 }
 
 // dep-resolved vars: key = env var name, value = package name

@@ -1,5 +1,10 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
+declare const window: unknown
+declare const Bun: {
+  spawn: (cmd: string[], opts: Record<string, unknown>) => { exited: Promise<number> }
+}
+
 // --- ensureEnv (inlined from @take-out/helpers — zero deps) ---
 
 export function ensureEnv(name: string, defaultValue?: string): string {
@@ -91,10 +96,11 @@ export function createEnv<
   const portOffset = Number(process.env.PORT_OFFSET || 0)
 
   // compute ports with offset
-  const ports = {} as Resolved<TPorts>
+  const resolvedPorts: Record<string, number> = {}
   for (const [key, base] of Object.entries(config.ports)) {
-    ;(ports as any)[key] = (base as number) + portOffset
+    resolvedPorts[key] = (base as number) + portOffset
   }
+  const ports = resolvedPorts as Resolved<TPorts>
 
   // resolve NODE_ENV
   const rawEnv = process.env.NODE_ENV || 'development'
@@ -116,24 +122,25 @@ export function createEnv<
   }
 
   // resolve expected values and build final env
-  const env = { NODE_ENV } as { [K in AllKeys<TBase, TDev, TProd>]: string }
+  const resolvedEnv: Record<string, string> = { NODE_ENV }
 
   for (const [key, val] of Object.entries(merged)) {
     if (val === expected) {
-      // check process.env for the value
       const envVal = process.env[key]
       if (envVal !== undefined && envVal !== '') {
-        ;(env as any)[key] = envVal
+        resolvedEnv[key] = envVal
       } else if (NODE_ENV === 'production') {
         throw new Error(`expected env var ${key} to be set in production`)
       } else {
         console.warn(` - expected env ${key} not set`)
-        ;(env as any)[key] = ''
+        resolvedEnv[key] = ''
       }
     } else {
-      ;(env as any)[key] = val
+      resolvedEnv[key] = val
     }
   }
+
+  const env = resolvedEnv as EnvMap<TBase, TDev, TProd>
 
   function apply() {
     // don't overwrite when running inside vite SSR (VITE_ENVIRONMENT is set)
@@ -170,7 +177,7 @@ export function createEnv<
     const sep = process.argv.indexOf('--')
     const cmd = sep >= 0 ? process.argv.slice(sep + 1) : process.argv.slice(2)
     if (cmd.length) {
-      const proc = (globalThis as any).Bun.spawn(cmd, {
+      const proc = Bun.spawn(cmd, {
         env: process.env,
         stdio: ['inherit', 'inherit', 'inherit'],
       })
@@ -181,7 +188,7 @@ export function createEnv<
   // server-only proxy — throws on client, reads live from process.env
   // reading from process.env at access time prevents build-time inlining
   // and ensures runtime env overrides take effect
-  const isClient = () => typeof (globalThis as any).window !== 'undefined'
+  const isClient = () => typeof window !== 'undefined'
   const server = new Proxy(env, {
     get(target, prop, receiver) {
       if (typeof prop === 'string' && isClient()) {

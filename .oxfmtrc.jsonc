@@ -37,6 +37,7 @@
     "**/.claude/**",
     "**/migrations/meta/**",
     "**/*.generated.**",
+    "**/data/generated/**",
     "**/themes-out.ts",
     "**/*.d.ts",
     "**/ios/**",

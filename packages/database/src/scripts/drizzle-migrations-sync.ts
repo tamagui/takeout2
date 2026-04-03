@@ -1,9 +1,8 @@
 #!/usr/bin/env bun
 
 /**
- * This script scans for SQL files in migrations directory,
- * creates corresponding TypeScript migration files,
- * and imports the SQL with ?raw
+ * This script scans for SQL files in migrations directory and
+ * creates corresponding TypeScript migration files with inlined SQL.
  */
 
 import { existsSync } from 'node:fs'
@@ -60,6 +59,13 @@ async function renameNewDrizzleMigrations(
   })
 
   if (newDrizzleSqlFiles.length === 0) return sqlFiles
+
+  // if ALL sql files are new (no .ts wrappers exist yet), skip renaming —
+  // there's nothing to conflict with, and renaming would scramble the order
+  const existingTsCount = files.filter(
+    (f) => /^\d+/.test(f) && f.endsWith('.ts'),
+  ).length
+  if (existingTsCount === 0) return sqlFiles
 
   // group by migration number
   const migrationGroups = new Map<string, string[]>()
@@ -189,12 +195,23 @@ export async function syncDrizzleMigrations(options: DrizzleSyncOptions) {
       console.info(`Creating ${tsFileName}`)
     }
 
-    // generate the migration content
+    // read and escape SQL for inline embedding
+    const sqlContent = (await readFile(join(migrationsDir, sqlFile), 'utf-8')).trim()
+    const escaped = sqlContent
+      .replace(/\\/g, '\\\\')
+      .replace(/`/g, '\\`')
+      .replace(/\$/g, '\\$')
+
+    // generate the migration content with inlined SQL (no ?raw — works in bun + vite)
     const migrationContent = `import type { PoolClient } from 'pg'
-import sql from './${sqlFile}?raw'
+
+const sql = \`${escaped}\`
 
 export async function up(client: PoolClient) {
-  await client.query(sql)
+  for (const stmt of sql.split('--> statement-breakpoint')) {
+    const trimmed = stmt.trim()
+    if (trimmed) await client.query(trimmed)
+  }
 }
 `
 

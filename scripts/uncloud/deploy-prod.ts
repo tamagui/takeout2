@@ -4,7 +4,7 @@ import { cmd } from '@take-out/cli'
 
 await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
   // env is loaded by run:prod wrapper (dotenvx --overload -f .env .env.production)
-  const { buildMigrations, buildWeb, buildDockerImage } = await import('./helpers/build')
+  const { buildWeb, buildDockerImage } = await import('./helpers/build')
   const { processComposeEnv } = await import('./helpers/processEnv')
   const { checkSSHKey, testSSHConnection } = await import('./helpers/ssh')
   const { checkUncloudCLI, initUncloud, pushImage, deployStack, showStatus } =
@@ -303,7 +303,6 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
 
   // build steps
   if (!skipBuild) {
-    await buildMigrations()
     await buildWeb()
   } else {
     console.info('⏭️  skipping web build (--skip-build)')

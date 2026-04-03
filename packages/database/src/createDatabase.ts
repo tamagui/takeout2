@@ -35,7 +35,7 @@ export type DatabaseConfig<
 }
 
 export type MigrateOptions = {
-  migrationsGlob: Record<string, () => Promise<unknown>>
+  migrations: Record<string, () => Promise<unknown>>
   cvrDb?: string
   changeDb?: string
   createDatabases?: string[]
@@ -90,7 +90,7 @@ export function createDatabase<
     console.info('[database] running migrations...')
     await migrate({
       connectionString,
-      migrationsGlob: options.migrationsGlob,
+      migrations: options.migrations,
       cvrDb: stripQueryParams(options.cvrDb),
       changeDb: stripQueryParams(options.changeDb),
       createDatabases: options.createDatabases,

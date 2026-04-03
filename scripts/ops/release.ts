@@ -63,20 +63,13 @@ await cmd`Run full CI/CD pipeline: test, build prod, deploy`
           condition: () => !skipBuild,
           fn: async () => {
             console.info('\n🏗️  building for production...')
-            await Promise.all([
-              run(`bun tko db build`, {
-                prefix: 'migrations',
-                timeout: time.ms.minutes(2),
-                timing: 'db:build',
-              }),
-              args.retry
-                ? null
-                : run(`bun run web build`, {
-                    prefix: 'web-build',
-                    timeout: time.ms.minutes(5),
-                    timing: 'web:build (prod)',
-                  }),
-            ])
+            if (!args.retry) {
+              await run(`bun run web build`, {
+                prefix: 'web-build',
+                timeout: time.ms.minutes(5),
+                timing: 'web:build (prod)',
+              })
+            }
             if (!skipDeploy) {
               await printTiming('prebuild docker image', () =>
                 prebuildDockerImage(deployPlatform),

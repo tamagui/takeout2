@@ -28,7 +28,7 @@ const DEFAULT_MIGRATION_TIMEOUT = 5_000
 
 export type MigrateOptions = {
   connectionString: string
-  migrationsGlob: Record<string, () => Promise<unknown>>
+  migrations: Record<string, () => Promise<unknown>>
   createDatabases?: string[]
   onMigrationComplete?: () => Promise<void>
   gitSha?: string
@@ -57,7 +57,7 @@ async function withTimeout<T>(promise: Promise<T>, ms: number, name: string): Pr
 export async function migrate(options: MigrateOptions) {
   const {
     connectionString,
-    migrationsGlob,
+    migrations,
     createDatabases = [],
     onMigrationComplete,
     forceExit = false,
@@ -93,7 +93,7 @@ export async function migrate(options: MigrateOptions) {
     const appliedMigrationNames = new Set(appliedMigrations.rows.map((row) => row.name))
 
     // get TypeScript migrations
-    const tsMigrationsSorted = Object.entries(migrationsGlob)
+    const tsMigrationsSorted = Object.entries(migrations)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([file, run]) => ({
         name: basename(file).replace('.ts', ''),
@@ -118,12 +118,14 @@ export async function migrate(options: MigrateOptions) {
     ).then((migrations) => migrations.filter(Boolean) as Migration[])
 
     // combine TypeScript and SQL migrations, sorted by name to ensure correct order
-    const migrations = [...tsMigrations].sort((a, b) => a.name.localeCompare(b.name))
+    const pendingMigrations = [...tsMigrations].sort((a, b) =>
+      a.name.localeCompare(b.name),
+    )
 
-    if (!migrations.length) {
+    if (!pendingMigrations.length) {
       await client.query('COMMIT')
     } else {
-      for (const migration of migrations) {
+      for (const migration of pendingMigrations) {
         if (migration.up) {
           // use savepoints so "already exists" errors don't abort the transaction.
           // this handles cases where tables/columns exist but migration tracking

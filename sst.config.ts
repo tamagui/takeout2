@@ -1,5 +1,12 @@
 /// <reference path="./.sst/platform/config.d.ts" />
 
+/**
+ * Note: this is example configuration we pulled from a working
+ * real world app. It's not been updated in a while and would need work
+ * to get back into proper shape. We've included it here as it should
+ * save significant time at least to see a somewhat validated example.
+ */
+
 export default $config({
   async app(input) {
     const { APP_NAME_LOWERCASE } = await import('./src/constants/app')
@@ -421,11 +428,14 @@ export default $config({
       ...lambdaEnv
     } = commonEnv
 
+    // we moved away from pre-building our migrator as we found it cumbersome
+    // to have a full-on vite build we manage, instead we've moved to bun
+    // but you'd need to figure this out again for SST/AWS, likely avoid lambda.
     const migrator = new sst.aws.Function('PostgresMigrator', {
       vpc,
       // trying to make it wait for zero
       link: [database, viewSyncer],
-      handler: 'src/database/migrate-dist.main',
+      handler: 'src/database/migrate.main',
       runtime: 'nodejs22.x',
       environment: {
         ...lambdaEnv,

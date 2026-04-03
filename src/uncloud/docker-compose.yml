@@ -83,31 +83,11 @@ services:
       - pgdb_data:/var/lib/postgresql/data
       - ./src/database/:/docker-entrypoint-initdb.d
 
-  migrate:
-    image: takeout-web:latest
-    restart: on-failure:3
-    environment:
-      <<: *app-env
-      RUN: 1
-      ALLOW_MISSING_ENV: 1
-      NODE_TLS_REJECT_UNAUTHORIZED: 0
-      ZERO_UPSTREAM_DB: ${ZERO_UPSTREAM_DB:-postgresql://user:password@pgdb:5432/postgres}
-      ZERO_CVR_DB: ${ZERO_CVR_DB:-postgresql://user:password@pgdb:5432/zero_cvr}
-      ZERO_CHANGE_DB: ${ZERO_CHANGE_DB:-postgresql://user:password@pgdb:5432/zero_cdb}
-    healthcheck:
-      test: ["CMD-SHELL", "test -f /tmp/.done"]
-      interval: 2s
-      timeout: 2s
-      retries: 1
-      start_period: 60s
-    command: ["sh", "-c", "node /app/src/database/migrate-dist.js && touch /tmp/.done && sleep infinity"]
+  # migrate removed - runs via docker exec in deploy script instead of as a service
 
   zero:
     image: "rocicorp/zero:${ZERO_VERSION:-error-run-bun-tko-run-update-local-env}"
     restart: always
-    depends_on:
-      migrate:
-        condition: service_healthy
     x-ports:
       - ${VITE_ZERO_HOSTNAME:-zero-takeout.uncld.dev}:4848/https
     environment:

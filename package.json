@@ -23,7 +23,7 @@
     "android": "one run:android",
     "aws": "tko aws",
     "backend:clean": "docker compose down --volumes --remove-orphans --rmi local",
-    "backend:migrate": "ALLOW_MISSING_ENV=1 RUN=1 bun run:dev src/database/migrate.ts",
+    "backend:migrate": "ALLOW_MISSING_ENV=1 bun run:dev src/database/migrate.ts",
     "backend": "docker compose up -d pgdb --remove-orphans --wait && bun backend:migrate && docker compose up --remove-orphans",
     "build": "tko run build",
     "check": "tko check --default-all",

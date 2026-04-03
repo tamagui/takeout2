@@ -1,17 +1,18 @@
 // registry for query functions to their stable names
 // this allows minification while preserving query identity
+//
+// stamps the query name directly on the function object instead of using
+// a WeakMap. this survives CJS module boundary issues where function
+// reference identity can be lost (e.g. native iframe CJS bundles executed
+// via new Function() where the require() cache differs from the registration
+// context).
 
-import { globalValue } from '@take-out/helpers'
-
-const queryNameRegistry = globalValue(
-  `on-zero:query-name`,
-  () => new WeakMap<Function, string>(),
-)
+const QUERY_NAME_KEY = '__onZeroQueryName'
 
 export function registerQuery(fn: Function, name: string) {
-  queryNameRegistry.set(fn, name)
+  ;(fn as any)[QUERY_NAME_KEY] = name
 }
 
 export function getQueryName(fn: Function): string | undefined {
-  return queryNameRegistry.get(fn)
+  return (fn as any)?.[QUERY_NAME_KEY]
 }

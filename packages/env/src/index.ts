@@ -148,7 +148,7 @@ export function createEnv<
       const envVal = process.env[key]
       if (envVal !== undefined && envVal !== '') {
         resolvedEnv[key] = envVal
-      } else if (NODE_ENV === 'production') {
+      } else if (NODE_ENV === 'production' && !process.env.ALLOW_MISSING_ENV) {
         throw new Error(`expected env var ${key} to be set in production`)
       } else {
         console.warn(` - expected env ${key} not set`)

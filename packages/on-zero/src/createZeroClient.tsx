@@ -249,17 +249,18 @@ export function createZeroClient<
     // (mutations read auth dynamically via getAuthData() to avoid stale closure race condition)
     setAuthData(authData)
 
-    // recreate mutators when auth changes so ZeroProvider recreates the Zero instance
-    // (mutators read auth dynamically via getAuthData(), but Zero needs fresh instance on auth change)
+    // mutators are stable — auth is read dynamically via getAuthData() at mutation
+    // time, so we don't need to recreate them (or the Zero instance) on auth change.
+    // setAuthData() above already ensures getAuthData() returns current auth.
     const mutators = useMemo(() => {
       return createMutators({
         models,
         environment: 'client',
-        authData,
+        authData: null,
         can: permissionsHelpers.can,
       })
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [authData])
+    }, [])
 
     // for now we re-parent
     if (disable) {

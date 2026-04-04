@@ -1,207 +1,66 @@
 #!/usr/bin/env bun
 
 /**
- * This script scans for SQL files in migrations directory and
- * creates corresponding TypeScript migration files with inlined SQL.
+ * drizzle-kit v1 beta generates migrations as directories:
+ *   YYYYMMDDHHMMSS_name/migration.sql + snapshot.json
+ *
+ * our migration runner uses loadMigrationsFromDir which only
+ * finds flat .ts files. this script creates a flat .ts wrapper for each
+ * directory migration so the runner can pick them up.
+ *
+ * the wrapper inlines the SQL as a string constant (no ?raw import needed)
+ * which makes it work with both vite and bun.
  */
 
 import { existsSync } from 'node:fs'
-import { readdir, readFile, writeFile, stat, rename } from 'node:fs/promises'
-import { join, basename, extname } from 'node:path'
+import { readdir, readFile, writeFile, stat } from 'node:fs/promises'
+import { join } from 'node:path'
 
 export type DrizzleSyncOptions = {
   migrationsDir: string
 }
 
-/**
- * Extracts the numeric prefix from a migration filename
- */
-function getMigrationNumber(filename: string): number | null {
-  const match = filename.match(/^(\d+)/)
-  return match && match[1] ? Number.parseInt(match[1], 10) : null
-}
-
-/**
- * Finds the highest migration number in the directory
- */
-async function getHighestMigrationNumber(dir: string): Promise<number> {
-  const files = await readdir(dir)
-  let highest = -1
-
-  for (const file of files) {
-    const num = getMigrationNumber(file)
-    if (num !== null && num > highest) {
-      highest = num
-    }
-  }
-
-  return highest
-}
-
-/**
- * Renames newly generated drizzle migrations to use correct sequential numbering
- */
-async function renameNewDrizzleMigrations(
-  migrationsPath: string,
-  sqlFiles: string[],
-): Promise<string[]> {
-  const drizzlePattern = /^(\d{4})_[a-z]+_[a-z_]+\.sql$/
-  const files = await readdir(migrationsPath)
-
-  // get the highest existing migration number
-  const highestNumber = await getHighestMigrationNumber(migrationsPath)
-
-  // find new drizzle SQL files (without corresponding .ts files yet)
-  const newDrizzleSqlFiles = sqlFiles.filter((file) => {
-    if (!drizzlePattern.test(file)) return false
-    const tsFile = file.replace('.sql', '.ts')
-    return !files.includes(tsFile)
-  })
-
-  if (newDrizzleSqlFiles.length === 0) return sqlFiles
-
-  // if ALL sql files are new (no .ts wrappers exist yet), skip renaming —
-  // there's nothing to conflict with, and renaming would scramble the order
-  const existingTsCount = files.filter((f) => /^\d+/.test(f) && f.endsWith('.ts')).length
-  if (existingTsCount === 0) return sqlFiles
-
-  // group by migration number
-  const migrationGroups = new Map<string, string[]>()
-  for (const file of newDrizzleSqlFiles) {
-    const num = file.substring(0, 4)
-    if (!migrationGroups.has(num)) {
-      migrationGroups.set(num, [])
-    }
-    migrationGroups.get(num)!.push(file)
-  }
-
-  let nextNumber = highestNumber + 1
-  const renamedFiles: string[] = []
-
-  // process each group of new migrations
-  for (const [originalNum, groupFiles] of migrationGroups) {
-    const drizzleNum = Number.parseInt(originalNum, 10)
-
-    // if drizzle's number is less than or equal to our highest, we need to renumber
-    if (drizzleNum <= highestNumber) {
-      const newNumStr = nextNumber.toString().padStart(4, '0')
-
-      console.info(`Renumbering new drizzle migration ${originalNum} to ${newNumStr}`)
-
-      for (const file of groupFiles) {
-        const newName = file.replace(/^\d{4}/, newNumStr)
-        const oldPath = join(migrationsPath, file)
-        const newPath = join(migrationsPath, newName)
-
-        await rename(oldPath, newPath)
-        console.info(`  Renamed ${file} -> ${newName}`)
-        renamedFiles.push(newName)
-      }
-
-      // also rename the meta snapshot if it exists
-      const metaDir = join(migrationsPath, 'meta')
-      if (existsSync(metaDir)) {
-        const metaFiles = await readdir(metaDir)
-        const snapshotFile = `${originalNum}_snapshot.json`
-        if (metaFiles.includes(snapshotFile)) {
-          const newSnapshotName = `${newNumStr}_snapshot.json`
-          await rename(join(metaDir, snapshotFile), join(metaDir, newSnapshotName))
-          console.info(`  Renamed meta/${snapshotFile} -> meta/${newSnapshotName}`)
-        }
-
-        // update journal tags to match renamed files
-        const journalPath = join(metaDir, '_journal.json')
-        if (existsSync(journalPath)) {
-          const journal = JSON.parse(await readFile(journalPath, 'utf-8'))
-          let journalUpdated = false
-
-          for (const entry of journal.entries) {
-            // match by suffix (the descriptive part after the number)
-            const tagMatch = entry.tag.match(/^\d+_(.+)$/)
-            if (!tagMatch) continue
-
-            for (const file of groupFiles) {
-              const fileTag = file.replace('.sql', '')
-              const fileSuffix = fileTag.replace(/^\d+_/, '')
-              if (tagMatch[1] === fileSuffix) {
-                const newTag = `${newNumStr}_${fileSuffix}`
-                console.info(`  Updated journal tag: ${entry.tag} -> ${newTag}`)
-                entry.tag = newTag
-                journalUpdated = true
-              }
-            }
-          }
-
-          if (journalUpdated) {
-            await writeFile(journalPath, JSON.stringify(journal, null, 4))
-          }
-        }
-      }
-
-      nextNumber++
-    } else {
-      // keep files that don't need renaming
-      renamedFiles.push(...groupFiles)
-    }
-  }
-
-  // return updated list of SQL files (with renamed files + unchanged files)
-  return sqlFiles.map((file) => {
-    const idx = newDrizzleSqlFiles.indexOf(file)
-    if (idx !== -1) {
-      // find what this file was renamed to
-      for (const renamed of renamedFiles) {
-        if (renamed.includes(file.substring(5))) {
-          // match by the descriptive part after the number
-          return renamed
-        }
-      }
-    }
-    return file
-  })
-}
-
 export async function syncDrizzleMigrations(options: DrizzleSyncOptions) {
   const { migrationsDir } = options
+  const entries = await readdir(migrationsDir, { withFileTypes: true })
 
-  // get all sql files in the migrations directory
-  const files = await readdir(migrationsDir)
-  let sqlFiles = files.filter((file) => extname(file) === '.sql')
+  // find directory-format migrations (contain migration.sql)
+  const migrationDirs = entries.filter(
+    (e) => e.isDirectory() && e.name !== 'meta' && e.name !== 'node_modules',
+  )
 
-  console.info(`Found ${sqlFiles.length} SQL files to convert to migrations.`)
+  let created = 0
+  let updated = 0
 
-  // rename any new drizzle migrations to continue from the highest number
-  sqlFiles = await renameNewDrizzleMigrations(migrationsDir, sqlFiles)
+  for (const dir of migrationDirs) {
+    const sqlPath = join(migrationsDir, dir.name, 'migration.sql')
+    if (!existsSync(sqlPath)) continue
 
-  // for each sql file, create a typescript migration
-  for (const sqlFile of sqlFiles) {
-    const baseName = basename(sqlFile, '.sql')
-    const tsFileName = `${baseName}.ts`
-    const tsFilePath = join(migrationsDir, tsFileName)
+    const sql = await readFile(sqlPath, 'utf-8')
+    const trimmed = sql.trim()
 
-    // skip if typescript file already exists
-    if (existsSync(tsFilePath)) {
-      const sqlStat = await stat(join(migrationsDir, sqlFile))
-      const tsStat = await stat(tsFilePath)
-
-      if (tsStat.mtimeMs > sqlStat.mtimeMs) {
-        continue
-      }
-
-      console.info(`Updating ${tsFileName} as SQL file has been modified.`)
-    } else {
-      console.info(`Creating ${tsFileName}`)
+    if (!trimmed || trimmed.startsWith('-- seed')) {
+      continue
     }
 
-    // read and escape SQL for inline embedding
-    const sqlContent = (await readFile(join(migrationsDir, sqlFile), 'utf-8')).trim()
-    const escaped = sqlContent
+    const wrapperPath = join(migrationsDir, `${dir.name}.ts`)
+
+    // check if wrapper already exists and is up to date
+    if (existsSync(wrapperPath)) {
+      const sqlMtime = (await stat(sqlPath)).mtimeMs
+      const tsMtime = (await stat(wrapperPath)).mtimeMs
+      if (tsMtime > sqlMtime) continue
+      updated++
+    } else {
+      created++
+    }
+
+    // generate wrapper with inlined SQL
+    const escaped = trimmed
       .replace(/\\/g, '\\\\')
       .replace(/`/g, '\\`')
       .replace(/\$/g, '\\$')
-
-    // generate the migration content with inlined SQL (no ?raw — works in bun + vite)
-    const migrationContent = `import type { PoolClient } from 'pg'
+    const content = `import type { PoolClient } from 'pg'
 
 const sql = \`${escaped}\`
 
@@ -213,10 +72,10 @@ export async function up(client: PoolClient) {
 }
 `
 
-    // write the typescript file
-    await writeFile(tsFilePath, migrationContent)
-    console.info(`Successfully created ${tsFileName}`)
+    await writeFile(wrapperPath, content)
   }
 
-  console.info('Migration sync completed.')
+  if (created > 0) console.info(`created ${created} migration wrapper(s)`)
+  if (updated > 0) console.info(`updated ${updated} migration wrapper(s)`)
+  if (created === 0 && updated === 0) console.info('migration wrappers up to date')
 }

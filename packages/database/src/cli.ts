@@ -29,34 +29,6 @@ const syncDrizzle = defineCommand({
   },
 })
 
-const buildMigrations = defineCommand({
-  meta: {
-    name: 'build-migrations',
-    description: 'Build migration bundle for deployment',
-  },
-  args: {
-    dir: {
-      type: 'string',
-      description: 'Migrations directory',
-      required: false,
-      default: './src/database/migrations',
-    },
-    out: {
-      type: 'string',
-      description: 'Output file name',
-      required: false,
-      default: 'migrate-dist.js',
-    },
-  },
-  async run({ args }) {
-    const migrationsDir = join(process.cwd(), args.dir)
-    await buildMigrationsRun({
-      migrationsDir,
-      outFile: args.out,
-    })
-  },
-})
-
 const migrationAdd = defineCommand({
   meta: {
     name: 'migrate:add',
@@ -145,7 +117,6 @@ const main = defineCommand({
   },
   subCommands: {
     'sync-drizzle': syncDrizzle,
-    'build-migrations': buildMigrations,
     'migrate:add': migrationAdd,
     psql,
     pg_dump: pgDump,

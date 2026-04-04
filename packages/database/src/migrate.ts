@@ -247,7 +247,7 @@ export function loadMigrationsFromDir(
           },
         ]
       }
-      return [`./${f}`, () => import(resolve(dir, f))]
+      return [`./${f}`, () => import(/* @vite-ignore */ resolve(dir, f))]
     }),
   )
 }

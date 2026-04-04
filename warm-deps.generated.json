@@ -28,6 +28,7 @@
     "drizzle-orm/node-postgres",
     "drizzle-orm/pg-core",
     "expo-haptics",
+    "mdx-bundler/client",
     "one",
     "pg",
     "posthog-node",

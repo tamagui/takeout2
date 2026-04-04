@@ -77,11 +77,11 @@ const result = createEnv({
     VITE_PROTOCOL: 'https',
     VITE_WEB_HOSTNAME: expected,
     VITE_ZERO_HOSTNAME: expected,
-    ZERO_CHANGE_DB: expected,
-    ZERO_CVR_DB: expected,
+    ZERO_CHANGE_DB: '',
+    ZERO_CVR_DB: '',
     ZERO_MUTATE_URL: '',
     ZERO_QUERY_URL: '',
-    ZERO_UPSTREAM_DB: expected,
+    ZERO_UPSTREAM_DB: '',
   },
 })
 

@@ -11,10 +11,19 @@ import { APP_SCHEME } from '../constants'
 import { afterCreateUser } from './afterCreateUser'
 import { storeOTP } from './lastOTP'
 
+const trustedOrigins = [
+  // match dev, prod, tauri
+  `https://${DOMAIN}`,
+  `http://localhost:${ports.web}`,
+  `http://host.docker.internal:${ports.web}`,
+  `${APP_SCHEME}://`,
+]
+
 console.info(
   `[better-auth] server`,
   server.BETTER_AUTH_SECRET.slice(0, 3),
   server.BETTER_AUTH_URL,
+  trustedOrigins,
 )
 
 export const authServer = betterAuth({
@@ -56,13 +65,7 @@ export const authServer = betterAuth({
     enabled: true,
   },
 
-  trustedOrigins: [
-    // match dev, prod, tauri
-    `https://${DOMAIN}`,
-    `http://localhost:${ports.web}`,
-    `http://host.docker.internal:${ports.web}`,
-    `${APP_SCHEME}://`,
-  ],
+  trustedOrigins,
 
   databaseHooks: {
     user: {
@@ -76,17 +79,17 @@ export const authServer = betterAuth({
   },
 
   plugins: [
-    // for use with react-native, tauri, etc
-    jwt({
-      jwt: {
-        expirationTime: '3y',
-      },
+    // optional JWT flows, useful for tauri, but not necessary as RN uses sessions
+    // jwt({
+    //   jwt: {
+    //     expirationTime: '1d',
+    //   },
 
-      jwks: {
-        // compat with zero
-        keyPairConfig: { alg: 'EdDSA', crv: 'Ed25519' },
-      },
-    }),
+    //   jwks: {
+    //     // compat with zero
+    //     keyPairConfig: { alg: 'EdDSA', crv: 'Ed25519' },
+    //   },
+    // }),
 
     bearer(),
 

@@ -65,7 +65,8 @@ export async function getAuthDataFromRequest(
         role: session.user.role === 'admin' ? 'admin' : undefined,
       }
     }
-  } catch {
+  } catch (err) {
+    console.warn(`Error validating session`, err)
     // session auth failed, try JWT
   }
 

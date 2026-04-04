@@ -32,6 +32,9 @@ await cmd`Run full CI/CD pipeline: test, build prod, deploy`
     const SEPARATOR = '\n' + '='.repeat(80)
 
     try {
+      // always build packages if needed
+      await run(`bun run build`)
+
       // step 1: run tests (unless --deploy-only or --skip-tests)
       if (!skipTests) {
         console.info('\n📋 running tests...')

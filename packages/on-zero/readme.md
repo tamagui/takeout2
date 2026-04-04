@@ -471,7 +471,7 @@ export const { ProvideZero, useQuery, zero, usePermission } = createZeroClient({
 <ProvideZero
   server="http://localhost:4848"
   userID={user.id}
-  auth={jwtToken}
+  auth={sessionToken}
   authData={{ id: user.id, email: user.email, role: user.role }}
 >
   <App />

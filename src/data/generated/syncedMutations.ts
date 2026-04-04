@@ -3,26 +3,36 @@
 import * as v from 'valibot'
 
 export const mutationValidators = {
-  block: {},
-  comment: {},
-  device: {},
-  notification: {},
-  post: {},
+  block: {
+
+  },
+  comment: {
+
+  },
+  device: {
+
+  },
+  notification: {
+
+  },
+  post: {
+
+  },
   report: {
     reportPost: v.object({
-      id: v.string(),
-      createdAt: v.number(),
-      postId: v.string(),
-      reason: v.string(),
-      details: v.optional(v.string()),
-    }),
+    id: v.string(),
+    createdAt: v.number(),
+    postId: v.string(),
+    reason: v.string(),
+    details: v.optional(v.string()),
+  }),
     reportUser: v.object({
-      id: v.string(),
-      createdAt: v.number(),
-      userId: v.string(),
-      reason: v.string(),
-      details: v.optional(v.string()),
-    }),
+    id: v.string(),
+    createdAt: v.number(),
+    userId: v.string(),
+    reason: v.string(),
+    details: v.optional(v.string()),
+  }),
   },
   user: {
     completeSignup: v.string(),
@@ -30,5 +40,7 @@ export const mutationValidators = {
     whitelistUsers: v.array(v.string()),
     finishOnboarding: v.void_(),
   },
-  userState: {},
+  userState: {
+
+  },
 }

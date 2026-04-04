@@ -155,7 +155,9 @@ export function createEnv<
         resolvedEnv[key] = ''
       }
     } else {
-      resolvedEnv[key] = val
+      // prefer process.env over config default (so .env values win)
+      const envVal = process.env[key]
+      resolvedEnv[key] = envVal !== undefined && envVal !== '' ? envVal : val
     }
   }
 

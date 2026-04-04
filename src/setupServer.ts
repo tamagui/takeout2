@@ -2,6 +2,8 @@ async function setup() {
   if (process.env.ONE_RENDER_MODE === 'ssg') {
     return
   } else {
+    const { AsyncLocalStorage } = await import('node:async_hooks')
+    const { setupAsyncLocalStorage } = await import('@take-out/helpers')
     const { initializeZeroMigrations } =
       await import('./data/server/initializeZeroMigrations')
     const { initializeErrorHandling } =
@@ -10,6 +12,7 @@ async function setup() {
 
     console.info(`[server] start (SHA: ${process.env.GIT_SHA})`)
 
+    setupAsyncLocalStorage(AsyncLocalStorage)
     initializeErrorHandling()
     initializeLogger()
     initializeZeroMigrations()

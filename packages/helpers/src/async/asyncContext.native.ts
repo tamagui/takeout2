@@ -3,6 +3,8 @@ interface AsyncContext<T> {
   run<R>(value: T, fn: () => R | Promise<R>): Promise<R>
 }
 
+export function setupAsyncLocalStorage(_AsyncLocalStorage: unknown) {}
+
 // react native implementation - no node:async_hooks available
 export function createAsyncContext<T>(): AsyncContext<T> {
   let currentContext: T | undefined

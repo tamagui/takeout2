@@ -15,9 +15,16 @@ interface AsyncLocalStorageConstructor {
 }
 
 let nodeAsyncLocalStorageCache: AsyncLocalStorageConstructor | null = null
+let configuredAsyncLocalStorage: AsyncLocalStorageConstructor | null = null
 
 // hide from vite/esbuild static analysis to avoid browser compat warning
 const nodeModuleId = ['node', 'async_hooks'].join(':')
+
+export function setupAsyncLocalStorage(
+  AsyncLocalStorage: AsyncLocalStorageConstructor | null,
+) {
+  configuredAsyncLocalStorage = AsyncLocalStorage
+}
 
 async function getNodeAsyncLocalStorage(): Promise<AsyncLocalStorageConstructor | null> {
   if (!nodeAsyncLocalStorageCache) {
@@ -36,25 +43,28 @@ export function createAsyncContext<T>(): AsyncContext<T> {
   if (isServerRuntime()) {
     let storage: NodeAsyncLocalStorage<T> | null = null
 
-    getNodeAsyncLocalStorage().then((AsyncLocalStorage) => {
-      if (AsyncLocalStorage && !storage) {
-        storage = new AsyncLocalStorage<T>()
-      }
-    })
+    const storageReady = Promise.resolve(configuredAsyncLocalStorage)
+      .then((AsyncLocalStorage) => AsyncLocalStorage || getNodeAsyncLocalStorage())
+      .then((AsyncLocalStorage) => {
+        if (AsyncLocalStorage && !storage) {
+          storage = new AsyncLocalStorage<T>()
+        }
+      })
 
     return {
       get(): T | undefined {
         if (!storage) {
-          console.warn(`⚠️ called AsyncContext before load!`)
-          return
+          throw new Error(`AsyncContext storage not initialized`)
         }
-
         return storage.getStore()
       },
 
       async run<R>(value: T, fn: () => R | Promise<R>): Promise<R> {
         if (!storage) {
-          throw new Error(`⚠️ called AsyncContext before load!`)
+          await storageReady
+        }
+        if (!storage) {
+          throw new Error(`AsyncContext storage unavailable in server runtime`)
         }
         return storage.run(value, fn)
       },

@@ -22,6 +22,13 @@ export function resolveQuery<Schema extends ZeroSchema>({
   const queryName = getQueryName(fn)
   if (!queryName) {
     const fnName = fn?.name || 'anonymous'
+    console.error('[on-zero] resolveQuery FAILED:', {
+      fnName,
+      fnIsDefined: fn !== undefined,
+      fnType: typeof fn,
+      fnStr: typeof fn === 'function' ? fn.toString().slice(0, 80) : String(fn),
+      stack: new Error().stack?.split('\n').slice(1, 5).join(' | '),
+    })
     throw new Error(
       `Query function '${fnName}' not registered. ` +
         `Ensure it is exported from a queries file and passed to createZeroClient via groupedQueries.`,

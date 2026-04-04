@@ -1,0 +1,1312 @@
+$ bun run:prod tko ops release --dry-run
+$ NODE_ENV=production bun env:prod bun run tko ops release --dry-run
+$ NODE_ENV=production bun env bun run tko ops release --dry-run
+$ bun src/env.ts -- bun run tko ops release --dry-run
+🚀 release
+Deploy platform: uncloud
+
+📋 running tests...
+$ bun tko test e2e
+[36m[test][0m 🧪 test
+[36m[test][0m 
+[36m[test][0m Starting parallel tasks: checks, playwright-install, backend, build-and-test
+[36m[test][0m Max parallelism: 16
+[36m[test][0m $ bun check
+[36m[test][0m $ bunx playwright install --with-deps chromium
+[36m[test][0m [36m[checks][0m $ tko check --default-all
+[36m[test][0m $ docker compose down
+[36m[test][0m $ bun web build
+[36m[test][0m [36m[checks][0m 
+[36m[test][0m [36m[checks][0m Running all scripts in check/
+[36m[test][0m [36m[checks][0m 
+[36m[test][0m [32m[web-build][0m $ tko web build
+[36m[test][0m [36m[checks][0m [35mdependencies[0m WARNING: JS plugins are experimental and not subject to semver.
+[36m[test][0m [36m[checks][0m [35mdependencies[0m Breaking changes are possible while JS plugins support is under development.
+[36m[test][0m [36m[checks][0m [36mlint[0m WARNING: JS plugins are experimental and not subject to semver.
+[36m[test][0m [36m[checks][0m [36mlint[0m Breaking changes are possible while JS plugins support is under development.
+[36m[test][0m [32m[web-build][0m $ NODE_ENV=production bun env:prod bun run one build "--platform=web"
+[36m[test][0m [32m[web-build][0m $ NODE_ENV=production bun env bun run one build "--platform=web"
+[36m[test][0m [36m[checks][0m [32mtypes[0m $ bun tsc --project ./tsconfig.json --noEmit --preserveWatchOutput 
+[36m[test][0m [32m[web-build][0m $ bun src/env.ts -- bun run one build "--platform=web"
+[36m[test][0m $ docker compose down
+[36m[test][0m $ docker compose up pgdb minio minio-init --remove-orphans --no-color
+[36m[test][0m Waiting for postgres...
+[36m[test][0m  Network takeout_default  Creating
+[36m[test][0m [32m✓[0m [35mplaywright install[0m completed in [33m0s[0m
+[36m[test][0m [32m✓[0m task: [35mplaywright-install[0m completed in [33m0s[0m
+[36m[test][0m  Network takeout_default  Created
+[36m[test][0m  Volume takeout_pgdb_data  Creating
+[36m[test][0m  Volume takeout_pgdb_data  Created
+[36m[test][0m  Volume takeout_minio_data  Creating
+[36m[test][0m  Volume takeout_minio_data  Created
+[36m[test][0m  Container takeout-minio-1  Creating
+[36m[test][0m  Container takeout-pgdb-1  Creating
+[36m[test][0m  Container takeout-minio-1  Created
+[36m[test][0m  Container takeout-minio-init-1  Creating
+[36m[test][0m  Container takeout-pgdb-1  Created
+[36m[test][0m  Container takeout-minio-init-1  Created
+[36m[test][0m Attaching to minio-1, minio-init-1, pgdb-1
+[36m[test][0m pgdb-1  | The files belonging to this database system will be owned by user "postgres".
+[36m[test][0m pgdb-1  | This user must also own the server process.
+[36m[test][0m pgdb-1  | 
+[36m[test][0m pgdb-1  | The database cluster will be initialized with locale "en_US.utf8".
+[36m[test][0m pgdb-1  | The default database encoding has accordingly been set to "UTF8".
+[36m[test][0m pgdb-1  | The default text search configuration will be set to "english".
+[36m[test][0m pgdb-1  | 
+[36m[test][0m pgdb-1  | Data page checksums are disabled.
+[36m[test][0m pgdb-1  | 
+[36m[test][0m pgdb-1  | fixing permissions on existing directory /var/lib/postgresql/data ... ok
+[36m[test][0m pgdb-1  | creating subdirectories ... ok
+[36m[test][0m pgdb-1  | selecting dynamic shared memory implementation ... posix
+[36m[test][0m pgdb-1  | selecting default max_connections ... 100
+[36m[test][0m Running migrations...
+[36m[test][0m $ bun backend:migrate
+[36m[test][0m pgdb-1  | selecting default shared_buffers ... 128MB
+[36m[test][0m pgdb-1  | selecting default time zone ... Etc/UTC
+[36m[test][0m pgdb-1  | creating configuration files ... ok
+[36m[test][0m [33m[migrate][0m $ ALLOW_MISSING_ENV=1 bun run:dev src/database/migrate.ts
+[36m[test][0m [33m[migrate][0m $ NODE_ENV=development bun env:dev bun run src/database/migrate.ts
+[36m[test][0m [33m[migrate][0m $ NODE_ENV=development bun env bun run src/database/migrate.ts
+[36m[test][0m [33m[migrate][0m $ bun src/env.ts -- bun run src/database/migrate.ts
+[36m[test][0m pgdb-1  | running bootstrap script ... ok
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  🔨 build client + server
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [33m[migrate][0m [database] waiting for database to be ready...
+[36m[test][0m [33m[migrate][0m [database] waiting... attempt 1/30 (retry in 1000ms)
+[36m[test][0m minio-1  | INFO: Formatting 1st pool, 1 set(s), 1 drives per set.
+[36m[test][0m minio-1  | INFO: WARNING: Host local has more than 0 drives of set. A host failure will result in data becoming unavailable.
+[36m[test][0m pgdb-1   | performing post-bootstrap initialization ... ok
+[36m[test][0m minio-1  | MinIO Object Storage Server
+[36m[test][0m minio-1  | Copyright: 2015-2026 MinIO, Inc.
+[36m[test][0m minio-1  | License: GNU AGPLv3 - https://www.gnu.org/licenses/agpl-3.0.html
+[36m[test][0m minio-1  | Version: RELEASE.2025-05-24T17-08-30Z (go1.24.3 linux/arm64)
+[36m[test][0m minio-1  | 
+[36m[test][0m minio-1  | API: http://192.168.97.3:9000  http://127.0.0.1:9000 
+[36m[test][0m minio-1  | WebUI: http://192.168.97.3:9001 http://127.0.0.1:9001  
+[36m[test][0m minio-1  | 
+[36m[test][0m minio-1  | Docs: https://docs.min.io
+[36m[test][0m [36m[checks][0m [33mknip[0m Experimental: running VxRN as a Vite plugin. This is not yet stable.
+[36m[test][0m minio-1  | INFO: 
+[36m[test][0m minio-1  |  You are running an older version of MinIO released 3 months before the latest release 
+[36m[test][0m minio-1  |  Update: Run `mc admin update ALIAS` 
+[36m[test][0m minio-1  | 
+[36m[test][0m minio-1  | 
+[36m[test][0m [33m[migrate][0m [database] waiting... attempt 2/30 (retry in 1500ms)
+[36m[test][0m pgdb-1   | syncing data to disk ... ok
+[36m[test][0m pgdb-1   | 
+[36m[test][0m pgdb-1   | 
+[36m[test][0m pgdb-1   | Success. You can now start the database server using:
+[36m[test][0m pgdb-1   | 
+[36m[test][0m pgdb-1   |     pg_ctl -D /var/lib/postgresql/data -l logfile start
+[36m[test][0m pgdb-1   | 
+[36m[test][0m pgdb-1   | initdb: warning: enabling "trust" authentication for local connections
+[36m[test][0m pgdb-1   | initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+[36m[test][0m [33m[migrate][0m [database] waiting... attempt 3/30 (retry in 2250ms)
+[36m[test][0m pgdb-1   | waiting for server to start.... done
+[36m[test][0m pgdb-1   | server started
+[36m[test][0m pgdb-1   | 
+[36m[test][0m pgdb-1   | /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/db.ts
+[36m[test][0m pgdb-1   | 
+[36m[test][0m pgdb-1   | /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/drizzle.config.ts
+[36m[test][0m pgdb-1   | 
+[36m[test][0m pgdb-1   | /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/drizzle-zero.config.ts
+[36m[test][0m pgdb-1   | 
+[36m[test][0m pgdb-1   | /usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/init.sql
+[36m[test][0m pgdb-1   | CREATE EXTENSION
+[36m[test][0m pgdb-1   | CREATE DATABASE
+[36m[test][0m pgdb-1   | CREATE DATABASE
+[36m[test][0m pgdb-1   | 
+[36m[test][0m pgdb-1   | 
+[36m[test][0m pgdb-1   | /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/migrate.ts
+[36m[test][0m pgdb-1   | 
+[36m[test][0m pgdb-1   | /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/migrations
+[36m[test][0m pgdb-1   | 
+[36m[test][0m pgdb-1   | /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/relations.ts
+[36m[test][0m pgdb-1   | 
+[36m[test][0m pgdb-1   | /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/schema.ts
+[36m[test][0m pgdb-1   | 
+[36m[test][0m [36m[checks][0m [35mdependencies[0m Found 0 warnings and 0 errors.
+[36m[test][0m [36m[checks][0m [35mdependencies[0m Finished in 4.3s on 535 files using 16 threads.
+[36m[test][0m [36m[checks][0m [35mdependencies[0m [32m✓ completed[0m
+[36m[test][0m pgdb-1   | waiting for server to shut down....2026-04-04 17:12:44.016 UTC [81] FATAL:  the database system is shutting down
+[36m[test][0m [32m[web-build][0m [33m
+[36m[test][0m [32m[web-build][0m   ➡ [tamagui] built config, components, prompt (225ms)[0m
+[36m[test][0m [36m[checks][0m [33mknip[0m [93m[4mUnused dependencies[24m[39m (1)
+[36m[test][0m [36m[checks][0m [33mknip[0m @gorhom/bottom-sheet  package.json:86:6
+[36m[test][0m [36m[checks][0m [33mknip[0m [93m[4mUnused devDependencies[24m[39m (2)
+[36m[test][0m [36m[checks][0m [33mknip[0m @dotenvx/dotenvx  package.json:180:6                 
+[36m[test][0m [36m[checks][0m [33mknip[0m drizzle-zero      packages/on-zero/package.json:103:6
+[36m[test][0m [36m[checks][0m [33mknip[0m [33m[4mConfiguration hints[24m (1)[39m
+[36m[test][0m [36m[checks][0m [33mknip[0m @lydell/node-pty-darwin-arm64    knip.json  [90mRemove from [97mignoreDependencies[90m[39m
+[36m[test][0m [36m[checks][0m [33mknip[0m [32m✓ completed[0m
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m otp                        ·    2 found   ·    2 opt   ·    2 flat    25ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m [feedId]                   ·   17 found   ·   14 opt   ·   16 flat    16ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m [method]                   ·    3 found   ·    2 opt   ·    3 flat     4ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/feed/@modal/(.)post/[feedId].tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/search/_layout.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/feed/_layout.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m index                      ·   21 found   ·   18 opt   ·   17 flat    52ms 
+[36m[test][0m pgdb-1   |  done
+[36m[test][0m pgdb-1   | server stopped
+[36m[test][0m pgdb-1   | 
+[36m[test][0m pgdb-1   | PostgreSQL init process complete; ready for start up.
+[36m[test][0m pgdb-1   | 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m index                      ·   14 found   ·   13 opt   ·    9 flat    59ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/search/index.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/profile/index.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/dimensions/index.ts (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/feed/index.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m _layout                    ·    3 found   ·    3 opt   ·    2 flat     2ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/home/notification/_layout.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/ai/index.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/profile/_layout.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/profile/post/[feedId].tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/feed/post/[feedId].tsx (cached)
+[36m[test][0m [36m[checks][0m [36mlint[0m Found 0 warnings and 0 errors.
+[36m[test][0m [36m[checks][0m [36mlint[0m Finished in 5.4s on 842 files using 16 threads.
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m index                      ·    5 found   ·    5 opt   ·    1 flat     9ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m blocked-users              ·   12 found   ·   11 opt   ·    8 flat     9ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/home/_layout.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/home/settings/_layout.tsx (cached)
+[36m[test][0m [36m[checks][0m [36mlint[0m [32m✓ completed[0m
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m +not-found                 ·    2 found   ·    1 opt   ·    2 flat     1ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m edit-profile               ·   11 found   ·    9 opt   ·   10 flat     5ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/home/notification/index.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/home/settings/blocked-users.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(legal)/privacy-policy+ssg.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/home/settings/edit-profile.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(legal)/terms-of-service+ssg.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/_layout.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/feed/profile/[userId].tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m index                      ·   28 found   ·   25 opt   ·   23 flat    19ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(legal)/eula+ssg.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/ai/_layout.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m [slug]+ssg                 ·    2 found   ·    2 opt   ·    2 flat     4ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/home/settings/index.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🧹 [one]      app/docs/[slug]+ssg.tsx removed 2 server-only exports
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m help+ssg                   ·   13 found   ·    9 opt   ·   12 flat     4ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/docs/[slug]+ssg.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m _layout                    ·   15 found   ·   12 opt   ·    8 flat     7ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/notification/useNotificationPromptFlow.ts (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m index+ssg                  ·    1 found   ·    1 opt   ·    1 flat     1ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m ssr-permissions+ssr        ·    6 found   ·    5 opt   ·    6 flat     3ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/help+ssg.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/docs/_layout.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/settings/useSettingsData.ts (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/user/useUser.ts (cached)
+[36m[test][0m [32m[web-build][0m  🧹 [one]      app/test/ssr-permissions+ssr.tsx removed 1 server-only exports
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m _layout                    ·    3 found   ·    3 opt   ·    1 flat     2ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m _layout                    ·    1 found   ·    1 opt   ·    1 flat     2ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/index+ssg.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/test/ssr-permissions+ssr.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m _layout                    ·    2 found   ·    2 opt   ·    1 flat     1ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/auth/_layout.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/_layout.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/docs/useDocsMenu.ts (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m login                      ·   15 found   ·   15 opt   ·    7 flat     7ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m OtpInput                   ·    5 found   ·    5 opt   ·    4 flat     9ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/_layout.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] app/(app)/auth/login.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m Button                     ·    4 found   ·    4 opt   ·    0 flat    17ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/auth/ui/OtpInput.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m StepPageLayout             ·    7 found   ·    6 opt   ·    7 flat     4ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/PasswordIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m KeyboardStickyFooter       ·    1 found   ·    1 opt   ·    0 flat     3ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/buttons/Button.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/keyboard/KeyboardStickyFooter.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/pages/StepPageLayout.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m Avatar                     ·    3 found   ·    3 opt   ·    0 flat    11ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m Pressable                  ·    1 found   ·    1 opt   ·    0 flat     1ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/feed/PostActionMenu.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/useIconProps.ts (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/avatars/Avatar.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m client                     ·    3 found   ·    3 opt   ·    3 flat     7ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m CommentInput               ·    7 found   ·    6 opt   ·    5 flat     6ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/feed/PostImage.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/DotIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m CommentSection             ·    5 found   ·    5 opt   ·    5 flat     3ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/zero/client.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/feed/CommentInput.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/app/HeadInfo.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/XIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/feed/CommentSection.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/EnvelopeSimpleIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m Toast                      ·    5 found   ·    5 opt   ·    5 flat     3ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m AnimatedBlurHeader         ·    7 found   ·    7 opt   ·    6 flat     5ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/forms/Input.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/buttons/HeaderBackButton.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m PostCard                   ·   12 found   ·   11 opt   ·   12 flat     6ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/toast/Toast.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/headers/AnimatedBlurHeader.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m FeedContent                ·    4 found   ·    4 opt   ·    1 flat     2ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/pages/PageLayout.tsx (cached)
+[36m[test][0m [33m[migrate][0m [database] connection successful
+[36m[test][0m [33m[migrate][0m [database] running migrations...
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m ProfilePage                ·    6 found   ·    6 opt   ·    4 flat     3ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/feed/PostCard.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m FeedDetailPage             ·   20 found   ·   16 opt   ·   18 flat    11ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/feed/FeedContent.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m AIChatInput                ·    3 found   ·    3 opt   ·    1 flat     6ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/profile/ProfilePage.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/feed/FeedDetailPage.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m PageContainer              ·    1 found   ·    1 opt   ·    0 flat     1ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/SparkleIcon.tsx (cached)
+[36m[test][0m [33m[migrate][0m [zero] created publication zero_takeout with 9 tables
+[36m[test][0m [33m[migrate][0m [zero] zero_takeout publication is up to date (9 tables)
+[36m[test][0m [33m[migrate][0m [database] migrations complete
+[36m[test][0m ✅ Migrations completed!
+[36m[test][0m Starting zero-cache...
+[36m[test][0m $ docker compose up zero --remove-orphans --no-color
+[36m[test][0m $ bun scripts/db/seed-demo.ts
+[36m[test][0m [34m[seed][0m seeding users...
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m MainHeader                 ·   15 found   ·   14 opt   ·   13 flat     7ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/ai/AIChatInput.tsx (cached)
+[36m[test][0m [34m[seed][0m   created user: sarahc
+[36m[test][0m [34m[seed][0m   created user: marcusj
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m LegalPage                  ·    7 found   ·    7 opt   ·    7 flat     3ms 
+[36m[test][0m  Volume takeout_zero_data  Creating
+[36m[test][0m [34m[seed][0m   created user: emmaw
+[36m[test][0m  Volume takeout_zero_data  Created
+[36m[test][0m  Container takeout-pgdb-1  Running
+[36m[test][0m  Container takeout-zero-1  Creating
+[36m[test][0m [34m[seed][0m   created user: alexr
+[36m[test][0m [34m[seed][0m seeding posts...
+[36m[test][0m [34m[seed][0m   created post: seed-post-1
+[36m[test][0m [34m[seed][0m   created post: seed-post-2
+[36m[test][0m [34m[seed][0m   created post: seed-post-3
+[36m[test][0m [34m[seed][0m   created post: seed-post-4
+[36m[test][0m [34m[seed][0m seeding comments...
+[36m[test][0m [34m[seed][0m   created comment: seed-comment-1
+[36m[test][0m [34m[seed][0m   created comment: seed-comment-2
+[36m[test][0m [34m[seed][0m   created comment: seed-comment-3
+[36m[test][0m [34m[seed][0m   created comment: seed-comment-4
+[36m[test][0m [34m[seed][0m   created comment: seed-comment-5
+[36m[test][0m [34m[seed][0m   created comment: seed-comment-6
+[36m[test][0m [34m[seed][0m   created comment: seed-comment-7
+[36m[test][0m [34m[seed][0m   created comment: seed-comment-8
+[36m[test][0m [34m[seed][0m done!
+[36m[test][0m ✅ Seed data loaded!
+[36m[test][0m [32m✓[0m task: [35mbackend[0m completed in [33m6s[0m
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m Text                       ·    1 found   ·    1 opt   ·    0 flat     1ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/app/MainHeader.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/user/useUserById.ts (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m AvatarUpload               ·    5 found   ·    3 opt   ·    3 flat     5ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/site/ui/LegalPage.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m NotificationCard           ·    8 found   ·    8 opt   ·    5 flat    10ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/upload/AvatarUpload.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/CheckIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/keyboard/KeyboardAwareScrollView.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/notification/NotificationCard.tsx (cached)
+[36m[test][0m  Container takeout-zero-1  Created
+[36m[test][0m Attaching to zero-1
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/app/LogoIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m SiteRootLayout             ·    1 found   ·    1 opt   ·    1 flat     1ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m Dialog                     ·   11 found   ·    9 opt   ·    9 flat     7ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/tamagui/TamaguiRootProvider.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m HomeBackground             ·    3 found   ·    3 opt   ·    1 flat     1ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/dialogs/Dialog.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/platform/PlatformSpecificRootProvider.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/site/ui/SiteRootLayout.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m Tooltip                    ·    1 found   ·    1 opt   ·    1 flat     3ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/landing/HomeBackground.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/CaretRightIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m Headings                   ·    9 found   ·    9 opt   ·    2 flat     3ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/tooltip/Tooltip.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m MDXComponents              ·   20 found   ·   17 opt   ·    1 flat     6ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/shortcuts/handleKeyboardEscape.ts (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/text/Headings.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m InfoCard                   ·    4 found   ·    4 opt   ·    3 flat     4ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ChatCircleIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/EnvelopeIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/UserIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/CaretLeftIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m Link                       ·    2 found   ·    2 opt   ·    1 flat     6ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/site/ui/InfoCard.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/app/Link.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m DocsMenuContents           ·    8 found   ·    8 opt   ·    7 flat     9ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/FileIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/InfoIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m ThemeSwitch                ·    2 found   ·    2 opt   ·    1 flat     3ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/BellIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/docs/DocsMenuContents.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/LockIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/DoorIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/theme/ThemeSwitch.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/BookmarkIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m ContentSection             ·   20 found   ·   20 opt   ·    6 flat    10ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m HeroSection                ·   37 found   ·   34 opt   ·   19 flat    19ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m Gallery                    ·    4 found   ·    4 opt   ·    2 flat     7ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/landing/ContentSection.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/gallery/Gallery.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/landing/HeroSection.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/notification/Notification.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m SearchButton               ·    3 found   ·    3 opt   ·    2 flat     2ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m DragDropFile               ·    4 found   ·    3 opt   ·    3 flat     9ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/docs/search/SearchButton.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/dialogs/Dialogs.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/upload/DragDropFile.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m SearchProvider             ·    2 found   ·    1 opt   ·    1 flat     6ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m BottomTabBar               ·    2 found   ·    2 opt   ·    1 flat     2ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/devtools/ZeroTestUI.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/docs/search/SearchProvider.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/app/BottomTabBar.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/auth/ui/LoginAdminButton.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/auth/ui/LoginDemoButton.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m LoginSocialButtons         ·    6 found   ·    4 opt   ·    6 flat     2ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m LoginLegalText             ·    2 found   ·    2 opt   ·    2 flat     2ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/auth/ui/LoginSocialButtons.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/auth/ui/LoginLegalText.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/auth/ui/LoginEmailButton.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m Glint                      ·    1 found   ·    1 opt   ·    0 flat     2ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ClipboardIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m PageHeading                ·    2 found   ·    2 opt   ·    2 flat     1ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/text/PageHeading.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m BaseStepPageLayout         ·    7 found   ·    6 opt   ·    5 flat     3ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/pages/BaseStepPageLayout.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/DownloadSimpleIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m Onboarding                 ·   26 found   ·   26 opt   ·   13 flat    23ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/DotsThreeIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/TrashIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/UserCircleIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/WarningCircleIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/onboarding/Onboarding.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/XCircleIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/PaperPlaneTiltIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m CommentItem                ·    5 found   ·    5 opt   ·    4 flat     3ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ChatCircleDotsIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/buttons/HeaderButton.tsx (cached)
+[36m[test][0m minio-init-1  | Added `local` successfully.
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/feed/CommentItem.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/CheckCircleIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m PostCommentPreview         ·    4 found   ·    4 opt   ·    4 flat     2ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m GradientBackground         ·    2 found   ·    2 opt   ·    0 flat     6ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/feed/PostCommentPreview.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m FloatingCreateButton       ·    2 found   ·    2 opt   ·    1 flat     1ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/backgrounds/GradientBackground.tsx (cached)
+[36m[test][0m minio-init-1  | Bucket created successfully `local/chat`.
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/buttons/FloatingCreateButton.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m HomeShimmer                ·   14 found   ·   14 opt   ·   14 flat     5ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m Pagination                 ·    2 found   ·    2 opt   ·    2 flat     2ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/shimmer/HomeShimmer.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m SimpleGrid                 ·    2 found   ·    2 opt   ·    0 flat     4ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/theme/useIsDark.ts (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/navigation/Pagination.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/layout/SimpleGrid.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ArrowUpIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m ProfileHeader              ·   11 found   ·   11 opt   ·    8 flat     4ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/GearIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ListIcon.tsx (cached)
+[36m[test][0m minio-init-1  | Access permission for `local/chat` is set to `download`
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/profile/ProfileHeader.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/app/NavigationTabs.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m Logo                       ·    2 found   ·    2 opt   ·    0 flat     3ms 
+[36m[test][0m minio-init-1  | ✅ MinIO chat bucket ready and public
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/app/Logo.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m ScrollHeader               ·    6 found   ·    6 opt   ·    3 flat     5ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m ListItem                   ·    3 found   ·    2 opt   ·    2 flat     2ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/headers/ScrollHeader.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/lists/ListItem.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/user/ui/UserProfilePopover.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m SiteFooter                 ·    8 found   ·    8 opt   ·    8 flat     3ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m SiteHeader                 ·   17 found   ·   13 opt   ·   12 flat     6ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/site/ui/SiteFooter.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m Popover                    ·    2 found   ·    2 opt   ·    1 flat     3ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/site/ui/SiteHeader.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/effects/BlurView/BlurView.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/popover/Popover.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m SimpleTable                ·    4 found   ·    4 opt   ·    0 flat     4ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m ProBadge                   ·    3 found   ·    2 opt   ·    2 flat     6ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/docs/SimpleTable.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/docs/ProBadge.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m Code                       ·    1 found   ·    1 opt   ·    0 flat     2ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/docs/Code.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m RouteTree                  ·   10 found   ·    7 opt   ·    4 flat     7ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/docs/RouteTree.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m DocsCodeBlock              ·    7 found   ·    5 opt   ·    1 flat     5ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ArrowUpRightIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/docs/DocsCodeBlock.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m WIPBadge                   ·    2 found   ·    2 opt   ·    1 flat     3ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/docs/WIPBadge.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/SunIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/MoonStarsIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/CircleHalfIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m DocsRouteNavItem           ·    5 found   ·    5 opt   ·    5 flat     6ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/logos/TamaguiLogo.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/logos/OneLogo.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/logos/ZeroLogo.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/docs/DocsRouteNavItem.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m BetaBadge                  ·    2 found   ·    2 opt   ·    0 flat     1ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/CopyIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/video/Video.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/app/BetaBadge.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/MagnifyingGlassIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m DialogOnboard              ·    1 found   ·    0 opt   ·    1 flat     1ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ArrowRightIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m DialogError                ·    2 found   ·    2 opt   ·    1 flat     2ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/dialogs/DialogOnboard.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m DialogAdminPassword        ·    2 found   ·    2 opt   ·    1 flat     1ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/dialogs/DialogError.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/dialogs/DialogAdminPassword.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m DialogConfirm              ·    2 found   ·    2 opt   ·    1 flat     2ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/dialogs/DialogConfirm.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m DialogCreatePost           ·   17 found   ·   14 opt   ·   14 flat     9ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ImageIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/HouseIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/hooks/useGoBackToHome.ts (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/docs/search/DocSearch.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m OnboardingActionButton     ·    1 found   ·    1 opt   ·    1 flat     1ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/GoogleIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/dialogs/DialogCreatePost.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/AppleIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m OnboardingPageIndicato     ·    2 found   ·    2 opt   ·    2 flat     3ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/onboarding/OnboardingActionButton.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/onboarding/OnboardingPageIndicator.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/PaletteIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/StackIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/DeviceMobileSpeakerIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/FireIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/DatabaseIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/GlobeIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/RocketIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m LineShimmer                ·    1 found   ·    1 opt   ·    0 flat     1ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/PlusIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m Shimmer                    ·    3 found   ·    3 opt   ·    0 flat     4ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/shimmer/LineShimmer.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m CircleShimmer              ·    1 found   ·    1 opt   ·    0 flat     1ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/shimmer/ShimmerContext.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/shimmer/Shimmer.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m RovingTabs                 ·    3 found   ·    2 opt   ·    1 flat     7ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/shimmer/CircleShimmer.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ShareFatIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m UserProfilePopoverCont     ·   18 found   ·   15 opt   ·   17 flat     4ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m ListItemBackground         ·    1 found   ·    1 opt   ·    0 flat     3ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/PencilSimpleIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/tabs/RovingTabs.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/shimmer/ShimmerManager.ts (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m PopoverMenu                ·    1 found   ·    1 opt   ·    1 flat     1ms 
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m ListItemFrame              ·    1 found   ·    1 opt   ·    0 flat     2ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/user/ui/UserProfilePopoverContent.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/lists/ListItemBackground.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/popover/PopoverMenu.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m ListItemText               ·    1 found   ·    1 opt   ·    0 flat     4ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/lists/ListItemIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m SocialLinksRow             ·    5 found   ·    4 opt   ·    2 flat     3ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/auth/ui/LoginButton.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🐥 [tamagui]  [33mweb[0m PromoLinksRow              ·    5 found   ·    4 opt   ·    3 flat     2ms 
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/lists/ListItemText.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/site/ui/SocialLinksRow.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/features/auth/ui/LoginListItem.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/landing/PromoLinksRow.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/MinusIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/FolderOpenIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/TerminalIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ArrowSquareOutIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/FileCsvIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/FileXIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ArchiveIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/FileImageIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/FileTextIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/FileVideoIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/FileJsIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/social-media/DiscordLogo.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/GithubLogoIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/social-media/TwitterLogo.tsx (cached)
+[36m[test][0m [32m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/GithubLogoIcon.tsx (cached)
+[36m[test][0m [32m[web-build][0m [33m[INEFFECTIVE_DYNAMIC_IMPORT] Warning:[0m src/zero/client.tsx is dynamically imported by src/zero/helpers/showClientDataError.ts but also statically imported by app/(app)/_layout.tsx, app/(app)/home/(tabs)/feed/@modal/(.)post/[feedId].tsx, app/(app)/home/_layout.tsx, src/features/devtools/ZeroTestUI.tsx, src/features/feed/FeedDetailPage.tsx, ..., dynamic import will not move module into another chunk.
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m [33m[PLUGIN_TIMINGS] Warning:[0m Your build spent significant time in plugins. Here is a breakdown:
+[36m[test][0m [32m[web-build][0m   - platform-specific-resolve (46%)
+[36m[test][0m [32m[web-build][0m   - tamagui-extract (23%)
+[36m[test][0m [32m[web-build][0m   - one:compiler (4%)
+[36m[test][0m [32m[web-build][0m   - one:environment-guard (2%)
+[36m[test][0m [32m[web-build][0m   - one:imagedata (2%)
+[36m[test][0m [32m[web-build][0m See https://rolldown.rs/options/checks#plugintimings for more details.
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m [33m[INEFFECTIVE_DYNAMIC_IMPORT] Warning:[0m src/zero/client.tsx is dynamically imported by src/zero/helpers/showClientDataError.ts but also statically imported by app/(app)/_layout.tsx, app/(app)/home/(tabs)/feed/@modal/(.)post/[feedId].tsx, app/(app)/home/_layout.tsx, src/features/devtools/ZeroTestUI.tsx, src/features/feed/FeedDetailPage.tsx, ..., dynamic import will not move module into another chunk.
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m [33m[INVALID_OPTION] Warning:[0m Manual code splitting options (minSize) specified without groups. These options have no effect without groups - you should either add groups to use manual code splitting or remove these options.
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m [33m[PLUGIN_TIMINGS] Warning:[0m Your build spent significant time in plugins. Here is a breakdown:
+[36m[test][0m [32m[web-build][0m   - platform-specific-resolve (46%)
+[36m[test][0m [32m[web-build][0m   - tamagui-extract (25%)
+[36m[test][0m [32m[web-build][0m   - one:compiler (5%)
+[36m[test][0m [32m[web-build][0m   - one:environment-guard (3%)
+[36m[test][0m [32m[web-build][0m   - one:environment-guard (2%)
+[36m[test][0m [32m[web-build][0m See https://rolldown.rs/options/checks#plugintimings for more details.
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  ⏱️ vite bundle: 6.38s
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  🔨 build api routes
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  🔨 build middlewares
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  🔨 build static routes (workers: 8)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /(app)/home/(tabs)/feed/post/[feedId].tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /home/feed/post/:feedId
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /(app)/home/(tabs)/feed/profile/[userId].tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /home/feed/profile/:userId
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /(app)/home/(tabs)/profile/post/[feedId].tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /home/profile/post/:feedId
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /(app)/auth/signup/otp.tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /auth/signup/otp
+[36m[test][0m zero-1  | {"level":"WARN","pid":39,"worker":"change-streamer","initSchema":"2at30ua1ccc","code":"SQLITE_ERROR","name":"SqliteError","errorMsg":"no such table: _zero.tableMetadata: \n      SELECT \"schema\", \"table\" as \"name\", \"minRowVersion\" FROM \"_zero.tableMetadata\"\n    ","stack":"SqliteError: no such table: _zero.tableMetadata: \n      SELECT \"schema\", \"table\" as \"name\", \"minRowVersion\" FROM \"_zero.tableMetadata\"\n    \n    at Database.prepare (/usr/local/lib/node_modules/@rocicorp/zero/node_modules/@rocicorp/zero-sqlite3/lib/methods/wrappers.js:5:21)\n    at file:///usr/local/lib/node_modules/@rocicorp/zero/out/zqlite/src/db.js:32:15\n    at #run (file:///usr/local/lib/node_modules/@rocicorp/zero/out/zqlite/src/db.js:67:11)\n    at Database.prepare (file:///usr/local/lib/node_modules/@rocicorp/zero/out/zqlite/src/db.js:29:19)\n    at TableMetadataTracker.getMinRowVersions (file:///usr/local/lib/node_modules/@rocicorp/zero/out/zero-cache/src/services/replicator/schema/table-metadata.js:80:57)\n    at listTables (file:///usr/local/lib/node_modules/@rocicorp/zero/out/zero-cache/src/db/lite-tables.js:25:73)\n    at computeZqlSpecs (file:///usr/local/lib/node_modules/@rocicorp/zero/out/zero-cache/src/db/lite-tables.js:105:38)\n    at getReplicatedTables (file:///usr/local/lib/node_modules/@rocicorp/zero/out/zero-cache/src/services/replicator/replication-status.js:90:23)\n    at replicationStatusEvent (file:///usr/local/lib/node_modules/@rocicorp/zero/out/zero-cache/src/services/replicator/replication-status.js:63:18)\n    at ReplicationStatusPublisher.publish (file:///usr/local/lib/node_modules/@rocicorp/zero/out/zero-cache/src/services/replicator/replication-status.js:16:17)","message":"Unable to create full ReplicationStatusEvent"}
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /(app)/home/settings/blocked-users.tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /home/settings/blocked-users
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /(app)/home/settings/edit-profile.tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /home/settings/edit-profile
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /(app)/auth/signup/[method].tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /auth/signup/:method
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /(app)/auth/login.tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /auth/login
+[36m[test][0m [36m[checks][0m [32mtypes[0m [32m✓ completed[0m
+[36m[test][0m [36m[checks][0m 
+[36m[test][0m [36m[checks][0m [0m[32m✓ All scripts completed successfully[0m
+[36m[test][0m [36m[checks][0m 
+[36m[test][0m [32m✓[0m [35mbun check[0m completed in [33m9s[0m
+[36m[test][0m [32m✓[0m task: [35mchecks[0m completed in [33m9s[0m
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /(app)/home/(tabs)/ai/index.tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /home/ai/
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /(app)/home/(tabs)/feed/index.tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /home/feed/
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /(app)/home/(tabs)/profile/index.tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /home/profile/
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /(app)/home/(tabs)/search/index.tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /home/search/
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /(app)/home/notification/index.tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /home/notification/
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /(app)/home/settings/index.tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /home/settings/
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /(legal)/eula+ssg.tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /eula
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /(legal)/privacy-policy+ssg.tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /privacy-policy
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /(legal)/terms-of-service+ssg.tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /terms-of-service
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /test/ssr-permissions+ssr.tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /test/ssr-permissions
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /docs/[slug]+ssg.tsx (with 19 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /docs/agents
+[36m[test][0m [32m[web-build][0m   ↦ route /docs/changelog-2025
+[36m[test][0m [32m[web-build][0m   ↦ route /docs/changelog
+[36m[test][0m [32m[web-build][0m   ↦ route /docs/conventions
+[36m[test][0m [32m[web-build][0m   ↦ route /docs/database
+[36m[test][0m [32m[web-build][0m   ↦ route /docs/deployment-overview
+[36m[test][0m [32m[web-build][0m   ↦ route /docs/faq
+[36m[test][0m [32m[web-build][0m   ↦ route /docs/get-started
+[36m[test][0m [32m[web-build][0m   ↦ route /docs/highlights
+[36m[test][0m [32m[web-build][0m   ↦ route /docs/interface
+[36m[test][0m [32m[web-build][0m   ↦ route /docs/introduction
+[36m[test][0m [32m[web-build][0m   ↦ route /docs/one
+[36m[test][0m [32m[web-build][0m   ↦ route /docs/releasing
+[36m[test][0m [32m[web-build][0m   ↦ route /docs/roadmap
+[36m[test][0m [32m[web-build][0m   ↦ route /docs/scripts
+[36m[test][0m [32m[web-build][0m   ↦ route /docs/static-starter
+[36m[test][0m [32m[web-build][0m   ↦ route /docs/tamagui
+[36m[test][0m [32m[web-build][0m   ↦ route /docs/testing
+[36m[test][0m [32m[web-build][0m   ↦ route /docs/zero
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /help+ssg.tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /help
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /index+ssg.tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  [build] page /+not-found.tsx (with 1 routes)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m   ↦ route /+not-found
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  ⏱️ static routes: 3.06s (40 pages)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  🛡 skew protection: emitted version.json
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  📄 generated sitemap.xml (39 URLs)
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  🔒 scanning client bundles for leaked secrets...
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  🔒 security scan passed — no secrets found
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m[web-build][0m  💛 build complete
+[36m[test][0m [32m[web-build][0m 
+[36m[test][0m [32m✓[0m [35mweb build (test)[0m completed in [33m10s[0m
+[36m[test][0m 
+[36m[test][0m Running integration tests...
+[36m[test][0m $ bun run test:unit
+[36m[test][0m $ bun web serve
+[36m[test][0m [31m[tests][0m $ bun run:dev vitest run -c ./src/test/vitest.config.ts
+[36m[test][0m $ tko web serve
+[36m[test][0m [31m[tests][0m $ NODE_ENV=development bun env:dev bun run vitest run -c ./src/test/vitest.config.ts
+[36m[test][0m [31m[tests][0m $ NODE_ENV=development bun env bun run vitest run -c ./src/test/vitest.config.ts
+[36m[test][0m [31m[tests][0m $ bun src/env.ts -- bun run vitest run -c ./src/test/vitest.config.ts
+[36m[test][0m 
+[36m[test][0m   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m8081[22m/[39m
+[36m[test][0m   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.12.176:[1m8081[22m/[39m
+[36m[test][0m 
+[36m[test][0m [31m[tests][0m 
+[36m[test][0m [31m[tests][0m [1m[46m RUN [49m[22m [36mv4.1.0 [39m[90m/Users/n8/takeout[39m
+[36m[test][0m [31m[tests][0m 
+[36m[test][0m [31m[tests][0m  [32m✓[39m src/test/unit/example.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+[36m[test][0m [31m[tests][0m  [32m✓[39m packages/run/src/helpers/resolveScript.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+[36m[test][0m [31m[tests][0m  [32m✓[39m packages/helpers/src/storage/storage.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+[36m[test][0m [31m[tests][0m  [32m✓[39m packages/hooks/src/useDeepMemoizedObject.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+[36m[test][0m [31m[tests][0m  [32m✓[39m src/test/unit/auth-initialization.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 206[2mms[22m[39m
+[36m[test][0m [31m[tests][0m  [32m✓[39m packages/on-zero/src/usePermission.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+[36m[test][0m [31m[tests][0m  [32m✓[39m packages/on-zero/src/serverWhere.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+[36m[test][0m $ cd src/test && bunx playwright test
+[36m[test][0m [31m[tests][0m  [32m✓[39m packages/run/src/helpers/process-cleanup.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 327[2mms[22m[39m
+[36m[test][0m [36m[integration][0m 
+[36m[test][0m [36m[integration][0m Running 16 tests using 1 worker
+[36m[test][0m [36m[integration][0m 
+[36m[test][0m [31m[tests][0m  [32m✓[39m packages/run/src/process-cleanup.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 1304[2mms[22m[39m
+[36m[test][0m [31m[tests][0m      [33m[2m✓[22m[39m SIGTERM kills all children [33m 362[2mms[22m[39m
+[36m[test][0m [31m[tests][0m      [33m[2m✓[22m[39m SIGHUP kills all children [33m 311[2mms[22m[39m
+[36m[test][0m [31m[tests][0m      [33m[2m✓[22m[39m pid file is created and cleaned up [33m 312[2mms[22m[39m
+[36m[test][0m [36m[integration][0m   ✓   1 [chromium] › integration/api.test.ts:7:3 › API Integration Tests › health endpoint should return ok status (330ms)
+[36m[test][0m [36m[integration][0m   ✓   2 [chromium] › integration/api.test.ts:22:3 › API Integration Tests › health endpoint should respond quickly (6ms)
+[36m[test][0m [36m[integration][0m   ✓   3 [chromium] › integration/basic.test.ts:17:3 › Basic Integration Tests › server should be running (95ms)
+[36m[test][0m [better-auth] server 123 http://localhost:8081
+[36m[test][0m [31m[tests][0m  [32m✓[39m packages/on-zero/src/generate.test.ts [2m([22m[2m18 tests[22m[2m)[22m[33m 2289[2mms[22m[39m
+[36m[test][0m [31m[tests][0m      [33m[2m✓[22m[39m handles array param type [33m 518[2mms[22m[39m
+[36m[test][0m [31m[tests][0m      [33m[2m✓[22m[39m resolves imported type references for mutations [33m 377[2mms[22m[39m
+[36m[test][0m [31m[tests][0m      [33m[2m✓[22m[39m resolves utility types like Pick [33m 373[2mms[22m[39m
+[36m[test][0m [31m[tests][0m      [33m[2m✓[22m[39m skips symbol-keyed properties when resolving imported mutation param types [33m 372[2mms[22m[39m
+[36m[test][0m [31m[tests][0m      [33m[2m✓[22m[39m resolves imported types in query params [33m 356[2mms[22m[39m
+[36m[test][0m [31m[tests][0m 
+[36m[test][0m [31m[tests][0m [2m Test Files [22m [1m[32m10 passed[39m[22m[90m (10)[39m
+[36m[test][0m [31m[tests][0m [2m      Tests [22m [1m[32m96 passed[39m[22m[90m (96)[39m
+[36m[test][0m [31m[tests][0m [2m   Start at [22m 07:12:51
+[36m[test][0m [31m[tests][0m [2m   Duration [22m 2.45s[2m (transform 728ms, setup 0ms, import 901ms, tests 4.14s, environment 0ms)[22m
+[36m[test][0m [31m[tests][0m 
+[36m[test][0m [31m[tests][0m JSON report written to /Users/n8/takeout/src/test/unit/.output/results.json
+[36m[test][0m [32m✓[0m [35mtest suite[0m completed in [33m3s[0m
+[36m[test][0m [32m✓[0m [35munit tests[0m completed in [33m3s[0m
+[36m[test][0m [36m[integration][0m Screenshot saved to /tmp/login-page.png
+[36m[test][0m [36m[integration][0m Found 13 buttons:
+[36m[test][0m [36m[integration][0m   -  [data-testid=null]
+[36m[test][0m [36m[integration][0m   - Login [data-testid=null]
+[36m[test][0m [36m[integration][0m   - Docs [data-testid=null]
+[36m[test][0m [36m[integration][0m   -  [data-testid=null]
+[36m[test][0m [36m[integration][0m   -  [data-testid=null]
+[36m[test][0m [36m[integration][0m   -  [data-testid=null]
+[36m[test][0m [36m[integration][0m   -  [data-testid=null]
+[36m[test][0m [36m[integration][0m   - Continue with Email [data-testid=null]
+[36m[test][0m [36m[integration][0m   - Login as Demo User [data-testid=login-as-demo]
+[36m[test][0m [36m[integration][0m   - Google [data-testid=null]
+[36m[test][0m [36m[integration][0m   - Apple [data-testid=null]
+[36m[test][0m [36m[integration][0m   -  [data-testid=null]
+[36m[test][0m [36m[integration][0m   -  [data-testid=null]
+[36m[test][0m [36m[integration][0m   ✓   4 [chromium] › integration/check-login.test.ts:6:1 › check login page has demo button (4.0s)
+[36m[test][0m [36m[integration][0m Logging in as demo user via API...
+[36m[test][0m [auth] POST 401 http://localhost:8081/api/auth/sign-in/email
+[36m[test][0m {
+[36m[test][0m   status: 401,
+[36m[test][0m   statusText: 'UNAUTHORIZED',
+[36m[test][0m   headers: { 'content-type': 'application/json' },
+[36m[test][0m   body: '{"code":"INVALID_EMAIL_OR_PASSWORD","message":"Invalid email or password"}'
+[36m[test][0m }
+[36m[test][0m [afterCreateUser] Creating user records for demo@takeout.tamagui.dev
+[36m[test][0m [afterCreateUser] Creating userPublic record
+[36m[test][0m [afterCreateUser] ✅ User demo@takeout.tamagui.dev setup complete
+[36m[test][0m [36m[integration][0m ✅ Logged in via sign-up (status: 200)
+[36m[test][0m [36m[integration][0m   ✓   5 [chromium] › integration/comment-flow.test.ts:10:3 › Comment Flow › can add comment immediately after login without page refresh (6.0s)
+[36m[test][0m [36m[integration][0m   ✓   6 [chromium] › integration/login-page.test.ts:16:1 › login page should load without freezing (302ms)
+[36m[test][0m [36m[integration][0m   ✓   7 [chromium] › integration/login-page.test.ts:38:1 › login page shows login form elements (788ms)
+[36m[test][0m [36m[integration][0m   ✓   8 [chromium] › integration/login-page.test.ts:51:1 › login page does not redirect infinitely (2.2s)
+[36m[test][0m [36m[integration][0m Logging in as demo user via API...
+[36m[test][0m [36m[integration][0m ✅ Logged in via sign-in (status: 200)
+[36m[test][0m [36m[integration][0m   ✓   9 [chromium] › integration/permissions.test.ts:80:3 › SSR Permissions › serverWhere filters blocked users posts via API (4.4s)
+[36m[test][0m [36m[integration][0m   ✓  10 [chromium] › integration/permissions.test.ts:128:3 › SSR Permissions › serverWhere returns all posts for anonymous viewer (6ms)
+[36m[test][0m [36m[integration][0m Logging in as demo user via API...
+[36m[test][0m [36m[integration][0m ✅ Logged in via sign-in (status: 200)
+[36m[test][0m [36m[integration][0m   ✓  11 [chromium] › integration/permissions.test.ts:146:3 › Permissions › notBlockedByViewer: blocking hides posts, unblocking restores them (5.6s)
+[36m[test][0m [36m[integration][0m Logging in as demo user via API...
+[36m[test][0m [36m[integration][0m ✅ Logged in via sign-in (status: 200)
+[36m[test][0m [36m[integration][0m   ✓  12 [chromium] › integration/permissions.test.ts:208:3 › Permissions › usePermission: true for own post, false for other user post (5.4s)
+[36m[test][0m [36m[integration][0m Logging in as demo user via API...
+[36m[test][0m [36m[integration][0m ✅ Logged in via sign-in (status: 200)
+[36m[test][0m [36m[integration][0m   ✓  13 [chromium] › integration/permissions.test.ts:241:3 › Permissions › usePermission: true for own post after creating one (5.5s)
+[36m[test][0m [36m[integration][0m Logging in as demo user via API...
+[36m[test][0m [36m[integration][0m ✅ Logged in via sign-in (status: 200)
+[36m[test][0m [36m[integration][0m   ✓  14 [chromium] › integration/permissions.test.ts:298:3 › Permissions › notBlockedByViewer: blocking multiple users hides all their posts (5.7s)
+[36m[test][0m [36m[integration][0m Logging in as demo user via API...
+[36m[test][0m [36m[integration][0m ✅ Logged in via sign-in (status: 200)
+[36m[test][0m [36m[integration][0m   ✓  15 [chromium] › integration/post-flow.test.ts:15:3 › Post Flow › can create a post with caption and image (4.9s)
+[36m[test][0m [36m[integration][0m Logging in as demo user via API...
+[36m[test][0m [36m[integration][0m ✅ Logged in via sign-in (status: 200)
+[36m[test][0m [36m[integration][0m   ✓  16 [chromium] › integration/query.test.ts:6:3 › query() › fetches user data from server (2.2s)
+[36m[test][0m [36m[integration][0m 
+[36m[test][0m [36m[integration][0m   16 passed (48.0s)
+[36m[test][0m [32m✓[0m [35mplaywright tests[0m completed in [33m48s[0m
+[36m[test][0m [32m✓[0m [35mintegration tests[0m completed in [33m49s[0m
+[36m[test][0m [32m✓[0m task: [35mbuild-and-test[0m completed in [33m1m 0s[0m
+[36m[test][0m 
+[36m[test][0m All parallel tasks completed successfully in 1m 0s
+[36m[test][0m 
+[36m[test][0m ✅ all tests passed!
+[36m[test][0m Gracefully Stopping... press Ctrl+C again to force
+[36m[test][0m error: script "web" was terminated by signal SIGTERM (Polite quit request)
+[36m[test][0m Gracefully Stopping... press Ctrl+C again to force
+[36m[test][0m  Container takeout-zero-1  Stopping
+[36m[test][0m  Container takeout-minio-init-1  Stopping
+[36m[test][0m  Container takeout-pgdb-1  Stopping
+[36m[test][0m  Container takeout-zero-1  Stopped
+[36m[test][0m 
+[32m✓[0m [35mtests[0m completed in [33m1m 1s[0m
+
+Starting parallel tasks: deploy-env, build
+Max parallelism: 16
+🔧 checking uncloud cli...
+
+🏗️  building for production...
+$ bun run web build
+[35m[web-build][0m $ tko web build
+[35m[web-build][0m $ NODE_ENV=production bun env:prod bun run one build "--platform=web"
+[35m[web-build][0m $ NODE_ENV=production bun env bun run one build "--platform=web"
+[35m[web-build][0m $ bun src/env.ts -- bun run one build "--platform=web"
+  uncloud cli already installed
+🔑 setting up ssh key from environment...
+[35m[web-build][0m 
+[35m[web-build][0m  🔨 build client + server
+[35m[web-build][0m 
+  ssh key written to /Users/n8/.ssh/uncloud_deploy
+[32m✓[0m task: [35mdeploy-env[0m completed in [33m1s[0m
+[35m[web-build][0m [33m
+[35m[web-build][0m   ➡ [tamagui] built config, components, prompt (111ms)[0m
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m _layout                    ·    3 found   ·    3 opt   ·    1 flat    15ms 
+[35m[web-build][0m  🪄 [compiler] app/(app)/auth/_layout.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/search/_layout.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m [method]                   ·    3 found   ·    2 opt   ·    3 flat    10ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m index                      ·   21 found   ·   18 opt   ·   17 flat    41ms 
+[35m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/search/index.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m login                      ·   15 found   ·   15 opt   ·    7 flat     8ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/dimensions/index.ts (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m index                      ·   14 found   ·   13 opt   ·    9 flat    61ms 
+[35m[web-build][0m  🪄 [compiler] app/(app)/auth/login.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m otp                        ·    2 found   ·    2 opt   ·    2 flat     4ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m index                      ·    5 found   ·    5 opt   ·    1 flat    10ms 
+[35m[web-build][0m  🪄 [compiler] app/(app)/home/notification/_layout.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/ai/index.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m edit-profile               ·   11 found   ·    9 opt   ·   10 flat     6ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m blocked-users              ·   12 found   ·   11 opt   ·    8 flat     7ms 
+[35m[web-build][0m  🪄 [compiler] app/(app)/home/notification/index.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m _layout                    ·    1 found   ·    1 opt   ·    1 flat     3ms 
+[35m[web-build][0m  🪄 [compiler] app/(app)/home/settings/blocked-users.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] app/(app)/home/settings/edit-profile.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] app/(legal)/privacy-policy+ssg.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m +not-found                 ·    2 found   ·    1 opt   ·    2 flat     2ms 
+[35m[web-build][0m  🪄 [compiler] app/(legal)/eula+ssg.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] app/(app)/_layout.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] app/_layout.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] app/(legal)/terms-of-service+ssg.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m index                      ·   28 found   ·   25 opt   ·   23 flat    19ms 
+[35m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/feed/profile/[userId].tsx (cached)
+[35m[web-build][0m  🪄 [compiler] app/(app)/home/settings/index.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/notification/useNotificationPromptFlow.ts (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m [slug]+ssg                 ·    2 found   ·    2 opt   ·    2 flat     3ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m _layout                    ·    2 found   ·    2 opt   ·    1 flat     2ms 
+[35m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/ai/_layout.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/profile/index.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/user/useUser.ts (cached)
+[35m[web-build][0m  🧹 [one]      app/docs/[slug]+ssg.tsx removed 2 server-only exports
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m _layout                    ·   15 found   ·   12 opt   ·    8 flat     6ms 
+[35m[web-build][0m  🪄 [compiler] app/docs/[slug]+ssg.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/_layout.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m index+ssg                  ·    1 found   ·    1 opt   ·    1 flat     1ms 
+[35m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/feed/post/[feedId].tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/settings/useSettingsData.ts (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m help+ssg                   ·   13 found   ·    9 opt   ·   12 flat     4ms 
+[35m[web-build][0m  🪄 [compiler] app/docs/_layout.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m ssr-permissions+ssr        ·    6 found   ·    5 opt   ·    6 flat     4ms 
+[35m[web-build][0m  🪄 [compiler] app/index+ssg.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] app/help+ssg.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] app/(app)/home/_layout.tsx (cached)
+[35m[web-build][0m  🧹 [one]      app/test/ssr-permissions+ssr.tsx removed 1 server-only exports
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m [feedId]                   ·   17 found   ·   14 opt   ·   16 flat    10ms 
+[35m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/feed/_layout.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] app/test/ssr-permissions+ssr.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/profile/post/[feedId].tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/docs/useDocsMenu.ts (cached)
+[35m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/feed/index.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m _layout                    ·    3 found   ·    3 opt   ·    2 flat     2ms 
+[35m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/feed/@modal/(.)post/[feedId].tsx (cached)
+[35m[web-build][0m  🪄 [compiler] app/(app)/home/(tabs)/profile/_layout.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/buttons/HeaderBackButton.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m Onboarding                 ·   26 found   ·   26 opt   ·   13 flat    25ms 
+[35m[web-build][0m  🪄 [compiler] app/(app)/home/settings/_layout.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/EnvelopeSimpleIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/forms/Input.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m Button                     ·    4 found   ·    4 opt   ·    0 flat    15ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m KeyboardStickyFooter       ·    1 found   ·    1 opt   ·    0 flat     2ms 
+[35m[web-build][0m  🪄 [compiler] src/features/onboarding/Onboarding.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m StepPageLayout             ·    7 found   ·    6 opt   ·    7 flat     4ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/keyboard/KeyboardStickyFooter.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/buttons/Button.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m PostCard                   ·   12 found   ·   11 opt   ·   12 flat     6ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/pages/PageLayout.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/useIconProps.ts (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/pages/StepPageLayout.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m AnimatedBlurHeader         ·    7 found   ·    7 opt   ·    6 flat     6ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/app/HeadInfo.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/feed/PostCard.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m LoginSocialButtons         ·    6 found   ·    4 opt   ·    6 flat     2ms 
+[35m[web-build][0m  🪄 [compiler] src/features/auth/ui/LoginDemoButton.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/headers/AnimatedBlurHeader.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/auth/ui/LoginAdminButton.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m Headings                   ·    9 found   ·    9 opt   ·    2 flat     4ms 
+[35m[web-build][0m  🪄 [compiler] src/features/auth/ui/LoginSocialButtons.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/app/LogoIcon.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m LoginLegalText             ·    2 found   ·    2 opt   ·    2 flat     1ms 
+[35m[web-build][0m  🪄 [compiler] src/features/auth/ui/LoginEmailButton.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/text/Headings.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m AIChatInput                ·    3 found   ·    3 opt   ·    1 flat     4ms 
+[35m[web-build][0m  🪄 [compiler] src/features/auth/ui/LoginLegalText.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/SparkleIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/ai/AIChatInput.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m Toast                      ·    5 found   ·    5 opt   ·    5 flat     3ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m client                     ·    3 found   ·    3 opt   ·    3 flat     6ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/toast/Toast.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/zero/client.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m NotificationCard           ·    8 found   ·    8 opt   ·    5 flat     9ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m OtpInput                   ·    5 found   ·    5 opt   ·    4 flat     6ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/notification/NotificationCard.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/auth/ui/OtpInput.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/PasswordIcon.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m Text                       ·    1 found   ·    1 opt   ·    0 flat     1ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/keyboard/KeyboardAwareScrollView.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m Dialog                     ·   11 found   ·    9 opt   ·    9 flat     8ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m AvatarUpload               ·    5 found   ·    3 opt   ·    3 flat     4ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/dialogs/Dialog.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/XIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/upload/AvatarUpload.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m Avatar                     ·    3 found   ·    3 opt   ·    0 flat    11ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m LegalPage                  ·    7 found   ·    7 opt   ·    7 flat     4ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/CheckIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/avatars/Avatar.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/site/ui/LegalPage.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m Gallery                    ·    4 found   ·    4 opt   ·    2 flat     8ms 
+[35m[web-build][0m  🪄 [compiler] src/features/devtools/ZeroTestUI.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/shortcuts/handleKeyboardEscape.ts (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/notification/Notification.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m DragDropFile               ·    4 found   ·    3 opt   ·    3 flat     9ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/gallery/Gallery.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/dialogs/Dialogs.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/platform/PlatformSpecificRootProvider.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m HomeBackground             ·    3 found   ·    3 opt   ·    1 flat     1ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m SiteRootLayout             ·    1 found   ·    1 opt   ·    1 flat     1ms 
+[35m[web-build][0m  🪄 [compiler] src/tamagui/TamaguiRootProvider.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/upload/DragDropFile.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m Tooltip                    ·    1 found   ·    1 opt   ·    1 flat     3ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m ProfilePage                ·    6 found   ·    6 opt   ·    4 flat     4ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/landing/HomeBackground.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/site/ui/SiteRootLayout.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/tooltip/Tooltip.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/CaretRightIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/profile/ProfilePage.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m BottomTabBar               ·    2 found   ·    2 opt   ·    1 flat     2ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m MainHeader                 ·   15 found   ·   14 opt   ·   13 flat     4ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m MDXComponents              ·   20 found   ·   17 opt   ·    1 flat     7ms 
+[35m[web-build][0m  🪄 [compiler] src/features/app/BottomTabBar.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/app/MainHeader.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/user/useUserById.ts (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m FeedDetailPage             ·   20 found   ·   16 opt   ·   18 flat    10ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ChatCircleIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/BellIcon.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m ThemeSwitch                ·    2 found   ·    2 opt   ·    1 flat     2ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/DoorIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/feed/FeedDetailPage.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/UserIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/BookmarkIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/theme/ThemeSwitch.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/FileIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/InfoIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/LockIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/CaretLeftIcon.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m DocsMenuContents           ·    8 found   ·    8 opt   ·    7 flat     7ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m ContentSection             ·   20 found   ·   20 opt   ·    6 flat     8ms 
+[35m[web-build][0m  🪄 [compiler] src/features/docs/DocsMenuContents.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m Link                       ·    2 found   ·    2 opt   ·    1 flat     5ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m HeroSection                ·   37 found   ·   34 opt   ·   19 flat    17ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/landing/ContentSection.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m SearchProvider             ·    2 found   ·    1 opt   ·    1 flat     5ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m InfoCard                   ·    4 found   ·    4 opt   ·    3 flat     3ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/app/Link.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/EnvelopeIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/landing/HeroSection.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m SearchButton               ·    3 found   ·    3 opt   ·    2 flat     2ms 
+[35m[web-build][0m  🪄 [compiler] src/features/site/ui/InfoCard.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/docs/search/SearchProvider.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m FeedContent                ·    4 found   ·    4 opt   ·    1 flat     1ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m CommentSection             ·    5 found   ·    5 opt   ·    5 flat     2ms 
+[35m[web-build][0m  🪄 [compiler] src/features/docs/search/SearchButton.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/feed/FeedContent.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/feed/CommentSection.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/feed/PostImage.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/feed/PostActionMenu.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m CommentInput               ·    7 found   ·    6 opt   ·    5 flat     4ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m Pressable                  ·    1 found   ·    1 opt   ·    0 flat     1ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/DotIcon.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m PageContainer              ·    1 found   ·    1 opt   ·    0 flat     1ms 
+[35m[web-build][0m  🪄 [compiler] src/features/feed/CommentInput.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/buttons/HeaderButton.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m OnboardingPageIndicato     ·    2 found   ·    2 opt   ·    2 flat     3ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m Glint                      ·    1 found   ·    1 opt   ·    0 flat     2ms 
+[35m[web-build][0m  🪄 [compiler] src/features/onboarding/OnboardingPageIndicator.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m OnboardingActionButton     ·    1 found   ·    1 opt   ·    1 flat     0ms 
+[35m[web-build][0m  🪄 [compiler] src/features/onboarding/OnboardingActionButton.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/DatabaseIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/CheckCircleIcon.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m GradientBackground         ·    2 found   ·    2 opt   ·    0 flat     6ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/GlobeIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/FireIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/DeviceMobileSpeakerIcon.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m PageHeading                ·    2 found   ·    2 opt   ·    2 flat     1ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/PaletteIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/backgrounds/GradientBackground.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/GearIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/RocketIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/StackIcon.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m PostCommentPreview         ·    4 found   ·    4 opt   ·    4 flat     1ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m BaseStepPageLayout         ·    7 found   ·    6 opt   ·    5 flat     4ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/text/PageHeading.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/feed/PostCommentPreview.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/pages/BaseStepPageLayout.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/AppleIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/GoogleIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ArrowUpIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/theme/useIsDark.ts (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/XCircleIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/WarningCircleIcon.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m DialogConfirm              ·    2 found   ·    2 opt   ·    1 flat     2ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m DialogOnboard              ·    1 found   ·    0 opt   ·    1 flat     1ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ClipboardIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/effects/BlurView/BlurView.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/dialogs/DialogConfirm.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/dialogs/DialogOnboard.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m DialogAdminPassword        ·    2 found   ·    2 opt   ·    1 flat     2ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m DialogError                ·    2 found   ·    2 opt   ·    1 flat     1ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/dialogs/DialogAdminPassword.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/dialogs/DialogError.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/video/Video.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ImageIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/hooks/useGoBackToHome.ts (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m SiteFooter                 ·    8 found   ·    8 opt   ·    8 flat     2ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m DialogCreatePost           ·   17 found   ·   14 opt   ·   14 flat    10ms 
+[35m[web-build][0m  🪄 [compiler] src/features/site/ui/SiteFooter.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/dialogs/DialogCreatePost.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m SiteHeader                 ·   17 found   ·   13 opt   ·   12 flat     5ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m Pagination                 ·    2 found   ·    2 opt   ·    2 flat     2ms 
+[35m[web-build][0m  🪄 [compiler] src/features/site/ui/SiteHeader.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m ProfileHeader              ·   11 found   ·   11 opt   ·    8 flat     4ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/navigation/Pagination.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m SimpleGrid                 ·    2 found   ·    2 opt   ·    0 flat     3ms 
+[35m[web-build][0m  🪄 [compiler] src/features/profile/ProfileHeader.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m Popover                    ·    2 found   ·    2 opt   ·    1 flat     4ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/layout/SimpleGrid.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/HouseIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/popover/Popover.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/UserCircleIcon.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m ScrollHeader               ·    6 found   ·    6 opt   ·    3 flat     6ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m Logo                       ·    2 found   ·    2 opt   ·    0 flat     4ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m ListItem                   ·    3 found   ·    2 opt   ·    2 flat     2ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/app/Logo.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/headers/ScrollHeader.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/app/NavigationTabs.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ListIcon.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m Code                       ·    1 found   ·    1 opt   ·    0 flat     3ms 
+[35m[web-build][0m  🪄 [compiler] src/features/user/ui/UserProfilePopover.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m ProBadge                   ·    3 found   ·    2 opt   ·    2 flat     5ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m SimpleTable                ·    4 found   ·    4 opt   ·    0 flat     4ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/lists/ListItem.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/docs/Code.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m RouteTree                  ·   10 found   ·    7 opt   ·    4 flat     6ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m WIPBadge                   ·    2 found   ·    2 opt   ·    1 flat     4ms 
+[35m[web-build][0m  🪄 [compiler] src/features/docs/SimpleTable.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/docs/ProBadge.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m DocsCodeBlock              ·    7 found   ·    5 opt   ·    1 flat     5ms 
+[35m[web-build][0m  🪄 [compiler] src/features/docs/WIPBadge.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/docs/RouteTree.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/CircleHalfIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/MoonStarsIcon.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m DocsRouteNavItem           ·    5 found   ·    5 opt   ·    5 flat     7ms 
+[35m[web-build][0m  🪄 [compiler] src/features/docs/DocsCodeBlock.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/SunIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/logos/OneLogo.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/logos/ZeroLogo.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/docs/DocsRouteNavItem.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/logos/TamaguiLogo.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m BetaBadge                  ·    2 found   ·    2 opt   ·    0 flat     1ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ArrowUpRightIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/CopyIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ArrowRightIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/docs/search/DocSearch.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m HomeShimmer                ·   14 found   ·   14 opt   ·   14 flat     5ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m FloatingCreateButton       ·    2 found   ·    2 opt   ·    1 flat     1ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/MagnifyingGlassIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/app/BetaBadge.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m CommentItem                ·    5 found   ·    5 opt   ·    4 flat     3ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/shimmer/HomeShimmer.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/buttons/FloatingCreateButton.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ChatCircleDotsIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/TrashIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/DownloadSimpleIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/feed/CommentItem.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/DotsThreeIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/PaperPlaneTiltIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/FileImageIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/FileCsvIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/FileJsIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ArchiveIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/FileTextIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/FileVideoIcon.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m PromoLinksRow              ·    5 found   ·    4 opt   ·    3 flat     3ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m SocialLinksRow             ·    5 found   ·    4 opt   ·    2 flat     4ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/FileXIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/auth/ui/LoginListItem.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/landing/PromoLinksRow.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/auth/ui/LoginButton.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/site/ui/SocialLinksRow.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m PopoverMenu                ·    1 found   ·    1 opt   ·    1 flat     1ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/PencilSimpleIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ShareFatIcon.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m RovingTabs                 ·    3 found   ·    2 opt   ·    1 flat     6ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/popover/PopoverMenu.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m LineShimmer                ·    1 found   ·    1 opt   ·    0 flat     0ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m UserProfilePopoverCont     ·   18 found   ·   15 opt   ·   17 flat     4ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/tabs/RovingTabs.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/shimmer/LineShimmer.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/features/user/ui/UserProfilePopoverContent.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m ListItemBackground         ·    1 found   ·    1 opt   ·    0 flat     3ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m ListItemText               ·    1 found   ·    1 opt   ·    0 flat     4ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/lists/ListItemBackground.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m ListItemFrame              ·    1 found   ·    1 opt   ·    0 flat     3ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/lists/ListItemIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/lists/ListItemText.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/PlusIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/MinusIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/FolderOpenIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/TerminalIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/ArrowSquareOutIcon.tsx (cached)
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m CircleShimmer              ·    1 found   ·    1 opt   ·    0 flat     1ms 
+[35m[web-build][0m  🐥 [tamagui]  [33mweb[0m Shimmer                    ·    3 found   ·    3 opt   ·    0 flat     5ms 
+[35m[web-build][0m  🪄 [compiler] src/interface/shimmer/ShimmerContext.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/shimmer/CircleShimmer.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/shimmer/Shimmer.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/phosphor/GithubLogoIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/social-media/TwitterLogo.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/social-media/DiscordLogo.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/icons/GithubLogoIcon.tsx (cached)
+[35m[web-build][0m  🪄 [compiler] src/interface/shimmer/ShimmerManager.ts (cached)
+[35m[web-build][0m [33m[INEFFECTIVE_DYNAMIC_IMPORT] Warning:[0m src/zero/client.tsx is dynamically imported by src/zero/helpers/showClientDataError.ts but also statically imported by app/(app)/_layout.tsx, app/(app)/home/(tabs)/feed/@modal/(.)post/[feedId].tsx, app/(app)/home/_layout.tsx, src/features/devtools/ZeroTestUI.tsx, src/features/feed/FeedDetailPage.tsx, ..., dynamic import will not move module into another chunk.
+[35m[web-build][0m 
+[35m[web-build][0m [33m[PLUGIN_TIMINGS] Warning:[0m Your build spent significant time in plugins. Here is a breakdown:
+[35m[web-build][0m   - platform-specific-resolve (46%)
+[35m[web-build][0m   - tamagui-extract (25%)
+[35m[web-build][0m   - one:compiler (5%)
+[35m[web-build][0m   - one:environment-guard (3%)
+[35m[web-build][0m   - one:environment-guard (2%)
+[35m[web-build][0m See https://rolldown.rs/options/checks#plugintimings for more details.
+[35m[web-build][0m 
+[35m[web-build][0m [33m[INEFFECTIVE_DYNAMIC_IMPORT] Warning:[0m src/zero/client.tsx is dynamically imported by src/zero/helpers/showClientDataError.ts but also statically imported by app/(app)/_layout.tsx, app/(app)/home/(tabs)/feed/@modal/(.)post/[feedId].tsx, app/(app)/home/_layout.tsx, src/features/devtools/ZeroTestUI.tsx, src/features/feed/FeedDetailPage.tsx, ..., dynamic import will not move module into another chunk.
+[35m[web-build][0m 
+[35m[web-build][0m [33m[INVALID_OPTION] Warning:[0m Manual code splitting options (minSize) specified without groups. These options have no effect without groups - you should either add groups to use manual code splitting or remove these options.
+[35m[web-build][0m 
+[35m[web-build][0m [33m[PLUGIN_TIMINGS] Warning:[0m Your build spent significant time in plugins. Here is a breakdown:
+[35m[web-build][0m   - platform-specific-resolve (48%)
+[35m[web-build][0m   - tamagui-extract (25%)
+[35m[web-build][0m   - one:compiler (4%)
+[35m[web-build][0m   - one:environment-guard (3%)
+[35m[web-build][0m   - one-virtual-entry (2%)
+[35m[web-build][0m See https://rolldown.rs/options/checks#plugintimings for more details.
+[35m[web-build][0m 
+[35m[web-build][0m 
+[35m[web-build][0m  ⏱️ vite bundle: 4.47s
+[35m[web-build][0m 
+[35m[web-build][0m 
+[35m[web-build][0m  🔨 build api routes
+[35m[web-build][0m 
+[35m[web-build][0m 
+[35m[web-build][0m  🔨 build middlewares
+[35m[web-build][0m 
+[35m[web-build][0m 
+[35m[web-build][0m  🔨 build static routes (workers: 8)
+[35m[web-build][0m 
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /(app)/home/(tabs)/feed/post/[feedId].tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /home/feed/post/:feedId
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /(app)/home/(tabs)/feed/profile/[userId].tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /home/feed/profile/:userId
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /(app)/home/(tabs)/profile/post/[feedId].tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /home/profile/post/:feedId
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /(app)/auth/signup/otp.tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /auth/signup/otp
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /(app)/home/settings/blocked-users.tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /home/settings/blocked-users
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /(app)/home/settings/edit-profile.tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /home/settings/edit-profile
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /(app)/auth/signup/[method].tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /auth/signup/:method
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /(app)/auth/login.tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /auth/login
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /(app)/home/(tabs)/ai/index.tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /home/ai/
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /(app)/home/(tabs)/feed/index.tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /home/feed/
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /(app)/home/(tabs)/profile/index.tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /home/profile/
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /(app)/home/(tabs)/search/index.tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /home/search/
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /(app)/home/notification/index.tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /home/notification/
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /(app)/home/settings/index.tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /home/settings/
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /(legal)/eula+ssg.tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /eula
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /(legal)/privacy-policy+ssg.tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /privacy-policy
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /(legal)/terms-of-service+ssg.tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /terms-of-service
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /test/ssr-permissions+ssr.tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /test/ssr-permissions
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /docs/[slug]+ssg.tsx (with 19 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /docs/agents
+[35m[web-build][0m   ↦ route /docs/changelog-2025
+[35m[web-build][0m   ↦ route /docs/changelog
+[35m[web-build][0m   ↦ route /docs/conventions
+[35m[web-build][0m   ↦ route /docs/database
+[35m[web-build][0m   ↦ route /docs/deployment-overview
+[35m[web-build][0m   ↦ route /docs/faq
+[35m[web-build][0m   ↦ route /docs/get-started
+[35m[web-build][0m   ↦ route /docs/highlights
+[35m[web-build][0m   ↦ route /docs/interface
+[35m[web-build][0m   ↦ route /docs/introduction
+[35m[web-build][0m   ↦ route /docs/one
+[35m[web-build][0m   ↦ route /docs/releasing
+[35m[web-build][0m   ↦ route /docs/roadmap
+[35m[web-build][0m   ↦ route /docs/scripts
+[35m[web-build][0m   ↦ route /docs/static-starter
+[35m[web-build][0m   ↦ route /docs/tamagui
+[35m[web-build][0m   ↦ route /docs/testing
+[35m[web-build][0m   ↦ route /docs/zero
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /help+ssg.tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /help
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /index+ssg.tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /
+[35m[web-build][0m 
+[35m[web-build][0m  [build] page /+not-found.tsx (with 1 routes)
+[35m[web-build][0m 
+[35m[web-build][0m   ↦ route /+not-found
+[35m[web-build][0m 
+[35m[web-build][0m  ⏱️ static routes: 2.87s (40 pages)
+[35m[web-build][0m 
+[35m[web-build][0m 
+[35m[web-build][0m  🛡 skew protection: emitted version.json
+[35m[web-build][0m 
+[35m[web-build][0m 
+[35m[web-build][0m  📄 generated sitemap.xml (39 URLs)
+[35m[web-build][0m 
+[35m[web-build][0m 
+[35m[web-build][0m  🔒 scanning client bundles for leaked secrets...
+[35m[web-build][0m 
+[35m[web-build][0m 
+[35m[web-build][0m  🔒 security scan passed — no secrets found
+[35m[web-build][0m 
+[35m[web-build][0m 
+[35m[web-build][0m  💛 build complete
+[35m[web-build][0m 
+[32m✓[0m [35mweb:build (prod)[0m completed in [33m8s[0m
+[32m✓[0m task: [35mbuild[0m completed in [33m8s[0m
+
+All parallel tasks completed successfully in 8s
+
+✅ release completed successfully!

@@ -10,11 +10,15 @@ export const mutationValidators = {
   post: {},
   report: {
     reportPost: v.object({
+      id: v.string(),
+      createdAt: v.number(),
       postId: v.string(),
       reason: v.string(),
       details: v.optional(v.string()),
     }),
     reportUser: v.object({
+      id: v.string(),
+      createdAt: v.number(),
       userId: v.string(),
       reason: v.string(),
       details: v.optional(v.string()),

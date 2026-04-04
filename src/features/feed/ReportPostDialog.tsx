@@ -1,3 +1,4 @@
+import { randomId } from '@take-out/helpers'
 import { useState } from 'react'
 import {
   Adapt,
@@ -41,6 +42,8 @@ export function ReportPostDialog({ postId, open, onOpenChange }: ReportPostDialo
     setIsSubmitting(true)
     try {
       zero.mutate.report.reportPost({
+        id: randomId(),
+        createdAt: Date.now(),
         postId,
         reason: reportReason,
         details: finalDetails,

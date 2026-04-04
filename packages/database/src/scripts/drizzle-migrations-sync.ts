@@ -62,9 +62,7 @@ async function renameNewDrizzleMigrations(
 
   // if ALL sql files are new (no .ts wrappers exist yet), skip renaming —
   // there's nothing to conflict with, and renaming would scramble the order
-  const existingTsCount = files.filter(
-    (f) => /^\d+/.test(f) && f.endsWith('.ts'),
-  ).length
+  const existingTsCount = files.filter((f) => /^\d+/.test(f) && f.endsWith('.ts')).length
   if (existingTsCount === 0) return sqlFiles
 
   // group by migration number

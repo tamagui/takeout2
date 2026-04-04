@@ -49,6 +49,8 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
 
     try {
       zero.mutate.report.reportPost({
+        id: randomId(),
+        createdAt: Date.now(),
         postId: post.id,
         reason,
         details: '',

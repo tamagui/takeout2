@@ -1,4 +1,3 @@
-import { randomId } from '@take-out/helpers'
 import { mutations, serverWhere } from 'on-zero'
 
 const permissions = serverWhere('report', (_, auth) => {
@@ -9,6 +8,8 @@ export const mutate = mutations('report', permissions, {
   reportPost: async (
     { tx, authData },
     data: {
+      id: string
+      createdAt: number
       postId: string
       reason: string
       details?: string
@@ -17,7 +18,7 @@ export const mutate = mutations('report', permissions, {
     if (!authData) throw new Error('Not authenticated')
 
     await tx.mutate.report.insert({
-      id: randomId(),
+      id: data.id,
       reporterId: authData.id,
       reportedPostId: data.postId,
       reportedUserId: undefined,
@@ -26,13 +27,15 @@ export const mutate = mutations('report', permissions, {
       status: 'pending',
       reviewedBy: undefined,
       reviewedAt: undefined,
-      createdAt: Date.now(),
+      createdAt: data.createdAt,
     })
   },
 
   reportUser: async (
     { tx, authData },
     data: {
+      id: string
+      createdAt: number
       userId: string
       reason: string
       details?: string
@@ -41,7 +44,7 @@ export const mutate = mutations('report', permissions, {
     if (!authData) throw new Error('Not authenticated')
 
     await tx.mutate.report.insert({
-      id: randomId(),
+      id: data.id,
       reporterId: authData.id,
       reportedUserId: data.userId,
       reportedPostId: undefined,
@@ -50,7 +53,7 @@ export const mutate = mutations('report', permissions, {
       status: 'pending',
       reviewedBy: undefined,
       reviewedAt: undefined,
-      createdAt: Date.now(),
+      createdAt: data.createdAt,
     })
   },
 })

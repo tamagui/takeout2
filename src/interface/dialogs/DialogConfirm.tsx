@@ -9,12 +9,22 @@ import { Dialog } from './Dialog'
 import { closeDialogLayer2, dialogLayer2Emitter } from './shared'
 
 export const DialogConfirm = () => {
+  ;(globalThis as any).__sootDialogConfirmCount =
+    ((globalThis as any).__sootDialogConfirmCount || 0) + 1
   const { width } = useWindowDimensions()
   const minW = isWeb ? 450 : width * 0.9
   const [extraConfirm, setExtraConfirm] = useState('')
   const state = useEmitterSelector(dialogLayer2Emitter, (next) => {
     return next.type === 'confirm' ? next : null
   })
+  if ((globalThis as any).__sootDialogConfirmCount <= 50) {
+    console.log('[soot-dialog] DialogConfirm render', {
+      count: (globalThis as any).__sootDialogConfirmCount,
+      open: !!state,
+      width,
+      minW,
+    })
+  }
 
   const close = (accepted: boolean) => {
     confirmEmitter.emit(accepted)
@@ -27,6 +37,15 @@ export const DialogConfirm = () => {
       minW={minW}
       open={!!state}
       onOpenChange={(open) => {
+        ;(globalThis as any).__sootDialogConfirmOnOpenChangeCount =
+          ((globalThis as any).__sootDialogConfirmOnOpenChangeCount || 0) + 1
+        if ((globalThis as any).__sootDialogConfirmOnOpenChangeCount <= 50) {
+          console.log('[soot-dialog] DialogConfirm onOpenChange', {
+            count: (globalThis as any).__sootDialogConfirmOnOpenChangeCount,
+            open,
+            hasState: !!state,
+          })
+        }
         if (open) return
 
         // Only handle closing, not opening

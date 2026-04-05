@@ -23,6 +23,15 @@ export function AppLayout() {
   const { state } = useAuth()
   const pathname = usePathname()
   const isLoggedIn = state === 'logged-in'
+  ;(globalThis as any).__sootAppLayoutCount = ((globalThis as any).__sootAppLayoutCount || 0) + 1
+  if ((globalThis as any).__sootAppLayoutCount <= 80) {
+    console.log('[soot-root] AppLayout render', {
+      count: (globalThis as any).__sootAppLayoutCount,
+      authState: state,
+      pathname,
+      isLoggedIn,
+    })
+  }
 
   if (state === 'loading') {
     return (

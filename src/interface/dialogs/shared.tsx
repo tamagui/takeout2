@@ -33,6 +33,14 @@ export const dialogLayer2Emitter = createEmitter<DialogLayer2>('dialogConfirm', 
 })
 
 export const closeDialogLayer2 = () => {
+  ;(globalThis as any).__sootCloseDialogLayer2Count =
+    ((globalThis as any).__sootCloseDialogLayer2Count || 0) + 1
+  if ((globalThis as any).__sootCloseDialogLayer2Count <= 50) {
+    console.log('[soot-dialog] closeDialogLayer2', {
+      count: (globalThis as any).__sootCloseDialogLayer2Count,
+      currentType: dialogLayer2Emitter.value?.type,
+    })
+  }
   dialogLayer2Emitter.emit({ type: 'closed' })
 }
 

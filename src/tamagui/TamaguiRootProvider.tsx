@@ -16,6 +16,14 @@ export const TamaguiRootProvider = ({ children }: { children: ReactNode }) => {
 
 const TamaguiInnerProvider = ({ children }: { children: ReactNode }) => {
   const userScheme = useUserScheme()
+  ;(globalThis as any).__sootTamaguiRootCount =
+    ((globalThis as any).__sootTamaguiRootCount || 0) + 1
+  if ((globalThis as any).__sootTamaguiRootCount <= 80) {
+    console.log('[soot-root] TamaguiInnerProvider render', {
+      count: (globalThis as any).__sootTamaguiRootCount,
+      scheme: userScheme.value,
+    })
+  }
 
   return (
     <TamaguiProvider disableInjectCSS config={config} defaultTheme={userScheme.value}>

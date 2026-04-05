@@ -32,6 +32,16 @@ const DialogComponent = ({
   open,
   ...props
 }: DialogProps & { minH?: number; minW?: number }) => {
+  ;(globalThis as any).__sootDialogComponentCount =
+    ((globalThis as any).__sootDialogComponentCount || 0) + 1
+  if ((globalThis as any).__sootDialogComponentCount <= 50) {
+    console.log('[soot-dialog] DialogComponent render', {
+      count: (globalThis as any).__sootDialogComponentCount,
+      open,
+      minH,
+      minW,
+    })
+  }
   const dialogContentRef = useRef<TamaguiElement>(null)
   const insets = useSafeAreaInsets()
 

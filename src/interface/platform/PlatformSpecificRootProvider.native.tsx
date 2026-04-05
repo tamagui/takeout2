@@ -25,6 +25,15 @@ let splashHasBeenShown = false
 export function PlatformSpecificRootProvider({ children }: { children: ReactNode }) {
   const { state } = useAuth()
   const [showSplash, setShowSplash] = useState<boolean>(!splashHasBeenShown)
+  ;(globalThis as any).__sootPlatformRootCount =
+    ((globalThis as any).__sootPlatformRootCount || 0) + 1
+  if ((globalThis as any).__sootPlatformRootCount <= 80) {
+    console.log('[soot-root] PlatformSpecificRootProvider render', {
+      count: (globalThis as any).__sootPlatformRootCount,
+      authState: state,
+      showSplash,
+    })
+  }
 
   useEffect(() => {
     if (state !== 'loading') {

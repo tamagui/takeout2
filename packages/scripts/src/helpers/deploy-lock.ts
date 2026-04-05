@@ -56,3 +56,53 @@ export async function releaseDeployLock(
     // best-effort, lock will auto-expire
   }
 }
+
+/**
+ * run `fn` with the deploy lock held, releasing on ANY exit path —
+ * normal return, thrown error, or process signal (SIGTERM from CI cancel,
+ * SIGINT from ctrl-c, SIGHUP from terminal close).
+ *
+ * prefer this over raw acquire/release: a bare try/finally does NOT catch
+ * signals, so a CI-cancelled deploy would leak the lock for 15 minutes and
+ * block the next run. this helper installs signal handlers that release
+ * before exit, then removes them once `fn` completes.
+ */
+export async function withDeployLock<T>(
+  ssh: string,
+  fn: () => Promise<T>,
+  opts?: DeployLockOptions,
+): Promise<T> {
+  await acquireDeployLock(ssh, opts)
+
+  let released = false
+  const release = async () => {
+    if (released) return
+    released = true
+    await releaseDeployLock(ssh, opts)
+  }
+
+  // signal handlers — fire-and-forget release with a safety timeout so the
+  // process always exits even if the ssh release hangs
+  const signals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT', 'SIGHUP']
+  const handlers = new Map<NodeJS.Signals, () => void>()
+  for (const sig of signals) {
+    const handler = () => {
+      const done = release().catch(() => {})
+      const timeout = new Promise<void>((r) => setTimeout(r, 5_000))
+      Promise.race([done, timeout]).finally(() => {
+        process.exit(sig === 'SIGINT' ? 130 : 143)
+      })
+    }
+    handlers.set(sig, handler)
+    process.once(sig, handler)
+  }
+
+  try {
+    return await fn()
+  } finally {
+    for (const [sig, handler] of handlers) {
+      process.off(sig, handler)
+    }
+    await release()
+  }
+}

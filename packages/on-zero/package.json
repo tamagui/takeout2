@@ -69,6 +69,11 @@
       "types": "./types/createSchemaFromDrizzle.d.ts",
       "import": "./dist/esm/createSchemaFromDrizzle.mjs",
       "require": "./dist/cjs/createSchemaFromDrizzle.cjs"
+    },
+    "./generate-lite": {
+      "types": "./types/generate-lite.d.ts",
+      "import": "./dist/esm/generate-lite.mjs",
+      "require": "./dist/cjs/generate-lite.cjs"
     }
   },
   "dependencies": {

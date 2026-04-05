@@ -22,7 +22,7 @@ const nodeModuleId = ['node', 'async_hooks'].join(':')
 
 export function setupAsyncLocalStorage(
   AsyncLocalStorage: AsyncLocalStorageConstructor | null,
-) {
+): void {
   configuredAsyncLocalStorage = AsyncLocalStorage
 }
 

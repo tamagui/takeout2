@@ -1,4 +1,4 @@
-import { type Expected, createEnv, expected } from '@take-out/env'
+import { createEnv, expected } from '@take-out/env'
 
 const result = createEnv({
   ports: {
@@ -83,21 +83,9 @@ const result = createEnv({
     ZERO_QUERY_URL: '',
     ZERO_UPSTREAM_DB: '',
   },
+
+  deps: { ZERO_VERSION: '@rocicorp/zero' },
 })
 
-// env var registry for CI/docker sync (env-update reads this)
-// `expected` = required at runtime, string = has default
-export const envVars: Record<string, string | Expected> = {
-  ...result.config.base,
-  ...result.config.production,
-}
-
-// dep-resolved vars: key = env var name, value = package name
-// env-update resolves the version from package.json dependencies
-export const envDeps: Record<string, string> = {
-  ZERO_VERSION: '@rocicorp/zero',
-}
-
-export const envConfig = result.config
-export const { server, ports, portOffset } = result
+export const { server, ports, portOffset, production, versions, config: envConfig } = result
 if (import.meta.main) result.run()

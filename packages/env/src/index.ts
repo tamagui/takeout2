@@ -57,6 +57,10 @@ type EnvConfig<
     | TDev
   /** production env vars */
   production: TProd
+  /** env var → package name, for version resolution by env-update */
+  deps?: Record<string, string>
+  /** in dev mode, clear stale process.env before resolving and force-apply computed values */
+  freshDev?: boolean
 }
 
 type Resolved<T extends Record<string, number>> = { [K in keyof T]: number }
@@ -82,6 +86,10 @@ type EnvResult<
   portOffset: number
   /** raw config for tooling (env-update, generate) */
   config: EnvConfig<TPorts, TBase, TDev, TProd>
+  /** base + production merged — the full var registry for CI/docker sync */
+  production: Record<string, string | Expected>
+  /** resolved package versions from deps config (e.g. { ZERO_VERSION: '1.2.0' }) */
+  versions: Record<string, string>
   /** set env vars into process.env (skip keys already set) */
   apply: () => void
   /** write .env.development from current env (no-op if PORT_OFFSET is set) */
@@ -134,6 +142,14 @@ export function createEnv<
       ? modeConfig({ ports, portOffset, pgUrl })
       : modeConfig
 
+  // in dev mode with freshDev, clear stale process.env for development-computed keys
+  // prevents stale .env.development or parent-process values from overriding dev function
+  if (NODE_ENV === 'development' && config.freshDev && modeEnv) {
+    for (const key of Object.keys(modeEnv)) {
+      delete process.env[key]
+    }
+  }
+
   // merge base + mode, mode wins
   const merged: Record<string, EnvValue> = {
     ...config.base,
@@ -167,7 +183,7 @@ export function createEnv<
     // don't overwrite when running inside vite SSR (VITE_ENVIRONMENT is set)
     if (process.env.VITE_ENVIRONMENT) return
     for (const [key, val] of Object.entries(env)) {
-      if (process.env[key] === undefined) {
+      if (process.env[key] === undefined || (NODE_ENV === 'development' && config.freshDev)) {
         process.env[key] = val
       }
     }
@@ -241,8 +257,28 @@ export function createEnv<
     },
   })
 
+  // base + production merged — the full var registry
+  const production: Record<string, string | Expected> = {
+    ...config.base,
+    ...config.production,
+  }
+
+  // resolve dep versions from package.json
+  const versions: Record<string, string> = {}
+  if (config.deps) {
+    try {
+      const pkg = JSON.parse(readFileSync('package.json', 'utf-8'))
+      for (const [key, depName] of Object.entries(config.deps)) {
+        const version = pkg.dependencies?.[depName]?.replace(/^[\^~]/, '')
+        if (version) {
+          versions[key] = version
+        }
+      }
+    } catch {}
+  }
+
   // auto-apply on creation (matches existing behavior where importing env.ts has side effects)
   apply()
 
-  return { env, server, ports, portOffset, config, apply, writeDotEnv, run }
+  return { env, server, ports, portOffset, config, production, versions, apply, writeDotEnv, run }
 }

@@ -24,33 +24,27 @@ await cmd`sync environment variables from src/env.ts to matching files`
   .run(async ({ args }) => {
     // import env var definitions from src/env.ts (the single source of truth)
     const envModule = await import(path.resolve('src/env.ts'))
-    const envVars = envModule.envVars as Record<string, string | symbol>
-    const envDeps = (envModule.envDeps || {}) as Record<string, string>
+    const production = envModule.production as Record<string, string | symbol>
+    const versions = (envModule.versions || {}) as Record<string, string>
 
-    if (!envVars || typeof envVars !== 'object') {
-      console.error('no envVars export found in src/env.ts')
+    if (!production || typeof production !== 'object') {
+      console.error('no production export found in src/env.ts')
       process.exit(1)
     }
 
     // the expected symbol from @take-out/env
     const expectedSymbol = Symbol.for('take-out/env/expected')
 
-    // resolve dep versions from package.json dependencies
+    // merge resolved versions into the var registry
     const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf-8'))
-    const depResolved: Record<string, string> = {}
-    for (const [key, depName] of Object.entries(envDeps)) {
-      const version = packageJson.dependencies?.[depName]?.replace(/^[\^~]/, '')
-      if (version) {
-        depResolved[key] = version
-        // add dep-resolved vars to envVars with resolved value
-        envVars[key] = version
-      }
+    const depResolved = { ...versions }
+    for (const [key, value] of Object.entries(versions)) {
+      production[key] = value
     }
 
-    // normalize envVars: expected symbol → true (required), string → string
-    // for compatibility with strategy functions
+    // normalize: expected symbol → required, string → defaultValue
     type EnvEntry = { key: string; required: boolean; defaultValue: string }
-    const entries: EnvEntry[] = Object.entries(envVars)
+    const entries: EnvEntry[] = Object.entries(production)
       .map(([key, value]) => ({
         key,
         required: value === expectedSymbol,

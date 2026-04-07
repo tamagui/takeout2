@@ -1,6 +1,6 @@
 {
   "name": "@take-out/better-auth-utils",
-  "version": "0.4.1-1775554128287",
+  "version": "0.4.2",
   "description": "Better auth utilities and client for React/React Native applications",
   "sideEffects": false,
   "type": "module",

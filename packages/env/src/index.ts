@@ -1,8 +1,54 @@
-import { existsSync, readFileSync, writeFileSync } from 'node:fs'
-
+/**
+ * `@take-out/env` is intentionally a dual-use module:
+ *
+ * 1. It must be safe to import from browser/client code.
+ * 2. It must still be able to do useful server-only work for local development
+ *    and tooling.
+ *
+ * That contract matters because app-level `src/env.ts` files often re-export
+ * values from `createEnv(...)`, and those modules are sometimes imported from
+ * shared or client-facing code. If this package statically imports Node-only
+ * builtins such as `node:fs`, Vite and other browser bundlers will pull a
+ * server-only dependency into the client graph and fail at build/runtime.
+ *
+ * The rules for this file are therefore:
+ *
+ * - Importing this module must be browser-safe.
+ * - Reading `process.env` at import/evaluation time is allowed.
+ * - Node-only behavior must stay behind lazy server checks.
+ * - The heavy / side-effectful dev workflow is expected to happen through
+ *   `result.run()` from the parent `src/env.ts` entrypoint.
+ *
+ * In practice that means:
+ *
+ * - We do not use a static top-level `node:fs` import here.
+ * - Filesystem access is resolved lazily via `process.getBuiltinModule`.
+ * - Browser imports can still access resolved env values without touching fs.
+ * - Server/dev code can still read managed `.env.development`, write it back,
+ *   and inspect `package.json` versions when those features are used.
+ *
+ * If this file starts needing more server-only behavior over time, keep that
+ * logic lazy and gated. Do not reintroduce top-level Node builtin imports into
+ * this entrypoint unless the package contract changes everywhere that consumes
+ * it.
+ */
 declare const window: unknown
 declare const Bun: {
   spawn: (cmd: string[], opts: Record<string, unknown>) => { exited: Promise<number> }
+}
+
+type FsModule = {
+  existsSync: (path: string) => boolean
+  readFileSync: (path: string, encoding: string) => string
+  writeFileSync: (path: string, data: string, encoding?: string) => void
+}
+
+function getFs(): FsModule | null {
+  const getBuiltinModule = (process as any).getBuiltinModule
+  if (typeof getBuiltinModule !== 'function') {
+    return null
+  }
+  return (getBuiltinModule('node:fs') as FsModule | null) ?? null
 }
 
 // --- ensureEnv (inlined from @take-out/helpers — zero deps) ---
@@ -104,11 +150,12 @@ const validEnvs = { development: true, production: true } as const
 const managedDotEnvHeader = '# managed by src/env.ts!'
 
 function readManagedDotEnv(dotEnvPath: string): Record<string, string> {
-  if (!existsSync(dotEnvPath)) {
+  const fs = getFs()
+  if (!fs || !fs.existsSync(dotEnvPath)) {
     return {}
   }
 
-  const content = readFileSync(dotEnvPath, 'utf-8')
+  const content = fs.readFileSync(dotEnvPath, 'utf-8')
   if (!content.startsWith(`${managedDotEnvHeader}\n`)) {
     return {}
   }
@@ -237,13 +284,21 @@ export function createEnv<
   }
 
   function writeDotEnv() {
+    const fs = getFs()
+    if (!fs) {
+      return
+    }
+
     const dotEnvDevPath = '.env.development'
     const dotEnvDev = Object.entries(env)
       .map(([key, val]) => `${key}=${JSON.stringify(val)}`)
       .join('\n')
     const content = `${managedDotEnvHeader}\n${dotEnvDev}`
-    if (!existsSync(dotEnvDevPath) || readFileSync(dotEnvDevPath, 'utf-8') !== content) {
-      writeFileSync(dotEnvDevPath, content, 'utf8')
+    if (
+      !fs.existsSync(dotEnvDevPath) ||
+      fs.readFileSync(dotEnvDevPath, 'utf-8') !== content
+    ) {
+      fs.writeFileSync(dotEnvDevPath, content, 'utf8')
     }
   }
 
@@ -314,11 +369,14 @@ export function createEnv<
   const versions: Record<string, string> = {}
   if (config.deps) {
     try {
-      const pkg = JSON.parse(readFileSync('package.json', 'utf-8'))
-      for (const [key, depName] of Object.entries(config.deps)) {
-        const version = pkg.dependencies?.[depName]?.replace(/^[\^~]/, '')
-        if (version) {
-          versions[key] = version
+      const fs = getFs()
+      if (fs) {
+        const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'))
+        for (const [key, depName] of Object.entries(config.deps)) {
+          const version = pkg.dependencies?.[depName]?.replace(/^[\^~]/, '')
+          if (version) {
+            versions[key] = version
+          }
         }
       }
     } catch {}

@@ -9,9 +9,25 @@ export async function loadEnv(
   // loads env into process.env
   await vxrnLoadEnv(environment)
 
-  // import src/env.ts to get the env config applied (side effect: populates process.env)
-  const envModule = await import(join(process.cwd(), 'src/env.ts'))
-  const Environment = envModule.server || {}
+  const previousMode = process.env.TAKEOUT_ENV_MODE
+  if (environment === 'development' || environment === 'production') {
+    process.env.TAKEOUT_ENV_MODE = environment
+  } else {
+    delete process.env.TAKEOUT_ENV_MODE
+  }
+
+  let Environment: Record<string, string>
+  try {
+    // import src/env.ts to get the env config applied (side effect: populates process.env)
+    const envModule = await import(join(process.cwd(), 'src/env.ts'))
+    Environment = envModule.server || {}
+  } finally {
+    if (previousMode === undefined) {
+      delete process.env.TAKEOUT_ENV_MODE
+    } else {
+      process.env.TAKEOUT_ENV_MODE = previousMode
+    }
+  }
 
   // validate
   for (const key in Environment) {

@@ -22,6 +22,10 @@ export async function getTestEnv() {
     ...serverEnvFallback,
     ...devEnv,
     CI: 'true',
+    // Child test processes may import src/env.ts directly. Keep them pinned to
+    // development mode even when the parent release flow started from
+    // production-flavored env.
+    TAKEOUT_ENV_MODE: 'development',
     ...(!process.env.DEBUG_BACKEND && {
       ZERO_LOG_LEVEL: 'warn',
     }),

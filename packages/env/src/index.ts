@@ -201,8 +201,10 @@ export function createEnv<
   }
   const ports = resolvedPorts as Resolved<TPorts>
 
-  // resolve NODE_ENV
-  const rawEnv = process.env.NODE_ENV || 'development'
+  // allow callers (like test/release helpers) to resolve env values for a
+  // target mode without inheriting the parent process's NODE_ENV branch.
+  const explicitMode = process.env.TAKEOUT_ENV_MODE
+  const rawEnv = explicitMode || process.env.NODE_ENV || 'development'
   const NODE_ENV = (rawEnv === 'test' ? 'development' : rawEnv) as keyof typeof validEnvs
 
   if (!validEnvs[NODE_ENV]) {
@@ -225,6 +227,7 @@ export function createEnv<
     typeof modeConfig === 'function'
       ? modeConfig({ ports, portOffset, pgUrl })
       : modeConfig
+  const modeKeys = new Set(Object.keys(modeEnv || {}))
   const managedDevEnv =
     NODE_ENV === 'development' && config.freshDev
       ? readManagedDotEnv('.env.development')
@@ -265,9 +268,16 @@ export function createEnv<
         resolvedEnv[key] = ''
       }
     } else {
-      // prefer process.env over config default (so .env values win)
+      // prefer process.env over config defaults, except when an explicit mode
+      // override is active. In that case, mode-computed keys must resolve from
+      // the requested mode rather than inherited parent-process values.
       const envVal = process.env[key]
-      resolvedEnv[key] = envVal !== undefined && envVal !== '' ? envVal : val
+      resolvedEnv[key] =
+        explicitMode && modeKeys.has(key)
+          ? val
+          : envVal !== undefined && envVal !== ''
+            ? envVal
+            : val
     }
   }
 
@@ -277,7 +287,9 @@ export function createEnv<
     // don't overwrite when running inside vite SSR (VITE_ENVIRONMENT is set)
     if (process.env.VITE_ENVIRONMENT) return
     for (const [key, val] of Object.entries(env)) {
-      if (process.env[key] === undefined || refreshedKeys.has(key)) {
+      if (explicitMode && modeKeys.has(key)) {
+        process.env[key] = val
+      } else if (process.env[key] === undefined || refreshedKeys.has(key)) {
         process.env[key] = val
       }
     }

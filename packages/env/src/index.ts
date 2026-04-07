@@ -59,7 +59,7 @@ type EnvConfig<
   production: TProd
   /** env var → package name, for version resolution by env-update */
   deps?: Record<string, string>
-  /** in dev mode, clear stale process.env before resolving and force-apply computed values */
+  /** in dev mode, refresh values sourced from managed .env.development without clobbering explicit overrides */
   freshDev?: boolean
 }
 
@@ -101,6 +101,43 @@ type EnvResult<
 // --- createEnv ---
 
 const validEnvs = { development: true, production: true } as const
+const managedDotEnvHeader = '# managed by src/env.ts!'
+
+function readManagedDotEnv(dotEnvPath: string): Record<string, string> {
+  if (!existsSync(dotEnvPath)) {
+    return {}
+  }
+
+  const content = readFileSync(dotEnvPath, 'utf-8')
+  if (!content.startsWith(`${managedDotEnvHeader}\n`)) {
+    return {}
+  }
+
+  const values: Record<string, string> = {}
+  for (const line of content.split('\n')) {
+    if (!line || line.startsWith('#')) {
+      continue
+    }
+
+    const equalsIndex = line.indexOf('=')
+    if (equalsIndex <= 0) {
+      continue
+    }
+
+    const key = line.slice(0, equalsIndex)
+    const rawValue = line.slice(equalsIndex + 1)
+    try {
+      values[key] = JSON.parse(rawValue)
+    } catch {
+      values[key] =
+        rawValue.startsWith('"') && rawValue.endsWith('"')
+          ? rawValue.slice(1, -1)
+          : rawValue
+    }
+  }
+
+  return values
+}
 
 export function createEnv<
   TPorts extends Record<string, number>,
@@ -141,12 +178,22 @@ export function createEnv<
     typeof modeConfig === 'function'
       ? modeConfig({ ports, portOffset, pgUrl })
       : modeConfig
+  const managedDevEnv =
+    NODE_ENV === 'development' && config.freshDev
+      ? readManagedDotEnv('.env.development')
+      : {}
+  const refreshedKeys = new Set<string>()
 
-  // in dev mode with freshDev, clear stale process.env for development-computed keys
-  // prevents stale .env.development or parent-process values from overriding dev function
+  // in dev mode with freshDev, clear only values that came from our managed
+  // .env.development file so computed defaults refresh without clobbering
+  // explicit overrides inherited from the parent process.
   if (NODE_ENV === 'development' && config.freshDev && modeEnv) {
     for (const key of Object.keys(modeEnv)) {
-      delete process.env[key]
+      const envVal = process.env[key]
+      if (envVal !== undefined && managedDevEnv[key] === envVal) {
+        delete process.env[key]
+        refreshedKeys.add(key)
+      }
     }
   }
 
@@ -183,7 +230,7 @@ export function createEnv<
     // don't overwrite when running inside vite SSR (VITE_ENVIRONMENT is set)
     if (process.env.VITE_ENVIRONMENT) return
     for (const [key, val] of Object.entries(env)) {
-      if (process.env[key] === undefined || (NODE_ENV === 'development' && config.freshDev)) {
+      if (process.env[key] === undefined || refreshedKeys.has(key)) {
         process.env[key] = val
       }
     }
@@ -192,9 +239,9 @@ export function createEnv<
   function writeDotEnv() {
     const dotEnvDevPath = '.env.development'
     const dotEnvDev = Object.entries(env)
-      .map(([key, val]) => `${key}="${val}"`)
+      .map(([key, val]) => `${key}=${JSON.stringify(val)}`)
       .join('\n')
-    const content = `# managed by src/env.ts!\n${dotEnvDev}`
+    const content = `${managedDotEnvHeader}\n${dotEnvDev}`
     if (!existsSync(dotEnvDevPath) || readFileSync(dotEnvDevPath, 'utf-8') !== content) {
       writeFileSync(dotEnvDevPath, content, 'utf8')
     }
@@ -280,5 +327,16 @@ export function createEnv<
   // auto-apply on creation (matches existing behavior where importing env.ts has side effects)
   apply()
 
-  return { env, server, ports, portOffset, config, production, versions, apply, writeDotEnv, run }
+  return {
+    env,
+    server,
+    ports,
+    portOffset,
+    config,
+    production,
+    versions,
+    apply,
+    writeDotEnv,
+    run,
+  }
 }

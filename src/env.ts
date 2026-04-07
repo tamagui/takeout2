@@ -87,5 +87,12 @@ const result = createEnv({
   deps: { ZERO_VERSION: '@rocicorp/zero' },
 })
 
-export const { server, ports, portOffset, production, versions, config: envConfig } = result
+export const {
+  server,
+  ports,
+  portOffset,
+  production,
+  versions,
+  config: envConfig,
+} = result
 if (import.meta.main) result.run()

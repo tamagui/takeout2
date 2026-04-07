@@ -69,17 +69,10 @@ export async function loginAsDemo(page: Page, pathname = '/') {
 }
 
 export async function loginAsAdmin(page: Page, pathname = '/') {
-  console.info('Navigating to login page...')
-  await page.goto(`${BASE_URL}/auth/login?showAdmin`, {
+  console.info('Setting up admin...')
+  await page.goto(`${BASE_URL}/?admin`, {
     waitUntil: 'domcontentloaded',
   })
-
-  console.info('Logging in as admin...')
-
-  // click the login as admin button
-  await page.locator('[data-testid="login-as-admin"]').click()
-  await page.waitForTimeout(1000)
-  await page.waitForLoadState('networkidle')
 
   // verify login by checking if we're redirected away from login page
   const currentUrl = page.url()

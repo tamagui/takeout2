@@ -95,4 +95,5 @@ export const {
   versions,
   config: envConfig,
 } = result
+
 if (import.meta.main) result.run()

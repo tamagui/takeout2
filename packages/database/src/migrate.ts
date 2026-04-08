@@ -137,7 +137,26 @@ export async function migrate(options: MigrateOptions) {
             await withTimeout(migration.up(client), timeout, migration.name)
             await client.query(`RELEASE SAVEPOINT ${sp}`)
           } catch (e: any) {
-            await client.query(`ROLLBACK TO SAVEPOINT ${sp}`)
+            // ROLLBACK TO SAVEPOINT can fail in its own right (e.g. when running
+            // against pglite via orez's wire-protocol proxy, a parallel client
+            // sharing the same backend session can corrupt the transaction
+            // state, leaving us with no active transaction). if we don't catch
+            // the rollback failure separately, the original migration error `e`
+            // is replaced by the rollback's error, hiding what actually went
+            // wrong. log the rollback failure and re-throw the original.
+            try {
+              await client.query(`ROLLBACK TO SAVEPOINT ${sp}`)
+            } catch (rollbackErr) {
+              console.error(
+                `[migrate] ${migration.name}: ROLLBACK TO SAVEPOINT failed:`,
+                rollbackErr,
+              )
+              console.error(
+                `[migrate] ${migration.name}: original migration error was:`,
+                e,
+              )
+              throw e
+            }
             // only ignore idempotency errors - NOT all 42xxx errors!
             // 42xxx is the entire "Syntax Error or Access Rule Violation" class
             // which includes undefined_table (42P01), syntax_error (42601), etc.

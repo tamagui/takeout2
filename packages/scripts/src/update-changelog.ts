@@ -70,7 +70,23 @@ Instructions:
 
 Archiving old entries:
 - keep only 10 weeks in changelog.mdx
-- when over 10 weeks, move oldest entries to changelog-YYYY.mdx (by year, e.g. changelog-2025.mdx)
-- add a link at the bottom of changelog.mdx: "See [2025 changes](/docs/changelog-2025)" etc (use absolute path)
+- when over 10 weeks, move the oldest entries into an archive file named
+  changelog-YYYY.mdx, where YYYY is the year the archived WEEK is from
+  (not the current year). e.g. a "Week of January 27, 2026" entry belongs
+  in changelog-2026.mdx, not changelog-2025.mdx — even if 2025 already
+  exists as an archive. never mix years in the same archive file.
+- if the target archive file doesn't exist yet, create it with frontmatter:
+    ---
+    title: Changelog Archive — YYYY
+    description: Archived Takeout updates from YYYY
+    ---
+  and end the file with a link chain to the previous year's archive if
+  one exists, e.g. "See [2025 changes](/docs/changelog-2025) for earlier updates."
+- if the archive already exists, prepend the new weeks to the top
+  (after frontmatter), so it stays in reverse-chronological order
+- at the bottom of changelog.mdx, list links to every archive file that
+  exists, newest first, e.g.
+  "See [early 2026 changes](/docs/changelog-2026) and [2025 changes](/docs/changelog-2025) for previous updates."
+  (use absolute paths, update the list whenever a new archive file is created)
 `)
 })

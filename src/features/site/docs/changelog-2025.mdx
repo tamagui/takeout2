@@ -3,6 +3,137 @@ title: Changelog Archive
 description: Older Takeout updates
 ---
 
+## Week of January 27, 2026
+
+`d22f54b3`
+
+### Features
+
+- Delete post action in post menu
+- Content moderation for launch - AWS Rekognition image moderation blocks
+  nudity, violence, and hate symbols on upload, plus profanity filter for
+  posts/comments with leetspeak detection
+- Rate limiting for launch - 30 mutations per minute per user via Zero config
+- `run-all` CLI command runs multiple package.json scripts in parallel with
+  `--flags=last` option to forward args only to the final script
+- `args()` helper for cleaner script argument parsing across all CLI scripts
+- Demo reset script to restore demo database to seed state
+- JWKS error detection and warning with `db:clear-jwks` script to fix auth
+  secret mismatches
+- Auto-sync Zero version to env on postinstall
+
+### Upgrades
+
+- Tamagui upgraded to 2.0 RC with cleaner config setup and improved build system
+- One upgraded to 1.4.8 with better dev tools behavior
+- Zero upgraded to 0.25.11 with bug fixes
+- `over-zero` package published to npm - removed local workspace version in
+  favor of published `on-zero` package
+
+### Improvements
+
+- Faster dev compilation - Tamagui compiler now disabled entirely in dev mode
+  instead of running with extraction disabled
+- Unified login page - removed separate native file, consolidated web/native
+  handling
+- Unified search page - removed separate native file, shared responsive
+  implementation
+- Unified `up` and `update-deps` scripts with `upgradeSets` config for cleaner
+  package upgrades
+- HeroSection and MainHeader responsive improvements
+- Fixed feed/profile overlay bug on web - profile pages now properly replace
+  feed instead of floating on top
+- Popover animations restored by removing `contain=layout` constraint
+- Profile page loading simplified to subtle spinner
+- Menu animations improved with `quickestLessBouncy` transition
+- Disabled mobile tap highlight for cleaner touch feedback
+- Zero production tuning docs added with performance recommendations
+- Button and Tooltip component documentation added
+- Configurable ports for multi-project use - all scripts and docker-compose now
+  read from `.env.development`
+- Migrations consolidated into single initial schema with new `db:reset-schema`
+  script for clean resets
+- Script helpers moved off bun-specific APIs to standard node:child_process for
+  broader compatibility
+- Splash animation updated to use rotateZ
+- Improved icon script to support additional font weights
+- Smarter docs skill linking with auto-detection
+- CI fails faster on errors
+
+### Bug fixes and chores (52)
+
+---
+
+## Week of January 20, 2026
+
+`29254c43`
+
+### Features
+
+- `@take-out/native` package with crypto polyfill for React Native
+- BlurView component with native expo-blur integration
+- Block filtering with `notBlockedByViewer` serverWhere - blocked users' posts
+  never sync to client
+- FeedContent component with paginated posts and AnimatePresence transitions
+- PostCommentPreview for inline comment display on posts
+- Image dimensions stored in database for better layout calculations
+- CLI script caching system for faster script discovery
+- Keyboard-aware feed detail page with smooth scroll-to-end on native
+- Dynamic OG image generation for index and docs pages
+- Bottom tab bar with responsive layout for mobile
+- Floating create button for quick post creation
+- Settings page sidebar layout with mobile-specific design
+- Mock AI chat UI with native input component
+- Docs menu on mobile for better navigation
+- Scrollbar color customization
+- HeadInfo titles added to logged-in pages
+- Enhanced comment input with better keyboard handling and interaction
+- Global `run()` helper for one-shot Zero queries without React hooks
+- `create-takeout` package for bootstrapping new Takeout projects
+- Web onboarding UI with multi-step slides and configuration
+- Protected component (from One) for cleaner authentication routing
+- CLI `--auto` and `--print` flags for sync command automation
+- Onboarding storage for persisting user progress
+
+### Upgrades
+
+- Tamagui upgraded to 2.0 canary with improved Select, animation fixes,
+  RNGH-powered press events, and better sheet handling
+- One upgraded to 1.2.81 with native devtools fix
+
+### Improvements
+
+- React Compiler enabled in Metro for native builds with memoized components
+- Flattened docs directory structure for better organization
+- Consolidated native layout files - removed duplicate `_layout.native.tsx`
+  files across routes
+- Simplified auth signup flow - removed separate native OTP and method pages
+- Post queries now include user relation by default
+- Redesigned native login page with haptic feedback
+- Faster dev mode by disabling React compiler during development
+- Env sync now supports variable filtering and blocks placeholder values
+- Fixed auth state race condition that caused redirect flicker on page reload
+- Profile page layout with max width and centering
+- Responsive site header improvements
+- ScrollHeader optimized for mobile with improved shadow logic
+- Dialog and sheet component refinements
+- Gallery uses Pressable for close action fixing real device issues
+- Standardized transition timing to 200ms across components
+- Sticky docs sidebar for better navigation
+- Moved to new headless Stack API for cleaner native navigation
+- Removed Animated from react-native-web-lite for reduced bundle size
+- Responsive auth layout on web with dark theme support
+- Improved shimmer loading states to prevent flickering
+- Redesigned landing page hero section with memoized terminal components
+- Improved CLI skills generation with auto-linking to docs
+- Avatar now links directly to profile on web (replaced popover menu)
+- Cleaned up unused theme files and vite config
+- Better testing documentation in README
+
+### Bug fixes and chores (85)
+
+---
+
 ## Week of January 13, 2026
 
 `fd6fee7`

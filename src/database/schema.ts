@@ -1,4 +1,4 @@
-import { derivePublicTables, privateTable } from '@take-out/database'
+import { privateTable } from '@take-out/database'
 import { pgTable } from 'drizzle-orm/pg-core'
 
 import type { InferSelectModel } from 'drizzle-orm'

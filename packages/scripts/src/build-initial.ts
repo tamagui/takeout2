@@ -16,17 +16,13 @@ await cmd`bootstrap project workspace and build initial packages`.run(
 
     // check if critical packages are built
     if (hasPackages) {
-      const needsBuild =
-        !fs.existsSync(`./packages/helpers/dist`) ||
-        !fs.existsSync(`./packages/cli/dist/esm`)
-
-      if (needsBuild) {
+      if (!fs.existsSync(`./packages/helpers/dist`)) {
         // build helpers first as other packages depend on it
         await $`cd packages/helpers && bun run build`
-
-        // then build all other packages in parallel
-        await $`bun ./packages/run/src/run.ts build --no-root`
       }
+
+      // then build all other packages in parallel
+      await $`bun ./packages/run/src/run.ts build --no-root`
     }
 
     // show welcome message if not onboarded

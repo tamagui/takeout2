@@ -173,14 +173,11 @@ function readManagedDotEnv(dotEnvPath: string): Record<string, string> {
 
     const key = line.slice(0, equalsIndex)
     const rawValue = line.slice(equalsIndex + 1)
-    try {
-      values[key] = JSON.parse(rawValue)
-    } catch {
-      values[key] =
-        rawValue.startsWith('"') && rawValue.endsWith('"')
-          ? rawValue.slice(1, -1)
-          : rawValue
-    }
+    // unquoted values are literal, quoted values just strip quotes
+    values[key] =
+      rawValue.startsWith('"') && rawValue.endsWith('"')
+        ? rawValue.slice(1, -1)
+        : rawValue
   }
 
   return values
@@ -303,7 +300,24 @@ export function createEnv<
 
     const dotEnvDevPath = '.env.development'
     const dotEnvDev = Object.entries(env)
-      .map(([key, val]) => `${key}=${JSON.stringify(val)}`)
+      .map(([key, val]) => {
+        // bun's dotenv doesn't unescape \", so avoid quoting when possible
+        // unquoted values preserve quotes and backslashes correctly
+        // must quote if: starts with #, has leading/trailing whitespace, or contains newlines
+        const needsQuotes =
+          val.startsWith('#') ||
+          val.startsWith(' ') ||
+          val.startsWith('\t') ||
+          val.endsWith(' ') ||
+          val.endsWith('\t') ||
+          val.includes('\n')
+        if (needsQuotes) {
+          // for quoted values, we have no good escape mechanism in bun's dotenv
+          // just quote it and hope there are no internal quotes
+          return `${key}="${val}"`
+        }
+        return `${key}=${val}`
+      })
       .join('\n')
     const content = `${managedDotEnvHeader}\n${dotEnvDev}`
     if (

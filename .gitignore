@@ -69,3 +69,5 @@ src/uncloud/Caddyfile
 .hot-updater/output
 .maestro-debug/
 scripts/test/
+
+.orez

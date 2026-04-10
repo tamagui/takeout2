@@ -12,7 +12,7 @@
   "engines": {
     "node": "24.3.0"
   },
-  "packageManager": "bun@1.3.9",
+  "packageManager": "bun@1.3.12",
   "workspaces": [
     "./packages/*"
   ],
@@ -49,6 +49,8 @@
     "fix": "bun lint:fix",
     "lint:fix": "oxfmt && oxlint --import-plugin --type-aware --fix --fix-suggestions",
     "lint": "oxlint --import-plugin --type-aware",
+    "lite:backend": "bun run:dev orez --disable-wasm-sqlite --data-dir=${OREZ_DATA_DIR:-.orez} --pg-port=${VITE_PORT_POSTGRES:-5632} --zero-port=${VITE_PORT_ZERO:-5048} --s3 --s3-port=${VITE_PORT_MINIO:-9290} --on-db-ready='bun db:migrate' --admin",
+    "lite": "bun run:dev tko run-all --pty --flags=last lite:backend watch watch:types watch:zero:generate one:dev",
     "native:prebuild": "one prebuild",
     "onboard": "tko onboard",
     "one:dev": "bun ./scripts/one-dev.ts",
@@ -100,15 +102,15 @@
     "@take-out/helpers": "workspace:*",
     "@take-out/native-hot-update": "workspace:*",
     "@take-out/database": "workspace:*",
-    "@tamagui/config": "2.0.0-rc.36",
-    "@tamagui/constants": "2.0.0-rc.36",
-    "@tamagui/helpers-icon": "2.0.0-rc.36",
-    "@tamagui/linear-gradient": "2.0.0-rc.36",
-    "@tamagui/menu": "2.0.0-rc.36",
-    "@tamagui/native": "2.0.0-rc.36",
-    "@tamagui/themes": "2.0.0-rc.36",
-    "@tamagui/toast": "2.0.0-rc.36",
-    "@tamagui/vite-plugin": "2.0.0-rc.36",
+    "@tamagui/config": "2.0.0-rc.38-1775845464754",
+    "@tamagui/constants": "2.0.0-rc.38-1775845464754",
+    "@tamagui/helpers-icon": "2.0.0-rc.38-1775845464754",
+    "@tamagui/linear-gradient": "2.0.0-rc.38-1775845464754",
+    "@tamagui/menu": "2.0.0-rc.38-1775845464754",
+    "@tamagui/native": "2.0.0-rc.38-1775845464754",
+    "@tamagui/themes": "2.0.0-rc.38-1775845464754",
+    "@tamagui/toast": "2.0.0-rc.38-1775845464754",
+    "@tamagui/vite-plugin": "2.0.0-rc.38-1775845464754",
     "@types/jsonwebtoken": "^9.0.10",
     "@vxrn/color-scheme": "1.15.0",
     "@vxrn/compiler": "1.15.0",
@@ -170,7 +172,7 @@
     "react-native-worklets": "^0.8.1",
     "satori": "^0.19.1",
     "server-only": "^0.0.1",
-    "tamagui": "2.0.0-rc.36",
+    "tamagui": "2.0.0-rc.38-1775845464754",
     "voltra": "^1.2.1",
     "vxrn": "1.15.0",
     "zeego": "^3.0.6"
@@ -194,6 +196,7 @@
     "drizzle-kit": "1.0.0-beta.9-e89174b",
     "fs-extra": "^11.2.0",
     "knip": "^5.82.0",
+    "orez": "0.2.9",
     "oxfmt": "^0.16.0",
     "oxlint": "^1.31.0",
     "oxlint-tsgolint": "^0.11.4",
@@ -221,7 +224,6 @@
     }
   },
   "trustedDependencies": [
-    "@rocicorp/zero-sqlite3",
     "oxc-parser"
   ],
   "publishConfig": {

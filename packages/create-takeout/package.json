@@ -18,7 +18,7 @@
     "yocto-spinner": "^0.1.0"
   },
   "devDependencies": {
-    "@tamagui/build": "2.0.0-rc.36",
+    "@tamagui/build": "2.0.0-rc.38-1775845464754",
     "@types/prompts": "^2.4.9",
     "typescript": "^5.0.0"
   },

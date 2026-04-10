@@ -103,7 +103,7 @@ fi
 
   // log any stale cleanup so the next deploy's logs show who left it
   const staleMatch = acquireOut.match(/STALE_META_START\n([\s\S]*?)\nSTALE_META_END/)
-  if (staleMatch) {
+  if (staleMatch?.[1]) {
     console.warn(`deploy-lock: cleared stale lock (older than ${maxAge}m) left by:`)
     for (const line of staleMatch[1].split('\n')) {
       console.warn(`  ${line}`)

@@ -329,6 +329,9 @@ export function createEnv<
   }
 
   async function run() {
+    // prevent RUN from leaking to child processes
+    delete process.env.RUN
+
     // write .env.development if default offset and dev mode
     if (
       !process.env.VITE_ENVIRONMENT &&

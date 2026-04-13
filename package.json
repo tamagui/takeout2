@@ -50,7 +50,7 @@
     "lint:fix": "oxfmt && oxlint --import-plugin --type-aware --fix --fix-suggestions",
     "lint": "oxlint --import-plugin --type-aware",
     "lite:backend": "bun run:dev orez --disable-wasm-sqlite --data-dir=${OREZ_DATA_DIR:-.orez} --pg-port=${VITE_PORT_POSTGRES:-5632} --zero-port=${VITE_PORT_ZERO:-5048} --s3 --s3-port=${VITE_PORT_MINIO:-9290} --on-db-ready='bun db:migrate' --admin",
-    "lite": "bun run:dev tko run-all --pty --flags=last lite:backend watch watch:types watch:zero:generate one:dev",
+    "lite": "bun tko run build && SKIP_INITIAL_BUILD=1 bun run:dev tko run-all --pty --flags=last lite:backend watch watch:types watch:zero:generate one:dev",
     "native:prebuild": "one prebuild",
     "onboard": "tko onboard",
     "one:dev": "bun ./scripts/one-dev.ts",

@@ -40,23 +40,19 @@ check_bun() {
   if ! command -v bun &> /dev/null; then
     error "bun is not installed"
     echo ""
-    echo "  we recommend using bunv (version manager):"
-    echo -e "    ${BOLD}curl -fsSL https://bunv.sh/install | bash${NC}"
+    echo "  we recommend using mise (version manager):"
+    echo -e "    ${BOLD}brew install mise${NC}"
+    echo "    or: curl https://mise.run | sh"
+    echo ""
+    echo "  then enable auto-detection of bun from package.json:"
+    echo -e "    ${BOLD}mise settings set idiomatic_version_file true${NC}"
+    echo -e "    ${BOLD}mise settings add idiomatic_version_file_enable_tools bun${NC}"
+    echo -e "    ${BOLD}mise settings set auto_install true${NC}"
     echo ""
     echo "  or install bun directly:"
     echo -e "    ${BOLD}curl -fsSL https://bun.sh/install | bash${NC}"
     echo ""
-
-    read -p "  would you like help installing bunv? [y/N] " -n 1 -r
-    echo ""
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-      echo ""
-      info "run this command to install bunv:"
-      echo ""
-      echo "    curl -fsSL https://bunv.sh/install | bash"
-      echo ""
-      echo "  then restart your terminal and run this script again"
-    fi
+    echo "  then restart your terminal and run this script again"
     exit 1
   fi
 
@@ -73,11 +69,11 @@ check_bun() {
     warn "bun version mismatch: have v$current_version, need v$required_version"
     echo ""
 
-    if command -v bunv &> /dev/null; then
-      echo -e "  bunv detected - run: ${BOLD}bunv install $required_version${NC}"
+    if command -v mise &> /dev/null; then
+      echo -e "  mise detected - run: ${BOLD}mise install${NC} (auto-detects from package.json)"
     else
-      echo "  consider using bunv for version management:"
-      echo -e "    ${BOLD}curl -fsSL https://bunv.sh/install | bash${NC}"
+      echo "  consider using mise for version management:"
+      echo -e "    ${BOLD}brew install mise${NC}"
       echo ""
       echo "  or update bun directly:"
       echo -e "    ${BOLD}bun upgrade --version $required_version${NC}"

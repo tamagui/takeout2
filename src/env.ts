@@ -1,6 +1,7 @@
 import { createEnv, expected } from '@take-out/env'
 
 const result = createEnv({
+  freshDev: true,
   ports: {
     minio: 9200,
     postgres: 5433,

@@ -28,6 +28,10 @@
     "access": "public"
   },
   "dependencies": {
-    "@lydell/node-pty": "^1.2.0-beta.3"
+    "@lydell/node-pty": "^1.2.0-beta.3",
+    "semver": "^7.7.3"
+  },
+  "devDependencies": {
+    "@types/semver": "^7.7.1"
   }
 }

@@ -1,8 +1,5 @@
 import fs from 'node:fs'
-
-function getCurrentNodeVersion() {
-  return process.version
-}
+import semver from 'semver'
 
 async function getRequiredNodeVersion() {
   const path = await import('node:path')
@@ -12,28 +9,28 @@ async function getRequiredNodeVersion() {
       path.join(process.cwd(), '.node-version'),
       'utf-8',
     )
-    return `v${nodeVersionContent.trim()}`
+    return nodeVersionContent.trim()
   } catch {}
 
   try {
     const packageJson = JSON.parse(
       await fs.promises.readFile(path.join(process.cwd(), 'package.json'), 'utf-8'),
     )
-    return packageJson?.engines?.node ? `v${packageJson.engines.node}` : null
+    return packageJson?.engines?.node ?? null
   } catch {
     return null
   }
 }
 
 export async function checkNodeVersion() {
-  const currentNodeVersion = getCurrentNodeVersion()
-  const requiredNodeVersion = await getRequiredNodeVersion()
+  const current = process.version
+  const required = await getRequiredNodeVersion()
 
-  if (requiredNodeVersion) {
-    if (currentNodeVersion !== requiredNodeVersion) {
-      throw new Error(
-        `\u001b[33mWarning: Incorrect Node.js version. Expected ${requiredNodeVersion} but got ${currentNodeVersion}\u001b[0m`,
-      )
-    }
-  }
+  if (!required) return
+
+  if (semver.validRange(required) && semver.satisfies(current, required)) return
+
+  throw new Error(
+    `[33mWarning: Incorrect Node.js version. Expected ${required} but got ${current}[0m`,
+  )
 }

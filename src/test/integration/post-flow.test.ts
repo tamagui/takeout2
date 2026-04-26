@@ -6,9 +6,6 @@ import { expect, test } from '@playwright/test'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 import { loginAsDemo } from './helpers'
-import { ports } from '~/env'
-
-const BASE_URL = `http://localhost:${ports.web}`
 
 // increase timeout for this test since it involves file uploads
 test.describe('Post Flow', () => {
@@ -16,10 +13,6 @@ test.describe('Post Flow', () => {
     test.setTimeout(120000)
 
     await loginAsDemo(page)
-
-    // go to home feed and click the plus button to open create post dialog
-    await page.goto(`${BASE_URL}/home/feed`, { waitUntil: 'domcontentloaded' })
-    await page.waitForTimeout(2000)
 
     // click the plus button in the header to open the create post dialog
     const plusButton = page.locator('[data-testid="create-post-button"]')

@@ -1,9 +1,7 @@
 import { expect, test } from '@playwright/test'
-import { ports } from '~/env'
 
-import { loginAsDemo } from './helpers'
+import { gotoAndWaitForZero, loginAsDemo } from './helpers'
 
-const BASE_URL = `http://localhost:${ports.web}`
 const SEED_POST_ID = 'seed-post-1'
 
 test.describe('Comment Flow', () => {
@@ -35,11 +33,8 @@ test.describe('Comment Flow', () => {
       page.getByTestId('comment-item').filter({ hasText: commentText }),
     ).toBeVisible({ timeout: 500 })
 
-    // wait for sync then reload to verify persistence
-    // navigate to feed first (hard nav to post detail may not render immediately
-    // since zero needs to re-establish auth and sync)
-    await page.waitForTimeout(2000)
-    await page.goto(`${BASE_URL}/home/feed`, { waitUntil: 'domcontentloaded' })
+    // hard-nav back to feed; zero re-establishes its websocket on the new doc
+    await gotoAndWaitForZero(page, '/home/feed')
 
     // the comment should appear in the feed's comment preview for this post
     // (the feed shows the latest comment inline)

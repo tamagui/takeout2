@@ -16,7 +16,7 @@ await cmd`ensure zero-sqlite3 native module is built`.run(async ({ $, fs }) => {
   if (result.exitCode !== 0) {
     console.error(
       'zero-sqlite3 build failed, will fall back to wasm:',
-      result.stderr.toString()
+      result.stderr.toString(),
     )
   }
 })

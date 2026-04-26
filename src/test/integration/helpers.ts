@@ -3,6 +3,25 @@ import { ports } from '~/env'
 
 const BASE_URL = `http://localhost:${ports.web}`
 
+// navigate and wait for zero's websocket to come online before returning.
+// this replaces fixed-time waitForTimeout calls that race zero's first sync.
+// the zero client sets body[data-zero-connected="true"] when its connection
+// state machine emits "connected" (see src/zero/client.tsx ZeroConnectionMonitor).
+export async function gotoAndWaitForZero(
+  page: Page,
+  pathname: string,
+  options: { timeout?: number } = {},
+) {
+  await page.goto(`${BASE_URL}${pathname}`, {
+    waitUntil: 'domcontentloaded',
+    timeout: 15000,
+  })
+  await page.locator('body[data-zero-connected="true"]').waitFor({
+    state: 'attached',
+    timeout: options.timeout ?? 60000,
+  })
+}
+
 export async function loginAsDemo(page: Page, pathname = '/') {
   console.info('Logging in as demo user via API...')
 
@@ -53,19 +72,14 @@ export async function loginAsDemo(page: Page, pathname = '/') {
     `✅ Logged in via ${result.step} (status: ${result.status})${result.attempt ? ` (attempt ${result.attempt + 1})` : ''}`,
   )
 
-  // navigate to home feed (cookie is set, so we'll be authenticated)
+  // navigate to home feed (cookie is set, so we'll be authenticated) and wait
+  // for zero's websocket to connect before returning
   const target =
     pathname !== '/' && pathname !== '/home' && pathname !== '/home/feed'
       ? pathname
       : '/home/feed'
 
-  await page.goto(`${BASE_URL}${target}`, {
-    waitUntil: 'domcontentloaded',
-    timeout: 15000,
-  })
-
-  // wait for page to stabilize
-  await page.waitForTimeout(2000)
+  await gotoAndWaitForZero(page, target)
 }
 
 export async function loginAsAdmin(page: Page, pathname = '/') {

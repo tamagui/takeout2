@@ -82,8 +82,6 @@ test.describe('SSR Permissions', () => {
 
     // login to get demo user id
     await loginAsDemo(page)
-    await page.goto(`${BASE_URL}/home/feed`, { waitUntil: 'domcontentloaded' })
-    await page.waitForTimeout(2000)
 
     await openTestUI(page)
     await page.waitForFunction(
@@ -149,8 +147,6 @@ test.describe('Permissions', () => {
     test.setTimeout(60000)
 
     await loginAsDemo(page)
-    await page.goto(`${BASE_URL}/home/feed`, { waitUntil: 'domcontentloaded' })
-    await page.waitForTimeout(3000)
 
     // seed posts should be visible before blocking
     await waitForPostVisible(page, SEED_POST_1)
@@ -211,8 +207,6 @@ test.describe('Permissions', () => {
     test.setTimeout(60000)
 
     await loginAsDemo(page)
-    await page.goto(`${BASE_URL}/home/feed`, { waitUntil: 'domcontentloaded' })
-    await page.waitForTimeout(3000)
 
     await openTestUI(page)
 
@@ -242,8 +236,6 @@ test.describe('Permissions', () => {
     test.setTimeout(60000)
 
     await loginAsDemo(page)
-    await page.goto(`${BASE_URL}/home/feed`, { waitUntil: 'domcontentloaded' })
-    await page.waitForTimeout(3000)
 
     await openTestUI(page)
 
@@ -301,8 +293,6 @@ test.describe('Permissions', () => {
     test.setTimeout(60000)
 
     await loginAsDemo(page)
-    await page.goto(`${BASE_URL}/home/feed`, { waitUntil: 'domcontentloaded' })
-    await page.waitForTimeout(3000)
 
     await openTestUI(page)
 

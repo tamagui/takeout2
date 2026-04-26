@@ -14,7 +14,9 @@ export default defineConfig({
   workers: process.env.CI ? 1 : Math.min(4, Math.floor(cpus().length * 0.5)),
   retries: 1,
   maxFailures: 3,
-  reporter: 'list',
+  reporter: process.env.CI
+    ? [['list'], ['html', { open: 'never', outputFolder: 'playwright-report' }]]
+    : 'list',
   use: {
     baseURL: `http://localhost:${PORT_WEB}`,
     trace: 'on-first-retry',

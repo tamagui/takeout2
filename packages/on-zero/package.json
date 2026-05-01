@@ -106,7 +106,7 @@
   },
   "devDependencies": {
     "drizzle-zero": "1.0.0-beta.0",
-    "@tamagui/build": "2.0.0-rc.38-1775848301302",
+    "@tamagui/build": "2.0.0-rc.41",
     "@types/node": "25.2.0",
     "@types/pg": "^8.11.10",
     "@types/react": "^19.0.0",

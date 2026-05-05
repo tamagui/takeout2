@@ -9,8 +9,12 @@ export const SERVER_URL = (() => {
   // server/native: use One's getURL or fallback
   const url = getURL()
   if (url === 'http://one-server.example.com') {
-    // release build - use baked-in URL or default
-    return import.meta.env.VITE_SERVER || 'http://localhost:8081'
+    // release build - prefer baked-in production hostname, then dev fallback
+    const host = import.meta.env.VITE_WEB_HOSTNAME
+    if (host && host !== 'localhost:8081') {
+      return `https://${host}`
+    }
+    return 'http://localhost:8081'
   }
   return url
 })()

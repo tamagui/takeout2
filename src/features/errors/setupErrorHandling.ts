@@ -9,11 +9,12 @@ export function initializeErrorHandling(): void {
     return
   }
 
-  if (process.env.NODE_ENV !== 'development') {
+  if (typeof document !== 'undefined') {
     setupWebHandlers()
+  } else if (typeof process !== 'undefined' && typeof process.on === 'function') {
+    setupNodeHandlers()
   }
 
-  setupNodeHandlers()
   handlersSetup = true
 }
 

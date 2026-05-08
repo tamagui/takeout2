@@ -1,6 +1,6 @@
 ---
 name: takeout-aggregates
-description: Database aggregates via PostgreSQL triggers. commentCount, followerCount, reactionCount, stats tables, INSERT ON CONFLICT, denormalized counts.
+description: DB aggregates via Postgres triggers — commentCount, followerCount, reactionCount, denormalized counts.
 ---
 
 # Aggregates

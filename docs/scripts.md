@@ -1,6 +1,6 @@
 ---
 name: takeout-scripts
-description: Scripts guide for tko CLI automation. scripts, CLI scripts, ./scripts/ directory, tko commands, tko run, parallel execution, script management, bun scripts, npm scripts, automation.
+description: tko CLI scripts in ./scripts/ — tko run, parallel execution, bun scripts.
 ---
 
 # scripts

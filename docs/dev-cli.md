@@ -1,6 +1,6 @@
 ---
 name: takeout-dev-cli
-description: Dev CLI guide for the interactive dev server. dev server, bun dev, one dev, keyboard shortcuts, open ios simulator, open web, open android, dev tools, focus terminal, interactive CLI, dev workflow.
+description: Interactive dev CLI (bun dev / one dev) — keyboard shortcuts to open iOS sim / web / android.
 ---
 
 # dev cli

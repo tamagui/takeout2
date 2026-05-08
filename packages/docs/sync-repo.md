@@ -1,10 +1,6 @@
 ---
 name: takeout-sync-prompt
-description:
-  Intelligent sync guide for updating forked Takeout with upstream changes while
-  preserving customizations. sync, upstream sync, fork sync, merging upstream,
-  git merge, tamagui/takeout2, upstream changes, update from takeout, takeout
-  updates.
+description: Sync forked Takeout with upstream tamagui/takeout2 — git merge, preserve customizations.
 ---
 
 # Takeout Repository Sync Prompt

@@ -1,6 +1,6 @@
 ---
 name: takeout-package-json
-description: Package.json structure guide. package.json, package configuration, scripts section, npm scripts, env vars, environment variables, workspaces, monorepo, trustedDependencies, dependencies.
+description: package.json structure — scripts, env vars, workspaces, monorepo, trustedDependencies.
 ---
 
 # package.json

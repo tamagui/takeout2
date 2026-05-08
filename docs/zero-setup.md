@@ -1,6 +1,6 @@
 ---
 name: takeout-zero-setup
-description: "Zero setup, configuration, and debugging guide. environment variables, ZERO_NUM_SYNC_WORKERS, ZERO_CVR_MAX_CONNS, ZERO_UPSTREAM_MAX_CONNS, rate limiting, database connection limits, production tuning, relationships config, type generation, bun tko zero generate, ?debug=2, performance troubleshooting, analyze-indexes, slow queries, indexes, SQLite replica."
+description: Zero sync setup, performance tuning, indexes — env vars (ZERO_*), rate limiting, ?debug=2, type generation.
 ---
 
 ## relationships

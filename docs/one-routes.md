@@ -1,6 +1,6 @@
 ---
 name: takeout-one-routes
-description: One framework routing guide. Use when working with routing, routes, pages, navigation, app/ directory structure, file-based routing, dynamic routes [id], params, layouts, _layout.tsx, SSG, SSR, SPA static generation, loaders, data loading, Link component, or navigate.
+description: One routing — app/ dir, file-based routes, [id] params, _layout.tsx, SSG/SSR/SPA, loaders, Link.
 ---
 
 # one framework: routes & routing

@@ -1,6 +1,6 @@
 ---
 name: takeout-zero-queries
-description: "Zero queries guide and anti-patterns. useQuery, zql, run(), serverWhere, exists(), permissions, relations, .related(), pagination, cursor, .start(), .one(), .limit(), .where(), .orderBy(), query patterns, conditional queries, enabled, non-reactive queries, cache reads, n+1, useAuth vs useUser, client-side filtering, index vs detail queries."
+description: Zero queries with zql — useQuery, run(), .where, .related, .one, exists, pagination, permissions, anti-patterns.
 ---
 
 ## queries

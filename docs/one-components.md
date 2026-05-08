@@ -1,6 +1,6 @@
 ---
 name: takeout-one-components
-description: One framework components guide for navigation, layouts, and UI elements. Link, Redirect, navigation, Head, meta tags, SEO, SafeAreaView, StatusBar, device safe areas, Stack, Tabs, Slot, layout components, LoadProgressBar, ScrollBehavior.
+description: One components — Link, Redirect, Head/SEO, SafeAreaView, StatusBar, Stack/Tabs/Slot, LoadProgressBar.
 ---
 
 # one framework: components

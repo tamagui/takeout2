@@ -1,6 +1,6 @@
 ---
 name: deploy-uncloud
-description: Uncloud deployment guide for self-hosted production setups. uncloud deployment, self-hosted, docker-compose, production setup, SSL certificates, HTTPS, zero-downtime deploys, rolling updates, scaling, multiple machines, Multipass VM, local deployment.
+description: Uncloud self-hosted deployment — docker-compose, SSL, zero-downtime, scaling, Multipass VM.
 ---
 
 # uncloud deployment guide

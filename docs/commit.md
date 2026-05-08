@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Git commit guidelines. commit, create commits, commit message, commit style, commit conventions, commit format, committing changes, make commit, git commit, lowercase messages, one-line commits. Never add yourself as contributor, keep messages lowercase and one-line.
+description: Git commit guidelines — lowercase, one-line, no co-author. Use when committing.
 ---
 
 # git commit

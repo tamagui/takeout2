@@ -1,6 +1,6 @@
 ---
 name: takeout-triggers
-description: PostgreSQL database triggers guide for automation and data consistency. creating triggers, trigger functions, plpgsql, BEFORE/AFTER triggers, INSERT/UPDATE/DELETE events, maintaining derived data, syncing tables, audit trails, cascading updates, counter maintenance, reaction counts, reply counts.
+description: PostgreSQL triggers — BEFORE/AFTER INSERT/UPDATE/DELETE, plpgsql, derived data, audit trails, counters.
 ---
 
 # Database Triggers Guide

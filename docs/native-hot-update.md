@@ -1,6 +1,6 @@
 ---
 name: takeout-native-hot-update
-description: Native hot update (OTA/over-the-air) system guide for @take-out/native-hot-update. Use for HotUpdaterSplash, splash screen, deploy-hot-update scripts, update issues, or troubleshooting OTA updates.
+description: @take-out/native-hot-update OTA — HotUpdaterSplash, deploy-hot-update scripts, troubleshooting.
 ---
 
 # Native Hot Update System

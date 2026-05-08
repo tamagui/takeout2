@@ -1,6 +1,6 @@
 ---
 name: takeout-cloudflare-dev-tunnel
-description: Cloudflare dev tunnel guide for exposing local development servers publicly. dev tunnel, cloudflare tunnel, cfargotunnel, local tunnel, testing webhooks, webhook testing, share local server, expose localhost, ngrok alternative.
+description: Cloudflare dev tunnel — expose localhost publicly for webhook testing (ngrok alternative).
 ---
 
 # Development Tunnel

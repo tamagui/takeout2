@@ -1,6 +1,6 @@
 ---
 name: deploy
-description: Deployment infrastructure overview and platform setup. deploy, deployment, production, CI/CD, continuous integration, DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY, uncloud, SST, docker, containers, infrastructure, environment variables, GitHub Actions, or zero-downtime deploys.
+description: Deployment infra — DEPLOY_HOST/USER/SSH_KEY, uncloud, SST, docker, GitHub Actions, env vars.
 ---
 
 # deployment infrastructure summary

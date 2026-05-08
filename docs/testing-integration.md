@@ -1,6 +1,6 @@
 ---
 name: takeout-testing-integration
-description: Integration testing guide. Use when writing Playwright tests, running bun test integration, testing with loginAsDemo, or debugging test failures. integration tests, e2e tests, end-to-end, Playwright, browser tests, test fixtures, test setup, test users.
+description: Integration tests with Playwright — bun test integration, loginAsDemo, fixtures, debugging failures.
 ---
 
 # Integration Testing Guide

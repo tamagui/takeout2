@@ -1,6 +1,6 @@
 ---
 name: takeout-hot-updater
-description: Guide for implementing OTA updates and hot updates in React Native apps. hot updater, OTA updates, over-the-air updates, app updates, code push, deploy updates, @hot-updater/react-native, HotUpdater.wrap, useHotUpdater, update deployment, clearCrashHistory, crash history.
+description: OTA / hot updates in React Native — @hot-updater/react-native, HotUpdater.wrap, useHotUpdater, code push.
 ---
 
 # Hot Updater Guide

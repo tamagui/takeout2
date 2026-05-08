@@ -1,6 +1,6 @@
 ---
 name: takeout-zero-models
-description: "Zero models, mutations, and CRUD guide. mutations(), schema, table(), permissions, mutate, insert, update, delete, MutatorContext, asyncTasks, server actions, convergence, optimistic updates, soft deletes, calling mutations, .server promise."
+description: Zero models, mutations, CRUD — schema, table(), permissions, MutatorContext, optimistic updates, soft deletes.
 ---
 
 ## models

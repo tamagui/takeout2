@@ -19,13 +19,6 @@ const trustedOrigins = [
   `${APP_SCHEME}://`,
 ]
 
-console.info(
-  `[better-auth] server`,
-  server.BETTER_AUTH_SECRET.slice(0, 3),
-  server.BETTER_AUTH_URL,
-  trustedOrigins,
-)
-
 export const authServer = betterAuth({
   // using server.BETTER_AUTH_URL instead of baseUrl
 

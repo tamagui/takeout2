@@ -114,17 +114,25 @@ configurable timeouts and retry strategies.
 We have a unified migration system that combines Drizzle schema migrations with
 custom TypeScript migrations. You don't need to touch Drizzle directly.
 
+Tables are declared in a single `src/database/schema.ts`. Use `pgTable(...)` for
+public (Zero-synced) tables and `pgPrivateTable(...)` for private (server-only)
+tables — `pgPrivateTable` is built from `privateTable(pgTable)` exported by
+`@take-out/database`.
+
 ### Migration Workflow
 
-1. Edit `src/database/schema-public.ts` or `src/database/schema-private.ts`
+1. Edit `src/database/schema.ts`
 2. Run migrations:
 
 ```bash
-# local development - generates and runs migrations
-bun migrate run
+# local development — generates SQL, syncs wrappers, then runs them
+bun db:migrate
 
-# production - just generates and builds (CI deploys)
-bun migrate build
+# production / CI — generates only (deploy runs them)
+bun db:build
+
+# update the Zero schema after structural changes
+bun zero:generate
 ```
 
 ### Custom Migrations
@@ -174,9 +182,10 @@ automatically. If you need to manually fix:
    ```
 
 **Schema changes not being detected:**
-- Make sure you're editing the right file (`schema-public.ts` vs `schema-private.ts`)
-- Both schemas go to Drizzle - "private" just means auth tables, not "excluded from migrations"
-- Run `bun migrate run` which regenerates migrations fresh
+- Make sure you're editing `src/database/schema.ts` and the change is saved
+- `pgPrivateTable` and `pgTable` both go through Drizzle — "private" just means
+  the table isn't published to Zero, not "excluded from migrations"
+- Run `bun db:migrate` which regenerates migrations fresh and runs them
 
 ### Generated Columns in PostgreSQL
 
@@ -193,7 +202,7 @@ GENERATED ALWAYS AS (expression) STORED;
 Modifying existing columns to be generated: first drop the existing column, then
 add it back as generated. Cannot directly convert a regular column to generated.
 
-In Drizzle schema (src/database/schema-public.ts):
+In Drizzle schema (src/database/schema.ts):
 
 ```typescript
 columnName: t.integer().generatedAlwaysAs(sql`expression`)

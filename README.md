@@ -272,14 +272,15 @@ PostgreSQL runs in Docker on port 5433:
 
 ### Migrations
 
-In general you just update your `src/database/schema-public.ts` and then run
-`bun migrate` while your backend server is up. You can also just run
-`bun tko db generate` if the backend isn't running.
+In general you just update `src/database/schema.ts` and then run
+`bun db:migrate` while your backend server is up. That generates SQL from the
+schema and runs the resulting migration. For CI / production builds (generate
+only, no run) use `bun db:build`.
 
-Database schema is defined in:
-
-- `src/database/schema-public.ts` - Public tables (exposed to Zero/client)
-- `src/database/schema-private.ts` - Private tables
+Database schema is defined in `src/database/schema.ts`. Use `pgTable(...)` for
+public tables (exposed to Zero/client) and `pgPrivateTable(...)` for private
+tables — `pgPrivateTable` comes from `privateTable(pgTable)` exported by
+`@take-out/database`.
 
 If you need something outside of Drizzle migrations, you can do
 `bun db:add-migration`

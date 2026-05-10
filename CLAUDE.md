@@ -80,15 +80,17 @@ server-only access (throws on client). run `bun env:update` to sync to CI/docker
 ## database migrations
 
 ```bash
-bun db:add-migration <name>  # create new migration file
-bun db:migrate               # build + run migrations
+bun db:add-migration <name>  # create new one-off migration file
+bun db:build                 # generate SQL + sync wrappers (no run, used by CI)
+bun db:migrate               # build + run migrations (locally use this)
 ```
 
 workflow:
 
 updating schema, just:
-1. edit schema in `src/database/schema*.ts`
-2. run `bun db:migrate`
+1. edit `src/database/schema.ts` (use `pgPrivateTable` for non-Zero tables)
+2. run `bun db:migrate` (generates and runs in one step)
+3. run `bun zero:generate` if structural change affects the Zero schema
 
 if you need to do something outside schema (rarely!):
 1. run `bun db:add-migration <name>`

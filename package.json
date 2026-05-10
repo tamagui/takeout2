@@ -30,6 +30,7 @@
     "ops": "bun run:prod tko ops",
     "clean": "tko run clean",
     "db:add-migration": "tko db add-migration",
+    "db:build": "tko db build",
     "db:migrate": "tko db migrate",
     "db": "tko db",
     "dev": "tko run-all --pty --flags=last watch watch:types watch:zero:generate one:dev",

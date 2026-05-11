@@ -16,6 +16,7 @@ export * from './mutations'
 export * from './where'
 export * from './serverWhere'
 export * from './zql'
+export { defineQuery, defineQueries } from '@rocicorp/zero'
 
 // drizzle-zero re-exports moved to 'on-zero/drizzle' to avoid pulling
 // drizzle-zero + drizzle-orm/_relations into the main bundle

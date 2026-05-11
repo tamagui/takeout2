@@ -1,15 +1,7 @@
 import { randomId, useEmitterSelector } from '@take-out/helpers'
 import { useRef, useState } from 'react'
 import { KeyboardController } from 'react-native-keyboard-controller'
-import {
-  Circle,
-  isWeb,
-  ScrollView,
-  SizableText,
-  Spinner,
-  useWindowDimensions,
-  YStack,
-} from 'tamagui'
+import { Circle, isWeb, SizableText, Spinner, useWindowDimensions, YStack } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
 import { pickImageFromLibrary } from '~/helpers/media/imagePicker'
@@ -274,27 +266,17 @@ export const DialogCreatePost = () => {
         if (!open) handleClose()
       }}
     >
-      {!isWeb ? (
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="interactive"
-        >
-          {content}
-        </ScrollView>
-      ) : (
-        <>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            style={{ display: 'none' }}
-            onChange={handleWebFileChange}
-            data-testid="create-post-file-input"
-          />
-          <ScrollView showsVerticalScrollIndicator={false}>{content}</ScrollView>
-        </>
+      {isWeb && (
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleWebFileChange}
+          data-testid="create-post-file-input"
+        />
       )}
+      {content}
     </Dialog>
   )
 }

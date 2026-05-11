@@ -107,7 +107,11 @@ const DialogComponent = ({
             >
               <YStack z={0} bg="$color5" opacity={0.5} inset={0} position="absolute" />
               <BlurView intensity={50} position="absolute" inset={0} />
-              <Sheet.ScrollView>
+              <Sheet.ScrollView
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="interactive"
+                showsVerticalScrollIndicator={false}
+              >
                 <TamaguiDialog.Adapt.Contents />
               </Sheet.ScrollView>
             </Sheet.Frame>
@@ -239,7 +243,6 @@ const DialogBody = (props: { children: any; scrollable?: boolean }) => {
   if (props.scrollable) {
     return (
       <ScrollView m="$-1">
-        {/* add some extra bottom pad so it scrolls more naturally to bottom */}
         <YStack gap="$2" px="$1">
           {content}
         </YStack>

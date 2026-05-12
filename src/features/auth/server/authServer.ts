@@ -17,6 +17,10 @@ const trustedOrigins = [
   `http://localhost:${ports.web}`,
   `http://host.docker.internal:${ports.web}`,
   `${APP_SCHEME}://`,
+  // sootsim shell renders takeout's bundle from its own origin and the bundle's
+  // location.origin is the shell, not the One server. trust it in dev so the
+  // shell-proxied /api/auth calls aren't 403'd as INVALID_ORIGIN.
+  'http://localhost:5173',
 ]
 
 export const authServer = betterAuth({

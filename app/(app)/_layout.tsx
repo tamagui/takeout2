@@ -1,4 +1,4 @@
-import { Redirect, Slot, Stack, usePathname } from 'one'
+import { Slot, Stack } from 'one'
 import { Configuration, SizableText } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
@@ -21,8 +21,6 @@ function WidgetSetup() {
 
 export function AppLayout() {
   const { state } = useAuth()
-  const pathname = usePathname()
-  const isLoggedIn = state === 'logged-in'
 
   if (state === 'loading') {
     return (
@@ -32,13 +30,8 @@ export function AppLayout() {
     )
   }
 
-  // redirect for auth routing (works on both web and native)
-  if (!isLoggedIn && pathname.startsWith('/home')) {
-    return <Redirect href="/auth/login" />
-  }
-  if (isLoggedIn && pathname.startsWith('/auth')) {
-    return <Redirect href="/home/feed" />
-  }
+  // auth redirects live in app/(app)/auth/_layout.tsx and app/(app)/home/_layout.tsx —
+  // they must run from inside a focused stack screen on native, not above the stack
 
   return (
     // our app is SPA from here on down, avoid extra work by disabling SSR

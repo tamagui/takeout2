@@ -34,7 +34,11 @@ export const ZERO_SERVER_URL = (() => {
 
   // server/native: construct from hostname or fallback
   const host = import.meta.env.VITE_ZERO_HOSTNAME
-  return host ? `https://${host}` : 'http://localhost:4848'
+  if (!host) return 'http://localhost:4848'
+  // local dev zero server only speaks http — only switch to https off-localhost
+  const protocol =
+    host.startsWith('localhost') || host.startsWith('127.0.0.1') ? 'http' : 'https'
+  return `${protocol}://${host}`
 })()
 
 export const DEFAULT_HOT_UPDATE_SERVER_URL =

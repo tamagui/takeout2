@@ -1,9 +1,19 @@
-import { Slot, Stack } from 'one'
+import { Redirect, Slot, Stack } from 'one'
 import { XStack, YStack } from 'tamagui'
 
+import { useAuth } from '~/features/auth/client/authClient'
 import { Onboarding } from '~/features/onboarding'
 
 export function AuthAndOnboardingLayout() {
+  // redirect from inside the focused auth screen — putting this in the parent
+  // (app)/_layout unmounts <Stack> before the redirect lands, so the native
+  // stack never transitions. inside the focused screen, useFocusEffect fires
+  // correctly and the stack swaps to the home screen.
+  const { state } = useAuth()
+  if (state === 'logged-in') {
+    return <Redirect href="/home/feed" />
+  }
+
   if (process.env.VITE_NATIVE) {
     return <Slot />
   }

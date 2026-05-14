@@ -122,7 +122,7 @@
         "drizzle-kit": "1.0.0-beta.9-e89174b",
         "fs-extra": "^11.2.0",
         "knip": "^5.82.0",
-        "orez": "0.2.9",
+        "orez": "0.2.18",
         "oxfmt": "^0.16.0",
         "oxlint": "^1.31.0",
         "oxlint-tsgolint": "^0.11.4",
@@ -2501,7 +2501,7 @@
 
     "basic-auth": ["basic-auth@2.0.1", "", { "dependencies": { "safe-buffer": "5.1.2" } }, "sha512-NF+epuEdnUYVlGuhaxbbq+dvJttwLnGY+YixlXlME5KpQ5W3CnXA5cVTneY3SPbPDRkcjMbifrwmFYcClgOZeg=="],
 
-    "bedrock-sqlite": ["bedrock-sqlite@0.2.9", "", {}, "sha512-to9WaAZHVW2SmT2sMbb+I21UrEG/HuVD03h7ImflSfMWe7rAkd6prSTyYTFWMZRAGXefPRThyW7Pz/3TSJkYAA=="],
+    "bedrock-sqlite": ["bedrock-sqlite@0.2.18", "", {}, "sha512-2jry97jrEzHfoGJadiDBnKKWYz7dhU1GaxTCtzTX7I3YrC3CPV8LfPk6BRMOyASJXvRRp3IMKSWehx+U0nN0EA=="],
 
     "better-auth": ["better-auth@1.3.34", "", { "dependencies": { "@better-auth/core": "1.3.34", "@better-auth/telemetry": "1.3.34", "@better-auth/utils": "0.3.0", "@better-fetch/fetch": "1.1.18", "@noble/ciphers": "^2.0.0", "@noble/hashes": "^2.0.0", "@simplewebauthn/browser": "^13.1.2", "@simplewebauthn/server": "^13.1.2", "better-call": "1.0.19", "defu": "^6.1.4", "jose": "^6.1.0", "kysely": "^0.28.5", "nanostores": "^1.0.1", "zod": "^4.1.5" } }, "sha512-LWA52SlvnUBJRbN8VLSTLILPomZY3zZAiLxVJCeSQ5uVmaIKkMBhERitkfJcXB9RJcfl4uP+3EqKkb6hX1/uiw=="],
 
@@ -3773,7 +3773,7 @@
 
     "ora": ["ora@3.4.0", "", { "dependencies": { "chalk": "^2.4.2", "cli-cursor": "^2.1.0", "cli-spinners": "^2.0.0", "log-symbols": "^2.2.0", "strip-ansi": "^5.2.0", "wcwidth": "^1.0.1" } }, "sha512-eNwHudNbO1folBP3JsZ19v9azXWtQZjICdr3Q0TDPIaeBQ3mXLrh54wM+er0+hSp+dWKf+Z8KM58CYzEyIYxYg=="],
 
-    "orez": ["orez@0.2.9", "", { "dependencies": { "@electric-sql/pglite": "0.4.1", "@electric-sql/pglite-tools": "^0.3.1", "bedrock-sqlite": "0.2.9", "citty": "^0.2.0", "pg-gateway": "0.3.0-beta.4", "pgsql-parser": "^17.9.11", "postgres": "^3.4.5" }, "peerDependencies": { "@rocicorp/zero": ">=1.0.0", "vite": ">=5" }, "optionalPeers": ["vite"], "bin": { "orez": "dist/cli-entry.js" } }, "sha512-vXqmjMv4g/ktsffTqXcySGS3seolYzno6J0UI+JT7TBEY10CMU3xMr3BeZNKpGpRE6cxI87pOwATQDrO4rHIcQ=="],
+    "orez": ["orez@0.2.18", "", { "dependencies": { "@electric-sql/pglite": "0.4.1", "@electric-sql/pglite-tools": "^0.3.1", "bedrock-sqlite": "0.2.18", "citty": "^0.2.0", "pg-gateway": "0.3.0-beta.4", "pgsql-parser": "^17.9.11", "postgres": "^3.4.5" }, "peerDependencies": { "@rocicorp/zero": ">=1.0.0", "vite": ">=5" }, "optionalPeers": ["vite"], "bin": { "orez": "dist/cli-entry.js" } }, "sha512-R28rPQ7GsMHO218ywVKbDjg9/KJlo1eh6SDQbrF3z4yu9A/RwvCmUaikxct+hKtxLUlxd7tvm6d2+1JP1TyT1w=="],
 
     "outdent": ["outdent@0.8.0", "", {}, "sha512-KiOAIsdpUTcAXuykya5fnVVT+/5uS0Q1mrkRHcF89tpieSmY33O/tmc54CqwA+bfhbtEfZUNLHaPUiB9X3jt1A=="],
 

@@ -204,7 +204,7 @@ export async function run(
           console.error(`run() error: ${errorMsg}: ${stderr || ''}`)
         }
 
-        const error = new Error(errorMsg, { cause: { exitCode } })
+        const error = new Error(errorMsg, { cause: { exitCode, stdout, stderr } })
         Error.captureStackTrace(error, runInternal)
         throw error
       }

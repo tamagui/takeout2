@@ -39,7 +39,19 @@ export type PermissionStrategy = 'optimistic' | 'optimistic-deny' | 'optimistic-
 
 function getZeroProxyValue(instance: object, key: PropertyKey) {
   const value = Reflect.get(instance, key, instance)
-  return typeof value === 'function' ? value.bind(instance) : value
+  if (typeof value !== 'function') return value
+
+  const bound = value.bind(instance)
+  for (const property of Reflect.ownKeys(value)) {
+    if (property === 'length' || property === 'name' || property === 'prototype') {
+      continue
+    }
+    const descriptor = Object.getOwnPropertyDescriptor(value, property)
+    if (descriptor) {
+      Object.defineProperty(bound, property, descriptor)
+    }
+  }
+  return bound
 }
 
 export function createZeroClient<

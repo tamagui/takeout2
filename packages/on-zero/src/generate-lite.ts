@@ -209,8 +209,7 @@ export function generateLite(opts: LiteGenerateOptions): LiteGenerateResult {
 
       const paramType = h.paramTypeText.trim()
 
-      // unknown explicitly → no validator (becomes v.void_ in the emitter,
-      // matching the existing generator's behavior for 'unknown')
+      // unknown explicitly → permissive validator
       if (paramType === 'unknown') {
         return { name: h.name, paramType: 'unknown', valibotCode: '' }
       }

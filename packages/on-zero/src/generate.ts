@@ -274,13 +274,21 @@ function extractMutationsFromModel(
 
   // determine overload
   // 1-arg: mutations({ ... })
-  // 2-arg: mutations(schema, perm)
-  // 3-arg: mutations(schema, perm, { ... })
-  const hasCRUD = args.length >= 2
+  // schema model: mutations(schema, perm) / mutations(schema, perm, { ... })
+  // named model: mutations('name', handlers) / mutations('name', perm, { ... })
+  const firstArg = args[0]
+  const hasNamedModel = Boolean(firstArg && ts.isStringLiteralLike(firstArg))
+  const hasCRUD = args.length >= 2 && !hasNamedModel
   let handlersArg: import('typescript').ObjectLiteralExpression | null = null
 
   if (args.length === 1 && ts.isObjectLiteralExpression(args[0]!)) {
     handlersArg = args[0] as import('typescript').ObjectLiteralExpression
+  } else if (hasNamedModel) {
+    if (args.length >= 3 && ts.isObjectLiteralExpression(args[2]!)) {
+      handlersArg = args[2] as import('typescript').ObjectLiteralExpression
+    } else if (args.length >= 2 && ts.isObjectLiteralExpression(args[1]!)) {
+      handlersArg = args[1] as import('typescript').ObjectLiteralExpression
+    }
   } else if (args.length === 3 && ts.isObjectLiteralExpression(args[2]!)) {
     handlersArg = args[2] as import('typescript').ObjectLiteralExpression
   }

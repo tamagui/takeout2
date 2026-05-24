@@ -17,7 +17,7 @@ export type ExtractedMutation = {
   name: string
   // 'void' | inline type string | unresolved reference
   paramType: string
-  // generated valibot code, or '' if skipped (falls back to v.unknown() or v.void_())
+  // generated valibot code, or '' when the payload is void/unknown
   valibotCode: string
 }
 
@@ -87,6 +87,93 @@ function splitTopLevelTypeUnion(type: string): string[] {
   return parts.filter(Boolean)
 }
 
+function splitTopLevelTypeIntersection(type: string): string[] {
+  const parts: string[] = []
+  let depth = 0
+  let start = 0
+  let quote: string | null = null
+
+  for (let i = 0; i < type.length; i++) {
+    const char = type[i]
+    if (quote) {
+      if (char === '\\') {
+        i++
+        continue
+      }
+      if (char === quote) quote = null
+      continue
+    }
+    if (char === '"' || char === "'" || char === '`') {
+      quote = char
+      continue
+    }
+    if (char === '<' || char === '(' || char === '{' || char === '[') {
+      depth++
+      continue
+    }
+    if (char === '>' || char === ')' || char === '}' || char === ']') {
+      depth = Math.max(0, depth - 1)
+      continue
+    }
+    if (char === '&' && depth === 0 && type[i - 1] !== '&' && type[i + 1] !== '&') {
+      parts.push(type.slice(start, i).trim())
+      start = i + 1
+    }
+  }
+
+  parts.push(type.slice(start).trim())
+  return parts.filter(Boolean)
+}
+
+function stripTypeComments(type: string): string {
+  let out = ''
+  let quote: string | null = null
+
+  for (let i = 0; i < type.length; i++) {
+    const char = type[i]
+    const next = type[i + 1]
+    if (quote) {
+      out += char
+      if (char === '\\') {
+        if (next) {
+          out += next
+          i++
+        }
+        continue
+      }
+      if (char === quote) quote = null
+      continue
+    }
+    if (char === '"' || char === "'" || char === '`') {
+      quote = char
+      out += char
+      continue
+    }
+    if (char === '/' && next === '/') {
+      while (i < type.length && type[i] !== '\n') i++
+      if (i < type.length) out += '\n'
+      continue
+    }
+    if (char === '/' && next === '*') {
+      i += 2
+      while (i < type.length && !(type[i] === '*' && type[i + 1] === '/')) i++
+      i++
+      continue
+    }
+    out += char
+  }
+
+  return out
+}
+
+function nextNonWhitespace(type: string, start: number): string | undefined {
+  for (let i = start; i < type.length; i++) {
+    const char = type[i]
+    if (char && !/\s/.test(char)) return char
+  }
+  return undefined
+}
+
 function splitTopLevelObjectEntries(type: string): string[] {
   const parts: string[] = []
   let depth = 0
@@ -115,7 +202,14 @@ function splitTopLevelObjectEntries(type: string): string[] {
       depth = Math.max(0, depth - 1)
       continue
     }
-    if ((char === ';' || char === ',') && depth === 0) {
+    if (
+      depth === 0 &&
+      (char === ';' ||
+        char === ',' ||
+        (char === '\n' &&
+          type.slice(start, i).includes(':') &&
+          !['|', '&'].includes(nextNonWhitespace(type, i + 1) ?? '')))
+    ) {
       parts.push(type.slice(start, i).trim())
       start = i + 1
     }
@@ -125,12 +219,35 @@ function splitTopLevelObjectEntries(type: string): string[] {
   return parts.filter(Boolean)
 }
 
+function parseInlineObjectEntries(type: string): string[] | null | undefined {
+  if (!type.startsWith('{') || !type.endsWith('}')) return undefined
+
+  const inner = type.slice(1, -1).trim()
+  if (!inner) return []
+
+  const entries: string[] = []
+  for (const part of splitTopLevelObjectEntries(inner)) {
+    const trimmed = part.trim().replace(/[;,]\s*$/, '')
+    if (!trimmed || trimmed.startsWith('[')) continue
+    const match = trimmed.match(/^(?:readonly\s+)?(\w+)(\?)?:\s*(.+)$/s)
+    if (!match) continue
+    const [, name, opt, typeStr] = match
+    const parsed = parseTypeString(typeStr!.trim())
+    if (!parsed) return null // can't resolve inner type
+    let val = parsed
+    if (opt) val = `v.optional(${val})`
+    entries.push(`${formatObjectKey(name!)}: ${val}`)
+  }
+
+  return entries
+}
+
 // simple string-based type parser for inline type annotations from source text.
 // handles: primitives, inline objects { ... }, arrays, void/null/unknown.
 // returns null for type references that cannot be resolved without a type
 // checker (bare identifiers, generics, imported aliases).
 export function parseTypeString(type: string): string | null {
-  type = type.trim()
+  type = stripTypeComments(type.trim()).trim()
 
   const unionParts = splitTopLevelTypeUnion(type)
   if (unionParts.length > 1) {
@@ -150,6 +267,18 @@ export function parseTypeString(type: string): string | null {
     return val
   }
 
+  const intersectionParts = splitTopLevelTypeIntersection(type)
+  if (intersectionParts.length > 1) {
+    const entries: string[] = []
+    for (const part of intersectionParts) {
+      const objectEntries = parseInlineObjectEntries(part)
+      if (!objectEntries) return null
+      entries.push(...objectEntries)
+    }
+    if (entries.length === 0) return 'v.object({})'
+    return `v.object({\n    ${entries.join(',\n    ')},\n  })`
+  }
+
   // primitives
   if (type === 'string') return 'v.string()'
   if (type === 'number') return 'v.number()'
@@ -159,25 +288,13 @@ export function parseTypeString(type: string): string | null {
   if (type === 'any' || type === 'unknown') return 'v.unknown()'
 
   // inline object: { key: type; ... }
-  if (type.startsWith('{') && type.endsWith('}')) {
-    const inner = type.slice(1, -1).trim()
-    if (!inner) return 'v.object({})'
-    const entries: string[] = []
-    for (const part of splitTopLevelObjectEntries(inner)) {
-      const trimmed = part.trim().replace(/[;,]\s*$/, '')
-      if (!trimmed) continue
-      const match = trimmed.match(/^(?:readonly\s+)?(\w+)(\?)?:\s*(.+)$/)
-      if (!match) continue
-      const [, name, opt, typeStr] = match
-      const parsed = parseTypeString(typeStr!.trim())
-      if (!parsed) return null // can't resolve inner type
-      let val = parsed
-      if (opt) val = `v.optional(${val})`
-      entries.push(`${formatObjectKey(name!)}: ${val}`)
-    }
+  const objectEntries = parseInlineObjectEntries(type)
+  if (objectEntries) {
+    const entries = objectEntries
     if (entries.length === 0) return 'v.object({})'
     return `v.object({\n    ${entries.join(',\n    ')},\n  })`
   }
+  if (objectEntries === null) return null
 
   // array: T[]
   if (type.endsWith('[]')) {
@@ -510,8 +627,12 @@ export function generateSyncedMutationsFile(modelMutations: ModelMutations[]): s
       for (const mut of model.custom) {
         if (model.hasCRUD && ['insert', 'update', 'delete', 'upsert'].includes(mut.name))
           continue
-        if (mut.paramType === 'void' || !mut.valibotCode) {
+        if (mut.paramType === 'void') {
           entries.push(`    ${mut.name}: v.void_(),`)
+          continue
+        }
+        if (!mut.valibotCode) {
+          entries.push(`    ${mut.name}: v.unknown(),`)
           continue
         }
         entries.push(`    ${mut.name}: ${extractValibotExpression(mut.valibotCode)},`)

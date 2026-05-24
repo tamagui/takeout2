@@ -311,6 +311,102 @@ export const mutate = mutations({
     expect(content).toContain('v.string()')
   })
 
+  test('generates validators for string-model multiline mutation params', async () => {
+    writeFileSync(
+      join(testDir, 'models/agentEvent.ts'),
+      `
+import { mutations, serverWhere } from 'on-zero'
+
+const perm = serverWhere('agentEvent', () => true)
+
+export const mutate = mutations('agentEvent', perm, {
+  claimReviewLease: async (
+    { tx },
+    props: {
+      id: string
+      projectId: string
+      agentId: string
+      userId: string
+      taskId: string
+      reviewKey: string
+      runnerId: string
+      createdAt: number
+    },
+  ) => {
+    await tx.mutate.agentEvent.insert(props)
+  },
+})
+`,
+    )
+
+    await generate({ dir: testDir, silent: true })
+
+    const content = readFileSync(join(testDir, 'generated/syncedMutations.ts'), 'utf-8')
+    expect(content).toContain('claimReviewLease')
+    expect(content).toContain('projectId: v.string()')
+    expect(content).toContain('createdAt: v.number()')
+    expect(content).not.toContain('claimReviewLease: v.object({})')
+  })
+
+  test('generates validators for object intersections', async () => {
+    writeFileSync(
+      join(testDir, 'models/agent.ts'),
+      `
+import { mutations, serverWhere } from 'on-zero'
+
+const perm = serverWhere('agent', () => true)
+
+export const mutate = mutations('agent', perm, {
+  update: async (
+    { tx },
+    props: {
+      id: string
+    } & {
+      status?: string
+      currentTaskId?: string
+      [key: string]: unknown
+    },
+  ) => {
+    await tx.mutate.agent.update(props)
+  },
+})
+`,
+    )
+
+    await generate({ dir: testDir, silent: true })
+
+    const content = readFileSync(join(testDir, 'generated/syncedMutations.ts'), 'utf-8')
+    expect(content).toContain('update')
+    expect(content).toContain('id: v.string()')
+    expect(content).toContain('status: v.optional(v.string())')
+    expect(content).toContain('currentTaskId: v.optional(v.string())')
+    expect(content).not.toContain('update: v.object({})')
+    expect(content).not.toContain('[key')
+  })
+
+  test('uses v.unknown for untyped mutation payloads', async () => {
+    writeFileSync(
+      join(testDir, 'models/project.ts'),
+      `
+import { mutations, serverWhere } from 'on-zero'
+
+const perm = serverWhere('project', () => true)
+
+export const mutate = mutations('project', perm, {
+  insert: async ({ tx }, project) => {
+    await tx.mutate.project.insert(project)
+  },
+})
+`,
+    )
+
+    await generate({ dir: testDir, silent: true })
+
+    const content = readFileSync(join(testDir, 'generated/syncedMutations.ts'), 'utf-8')
+    expect(content).toContain('insert: v.unknown()')
+    expect(content).not.toContain('insert: v.void_()')
+  })
+
   test('handles mutations with only context param (void)', async () => {
     writeFileSync(
       join(testDir, 'models/user.ts'),

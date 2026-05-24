@@ -99,6 +99,114 @@ describe('generateLite', () => {
     expect(result.mutationCount).toBe(3)
   })
 
+  test('parses newline-separated mutation object types', () => {
+    const files: Record<string, string> = {
+      [`${DIR}/models/agentEvent.ts`]: '// fake',
+      [`${DIR}/models/deployment.ts`]: '// fake',
+    }
+
+    const fixtures: Record<string, LiteParsedFile> = {
+      [`${DIR}/models/agentEvent.ts`]: {
+        mutations: [
+          {
+            modelName: 'agentEvent',
+            handlers: [
+              {
+                name: 'claimReviewLease',
+                paramTypeText: `{
+                  id: string
+                  projectId: string
+                  createdAt: number
+                }`,
+              },
+            ],
+            schema: null,
+          },
+        ],
+        queries: [],
+      },
+      [`${DIR}/models/deployment.ts`]: {
+        mutations: [
+          {
+            modelName: 'deployment',
+            handlers: [
+              {
+                name: 'deploy',
+                paramTypeText: `{
+                  id: string
+                  platform?: string // 'web' | 'ios'
+                  buildTier?: string // 'dev' | 'testflight' | 'production'
+                }`,
+              },
+            ],
+            schema: null,
+          },
+        ],
+        queries: [],
+      },
+    }
+
+    const result = generateLite({
+      files,
+      dir: DIR,
+      parse: makeParse(fixtures),
+    })
+
+    const synced = result.files['syncedMutations.ts']!
+    expect(synced).toContain('claimReviewLease:')
+    expect(synced).toContain('projectId: v.string()')
+    expect(synced).toContain('createdAt: v.number()')
+    expect(synced).toContain('deploy:')
+    expect(synced).toContain('platform: v.optional(v.string())')
+    expect(synced).toContain('buildTier: v.optional(v.string())')
+    expect(synced).not.toContain('claimReviewLease: v.object({})')
+    expect(synced).not.toContain('deploy: v.object({})')
+  })
+
+  test('parses object intersections and skips index signatures', () => {
+    const files: Record<string, string> = {
+      [`${DIR}/models/agent.ts`]: '// fake',
+    }
+
+    const fixtures: Record<string, LiteParsedFile> = {
+      [`${DIR}/models/agent.ts`]: {
+        mutations: [
+          {
+            modelName: 'agent',
+            handlers: [
+              {
+                name: 'update',
+                paramTypeText: `{
+                  id: string
+                } & {
+                  status?: string
+                  currentTaskId?: string
+                  [key: string]: unknown
+                }`,
+              },
+            ],
+            schema: null,
+          },
+        ],
+        queries: [],
+      },
+    }
+
+    const result = generateLite({
+      files,
+      dir: DIR,
+      parse: makeParse(fixtures),
+    })
+
+    const synced = result.files['syncedMutations.ts']!
+    expect(synced).toContain('update:')
+    expect(synced).toContain('id: v.string()')
+    expect(synced).toContain('status: v.optional(v.string())')
+    expect(synced).toContain('currentTaskId: v.optional(v.string())')
+    expect(synced).not.toContain('[key')
+    expect(synced).not.toContain('update: v.object({})')
+  })
+
   test('falls back to v.unknown() for type references', () => {
     const files: Record<string, string> = {
       [`${DIR}/models/post.ts`]: '// fake',
@@ -139,6 +247,33 @@ describe('generateLite', () => {
     const synced = result.files['syncedMutations.ts']!
     expect(synced).toContain('archive: v.unknown()')
     expect(synced).toContain('publish: v.string()')
+  })
+
+  test('uses v.unknown() for explicitly unknown mutation params', () => {
+    const files: Record<string, string> = {
+      [`${DIR}/models/project.ts`]: '// fake',
+    }
+
+    const fixtures: Record<string, LiteParsedFile> = {
+      [`${DIR}/models/project.ts`]: {
+        mutations: [
+          {
+            modelName: 'project',
+            handlers: [{ name: 'insert', paramTypeText: 'unknown' }],
+            schema: null,
+          },
+        ],
+        queries: [],
+      },
+    }
+
+    const result = generateLite({
+      files,
+      dir: DIR,
+      parse: makeParse(fixtures),
+    })
+
+    expect(result.files['syncedMutations.ts']!).toContain('insert: v.unknown()')
   })
 
   test('emits query files with v.unknown() fallback for references', () => {

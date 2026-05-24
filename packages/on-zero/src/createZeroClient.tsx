@@ -37,6 +37,11 @@ export type GroupedQueries = Record<string, Record<string, (...args: any[]) => a
 //  - 'optimistic-allow': return true until server confirms
 export type PermissionStrategy = 'optimistic' | 'optimistic-deny' | 'optimistic-allow'
 
+function getZeroProxyValue(instance: object, key: PropertyKey) {
+  const value = Reflect.get(instance, key, instance)
+  return typeof value === 'function' ? value.bind(instance) : value
+}
+
 export function createZeroClient<
   Schema extends ZeroSchema,
   Models extends GenericModels,
@@ -175,7 +180,7 @@ export function createZeroClient<
           `Zero instance not initialized. Ensure ZeroProvider is mounted before accessing 'zero'.`,
         )
       }
-      return Reflect.get(latestZeroInstance, key, latestZeroInstance)
+      return getZeroProxyValue(latestZeroInstance, key)
     },
   })
 

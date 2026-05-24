@@ -8,11 +8,25 @@
 // context).
 
 const QUERY_NAME_KEY = '__onZeroQueryName'
+const queryNamesByFunctionName = new Map<string, string | null>()
 
 export function registerQuery(fn: Function, name: string) {
   ;(fn as any)[QUERY_NAME_KEY] = name
+
+  if (!fn.name) return
+
+  const existing = queryNamesByFunctionName.get(fn.name)
+  if (existing === undefined || existing === name) {
+    queryNamesByFunctionName.set(fn.name, name)
+  } else {
+    queryNamesByFunctionName.set(fn.name, null)
+  }
 }
 
 export function getQueryName(fn: Function): string | undefined {
-  return (fn as any)?.[QUERY_NAME_KEY]
+  const stampedName = (fn as any)?.[QUERY_NAME_KEY]
+  if (stampedName) return stampedName
+
+  const namedQuery = queryNamesByFunctionName.get(fn?.name)
+  return namedQuery ?? undefined
 }

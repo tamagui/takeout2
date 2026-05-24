@@ -81,4 +81,24 @@ describe('usePermission _uid query identity', () => {
 
     expect(getQueryName(fn)).toBe('permission.testEntity')
   })
+
+  test('query lookup survives hot-reloaded function identity', () => {
+    const original = function activeProjects() {}
+    const hotReloaded = function activeProjects() {}
+
+    registerQuery(original, 'project.activeProjects')
+
+    expect(getQueryName(hotReloaded)).toBe('project.activeProjects')
+  })
+
+  test('query lookup does not guess when names are ambiguous', () => {
+    const first = function byId() {}
+    const second = function byId() {}
+    const hotReloaded = function byId() {}
+
+    registerQuery(first, 'project.byId')
+    registerQuery(second, 'user.byId')
+
+    expect(getQueryName(hotReloaded)).toBeUndefined()
+  })
 })

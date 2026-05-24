@@ -49,12 +49,106 @@ export function getModelImportName(name: string): string {
 
 // string-based type parser
 
+function splitTopLevelTypeUnion(type: string): string[] {
+  const parts: string[] = []
+  let depth = 0
+  let start = 0
+  let quote: string | null = null
+
+  for (let i = 0; i < type.length; i++) {
+    const char = type[i]
+    if (quote) {
+      if (char === '\\') {
+        i++
+        continue
+      }
+      if (char === quote) quote = null
+      continue
+    }
+    if (char === '"' || char === "'" || char === '`') {
+      quote = char
+      continue
+    }
+    if (char === '<' || char === '(' || char === '{' || char === '[') {
+      depth++
+      continue
+    }
+    if (char === '>' || char === ')' || char === '}' || char === ']') {
+      depth = Math.max(0, depth - 1)
+      continue
+    }
+    if (char === '|' && depth === 0) {
+      parts.push(type.slice(start, i).trim())
+      start = i + 1
+    }
+  }
+
+  parts.push(type.slice(start).trim())
+  return parts.filter(Boolean)
+}
+
+function splitTopLevelObjectEntries(type: string): string[] {
+  const parts: string[] = []
+  let depth = 0
+  let start = 0
+  let quote: string | null = null
+
+  for (let i = 0; i < type.length; i++) {
+    const char = type[i]
+    if (quote) {
+      if (char === '\\') {
+        i++
+        continue
+      }
+      if (char === quote) quote = null
+      continue
+    }
+    if (char === '"' || char === "'" || char === '`') {
+      quote = char
+      continue
+    }
+    if (char === '<' || char === '(' || char === '{' || char === '[') {
+      depth++
+      continue
+    }
+    if (char === '>' || char === ')' || char === '}' || char === ']') {
+      depth = Math.max(0, depth - 1)
+      continue
+    }
+    if ((char === ';' || char === ',') && depth === 0) {
+      parts.push(type.slice(start, i).trim())
+      start = i + 1
+    }
+  }
+
+  parts.push(type.slice(start).trim())
+  return parts.filter(Boolean)
+}
+
 // simple string-based type parser for inline type annotations from source text.
 // handles: primitives, inline objects { ... }, arrays, void/null/unknown.
 // returns null for type references that cannot be resolved without a type
 // checker (bare identifiers, generics, imported aliases).
 export function parseTypeString(type: string): string | null {
   type = type.trim()
+
+  const unionParts = splitTopLevelTypeUnion(type)
+  if (unionParts.length > 1) {
+    const hasNull = unionParts.includes('null')
+    const hasUndefined = unionParts.includes('undefined') || unionParts.includes('void')
+    const valueParts = unionParts.filter(
+      (part) => part !== 'null' && part !== 'undefined' && part !== 'void',
+    )
+    if (valueParts.length === 0) return hasNull ? 'v.null_()' : 'v.void_()'
+
+    const parsedParts = valueParts.map((part) => parseTypeString(part))
+    if (parsedParts.some((part) => !part)) return null
+    let val =
+      parsedParts.length === 1 ? parsedParts[0]! : `v.union([${parsedParts.join(', ')}])`
+    if (hasNull) val = `v.nullable(${val})`
+    if (hasUndefined) val = `v.optional(${val})`
+    return val
+  }
 
   // primitives
   if (type === 'string') return 'v.string()'
@@ -68,11 +162,9 @@ export function parseTypeString(type: string): string | null {
   if (type.startsWith('{') && type.endsWith('}')) {
     const inner = type.slice(1, -1).trim()
     if (!inner) return 'v.object({})'
-    // normalize newlines/commas to semicolons for splitting
-    const normalized = inner.replace(/\n/g, '; ').replace(/;\s*;/g, ';')
     const entries: string[] = []
-    for (const part of normalized.split(';')) {
-      const trimmed = part.trim().replace(/,\s*$/, '')
+    for (const part of splitTopLevelObjectEntries(inner)) {
+      const trimmed = part.trim().replace(/[;,]\s*$/, '')
       if (!trimmed) continue
       const match = trimmed.match(/^(?:readonly\s+)?(\w+)(\?)?:\s*(.+)$/)
       if (!match) continue

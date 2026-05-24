@@ -161,6 +161,12 @@ describe('generateLite', () => {
           { name: 'postById', paramTypeText: '{ id: string }' },
           // primitive
           { name: 'byAuthorId', paramTypeText: 'string' },
+          // optional nullable inline object
+          {
+            name: 'paged',
+            paramTypeText:
+              '{ pageSize: number; cursor?: { id: string; createdAt: number } | null }',
+          },
           // type reference → fallback
           { name: 'filtered', paramTypeText: 'PostFilter' },
           // permission should be skipped
@@ -189,13 +195,15 @@ describe('generateLite', () => {
     expect(synced).toContain('byAuthorId: defineQuery(')
     // primitive string param shows up as v.string() validator
     expect(synced).toMatch(/byAuthorId: defineQuery\(\s*v\.string\(\)/)
+    expect(synced).toContain('paged: defineQuery(')
+    expect(synced).toContain('cursor: v.optional(v.nullable(v.object({')
     // type reference fallback
     expect(synced).toContain('filtered: defineQuery(')
     expect(synced).toMatch(/filtered: defineQuery\(\s*v\.unknown\(\)/)
     // permission export skipped
     expect(synced).not.toContain('permission: defineQuery')
 
-    expect(result.queryCount).toBe(4) // permission excluded
+    expect(result.queryCount).toBe(5) // permission excluded
   })
 
   test('emits types.ts and tables.ts when a model declares a schema inline', () => {

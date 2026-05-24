@@ -152,7 +152,7 @@ export const allPosts = () => zero.query.post
     expect(syncedContent).not.toContain('permission:')
   })
 
-  test('handles user model special case (userPublic)', async () => {
+  test('aliases user import without changing the model key', async () => {
     writeFileSync(
       join(testDir, 'models/user.ts'),
       `export const schema = table('user', { id: string(), name: string() })`,
@@ -162,7 +162,8 @@ export const allPosts = () => zero.query.post
 
     const modelsContent = readFileSync(join(testDir, 'generated/models.ts'), 'utf-8')
     expect(modelsContent).toContain("import * as userPublic from '../models/user'")
-    expect(modelsContent).toContain('userPublic,')
+    expect(modelsContent).toContain('user: userPublic,')
+    expect(modelsContent).not.toContain('\n  userPublic,')
 
     const typesContent = readFileSync(join(testDir, 'generated/types.ts'), 'utf-8')
     expect(typesContent).toContain('typeof schema.userPublic')

@@ -77,10 +77,12 @@ describe('generateLite', () => {
       'syncedMutations.ts',
     ])
 
-    // models.ts: imports both model files, handles user → userPublic
+    // models.ts: aliases the user import without changing the model key
     const models = result.files['models.ts']!
     expect(models).toContain("import * as todo from '../models/todo'")
     expect(models).toContain("import * as userPublic from '../models/user'")
+    expect(models).toContain('user: userPublic,')
+    expect(models).not.toContain('\n  userPublic,')
     expect(models).toContain('export const models = {')
 
     // syncedMutations.ts: inline types resolve to v.object validators

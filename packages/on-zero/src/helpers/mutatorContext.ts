@@ -2,10 +2,21 @@ import { createAsyncContext } from '@take-out/helpers'
 
 import type { AuthData, MutatorContext } from '../types'
 
-const asyncContext = createAsyncContext<MutatorContext>()
+type AsyncContext<T> = ReturnType<typeof createAsyncContext<T>>
+
+const contextStore = globalThis as typeof globalThis & {
+  __onZeroMutatorContext__?: AsyncContext<MutatorContext>
+  __onZeroAuthScopeContext__?: AsyncContext<AuthData | null>
+}
+
+const asyncContext =
+  contextStore.__onZeroMutatorContext__ ??
+  (contextStore.__onZeroMutatorContext__ = createAsyncContext<MutatorContext>())
 
 // lightweight auth-only scope for asyncTasks (where mutation context is gone but authData is needed)
-const authScopeContext = createAsyncContext<AuthData | null>()
+const authScopeContext =
+  contextStore.__onZeroAuthScopeContext__ ??
+  (contextStore.__onZeroAuthScopeContext__ = createAsyncContext<AuthData | null>())
 
 export function mutatorContext(): MutatorContext {
   const currentContext = asyncContext.get()

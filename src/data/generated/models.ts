@@ -15,6 +15,6 @@ export const models = {
   notification,
   post,
   report,
-  userPublic,
+  user: userPublic,
   userState,
 }

@@ -99,7 +99,7 @@
     "@react-navigation/bottom-tabs": "^7.10.1",
     "@react-navigation/native": "7.1.33",
     "@resvg/resvg-js": "^2.6.2",
-    "@rocicorp/zero": "0.26.2",
+    "@rocicorp/zero": "1.5.0",
     "@take-out/better-auth-utils": "workspace:*",
     "@take-out/env": "workspace:*",
     "@take-out/helpers": "workspace:*",

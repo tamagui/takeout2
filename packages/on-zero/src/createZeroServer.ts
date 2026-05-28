@@ -226,8 +226,8 @@ export function createZeroServer<
     const response = await runWithQueryContext(
       { authData: authData || ({} as AuthData) },
       () =>
-        zeroHandleQueryRequest(
-          (name, args) => {
+        zeroHandleQueryRequest({
+          handler: (name, args) => {
             // per-model permission queries registered by on-zero at runtime
             if (name.startsWith('permission.')) {
               const table = name.slice('permission.'.length)
@@ -268,7 +268,8 @@ export function createZeroServer<
           },
           schema,
           request,
-        ),
+          userID: typeof authData?.id === 'string' ? authData.id : null,
+        }),
     )
 
     return {

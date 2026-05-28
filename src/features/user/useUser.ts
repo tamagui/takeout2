@@ -24,7 +24,7 @@ export const useUser = () => {
 
     update: (next: Partial<User>) => {
       ensure(user, 'no user')
-      return zero.mutate.userPublic.update({
+      return zero.mutate.user.update({
         id: user.id,
         ...next,
       })

@@ -6,6 +6,10 @@ export function setStorageDriver(d: StorageDriver): void {
   driver = d
 }
 
+export function clearStorageDriver(): void {
+  driver = null
+}
+
 export function getStorageDriver(): StorageDriver | null {
   if (driver) return driver
   if (typeof localStorage !== 'undefined' && typeof localStorage.getItem === 'function') {

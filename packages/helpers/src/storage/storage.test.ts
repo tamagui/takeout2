@@ -1,21 +1,28 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import { createStorage } from './createStorage'
-import { getStorageDriver, setStorageDriver } from './driver'
+import { clearStorageDriver, getStorageDriver, setStorageDriver } from './driver'
 
 // test the storage driver system to ensure it works correctly
 // this regression test validates that the storage system initializes properly
 // which is critical for native auth to work
 
 describe('storage driver system', () => {
+  beforeEach(() => {
+    clearStorageDriver()
+  })
+
   describe('driver initialization', () => {
     it('getStorageDriver should return localStorage fallback on web', () => {
-      // web environment has localStorage which should be used as fallback
       const driver = getStorageDriver()
-      // in node/vitest environment, localStorage might not exist
-      // but if it does, the driver should work
-      if (typeof localStorage !== 'undefined') {
+      const hasUsableLocalStorage =
+        typeof globalThis.localStorage !== 'undefined' &&
+        typeof globalThis.localStorage.getItem === 'function'
+
+      if (hasUsableLocalStorage) {
         expect(driver).toBeTruthy()
+      } else {
+        expect(driver).toBeNull()
       }
     })
 

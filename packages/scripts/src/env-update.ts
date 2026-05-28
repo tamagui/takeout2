@@ -216,8 +216,12 @@ await cmd`sync environment variables from src/env.ts to matching files`
           const val = dep || defaultValue
 
           if (isGithubActions) {
+            // deps-derived versions track package.json — emit a literal so a
+            // stale repo secret can never shadow them (a stale ZERO_VERSION
+            // secret once pinned an old zero-cache protocol against a newer
+            // client). matches the .env codegen below, which already does this.
             return dep
-              ? `${indent}${key}: \${{ secrets.${key} || '${dep}' }}`
+              ? `${indent}${key}: '${dep}'`
               : `${indent}${key}: \${{ secrets.${key} }}`
           }
 

@@ -91,22 +91,26 @@ const getCommand = defineCommand({
     const results: Array<{ name: string; content: string }> = []
     const errors: Array<{ name: string; error: string }> = []
 
-    // check local ./docs folder first
+    // check local ./skills, then ./docs, then the package docs
     const cwd = process.cwd()
+    const localSkillsDir = join(cwd, 'skills')
     const localDocsDir = join(cwd, 'docs')
 
     // collect all docs
     for (const name of names) {
       const fileName = name.endsWith('.md') ? name : `${name}.md`
 
-      // try local docs first
-      const localFilePath = join(localDocsDir, fileName)
+      // prefer local skills, then local docs, then package docs
+      const localSkillsPath = join(localSkillsDir, fileName)
+      const localDocsPath = join(localDocsDir, fileName)
       const packageFilePath = join(DOCS_DIR, fileName)
 
       let filePath: string | null = null
 
-      if (existsSync(localFilePath)) {
-        filePath = localFilePath
+      if (existsSync(localSkillsPath)) {
+        filePath = localSkillsPath
+      } else if (existsSync(localDocsPath)) {
+        filePath = localDocsPath
       } else if (existsSync(packageFilePath)) {
         filePath = packageFilePath
       }

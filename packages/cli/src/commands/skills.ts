@@ -58,13 +58,21 @@ function toSkillName(name: string): string {
     .slice(0, 64)
 }
 
+// prefer a project's ./skills dir if it exists, else fall back to ./docs. lets
+// consumers cleanly separate agent skills (frontmatter md) from plain docs.
+function resolveLocalDocsDir(cwd: string): string {
+  const skillsDir = join(cwd, 'skills')
+  if (existsSync(skillsDir)) return skillsDir
+  return join(cwd, 'docs')
+}
+
 function collectAllDocs(
   cwd: string,
 ): Array<{ name: string; path: string; source: 'package' | 'local' }> {
   const docs: Array<{ name: string; path: string; source: 'package' | 'local' }> = []
   const seen = new Set<string>()
 
-  const localDocsDir = join(cwd, 'docs')
+  const localDocsDir = resolveLocalDocsDir(cwd)
   if (existsSync(localDocsDir)) {
     const files = readdirSync(localDocsDir).filter((f) => f.endsWith('.md'))
     for (const file of files) {
@@ -99,7 +107,7 @@ async function generateDocSkills(
 }> {
   const skillsDir = join(cwd, '.claude', 'skills')
   const docs = collectAllDocs(cwd)
-  const localDocsDir = join(cwd, 'docs')
+  const localDocsDir = resolveLocalDocsDir(cwd)
   const expectedSkillNames = new Set<string>()
 
   if (docs.length === 0) {

@@ -61,7 +61,12 @@ describe('observeMutation', () => {
     await done
 
     expect(local).toEqual([
-      { scope: 'server', kind: 'app', message: 'Could not create post.', details: undefined },
+      {
+        scope: 'server',
+        kind: 'app',
+        message: 'Could not create post.',
+        details: undefined,
+      },
     ])
     expect(global).toEqual(local)
     dispose()

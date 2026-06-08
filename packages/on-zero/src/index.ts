@@ -4,6 +4,7 @@ export * from './helpers/batchQuery'
 export * from './helpers/createMutators'
 export * from './helpers/ensureLoggedIn'
 export * from './helpers/mutatorContext'
+export * from './helpers/useMutation'
 export { ensureAuth, getAuth } from './helpers/getAuth'
 export { setAuthData, setEnvironment } from './state'
 

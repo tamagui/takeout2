@@ -1,5 +1,6 @@
 import { getTableName } from 'drizzle-orm'
 import { PgTable } from 'drizzle-orm/pg-core'
+import type { Pool } from 'pg'
 
 import { createDrizzle } from './createDrizzle'
 import { createPool, type CreatePoolOptions } from './createPool'
@@ -22,10 +23,23 @@ export type DatabaseConfig<
   TSchema extends Record<string, unknown>,
   TRelations extends AnyRelations | Record<string, unknown> = EmptyRelations,
 > = {
-  connectionString: string
+  /**
+   * The PG connection string. Required unless a pre-built `pool` is provided
+   * (it is still used by `migrate()` / `waitForDatabase()`, which need a string).
+   */
+  connectionString?: string
   schema: TSchema
   relations?: TRelations
-  pool?: Omit<CreatePoolOptions, 'connectionString'>
+  /**
+   * Optional pre-built Pool-like client (e.g. a DoBackend-backed Pool for the
+   * Cloudflare Durable Object runtime, where there is no external Postgres).
+   * When provided, `createPool` is skipped and this pool is used directly —
+   * mirrors `createZeroServer`'s `pool` option. `connectionString` is then only
+   * needed for the migration helpers.
+   */
+  pool?: Pool
+  /** Options forwarded to the default `createPool` (ignored when `pool` is set). */
+  poolOptions?: Omit<CreatePoolOptions, 'connectionString'>
   zero?: {
     publicationName: string
     publicTables: string[]
@@ -55,10 +69,14 @@ export function createDatabase<
 >(config: DatabaseConfig<TSchema, TRelations>) {
   const { connectionString, schema, relations, zero } = config
 
-  const pool = createPool({
-    connectionString,
-    ...config.pool,
-  })
+  // use a caller-provided pool (e.g. the Cloudflare DO-backed pool) when given;
+  // otherwise build the default real-pg pool from the connection string.
+  const pool =
+    config.pool ??
+    createPool({
+      connectionString: connectionString ?? '',
+      ...config.poolOptions,
+    })
 
   const drizzle = createDrizzle({
     pool,
@@ -84,6 +102,11 @@ export function createDatabase<
   }
 
   async function runMigrate(options: MigrateOptions) {
+    if (!connectionString) {
+      throw new Error(
+        'createDatabase: migrate() requires a `connectionString` (it is not derivable from a pre-built `pool`)',
+      )
+    }
     console.info('[database] waiting for database to be ready...')
     await waitForDatabase(connectionString)
 

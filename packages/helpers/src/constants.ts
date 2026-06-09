@@ -1,4 +1,4 @@
-import { isWeb } from '@tamagui/constants'
+import { isWeb } from './platform'
 
 export const isTauri: boolean = typeof window !== 'undefined' && '__TAURI__' in window
 
@@ -16,7 +16,7 @@ export const IS_SAFARI: boolean =
     typeof navigator.vendor === 'string' &&
     navigator.vendor.includes('Apple Computer'))
 
-export { isAndroid, isBrowser, isIos, isServer, isWeb } from '@tamagui/constants'
+export { isAndroid, isBrowser, isIos, isServer, isWeb } from './platform'
 
 export const EMPTY_ARRAY = [] as never
 export const EMPTY_OBJECT = {} as never

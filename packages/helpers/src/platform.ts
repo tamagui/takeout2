@@ -23,8 +23,16 @@ export const useIsomorphicLayoutEffect: typeof useEffect = isServer
 export const isChrome: boolean =
   typeof navigator !== 'undefined' && /Chrome/.test(navigator.userAgent || '')
 
+// guard the `window` access: in a web worker `navigator`/`location` exist (so
+// isClient is true) but `window` does NOT — touching it throws "window is not
+// defined" and kills the worker. soot bundles @take-out/helpers into its
+// project-server web worker, so the unguarded form (which @tamagui/constants
+// also ships, but never loads in a worker) hard-crashes preview bundling.
+// keep this typeof guard even though it diverges from @tamagui/constants.
 export const isWebTouchable: boolean =
-  isClient && ('ontouchstart' in window || navigator.maxTouchPoints > 0)
+  isClient &&
+  typeof window !== 'undefined' &&
+  ('ontouchstart' in window || navigator.maxTouchPoints > 0)
 
 export const isNativeDesktop: boolean = false
 export const isTouchable: boolean = !isWeb || isWebTouchable

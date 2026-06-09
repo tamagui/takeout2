@@ -1,4 +1,4 @@
-import { isAndroid } from '@tamagui/constants'
+import { isAndroid } from '~/constants/platform'
 import Constants from 'expo-constants'
 import * as Device from 'expo-device'
 import * as Notifications from 'expo-notifications'

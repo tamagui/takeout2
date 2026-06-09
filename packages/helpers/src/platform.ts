@@ -1,14 +1,60 @@
 // platform booleans, web/default variant.
-// re-implemented locally so @take-out/helpers carries no @tamagui/* runtime dep.
-// the native values live in platform.native.ts (resolved by metro / the react-native export condition).
+// Re-implemented locally (mirrors @tamagui/constants) so @take-out/helpers carries no @tamagui/* runtime dep.
+// The native values live in platform.native.ts (resolved by metro / the react-native export condition).
+
+import { useEffect, useLayoutEffect } from 'react'
 
 export const isWeb: boolean = true
 
+// RN adds fake window and document so its not simple to get this right
+// check both navigator and location
 export const isBrowser: boolean =
   typeof navigator !== 'undefined' && typeof location !== 'undefined'
 
-export const isServer: boolean = !isBrowser
+export const isServer: boolean = isWeb && !isBrowser
+export const isClient: boolean = isWeb && isBrowser
+/** @deprecated use isBrowser instead */
+export const isWindowDefined: boolean = isBrowser
 
-export const isAndroid: boolean = false
+export const useIsomorphicLayoutEffect: typeof useEffect = isServer
+  ? useEffect
+  : useLayoutEffect
 
-export const isIos: boolean = false
+export const isChrome: boolean =
+  typeof navigator !== 'undefined' && /Chrome/.test(navigator.userAgent || '')
+
+export const isWebTouchable: boolean =
+  isClient && ('ontouchstart' in window || navigator.maxTouchPoints > 0)
+
+export const isNativeDesktop: boolean = false
+export const isTouchable: boolean = !isWeb || isWebTouchable
+// set :boolean to avoid inferring type to false
+// On web, isAndroid/isIos are always false in production.
+// TEST_NATIVE_PLATFORM is only set by the test runner (vitest) to simulate native
+// environments (e.g. androidtv, tvos) from a web/jsdom test context.
+export const isAndroid: boolean =
+  process.env.TEST_NATIVE_PLATFORM === 'android' ||
+  process.env.TEST_NATIVE_PLATFORM === 'androidtv'
+export const isIos: boolean =
+  process.env.TEST_NATIVE_PLATFORM === 'ios' ||
+  process.env.TEST_NATIVE_PLATFORM === 'tvos'
+export const supportsDynamicColorIOS: boolean =
+  isIos || process.env.TAMAGUI_DYNAMIC_COLOR_IOS === '1'
+export const isTV: boolean =
+  process.env.TEST_NATIVE_PLATFORM === 'androidtv' ||
+  process.env.TEST_NATIVE_PLATFORM === 'tvos'
+/**
+ * Reflects Platform.OS. TV platforms are intentionally NOT separate values:
+ * - Android TV has Platform.OS === 'android' (react-native-tvos behavior)
+ * - tvOS has Platform.OS === 'ios' (react-native-tvos behavior)
+ * Use `isTV` combined with `isAndroid`/`isIos` to detect specific TV platforms.
+ */
+export const currentPlatform: 'web' | 'ios' | 'native' | 'android' = 'web'
+
+// In web source mode (Vite/webpack without pre-built dist), TAMAGUI_TARGET may not be set.
+// Set it here so all process.env.TAMAGUI_TARGET runtime checks work correctly.
+// In pre-built dist, the build tool inlines TAMAGUI_TARGET as a literal string,
+// making this block dead code (if (!'web') → never executes).
+if (!process.env.TAMAGUI_TARGET) {
+  process.env.TAMAGUI_TARGET = 'web'
+}

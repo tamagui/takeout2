@@ -1,4 +1,4 @@
-import { isClient } from '@tamagui/constants'
+import { isClient } from '~/constants/platform'
 
 export function createKVStore(userId: string | null): 'idb' | 'mem' {
   // use idb for logged in users on web client

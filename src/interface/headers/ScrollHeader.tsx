@@ -1,4 +1,4 @@
-import { isBrowser } from '@tamagui/constants'
+import { isBrowser } from '~/constants/platform'
 import { useEffect, useState } from 'react'
 import { XStack, YStack } from 'tamagui'
 

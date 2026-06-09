@@ -106,7 +106,6 @@
     "@take-out/native-hot-update": "workspace:*",
     "@take-out/database": "workspace:*",
     "@tamagui/config": "2.1.0-1780964419737",
-    "@tamagui/constants": "2.1.0-1780964419737",
     "@tamagui/helpers-icon": "2.1.0-1780964419737",
     "@tamagui/linear-gradient": "2.1.0-1780964419737",
     "@tamagui/menu": "2.1.0-1780964419737",

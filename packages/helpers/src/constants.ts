@@ -16,7 +16,7 @@ export const IS_SAFARI: boolean =
     typeof navigator.vendor === 'string' &&
     navigator.vendor.includes('Apple Computer'))
 
-export { isAndroid, isBrowser, isIos, isServer, isWeb } from './platform'
+export * from './platform'
 
 export const EMPTY_ARRAY = [] as never
 export const EMPTY_OBJECT = {} as never

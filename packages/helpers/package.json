@@ -1,6 +1,6 @@
 {
   "name": "@take-out/helpers",
-  "version": "0.4.20",
+  "version": "0.4.21",
   "sideEffects": false,
   "type": "module",
   "source": "src/index.ts",
@@ -24,22 +24,22 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "react-native": "./dist/esm/index.native.js",
       "types": "./src/index.ts",
+      "react-native": "./dist/esm/index.native.js",
       "import": "./dist/esm/index.mjs",
       "require": "./dist/cjs/index.cjs",
       "default": "./dist/esm/index.mjs"
     },
     "./server-only": {
-      "react-native": "./dist/esm/server-only.native.js",
       "types": "./src/server-only.ts",
+      "react-native": "./dist/esm/server-only.native.js",
       "import": "./dist/esm/server-only.mjs",
       "require": "./dist/cjs/server-only.cjs",
       "default": "./dist/esm/server-only.mjs"
     },
     "./client-only": {
-      "react-native": "./dist/esm/client-only.native.js",
       "types": "./src/client-only.ts",
+      "react-native": "./dist/esm/client-only.native.js",
       "import": "./dist/esm/client-only.mjs",
       "require": "./dist/cjs/client-only.cjs",
       "default": "./dist/esm/client-only.mjs"

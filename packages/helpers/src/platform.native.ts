@@ -36,19 +36,23 @@ export const isTV: boolean =
   process.env.TEST_NATIVE_PLATFORM === 'androidtv' ||
   process.env.TEST_NATIVE_PLATFORM === 'tvos'
 
-const platforms = {
+type CurrentPlatform = 'web' | 'ios' | 'native' | 'android' | 'macos' | 'windows'
+
+// Platform.OS includes 'web' in its type (PlatformOSType) but never at native runtime,
+// so the map is partial — any unmapped OS falls through to 'native'.
+const platforms: Partial<Record<typeof Platform.OS, CurrentPlatform>> = {
   ios: 'ios',
   android: 'android',
   macos: 'macos',
   windows: 'windows',
-} as const
+}
 /**
  * Reflects Platform.OS. TV platforms are intentionally NOT separate values:
  * - Android TV has Platform.OS === 'android' (react-native-tvos behavior)
  * - tvOS has Platform.OS === 'ios' (react-native-tvos behavior)
  * Use `isTV` combined with `isAndroid`/`isIos` to detect specific TV platforms.
  */
-export const currentPlatform: 'web' | 'ios' | 'native' | 'android' | 'macos' | 'windows' =
+export const currentPlatform: CurrentPlatform =
   (Platform?.OS ? platforms[Platform.OS] : undefined) || 'native'
 
 // In Metro source mode, TAMAGUI_TARGET may not be set by the build tool.

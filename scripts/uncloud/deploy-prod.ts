@@ -1,5 +1,7 @@
 #!/usr/bin/env bun
 
+import { tmpdir } from 'node:os'
+
 import { cmd } from '@take-out/cli'
 
 await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
@@ -90,6 +92,74 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
       console.info(colors.gray('  pgdb stopped cleanly'))
     } catch {
       console.info(colors.gray('  pgdb: not running or already stopped'))
+    }
+  }
+
+  // run migrations as a one-off container from the pushed web image, before the
+  // stack deploys. the image carries the repo + node_modules + bun, and migrate.ts
+  // creates the zero publication on completion (ensureZeroPublication). running it
+  // first means the publication + zero_cvr/zero_cdb databases exist before zero
+  // connects upstream — otherwise zero comes up against a db with no publication.
+  // db urls go through a scp'd env file so they never land in logs or process args.
+  async function runMigrations(
+    host: string,
+    sshKey: string,
+    dbUrls: { ZERO_UPSTREAM_DB: string; ZERO_CVR_DB: string; ZERO_CHANGE_DB: string },
+  ): Promise<void> {
+    console.info('\n🔧 running database migrations...\n')
+
+    const envFileContent =
+      [
+        'ALLOW_MISSING_ENV=1',
+        'NODE_TLS_REJECT_UNAUTHORIZED=0',
+        `GIT_SHA=${process.env.GIT_SHA || 'unknown'}`,
+        `ZERO_UPSTREAM_DB=${dbUrls.ZERO_UPSTREAM_DB}`,
+        `ZERO_CVR_DB=${dbUrls.ZERO_CVR_DB}`,
+        `ZERO_CHANGE_DB=${dbUrls.ZERO_CHANGE_DB}`,
+      ].join('\n') + '\n'
+
+    const localEnvFile = path.join(tmpdir(), 'takeout-migrate.env')
+    const remoteEnvFile = '/tmp/takeout-migrate.env'
+    await fs.promises.writeFile(localEnvFile, envFileContent, { mode: 0o600 })
+
+    const ssh = getSSHCmd(host, sshKey)
+    try {
+      await run(
+        `scp -i ${sshKey} -o StrictHostKeyChecking=no ${localEnvFile} ${host}:${remoteEnvFile}`,
+        { silent: true },
+      )
+
+      // capture output so we can both verify success and surface it on failure.
+      // migrate.ts exits non-zero on hard errors (run() throws), but ensureZeroPublication
+      // logs "no public tables found" and returns on a 0 exit — the exact silent failure
+      // that broke the first rollout. verify the publication step actually ran.
+      let migrationOutput = ''
+      try {
+        const { stdout } = await run(
+          `${ssh} "docker run --rm --env-file ${remoteEnvFile} takeout-web:latest bun src/database/migrate.ts 2>&1"`,
+          { captureOutput: true },
+        )
+        migrationOutput = stdout.trim()
+      } catch (err) {
+        const out = (err as { cause?: { stdout?: string } })?.cause?.stdout?.trim()
+        if (out) console.error(colors.red(out))
+        throw err
+      }
+
+      if (migrationOutput) console.info(colors.gray(migrationOutput))
+
+      if (!/\[database\] migrations complete/.test(migrationOutput)) {
+        throw new Error('migration did not report completion (see output above)')
+      }
+      if (/no public tables found/i.test(migrationOutput)) {
+        throw new Error(
+          'migration ran but the zero publication was NOT created (no public tables found)',
+        )
+      }
+      console.info('✅ migrations complete (zero publication verified)')
+    } finally {
+      await run(`${ssh} "rm -f ${remoteEnvFile}"`, { silent: true }).catch(() => {})
+      await fs.promises.unlink(localEnvFile).catch(() => {})
     }
   }
 
@@ -349,8 +419,21 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
     await gracefulStopZero(host, DEPLOY_SSH_KEY)
     await gracefulStopPgdb(host, DEPLOY_SSH_KEY)
 
-    // deploy without pgdb profile since using external database
-    await deployStack(processedCompose)
+    // migrate before deploying so the zero publication exists before zero starts
+    await runMigrations(host, DEPLOY_SSH_KEY, {
+      ZERO_UPSTREAM_DB,
+      ZERO_CVR_DB,
+      ZERO_CHANGE_DB,
+    })
+
+    // deploy web with --recreate to pick up the freshly pushed :latest image
+    // (no pgdb profile — using an external managed database)
+    await deployStack(processedCompose, { service: 'web' })
+
+    // deploy zero WITHOUT --recreate: uncloud restarts it only when its image/config
+    // actually changed (e.g. a ZERO_VERSION bump), so a web-only deploy doesn't trigger
+    // a websocket reconnect storm. the replica volume is preserved across the restart.
+    await deployStack(processedCompose, { service: 'zero', recreate: false })
 
     // deploy caddy with custom tls config if origin ca certs are configured
     await deployCaddyWithTLS(host, DEPLOY_SSH_KEY)

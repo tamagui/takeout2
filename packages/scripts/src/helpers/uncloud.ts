@@ -126,13 +126,21 @@ export async function pushImage(
 
 export async function deployStack(
   composeFile: string,
-  options?: { profile?: string } & UncloudConfig,
+  options?: { profile?: string; service?: string; recreate?: boolean } & UncloudConfig,
 ): Promise<void> {
-  console.info('\n📦 deploying stack...\n')
+  const service = options?.service
+  console.info(`\n📦 deploying ${service ?? 'stack'}...\n`)
 
   const profileFlag = options?.profile ? `--profile ${options.profile}` : ''
-  // --recreate ensures containers are recreated even if config unchanged (pulls fresh images)
-  await run(`${ucCmd(options)} deploy -f ${composeFile} ${profileFlag} --recreate --yes`)
+  // --recreate forces fresh containers even when config is unchanged (picks up the new
+  // :latest image). pass recreate:false to let uncloud restart a service ONLY when its
+  // image/config actually changed — used for zero, whose restarts drop every websocket
+  // connection and cause a client reconnect storm.
+  const recreateFlag = options?.recreate === false ? '' : '--recreate'
+  const serviceArg = service ? ` ${service}` : ''
+  await run(
+    `${ucCmd(options)} deploy -f ${composeFile} ${profileFlag} ${recreateFlag} --yes${serviceArg}`,
+  )
 
   console.info('\n✅ deployment complete!')
 }

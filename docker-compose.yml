@@ -54,8 +54,19 @@ services:
       # maps host.docker.internal to the host gateway IP on Linux
       # on Mac/Windows Docker Desktop, this is already available
       - "host.docker.internal:host-gateway"
+    healthcheck:
+      # zero-cache only opens its http/ws listener after all workers (incl. initial
+      # replication) are ready, so a 200/anything response here is a true readiness signal.
+      # fast cadence + generous retries to cover slow-runner initial sync (~2 min budget).
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4848/"]
+      interval: 2s
+      timeout: 5s
+      retries: 60
+      start_period: 10s
     environment:
       ZERO_LOG_LEVEL: ${ZERO_LOG_LEVEL:-warn}
+      # keep the replica db inside the mounted volume so restarts reuse it instead of re-syncing
+      ZERO_REPLICA_FILE: /app/sync-replica.db
       ZERO_UPSTREAM_DB: postgresql://user:password@pgdb:5432/postgres
       ZERO_CVR_DB: postgresql://user:password@pgdb:5432/zero_cvr
       ZERO_CHANGE_DB: postgresql://user:password@pgdb:5432/zero_cdb

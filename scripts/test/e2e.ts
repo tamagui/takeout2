@@ -203,7 +203,8 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
       // now start zero-cache (needs tables + publication from migrations)
       console.info('Starting zero-cache...')
       void run('docker compose up zero --remove-orphans --no-color', {
-        env: { ...testEnv, ZERO_LOG_LEVEL: 'warn' },
+        // info level so the docker-logs dump on failure shows connection-level detail
+        env: { ...testEnv, ZERO_LOG_LEVEL: 'info' },
         detached: true,
       })
 
@@ -241,7 +242,10 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
         await waitForRun('backend')
 
         await startFrontend()
-        await waitForPort(ports.zero)
+        // a raw tcp check on zero passes the instant docker binds the host port, long
+        // before zero-cache serves anything. it only opens its http listener after all
+        // workers (incl. initial replication) are ready, so probe http instead.
+        await waitForZeroReady(ports.zero)
         await waitForPort(ports.web)
 
         const testEnv = await getTestEnv()
@@ -259,6 +263,23 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
         failures.push({ task: 'integration tests', error })
         throw error
       }
+    }
+
+    async function waitForZeroReady(port: number) {
+      const url = `http://127.0.0.1:${port}/`
+      const timeoutMs = 120_000
+      const deadline = Date.now() + timeoutMs
+      console.info('Waiting for zero-cache http listener...')
+      while (Date.now() < deadline) {
+        try {
+          // any http response means the listener is up; status is irrelevant
+          await fetch(url)
+          return
+        } catch {
+          await sleep(1000)
+        }
+      }
+      throw new Error(`zero-cache did not serve http on ${url} after ${timeoutMs}ms`)
     }
 
     async function printDockerLogs() {

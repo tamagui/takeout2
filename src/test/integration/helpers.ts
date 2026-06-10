@@ -32,7 +32,8 @@ export async function gotoAndWaitForZero(
         timeout: perAttemptTimeout,
       })
       const ms = Date.now() - start
-      if (ms > 5000) console.info(`[zero] slow connect: ${ms}ms on attempt ${attempt} (${pathname})`)
+      if (ms > 5000)
+        console.info(`[zero] slow connect: ${ms}ms on attempt ${attempt} (${pathname})`)
       return
     } catch (err) {
       if (attempt === maxAttempts) throw err

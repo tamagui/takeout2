@@ -12,14 +12,43 @@ export async function gotoAndWaitForZero(
   pathname: string,
   options: { timeout?: number } = {},
 ) {
+  // PROBE: capture browser console (zero events / connection state) + connect timing
+  // to diagnose CI-only zero-connect failures. revert after diagnosis.
+  page.on('console', (msg) => {
+    const t = msg.text()
+    if (/zero|connect|Zero|websocket|auth/i.test(t)) {
+      console.info(`[browser] ${t}`)
+    }
+  })
+  page.on('pageerror', (err) => console.info(`[browser-error] ${err.message}`))
+
   await page.goto(`${BASE_URL}${pathname}`, {
     waitUntil: 'domcontentloaded',
     timeout: 15000,
   })
-  await page.locator('body[data-zero-connected="true"]').waitFor({
-    state: 'attached',
-    timeout: options.timeout ?? 60000,
-  })
+  const start = Date.now()
+  try {
+    await page.locator('body[data-zero-connected="true"]').waitFor({
+      state: 'attached',
+      // PROBE: raised from 60000 to see whether zero EVENTUALLY connects (slow) or never (bug)
+      timeout: options.timeout ?? 180000,
+    })
+    console.info(`[probe] zero connected in ${Date.now() - start}ms (${pathname})`)
+  } catch (e) {
+    const diag = await page
+      .evaluate(() => {
+        const z = (globalThis as any).zero
+        return {
+          connState: z?.connection?.state?.value ?? z?.connectionState ?? 'unknown',
+          bodyAttr: document.body?.dataset?.zeroConnected ?? 'unset',
+        }
+      })
+      .catch((err) => ({ evalError: String(err) }))
+    console.info(
+      `[probe] zero NEVER connected after ${Date.now() - start}ms (${pathname}); diag=${JSON.stringify(diag)}`,
+    )
+    throw e
+  }
 }
 
 export async function loginAsDemo(page: Page, pathname = '/') {

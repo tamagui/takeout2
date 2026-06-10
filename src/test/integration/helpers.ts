@@ -12,42 +12,34 @@ export async function gotoAndWaitForZero(
   pathname: string,
   options: { timeout?: number } = {},
 ) {
-  // PROBE: capture browser console (zero events / connection state) + connect timing
-  // to diagnose CI-only zero-connect failures. revert after diagnosis.
-  page.on('console', (msg) => {
-    const t = msg.text()
-    if (/zero|connect|Zero|websocket|auth/i.test(t)) {
-      console.info(`[browser] ${t}`)
-    }
-  })
-  page.on('pageerror', (err) => console.info(`[browser-error] ${err.message}`))
-
-  await page.goto(`${BASE_URL}${pathname}`, {
-    waitUntil: 'domcontentloaded',
-    timeout: 15000,
-  })
-  const start = Date.now()
-  try {
-    await page.locator('body[data-zero-connected="true"]').waitFor({
-      state: 'attached',
-      // PROBE: raised from 60000 to see whether zero EVENTUALLY connects (slow) or never (bug)
-      timeout: options.timeout ?? 180000,
+  // zero normally connects in ~1s. but on a resource-constrained CI runner the first
+  // connection attempt after login occasionally loses a race and zero retries with a
+  // ~60s websocket backoff, so a single connect can take 60-90s before succeeding. a
+  // fresh page load starts a new connection immediately (no backoff), so retry by
+  // reloading rather than waiting out one long backoff or flaking. zero recovers — this
+  // is not a hang; see investigation in git history (zero 1.6 connect-backoff in CI).
+  const perAttemptTimeout = options.timeout ?? 35000
+  const maxAttempts = 3
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    await page.goto(`${BASE_URL}${pathname}`, {
+      waitUntil: 'domcontentloaded',
+      timeout: 15000,
     })
-    console.info(`[probe] zero connected in ${Date.now() - start}ms (${pathname})`)
-  } catch (e) {
-    const diag = await page
-      .evaluate(() => {
-        const z = (globalThis as any).zero
-        return {
-          connState: z?.connection?.state?.value ?? z?.connectionState ?? 'unknown',
-          bodyAttr: document.body?.dataset?.zeroConnected ?? 'unset',
-        }
+    const start = Date.now()
+    try {
+      await page.locator('body[data-zero-connected="true"]').waitFor({
+        state: 'attached',
+        timeout: perAttemptTimeout,
       })
-      .catch((err) => ({ evalError: String(err) }))
-    console.info(
-      `[probe] zero NEVER connected after ${Date.now() - start}ms (${pathname}); diag=${JSON.stringify(diag)}`,
-    )
-    throw e
+      const ms = Date.now() - start
+      if (ms > 5000) console.info(`[zero] slow connect: ${ms}ms on attempt ${attempt} (${pathname})`)
+      return
+    } catch (err) {
+      if (attempt === maxAttempts) throw err
+      console.info(
+        `[zero] not connected within ${perAttemptTimeout}ms, reloading (attempt ${attempt + 1}/${maxAttempts}) (${pathname})`,
+      )
+    }
   }
 }
 

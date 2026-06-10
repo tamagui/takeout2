@@ -1,15 +1,6 @@
-import { useZero } from '@rocicorp/zero/react'
+import { useConnectionState, useZero } from '@rocicorp/zero/react'
 import { createZeroClient, run } from 'on-zero'
-import {
-  Component,
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react'
+import { Component, memo, useEffect, useMemo, useRef, type ReactNode } from 'react'
 import { debounce, SizableText, YStack } from 'tamagui'
 
 import { Button } from '~/interface/buttons/Button'
@@ -20,14 +11,10 @@ import * as groupedQueries from '~/data/generated/groupedQueries'
 import { models } from '~/data/generated/models'
 import { userByUsername } from '~/data/queries/user'
 import { schema } from '~/data/generated/schema'
-import { useAuth } from '~/features/auth/client/authClient'
+import { authClient, useAuth } from '~/features/auth/client/authClient'
 import { setDevGlobal } from '~/features/devtools/devGlobal'
 import { showToast } from '~/interface/toast/Toast'
 import { unstable_batchedUpdates } from './batchUpdates'
-import {
-  resetShownClientDataError,
-  showClientDataErrorOnce,
-} from './helpers/showClientDataError'
 import { createKVStore } from './storage'
 
 export const {
@@ -47,7 +34,6 @@ export const {
 const ProvideZeroImpl = ({ children }: { children: ReactNode }) => {
   const auth = useAuth()
   const userId = auth?.user?.id || 'anon'
-  const [zeroDisabledByError, setZeroDisabledByError] = useState(false)
 
   // stabilize authData across auth transitions to prevent mutations from
   // seeing null during brief re-render gaps (e.g. session refresh, tab wake)
@@ -57,26 +43,19 @@ const ProvideZeroImpl = ({ children }: { children: ReactNode }) => {
   }
   const stableAuthData = auth.authData ?? stableAuthDataRef.current
 
-  const disable = !auth?.user?.email || zeroDisabledByError
+  const authed = !!auth?.user?.email
 
   const kvStore = useMemo(() => createKVStore(userId), [userId])
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
-      console.info(`[zero] ${disable ? 'disabled' : 'enabled'}`, {
+      console.info(`[zero] ${authed ? 'authed' : 'anon'}`, {
         userId,
         ZERO_SERVER_URL,
         kvStore,
       })
     }
-  }, [disable, userId, kvStore])
-
-  useEffect(() => {
-    if (!zeroDisabledByError) {
-      resetShownClientDataError('zero-client-state-not-found')
-      resetShownClientDataError('zero-update-needed')
-    }
-  }, [zeroDisabledByError])
+  }, [authed, userId, kvStore])
 
   // prefer explicit session auth for zero when available
   const zeroAuth = (() => {
@@ -98,33 +77,6 @@ const ProvideZeroImpl = ({ children }: { children: ReactNode }) => {
       authData={stableAuthData}
       cacheURL={ZERO_SERVER_URL}
       {...(unstable_batchedUpdates ? { batchViewUpdates: unstable_batchedUpdates } : {})}
-      onClientStateNotFound={useCallback((reason?: string) => {
-        const description =
-          reason ||
-          'The local data needed to keep this page in sync is no longer available.'
-        console.error('[zero] client state not found', { reason: description })
-        setZeroDisabledByError(true)
-        showClientDataErrorOnce({
-          key: 'zero-client-state-not-found',
-          title: 'Sync Error',
-          description,
-        })
-      }, [])}
-      onUpdateNeeded={useCallback((reason?: { type?: string; message?: string }) => {
-        const description = [
-          'A local sync update is required before this page can continue.',
-          reason?.message,
-        ]
-          .filter(Boolean)
-          .join(' ')
-        console.error('[zero] update needed', reason)
-        setZeroDisabledByError(true)
-        showClientDataErrorOnce({
-          key: 'zero-update-needed',
-          title: 'Sync Error',
-          description,
-        })
-      }, [])}
     >
       {children}
       <ZeroDebug />
@@ -182,6 +134,7 @@ export const ProvideZero = ({ children }: { children: ReactNode }) => (
   </ZeroErrorBoundary>
 )
 
+// module-level so they survive remounts and zero instance swaps
 let lastConnectionState: 'disconnected' | 'connected' | 'idle' = 'idle'
 
 const announceDisconnected = debounce(() => {
@@ -193,44 +146,100 @@ const announceDisconnected = debounce(() => {
 
 let hasEverConnected = false
 
+// refresh the better-auth session and resume zero when zero-cache rejected our
+// auth (expired token). ZeroProvider only auto-resumes when the auth string
+// CHANGES, so an expired token strands the run loop in needs-auth until we
+// manually reconnect with a fresh token.
+const recoverNeedsAuth = async (zero: ReturnType<typeof useZero>) => {
+  const { data } = await authClient.getSession()
+  const token = data?.session?.token
+  if (token) {
+    await zero.connection.connect({ auth: token })
+  }
+}
+
 const ZeroConnectionMonitor = () => {
+  // must use useConnectionState (not the module-level zero proxy): ZeroProvider
+  // recreates the zero instance on userID/auth changes (anon -> authed on every
+  // authed page load), and a proxy subscription stays bound to the dead instance.
+  const connectionState = useConnectionState()
+  const zero = useZero()
+  const needsAuthAttempted = useRef(false)
+
   useEffect(() => {
-    const unsub1 = zero.connection.state.subscribe((connectionState) => {
-      if (connectionState.name === 'connected') {
-        announceDisconnected.cancel()
-        if (hasEverConnected && lastConnectionState === 'disconnected') {
-          showToast(`Re-connected!`)
-        }
-        hasEverConnected = true
-        lastConnectionState = 'connected'
-        // signal readiness for e2e tests waiting on zero sync
-        if (typeof document !== 'undefined') {
-          document.body.dataset.zeroConnected = 'true'
-        }
-        return
-      }
+    const reason =
+      'reason' in connectionState && typeof connectionState.reason === 'string'
+        ? connectionState.reason
+        : ''
 
-      if (
-        connectionState.name === 'disconnected' ||
-        connectionState.name === 'error' ||
-        connectionState.name === 'closed'
-      ) {
-        lastConnectionState = 'disconnected'
-        if (hasEverConnected) {
-          announceDisconnected()
-        }
-        return
+    if (typeof document !== 'undefined') {
+      document.body.dataset.zeroState = connectionState.name
+      if (reason) {
+        document.body.dataset.zeroReason = reason.slice(0, 200)
+      } else {
+        delete document.body.dataset.zeroReason
       }
-    })
+    }
 
-    const unsub2 = zeroEvents.listen((event) => {
+    if (process.env.NODE_ENV === 'development' || process.env.IS_TESTING === '1') {
+      console.info(
+        `[zero] connection ${connectionState.name}`,
+        reason ? `reason=${reason}` : '',
+      )
+    }
+
+    if (connectionState.name !== 'needs-auth') {
+      needsAuthAttempted.current = false
+    }
+
+    if (connectionState.name === 'connected') {
+      announceDisconnected.cancel()
+      if (hasEverConnected && lastConnectionState === 'disconnected') {
+        showToast(`Re-connected!`)
+      }
+      hasEverConnected = true
+      lastConnectionState = 'connected'
+      // signal readiness for e2e tests waiting on zero sync
+      if (typeof document !== 'undefined') {
+        document.body.dataset.zeroConnected = 'true'
+      }
+      return
+    }
+
+    if (connectionState.name === 'needs-auth') {
+      if (typeof document !== 'undefined') {
+        delete document.body.dataset.zeroConnected
+      }
+      // attempt recovery at most once per transition into needs-auth
+      if (!needsAuthAttempted.current) {
+        needsAuthAttempted.current = true
+        recoverNeedsAuth(zero).catch((error: unknown) => {
+          console.warn('[zero] needs-auth recovery failed', error)
+        })
+      }
+      return
+    }
+
+    if (
+      connectionState.name === 'disconnected' ||
+      connectionState.name === 'error' ||
+      connectionState.name === 'closed'
+    ) {
+      lastConnectionState = 'disconnected'
+      if (typeof document !== 'undefined') {
+        delete document.body.dataset.zeroConnected
+      }
+      if (hasEverConnected) {
+        announceDisconnected()
+      }
+      return
+    }
+  }, [connectionState, zero])
+
+  useEffect(() => {
+    return zeroEvents.listen((event) => {
       console.warn('zero event', event)
     })
-
-    return () => {
-      unsub1()
-      unsub2()
-    }
   }, [])
 
   return null

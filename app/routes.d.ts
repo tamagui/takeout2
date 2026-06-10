@@ -6,7 +6,7 @@ import type { OneRouter } from 'one'
 declare module 'one' {
   export namespace OneRouter {
     export interface __routes<T extends string = string> extends Record<string, unknown> {
-      StaticRoutes: 
+      StaticRoutes:
         | `/`
         | `/(app)`
         | `/(app)/auth`
@@ -73,7 +73,7 @@ declare module 'one' {
         | `/privacy-policy`
         | `/terms-of-service`
         | `/test/ssr-permissions`
-      DynamicRoutes: 
+      DynamicRoutes:
         | `/(app)/auth/signup/${OneRouter.SingleRoutePart<T>}`
         | `/(app)/home/(tabs)/feed/post/${OneRouter.SingleRoutePart<T>}`
         | `/(app)/home/(tabs)/feed/profile/${OneRouter.SingleRoutePart<T>}`
@@ -89,7 +89,7 @@ declare module 'one' {
         | `/home/feed/post/${OneRouter.SingleRoutePart<T>}`
         | `/home/feed/profile/${OneRouter.SingleRoutePart<T>}`
         | `/home/profile/post/${OneRouter.SingleRoutePart<T>}`
-      DynamicRouteTemplate: 
+      DynamicRouteTemplate:
         | `/(app)/auth/signup/[method]`
         | `/(app)/home/(tabs)/feed/post/[feedId]`
         | `/(app)/home/(tabs)/feed/profile/[userId]`

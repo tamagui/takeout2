@@ -1,5 +1,5 @@
 import { useId } from 'react'
-import Svg, { Defs, LinearGradient, Stop, Rect, Circle } from 'react-native-svg'
+import { Svg, Defs, LinearGradient, Stop, Rect, Circle } from 'react-native-svg'
 
 import { useIconProps } from '~/interface/icons/useIconProps'
 

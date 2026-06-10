@@ -95,7 +95,7 @@ await cmd`Add a Phosphor icon to the project`.run(async ({ fs, path }) => {
 
     const pathsCode = paths.map((path) => `      ${path}`).join('\n')
 
-    return `import Svg, { Path } from 'react-native-svg'
+    return `import { Svg, Path } from 'react-native-svg'
 import { useIconProps } from '~/interface/icons/useIconProps'
 import type { IconProps } from '~/interface/icons/types'
 

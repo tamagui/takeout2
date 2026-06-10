@@ -1,4 +1,4 @@
-import Svg, { Path } from 'react-native-svg'
+import { Svg, Path } from 'react-native-svg'
 import { useTheme } from 'tamagui'
 
 import { getIconSize } from '~/interface/icons/helpers'

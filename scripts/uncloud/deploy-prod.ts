@@ -26,6 +26,18 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
   const DEPLOY_SSH_KEY =
     process.env.DEPLOY_SSH_KEY || `${process.env.HOME}/.ssh/uncloud_deploy`
 
+  // the deployed commit sha must reach the containers so /api/health can report
+  // it. CI and local both run this from the repo checkout, so derive it from git
+  // when not already set — it flows into the processed compose env and the
+  // migration env file, both of which read process.env.GIT_SHA.
+  if (!process.env.GIT_SHA) {
+    const { stdout } = await run('git rev-parse HEAD', {
+      captureOutput: true,
+      silent: true,
+    })
+    process.env.GIT_SHA = stdout.trim()
+  }
+
   function getSSHCmd(host: string, sshKey: string): string {
     return `ssh -i ${sshKey} -o StrictHostKeyChecking=no ${host}`
   }

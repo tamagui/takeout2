@@ -1,6 +1,6 @@
 import { defineQueries, defineQuery, Zero as ZeroClient } from '@rocicorp/zero'
 import { useConnectionState, useZero, ZeroProvider } from '@rocicorp/zero/react'
-import { createEmitter } from '@take-out/helpers'
+import { createEmitter, useEmitterValue } from '@take-out/helpers'
 import {
   createContext,
   memo,
@@ -251,22 +251,29 @@ export function createZeroClient<
     return null
   }
 
-  // the zero instance lives OUTSIDE the react lifecycle. react 18 suspense
-  // hide/reveal (a lazy route chunk suspending after commit, strict mode, any
-  // Offscreen cycle) unmounts and re-fires the effects of a committed tree
-  // while preserving its state — when ZeroProvider created zero inside its own
-  // effect, every such cycle closed the live instance (its run loop dying with
-  // "Failed to connect / Store is closed") and created a replacement, killing
-  // in-flight queries and preloads. instead we create the instance during
-  // render, cache it here per identity key, hand it to ZeroProvider as an
-  // external `zero` (which it never closes), and close the previous instance
-  // only when the key truly changes — a real identity change (user, storage,
-  // server, logged in/out), never a react lifecycle artifact.
+  // the zero instance lives OUTSIDE the react lifecycle. react destroys and
+  // re-fires the effects of a committed tree on any suspense hide/reveal, and
+  // consumers also remount the provider (splash -> IDE). when ZeroProvider
+  // created zero inside its own effect, every such cycle closed the live
+  // instance mid-connect ("Failed to connect / Store is closed") and built a
+  // replacement, killing in-flight queries and preloads. instead the instance
+  // is created in an effect, cached here per identity key, handed to
+  // ZeroProvider as an external `zero` (which it never closes), and the
+  // previous instance is closed only when the key truly changes — a real
+  // identity change (user, storage, server, logged in/out), never a react
+  // lifecycle artifact. single-provider assumption: one mounted ProvideZero
+  // per client (true of every consumer); two simultaneously mounted providers
+  // with different identities would thrash this slot.
   let cachedZero: { key: string; instance: ZeroInstance } | null = null
 
   // bumping this recreates the instance with the same options — parity with
-  // ZeroProvider's built-in onClientStateNotFound rotation.
+  // ZeroProvider's built-in onClientStateNotFound rotation. the pending flag
+  // mirrors upstream's rotationPendingRef: a storm of client-state-not-found
+  // callbacks coalesces into ONE rotation, re-armed when the fresh instance
+  // is created — without it a new instance that immediately re-fires the
+  // callback rotation-loops forever.
   const zeroInstanceGeneration = createEmitter<number>('zero-instance-generation', 0)
+  let zeroRotationPending = false
 
   const ProvideZero = ({
     children,
@@ -297,8 +304,7 @@ export function createZeroClient<
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    const [generation, setGeneration] = useState(zeroInstanceGeneration.value)
-    useEffect(() => zeroInstanceGeneration.listen(setGeneration), [])
+    const generation = useEmitterValue(zeroInstanceGeneration)
 
     const auth = 'auth' in props ? (props as { auth?: string | null }).auth : undefined
     const hasAuth = typeof auth === 'string'
@@ -318,63 +324,72 @@ export function createZeroClient<
       generation,
     ])
 
-    const instance =
-      typeof window === 'undefined'
-        ? undefined
-        : (() => {
-            if (cachedZero?.key === instanceKey) return cachedZero.instance
-            cachedZero?.instance.close()
-            const options = props as Omit<
-              ZeroOptions<Schema, ZeroMutators>,
-              'schema' | 'mutators'
-            >
-            cachedZero = {
-              key: instanceKey,
-              instance: new ZeroClient<Schema, ZeroMutators>({
-                kvStore: 'mem',
-                ...options,
-                schema,
-                // @ts-expect-error same erasure ZeroProvider needed
-                mutators,
-                onClientStateNotFound: () => {
-                  // consumer callback wins; recreate-with-same-options is the
-                  // fallback, mirroring ZeroProvider's internal rotation.
-                  if (options.onClientStateNotFound) {
-                    try {
-                      options.onClientStateNotFound()
-                      return
-                    } catch {
-                      // fall through to rotation
-                    }
-                  }
-                  zeroInstanceGeneration.emit(zeroInstanceGeneration.value + 1)
-                },
-              }),
-            }
-            return cachedZero.instance
-          })()
+    // create/rotate in an effect — commit-safe: a discarded concurrent render
+    // can never close an instance the committed tree still uses. a suspense
+    // hide/reveal re-runs this effect with an unchanged key — cache hit, no
+    // churn, no cleanup-close. children mounting one effect-tick after the
+    // provider matches ZeroProvider's internal-creation timing, which consumer
+    // boot orchestration observes.
+    const [instance, setInstance] = useState<ZeroInstance | undefined>()
+    useEffect(() => {
+      let cached = cachedZero
+      if (cached?.key !== instanceKey) {
+        cached?.instance.close()
+        const options = props as Omit<
+          ZeroOptions<Schema, ZeroMutators>,
+          'schema' | 'mutators'
+        >
+        cached = {
+          key: instanceKey,
+          instance: new ZeroClient<Schema, ZeroMutators>({
+            kvStore: 'mem',
+            ...options,
+            schema,
+            // @ts-expect-error same erasure ZeroProvider needed
+            mutators,
+            onClientStateNotFound: () => {
+              // consumer callback wins; recreate-with-same-options is the
+              // fallback, mirroring ZeroProvider's internal rotation.
+              if (options.onClientStateNotFound) {
+                try {
+                  options.onClientStateNotFound()
+                  return
+                } catch {
+                  // fall through to rotation
+                }
+              }
+              if (zeroRotationPending) return
+              zeroRotationPending = true
+              zeroInstanceGeneration.emit(zeroInstanceGeneration.value + 1)
+            },
+          }),
+        }
+        cachedZero = cached
+        zeroRotationPending = false
+      }
+      setInstance(cached.instance)
+      // identity is fully captured by instanceKey; function props are bound
+      // at construction by design.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [instanceKey])
 
     // a changed token on the same identity refreshes auth in place — zero
-    // sends an auth update over the live connection instead of reconnecting.
+    // sends an auth update over the live connection instead of reconnecting
+    // (upstream ZeroProvider does exactly this). string <-> undefined flips
+    // rotate the instance via hasAuth in the identity key instead.
     const prevAuthRef = useRef(auth)
     useEffect(() => {
-      if (instance && typeof auth === 'string' && prevAuthRef.current !== auth) {
+      const prevAuth = prevAuthRef.current
+      prevAuthRef.current = auth
+      if (
+        instance &&
+        typeof prevAuth === 'string' &&
+        typeof auth === 'string' &&
+        prevAuth !== auth
+      ) {
         instance.connection.connect({ auth })
       }
-      prevAuthRef.current = auth
     }, [instance, auth])
-
-    // hand the instance to ZeroProvider via state set in an effect — exact
-    // timing parity with its internal-creation path, where children mount one
-    // effect-tick after the provider. consumers' boot orchestration observes
-    // that ordering; mounting children in the provider's own first commit
-    // changed it and broke app boot sequencing.
-    const [committedInstance, setCommittedInstance] = useState<
-      ZeroInstance | undefined
-    >()
-    useEffect(() => {
-      setCommittedInstance(instance)
-    }, [instance])
 
     // for now we re-parent
     if (disable) {
@@ -383,11 +398,13 @@ export function createZeroClient<
 
     return (
       <AuthDataContext.Provider value={authData}>
-        <ZeroProvider zero={committedInstance as ZeroInstance}>
-          <SetZeroInstance />
-          <ConnectionMonitor zeroEvents={zeroEvents} />
-          {children}
-        </ZeroProvider>
+        {instance ? (
+          <ZeroProvider zero={instance}>
+            <SetZeroInstance />
+            <ConnectionMonitor zeroEvents={zeroEvents} />
+            {children}
+          </ZeroProvider>
+        ) : null}
       </AuthDataContext.Provider>
     )
   }

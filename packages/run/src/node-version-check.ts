@@ -1,5 +1,23 @@
+import { execFileSync } from 'node:child_process'
 import fs from 'node:fs'
 import semver from 'semver'
+
+function getCurrentNodeVersion() {
+  // under bun, process.version is bun's bundled node-COMPAT string (a fixed
+  // value like v24.3.0), not the project's actual node toolchain — comparing
+  // it against engines.node rejects any pin newer than bun's compat level.
+  // the check exists to guard native-addon ABI for the real `node` binary
+  // child processes will run, so resolve that binary's version from PATH.
+  if (process.versions.bun) {
+    try {
+      return execFileSync('node', ['--version'], { encoding: 'utf-8' }).trim()
+    } catch {
+      // no node on PATH — nothing for the version pin to guard
+      return null
+    }
+  }
+  return process.version
+}
 
 async function getRequiredNodeVersion() {
   const path = await import('node:path')
@@ -23,10 +41,10 @@ async function getRequiredNodeVersion() {
 }
 
 export async function checkNodeVersion() {
-  const current = process.version
+  const current = getCurrentNodeVersion()
   const required = await getRequiredNodeVersion()
 
-  if (!required) return
+  if (!required || !current) return
 
   if (semver.validRange(required) && semver.satisfies(current, required)) return
 

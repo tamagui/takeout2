@@ -10,6 +10,7 @@ export { setAuthData, setEnvironment } from './state'
 
 export * from './combineZeroClients'
 export * from './createZeroClient'
+export * from './httpPullTransport'
 export * from './createUseQuery'
 export * from './resolveQuery'
 export * from './run'

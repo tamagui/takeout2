@@ -13,6 +13,7 @@ import {
 } from 'react'
 
 import { createPermissions } from './createPermissions'
+import { ensureHttpPullTransport } from './httpPullTransport'
 import {
   createUseQuery,
   createUseQueryDirect,
@@ -331,11 +332,20 @@ export function createZeroClient<
     children,
     authData: authDataIn,
     disable,
+    transport,
+    pullIntervalMs = 30_000,
     ...props
   }: Omit<ZeroOptions<Schema, ZeroMutators>, 'schema' | 'mutators'> & {
     children: ReactNode
     authData?: AuthData | null
     disable?: boolean
+    // 'http-pull' runs the stock zero client over stateless HTTP pull/push
+    // (no websocket, no resident server state) by intercepting the sync
+    // socket for this instance's server origin. see httpPullTransport.ts.
+    transport?: 'http-pull'
+    // http-pull only: every open connection also pulls on this interval so
+    // server-initiated changes arrive without a client-side trigger
+    pullIntervalMs?: number
   }) => {
     const authData = (authDataIn ?? null) as AuthData
 
@@ -374,6 +384,7 @@ export function createZeroClient<
         .sort(([a], [b]) => (a < b ? -1 : 1)),
       hasAuth,
       generation,
+      transport,
     ])
 
     // create/rotate in an effect — commit-safe: a discarded concurrent render
@@ -391,6 +402,14 @@ export function createZeroClient<
           ZeroOptions<Schema, ZeroMutators>,
           'schema' | 'mutators'
         >
+        // install before construction so the instance's first connect goes
+        // through HTTP. per-origin idempotent — rotation reuses the install.
+        if (transport === 'http-pull') {
+          if (typeof options.server !== 'string') {
+            throw new Error(`transport 'http-pull' requires a server URL`)
+          }
+          ensureHttpPullTransport({ origin: options.server, pullIntervalMs })
+        }
         cached = {
           key: instanceKey,
           instance: new ZeroClient<Schema, ZeroMutators>({

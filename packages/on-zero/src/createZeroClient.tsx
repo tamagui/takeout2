@@ -405,10 +405,13 @@ export function createZeroClient<
         // install before construction so the instance's first connect goes
         // through HTTP. per-origin idempotent — rotation reuses the install.
         if (transport === 'http-pull') {
-          if (typeof options.server !== 'string') {
+          // same precedence as zero's own getServer (cacheURL is the current
+          // option name; server is its deprecated alias)
+          const serverURL = options.cacheURL ?? options.server
+          if (typeof serverURL !== 'string') {
             throw new Error(`transport 'http-pull' requires a server URL`)
           }
-          ensureHttpPullTransport({ origin: options.server, pullIntervalMs })
+          ensureHttpPullTransport({ origin: serverURL, pullIntervalMs })
         }
         cached = {
           key: instanceKey,

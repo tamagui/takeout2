@@ -1,6 +1,6 @@
 {
   "name": "@take-out/native",
-  "version": "0.4.24",
+  "version": "0.4.25",
   "type": "module",
   "exports": {
     "./setup-crypto": {

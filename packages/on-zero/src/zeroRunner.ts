@@ -20,9 +20,15 @@ export function setRunner(r: ZeroRunner) {
   runner = r
 }
 
-export function getRunner(): ZeroRunner {
+export function getRunner(instance?: { runner: ZeroRunner | null }): ZeroRunner {
   if (isInZeroMutation()) {
     return (q, o) => mutatorContext().tx.run(q, o)
+  }
+
+  // a mounted instance's own runner wins; otherwise the ambient runner
+  // (single-instance client, or the server transaction runner)
+  if (instance?.runner) {
+    return instance.runner
   }
 
   if (!runner) {

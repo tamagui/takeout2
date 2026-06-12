@@ -1,3 +1,4 @@
+import { getInstanceForQueryFn } from './instanceRegistry'
 import { resolveQuery, type PlainQueryFn } from './resolveQuery'
 import { getRunner } from './zeroRunner'
 
@@ -62,7 +63,6 @@ export function run(
   const hasParams = modeArg !== undefined || (paramsOrMode && paramsOrMode !== 'complete')
   const params = hasParams ? paramsOrMode : undefined
   const mode = hasParams ? modeArg : paramsOrMode
-  const runner = getRunner()
   const options =
     mode === 'complete'
       ? ({
@@ -72,13 +72,14 @@ export function run(
 
   if (queryOrFn && queryOrFn['ast']) {
     // inline zql - on client it only resolves against cache, on server fully
-    return runner(queryOrFn, options)
+    return getRunner()(queryOrFn, options)
   }
 
-  const customQueries = getCustomQueries()
+  // with multiple client instances mounted, a named query executes against
+  // the instance that claimed its namespace, not whichever mounted last
+  const instance = getInstanceForQueryFn(queryOrFn)
+  const customQueries = instance?.customQueries ?? getCustomQueries()
   const queryRequest = resolveQuery({ customQueries, fn: queryOrFn, params })
 
-  const out = runner(queryRequest as any, options)
-
-  return out
+  return getRunner(instance)(queryRequest as any, options)
 }

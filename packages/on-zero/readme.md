@@ -517,6 +517,56 @@ app.post('/api/zero/pull', async (req) => {
 })
 ```
 
+### multiple client instances
+
+one page can run several zero clients (e.g. a global control-plane instance
+plus a per-project instance with its own storage key and sync url). give each
+a unique `instanceName` and split queries/models so every namespace belongs to
+exactly one instance — duplicate claims throw at create time. then combine
+them into one consumer surface:
+
+```tsx
+import { combineZeroClients, createZeroClient } from 'on-zero'
+
+const control = createZeroClient({
+  schema,
+  models: controlModels,
+  groupedQueries: controlQueries,
+  instanceName: 'control',
+})
+const project = createZeroClient({
+  schema,
+  models: projectModels,
+  groupedQueries: projectQueries,
+  instanceName: 'project',
+})
+
+// useQuery/run/preload/getQuery dispatch by the query fn's namespace,
+// zero.mutate.<namespace> dispatches by model namespace; anything unclaimed
+// (and non-mutate zero access like userID) goes to the first client
+export const { useQuery, zero, run, preload, getQuery, zeroEvents } =
+  combineZeroClients(control, project)
+
+// render every instance's provider (nesting order doesn't matter — dispatch
+// does not use react context)
+;<control.ProvideZero server={controlUrl} userID={user.id}>
+  <project.ProvideZero server={projectUrl} userID={`${user.id}:${projectId}`}>
+    <App />
+  </project.ProvideZero>
+</control.ProvideZero>
+```
+
+constraints:
+
+- each instance needs its own client-group identity (separate `userID` /
+  storage key / server url) — never swap the backing namespace under a live
+  instance.
+- a mutator may only read/write tables owned by its own instance. its
+  transaction runs on that instance alone; cross-instance writes are not
+  detectable at registration and will silently miss the other store.
+- the server stays single: one `createZeroServer` per backend process.
+- omitting `instanceName` keeps the exact single-instance behavior.
+
 ### server validation hooks
 
 add custom validation for all queries and mutations:

@@ -14,6 +14,7 @@ import {
 
 import { createPermissions } from './createPermissions'
 import { createUseQuery, type QueryControlMode } from './createUseQuery'
+import { registerClientInstance } from './instanceRegistry'
 import { createMutators } from './helpers/createMutators'
 import { getAuth } from './helpers/getAuth'
 import { getAllMutationsPermissions, getMutationsPermissions } from './modelRegistry'
@@ -22,7 +23,7 @@ import { resolveQuery, type PlainQueryFn } from './resolveQuery'
 import { setCustomQueries } from './run'
 import { getEnvironment, setAuthData, setEnvironment, setSchema } from './state'
 import { getRawWhere, setEvaluatingPermission } from './where'
-import { setRunner } from './zeroRunner'
+import { setRunner, type ZeroRunner } from './zeroRunner'
 import { zql } from './zql'
 
 import type { AuthData, GenericModels, GetZeroMutators, ZeroEvent } from './types'
@@ -63,11 +64,16 @@ export function createZeroClient<
   models,
   groupedQueries,
   permissionStrategy = 'optimistic',
+  instanceName = 'default',
 }: {
   schema: Schema
   models: Models
   groupedQueries: GroupedQueries
   permissionStrategy?: PermissionStrategy
+  // names this client instance so multiple instances can coexist on one page.
+  // each query/mutator namespace is claimed by exactly one instance, and the
+  // ambient run() + the combineZeroClients facade dispatch by that claim.
+  instanceName?: string
 }) {
   type ZeroMutators = GetZeroMutators<Models>
   type ZeroInstance = Zero<Schema, ZeroMutators>
@@ -177,6 +183,15 @@ export function createZeroClient<
   // create the single shared CustomQuery registry
   const customQueries = defineQueries(wrappedNamespaces)
 
+  // claim this instance's query/mutator namespaces so the ambient run() and
+  // the combineZeroClients facade dispatch to the owning instance. the
+  // auto-generated 'permission' namespace stays unclaimed (per-instance).
+  const instance = registerClientInstance({
+    name: instanceName,
+    namespaces: Object.keys({ ...groupedQueries, ...models }),
+    customQueries,
+  })
+
   // register for global run() helper
   setCustomQueries(customQueries)
 
@@ -197,7 +212,12 @@ export function createZeroClient<
     },
   })
 
-  const zeroEvents = createEmitter<ZeroEvent | null>('zero', null)
+  // emitter names are global keys (dev hmr cache) — scope them per instance
+  // so two instances never share cached values. the default name stays
+  // unchanged for single-instance back-compat.
+  const emitterScope = instanceName === 'default' ? '' : `:${instanceName}`
+
+  const zeroEvents = createEmitter<ZeroEvent | null>(`zero${emitterScope}`, null)
 
   const AuthDataContext = createContext<AuthData>({} as AuthData)
 
@@ -272,7 +292,10 @@ export function createZeroClient<
   // callbacks coalesces into ONE rotation, re-armed when the fresh instance
   // is created — without it a new instance that immediately re-fires the
   // callback rotation-loops forever.
-  const zeroInstanceGeneration = createEmitter<number>('zero-instance-generation', 0)
+  const zeroInstanceGeneration = createEmitter<number>(
+    `zero-instance-generation${emitterScope}`,
+    0,
+  )
   let zeroRotationPending = false
 
   const ProvideZero = ({
@@ -420,8 +443,12 @@ export function createZeroClient<
     // we'll need to add that soon
     if (zeroInstance !== latestZeroInstance) {
       latestZeroInstance = zeroInstance
-      // register runner for global run() helper
-      setRunner((query, options) => zeroInstance.run(query as any, options))
+      const runner: ZeroRunner = (query, options) =>
+        zeroInstance.run(query as any, options)
+      // the instance-keyed runner is what run() dispatches owned namespaces
+      // to; the global runner stays as the ambient fallback (inline zql)
+      instance.runner = runner
+      setRunner(runner)
     }
 
     return null
@@ -506,6 +533,7 @@ export function createZeroClient<
   }
 
   return {
+    instanceName,
     zeroEvents,
     ProvideZero,
     ControlQueries,

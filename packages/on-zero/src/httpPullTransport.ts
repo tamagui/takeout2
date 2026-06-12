@@ -75,7 +75,10 @@ export function installHttpPullTransport(
   const state: TransportState = {
     origin: new URL(opts.origin),
     originString: trimTrailingSlash(new URL(opts.origin).toString()),
-    fetch: fetchImpl,
+    // the transport invokes this as `state.fetch(...)` — without binding,
+    // window.fetch sees `state` as its receiver and browsers throw
+    // "Illegal invocation" (node's fetch doesn't care, so tests can't catch it)
+    fetch: fetchImpl.bind(globalThis),
     nativeWebSocket: previousWebSocket,
     sockets: new Set(),
     pullIntervalMs: opts.pullIntervalMs,

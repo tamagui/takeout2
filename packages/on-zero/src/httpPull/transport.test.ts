@@ -417,6 +417,29 @@ describe('zero-http transport', () => {
     expect(second).toBe(first)
     first.uninstall()
   })
+
+  test('pull 409 (client cookie ahead of server) resets client state instead of reconnect-looping', async () => {
+    // a 409 means the server's change-tracking watermark is BEHIND the
+    // client's cookie — the server lost/reset its state (replica reset). the
+    // transport must surface zero-cache's InvalidConnectionRequestBaseCookie
+    // error so the stock client drops local state and calls
+    // onClientStateNotFound, instead of failing the socket and retrying the
+    // same future cookie forever.
+    const fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const request = recordRequest(input, init)
+      expect(request.path).toBe('/pull')
+      return jsonResponse(
+        { error: 'future cookie 299 is ahead of server cookie 66' },
+        { status: 409 },
+      )
+    })
+    install(fetch)
+    const onClientStateNotFound = vi.fn()
+    createZero({ onClientStateNotFound })
+    await vi.waitFor(() => expect(onClientStateNotFound).toHaveBeenCalled(), {
+      timeout: 5_000,
+    })
+  })
 })
 
 function install(fetch: typeof globalThis.fetch) {
@@ -425,7 +448,9 @@ function install(fetch: typeof globalThis.fetch) {
   return transport
 }
 
-function createZero(options: { pingTimeoutMs?: number } = {}) {
+function createZero(
+  options: { pingTimeoutMs?: number; onClientStateNotFound?: () => void } = {},
+) {
   const zero = new Zero({
     server: ORIGIN,
     userID: 'u1',
@@ -435,6 +460,7 @@ function createZero(options: { pingTimeoutMs?: number } = {}) {
     storageKey: `zero-http-test-${++storageID}`,
     mutators: zeroHttpFixtureMutators,
     pingTimeoutMs: options.pingTimeoutMs,
+    onClientStateNotFound: options.onClientStateNotFound,
   })
   zeros.push(zero)
   return zero

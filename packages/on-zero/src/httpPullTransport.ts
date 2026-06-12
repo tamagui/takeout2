@@ -365,6 +365,23 @@ class ZeroHttpSocket {
       if (this.readyState !== this.CLOSED) this.close(1000, error.message)
       return
     }
+    if (isStaleClientCookieError(error)) {
+      // the client's cookie is AHEAD of the server watermark — the server
+      // lost or reset its change-tracking state (replica reset / restore).
+      // mirror zero-cache's InvalidConnectionRequestBaseCookie error frame so
+      // the stock client drops its local db and rebuilds from scratch instead
+      // of reconnect-looping on 409 forever.
+      this.emitMessage([
+        'error',
+        {
+          kind: 'InvalidConnectionRequestBaseCookie',
+          message: error.message,
+          origin: 'server',
+        },
+      ])
+      if (this.readyState !== this.CLOSED) this.close(1000, error.message)
+      return
+    }
     this.emit('error', { error })
     this.close(1011, errorMessage(error))
   }
@@ -558,5 +575,13 @@ function isAuthHTTPError(error: unknown): error is ZeroHttpResponseError {
   return (
     error instanceof ZeroHttpResponseError &&
     (error.status === 401 || error.status === 403)
+  )
+}
+
+function isStaleClientCookieError(error: unknown): error is ZeroHttpResponseError {
+  return (
+    error instanceof ZeroHttpResponseError &&
+    error.path === '/pull' &&
+    error.status === 409
   )
 }

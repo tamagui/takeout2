@@ -13,7 +13,12 @@ import {
 } from 'react'
 
 import { createPermissions } from './createPermissions'
-import { createUseQuery, type QueryControlMode } from './createUseQuery'
+import {
+  createUseQuery,
+  createUseQueryDirect,
+  type QueryControlMode,
+  type UseQueryHook,
+} from './createUseQuery'
 import { registerClientInstance } from './instanceRegistry'
 import { createMutators } from './helpers/createMutators'
 import { getAuth } from './helpers/getAuth'
@@ -219,6 +224,14 @@ export function createZeroClient<
 
   const zeroEvents = createEmitter<ZeroEvent | null>(`zero${emitterScope}`, null)
 
+  // bumped after commit whenever the mounted zero instance changes (first
+  // mount, identity change, client-state-not-found rotation) — the direct
+  // query path re-materializes its views against the new instance
+  const zeroInstanceVersion = createEmitter<number>(
+    `zero-instance-version${emitterScope}`,
+    0,
+  )
+
   const AuthDataContext = createContext<AuthData>({} as AuthData)
 
   const useQuery = createUseQuery<Schema>({
@@ -226,50 +239,66 @@ export function createZeroClient<
     customQueries,
   })
 
+  // context-free counterpart: materializes directly on THIS instance's
+  // mounted zero instead of the nearest ZeroProvider context. used by
+  // combineZeroClients for instances whose provider is not innermost.
+  const useQueryDirect = createUseQueryDirect<Schema>({
+    DisabledContext,
+    customQueries,
+    getZero: () => latestZeroInstance,
+    zeroVersion: zeroInstanceVersion,
+  })
+
   // permission check uses a per-model synced query so server is authoritative
-  // permissionStrategy controls client behavior before server responds
-  function usePermission(
-    table: TableName | (string & {}),
-    objOrId: string | Partial<Row<any>> | undefined,
-    enabled = typeof objOrId !== 'undefined',
-    debug = false,
-  ): boolean | null {
-    const disableMode = useContext(DisabledContext)
-    const lastRef = useRef<boolean | null>(null)
-    const tableStr = table as string
-    const checkFn = permissionCheckFns[tableStr]
+  // permissionStrategy controls client behavior before server responds.
+  // built over a query hook so the facade can route permission checks down
+  // the same context vs direct path as the table's other queries.
+  const createUsePermission = (useQueryImpl: UseQueryHook<Schema>) =>
+    function usePermission(
+      table: TableName | (string & {}),
+      objOrId: string | Partial<Row<any>> | undefined,
+      enabled = typeof objOrId !== 'undefined',
+      debug = false,
+    ): boolean | null {
+      const disableMode = useContext(DisabledContext)
+      const lastRef = useRef<boolean | null>(null)
+      const tableStr = table as string
+      const checkFn = permissionCheckFns[tableStr]
 
-    // include auth user ID in query args so zero-cache creates per-user
-    // permission views (prevents dedup across different auth contexts)
-    const auth = getAuth()
-    const _uid = auth?.id || 'anon'
+      // include auth user ID in query args so zero-cache creates per-user
+      // permission views (prevents dedup across different auth contexts)
+      const auth = getAuth()
+      const _uid = auth?.id || 'anon'
 
-    const [data, status] = useQuery(
-      checkFn as any,
-      { objOrId: objOrId as any, _uid },
-      { enabled: Boolean(!disableMode && enabled && objOrId && checkFn) },
-    )
+      const [data, status] = useQueryImpl(
+        checkFn as any,
+        { objOrId: objOrId as any, _uid },
+        { enabled: Boolean(!disableMode && enabled && objOrId && checkFn) },
+      )
 
-    if (debug) {
-      console.info(`usePermission()`, { table, objOrId, data, status })
+      if (debug) {
+        console.info(`usePermission()`, { table, objOrId, data, status })
+      }
+
+      if (!objOrId) return false
+
+      // null while loading, then server's authoritative answer
+      const result = status.type === 'unknown' ? null : Boolean(data)
+
+      if (!disableMode) {
+        lastRef.current = result
+        return result
+      }
+
+      if (disableMode === 'last-value') {
+        return lastRef.current
+      }
+
+      return null
     }
 
-    if (!objOrId) return false
-
-    // null while loading, then server's authoritative answer
-    const result = status.type === 'unknown' ? null : Boolean(data)
-
-    if (!disableMode) {
-      lastRef.current = result
-      return result
-    }
-
-    if (disableMode === 'last-value') {
-      return lastRef.current
-    }
-
-    return null
-  }
+  const usePermission = createUsePermission(useQuery)
+  const usePermissionDirect = createUsePermission(useQueryDirect)
 
   // the zero instance lives OUTSIDE the react lifecycle. react destroys and
   // re-fires the effects of a committed tree on any suspense hide/reveal, and
@@ -451,6 +480,12 @@ export function createZeroClient<
       setRunner(runner)
     }
 
+    // notify direct-path views after commit (emitting during render would
+    // setState other components mid-render)
+    useEffect(() => {
+      zeroInstanceVersion.emit(zeroInstanceVersion.value + 1)
+    }, [zeroInstance])
+
     return null
   }
 
@@ -538,7 +573,9 @@ export function createZeroClient<
     ProvideZero,
     ControlQueries,
     useQuery,
+    useQueryDirect,
     usePermission,
+    usePermissionDirect,
     zero,
     preload,
     getQuery,

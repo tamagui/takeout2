@@ -105,14 +105,16 @@
     }
   },
   "devDependencies": {
-    "drizzle-zero": "1.0.0-beta.0",
     "@tamagui/build": "2.1.0-1780964419737",
     "@types/node": "25.2.0",
     "@types/pg": "^8.11.10",
     "@types/react": "^19.0.0",
+    "drizzle-zero": "1.0.0-beta.0",
+    "jsdom": "29.1.1",
     "oxfmt": "^0.16.0",
     "oxlint": "^1.31.0",
     "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "react-native": "*",
     "typescript": "^5.9.3",
     "vitest": "^3.1.1"

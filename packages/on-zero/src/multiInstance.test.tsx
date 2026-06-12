@@ -53,7 +53,9 @@ function fakeClient(name: string, namespaces: string[], zeroStub: unknown) {
   return {
     instanceName: name,
     useQuery: vi.fn(() => `${name}-useQuery`),
+    useQueryDirect: vi.fn(() => `${name}-useQueryDirect`),
     usePermission: vi.fn(() => `${name}-usePermission`),
+    usePermissionDirect: vi.fn(() => `${name}-usePermissionDirect`),
     zero: zeroStub,
     preload: vi.fn(() => `${name}-preload`),
     getQuery: vi.fn(() => `${name}-getQuery`),
@@ -197,6 +199,8 @@ describe('combineZeroClients facade', () => {
     registerQuery(userQuery, 'fqUser.byId')
     registerQuery(taskQuery, 'fqTask.byId')
 
+    // project is last → inner: its hooks ride the upstream context path;
+    // control is outer → its hooks go through the context-free direct path
     const combined = combineZeroClients(control, project)
     const useQuery = combined.useQuery as (...args: any[]) => any
     const preload = combined.preload as (...args: any[]) => any
@@ -204,11 +208,13 @@ describe('combineZeroClients facade', () => {
     const usePermission = combined.usePermission as (...args: any[]) => any
 
     useQuery(userQuery, { id: '1' })
-    expect(control.useQuery).toHaveBeenCalledWith(userQuery, { id: '1' })
+    expect(control.useQueryDirect).toHaveBeenCalledWith(userQuery, { id: '1' })
+    expect(control.useQuery).not.toHaveBeenCalled()
     expect(project.useQuery).not.toHaveBeenCalled()
 
     useQuery(taskQuery, { id: '2' })
     expect(project.useQuery).toHaveBeenCalledWith(taskQuery, { id: '2' })
+    expect(project.useQueryDirect).not.toHaveBeenCalled()
 
     preload(taskQuery, { id: '3' })
     expect(project.preload).toHaveBeenCalledWith(taskQuery, { id: '3' })
@@ -218,15 +224,45 @@ describe('combineZeroClients facade', () => {
     expect(control.getQuery).toHaveBeenCalledWith(userQuery, { id: '4' })
     expect(project.getQuery).not.toHaveBeenCalled()
 
-    // unregistered query fns fall back to the primary instance
+    // unregistered query fns fall back to the primary instance (outer → direct)
     const anonymous = makeQueryFn()
     useQuery(anonymous, { id: '5' })
-    expect(control.useQuery).toHaveBeenCalledWith(anonymous, { id: '5' })
+    expect(control.useQueryDirect).toHaveBeenCalledWith(anonymous, { id: '5' })
 
-    // usePermission dispatches by table-named model namespace
+    // usePermission dispatches by table-named model namespace and follows the
+    // same context vs direct split: inner table → context, outer table → direct
     usePermission('fqTask', 'row-1')
     expect(project.usePermission).toHaveBeenCalledWith('fqTask', 'row-1')
+    expect(project.usePermissionDirect).not.toHaveBeenCalled()
+
+    usePermission('fqUser', 'row-2')
+    expect(control.usePermissionDirect).toHaveBeenCalledWith('fqUser', 'row-2')
     expect(control.usePermission).not.toHaveBeenCalled()
+  })
+
+  test('the inner option overrides which client uses the context path', () => {
+    const a = fakeClient('inner-a', ['innerA'], {})
+    const b = fakeClient('inner-b', ['innerB'], {})
+    const aQuery = makeQueryFn()
+    const bQuery = makeQueryFn()
+    registerQuery(aQuery, 'innerA.byId')
+    registerQuery(bQuery, 'innerB.byId')
+
+    // a is FIRST (primary) but declared inner → context path; b becomes direct
+    const combined = combineZeroClients(a, b, { inner: 'inner-a' })
+    const useQuery = combined.useQuery as (...args: any[]) => any
+
+    useQuery(aQuery, { id: '1' })
+    expect(a.useQuery).toHaveBeenCalledWith(aQuery, { id: '1' })
+    expect(a.useQueryDirect).not.toHaveBeenCalled()
+
+    useQuery(bQuery, { id: '2' })
+    expect(b.useQueryDirect).toHaveBeenCalledWith(bQuery, { id: '2' })
+    expect(b.useQuery).not.toHaveBeenCalled()
+
+    expect(() => combineZeroClients(a, b, { inner: 'nope' })).toThrow(
+      /not one of the passed clients/,
+    )
   })
 
   test('combined zeroEvents relays every instance', () => {

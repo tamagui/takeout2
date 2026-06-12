@@ -547,8 +547,12 @@ const project = createZeroClient({
 export const { useQuery, zero, run, preload, getQuery, zeroEvents } =
   combineZeroClients(control, project)
 
-// render every instance's provider (nesting order doesn't matter — dispatch
-// does not use react context)
+// render every instance's provider. NESTING ORDER IS A CONTRACT: the LAST
+// client passed to combineZeroClients (or the `inner` option) must be the
+// INNERMOST provider — zero-react's useQuery resolves the nearest provider's
+// instance from context, so only the inner instance rides that path. all
+// other instances' useQuery/usePermission go through a context-free direct
+// materialize on their own mounted zero.
 ;<control.ProvideZero server={controlUrl} userID={user.id}>
   <project.ProvideZero server={projectUrl} userID={`${user.id}:${projectId}`}>
     <App />
@@ -561,6 +565,11 @@ constraints:
 - each instance needs its own client-group identity (separate `userID` /
   storage key / server url) — never swap the backing namespace under a live
   instance.
+- give the INNER slot to the instance owning the bulk of the subscriptions —
+  inner queries keep zero-react's viewStore dedup + ttl. outer instances use
+  the direct path, which has no cross-component view dedup (each hook
+  materializes its own view), so keep outer instances on bounded, tiny
+  queries (current user, settings, directories).
 - a mutator may only read/write tables owned by its own instance. its
   transaction runs on that instance alone; cross-instance writes are not
   detectable at registration and will silently miss the other store.

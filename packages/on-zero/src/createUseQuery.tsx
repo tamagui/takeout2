@@ -182,7 +182,18 @@ function createDirectView(
       return () => listeners.delete(notify)
     },
     getSnapshot: () => snapshot,
-    destroy: () => view.destroy(),
+    destroy: () => {
+      // identity rotation closes the owning zero before react runs this
+      // cleanup (the version bump that swaps the view is post-commit) — the
+      // closed instance already removed the view's ttl connection record, so
+      // zero's destroy asserts ("Connection not found"). destroy-after-close
+      // is semantically a no-op; swallow it instead of killing the route.
+      try {
+        view.destroy()
+      } catch {
+        // instance closed first — nothing left to tear down
+      }
+    },
   }
 }
 

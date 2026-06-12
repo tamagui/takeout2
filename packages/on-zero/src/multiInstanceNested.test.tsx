@@ -6,7 +6,7 @@
 // path — they must materialize directly on the owning instance.
 
 import { createSchema, string, table } from '@rocicorp/zero'
-import { act } from 'react'
+import { act, StrictMode } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, expect, test } from 'vitest'
 
@@ -180,6 +180,30 @@ test('inner provider unmount/remount does not break outer-instance subscriptions
   await render(<App showInner />)
   await seedControl({ id: 'u2', name: 'v3' })
   await waitFor(() => probe.data?.name === 'v3', 'v3 visible after inner remount')
+})
+
+test('StrictMode: direct views survive the effect double-invoke', async () => {
+  // StrictMode (and any suspense hide/reveal) runs effect cleanup + re-setup
+  // with unchanged deps: the cleanup destroys the materialized view while the
+  // memoized store identity survives, so without re-materialization on
+  // resubscribe the snapshot freezes at its mount-time value forever — the
+  // "control queries strand at result type unknown" bug (soot 3e6ecd10a)
+  await render(
+    <StrictMode>
+      <control.ProvideZero server={null} userID="t4-ctl">
+        <project.ProvideZero server={null} userID="t4-prj">
+          <ControlUserProbe id="u4" />
+        </project.ProvideZero>
+      </control.ProvideZero>
+    </StrictMode>,
+  )
+  await waitFor(() => probe.renders > 0, 'probe mount')
+
+  await seedControl({ id: 'u4', name: 'strict-v1' })
+  await waitFor(() => probe.data?.name === 'strict-v1', 'update visible under StrictMode')
+
+  await seedControl({ id: 'u4', name: 'strict-v2' })
+  await waitFor(() => probe.data?.name === 'strict-v2', 'second update still live')
 })
 
 test('direct-path views re-materialize when the owning instance rotates', async () => {

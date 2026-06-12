@@ -151,45 +151,64 @@ type MaterializableZero = {
 }
 
 function createDirectView(
-  zero: MaterializableZero,
+  getZero: () => MaterializableZero | null,
   queryRequest: unknown,
   ttl: UseQueryOptions['ttl'],
 ): DirectView {
   let snapshot: readonly [unknown, { type: string }] = DISABLED_SNAPSHOT
   const listeners = new Set<() => void>()
+  let view: { destroy(): void } | null = null
 
-  // zero.materialize accepts a QueryRequest (it applies the instance context
-  // itself) — the same public api the upstream ViewWrapper uses
-  const view = zero.materialize(queryRequest, ttl === undefined ? undefined : { ttl })
+  const materialize = () => {
+    const zero = getZero()
+    if (!zero) return
+    // zero.materialize accepts a QueryRequest (it applies the instance context
+    // itself) — the same public api the upstream ViewWrapper uses
+    const next = zero.materialize(queryRequest, ttl === undefined ? undefined : { ttl })
+    view = next
 
-  // addListener fires immediately with current data, so the snapshot is
-  // populated before react's first getSnapshot. data must be cloned: the
-  // underlying view mutates it in place, and useSyncExternalStore requires
-  // immutable snapshots to detect changes.
-  view.addListener((data, resultType) => {
-    snapshot = [
-      data === undefined ? undefined : structuredClone(data),
-      { type: resultType },
-    ]
-    for (const listener of listeners) {
-      listener()
-    }
-  })
+    // addListener fires immediately with current data, so the snapshot is
+    // populated before react's first getSnapshot. data must be cloned: the
+    // underlying view mutates it in place, and useSyncExternalStore requires
+    // immutable snapshots to detect changes.
+    next.addListener((data, resultType) => {
+      snapshot = [
+        data === undefined ? undefined : structuredClone(data),
+        { type: resultType },
+      ]
+      for (const listener of listeners) {
+        listener()
+      }
+    })
+  }
+
+  // eager: snapshot is warm before react's first getSnapshot
+  materialize()
 
   return {
     subscribe: (notify) => {
       listeners.add(notify)
+      // react runs effect cleanup + re-setup with unchanged deps under
+      // StrictMode double-invoke and suspense hide/reveal — the cleanup
+      // destroyed the view while this memoized store survived, so the
+      // resubscribe must re-materialize or the snapshot freezes forever
+      if (view === null) {
+        materialize()
+      }
       return () => listeners.delete(notify)
     },
     getSnapshot: () => snapshot,
     destroy: () => {
+      const current = view
+      view = null
+      if (!current) return
       // identity rotation closes the owning zero before react runs this
       // cleanup (the version bump that swaps the view is post-commit) — the
       // closed instance already removed the view's ttl connection record, so
       // zero's destroy asserts ("Connection not found"). destroy-after-close
       // is semantically a no-op; swallow it instead of killing the route.
       try {
-        view.destroy()
+        current.destroy()
       } catch {
         // instance closed first — nothing left to tear down
       }
@@ -233,10 +252,9 @@ export function createUseQueryDirect<Schema extends ZeroSchema>({
     const paramsKey = params === undefined ? '' : JSON.stringify(params)
 
     const view = useMemo((): DirectView | null => {
-      const zero = getZero()
-      if (!enabled || !zero) return null
+      if (!enabled || !getZero()) return null
       const queryRequest = resolveQuery({ customQueries, fn, params })
-      return createDirectView(zero, queryRequest, ttl)
+      return createDirectView(getZero, queryRequest, ttl)
       // params is keyed by paramsKey; version re-materializes on a new zero
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fn, paramsKey, enabled, ttl, version])

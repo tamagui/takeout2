@@ -19,14 +19,8 @@ await cmd`Check node and bun versions before install`.run(async ({ fs, path }) =
     }
   }
 
-  // check node version
-  const requiredNode = packageJson.engines?.node as string | undefined
-  if (requiredNode) {
-    const currentNode = process.version.replace('v', '')
-    if (currentNode !== requiredNode) {
-      errors.push(`node: expected ${requiredNode}, got ${currentNode}`)
-    }
-  }
+  // node version is guarded against the real toolchain (not bun's node-compat
+  // string) in packages/run/src/node-version-check.ts during postinstall
 
   if (errors.length > 0) {
     console.error('\x1b[31m✗ version mismatch\x1b[0m')

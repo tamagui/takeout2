@@ -85,7 +85,7 @@
   "peerDependencies": {
     "pg": ">=8.0.0",
     "@rocicorp/zero": ">=1.5.0",
-    "drizzle-orm": ">=1.0.0 <2",
+    "drizzle-orm": ">=1.0.0-beta.0 <2",
     "drizzle-zero": ">=1.0.0-beta.0",
     "react": "*",
     "react-native": "*"

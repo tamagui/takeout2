@@ -418,6 +418,50 @@ describe('zero-http transport', () => {
     first.uninstall()
   })
 
+  test('push responses are filtered to this client — foreign (recovery) results are dropped', async () => {
+    // a mutation-RECOVERY push carries a previous client's pending mutations
+    // and the server echoes that old clientID in the response. zero-cache only
+    // delivers a client its own results; forwarding the raw response trips
+    // zero's "received mutation for the wrong client" assert and kills the
+    // connection (reproduced against soot's ultimate e2e, 2026-06-12).
+    const fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const request = recordRequest(input, init)
+      if (request.path === '/pull') {
+        return jsonResponse({ cookie: request.body.cookie, unchanged: true })
+      }
+      const mutation = request.body.mutations[0]
+      return jsonResponse({
+        pushResponse: {
+          mutations: [
+            {
+              id: { clientID: 'previous-session-client', id: 7 },
+              result: {
+                error: 'alreadyProcessed',
+                details: 'recovered mutation already applied',
+              },
+            },
+            {
+              id: { clientID: mutation.clientID, id: mutation.id },
+              result: {},
+            },
+          ],
+        },
+      })
+    })
+    install(fetch)
+    const zero = createZero()
+
+    const mutation = zero.mutate.project.create({
+      id: 'p-recovery',
+      ownerId: 'u1',
+      name: 'recovered',
+    })
+    // the client's own result must resolve; the foreign result must be
+    // dropped instead of asserting the connection dead.
+    await mutation.client
+    await mutation.server
+  })
+
   test('pull 409 (client cookie ahead of server) resets client state instead of reconnect-looping', async () => {
     // a 409 means the server's change-tracking watermark is BEHIND the
     // client's cookie — the server lost/reset its state (replica reset). the

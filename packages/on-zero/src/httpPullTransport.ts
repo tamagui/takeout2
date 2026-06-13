@@ -286,7 +286,16 @@ class ZeroHttpSocket {
     const response = (await this.postJSON('/push', body)) as {
       pushResponse?: unknown
     }
-    this.emitMessage(['pushResponse', response.pushResponse])
+    // mutation RECOVERY pushes carry a PREVIOUS client's pending mutations,
+    // and the server response echoes that old clientID. zero-cache's pusher
+    // groups results by clientID and only delivers a client its OWN results
+    // (recovered mutations settle via lastMutationIDChanges in pokes); the
+    // raw response would trip zero's "received mutation for the wrong
+    // client" assert and kill the connection. mirror the same filtering.
+    this.emitMessage([
+      'pushResponse',
+      filterMutationResultsToClient(response.pushResponse, this.clientID),
+    ])
     this.requestPullAfterCurrent()
   }
 
@@ -576,6 +585,22 @@ function isAuthHTTPError(error: unknown): error is ZeroHttpResponseError {
     error instanceof ZeroHttpResponseError &&
     (error.status === 401 || error.status === 403)
   )
+}
+
+// keep only this client's own mutation results — zero-cache's pusher does the
+// same per-client fan-out (results for clients without a live connection are
+// dropped; their LMID advance arrives via the next pull's
+// lastMutationIDChanges, which is how recovered mutations settle).
+function filterMutationResultsToClient(pushResponse: unknown, clientID: string) {
+  if (!pushResponse || typeof pushResponse !== 'object') return pushResponse
+  const mutations = (pushResponse as { mutations?: unknown }).mutations
+  if (!Array.isArray(mutations)) return pushResponse
+  return {
+    ...pushResponse,
+    mutations: mutations.filter(
+      (m) => (m as { id?: { clientID?: string } })?.id?.clientID === clientID,
+    ),
+  }
 }
 
 function isStaleClientCookieError(error: unknown): error is ZeroHttpResponseError {

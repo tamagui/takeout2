@@ -316,6 +316,10 @@ export async function runParallelScripts(
       })
     }
 
+    // when this process spawned — used to tell a crash-loop (rapid re-crashes)
+    // from an occasional crash after a long stable run.
+    const startedAt = Date.now()
+
     const managed: ManagedProcess = {
       proc,
       name,
@@ -364,12 +368,41 @@ export async function runParallelScripts(
       if (code && code !== 0) {
         console.error(`${getPrefix(index)} Process exited with code ${code}`)
 
-        if (watch && restarts < MAX_RESTARTS) {
-          const newRestarts = restarts + 1
-          console.info(
-            `Restarting process ${name} (${newRestarts}/${MAX_RESTARTS} times)`,
-          )
-          runScript(name, cwd, prefixLabel, newRestarts, extraArgs, index, directCommand)
+        if (watch) {
+          // a process that ran stably for a while before crashing isn't a
+          // crash-loop — reset the counter so an occasional crash over a long
+          // dev session recovers, instead of permanently giving up after
+          // MAX_RESTARTS lifetime hits. the cap then only catches RAPID re-crashes.
+          const ranMs = Date.now() - startedAt
+          const STABLE_MS = 20_000
+          const effectiveRestarts = ranMs >= STABLE_MS ? 0 : restarts
+          if (effectiveRestarts < MAX_RESTARTS) {
+            const newRestarts = effectiveRestarts + 1
+            // exponential backoff so a process crash-looping under CPU/memory
+            // pressure doesn't instantly re-boot and spin the box at 100% —
+            // wait 1s, 2s, 4s … capped at 30s before the next attempt.
+            const delayMs = Math.min(1_000 * 2 ** effectiveRestarts, 30_000)
+            console.info(
+              `Restarting process ${name} (${newRestarts}/${MAX_RESTARTS}) in ${Math.round(delayMs / 1000)}s`,
+            )
+            setTimeout(() => {
+              if (getIsExiting()) return
+              runScript(
+                name,
+                cwd,
+                prefixLabel,
+                newRestarts,
+                extraArgs,
+                index,
+                directCommand,
+              )
+            }, delayMs)
+          } else {
+            console.error(
+              `${getPrefix(index)} gave up after ${MAX_RESTARTS} rapid restarts`,
+            )
+            exit(1)
+          }
         } else {
           exit(1)
         }

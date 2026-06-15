@@ -220,7 +220,7 @@ test('direct-path views re-materialize when the owning instance rotates', async 
   await waitFor(() => probe.data?.name === 'before-rotation', 'pre-rotation row')
 
   // identity change rotates the mounted zero instance (new client group,
-  // fresh store) — the same mechanism a zeroInstanceGeneration bump uses
+  // fresh store) via the instanceKey change
   await render(<App userID="rot-2" />)
   await waitFor(() => probe.data === undefined, 'view reset to the new empty store')
 

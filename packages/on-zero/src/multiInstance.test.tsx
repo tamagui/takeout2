@@ -276,9 +276,11 @@ describe('combineZeroClients facade', () => {
     a.zeroEvents.emit({ type: 'error', message: 'from-a' })
     b.zeroEvents.emit({ type: 'error', message: 'from-b' })
 
-    expect(seen.map((event) => event?.message)).toEqual(['from-a', 'from-b'])
+    const messageOf = (event: ZeroEvent | null) =>
+      event?.type === 'error' ? event.message : undefined
+    expect(seen.map(messageOf)).toEqual(['from-a', 'from-b'])
     // the source emitters stay independent of each other
-    expect(a.zeroEvents.value?.message).toBe('from-a')
-    expect(b.zeroEvents.value?.message).toBe('from-b')
+    expect(messageOf(a.zeroEvents.value)).toBe('from-a')
+    expect(messageOf(b.zeroEvents.value)).toBe('from-b')
   })
 })

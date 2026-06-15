@@ -135,7 +135,12 @@ export type TablePrimaryKeys<TS extends GenericTable> = TupleToUnion<
   GetTableSchema<TS>['primaryKey']
 >
 
-export type ZeroEvent = { type: 'error'; message: string }
+export type ZeroEvent =
+  | { type: 'error'; message: string }
+  // recovery lifecycle: 'recovering' = dropping local state + reloading;
+  // 'fatal' = recovery already attempted (loop guard tripped), not reloading.
+  | { type: 'recovering'; reason: string }
+  | { type: 'fatal'; reason: string }
 
 /**
  * Admin role bypass for permissions:

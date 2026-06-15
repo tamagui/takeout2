@@ -37,3 +37,8 @@ export {
   type ShowZeroClientErrorOptions,
   type ZeroClientErrorInfo,
 } from './helpers/showZeroClientError'
+export {
+  makeZeroRecovery,
+  composeRecoveryLogSink,
+  type ZeroRecoveryDeps,
+} from './helpers/recoverZeroClient'

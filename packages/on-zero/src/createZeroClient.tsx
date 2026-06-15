@@ -1,6 +1,6 @@
 import { defineQueries, defineQuery, Zero as ZeroClient } from '@rocicorp/zero'
 import { useConnectionState, useZero, ZeroProvider } from '@rocicorp/zero/react'
-import { createEmitter, useEmitterValue } from '@take-out/helpers'
+import { createEmitter } from '@take-out/helpers'
 import {
   createContext,
   memo,
@@ -22,6 +22,11 @@ import {
 } from './createUseQuery'
 import { registerClientInstance } from './instanceRegistry'
 import { createMutators } from './helpers/createMutators'
+import {
+  composeRecoveryLogSink,
+  makeZeroRecovery,
+  type ZeroRecoveryDeps,
+} from './helpers/recoverZeroClient'
 import { getAuth } from './helpers/getAuth'
 import { getAllMutationsPermissions, getMutationsPermissions } from './modelRegistry'
 import { registerQuery } from './queryRegistry'
@@ -226,8 +231,8 @@ export function createZeroClient<
   const zeroEvents = createEmitter<ZeroEvent | null>(`zero${emitterScope}`, null)
 
   // bumped after commit whenever the mounted zero instance changes (first
-  // mount, identity change, client-state-not-found rotation) — the direct
-  // query path re-materializes its views against the new instance
+  // mount, identity change) — the direct query path re-materializes its views
+  // against the new instance
   const zeroInstanceVersion = createEmitter<number>(
     `zero-instance-version${emitterScope}`,
     0,
@@ -316,24 +321,13 @@ export function createZeroClient<
   // with different identities would thrash this slot.
   let cachedZero: { key: string; instance: ZeroInstance } | null = null
 
-  // bumping this recreates the instance with the same options — parity with
-  // ZeroProvider's built-in onClientStateNotFound rotation. the pending flag
-  // mirrors upstream's rotationPendingRef: a storm of client-state-not-found
-  // callbacks coalesces into ONE rotation, re-armed when the fresh instance
-  // is created — without it a new instance that immediately re-fires the
-  // callback rotation-loops forever.
-  const zeroInstanceGeneration = createEmitter<number>(
-    `zero-instance-generation${emitterScope}`,
-    0,
-  )
-  let zeroRotationPending = false
-
   const ProvideZero = ({
     children,
     authData: authDataIn,
     disable,
     transport,
     pullIntervalMs = 30_000,
+    beforeReload,
     ...props
   }: Omit<ZeroOptions<Schema, ZeroMutators>, 'schema' | 'mutators'> & {
     children: ReactNode
@@ -346,8 +340,19 @@ export function createZeroClient<
     // http-pull only: every open connection also pulls on this interval so
     // server-initiated changes arrive without a client-side trigger
     pullIntervalMs?: number
+    // awaited before a self-healing recovery reload — e.g. wait for the dev
+    // origin to be reachable so the reload doesn't hit a restarting server.
+    beforeReload?: () => Promise<void>
   }) => {
-    const authData = (authDataIn ?? null) as AuthData
+    // stabilize authData across transient auth gaps (session refresh, tab wake)
+    // so mutations never see null mid-transition; real logout still propagates
+    // via the hasAuth token rotation in instanceKey below. bakes in what every
+    // consumer hand-rolled with its own ref.
+    const stableAuthDataRef = useRef<AuthData | null>(authDataIn ?? null)
+    if (authDataIn) {
+      stableAuthDataRef.current = authDataIn
+    }
+    const authData = (authDataIn ?? stableAuthDataRef.current ?? null) as AuthData
 
     // update global authData synchronously during render so mutations always have latest auth
     // (mutations read auth dynamically via getAuthData() to avoid stale closure race condition)
@@ -366,8 +371,6 @@ export function createZeroClient<
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    const generation = useEmitterValue(zeroInstanceGeneration)
-
     const auth = 'auth' in props ? (props as { auth?: string | null }).auth : undefined
     const hasAuth = typeof auth === 'string'
 
@@ -383,7 +386,6 @@ export function createZeroClient<
         )
         .sort(([a], [b]) => (a < b ? -1 : 1)),
       hasAuth,
-      generation,
       transport,
     ])
 
@@ -413,33 +415,35 @@ export function createZeroClient<
           }
           ensureHttpPullTransport({ origin: serverURL, pullIntervalMs })
         }
-        cached = {
-          key: instanceKey,
-          instance: new ZeroClient<Schema, ZeroMutators>({
-            kvStore: 'mem',
-            ...options,
-            schema,
-            // @ts-expect-error same erasure ZeroProvider needed
-            mutators,
-            onClientStateNotFound: () => {
-              // consumer callback wins; recreate-with-same-options is the
-              // fallback, mirroring ZeroProvider's internal rotation.
-              if (options.onClientStateNotFound) {
-                try {
-                  options.onClientStateNotFound()
-                  return
-                } catch {
-                  // fall through to rotation
-                }
-              }
-              if (zeroRotationPending) return
-              zeroRotationPending = true
-              zeroInstanceGeneration.emit(zeroInstanceGeneration.value + 1)
-            },
-          }),
+        // recovery closures reach the instance through this ref so they always
+        // delete the CURRENT instance's own store (set right after construction;
+        // the handlers only fire post-mount).
+        const instanceRef: { current: ZeroInstance | null } = { current: null }
+        const recoveryDeps: ZeroRecoveryDeps = {
+          deleteLocalState: () => instanceRef.current?.delete() ?? Promise.resolve(),
+          zeroEvents,
+          beforeReload,
         }
+        const recovery = makeZeroRecovery(recoveryDeps)
+        const createdInstance = new ZeroClient<Schema, ZeroMutators>({
+          kvStore: 'mem',
+          ...options,
+          schema,
+          // @ts-expect-error same erasure ZeroProvider needed
+          mutators,
+          // compose the consumer logSink with the local-store-lost watcher.
+          logSink: composeRecoveryLogSink(recoveryDeps, options.logSink),
+          // consumer handlers win; otherwise on-zero's default self-healing
+          // recovery covers EVERY reason (drop local state + reload, guarded) —
+          // passing these to Zero disables its built-in reload, so any reason we
+          // left unhandled would fatal-blank the app forever.
+          onUpdateNeeded: options.onUpdateNeeded ?? recovery.onUpdateNeeded,
+          onClientStateNotFound:
+            options.onClientStateNotFound ?? recovery.onClientStateNotFound,
+        })
+        instanceRef.current = createdInstance
+        cached = { key: instanceKey, instance: createdInstance }
         cachedZero = cached
-        zeroRotationPending = false
       }
       setInstance(cached.instance)
       // identity is fully captured by instanceKey; function props are bound

@@ -19,6 +19,37 @@ import type { ExtractedMutation, ModelMutations, SchemaColumn } from './generate
 
 const hash = (s: string) => createHash('sha256').update(s).digest('hex')
 
+// hash every .ts input the generator reads (all of baseDir except the generated
+// output dir + node_modules) so a dev-boot regen can be skipped when nothing
+// changed. the expensive part of generate() — loading the typescript compiler
+// and building a TS program per query/model for type resolution — runs every
+// boot otherwise, even when the output is already current (the configureServer
+// watcher re-runs it on real edits, so the boot-time pass is pure redundancy).
+function hashInputTree(baseDir: string, generatedDir: string): string {
+  const parts: string[] = []
+  const walk = (dir: string) => {
+    if (!existsSync(dir)) return
+    const entries = readdirSync(dir, { withFileTypes: true }).sort((a, b) =>
+      a.name < b.name ? -1 : 1,
+    )
+    for (const entry of entries) {
+      const full = resolve(dir, entry.name)
+      if (entry.isDirectory()) {
+        if (entry.name === 'node_modules' || full === generatedDir) continue
+        walk(full)
+      } else if (
+        entry.isFile() &&
+        entry.name.endsWith('.ts') &&
+        !entry.name.endsWith('.d.ts')
+      ) {
+        parts.push(`${full}\0${readFileSync(full, 'utf-8')}`)
+      }
+    }
+  }
+  walk(baseDir)
+  return hash(parts.join('\0'))
+}
+
 let generateCache: Record<string, string> = {}
 let generateCachePath = ''
 
@@ -750,6 +781,29 @@ export async function generate(options: GenerateOptions): Promise<GenerateResult
 
   loadCache()
 
+  // input-freshness gate: if nothing under baseDir changed since the last
+  // COMPLETED generate (the input hash is only stored at the end, after
+  // saveCache), the outputs are already current — skip the typescript-program
+  // build entirely and return the cached counts. the configureServer watcher
+  // still re-runs generate on real model/query edits.
+  const inputHash = hashInputTree(baseDir, generatedDir)
+  if (
+    generateCache.__inputHash === inputHash &&
+    existsSync(resolve(generatedDir, 'models.ts'))
+  ) {
+    let counts: Partial<GenerateResult> = {}
+    try {
+      counts = JSON.parse(generateCache.__counts || '{}')
+    } catch {}
+    return {
+      filesChanged: 0,
+      modelCount: counts.modelCount ?? 0,
+      schemaCount: counts.schemaCount ?? 0,
+      queryCount: counts.queryCount ?? 0,
+      mutationCount: counts.mutationCount ?? 0,
+    }
+  }
+
   const allModelFiles = readdirSync(modelsDir)
     .filter((f) => f.endsWith('.ts'))
     .sort()
@@ -1061,6 +1115,14 @@ export async function generate(options: GenerateOptions): Promise<GenerateResult
     }
   }
 
+  // record the input hash + counts so the next boot can skip a no-op regen.
+  generateCache.__inputHash = inputHash
+  generateCache.__counts = JSON.stringify({
+    modelCount: allModelFiles.length,
+    schemaCount: filesWithSchema.length,
+    queryCount,
+    mutationCount,
+  })
   saveCache()
 
   return {

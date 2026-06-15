@@ -18,13 +18,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version-file: 'package.json'
-
-      - name: Install dependencies
-        run: bun install
+      - name: Install
+        uses: ./.github/actions/install
 
       - name: Deploy iOS
         run: bunx hot-updater deploy --platform ios --channel production-pre

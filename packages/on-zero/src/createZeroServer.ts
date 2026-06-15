@@ -223,53 +223,57 @@ export function createZeroServer<
       )
     }
 
+    const handler = (name: string, args: unknown) => {
+      // per-model permission queries registered by on-zero at runtime
+      if (name.startsWith('permission.')) {
+        const table = name.slice('permission.'.length)
+        const { objOrId } = args as {
+          objOrId: string | Record<string, any>
+        }
+        const perm = getMutationsPermissions(table)
+        if (!perm) {
+          throw new Error(`[permission] no permission defined for table: ${table}`)
+        }
+        // wrap with setEvaluatingPermission so serverWhere evaluates
+        // even when environment is 'client' (SSR hydration)
+        setEvaluatingPermission(true)
+        try {
+          return (getZQL() as any)[table]
+            .where((eb: any) => {
+              return permissions.buildPermissionQuery(authData, eb, perm, objOrId, table)
+            })
+            .one()
+        } finally {
+          setEvaluatingPermission(false)
+        }
+      }
+
+      // run validation hook if provided (must be sync - throw to reject)
+      if (validateQuery) {
+        validateQuery({ authData, queryName: name, params: args })
+      }
+
+      const query = (mustGetQuery as any)(queries, name)
+      return query.fn({ args, ctx: authData })
+    }
+
+    // when there is an authenticated user, pin the connection to its id so zero
+    // server-validates it (a client cannot claim another user's id). when logged
+    // out there is no server identity to validate against, so use zero's
+    // client-fallback path (the legacy call signature) which trusts whatever id
+    // the client declared — "anon", "guest", a per-device id, etc. on-zero stays
+    // un-prescriptive about the anon convention; permissions still gate access by
+    // authData. passing userID:null to the object form instead would make zero
+    // server-validate against null and reject every anon client, since a string
+    // connection userID can never equal null.
+    const userID = typeof authData?.id === 'string' ? authData.id : undefined
+
     const response = await runWithQueryContext(
       { authData: authData || ({} as AuthData) },
       () =>
-        zeroHandleQueryRequest({
-          handler: (name, args) => {
-            // per-model permission queries registered by on-zero at runtime
-            if (name.startsWith('permission.')) {
-              const table = name.slice('permission.'.length)
-              const { objOrId } = args as {
-                objOrId: string | Record<string, any>
-              }
-              const perm = getMutationsPermissions(table)
-              if (!perm) {
-                throw new Error(`[permission] no permission defined for table: ${table}`)
-              }
-              // wrap with setEvaluatingPermission so serverWhere evaluates
-              // even when environment is 'client' (SSR hydration)
-              setEvaluatingPermission(true)
-              try {
-                return (getZQL() as any)[table]
-                  .where((eb: any) => {
-                    return permissions.buildPermissionQuery(
-                      authData,
-                      eb,
-                      perm,
-                      objOrId,
-                      table,
-                    )
-                  })
-                  .one()
-              } finally {
-                setEvaluatingPermission(false)
-              }
-            }
-
-            // run validation hook if provided (must be sync - throw to reject)
-            if (validateQuery) {
-              validateQuery({ authData, queryName: name, params: args })
-            }
-
-            const query = (mustGetQuery as any)(queries, name)
-            return query.fn({ args, ctx: authData })
-          },
-          schema,
-          request,
-          userID: typeof authData?.id === 'string' ? authData.id : null,
-        }),
+        userID === undefined
+          ? zeroHandleQueryRequest(handler as any, schema, request)
+          : zeroHandleQueryRequest({ handler: handler as any, schema, request, userID }),
     )
 
     return {

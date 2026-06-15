@@ -344,13 +344,22 @@ export function createZeroClient<
     // origin to be reachable so the reload doesn't hit a restarting server.
     beforeReload?: () => Promise<void>
   }) => {
-    // stabilize authData across transient auth gaps (session refresh, tab wake)
-    // so mutations never see null mid-transition; real logout still propagates
-    // via the hasAuth token rotation in instanceKey below. bakes in what every
-    // consumer hand-rolled with its own ref.
+    // resolve the auth token first: a real logout (token gone) must clear
+    // authData so client mutators don't keep running as the old user, while a
+    // transient authData blip with the token still present (session refresh, tab
+    // wake) keeps the last value so mutations never see null mid-transition.
+    const auth = 'auth' in props ? (props as { auth?: string | null }).auth : undefined
+    const hasAuth = typeof auth === 'string'
+
+    // stabilize authData across transient gaps, but ONLY while authed — bakes in
+    // what consumers hand-rolled with a ref, and additionally clears on logout
+    // (the bare ref pattern does not, leaving mutators running as the old user
+    // until the instance rotates).
     const stableAuthDataRef = useRef<AuthData | null>(authDataIn ?? null)
     if (authDataIn) {
       stableAuthDataRef.current = authDataIn
+    } else if (!hasAuth) {
+      stableAuthDataRef.current = null
     }
     const authData = (authDataIn ?? stableAuthDataRef.current ?? null) as AuthData
 
@@ -370,9 +379,6 @@ export function createZeroClient<
       })
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-
-    const auth = 'auth' in props ? (props as { auth?: string | null }).auth : undefined
-    const hasAuth = typeof auth === 'string'
 
     // identity = every primitive option except the auth token value (token
     // changes refresh in place below; logged-in <-> logged-out still rotates

@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest'
 import {
   composeRecoveryLogSink,
   makeZeroRecovery,
-  resetReloadLatchForTests,
+  resetRecoveryStateForTests,
 } from './recoverZeroClient'
 
 import type { ZeroRecoveryDeps } from './recoverZeroClient'
@@ -26,15 +26,15 @@ function setup() {
   return { deps, deleteLocalState, reload, events }
 }
 
-// recovery chains deleteLocalState -> beforeReload -> reload across several
-// microtasks; a macrotask boundary drains the whole chain deterministically.
+// recovery chains deletes -> beforeReload -> reload across several microtasks;
+// a macrotask boundary drains the whole chain deterministically.
 async function flush() {
   await new Promise((resolve) => setTimeout(resolve, 0))
 }
 
 beforeEach(() => {
   window.sessionStorage.clear()
-  resetReloadLatchForTests()
+  resetRecoveryStateForTests()
 })
 
 describe('zero recovery', () => {
@@ -59,7 +59,7 @@ describe('zero recovery', () => {
     const recovery = makeZeroRecovery(deps)
     recovery.onUpdateNeeded({ type: UpdateNeededReasonType.NewClientGroup })
     await flush()
-    resetReloadLatchForTests()
+    resetRecoveryStateForTests()
     recovery.onUpdateNeeded({ type: UpdateNeededReasonType.VersionNotSupported })
     await flush()
     expect(deleteLocalState).not.toHaveBeenCalled()
@@ -74,11 +74,22 @@ describe('zero recovery', () => {
     expect(reload).toHaveBeenCalledTimes(1)
   })
 
-  test('a second trigger in the same page-load is a no-op (one reload heals all)', async () => {
+  test('combined client: every instance deletes its own store, but only ONE reload', async () => {
+    // two instances (control + project) fail on the same page-load. each must
+    // drop its OWN store; only one page reload should fire.
+    const a = setup()
+    const b = setup()
+    makeZeroRecovery(a.deps).onClientStateNotFound()
+    makeZeroRecovery(b.deps).onClientStateNotFound()
+    await flush()
+    expect(a.deleteLocalState).toHaveBeenCalledTimes(1)
+    expect(b.deleteLocalState).toHaveBeenCalledTimes(1)
+    expect(a.reload.mock.calls.length + b.reload.mock.calls.length).toBe(1)
+  })
+
+  test('a second trigger in the same page-load adds no extra reload or fatal', async () => {
     const { deps, reload, events } = setup()
     const recovery = makeZeroRecovery(deps)
-    // mirrors a combined control+project client: several triggers, one reload.
-    recovery.onClientStateNotFound()
     recovery.onClientStateNotFound()
     recovery.onUpdateNeeded({ type: UpdateNeededReasonType.NewClientGroup })
     await flush()
@@ -91,7 +102,7 @@ describe('zero recovery', () => {
     const recovery = makeZeroRecovery(deps)
     recovery.onClientStateNotFound()
     await flush()
-    resetReloadLatchForTests() // simulate the page reload clearing the latch
+    resetRecoveryStateForTests() // simulate the page reload clearing in-memory state
     recovery.onClientStateNotFound()
     await flush()
     expect(reload).toHaveBeenCalledTimes(1)
@@ -103,7 +114,7 @@ describe('zero recovery', () => {
     const recovery = makeZeroRecovery(deps)
     recovery.onClientStateNotFound()
     await flush()
-    resetReloadLatchForTests()
+    resetRecoveryStateForTests()
     recovery.onUpdateNeeded({ type: UpdateNeededReasonType.SchemaVersionNotSupported })
     await flush()
     expect(reload).toHaveBeenCalledTimes(2)
@@ -131,6 +142,22 @@ describe('zero recovery', () => {
     await flush()
     expect(deleteLocalState).toHaveBeenCalledTimes(1)
     expect(reload).toHaveBeenCalledTimes(1)
+  })
+
+  test('logSink flush calls through the consumer sink (preserves its this)', async () => {
+    const { deps } = setup()
+    class ClassSink {
+      flushed = false
+      log(): void {}
+      flush(): Promise<void> {
+        this.flushed = true
+        return Promise.resolve()
+      }
+    }
+    const consumer = new ClassSink()
+    const sink = composeRecoveryLogSink(deps, consumer)
+    await sink.flush?.()
+    expect(consumer.flushed).toBe(true)
   })
 
   test('logSink ignores non-error level and non-matching messages', async () => {

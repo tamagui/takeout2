@@ -14,7 +14,7 @@ const LOCAL_STORE_LOST = 'Expected IndexedDB not found'
 export type ZeroRecoveryDeps = {
   // delete THIS client's local persistent state (its own scoped IDB). pass the
   // instance's `.delete`. recovery is per-instance, so a combined client drops
-  // every underlying store; the latch below keeps it to ONE reload.
+  // EVERY underlying store; the latch below keeps it to one reload.
   deleteLocalState: () => Promise<unknown>
   // recovery lifecycle for consumers (preview postMessage, toast, …).
   zeroEvents: Emitter<ZeroEvent | null>
@@ -25,15 +25,14 @@ export type ZeroRecoveryDeps = {
   reload?: () => void
 }
 
-// one reload per page-load heals every instance + reason, so the FIRST recovery
-// latches and every later trigger this load is a no-op. without it a combined
-// (multi-instance) client double-reloads and the second instance emits a
-// spurious 'fatal' while the first is already reloading. in-memory on purpose: a
-// real reload clears it, so a genuine re-failure after reload can recover again.
+// one reload per page-load. the local-state deletes that must precede it are
+// collected here so EVERY affected instance (a combined client has several) drops
+// its own store before we reload — not just whichever instance fired first.
 let reloadScheduled = false
+const pendingDeletes: Array<Promise<unknown>> = []
 
 // cross-page-load, per-reason guard: distinct keys mean a NewClientGroup recovery
-// never suppresses a later SchemaVersionNotSupported one. survives the reload
+// never suppresses a later SchemaVersionNotSupported one. it survives the reload
 // (sessionStorage), so a reason that reloaded then immediately re-fires is caught
 // as a genuine fatal instead of reload-storming across loads.
 function recoveryGuardOpen(reasonKey: string): boolean {
@@ -55,7 +54,17 @@ function recover(
   dropLocalState: boolean,
 ): void {
   if (typeof window === 'undefined') return
-  // a reload is already coming this page-load — heal once, stay quiet otherwise.
+  // each affected instance drops its OWN stale store, even when a reload is
+  // already queued — otherwise a sibling's store survives the reload and
+  // fatal-loops on the next boot. the single scheduled reload awaits these.
+  if (dropLocalState) {
+    pendingDeletes.push(
+      Promise.resolve()
+        .then(deps.deleteLocalState)
+        .catch(() => {}),
+    )
+  }
+  // only ONE reload per page-load; a later trigger just contributes its delete.
   if (reloadScheduled) return
   if (!recoveryGuardOpen(reasonKey)) {
     console.error(`[on-zero] ${message} — already recovered once, not reloading`)
@@ -63,14 +72,13 @@ function recover(
     return
   }
   reloadScheduled = true
-  console.warn(
-    `[on-zero] ${message} — ${dropLocalState ? 'resetting local state and reloading' : 'reloading'}`,
-  )
+  console.warn(`[on-zero] ${message} — recovering`)
   deps.zeroEvents.emit({ type: 'recovering', reason: message })
   const doReload = deps.reload ?? (() => window.location.reload())
+  // defer one microtask so sibling instances failing in the same tick enqueue
+  // their deletes first, then await them all before reloading.
   Promise.resolve()
-    .then(() => (dropLocalState ? deps.deleteLocalState() : undefined))
-    .catch(() => {})
+    .then(() => Promise.allSettled(pendingDeletes))
     .then(() => deps.beforeReload?.())
     .catch(() => {})
     .finally(doReload)
@@ -132,6 +140,7 @@ export function composeRecoveryLogSink(
   deps: ZeroRecoveryDeps,
   consumerLogSink?: LogSink,
 ): LogSink {
+  const consumerFlush = consumerLogSink?.flush
   return {
     log(level: LogLevel, context: Context | undefined, ...args: unknown[]): void {
       if (consumerLogSink) consumerLogSink.log(level, context, ...args)
@@ -150,12 +159,15 @@ export function composeRecoveryLogSink(
         recover(deps, 'local-store', 'local store lost', true)
       }
     },
-    flush: consumerLogSink?.flush,
+    // call through the consumer sink so a class-based sink keeps its `this`,
+    // rather than handing Zero a detached method reference.
+    flush: consumerFlush ? () => consumerFlush.call(consumerLogSink) : undefined,
   }
 }
 
-// test-only: the reload latch is in-memory (a real page reload clears it); tests
-// simulate that reset between successive "page loads".
-export function resetReloadLatchForTests() {
+// test-only: the reload latch + pending deletes are in-memory (a real page reload
+// clears them); tests simulate that reset between successive "page loads".
+export function resetRecoveryStateForTests() {
   reloadScheduled = false
+  pendingDeletes.length = 0
 }

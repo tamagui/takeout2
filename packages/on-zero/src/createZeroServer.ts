@@ -272,8 +272,8 @@ export function createZeroServer<
       { authData: authData || ({} as AuthData) },
       () =>
         userID === undefined
-          ? zeroHandleQueryRequest(handler as any, schema, request)
-          : zeroHandleQueryRequest({ handler: handler as any, schema, request, userID }),
+          ? zeroHandleQueryRequest(handler, schema, request)
+          : zeroHandleQueryRequest({ handler, schema, request, userID }),
     )
 
     return {

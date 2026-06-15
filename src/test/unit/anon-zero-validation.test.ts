@@ -57,6 +57,21 @@ describe('zero query handler userID validation', () => {
     expect((response as any).userID).toBe('user-123')
   })
 
+  // soot uses the other valid anon strategy: it always hands on-zero a string id
+  // (a per-session `soot_anon_id` cookie, or "anon"), so anon users are
+  // server-validated against a stable id the client also declares. this is the
+  // branch soot always takes and takeout never does — the fix must leave it
+  // untouched. any string id (real user or stable-anon) stays server-validated.
+  test('stable string anon id stays server-validated (soot pattern)', async () => {
+    const { response } = await zeroServer.handleQueryRequest({
+      authData: { id: 'anon' } as any,
+      request: transformRequest('user.userById', { userId: 'someone' }),
+    })
+
+    expect((response as any).kind).toBe('QueryResponse')
+    expect((response as any).userID).toBe('anon')
+  })
+
   // locks the zero contract the fix depends on, and documents the old bug: zero's
   // object form coerces userID undefined/null to null and always emits it, so a
   // null userID becomes server-validated(null) — which rejects every string-id

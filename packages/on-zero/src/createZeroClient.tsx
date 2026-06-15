@@ -431,8 +431,11 @@ export function createZeroClient<
           schema,
           // @ts-expect-error same erasure ZeroProvider needed
           mutators,
-          // compose the consumer logSink with the local-store-lost watcher.
-          logSink: composeRecoveryLogSink(recoveryDeps, options.logSink),
+          // when the consumer brings no logSink, install ours: it preserves
+          // Zero's console output AND watches for the local-store-lost signature.
+          // a consumer with its own logSink owns log-based recovery (no
+          // double-fire with e.g. soot's origin-gated recovery).
+          logSink: options.logSink ?? composeRecoveryLogSink(recoveryDeps),
           // consumer handlers win; otherwise on-zero's default self-healing
           // recovery covers EVERY reason (drop local state + reload, guarded) —
           // passing these to Zero disables its built-in reload, so any reason we

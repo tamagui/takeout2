@@ -3,7 +3,11 @@ import { createEmitter } from '@take-out/helpers'
 import { UpdateNeededReasonType } from '@rocicorp/zero'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
-import { composeRecoveryLogSink, makeZeroRecovery } from './recoverZeroClient'
+import {
+  composeRecoveryLogSink,
+  makeZeroRecovery,
+  resetReloadLatchForTests,
+} from './recoverZeroClient'
 
 import type { ZeroRecoveryDeps } from './recoverZeroClient'
 import type { ZeroEvent } from '../types'
@@ -30,10 +34,11 @@ async function flush() {
 
 beforeEach(() => {
   window.sessionStorage.clear()
+  resetReloadLatchForTests()
 })
 
 describe('zero recovery', () => {
-  test('onUpdateNeeded drops local state and reloads, emitting recovering', async () => {
+  test('SchemaVersionNotSupported drops local state and reloads, emitting recovering', async () => {
     const { deps, deleteLocalState, reload, events } = setup()
     makeZeroRecovery(deps).onUpdateNeeded({
       type: UpdateNeededReasonType.SchemaVersionNotSupported,
@@ -49,7 +54,19 @@ describe('zero recovery', () => {
     expect(reload).toHaveBeenCalledTimes(1)
   })
 
-  test('onClientStateNotFound recovers the same way', async () => {
+  test('NewClientGroup / VersionNotSupported reload WITHOUT deleting (sibling-tab safe)', async () => {
+    const { deps, deleteLocalState, reload } = setup()
+    const recovery = makeZeroRecovery(deps)
+    recovery.onUpdateNeeded({ type: UpdateNeededReasonType.NewClientGroup })
+    await flush()
+    resetReloadLatchForTests()
+    recovery.onUpdateNeeded({ type: UpdateNeededReasonType.VersionNotSupported })
+    await flush()
+    expect(deleteLocalState).not.toHaveBeenCalled()
+    expect(reload).toHaveBeenCalledTimes(2)
+  })
+
+  test('onClientStateNotFound drops local state and reloads', async () => {
     const { deps, deleteLocalState, reload } = setup()
     makeZeroRecovery(deps).onClientStateNotFound()
     await flush()
@@ -57,22 +74,36 @@ describe('zero recovery', () => {
     expect(reload).toHaveBeenCalledTimes(1)
   })
 
-  test('loop guard: same reason within the window emits fatal, does not reload twice', async () => {
+  test('a second trigger in the same page-load is a no-op (one reload heals all)', async () => {
     const { deps, reload, events } = setup()
     const recovery = makeZeroRecovery(deps)
+    // mirrors a combined control+project client: several triggers, one reload.
+    recovery.onClientStateNotFound()
+    recovery.onClientStateNotFound()
     recovery.onUpdateNeeded({ type: UpdateNeededReasonType.NewClientGroup })
     await flush()
-    recovery.onUpdateNeeded({ type: UpdateNeededReasonType.NewClientGroup })
+    expect(reload).toHaveBeenCalledTimes(1)
+    expect(events.filter((event) => event.type === 'fatal')).toEqual([])
+  })
+
+  test('after a reload, a re-failing reason emits fatal instead of reloading again', async () => {
+    const { deps, reload, events } = setup()
+    const recovery = makeZeroRecovery(deps)
+    recovery.onClientStateNotFound()
+    await flush()
+    resetReloadLatchForTests() // simulate the page reload clearing the latch
+    recovery.onClientStateNotFound()
     await flush()
     expect(reload).toHaveBeenCalledTimes(1)
     expect(events.some((event) => event.type === 'fatal')).toBe(true)
   })
 
-  test('per-reason guard: a different reason still recovers', async () => {
+  test('after a reload, a different reason still recovers', async () => {
     const { deps, reload } = setup()
     const recovery = makeZeroRecovery(deps)
-    recovery.onUpdateNeeded({ type: UpdateNeededReasonType.NewClientGroup })
+    recovery.onClientStateNotFound()
     await flush()
+    resetReloadLatchForTests()
     recovery.onUpdateNeeded({ type: UpdateNeededReasonType.SchemaVersionNotSupported })
     await flush()
     expect(reload).toHaveBeenCalledTimes(2)
@@ -84,6 +115,19 @@ describe('zero recovery', () => {
     const sink = composeRecoveryLogSink(deps, consumer)
     sink.log('error', undefined, 'Error during persist: Expected IndexedDB not found')
     expect(consumer.log).toHaveBeenCalledTimes(1)
+    await flush()
+    expect(deleteLocalState).toHaveBeenCalledTimes(1)
+    expect(reload).toHaveBeenCalledTimes(1)
+  })
+
+  test('logSink with no consumer preserves console output and still watches', async () => {
+    const { deps, deleteLocalState, reload } = setup()
+    const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {})
+    const sink = composeRecoveryLogSink(deps)
+    sink.log('info', { worker: 'sync' }, 'connected')
+    expect(infoSpy).toHaveBeenCalledWith('worker=sync', 'connected')
+    infoSpy.mockRestore()
+    sink.log('error', undefined, 'Expected IndexedDB not found')
     await flush()
     expect(deleteLocalState).toHaveBeenCalledTimes(1)
     expect(reload).toHaveBeenCalledTimes(1)

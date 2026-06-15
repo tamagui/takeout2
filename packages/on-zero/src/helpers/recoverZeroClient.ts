@@ -3,8 +3,8 @@ import type { ZeroEvent } from '../types'
 import type { UpdateNeededReason } from '@rocicorp/zero'
 import type { Context, LogLevel, LogSink } from '@rocicorp/logger'
 
-// per-reason loop-guard window. a boot that immediately re-fails within this
-// window emits 'fatal' instead of reload-storming.
+// per-reason guard window: the SAME reason re-failing right after its reload is
+// surfaced as fatal instead of reload-storming on something the reload can't fix.
 const RECOVER_GUARD_MS = 60_000
 
 // the fatal local-store-loss signature Zero logs when the IndexedDB it expects
@@ -14,7 +14,7 @@ const LOCAL_STORE_LOST = 'Expected IndexedDB not found'
 export type ZeroRecoveryDeps = {
   // delete THIS client's local persistent state (its own scoped IDB). pass the
   // instance's `.delete`. recovery is per-instance, so a combined client drops
-  // every underlying store; the shared guard below keeps it to ONE reload.
+  // every underlying store; the latch below keeps it to ONE reload.
   deleteLocalState: () => Promise<unknown>
   // recovery lifecycle for consumers (preview postMessage, toast, …).
   zeroEvents: Emitter<ZeroEvent | null>
@@ -25,8 +25,17 @@ export type ZeroRecoveryDeps = {
   reload?: () => void
 }
 
-// distinct keys per reason: a NewClientGroup recovery must never suppress a
-// later SchemaVersionNotSupported one.
+// one reload per page-load heals every instance + reason, so the FIRST recovery
+// latches and every later trigger this load is a no-op. without it a combined
+// (multi-instance) client double-reloads and the second instance emits a
+// spurious 'fatal' while the first is already reloading. in-memory on purpose: a
+// real reload clears it, so a genuine re-failure after reload can recover again.
+let reloadScheduled = false
+
+// cross-page-load, per-reason guard: distinct keys mean a NewClientGroup recovery
+// never suppresses a later SchemaVersionNotSupported one. survives the reload
+// (sessionStorage), so a reason that reloaded then immediately re-fires is caught
+// as a genuine fatal instead of reload-storming across loads.
 function recoveryGuardOpen(reasonKey: string): boolean {
   try {
     const key = `on-zero-recover-${reasonKey}`
@@ -34,62 +43,99 @@ function recoveryGuardOpen(reasonKey: string): boolean {
     if (Date.now() - last < RECOVER_GUARD_MS) return false
     window.sessionStorage.setItem(key, String(Date.now()))
   } catch {
-    // no sessionStorage (private mode) — allow the attempt rather than wedge.
+    // no sessionStorage (private mode) — fall back to the in-memory latch.
   }
   return true
 }
 
-function recover(deps: ZeroRecoveryDeps, reasonKey: string, message: string): void {
+function recover(
+  deps: ZeroRecoveryDeps,
+  reasonKey: string,
+  message: string,
+  dropLocalState: boolean,
+): void {
   if (typeof window === 'undefined') return
+  // a reload is already coming this page-load — heal once, stay quiet otherwise.
+  if (reloadScheduled) return
   if (!recoveryGuardOpen(reasonKey)) {
     console.error(`[on-zero] ${message} — already recovered once, not reloading`)
     deps.zeroEvents.emit({ type: 'fatal', reason: message })
     return
   }
-  console.warn(`[on-zero] ${message} — resetting local state and reloading`)
+  reloadScheduled = true
+  console.warn(
+    `[on-zero] ${message} — ${dropLocalState ? 'resetting local state and reloading' : 'reloading'}`,
+  )
   deps.zeroEvents.emit({ type: 'recovering', reason: message })
   const doReload = deps.reload ?? (() => window.location.reload())
   Promise.resolve()
-    .then(() => deps.deleteLocalState())
+    .then(() => (dropLocalState ? deps.deleteLocalState() : undefined))
     .catch(() => {})
     .then(() => deps.beforeReload?.())
     .catch(() => {})
     .finally(doReload)
 }
 
-// every recoverable Zero failure resolves to the same cure: drop stale local
-// state and reload, so the fresh boot re-mints the client against the current
-// schema (and, when the consumer keys storage by a schema signature, a fresh
-// local store). passing our own onUpdateNeeded/onClientStateNotFound DISABLES
-// Zero's built-in reloadWithReason, so these handlers are the ONLY recovery —
-// they MUST cover every reason or the app fatal-blanks forever.
+// passing our own onUpdateNeeded/onClientStateNotFound DISABLES Zero's built-in
+// reloadWithReason, so these handlers are the ONLY recovery — they must cover
+// every reason or the app fatal-blanks forever.
 export function makeZeroRecovery(deps: ZeroRecoveryDeps) {
   return {
-    // all update-needed reasons (NewClientGroup / VersionNotSupported /
-    // SchemaVersionNotSupported) mean new client code is required, so the cure
-    // is a reload; deleting local state first re-keys a fresh store on schema
-    // moves and clears corruption on the others.
     onUpdateNeeded(reason: UpdateNeededReason) {
-      recover(deps, reason.type, `update needed (${reason.message || reason.type})`)
+      // every update-needed reason needs new client code → reload. but only
+      // SchemaVersionNotSupported means the local rows are now incompatible:
+      // mirror Zero's own decision (it disables the client group only for that
+      // reason). NewClientGroup / VersionNotSupported are code-version mismatches
+      // whose data is still valid — and delete() there would wipe the IndexedDB
+      // OTHER live tabs of this user share (the store is keyed by user+storageKey,
+      // not per-tab), e.g. the newer tab that triggered NewClientGroup.
+      const dropLocalState = reason.type === 'SchemaVersionNotSupported'
+      recover(
+        deps,
+        reason.type,
+        `update needed (${reason.message || reason.type})`,
+        dropLocalState,
+      )
     },
-    // local/server sync state is gone (GC, CVR reset, or server rejection); the
-    // instance is dead and must be replaced.
     onClientStateNotFound() {
-      recover(deps, 'client-state-not-found', 'client state not found')
+      // local/server sync state is gone or rejected — the store is unusable, so
+      // drop it and reload into a fresh client.
+      recover(deps, 'client-state-not-found', 'client state not found', true)
     },
   }
 }
 
-// compose the consumer's logSink (if any) with a watcher that triggers the same
-// recovery on the local-store-lost signature — the one fatal Zero surfaces only
-// through the log, not the structured callbacks.
+// preserve Zero's default console output: we MUST install a logSink to watch for
+// the corruption signature, but doing so replaces Zero's built-in console sink —
+// so when the consumer passes none, mirror Zero's key=value context prefix here
+// instead of silently swallowing every log.
+function logToConsole(
+  level: LogLevel,
+  context: Context | undefined,
+  ...args: unknown[]
+): void {
+  const prefix = context
+    ? Object.entries(context)
+        .map(([key, value]) => (value === undefined ? key : `${key}=${value}`))
+        .join(' ')
+    : ''
+  const method = level === 'debug' ? 'debug' : level
+  console[method](...(prefix ? [prefix] : []), ...args)
+}
+
+// watch error-level logs for the local-store-lost signature (the one fatal Zero
+// surfaces only through the log, not the structured callbacks) and trigger the
+// same recovery. forwards to the consumer sink, or to the console when there is
+// none. wire this ONLY when the consumer didn't pass their own logSink, so a
+// consumer that owns log-based recovery isn't double-fired.
 export function composeRecoveryLogSink(
   deps: ZeroRecoveryDeps,
   consumerLogSink?: LogSink,
 ): LogSink {
   return {
     log(level: LogLevel, context: Context | undefined, ...args: unknown[]): void {
-      consumerLogSink?.log(level, context, ...args)
+      if (consumerLogSink) consumerLogSink.log(level, context, ...args)
+      else logToConsole(level, context, ...args)
       if (level !== 'error') return
       const text = args
         .map((arg) =>
@@ -101,9 +147,15 @@ export function composeRecoveryLogSink(
         )
         .join(' ')
       if (text.includes(LOCAL_STORE_LOST)) {
-        recover(deps, 'local-store', 'local store lost')
+        recover(deps, 'local-store', 'local store lost', true)
       }
     },
     flush: consumerLogSink?.flush,
   }
+}
+
+// test-only: the reload latch is in-memory (a real page reload clears it); tests
+// simulate that reset between successive "page loads".
+export function resetReloadLatchForTests() {
+  reloadScheduled = false
 }

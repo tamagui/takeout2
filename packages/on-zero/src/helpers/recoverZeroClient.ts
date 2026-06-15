@@ -74,7 +74,13 @@ function recover(
   reloadScheduled = true
   console.warn(`[on-zero] ${message} — recovering`)
   deps.zeroEvents.emit({ type: 'recovering', reason: message })
-  const doReload = deps.reload ?? (() => window.location.reload())
+  // resolve the reload exactly as @rocicorp/zero does internally
+  // (`getBrowserGlobal('location')?.reload()`, zero.js): read location off the
+  // global and optional-chain through it. a non-DOM host with a `window` shim
+  // but no real `location` (the sootsim tenant render-worker hides `location`
+  // for isolation) then drops its stale IDB and no-ops the reload — letting the
+  // host remount — instead of throwing "reading 'reload'" on undefined.
+  const doReload = deps.reload ?? (() => globalThis.location?.reload?.())
   // defer one microtask so sibling instances failing in the same tick enqueue
   // their deletes first, then await them all before reloading.
   Promise.resolve()

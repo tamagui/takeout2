@@ -169,4 +169,37 @@ describe('zero recovery', () => {
     expect(deleteLocalState).not.toHaveBeenCalled()
     expect(reload).not.toHaveBeenCalled()
   })
+
+  // a host with a `window` shim but no real `location` — the sootsim tenant
+  // render-worker, which hides `location` for isolation. the DEFAULT reload
+  // path (no injected `deps.reload`) must still drop stale IDB and not throw
+  // "reading 'reload'" on undefined; it no-ops the reload and lets the host
+  // remount. previously crashed as an unhandled rejection.
+  test('default reload path is a safe no-op when location is absent', async () => {
+    const events: ZeroEvent[] = []
+    const zeroEvents = createEmitter<ZeroEvent | null>(`test-recover-${emitterSeq++}`, null)
+    zeroEvents.listen((event) => {
+      if (event) events.push(event)
+    })
+    const deleteLocalState = vi.fn(() => Promise.resolve())
+    // no `reload` dep — exercises the default `globalThis.location?.reload?.()`.
+    const deps: ZeroRecoveryDeps = { deleteLocalState, zeroEvents }
+    const originalLocation = globalThis.location
+    // simulate the worker: window exists (jsdom) but location is absent.
+    Object.defineProperty(globalThis, 'location', {
+      configurable: true,
+      value: undefined,
+    })
+    try {
+      makeZeroRecovery(deps).onClientStateNotFound()
+      await flush()
+    } finally {
+      Object.defineProperty(globalThis, 'location', {
+        configurable: true,
+        value: originalLocation,
+      })
+    }
+    expect(deleteLocalState).toHaveBeenCalledTimes(1)
+    expect(events).toContainEqual({ type: 'recovering', reason: 'client state not found' })
+  })
 })

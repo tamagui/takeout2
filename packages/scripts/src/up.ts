@@ -7,6 +7,9 @@ interface PackageJson {
   devDependencies?: Record<string, string>
   peerDependencies?: Record<string, string>
   optionalDependencies?: Record<string, string>
+  workspaces?: string[] | { packages?: string[] }
+  upgradePackageJsonGlobs?: string[]
+  upgradeSets?: Record<string, string[]>
 }
 
 await cmd`upgrade packages by name or pattern`
@@ -22,6 +25,9 @@ await cmd`upgrade packages by name or pattern`
       fs.readFileSync(path.join(rootDir, 'package.json'), 'utf-8'),
     )
     const upgradeSets: Record<string, string[]> = rootPackageJson.upgradeSets || {}
+    const upgradePackageJsonGlobs = Array.isArray(rootPackageJson.upgradePackageJsonGlobs)
+      ? rootPackageJson.upgradePackageJsonGlobs
+      : []
 
     for (const arg of args.rest) {
       if (arg in upgradeSets) {
@@ -48,18 +54,30 @@ await cmd`upgrade packages by name or pattern`
       process.exit(1)
     }
 
-    function findPackageJsonFiles(dir: string): string[] {
+    function findPackageJsonFiles(
+      dir: string,
+      extraPackageJsonGlobs = upgradePackageJsonGlobs,
+    ): string[] {
       const results: string[] = []
+      const seen = new Set<string>()
+
+      const addPackageJson = (packageJsonPath: string) => {
+        if (seen.has(packageJsonPath)) return
+        seen.add(packageJsonPath)
+        results.push(packageJsonPath)
+      }
 
       if (fs.existsSync(path.join(dir, 'package.json'))) {
-        results.push(path.join(dir, 'package.json'))
+        addPackageJson(path.join(dir, 'package.json'))
       }
 
       // check if it's a monorepo with workspaces
       try {
         const packageJson = JSON.parse(
           fs.readFileSync(path.join(dir, 'package.json'), 'utf-8'),
-        )
+        ) as PackageJson
+        const packageJsonGlobs = [...extraPackageJsonGlobs]
+
         if (packageJson.workspaces) {
           let workspacePaths: string[] = []
 
@@ -69,9 +87,15 @@ await cmd`upgrade packages by name or pattern`
             workspacePaths = packageJson.workspaces.packages
           }
 
-          for (const workspace of workspacePaths) {
+          packageJsonGlobs.unshift(...workspacePaths)
+        }
+
+        if (packageJsonGlobs.length > 0) {
+          for (const workspace of packageJsonGlobs) {
             // handle glob patterns like "packages/*", "code/**/*", "./code/ui/**/*"
-            const normalizedWorkspace = workspace.replace(/^\.\//, '')
+            const normalizedWorkspace = workspace
+              .replace(/^\.\//, '')
+              .replace(/\/package\.json$/, '')
 
             if (normalizedWorkspace.includes('**')) {
               // nested glob pattern - use glob to find all package.json files
@@ -87,7 +111,7 @@ await cmd`upgrade packages by name or pattern`
                         const subPath = path.join(searchDir, entry.name)
                         const pkgPath = path.join(subPath, 'package.json')
                         if (fs.existsSync(pkgPath)) {
-                          results.push(pkgPath)
+                          addPackageJson(pkgPath)
                         }
                         // recurse into subdirectories
                         findPackages(subPath)
@@ -112,7 +136,7 @@ await cmd`upgrade packages by name or pattern`
 
                 for (const subdir of subdirs) {
                   if (fs.existsSync(path.join(subdir, 'package.json'))) {
-                    results.push(path.join(subdir, 'package.json'))
+                    addPackageJson(path.join(subdir, 'package.json'))
                   }
                 }
               }
@@ -120,7 +144,7 @@ await cmd`upgrade packages by name or pattern`
               // exact path like "code/tamagui.dev" or "./code/sandbox"
               const pkgPath = path.join(dir, normalizedWorkspace, 'package.json')
               if (fs.existsSync(pkgPath)) {
-                results.push(pkgPath)
+                addPackageJson(pkgPath)
               }
             }
           }
@@ -219,7 +243,7 @@ await cmd`upgrade packages by name or pattern`
     }
 
     async function updatePackages(
-      packagesByWorkspace: Map<string, { dir: string; packages: string[] }>,
+      packagesByManifest: Map<string, { dir: string; packages: string[] }>,
       rootDir: string,
       packageJsonFiles: string[],
     ) {
@@ -234,7 +258,7 @@ await cmd`upgrade packages by name or pattern`
 
       // collect all unique packages to update
       const allPackages = new Set<string>()
-      for (const { packages } of packagesByWorkspace.values()) {
+      for (const { packages } of packagesByManifest.values()) {
         packages.forEach((pkg) => allPackages.add(pkg))
       }
 
@@ -272,14 +296,14 @@ await cmd`upgrade packages by name or pattern`
       let totalUpdates = 0
 
       for (const packageJsonPath of packageJsonFiles) {
-        const packagesInWorkspace =
-          packagesByWorkspace.get(getWorkspaceName(packageJsonPath, rootDir))?.packages ||
+        const packagesInManifest =
+          packagesByManifest.get(getWorkspaceName(packageJsonPath, rootDir))?.packages ||
           []
 
-        if (packagesInWorkspace.length > 0) {
+        if (packagesInManifest.length > 0) {
           const updates = updatePackageJsonVersions(
             packageJsonPath,
-            packagesInWorkspace,
+            packagesInManifest,
             versionMap,
           )
           if (updates > 0) {
@@ -330,9 +354,11 @@ await cmd`upgrade packages by name or pattern`
     const packageJsonFiles = findPackageJsonFiles(rootDir)
     console.info(`Found ${packageJsonFiles.length} package.json files`)
 
+    const workspacePackageJsonFiles = findPackageJsonFiles(rootDir, [])
+
     // get workspace package names to exclude from updates
     const workspacePackageNames = new Set<string>()
-    for (const packageJsonPath of packageJsonFiles) {
+    for (const packageJsonPath of workspacePackageJsonFiles) {
       if (packageJsonPath === path.join(rootDir, 'package.json')) continue
 
       try {
@@ -350,8 +376,8 @@ await cmd`upgrade packages by name or pattern`
       `Found ${workspacePackageNames.size} workspace packages to exclude from updates`,
     )
 
-    // build map of packages to update per workspace
-    const packagesByWorkspace = new Map<string, { dir: string; packages: string[] }>()
+    // build map of packages to update per manifest
+    const packagesByManifest = new Map<string, { dir: string; packages: string[] }>()
     const allMatchingDeps = new Set<string>()
 
     for (const packageJsonPath of packageJsonFiles) {
@@ -374,7 +400,7 @@ await cmd`upgrade packages by name or pattern`
       if (matchingDeps.length > 0) {
         const dir = packageJsonPath.replace('/package.json', '')
         const name = getWorkspaceName(packageJsonPath, rootDir)
-        packagesByWorkspace.set(name, { dir, packages: matchingDeps })
+        packagesByManifest.set(name, { dir, packages: matchingDeps })
       }
     }
 
@@ -397,7 +423,7 @@ await cmd`upgrade packages by name or pattern`
         allMatchingDeps.add(pkg)
       }
 
-      packagesByWorkspace.set('root', {
+      packagesByManifest.set('root', {
         dir: rootDir,
         packages: exactPatterns,
       })
@@ -417,14 +443,14 @@ await cmd`upgrade packages by name or pattern`
       console.info(
         `Found ${allMatchingDeps.size} dependencies matching patterns: ${packagePatterns.join(', ')}`,
       )
-      console.info(`Found matches in ${packagesByWorkspace.size} workspace(s)`)
+      console.info(`Found matches in ${packagesByManifest.size} package manifest(s)`)
     }
 
     if (globalTag) {
       console.info(`🏷️ Using tag '${globalTag}'`)
     }
 
-    await updatePackages(packagesByWorkspace, rootDir, packageJsonFiles)
+    await updatePackages(packagesByManifest, rootDir, packageJsonFiles)
 
     // sync resolved $dep: values (like ZERO_VERSION) to all env targets
     if (

@@ -526,9 +526,10 @@ exactly one instance — duplicate claims throw at create time. then combine
 them into one consumer surface:
 
 ```tsx
-import { combineZeroClients, createZeroClient } from 'on-zero'
+import { createZeroClient } from 'on-zero'
+import { combineZeroClients, createZeroClientWithDirectQueries } from 'on-zero/multi'
 
-const control = createZeroClient({
+const control = createZeroClientWithDirectQueries({
   schema,
   models: controlModels,
   groupedQueries: controlQueries,
@@ -551,8 +552,8 @@ export const { useQuery, zero, run, preload, getQuery, zeroEvents } =
 // client passed to combineZeroClients (or the `inner` option) must be the
 // INNERMOST provider — zero-react's useQuery resolves the nearest provider's
 // instance from context, so only the inner instance rides that path. all
-// other instances' useQuery/usePermission go through a context-free direct
-// materialize on their own mounted zero.
+// other instances must opt into the context-free direct adapter through
+// createZeroClientWithDirectQueries.
 ;<control.ProvideZero server={controlUrl} userID={user.id}>
   <project.ProvideZero server={projectUrl} userID={`${user.id}:${projectId}`}>
     <App />
@@ -565,11 +566,12 @@ constraints:
 - each instance needs its own client-group identity (separate `userID` /
   storage key / server url) — never swap the backing namespace under a live
   instance.
+- most apps should use plain `createZeroClient`; the `on-zero/multi` entrypoint
+  is only for this nested-provider edge case.
 - give the INNER slot to the instance owning the bulk of the subscriptions —
-  inner queries keep zero-react's viewStore dedup + ttl. outer instances use
-  the direct path, which has no cross-component view dedup (each hook
-  materializes its own view), so keep outer instances on bounded, tiny
-  queries (current user, settings, directories).
+  inner queries use zero-react's native context path. outer instances use the
+  direct adapter on their own mounted zero, so keep those instances on bounded,
+  low-fanout queries (current user, settings, directories).
 - a mutator may only read/write tables owned by its own instance. its
   transaction runs on that instance alone; cross-instance writes are not
   detectable at registration and will silently miss the other store.

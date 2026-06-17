@@ -19,12 +19,10 @@ import type { ReactNode } from 'react'
 // provider is mounted INNERMOST — may use the upstream context path. by
 // default that is the LAST client passed here (override via the `inner`
 // option); the first client is primary and its provider is expected OUTER.
-// the inner instance's queries ride zero-react's useQuery unchanged, keeping
-// viewStore dedup + ttl — give that slot to the instance owning the bulk of
-// the subscriptions. every other instance's useQuery/usePermission route
-// through the context-free direct hooks (useQueryDirect), which materialize
-// on the owning instance but skip view dedup — keep those instances on
-// bounded, tiny queries.
+// the inner instance's queries ride zero-react's useQuery unchanged. every
+// other instance must be created through `createZeroClientWithDirectQueries`
+// from `on-zero/multi`, which opts into the context-free adapter for this
+// nested-provider edge case. keep those non-inner instances bounded.
 
 type ControlQueriesProps = {
   children: ReactNode

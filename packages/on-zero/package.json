@@ -65,6 +65,12 @@
       "import": "./dist/esm/vite-plugin.mjs",
       "require": "./dist/cjs/vite-plugin.cjs"
     },
+    "./multi": {
+      "react-native": "./dist/esm/multi.native.js",
+      "types": "./types/multi.d.ts",
+      "import": "./dist/esm/multi.mjs",
+      "require": "./dist/cjs/multi.cjs"
+    },
     "./drizzle": {
       "types": "./types/createSchemaFromDrizzle.d.ts",
       "import": "./dist/esm/createSchemaFromDrizzle.mjs",

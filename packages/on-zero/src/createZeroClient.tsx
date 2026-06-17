@@ -1,6 +1,6 @@
 import { defineQueries, defineQuery, Zero as ZeroClient } from '@rocicorp/zero'
 import { useConnectionState, useZero, ZeroProvider } from '@rocicorp/zero/react'
-import { createEmitter } from '@take-out/helpers'
+import { createEmitter, type Emitter } from '@take-out/helpers'
 import {
   createContext,
   memo,
@@ -9,6 +9,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type Context,
   type ReactNode,
 } from 'react'
 
@@ -16,7 +17,6 @@ import { createPermissions } from './createPermissions'
 import { ensureHttpPullTransport } from './httpPullTransport'
 import {
   createUseQuery,
-  createUseQueryDirect,
   type QueryControlMode,
   type UseQueryHook,
 } from './createUseQuery'
@@ -38,7 +38,14 @@ import { setRunner, type ZeroRunner } from './zeroRunner'
 import { zql } from './zql'
 
 import type { AuthData, GenericModels, GetZeroMutators, ZeroEvent } from './types'
-import type { Query, Row, Zero, ZeroOptions, Schema as ZeroSchema } from '@rocicorp/zero'
+import type {
+  AnyQueryRegistry,
+  Query,
+  Row,
+  Zero,
+  ZeroOptions,
+  Schema as ZeroSchema,
+} from '@rocicorp/zero'
 
 type PreloadOptions = { ttl?: 'always' | 'never' | number | undefined }
 
@@ -49,6 +56,27 @@ export type GroupedQueries = Record<string, Record<string, (...args: any[]) => a
 //  - 'optimistic-deny': return false until server confirms
 //  - 'optimistic-allow': return true until server confirms
 export type PermissionStrategy = 'optimistic' | 'optimistic-deny' | 'optimistic-allow'
+
+export type CreateZeroClientOptions<
+  Schema extends ZeroSchema,
+  Models extends GenericModels,
+> = {
+  schema: Schema
+  models: Models
+  groupedQueries: GroupedQueries
+  permissionStrategy?: PermissionStrategy
+  // names this client instance so multiple instances can coexist on one page.
+  // each query/mutator namespace is claimed by exactly one instance, and the
+  // ambient run() + the combineZeroClients facade dispatch by that claim.
+  instanceName?: string
+}
+
+export type DirectQueryAdapter<Schema extends ZeroSchema> = (props: {
+  DisabledContext: Context<QueryControlMode>
+  customQueries: AnyQueryRegistry
+  getZero: () => any
+  zeroVersion: Emitter<number>
+}) => UseQueryHook<Schema>
 
 function getZeroProxyValue(instance: object, key: PropertyKey) {
   const value = Reflect.get(instance, key, instance)
@@ -67,7 +95,25 @@ function getZeroProxyValue(instance: object, key: PropertyKey) {
   return bound
 }
 
-export function createZeroClient<
+function createUnavailableDirectUseQuery<
+  Schema extends ZeroSchema,
+>(): UseQueryHook<Schema> {
+  function useQueryDirect(): never {
+    throw new Error(
+      `[on-zero] direct queries are optional. Import createZeroClientWithDirectQueries from 'on-zero/multi' for clients used outside the innermost ZeroProvider.`,
+    )
+  }
+
+  return useQueryDirect as UseQueryHook<Schema>
+}
+
+export function createZeroClient<Schema extends ZeroSchema, Models extends GenericModels>(
+  options: CreateZeroClientOptions<Schema, Models>,
+) {
+  return createZeroClientInternal(options)
+}
+
+export function createZeroClientInternal<
   Schema extends ZeroSchema,
   Models extends GenericModels,
 >({
@@ -76,15 +122,9 @@ export function createZeroClient<
   groupedQueries,
   permissionStrategy = 'optimistic',
   instanceName = 'default',
-}: {
-  schema: Schema
-  models: Models
-  groupedQueries: GroupedQueries
-  permissionStrategy?: PermissionStrategy
-  // names this client instance so multiple instances can coexist on one page.
-  // each query/mutator namespace is claimed by exactly one instance, and the
-  // ambient run() + the combineZeroClients facade dispatch by that claim.
-  instanceName?: string
+  createDirectUseQuery,
+}: CreateZeroClientOptions<Schema, Models> & {
+  createDirectUseQuery?: DirectQueryAdapter<Schema>
 }) {
   type ZeroMutators = GetZeroMutators<Models>
   type ZeroInstance = Zero<Schema, ZeroMutators>
@@ -230,13 +270,9 @@ export function createZeroClient<
 
   const zeroEvents = createEmitter<ZeroEvent | null>(`zero${emitterScope}`, null)
 
-  // bumped after commit whenever the mounted zero instance changes (first
-  // mount, identity change) — the direct query path re-materializes its views
-  // against the new instance
-  const zeroInstanceVersion = createEmitter<number>(
-    `zero-instance-version${emitterScope}`,
-    0,
-  )
+  const zeroInstanceVersion = createDirectUseQuery
+    ? createEmitter<number>(`zero-instance-version${emitterScope}`, 0)
+    : null
 
   const AuthDataContext = createContext<AuthData>({} as AuthData)
 
@@ -245,15 +281,14 @@ export function createZeroClient<
     customQueries,
   })
 
-  // context-free counterpart: materializes directly on THIS instance's
-  // mounted zero instead of the nearest ZeroProvider context. used by
-  // combineZeroClients for instances whose provider is not innermost.
-  const useQueryDirect = createUseQueryDirect<Schema>({
-    DisabledContext,
-    customQueries,
-    getZero: () => latestZeroInstance,
-    zeroVersion: zeroInstanceVersion,
-  })
+  const useQueryDirect = createDirectUseQuery
+    ? createDirectUseQuery({
+        DisabledContext,
+        customQueries,
+        getZero: () => latestZeroInstance,
+        zeroVersion: zeroInstanceVersion!,
+      })
+    : createUnavailableDirectUseQuery<Schema>()
 
   // permission check uses a per-model synced query so server is authoritative
   // permissionStrategy controls client behavior before server responds.
@@ -515,10 +550,8 @@ export function createZeroClient<
       setRunner(runner)
     }
 
-    // notify direct-path views after commit (emitting during render would
-    // setState other components mid-render)
     useEffect(() => {
-      zeroInstanceVersion.emit(zeroInstanceVersion.value + 1)
+      zeroInstanceVersion?.emit(zeroInstanceVersion.value + 1)
     }, [zeroInstance])
 
     return null

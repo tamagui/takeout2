@@ -8,8 +8,12 @@ export * from './helpers/useMutation'
 export { ensureAuth, getAuth } from './helpers/getAuth'
 export { setAuthData, setEnvironment } from './state'
 
-export * from './combineZeroClients'
-export * from './createZeroClient'
+export {
+  createZeroClient,
+  type CreateZeroClientOptions,
+  type GroupedQueries,
+  type PermissionStrategy,
+} from './createZeroClient'
 export * from './httpPullTransport'
 export * from './createUseQuery'
 export * from './resolveQuery'

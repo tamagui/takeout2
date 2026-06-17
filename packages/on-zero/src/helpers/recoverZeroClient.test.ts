@@ -177,7 +177,10 @@ describe('zero recovery', () => {
   // remount. previously crashed as an unhandled rejection.
   test('default reload path is a safe no-op when location is absent', async () => {
     const events: ZeroEvent[] = []
-    const zeroEvents = createEmitter<ZeroEvent | null>(`test-recover-${emitterSeq++}`, null)
+    const zeroEvents = createEmitter<ZeroEvent | null>(
+      `test-recover-${emitterSeq++}`,
+      null,
+    )
     zeroEvents.listen((event) => {
       if (event) events.push(event)
     })
@@ -200,6 +203,9 @@ describe('zero recovery', () => {
       })
     }
     expect(deleteLocalState).toHaveBeenCalledTimes(1)
-    expect(events).toContainEqual({ type: 'recovering', reason: 'client state not found' })
+    expect(events).toContainEqual({
+      type: 'recovering',
+      reason: 'client state not found',
+    })
   })
 })

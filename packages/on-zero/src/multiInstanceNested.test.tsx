@@ -6,12 +6,13 @@
 // path — they must materialize directly on the owning instance.
 
 import { createSchema, string, table } from '@rocicorp/zero'
+import { useZero } from '@rocicorp/zero/react'
 import { act, StrictMode } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, expect, test } from 'vitest'
 
-import { combineZeroClients } from './combineZeroClients'
 import { createZeroClient } from './createZeroClient'
+import { combineZeroClients, createZeroClientWithDirectQueries } from './multi'
 import { zql } from './zql'
 
 import type { MutatorContext } from './types'
@@ -44,7 +45,7 @@ const controlModels = {
 }
 const ctlUserById = (args: { id: string }) => (zql as any).user.where('id', args.id).one()
 
-const control = createZeroClient({
+const control = createZeroClientWithDirectQueries({
   schema,
   models: controlModels,
   groupedQueries: { ctlUser: { byId: ctlUserById } },
@@ -87,6 +88,9 @@ beforeEach(() => {
 
 afterEach(async () => {
   await act(async () => root.unmount())
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 20))
+  })
   container.remove()
 })
 
@@ -106,18 +110,57 @@ const probe: { data: UserRow | undefined; renders: number } = {
   data: undefined,
   renders: 0,
 }
+const materializeProbe: {
+  materializeTtls: unknown[]
+  updateTtls: unknown[]
+  destroys: number
+} = {
+  materializeTtls: [],
+  updateTtls: [],
+  destroys: 0,
+}
 
 // reset via helper so the assignments don't narrow probe.data to undefined
 // in test scope
 function resetProbe() {
   probe.data = undefined
   probe.renders = 0
+  materializeProbe.materializeTtls = []
+  materializeProbe.updateTtls = []
+  materializeProbe.destroys = 0
 }
 
-function ControlUserProbe({ id }: { id: string }) {
-  const [data] = (combined.useQuery as any)(ctlUserById, { id })
+function ControlUserProbe({ id, ttl }: { id: string; ttl?: number }) {
+  const [data] =
+    ttl === undefined
+      ? (combined.useQuery as any)(ctlUserById, { id })
+      : (combined.useQuery as any)(ctlUserById, { id }, { ttl })
   probe.data = data ?? undefined
   probe.renders++
+  return null
+}
+
+function MaterializeProbe() {
+  const zero = useZero() as any
+  if (!zero.__onZeroMaterializeProbe) {
+    zero.__onZeroMaterializeProbe = true
+    const materialize = zero.materialize.bind(zero)
+    zero.materialize = (...args: any[]) => {
+      materializeProbe.materializeTtls.push(args[1]?.ttl)
+      const view = materialize(...args)
+      const updateTTL = view.updateTTL.bind(view)
+      view.updateTTL = (ttl: unknown) => {
+        materializeProbe.updateTtls.push(ttl)
+        return updateTTL(ttl)
+      }
+      const destroy = view.destroy.bind(view)
+      view.destroy = () => {
+        materializeProbe.destroys++
+        return destroy()
+      }
+      return view
+    }
+  }
   return null
 }
 
@@ -204,6 +247,38 @@ test('StrictMode: direct views survive the effect double-invoke', async () => {
 
   await seedControl({ id: 'u4', name: 'strict-v2' })
   await waitFor(() => probe.data?.name === 'strict-v2', 'second update still live')
+})
+
+test('direct-path subscribers share one materialized view', async () => {
+  const App = ({ showSubscribers }: { showSubscribers: boolean }) => (
+    <control.ProvideZero server={null} userID="t5-ctl">
+      <MaterializeProbe />
+      <project.ProvideZero server={null} userID="t5-prj">
+        {showSubscribers ? (
+          <>
+            <ControlUserProbe id="u5" ttl={1000} />
+            <ControlUserProbe id="u5" ttl={2000} />
+          </>
+        ) : null}
+      </project.ProvideZero>
+    </control.ProvideZero>
+  )
+
+  await render(<App showSubscribers />)
+  await waitFor(() => probe.renders >= 2, 'both probes mount')
+
+  expect(materializeProbe.materializeTtls).toEqual([1000])
+  expect(materializeProbe.updateTtls).toEqual([2000])
+
+  await seedControl({ id: 'u5', name: 'shared-v1' })
+  await waitFor(() => probe.data?.name === 'shared-v1', 'shared view update visible')
+  expect(materializeProbe.materializeTtls).toEqual([1000])
+
+  await render(<App showSubscribers={false} />)
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 20))
+  })
+  expect(materializeProbe.destroys).toBe(1)
 })
 
 test('direct-path views re-materialize when the owning instance rotates', async () => {

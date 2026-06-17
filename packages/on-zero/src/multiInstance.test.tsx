@@ -4,10 +4,12 @@ import { describe, expect, test, vi } from 'vitest'
 
 import { combineZeroClients } from './combineZeroClients'
 import { createZeroClient } from './createZeroClient'
+import { runWithContext } from './helpers/mutatorContext'
 import { getInstanceForNamespace, registerClientInstance } from './instanceRegistry'
 import { registerQuery } from './queryRegistry'
 import { run } from './run'
 import { setRunner, type ZeroRunner } from './zeroRunner'
+import { zql } from './zql'
 
 import type { ZeroEvent } from './types'
 import type { AnyQueryRegistry, Query } from '@rocicorp/zero'
@@ -87,6 +89,73 @@ describe('multi-instance namespace dispatch', () => {
     // the request resolved through the owning instance's own query registry
     const request = controlRunner.mock.calls[0]![0] as { query: { queryName: string } }
     expect(request.query.queryName).toBe('runUser.byId')
+  })
+
+  test('run() rejects named queries inside server mutation context', async () => {
+    const { byId } = makeClient('run-ctx-owner', 'runCtxThing')
+    const ownerRunner = vi.fn(async (..._args: unknown[]) => ({ from: 'owner' }))
+    getInstanceForNamespace('runCtxThing')!.runner = ownerRunner as ZeroRunner
+    const txRun = vi.fn(async (..._args: unknown[]) => ({ from: 'tx' }))
+
+    await expect(
+      runWithContext(
+        {
+          authData: null,
+          environment: 'server',
+          can: async () => {},
+          tx: { run: txRun },
+        } as any,
+        () => run(byId, { id: '1' }),
+      ),
+    ).rejects.toThrow(/run\(namedQuery\) cannot be used inside a Zero mutation/)
+
+    expect(ownerRunner).not.toHaveBeenCalled()
+    expect(txRun).not.toHaveBeenCalled()
+  })
+
+  test('run() keeps named queries on their owning client runner when browser context leaks', async () => {
+    const { byId } = makeClient('run-client-leak-owner', 'runClientLeakThing')
+    const ownerRunner = vi.fn(async (..._args: unknown[]) => ({ from: 'owner' }))
+    getInstanceForNamespace('runClientLeakThing')!.runner = ownerRunner as ZeroRunner
+    const txRun = vi.fn(async (..._args: unknown[]) => ({ from: 'tx' }))
+
+    await expect(
+      runWithContext(
+        {
+          authData: null,
+          environment: 'client',
+          can: async () => {},
+          tx: { run: txRun },
+        } as any,
+        () => run(byId, { id: '1' }),
+      ),
+    ).resolves.toEqual({ from: 'owner' })
+
+    expect(ownerRunner).toHaveBeenCalledTimes(1)
+    expect(txRun).not.toHaveBeenCalled()
+  })
+
+  test('run() keeps inline zql on the active transaction runner', async () => {
+    makeClient('run-inline-context', 'runInlineThing')
+    const ambientRunner = vi.fn(async (..._args: unknown[]) => ({ from: 'ambient' }))
+    setRunner(ambientRunner as ZeroRunner)
+    const txRun = vi.fn(async (..._args: unknown[]) => ({ from: 'tx' }))
+    const query = zql.user.where('id', '1')
+
+    await expect(
+      runWithContext(
+        {
+          authData: null,
+          environment: 'client',
+          can: async () => {},
+          tx: { run: txRun },
+        } as any,
+        () => run(query),
+      ),
+    ).resolves.toEqual({ from: 'tx' })
+
+    expect(txRun).toHaveBeenCalledWith(query, undefined)
+    expect(ambientRunner).not.toHaveBeenCalled()
   })
 
   test('a claimed namespace with an unmounted instance uses the ambient runner (server path)', async () => {

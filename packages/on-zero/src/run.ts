@@ -1,6 +1,7 @@
 import { getInstanceForQueryFn } from './instanceRegistry'
 import { resolveQuery, type PlainQueryFn } from './resolveQuery'
-import { getRunner } from './zeroRunner'
+import { isInZeroMutation, mutatorContext } from './helpers/mutatorContext'
+import { getAmbientRunner, getRunner } from './zeroRunner'
 
 import type {
   AnyQueryRegistry,
@@ -75,11 +76,18 @@ export function run(
     return getRunner()(queryOrFn, options)
   }
 
+  const inMutation = isInZeroMutation()
+  if (inMutation && mutatorContext().environment === 'server') {
+    throw new Error(
+      'run(namedQuery) cannot be used inside a Zero mutation. Use tx.run(zql...) for transactional mutation reads.',
+    )
+  }
+
   // with multiple client instances mounted, a named query executes against
   // the instance that claimed its namespace, not whichever mounted last
   const instance = getInstanceForQueryFn(queryOrFn)
   const customQueries = instance?.customQueries ?? getCustomQueries()
   const queryRequest = resolveQuery({ customQueries, fn: queryOrFn, params })
 
-  return getRunner(instance)(queryRequest as any, options)
+  return getAmbientRunner(instance)(queryRequest as any, options)
 }

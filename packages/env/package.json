@@ -1,6 +1,6 @@
 {
   "name": "@take-out/env",
-  "version": "0.4.35",
+  "version": "0.4.36",
   "type": "module",
   "sideEffects": false,
   "main": "dist/cjs",

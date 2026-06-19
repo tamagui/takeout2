@@ -3,6 +3,493 @@ title: Changelog Archive — 2026
 description: Archived Takeout updates from early 2026
 ---
 
+## Week of March 30, 2026
+
+`f04823bd`
+
+### Features
+
+- `@take-out/env` package introduced — consolidates all env setup into a
+  single package with `createEnv`, an `expected` sentinel for required vars,
+  typed `server` proxy that throws on client access (preventing build-time
+  inlining), and a `pgUrl()` helper for standardized postgres connection
+  strings. Replaces the old `env-server.ts` / `generate.ts` machinery
+- `@take-out/database` package — renamed from `@take-out/postgres` and now
+  absorbs all the `src/database` boilerplate behind a `createDatabase()`
+  factory. Unified `schema.ts` (no more public/private split),
+  `privateTable()` wrapper plus `derivePublicTables()` eliminates manual
+  table lists, typed helpers (`insertRow`/`updateRow`/`deleteRow`),
+  `loadMigrationsFromDir()` for non-vite contexts, and `defineTrigger`/
+  `defineSeed` with glob loaders. Zero config is explicitly namespaced into
+  publication/triggers/seeds/buildInitSql
+- `on-zero` drizzle-zero integration built-in — models directory renamed to
+  mutations, relationships and schema auto-generated from drizzle, with a
+  new `generate-lite` export that does generation without requiring the
+  TypeScript compiler for lighter-weight builds
+- Notification system implementation completed with native push listeners
+  and refactored NotificationList
+- `withDeployLock` helper for signal-safe releases — wraps acquire/release
+  with SIGTERM/SIGINT handlers so cancelled or ctrl-c'd deploys don't leave
+  stale locks blocking future releases
+- `DEBUG_SQL=1` query logging baked into `createDrizzle`
+
+### Upgrades
+
+- Tamagui upgraded multiple times across the week, ending with reanimated
+  restored as the default after an upstream fix, and the old patch removed
+- One upgraded to fix `setupServer` during SSG builds and async context race
+- Vite upgraded with rolldown pinned
+- Drizzle v1 client API adopted — fixes ECONNREFUSED in Vite SSR caused by
+  drizzle v0's positional pool API creating a broken internal connection
+- Toast system migrated to `@tamagui/toast/v2`, removing ~500 lines of
+  native-specific toast code
+
+### Improvements
+
+- `on-zero` mutator re-creation avoided on auth-data change for better
+  performance
+- `on-zero` generate now respects `mutations/` vs `models/` directory in
+  import paths
+- Async context server init race fixed — `setupServer` no longer races with
+  the async context creation, preventing sporadic SSR failures
+- Query registry switched from `WeakMap` to property stamp for CJS
+  compatibility
+- Auth logs improved; JWT mode no longer default-on since it caused
+  confusion in standard session-based setups
+- Zero migrations table excluded from zero publication to prevent sync loops
+- Zero now starts after migrations in test/e2e instead of before, avoiding
+  race conditions during CI setup
+- Sync script inlines SQL instead of using `?raw` imports, skips rename on
+  first run, and handles `.sql` files in `loadMigrationsFromDir`
+- Non-deterministic mutation ordering fixed for report actions
+- Motion / rolldown tree-shaking interaction fixed by externalizing
+  `motion-dom` from SSR builds
+- Native upload endpoint uses full `API_URL` instead of a relative path that
+  XHR couldn't resolve on React Native
+- better-auth `createDynamicPathProxy` patched to return undefined for
+  unknown keys — React 19.2 / RN 0.83 introspection (`$$typeof`,
+  `constructor`) was triggering fake API calls and auth loops on native
+- Reanimated patch added to vite.config for native builds
+- Dev mode dep warming expanded for faster cold starts
+- AWS deps externalized from the main bundle
+- Migration script upgraded to not require a build step, with old build
+  scaffolding cleaned up
+- Auth rate limiting disabled in test mode to prevent flaky integration runs
+- Postgres CI wait timeout increased
+- `.env.development` no longer committed — it's auto-generated and
+  centralized in `src/env.ts`
+- `src/database/index.ts` renamed to `db.ts`; exports slimmed and config
+  deduplicated
+- `DrizzleHelpers` now return real builder types instead of `void`
+
+### Other
+
+- LICENSE file added to the repo
+
+### Bug fixes and chores (40)
+
+---
+
+## Week of March 23, 2026
+
+`213fc638`
+
+### Upgrades
+
+- Tamagui and One framework upgraded to latest canary (multiple bumps
+  through the week, including late-week fixes rolled into the next cycle)
+
+### Improvements
+
+- Login page redesigned with animated logo, enter transitions, and glass card
+  styling at the bottom of the screen
+- /home route redirect moved into layout to avoid intercepting nested tab routes
+  like /home/search and /home/profile
+- Feed set as default home tab with /home redirecting to /home/feed
+- FastSquircleView replaced with plain View for React Native 0.83 compatibility
+  since react-native-fast-squircle is incompatible
+- Reanimated 4.2.x compatibility patch added for Vite builds
+- SSR permissions test page refactored for web-only rendering
+- Build performance improvements from tamagui/one bump and dependency
+  alignment
+- vxrn plugin workaround removed now that Gradle 9 compatibility is handled
+  upstream
+
+### Bug fixes and chores (11)
+
+---
+
+## Week of March 16, 2026
+
+`aac96bb5`
+
+### Features
+
+- Major framework upgrade: React Native 0.83, Expo 55, Zero 0.26, Drizzle v1,
+  React 19.2, and Vite 8 with multi-stage Docker builds using the official bun
+  image, oxlint TypeScript plugin, and per-user zero kvStore
+- Maestro native E2E test flows for app launch, login, and comment posting with
+  testIDs added to key components for element targeting
+- Zero error boundary with user-facing retry UI that shows sync error details
+  and a retry button, replacing the previous silent failure mode
+- Zero connection state monitoring with disconnect/reconnect toast notifications
+  and auto-reload/reset actions when client data errors occur
+- on-zero `createZeroServer` accepts an optional external connection pool for
+  non-standard environments like Cloudflare Workers with PGlite
+- `env:update` rewritten with preset system supporting custom files, strategy
+  auto-detection for yaml/js/dotenv/ts files, and merged with `generate-env`
+  into a single command
+
+### Improvements
+
+- Native auth restructured to happen after login for better performance,
+  avoiding zero sync errors before the splash screen finishes
+- Docker switched from bind-mounted directories to named volumes, fixing
+  permission issues when host UID/GID doesn't match the container user
+- on-zero permission and ensure error checks use string-based name comparison
+  instead of instanceof, fixing false negatives caused by Vite's dependency
+  optimization creating duplicate module instances
+- Zero concurrent mode fix: replaced `use()` with `useContext()` for React 19
+  concurrent safety, and disabled `unstable_batchedUpdates` on native since
+  React 19 auto-batches (passing it caused re-entrant work loop errors)
+- Switched from op-sqlite to expo-sqlite for zero native storage, and removed
+  incompatible packages (expo-glass-effect, react-native-fast-squircle,
+  vxrn/expo-plugin) for React Native 0.83 compatibility
+- All oxlint warnings resolved across codebase with proper ignore patterns
+- react-native StyleSheet dependency removed by inlining absoluteFill across 9
+  files
+- Links now inherit font properties from parent components
+- `findStragglers` uses pgrep instead of ps for sandbox compatibility
+- `tko run --no-root` fixed to treat the flag as a leaf node, preventing
+  duplicate script execution when parent and child both resolve the same scripts
+- Loosened peer dependency ranges to prevent bundler module duplication
+- Force clear session on auth error for clean recovery
+- Playwright test caching added with increased timeout
+- Removed duplicate useUser hook in favor of useUserById from features/user
+- Minio removed from deploy configuration
+- Integration tests updated with API-based SSR permissions verification
+
+### Bug fixes and chores (19)
+
+---
+
+## Week of March 9, 2026
+
+`4cbf2849`
+
+### Features
+
+- on-zero `awaitEffects` option for server mutations lets async tasks be awaited
+  before returning instead of fire-and-forget, with authData moved into an
+  options object for a cleaner API
+- `PermissionError` class for typed permission denials, letting callers
+  distinguish expected access denials from unexpected errors via error name
+- Notification close button
+
+### Improvements
+
+- serverWhere SSR evaluation fixed by converting module-level state to a global
+  singleton, preventing Vite's module duplication from creating separate
+  server/client state instances that caused permission filters to not apply
+  during SSR
+- on-zero server-side detection improved with `isServerRuntime()` helper that
+  auto-detects Node/Bun without relying on Vite environment variables, fixing
+  mutator permission checks outside Vite contexts
+- on-zero code generation now includes read-only models (those without a mutate
+  export), ensuring Zero schema registration works for all tables
+- on-zero code generation handles Symbol.iterator and other symbol-keyed
+  TypeScript properties without crashing by skipping synthetic `__@` prefixed
+  names
+- Mutator error logging gated behind DEBUG flag, and expected permission
+  rejections no longer logged as errors to reduce log noise
+- Loosened peer dependency ranges to prevent bundler module duplication issues
+- Skills docs now require frontmatter, fixed stale symlinks, and removed
+  tko-scripts autogeneration
+
+### Bug fixes and chores (11)
+
+---
+
+## Week of March 2, 2026
+
+`8f3883ce`
+
+### Features
+
+- on-zero deep TypeScript to validator generation - automatically generates
+  runtime validators from your mutation argument types, with full support for
+  nested objects, arrays, unions, and optional fields
+- on-zero `ControlQueries` component for disabling query subtrees - wrap parts
+  of your component tree to conditionally disable all Zero queries underneath
+- on-zero `getQuery()` for accessing raw query objects outside React components
+- on-zero `setAuthData` exported from public API for manual auth state control
+- on-zero dynamic environment state replaces static isServer detection, fixing
+  edge cases where server/client detection was wrong
+- `--default-all` flag for CLI script groups - automatically selects all scripts
+  in a group without prompting
+- `/report-issue` command for filing issues with rich system context
+- database indexes added for common query patterns, plus a `zero/analyze-indexes`
+  script for finding missing indexes
+- mutation validators support in zero server configuration
+
+### Improvements
+
+- `run` and `run-all` scripts rewritten with deep testing, proper process
+  cleanup, and no sub-process spawning for more reliable signal handling
+- `@take-out/run` package extracted from scripts for cleaner separation of
+  process management concerns
+- on-zero models can now omit mutators entirely for read-only tables
+- on-zero HMR boundary moved from generated code to vite plugin, so generated
+  file changes no longer trigger full page reloads
+- integration tests stabilized with API-based login instead of UI-driven login
+  and proper wait conditions
+- uncloud deploy containers (migrate, minio-init) kept alive with healthchecks
+  so dependent services don't start too early
+- PTY runner kills entire process group to prevent orphaned processes
+- SIGHUP handled to prevent orphaned processes when terminal closes
+- on-zero crash-prevention added to postgres error handling in zero server
+- on-zero permission throws now treated as denials with dev-mode warnings for
+  unexpected errors, preventing crashes from misbehaving permission functions
+- on-zero permission check fixed for upsert operations when the target row
+  doesn't exist yet, matching the existing insert behavior
+- on-zero environment detection in SSR mutators uses the creation-time value
+  instead of a potentially stale global state
+
+### Upgrades
+
+- One upgraded to 1.10.2 for faster Chrome DevTools source searching
+
+### Bug fixes and chores (15)
+
+---
+
+## Week of February 23, 2026
+
+`cec96db5`
+
+### Features
+
+- on-zero `authData` argument added to zero query with async local context for
+  concurrent request safety
+- on-zero `getAuth()` and `ensureAuth()` helpers exported for easier access to
+  auth data in queries and mutations
+- on-zero `zeroServer.mutate` auto-resolves authData so you no longer need to
+  pass it manually
+- on-zero `awaitAsyncTasks` option for `zeroServer.mutate` - async tasks now
+  fire-and-forget by default to match the mutate API endpoint behavior
+- `cmd().env()` chainable for setting environment variables in CLI scripts
+- dev CLI docs added covering keyboard shortcuts and process focusing
+
+### Improvements
+
+- on-zero dev mode performance improved by disabling expensive JSON stringify
+  for query key comparison
+- drizzle migration journal now updated when renaming migration numbers,
+  preventing out-of-sync state
+- context menu styling improved for post actions and avatar menu
+- better terminal restore from TTY with improved process exit handling
+- smoother handoff back to shell after CLI process exit
+- `useAsyncEffect` loop warning now includes function name, deps, and component
+  stack for easier debugging
+- migrations set `search_path` to public explicitly, fixing issues when a pg
+  schema matching the db user exists
+- EAS build config updated to include bun version 1.3.9
+
+### Bug fixes and chores (8)
+
+---
+
+## Week of February 17, 2026
+
+`060abdbf`
+
+### Features
+
+- iOS create post widget using Voltra for quick posting from home screen
+- Better Zero documentation in skills
+
+### Improvements
+
+- PTY runner properly restores terminal to cooked mode on exit, preventing
+  broken terminal state after Ctrl+C
+- Migration runner only ignores actual duplicate key errors, not all constraint
+  violations
+
+### Bug fixes and chores (3)
+
+---
+
+## Week of February 10, 2026
+
+`bb43e47f`
+
+### Features
+
+- `tko run` keyboard shortcuts for restarting and killing individual processes —
+  letter-based shortcuts auto-computed from process labels, stdin forwarding to
+  focused process
+- iOS simulator skill added with 21 scripts for building, testing, accessibility
+  auditing, gesture/keyboard automation, and simulator lifecycle management
+- `tko skills` command extracted to dedicated script with expanded skill
+  management functionality
+- `--pty` mode for `run-all` command provides interactive dashboard with process
+  management
+- on-zero server validation hooks with configurable admin bypass for custom
+  mutation validation
+- Shared deploy health helpers with restart loop detection for safer deployments
+- Migration timeouts for easier debugging of hanging migrations
+- `bootstrap.sh` script for reliable first-time project setup
+
+### Upgrades
+
+- Tamagui upgraded to 2.0 RC11
+- One upgraded to 1.6.13
+- Bun upgraded to v1.3.9
+
+### Improvements
+
+- Process exit cleanup simplified from recursive pgrep tree-walking to process
+  groups (`kill -pid`), fixing hangs in complex multi-process exit scenarios
+- better-auth-utils passes session token in auth header based on session
+  presence instead of being gated on the JWT mode flag
+- on-zero HMR support with unified Vite and CLI plugins for faster development
+  iteration
+- on-zero cleanup and unification of Vite and CLI code generation
+- Auth/mutator requests only logged on error or when DEBUG is set, reducing log
+  noise
+- PTY resize errors caught gracefully when file descriptor already closed
+- Exclude init containers from restart loop detection in health checks
+- SSH retry logic with 3 attempts and 5s delay for more reliable deployments
+- Cross-subdomain cookies only enabled in production, fixing local development
+  auth
+- Migration savepoint resilience for lost tracking records
+- Sanitized savepoint names for migrations with hyphens
+
+### Bug fixes and chores (22)
+
+---
+
+## Week of February 3, 2026
+
+`0918f5d1`
+
+### Features
+
+- Push notification system - notification model, queries, server actions, device
+  registration, and in-app notification list with real-time updates
+- Notification listener and emitter architecture for decoupled notification
+  handling across the app
+- Notification prompt flow with persistent storage to avoid re-prompting users
+- Intercepting routes for feed detail - posts open in a modal overlay on web
+  while preserving direct URL navigation
+- Push notification toggle in settings
+- `cmd()` script helper - tagged template API for cleaner CLI scripts with
+  auto-generated `--help`, typed argument parsing, and built-in `run()` context
+- `run()` function for one-shot non-reactive Zero queries - defaults to server
+  fetch (`'complete'`), pass `'cached'` for local-only reads
+- `usePermission` now supports `permissionStrategy` option - choose between
+  `'optimistic'` (evaluate client-side), `'optimistic-deny'` (false until server
+  confirms), or `'optimistic-allow'` (true until server confirms)
+- on-zero `run()` works in both queries and mutations, accepting regular query
+  functions alongside synced queries
+- Local MCP server config added (`.claude/mcp.json`) for bun-based tooling setup
+- Burnt and Zeego native integrations added to setup
+- Type-aware oxlint via `oxlint-tsgolint` - linter now uses TypeScript type
+  information for more accurate rules
+- Dev-only docs support in skills generator - documentation can be flagged as
+  dev-only so it's available during development but excluded from production
+  builds
+
+### Upgrades
+
+- Tamagui upgraded to 2.0 RC6 with theme and font refinements
+- One upgraded to 1.6.1 with HTML cache fixes
+- Zero upgraded to 0.25.12 with less noisy logging
+
+### Improvements
+
+- Auth simplified - removed JWT token validation (leftover from Tauri
+  integration), streamlined to session-based auth with cleaner Zero push/pull
+  handlers
+- on-zero permissions no longer require explicit export - permissions are now
+  read directly from the model definition
+- on-zero `usePermission` moved to server-side named query to work with Zero
+  0.25's materialized query model - each table gets its own materialized
+  permission view instead of one shared query
+- on-zero generate `--after` command now runs on initial watch startup and
+  scopes formatting to only generated files, preventing watcher feedback loops
+- on-zero generate uses a cache directory for output so `--after` never triggers
+  file writes in the source tree, avoiding watcher feedback loops with linting
+- nested `serverWhere` calls inside permission builders now evaluate correctly
+  on the client - previously inner serverWhere was no-op'd, breaking compound
+  permission checks
+- `zeroServer.query()` now actually executes the query via `tx.run()` instead of
+  returning the query builder
+- all scripts rewritten to use `cmd()` API - 71 files migrated from raw
+  exec/spawn to typed, self-documenting commands with automatic help generation
+- scripts directory renamed from `ci/` to `ops/` (avoids conflict with bun's
+  built-in `bun ci` command), and `ops ci` renamed to `ops release`
+- CI pipeline split into separate `test.ts` and `release.ts` - test runner
+  extracted for independent use, release just orchestrates test + build + deploy
+- Env vars simplified - `VITE_PUBLIC_ZERO_SERVER` and `WEB_DOMAIN`/`ZERO_DOMAIN`
+  replaced with just `VITE_ZERO_HOSTNAME` and `VITE_WEB_HOSTNAME` (hostname
+  only, protocol constructed at runtime)
+- Zero env vars centralized through `package.json` env defaults ->
+  auto-generated `.env` -> docker `env_file` instead of hardcoded values in
+  docker-compose
+- `run-frontend-dev.ts` merged into `run-frontend.ts --dev` flag, eliminating
+  duplicate script
+- CLI startup made faster by lazy-importing dependencies instead of importing
+  everything up-front
+- package dependencies made lighter - moved to optional peerDependencies so
+  consumers don't install everything
+- helpers moved into `packages/scripts/` for reuse across projects (github-tail,
+  multipass, parse-env-file, process-compose-env, ssh, uncloud helpers)
+- consistent `fs.xyz` import pattern adopted across all scripts instead of mixed
+  destructured imports
+- Zero version sync extracted to shared script and removed from env pipeline to
+  simplify postinstall
+- `env:update` now resolves `$dep:` version references as fallbacks in CI
+  config, so CI no longer depends on manually-set GitHub secrets for dependency
+  versions
+- `env-server.ts` path resolution now tries both `src/constants/` and
+  `src/server/` locations for compatibility across project structures
+- compose env processing improved - handles multi-line values (PEM keys) and
+  quotes values containing yaml-breaking special characters (`:`, `#`, `{`,
+  etc.)
+- migration schema resolution uses `public.migrations` explicitly to avoid
+  conflicts when a pg schema matching the db user exists
+- React 19.1 `captureOwnerStack` used instead of broken `__CLIENT_INTERNALS`
+  internal for component stack traces
+- release publish now pins `workspace:*` deps to actual versions during pack and
+  restores them after, preventing broken publishes
+- permissions integration test suite added covering mutation guards and
+  query-based permission checks
+- HotUpdater enhanced with dynamic server URL handling and crash history
+  tracking API
+- Hot-updater debug info component shows update status, bundle ID, and version
+  info in settings on native
+- GradientBlurView and PageLayout split into separate native/web files to
+  prevent native deps from leaking into web
+- TabBar refactored to use View instead of Animated.View with improved glass
+  effect border radius
+- ProfileEditPage cleaned up - removed transition effects, improved button
+  accessibility
+- Comment flow integration test added for full create/verify/cleanup lifecycle
+- Feed detail page refactored with cleaner layout
+- Default animation durations removed from animationsApp config
+- Default username display changed from "No name" to "Unknown"
+- Stricter tsconfig across all packages catches more type issues
+- Dev cleanup script added for robust process and port cleanup
+- `peerDependenciesMeta` added for optional react and @rocicorp/zero in helpers
+- `update-local-env` renamed to `generate-env` since it's used in CI too, not
+  just locally
+- `sync-prompt` renamed to `sync-repo` for clarity
+
+### Bug fixes and chores (45)
+
+---
+
 ## Week of January 27, 2026
 
 `d22f54b3`

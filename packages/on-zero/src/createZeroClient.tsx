@@ -1,5 +1,10 @@
 import { defineQueries, defineQuery, Zero as ZeroClient } from '@rocicorp/zero'
-import { useConnectionState, useZero, ZeroProvider } from '@rocicorp/zero/react'
+import {
+  useConnectionState,
+  useZero,
+  ZeroContext,
+  ZeroProvider,
+} from '@rocicorp/zero/react'
 import { createEmitter, type Emitter } from '@take-out/helpers'
 import {
   createContext,
@@ -301,6 +306,8 @@ export function createZeroClientInternal<
       enabled = typeof objOrId !== 'undefined',
       debug = false,
     ): boolean | null {
+      // SSG: skip every hook below — see createUseQuery for rationale.
+      if (typeof window === 'undefined') return null
       const disableMode = useContext(DisabledContext)
       const lastRef = useRef<boolean | null>(null)
       const tableStr = table as string
@@ -356,17 +363,45 @@ export function createZeroClientInternal<
   // with different identities would thrash this slot.
   let cachedZero: { key: string; instance: ZeroInstance } | null = null
 
-  const ProvideZero = ({
-    children,
-    authData: authDataIn,
-    disable,
-    transport,
-    pullIntervalMs = 30_000,
-    beforeReload,
-    ...props
-  }: Omit<ZeroOptions<Schema, ZeroMutators>, 'schema' | 'mutators'> & {
+  // when ProvideZero is rendered without a real Zero instance (SSG, disable=true,
+  // or transiently while the active path is still creating its first instance),
+  // we want descendants' useZero() / useConnectionState() / on-zero useQuery to
+  // NOT throw — but also not run real queries. Hand them a stub Zero plus
+  // DisabledContext='empty':
+  //   1. zero/react's useZero() reads ZeroContext; the stub is truthy so it
+  //      doesn't throw "useZero must be used within a ZeroProvider".
+  //   2. on-zero's useQuery wrapper forces enabled=false to the underlying
+  //      zero useQuery when DisabledContext is set, so zero's viewStore.getView
+  //      returns its disabled-view stub without ever reading zero.clientID or
+  //      subscribing through the stub.
+  //   3. addContextToQuery(query, zero.context) is the only deep access in the
+  //      query path; the stub's .context is a plain object so that call
+  //      succeeds harmlessly.
+  //   4. useConnectionState reads zero.connection.state.{subscribe,current};
+  //      we provide a perma-'closed' state with a no-op subscribe. consumers
+  //      handle 'closed' as a normal disconnected state.
+  // This stub lets the provider tree render with stable shape regardless of
+  // whether Zero is active — so children never re-parent across enable/disable.
+  const DISABLED_ZERO_STUB_CONNECTION_STATE = {
+    current: { name: 'closed' as const },
+    subscribe: () => () => {},
+  }
+  const DISABLED_ZERO_STUB = {
+    context: {},
+    connection: { state: DISABLED_ZERO_STUB_CONNECTION_STATE },
+  } as unknown as ZeroInstance
+
+  type ProvideZeroProps = Omit<ZeroOptions<Schema, ZeroMutators>, 'schema' | 'mutators'> & {
     children: ReactNode
     authData?: AuthData | null
+    // when true, ProvideZero renders a stable shell with stub Zero — no real
+    // client is created, no websocket is opened, no IDB store is touched.
+    // useQuery descendants receive EMPTY_RESPONSE via DisabledContext='empty'.
+    // toggling this on/off NEVER re-parents children: the React tree shape is
+    // identical in both modes (active just mounts a sibling lifecycle, which
+    // doesn't shift children's position). use this when consumers need the
+    // provider tree mounted (e.g. inside a marketing splash that lazily
+    // upgrades to the real IDE) without paying for Zero until activation.
     disable?: boolean
     // 'http-pull' runs the stock zero client over stateless HTTP pull/push
     // (no websocket, no resident server state) by intercepting the sync
@@ -378,7 +413,42 @@ export function createZeroClientInternal<
     // awaited before a self-healing recovery reload — e.g. wait for the dev
     // origin to be reachable so the reload doesn't hit a restarting server.
     beforeReload?: () => Promise<void>
-  }) => {
+  }
+
+  const ProvideZero = ({ children, ...props }: ProvideZeroProps) => {
+    // SSG branch: NO HOOKS. on-zero's hooks call useRef/useState/useEffect
+    // through its bundled React copy, which the SSG build's runtime sees as
+    // null ("Cannot read properties of null (reading 'useRef')") because react
+    // isn't deduplicated across the bundle and on-zero's slot is undefined at
+    // render time. emit the stable shell synchronously instead. children
+    // re-parent ONCE at hydration (server: this branch; client: the active
+    // branch), but that happens before any heavy descendant (e.g. consumer
+    // F2CShell-style skip-first-render mounts) is in the tree — so the parent
+    // swap is invisible at the DOM layer (all our wrappers are
+    // Context.Providers with no DOM) and incurs no remount jank.
+    if (typeof window === 'undefined' || props.disable) {
+      return (
+        <AuthDataContext.Provider value={(props.authData ?? {}) as AuthData}>
+          <DisabledContext.Provider value="empty">
+            <ZeroContext.Provider value={DISABLED_ZERO_STUB as any}>
+              {children}
+            </ZeroContext.Provider>
+          </DisabledContext.Provider>
+        </AuthDataContext.Provider>
+      )
+    }
+
+    return <ProvideZeroActive {...props}>{children}</ProvideZeroActive>
+  }
+
+  const ProvideZeroActive = ({
+    children,
+    authData: authDataIn,
+    transport,
+    pullIntervalMs = 30_000,
+    beforeReload,
+    ...props
+  }: Omit<ProvideZeroProps, 'disable'>) => {
     // resolve the auth token first: a real logout (token gone) must clear
     // authData so client mutators don't keep running as the old user, while a
     // transient authData blip with the token still present (session refresh, tab
@@ -513,20 +583,21 @@ export function createZeroClientInternal<
       }
     }, [instance, auth])
 
-    // for now we re-parent
-    if (disable) {
-      return children
-    }
-
+    // Always render the same shell shape, with or without an instance. While
+    // the instance is being constructed (first effect tick) we hand descendants
+    // the stub Zero plus DisabledContext='empty' so useZero/useQuery
+    // short-circuit instead of throwing. SetZeroInstance + ConnectionMonitor
+    // only mount once instance exists, as siblings of children — they NEVER
+    // wrap children, so toggling them never re-parents.
     return (
       <AuthDataContext.Provider value={authData}>
-        {instance ? (
-          <ZeroProvider zero={instance}>
-            <SetZeroInstance />
-            <ConnectionMonitor zeroEvents={zeroEvents} />
+        <DisabledContext.Provider value={instance ? false : 'empty'}>
+          <ZeroContext.Provider value={instance ?? (DISABLED_ZERO_STUB as any)}>
+            {instance ? <SetZeroInstance /> : null}
+            {instance ? <ConnectionMonitor zeroEvents={zeroEvents} /> : null}
             {children}
-          </ZeroProvider>
-        ) : null}
+          </ZeroContext.Provider>
+        </DisabledContext.Provider>
       </AuthDataContext.Provider>
     )
   }

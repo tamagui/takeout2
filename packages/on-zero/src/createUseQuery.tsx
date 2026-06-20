@@ -64,6 +64,12 @@ export function createUseQuery<Schema extends ZeroSchema>({
   customQueries: AnyQueryRegistry
 }): UseQueryHook<Schema> {
   function useQuery(...args: any[]): any {
+    // SSG: skip every hook below. on-zero's bundled React copy isn't the same
+    // one the SSG build's renderer initialises, so hook dispatch returns null.
+    // an empty response matches how the wrapper behaves under DisabledContext
+    // anyway, so consumers see the same shape across SSG and the disabled
+    // client path.
+    if (typeof window === 'undefined') return EMPTY_RESPONSE
     const disableMode = useContext(DisabledContext)
     const lastRef = useRef<any>(EMPTY_RESPONSE)
     const [fn, paramsOrOptions, optionsArg] = args
@@ -75,7 +81,18 @@ export function createUseQuery<Schema extends ZeroSchema>({
       return { queryRequest, options: opts }
     }, [fn, paramsOrOptions, optionsArg])
 
-    const out = zeroUseQuery(queryRequest, options)
+    // when disabled, force enabled=false through to zero's useQuery so its
+    // viewStore returns a disabled view (no zero.clientID read, no view
+    // subscription) and the stub Zero handed in by ProvideZero stays inert.
+    // we still call zeroUseQuery unconditionally so hook order stays stable
+    // across DisabledContext changes — the disable check after only affects
+    // the return value.
+    const effectiveOptions = disableMode
+      ? typeof options === 'boolean'
+        ? false
+        : { ...(options ?? {}), enabled: false }
+      : options
+    const out = zeroUseQuery(queryRequest, effectiveOptions)
 
     if (process.env.NODE_ENV === 'development') {
       if (process.env.DEBUG_ZERO_QUERIES === '1')

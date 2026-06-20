@@ -258,6 +258,8 @@ export function createUseQueryDirect<Schema extends ZeroSchema>({
   const directViewStore = new DirectViewStore()
 
   function useQueryDirect(...args: any[]): any {
+    // SSG: skip every hook below — see createUseQuery for the rationale.
+    if (typeof window === 'undefined') return EMPTY_RESPONSE
     const disableMode = useContext(DisabledContext)
     const lastRef = useRef<any>(EMPTY_RESPONSE)
     const [fn, paramsOrOptions, optionsArg] = args

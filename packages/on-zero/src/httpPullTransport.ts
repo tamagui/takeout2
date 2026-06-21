@@ -160,7 +160,7 @@ class ZeroHttpSocket {
   private pullInFlight: Promise<void> | undefined
   private pullAfterCurrent = false
   private pushChain: Promise<void> = Promise.resolve()
-  private nextLocalCookieID = 0
+  private nextLocalCookieID: number
   private openTimer: ReturnType<typeof setTimeout> | undefined
   private pullTimer: ReturnType<typeof setInterval> | undefined
 
@@ -176,6 +176,14 @@ class ZeroHttpSocket {
     this.wsid = this.connectURL.searchParams.get('wsid') ?? `zero-http-${Date.now()}`
     const baseCookie = this.connectURL.searchParams.get('baseCookie')
     this.cookie = baseCookie ? baseCookie : null
+    // the local cookie ID is encoded into the suffix of any cookie we
+    // already advanced past (toLocalWebSocketCookie). reconnects rehydrate
+    // this.cookie from the URL baseCookie param replicache persisted, so we
+    // must resume the counter from its suffix — otherwise the first poke on
+    // the new socket re-emits an identical suffix and replicache trips
+    // "cookie did not change, but patch is not empty" and drops the patch.
+    const suffixMatch = this.cookie?.match(/#(\d+)$/)
+    this.nextLocalCookieID = suffixMatch ? Number(suffixMatch[1]) : 0
 
     const decoded = decodeSecProtocol(protocols)
     this.authToken = decoded.authToken

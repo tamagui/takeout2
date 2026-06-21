@@ -23,6 +23,15 @@ async function waitForDead(pid: number, timeoutMs = 3000): Promise<boolean> {
   return false
 }
 
+async function waitForAlive(pid: number, timeoutMs = 3000): Promise<boolean> {
+  const start = Date.now()
+  while (Date.now() - start < timeoutMs) {
+    if (isAlive(pid)) return true
+    await new Promise((r) => setTimeout(r, 50))
+  }
+  return false
+}
+
 async function waitForFile(path: string, timeoutMs = 3000): Promise<boolean> {
   const start = Date.now()
   while (Date.now() - start < timeoutMs) {
@@ -66,7 +75,7 @@ describe('process cleanup', () => {
     expect(await waitForFile(pidFile)).toBe(true)
     const childPid = parseInt(readFileSync(pidFile, 'utf-8').trim(), 10)
 
-    expect(isAlive(childPid)).toBe(true)
+    expect(await waitForAlive(childPid)).toBe(true)
 
     // killing the process group should kill it
     try {
@@ -95,7 +104,7 @@ describe('process cleanup', () => {
     const grandchildPid = parseInt(readFileSync(grandchildPidFile, 'utf-8').trim(), 10)
     pids.push(grandchildPid)
 
-    expect(isAlive(grandchildPid)).toBe(true)
+    expect(await waitForAlive(grandchildPid)).toBe(true)
 
     // kill the process group — grandchild should die too
     try {
@@ -130,7 +139,7 @@ describe('process cleanup', () => {
     const childPid = parseInt(readFileSync(childPidFile, 'utf-8').trim(), 10)
     pids.push(childPid)
 
-    expect(isAlive(childPid)).toBe(true)
+    expect(await waitForAlive(childPid)).toBe(true)
 
     // send SIGTERM to the process group
     try {

@@ -1,6 +1,6 @@
 {
   "name": "@take-out/cli",
-  "version": "0.4.46-1782024545147",
+  "version": "0.4.47",
   "description": "CLI tools for Takeout starter kit - interactive onboarding and project setup",
   "type": "module",
   "sideEffects": false,

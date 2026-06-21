@@ -166,7 +166,12 @@ export const useEmitterValue = <E extends Emitter<any>>(
     }
 
     return emitter.listen(setState)
-  }, [state, disabled, emitter])
+    // intentionally omit state from deps - we only want to re-subscribe when emitter changes.
+    // including state caused unsubscribe/resubscribe churn on every change, which under a
+    // rapidly-firing emitter (better-auth session refetches during ios oauth handoff)
+    // cascades into "Maximum update depth" via consumers that depend on the returned ref.
+    // oxlint-disable-next-line exhaustive-deps
+  }, [disabled, emitter])
 
   return state
 }

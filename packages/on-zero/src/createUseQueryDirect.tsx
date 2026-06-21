@@ -308,7 +308,20 @@ export function createUseQueryDirect<Schema extends ZeroSchema>({
     const view = useMemo((): DirectView | null => {
       const zero = getZero()
       if (!zero) return null
-      return directViewStore.getView(zero, queryRequest, enabled, ttl)
+      // when ProvideZero renders with disable=true (or pre-instance), the
+      // ZeroContext.value is the inert stub which has no `.materialize` —
+      // calling it throws "this[#zero].materialize is not a function". detect
+      // the stub and short-circuit to the disabled snapshot via enabled=false
+      // (mirroring the wrapper-useQuery path at createUseQuery.tsx).
+      // DisabledContext is not a reliable signal here: it flips 'empty' →
+      // false within one render once the active instance is created, which
+      // would re-key the useMemo and re-materialize the view — that breaks
+      // the "subscribers share one materialized view" invariant.
+      const effectiveEnabled =
+        typeof (zero as { materialize?: unknown }).materialize === 'function'
+          ? enabled
+          : false
+      return directViewStore.getView(zero, queryRequest, effectiveEnabled, ttl)
       // version re-materializes on a new zero
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [queryRequest, enabled, ttl, version])

@@ -425,22 +425,54 @@ export function createZeroClientInternal<
     beforeReload?: () => Promise<void>
   }
 
-  const ProvideZero = ({ children, ...props }: ProvideZeroProps) => {
-    // SSG branch: NO HOOKS. on-zero's hooks call useRef/useState/useEffect
-    // through its bundled React copy, which the SSG build's runtime sees as
-    // null ("Cannot read properties of null (reading 'useRef')") because react
-    // isn't deduplicated across the bundle and on-zero's slot is undefined at
-    // render time. emit the stable shell synchronously instead. children
-    // re-parent ONCE at hydration (server: this branch; client: the active
-    // branch), but that happens before any heavy descendant (e.g. consumer
-    // F2CShell-style skip-first-render mounts) is in the tree — so the parent
-    // swap is invisible at the DOM layer (all our wrappers are
-    // Context.Providers with no DOM) and incurs no remount jank.
-    if (typeof window === 'undefined' || props.disable) {
+  // ProvideZero is ONE component (no inner ProvideZeroActive wrapper). a
+  // single component shape on both SSR and client means React's useId() —
+  // which keys on the consuming fiber's tree position — produces identical
+  // ids on both sides for every descendant. an extra wrapper fiber (the
+  // previous shape: SSR returned the 3 providers directly while the client
+  // wrapped them in a ProvideZeroActive intermediate) shifted every
+  // descendant's tree id by a step and broke hydration on every useId
+  // consumer (SVG ids, form ids, etc).
+  //
+  // SSR path: EARLY-RETURN before any hook call. on-zero's hooks
+  // (useRef/useState/useEffect) call through a React copy whose hook
+  // dispatcher is null on the SSG runtime (because react isn't deduplicated
+  // across the build's bundle for on-zero's slot), so any hook call here
+  // throws "Cannot read properties of null (reading 'useRef')". the SSR
+  // shell renders the same 3-provider 3-child shape as the client.
+  //
+  // CLIENT path: hooks ALWAYS run, regardless of `disable`. only the
+  // returned JSX changes when `disable` flips — so a caller can toggle
+  // active ↔ inert at runtime without violating rules-of-hooks (no
+  // remount, no key-rotation needed). this is the structural guarantee
+  // consumers like soot's ProjectZeroGate depend on to flip from
+  // disable=true (anon-ssr hydration first render) to disable=false
+  // (active project mounted) without re-parenting children — children
+  // stay at the same fiber position whether the wrapper is inert or
+  // active.
+  const ProvideZero = ({
+    children,
+    authData: authDataIn,
+    transport,
+    pullIntervalMs = 30_000,
+    beforeReload,
+    disable,
+    ...props
+  }: ProvideZeroProps) => {
+    if (typeof window === 'undefined') {
       return (
-        <AuthDataContext.Provider value={(props.authData ?? {}) as AuthData}>
+        <AuthDataContext.Provider value={(authDataIn ?? {}) as AuthData}>
           <DisabledContext.Provider value="empty">
             <ZeroContext.Provider value={DISABLED_ZERO_STUB as any}>
+              {/* match the active path's 3-child layout EXACTLY so descendant
+                  useId() lands at the same fiber index in both branches. the
+                  two leading nulls reserve the SetZeroInstance + ConnectionMonitor
+                  slots; the active path puts those components there only once
+                  an instance exists. without these placeholder slots, children
+                  would sit at child index 0 here but index 2 in the active
+                  path, shifting every descendant useId. */}
+              {null}
+              {null}
               {children}
             </ZeroContext.Provider>
           </DisabledContext.Provider>
@@ -448,17 +480,6 @@ export function createZeroClientInternal<
       )
     }
 
-    return <ProvideZeroActive {...props}>{children}</ProvideZeroActive>
-  }
-
-  const ProvideZeroActive = ({
-    children,
-    authData: authDataIn,
-    transport,
-    pullIntervalMs = 30_000,
-    beforeReload,
-    ...props
-  }: Omit<ProvideZeroProps, 'disable'>) => {
     // resolve the auth token first: a real logout (token gone) must clear
     // authData so client mutators don't keep running as the old user, while a
     // transient authData blip with the token still present (session refresh, tab
@@ -518,6 +539,14 @@ export function createZeroClientInternal<
     // boot orchestration observes.
     const [instance, setInstance] = useState<ZeroInstance | undefined>()
     useEffect(() => {
+      // disable=true: do not create / rotate any instance. consumers can
+      // toggle disable on/off mid-mount without violating rules-of-hooks
+      // because every hook still runs every render — only the effect body
+      // (and the returned JSX, below) varies with disable.
+      if (disable) {
+        if (instance !== undefined) setInstance(undefined)
+        return
+      }
       let cached = cachedZero
       if (cached?.key !== instanceKey) {
         cached?.instance.close()
@@ -571,9 +600,10 @@ export function createZeroClientInternal<
       }
       setInstance(cached.instance)
       // identity is fully captured by instanceKey; function props are bound
-      // at construction by design.
+      // at construction by design. `disable` is a dep so a true → false
+      // transition runs the effect and mints the instance.
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [instanceKey])
+    }, [instanceKey, disable])
 
     // a changed token on the same identity refreshes auth in place — zero
     // sends an auth update over the live connection instead of reconnecting
@@ -593,18 +623,21 @@ export function createZeroClientInternal<
       }
     }, [instance, auth])
 
-    // Always render the same shell shape, with or without an instance. While
-    // the instance is being constructed (first effect tick) we hand descendants
-    // the stub Zero plus DisabledContext='empty' so useZero/useQuery
-    // short-circuit instead of throwing. SetZeroInstance + ConnectionMonitor
-    // only mount once instance exists, as siblings of children — they NEVER
-    // wrap children, so toggling them never re-parents.
+    // Always render the same shell shape, with or without an instance, and
+    // whether disable is true or false. While the instance is being
+    // constructed (first effect tick) — OR while disable=true — we hand
+    // descendants the stub Zero plus DisabledContext='empty' so
+    // useZero/useQuery short-circuit instead of throwing. SetZeroInstance +
+    // ConnectionMonitor only mount once an active instance exists, as
+    // siblings of children — they NEVER wrap children, so toggling them
+    // never re-parents.
+    const liveInstance = disable ? undefined : instance
     return (
       <AuthDataContext.Provider value={authData}>
-        <DisabledContext.Provider value={instance ? false : 'empty'}>
-          <ZeroContext.Provider value={instance ?? (DISABLED_ZERO_STUB as any)}>
-            {instance ? <SetZeroInstance /> : null}
-            {instance ? <ConnectionMonitor zeroEvents={zeroEvents} /> : null}
+        <DisabledContext.Provider value={liveInstance ? false : 'empty'}>
+          <ZeroContext.Provider value={liveInstance ?? (DISABLED_ZERO_STUB as any)}>
+            {liveInstance ? <SetZeroInstance /> : null}
+            {liveInstance ? <ConnectionMonitor zeroEvents={zeroEvents} /> : null}
             {children}
           </ZeroContext.Provider>
         </DisabledContext.Provider>

@@ -8,6 +8,7 @@ import { useEmitterValue, type Emitter } from '@take-out/helpers'
 import { useContext, useMemo, useRef, useSyncExternalStore, type Context } from 'react'
 
 import {
+  emptyResponseFor,
   parseUseQueryArgs,
   type QueryControlMode,
   type UseQueryHook,
@@ -25,13 +26,10 @@ import type {
 // useQuery path via createZeroClient; this exists only for nested providers
 // where a non-innermost instance cannot be selected through react context.
 
-const EMPTY_RESPONSE = [null, { type: 'unknown' }] as never
+// see createUseQuery.tsx — empty responses must match the typed contract:
+// plural queries get [], singular get undefined. returning null breaks the
+// obvious .filter / .find / .length on first render.
 const DISABLED_SUBSCRIBE = () => () => {}
-const DISABLED_SNAPSHOT: readonly [undefined, { type: 'unknown' }] = [
-  undefined,
-  { type: 'unknown' },
-]
-const getDisabledSnapshot = () => DISABLED_SNAPSHOT
 
 type DirectSnapshot = readonly [unknown, { type: string }]
 
@@ -255,16 +253,17 @@ export function createUseQueryDirect<Schema extends ZeroSchema>({
   getZero,
   zeroVersion,
 }: Parameters<CreateUseQueryDirect<Schema>>[0]): UseQueryHook<Schema> {
-  // SSG: return an inert hook — see createUseQuery for the rationale.
+  // SSG: return an inert hook — see createUseQuery for the rationale. default
+  // to the plural empty shape (most queries are plural; a singular caller can
+  // tolerate [] better than the non-singular caller can tolerate null/undefined).
   if (typeof window === 'undefined') {
-    return (() => EMPTY_RESPONSE) as UseQueryHook<Schema>
+    return ((_fn: any) => emptyResponseFor(undefined)) as UseQueryHook<Schema>
   }
 
   const directViewStore = new DirectViewStore()
 
   function useQueryDirect(...args: any[]): any {
     const disableMode = useContext(DisabledContext)
-    const lastRef = useRef<any>(EMPTY_RESPONSE)
     const [fn, paramsOrOptions, optionsArg] = args
 
     const version = useEmitterValue(zeroVersion)
@@ -281,19 +280,32 @@ export function createUseQueryDirect<Schema extends ZeroSchema>({
 
     const paramsKey = params === undefined ? '' : JSON.stringify(params)
 
+    // resolve the query once so we know its singular/plural format up front —
+    // the no-zero / disabled snapshot needs to match that format so .filter /
+    // .find / .length is safe on first render.
+    const queryRequest = useMemo(
+      () => resolveQuery({ customQueries, fn, params }),
+      // params is keyed by paramsKey
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [fn, paramsKey],
+    )
+
+    const emptyForQuery = useMemo(() => emptyResponseFor(queryRequest), [queryRequest])
+    const lastRef = useRef<any>(emptyForQuery)
+
     const view = useMemo((): DirectView | null => {
       const zero = getZero()
       if (!zero) return null
-      const queryRequest = resolveQuery({ customQueries, fn, params })
       return directViewStore.getView(zero, queryRequest, enabled, ttl)
-      // params is keyed by paramsKey; version re-materializes on a new zero
+      // version re-materializes on a new zero
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fn, paramsKey, enabled, ttl, version])
+    }, [queryRequest, enabled, ttl, version])
 
+    const getEmpty = () => emptyForQuery as DirectSnapshot
     const out = useSyncExternalStore(
       view ? view.subscribe : DISABLED_SUBSCRIBE,
-      view ? view.getSnapshot : getDisabledSnapshot,
-      view ? view.getSnapshot : getDisabledSnapshot,
+      view ? view.getSnapshot : getEmpty,
+      view ? view.getSnapshot : getEmpty,
     )
 
     if (!disableMode) {
@@ -305,7 +317,7 @@ export function createUseQueryDirect<Schema extends ZeroSchema>({
       return lastRef.current
     }
 
-    return EMPTY_RESPONSE
+    return emptyForQuery
   }
 
   return useQueryDirect as UseQueryHook<Schema>

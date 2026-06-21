@@ -110,7 +110,12 @@ function getSnapshot(
     return emptySnapshotSingularUnknown
   }
 
-  if (!singular && Array.isArray(data) && data.length === 0) {
+  // plural queries: data may arrive as null OR undefined from the zero view's
+  // initial / disconnected snapshot. either way we expose [], not the raw
+  // null/undefined — useQuery's contract is T[] for plural and callers do the
+  // obvious .filter / .find / .length / for-of on the first render. without
+  // this branch, a null first-snapshot crashes downstream.
+  if (!singular && (data == null || (Array.isArray(data) && data.length === 0))) {
     if (resultType === 'complete') return emptySnapshotPluralComplete
     if (resultType === 'error')
       return error ? [emptyArray, makeError(retry, error)] : emptySnapshotPluralError

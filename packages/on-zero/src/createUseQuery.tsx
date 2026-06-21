@@ -125,7 +125,22 @@ export function createUseQuery<Schema extends ZeroSchema>({
         ? false
         : { ...(options ?? {}), enabled: false }
       : options
-    const out = zeroUseQuery(queryRequest, effectiveOptions)
+    const rawOut = zeroUseQuery(queryRequest, effectiveOptions)
+
+    // normalize the rare null-data first snapshot for plural queries to []:
+    // zero-react's viewStore briefly hands us [null, {type:'unknown'}] when a
+    // stub Zero is wired up (e.g. during the disable→active transition) before
+    // the real materialize fires. useQuery is typed as T[] for plural so
+    // callers must never see null here. cheap drop-in: only allocates a new
+    // tuple in the (rare) null case; the steady-state pass-through is one
+    // identity check per render.
+    let out: any = rawOut
+    if (rawOut?.[0] === null) {
+      const fallback = emptyResponseFor(queryRequest)
+      if (fallback === EMPTY_RESPONSE_PLURAL) {
+        out = [EMPTY_PLURAL, rawOut[1] ?? RESULT_UNKNOWN]
+      }
+    }
 
     if (process.env.NODE_ENV === 'development') {
       if (process.env.DEBUG_ZERO_QUERIES === '1')

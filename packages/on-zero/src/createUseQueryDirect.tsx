@@ -258,11 +258,18 @@ export function createUseQueryDirect<Schema extends ZeroSchema>({
   getZero,
   zeroVersion,
 }: Parameters<CreateUseQueryDirect<Schema>>[0]): UseQueryHook<Schema> {
-  // SSG: return an inert hook — see createUseQuery for the rationale. default
-  // to the plural empty shape (most queries are plural; a singular caller can
-  // tolerate [] better than the non-singular caller can tolerate null/undefined).
+  // SSG: return an inert hook — see createUseQuery for the rationale. resolve
+  // each call's query shape so singular queries get [undefined, info] and
+  // plural queries get [[], info], matching the typed contract and the
+  // steady-state client path. without this, a singular .one() query returned
+  // [] on SSR while the client returned undefined, manifesting as a hydration
+  // mismatch wherever code destructured [row] from a singular query.
   if (typeof window === 'undefined') {
-    return ((_fn: any) => emptyResponseFor(undefined)) as UseQueryHook<Schema>
+    return ((fn: any, paramsOrOptions: any, optionsArg: any) => {
+      const { params } = parseUseQueryArgs(paramsOrOptions, optionsArg)
+      const queryRequest = resolveQuery({ customQueries, fn, params })
+      return emptyResponseFor(queryRequest)
+    }) as UseQueryHook<Schema>
   }
 
   const directViewStore = new DirectViewStore()

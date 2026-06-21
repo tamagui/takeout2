@@ -93,13 +93,20 @@ export function createUseQuery<Schema extends ZeroSchema>({
   // one the SSG build's renderer initialises, so hook dispatch returns null.
   // an empty response matches how the wrapper behaves under DisabledContext
   // anyway, so consumers see the same shape across SSG and the disabled
-  // client path. checking here (factory-time) instead of per-call keeps
-  // hook order stable so rules-of-hooks stays happy. we default to the plural
-  // shape (data = []) because most queries are plural; a singular query under
-  // SSG that depends on undefined-vs-[] is exotic enough to handle at the call
-  // site.
+  // client path. no hooks are called inside the returned function so
+  // rules-of-hooks isn't affected. resolve each call's query shape so
+  // singular queries get [undefined, info] and plural queries get [[], info]
+  // — matching the typed contract and the steady-state client path. without
+  // this, a singular query (e.g. projectById().one()) returned [] on SSR
+  // while the client returned undefined, which manifested as a hydration
+  // mismatch on every caller that destructured `[row] = useQuery(singular)`
+  // and looked at row.name / row.id etc.
   if (typeof window === 'undefined') {
-    return (() => EMPTY_RESPONSE_PLURAL) as UseQueryHook<Schema>
+    return ((fn: any, paramsOrOptions: any, optionsArg: any) => {
+      const { params } = parseUseQueryArgs(paramsOrOptions, optionsArg)
+      const queryRequest = resolveQuery({ customQueries, fn, params })
+      return emptyResponseFor(queryRequest)
+    }) as UseQueryHook<Schema>
   }
 
   function useQuery(...args: any[]): any {

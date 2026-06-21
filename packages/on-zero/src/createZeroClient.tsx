@@ -299,15 +299,24 @@ export function createZeroClientInternal<
   // permissionStrategy controls client behavior before server responds.
   // built over a query hook so the facade can route permission checks down
   // the same context vs direct path as the table's other queries.
-  const createUsePermission = (useQueryImpl: UseQueryHook<Schema>) =>
-    function usePermission(
+  // SSG: return an inert hook — see createUseQuery for rationale. checking
+  // here (factory-time) instead of per-call keeps hook order stable so
+  // rules-of-hooks stays happy.
+  const createUsePermission = (useQueryImpl: UseQueryHook<Schema>) => {
+    if (typeof window === 'undefined') {
+      return (() => null) as (
+        table: TableName | (string & {}),
+        objOrId: string | Partial<Row<any>> | undefined,
+        enabled?: boolean,
+        debug?: boolean,
+      ) => boolean | null
+    }
+    return function usePermission(
       table: TableName | (string & {}),
       objOrId: string | Partial<Row<any>> | undefined,
       enabled = typeof objOrId !== 'undefined',
       debug = false,
     ): boolean | null {
-      // SSG: skip every hook below — see createUseQuery for rationale.
-      if (typeof window === 'undefined') return null
       const disableMode = useContext(DisabledContext)
       const lastRef = useRef<boolean | null>(null)
       const tableStr = table as string
@@ -344,6 +353,7 @@ export function createZeroClientInternal<
 
       return null
     }
+  }
 
   const usePermission = createUsePermission(useQuery)
   const usePermissionDirect = createUsePermission(useQueryDirect)

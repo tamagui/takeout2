@@ -63,13 +63,17 @@ export function createUseQuery<Schema extends ZeroSchema>({
   DisabledContext: Context<QueryControlMode>
   customQueries: AnyQueryRegistry
 }): UseQueryHook<Schema> {
+  // SSG: return an inert hook. on-zero's bundled React copy isn't the same
+  // one the SSG build's renderer initialises, so hook dispatch returns null.
+  // an empty response matches how the wrapper behaves under DisabledContext
+  // anyway, so consumers see the same shape across SSG and the disabled
+  // client path. checking here (factory-time) instead of per-call keeps
+  // hook order stable so rules-of-hooks stays happy.
+  if (typeof window === 'undefined') {
+    return (() => EMPTY_RESPONSE) as UseQueryHook<Schema>
+  }
+
   function useQuery(...args: any[]): any {
-    // SSG: skip every hook below. on-zero's bundled React copy isn't the same
-    // one the SSG build's renderer initialises, so hook dispatch returns null.
-    // an empty response matches how the wrapper behaves under DisabledContext
-    // anyway, so consumers see the same shape across SSG and the disabled
-    // client path.
-    if (typeof window === 'undefined') return EMPTY_RESPONSE
     const disableMode = useContext(DisabledContext)
     const lastRef = useRef<any>(EMPTY_RESPONSE)
     const [fn, paramsOrOptions, optionsArg] = args

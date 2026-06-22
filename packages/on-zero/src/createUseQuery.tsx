@@ -10,6 +10,7 @@ import type {
   HumanReadable,
   Query,
   Schema as ZeroSchema,
+  TTL,
 } from '@rocicorp/zero'
 
 // false = enabled, 'empty' = disabled (return empty), 'last-value' = disabled (return cached)
@@ -17,7 +18,7 @@ export type QueryControlMode = false | 'empty' | 'last-value'
 
 export type UseQueryOptions = {
   enabled?: boolean | undefined
-  ttl?: 'always' | 'never' | number | undefined
+  ttl?: TTL | undefined
 }
 
 type QueryResultDetails = ReturnType<typeof zeroUseQuery>[1]
@@ -114,12 +115,30 @@ export function createUseQuery<Schema extends ZeroSchema>({
     const lastRef = useRef<any>(EMPTY_RESPONSE_PLURAL)
     const [fn, paramsOrOptions, optionsArg] = args
 
-    const { queryRequest, options } = useMemo(() => {
-      const { params, options: opts } = parseUseQueryArgs(paramsOrOptions, optionsArg)
-      const queryRequest = resolveQuery({ customQueries, fn, params })
+    const { params, options } = parseUseQueryArgs(paramsOrOptions, optionsArg)
 
-      return { queryRequest, options: opts }
-    }, [fn, paramsOrOptions, optionsArg])
+    // value-keyed memoization. callers conventionally pass inline objects to
+    // useQuery (`useQuery(byId, {id})`), so a raw identity dep would bust
+    // resolveQuery and re-create the query every render. JSON is faster than
+    // generic deep-equal for the small, simple-valued objects zero calls
+    // actually take, and matches what createUseQueryDirect does.
+    const paramsKey = params === undefined ? '' : JSON.stringify(params)
+    const queryRequest = useMemo(
+      () => resolveQuery({ customQueries, fn, params }),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [fn, paramsKey],
+    )
+
+    // extract option values as primitives — a fresh options object each render
+    // shouldn't propagate as a new ref into zero-react.
+    let optionEnabled: boolean | undefined
+    let optionTTL: TTL | undefined
+    if (typeof options === 'boolean') {
+      optionEnabled = options
+    } else if (options) {
+      optionEnabled = options.enabled
+      optionTTL = options.ttl
+    }
 
     // when disabled, force enabled=false through to zero's useQuery so its
     // viewStore returns a disabled view (no zero.clientID read, no view
@@ -127,11 +146,11 @@ export function createUseQuery<Schema extends ZeroSchema>({
     // we still call zeroUseQuery unconditionally so hook order stays stable
     // across DisabledContext changes — the disable check after only affects
     // the return value.
-    const effectiveOptions = disableMode
-      ? typeof options === 'boolean'
-        ? false
-        : { ...(options ?? {}), enabled: false }
-      : options
+    const effectiveEnabled = disableMode ? false : optionEnabled
+    const effectiveOptions = useMemo(
+      () => ({ enabled: effectiveEnabled, ttl: optionTTL }),
+      [effectiveEnabled, optionTTL],
+    )
     const rawOut = zeroUseQuery(queryRequest, effectiveOptions)
 
     // normalize the rare null-data first snapshot for plural queries to []:

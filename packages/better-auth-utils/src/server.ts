@@ -35,29 +35,29 @@ export type AuthServer = {
 }
 
 /**
- * Get auth data from request - tries session cookies first, then JWT header
- * Session: web apps with cookies forwarded by zero
- * JWT: native apps (Tauri, React Native) using Authorization header
+ * Get auth data from request - tries session first, then a JWKS-verified JWT.
+ * Session: web cookies (forwarded by zero) and native bearer tokens resolved by
+ *   the better-auth bearer() plugin — both handled by getSession.
+ * JWT: only for servers using the jwt() plugin instead of bearer().
  */
 export async function getAuthDataFromRequest(
   authServer: AuthServer,
   req: Request,
   tokenOptions?: ValidateTokenOptions,
 ): Promise<AuthData | null> {
-  // from react native, better auth doesnt send cookie but insteead only the Authorization
-  // but better auth wants to find the cookie here, so re-route it:
-
   const authHeader = req.headers.get('authorization')
-  const cookie = authHeader?.split('Bearer ')[1]
 
-  const newHeaders = new Headers(req.headers)
-  if (cookie) {
-    newHeaders.set('Cookie', cookie)
-  }
-
-  // try session-based auth first (web - cookies forwarded by zero)
+  // try session-based auth first, passing the request headers THROUGH UNTOUCHED:
+  // - web sends the forwarded session cookie.
+  // - native (React Native / Tauri) sends `Authorization: Bearer <session-token>`,
+  //   which the better-auth bearer() plugin verifies and rewrites into the session
+  //   cookie internally (with the correct cookie name).
+  // do NOT rewrite the Cookie header from the bearer value: the bearer token is
+  // not a `name=value` cookie, so it never matched a real session cookie, and
+  // overwriting an existing forwarded cookie with it silently dropped authenticated
+  // web requests (cookie + bearer both present) to an `anon` identity.
   try {
-    const session = await authServer.api.getSession({ headers: newHeaders })
+    const session = await authServer.api.getSession({ headers: req.headers })
     if (session?.user) {
       return {
         id: session.user.id,
@@ -70,8 +70,8 @@ export async function getAuthDataFromRequest(
     // session auth failed, try JWT
   }
 
-  // try authorization header (token-based auth for native/tauri)
-
+  // fall back to JWKS-verified JWT for servers using the jwt() plugin (no
+  // bearer() plugin to resolve the token above).
   const jwtToken = authHeader?.replace('Bearer ', '')
 
   if (jwtToken) {

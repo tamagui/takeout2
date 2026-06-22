@@ -15,6 +15,7 @@ import {
   type UseQueryOptions,
 } from './createUseQuery'
 import { resolveQuery } from './resolveQuery'
+import { useContentStable } from './useContentStable'
 
 import type {
   AnyQueryRegistry,
@@ -327,11 +328,19 @@ export function createUseQueryDirect<Schema extends ZeroSchema>({
     }, [queryRequest, enabled, ttl, version])
 
     const getEmpty = () => emptyForQuery as DirectSnapshot
-    const out = useSyncExternalStore(
+    const rawOut = useSyncExternalStore(
       view ? view.subscribe : DISABLED_SUBSCRIBE,
       view ? view.getSnapshot : getEmpty,
       view ? view.getSnapshot : getEmpty,
     )
+
+    // content-stable inner refs (see createUseQuery.tsx for the rationale).
+    const stableData = useContentStable(rawOut[0])
+    const stableInfo = useContentStable(rawOut[1])
+    const out: DirectSnapshot =
+      stableData !== rawOut[0] || stableInfo !== rawOut[1]
+        ? ([stableData, stableInfo] as DirectSnapshot)
+        : rawOut
 
     if (!disableMode) {
       lastRef.current = out

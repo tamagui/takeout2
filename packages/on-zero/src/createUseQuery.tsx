@@ -4,6 +4,7 @@ import { useContext, useMemo, useRef, type Context } from 'react'
 
 import { useZeroDebug } from './helpers/useZeroDebug'
 import { resolveQuery, type PlainQueryFn } from './resolveQuery'
+import { useContentStable } from './useContentStable'
 
 import type {
   AnyQueryRegistry,
@@ -166,6 +167,18 @@ export function createUseQuery<Schema extends ZeroSchema>({
       if (fallback === EMPTY_RESPONSE_PLURAL) {
         out = [EMPTY_PLURAL, rawOut[1] ?? RESULT_UNKNOWN]
       }
+    }
+
+    // content-stable inner refs. zero-react `#onData` does deepClone(snap) on
+    // every view notification, so even a no-op re-emit produces fresh data
+    // identity. consumers that destructure `[row] = useQuery(byId, {id})` and
+    // depend on `row` see a re-fire on each notification even when the row's
+    // content hasn't changed. anchor `data` + `info` to the prior reference
+    // when shallow-content matches so identity-based deps stay quiet.
+    const stableData = useContentStable(out?.[0])
+    const stableInfo = useContentStable(out?.[1])
+    if (stableData !== out?.[0] || stableInfo !== out?.[1]) {
+      out = [stableData, stableInfo]
     }
 
     if (process.env.NODE_ENV === 'development') {

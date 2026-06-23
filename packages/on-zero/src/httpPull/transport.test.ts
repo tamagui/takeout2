@@ -480,9 +480,7 @@ describe('zero-http transport', () => {
     install(fetch)
     const onClientStateNotFound = vi.fn()
     createZero({ onClientStateNotFound })
-    await vi.waitFor(() => expect(onClientStateNotFound).toHaveBeenCalled(), {
-      timeout: 5_000,
-    })
+    await eventually(() => expect(onClientStateNotFound).toHaveBeenCalled(), 5_000)
   })
 })
 

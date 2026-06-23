@@ -44,6 +44,21 @@ type MutateOptions = {
   awaitEffects?: boolean
 }
 
+type AlreadyProcessedMutation = {
+  id: {
+    clientID: string
+    id: number
+  }
+  result: {
+    error: 'alreadyProcessed'
+    details?: unknown
+  }
+}
+
+type PushRequestBody = {
+  clientGroupID?: unknown
+}
+
 type ServerMutate<Models extends GenericModels> = {
   [Key in keyof Models]: {
     [K in keyof Models[Key]['mutate']]: Models[Key]['mutate'][K] extends (
@@ -179,6 +194,7 @@ export function createZeroServer<
   }) => {
     // since mutations do DB work in transaction, avoid any async tasks during
     const asyncTasks: AsyncAction[] = []
+    const recoveryRequest = request.clone()
 
     const mutators = createMutators({
       asyncTasks,
@@ -193,6 +209,7 @@ export function createZeroServer<
 
     // @ts-expect-error type is ok but config in monorepo
     const response = await processor.process(mutators, request)
+    await persistAlreadyProcessedMutationResults(pool, recoveryRequest, response)
 
     // now finish
     if (!skipAsyncTasks && asyncTasks.length) {
@@ -415,4 +432,65 @@ export function createZeroServer<
     mutate,
     query,
   }
+}
+
+function alreadyProcessedMutations(response: unknown): AlreadyProcessedMutation[] {
+  if (!response || typeof response !== 'object') return []
+  const mutations = (response as { mutations?: unknown }).mutations
+  if (!Array.isArray(mutations)) return []
+
+  return mutations.filter((mutation): mutation is AlreadyProcessedMutation => {
+    if (!mutation || typeof mutation !== 'object') return false
+    const id = (mutation as { id?: unknown }).id
+    const result = (mutation as { result?: unknown }).result
+    return (
+      !!id &&
+      typeof id === 'object' &&
+      typeof (id as { clientID?: unknown }).clientID === 'string' &&
+      typeof (id as { id?: unknown }).id === 'number' &&
+      !!result &&
+      typeof result === 'object' &&
+      (result as { error?: unknown }).error === 'alreadyProcessed'
+    )
+  })
+}
+
+async function persistAlreadyProcessedMutationResults(
+  pool: NodePgTransaction,
+  request: Request,
+  response: unknown,
+) {
+  const mutations = alreadyProcessedMutations(response)
+  if (mutations.length === 0) return
+
+  const schema = new URL(request.url).searchParams.get('schema')
+  if (!schema) return
+
+  const body = (await request.json()) as PushRequestBody
+  if (typeof body.clientGroupID !== 'string') return
+
+  const table = `${quotePgIdentifier(schema)}."mutations"`
+  const values = mutations
+    .map((_, index) => {
+      const offset = index * 4
+      return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}::json)`
+    })
+    .join(', ')
+  const params = mutations.flatMap((mutation) => [
+    body.clientGroupID,
+    mutation.id.clientID,
+    mutation.id.id,
+    JSON.stringify(mutation.result),
+  ])
+
+  await pool.query(
+    `INSERT INTO ${table} ("clientGroupID", "clientID", "mutationID", "result")
+     VALUES ${values}
+     ON CONFLICT ("clientGroupID", "clientID", "mutationID") DO NOTHING`,
+    params,
+  )
+}
+
+function quotePgIdentifier(value: string) {
+  return `"${value.replaceAll('"', '""')}"`
 }

@@ -68,25 +68,24 @@ function schemaRows(table: string, columns: string[]) {
   }))
 }
 
-function pushRequest(mutationID: number) {
+function pushRequest(mutationIDs: number | number[]) {
+  const ids = Array.isArray(mutationIDs) ? mutationIDs : [mutationIDs]
   return new Request('http://localhost/push?schema=zero_0&appID=zero', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
       clientGroupID: 'cg1',
-      mutations: [
-        {
-          type: 'custom',
-          id: mutationID,
-          clientID: 'client-a',
-          name: 'project.touch',
-          args: [{}],
-          timestamp: 1,
-        },
-      ],
+      mutations: ids.map((mutationID) => ({
+        type: 'custom',
+        id: mutationID,
+        clientID: 'client-a',
+        name: 'project.touch',
+        args: [{}],
+        timestamp: 1,
+      })),
       pushVersion: 1,
       timestamp: 1,
-      requestID: `req-${mutationID}`,
+      requestID: `req-${ids.join('-')}`,
     }),
   })
 }
@@ -132,6 +131,51 @@ describe('createZeroServer mutation recovery', () => {
         JSON.stringify({
           error: 'alreadyProcessed',
           details: duplicateResult.details,
+        }),
+      ],
+    ])
+  })
+
+  test('persists only alreadyProcessed results in a mixed recovery push', async () => {
+    const pg = new FakePgClient()
+    const zeroServer = createZeroServer({
+      schema: zeroHttpFixtureSchema,
+      models: {
+        project: {
+          mutate: {
+            touch: async () => {},
+          },
+        },
+      },
+      createServerActions: () => ({}),
+      pool: pg as any,
+    })
+
+    await zeroServer.handleMutationRequest({
+      authData: null,
+      request: pushRequest(1),
+    })
+
+    const mixed = await zeroServer.handleMutationRequest({
+      authData: null,
+      request: pushRequest([1, 2]),
+    })
+
+    const results = (mixed.response as any).mutations.map((mutation: any) => ({
+      id: mutation.id.id,
+      result: mutation.result,
+    }))
+    expect(results[0].result.error).toBe('alreadyProcessed')
+    expect(results[1]).toEqual({ id: 2, result: {} })
+    expect(pg.lastMutationID).toBe(2)
+    expect(pg.mutationResultInserts).toEqual([
+      [
+        'cg1',
+        'client-a',
+        1,
+        JSON.stringify({
+          error: 'alreadyProcessed',
+          details: results[0].result.details,
         }),
       ],
     ])

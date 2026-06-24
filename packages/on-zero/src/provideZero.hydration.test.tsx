@@ -17,13 +17,16 @@
 // stability is what keeps useId stable.
 
 import { createSchema, string, table } from '@rocicorp/zero'
+import { IS_SERVER, IS_SERVER_RUNTIME } from '@take-out/helpers'
 import { useId, type ReactNode } from 'react'
 import { renderToString } from 'react-dom/server'
 import { expect, test } from 'vitest'
 
 import { createZeroClient } from './createZeroClient'
 
-const todoTable = table('todo').columns({ id: string(), title: string() }).primaryKey('id')
+const todoTable = table('todo')
+  .columns({ id: string(), title: string() })
+  .primaryKey('id')
 const schema = createSchema({ tables: [todoTable] })
 
 const client = createZeroClient({
@@ -38,13 +41,7 @@ function IdProbe({ name }: { name: string }) {
   return <span data-name={name} data-probe-id={id} />
 }
 
-function Tree({
-  children,
-  disable,
-}: {
-  children?: ReactNode
-  disable?: boolean
-}) {
+function Tree({ children, disable }: { children?: ReactNode; disable?: boolean }) {
   return (
     <client.ProvideZero authData={{}} userID="anon" disable={disable}>
       <IdProbe name="a" />
@@ -68,6 +65,11 @@ function readIds(html: string): Record<string, string> {
   while ((m = re.exec(html))) out[m[1]!] = m[2]!
   return out
 }
+
+test('test environment loads on-zero client runtime', () => {
+  expect(IS_SERVER_RUNTIME).toBe(false)
+  expect(IS_SERVER).toBe(false)
+})
 
 test('useId is stable across active vs disabled ProvideZero renders', () => {
   const active = readIds(renderToString(<Tree />))

@@ -6,32 +6,31 @@
 import { useLayoutEffect, type useEffect } from 'react'
 import { Platform } from 'react-native'
 
-export const isWeb: boolean = false
-export const isBrowser: boolean = false
-export const isServer: boolean = false
-export const isClient: boolean = true
-/** @deprecated use isBrowser instead */
-export const isWindowDefined: boolean = false
+export const IS_WEB: boolean = false
+export const IS_BROWSER: boolean = false
+export const IS_SERVER: boolean = false
+export const IS_SERVER_RUNTIME: boolean = false
+export const IS_CLIENT: boolean = true
 export const useIsomorphicLayoutEffect: typeof useEffect = useLayoutEffect
-export const isChrome: boolean = false
-export const isWebTouchable: boolean = false
-export const isNativeDesktop: boolean =
+export const IS_CHROME: boolean = false
+export const IS_WEB_TOUCHABLE: boolean = false
+export const IS_NATIVE_DESKTOP: boolean =
   Platform?.OS === 'macos' || Platform?.OS === 'windows'
-export const isTouchable: boolean = !isNativeDesktop
+export const IS_TOUCHABLE: boolean = !IS_NATIVE_DESKTOP
 // optional chain required: babel extractor loads native.cjs in node where Platform is undefined
-// On Android TV: Platform.OS === 'android' per react-native-tvos
-export const isAndroid: boolean =
+// on Android TV: Platform.OS === 'android' per react-native-tvos
+export const IS_ANDROID: boolean =
   Platform?.OS === 'android' ||
   process.env.TEST_NATIVE_PLATFORM === 'android' ||
   process.env.TEST_NATIVE_PLATFORM === 'androidtv'
-// On tvOS: Platform.OS === 'ios' per react-native-tvos
-export const isIos: boolean =
+// on tvOS: Platform.OS === 'ios' per react-native-tvos
+export const IS_IOS: boolean =
   Platform?.OS === 'ios' ||
   process.env.TEST_NATIVE_PLATFORM === 'ios' ||
   process.env.TEST_NATIVE_PLATFORM === 'tvos'
-export const supportsDynamicColorIOS: boolean =
-  isIos || process.env.TAMAGUI_DYNAMIC_COLOR_IOS === '1'
-export const isTV: boolean =
+export const SUPPORTS_DYNAMIC_COLOR_IOS: boolean =
+  IS_IOS || process.env.TAMAGUI_DYNAMIC_COLOR_IOS === '1'
+export const IS_TV: boolean =
   Platform?.isTV ||
   process.env.TEST_NATIVE_PLATFORM === 'androidtv' ||
   process.env.TEST_NATIVE_PLATFORM === 'tvos'
@@ -50,9 +49,9 @@ const platforms: Partial<Record<typeof Platform.OS, CurrentPlatform>> = {
  * Reflects Platform.OS. TV platforms are intentionally NOT separate values:
  * - Android TV has Platform.OS === 'android' (react-native-tvos behavior)
  * - tvOS has Platform.OS === 'ios' (react-native-tvos behavior)
- * Use `isTV` combined with `isAndroid`/`isIos` to detect specific TV platforms.
+ * Use `IS_TV` combined with `IS_ANDROID`/`IS_IOS` to detect specific TV platforms.
  */
-export const currentPlatform: CurrentPlatform =
+export const CURRENT_PLATFORM: CurrentPlatform =
   (Platform?.OS ? platforms[Platform.OS] : undefined) || 'native'
 
 // In Metro source mode, TAMAGUI_TARGET may not be set by the build tool.

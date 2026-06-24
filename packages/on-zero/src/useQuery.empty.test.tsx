@@ -7,6 +7,7 @@
 // queries get `[undefined, info]` instead (the established zero-react shape).
 
 import { createSchema, number, string, table } from '@rocicorp/zero'
+import { IS_SERVER, IS_SERVER_RUNTIME } from '@take-out/helpers'
 import { act } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, expect, test } from 'vitest'
@@ -77,6 +78,11 @@ function renderWithDisabled<T>(useHook: () => T): T {
   if (captured === undefined) throw new Error('Probe did not render')
   return captured
 }
+
+test('test environment loads on-zero client runtime', () => {
+  expect(IS_SERVER_RUNTIME).toBe(false)
+  expect(IS_SERVER).toBe(false)
+})
 
 // regression: previously this returned [null, ...] which crashed downstream
 // .filter / .find / .length. now it must return [[], ...] for plural queries.

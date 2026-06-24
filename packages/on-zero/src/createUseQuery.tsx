@@ -1,5 +1,6 @@
 import { useQuery as zeroUseQuery } from '@rocicorp/zero/react'
 import { addContextToQuery, asQueryInternals } from '@rocicorp/zero/bindings'
+import { IS_SERVER_RUNTIME } from '@take-out/helpers'
 import { useContext, useMemo, useRef, type Context } from 'react'
 
 import { useZeroDebug } from './helpers/useZeroDebug'
@@ -56,7 +57,9 @@ const EMPTY_RESPONSE_SINGULAR = Object.freeze([undefined, RESULT_UNKNOWN]) as ne
 // the underlying Query — singular vs plural is determined entirely by the
 // user-authored query body (`.one()` vs not), so passing an empty `ctx` is
 // safe here.
-export function emptyResponseFor(queryRequest: unknown): readonly [unknown, { type: string }] {
+export function emptyResponseFor(
+  queryRequest: unknown,
+): readonly [unknown, { type: string }] {
   try {
     const query = addContextToQuery(queryRequest as any, {} as never)
     const internals = asQueryInternals(query)
@@ -102,7 +105,7 @@ export function createUseQuery<Schema extends ZeroSchema>({
   // while the client returned undefined, which manifested as a hydration
   // mismatch on every caller that destructured `[row] = useQuery(singular)`
   // and looked at row.name / row.id etc.
-  if (typeof window === 'undefined') {
+  if (IS_SERVER_RUNTIME) {
     return ((fn: any, paramsOrOptions: any, optionsArg: any) => {
       const { params } = parseUseQueryArgs(paramsOrOptions, optionsArg)
       const queryRequest = resolveQuery({ customQueries, fn, params })

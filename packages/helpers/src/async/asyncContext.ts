@@ -1,4 +1,4 @@
-import { isServerRuntime } from '../server/isServerRuntime'
+import { IS_SERVER_RUNTIME } from '../platform'
 
 interface AsyncContext<T> {
   get(): T | undefined
@@ -40,7 +40,7 @@ async function getNodeAsyncLocalStorage(): Promise<AsyncLocalStorageConstructor 
 }
 
 export function createAsyncContext<T>(): AsyncContext<T> {
-  if (isServerRuntime()) {
+  if (IS_SERVER_RUNTIME) {
     let storage: NodeAsyncLocalStorage<T> | null = null
 
     const storageReady = Promise.resolve(configuredAsyncLocalStorage)

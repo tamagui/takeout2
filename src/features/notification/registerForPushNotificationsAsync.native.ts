@@ -1,4 +1,4 @@
-import { isAndroid } from '~/constants/platform'
+import { IS_ANDROID } from '~/constants/platform'
 import Constants from 'expo-constants'
 import * as Device from 'expo-device'
 import * as Notifications from 'expo-notifications'
@@ -21,7 +21,7 @@ type PushNotificationsRegistrationResult =
 export const registerForPushNotificationsAsync =
   async (): Promise<PushNotificationsRegistrationResult> => {
     // android requires notification channel
-    if (isAndroid) {
+    if (IS_ANDROID) {
       await Notifications.setNotificationChannelAsync('default', {
         name: 'Default',
         importance: Notifications.AndroidImportance.MAX,
@@ -76,7 +76,7 @@ export const registerForPushNotificationsAsync =
 
       return {
         success: true,
-        platform: isAndroid ? 'android' : 'ios',
+        platform: IS_ANDROID ? 'android' : 'ios',
         expoPushToken: expoTokenData.data, // ExponentPushToken[...]
         nativePushToken: nativeTokenData.data, // APNs/FCM token
         permissionStatus: finalStatus,

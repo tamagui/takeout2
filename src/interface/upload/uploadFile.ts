@@ -1,4 +1,9 @@
-import { AbortError, createGlobalContext, isWeb, useAsyncEffect } from '@take-out/helpers'
+import {
+  AbortError,
+  createGlobalContext,
+  IS_WEB,
+  useAsyncEffect,
+} from '@take-out/helpers'
 import { useContext, useEffect, useState } from 'react'
 import { useEvent } from 'tamagui'
 import { API_URL } from '~/constants/urls'
@@ -143,7 +148,7 @@ export const useUploadFiles = ({
     function getUpload(upload: File): FileUpload {
       const validation = validateFile(upload)
       // check if it's a native pseudo-file with uri property
-      const isNativeFile = !isWeb && typeof (upload as any).uri === 'string'
+      const isNativeFile = !IS_WEB && typeof (upload as any).uri === 'string'
       return {
         uid: getFileId(upload),
         name: upload.name,

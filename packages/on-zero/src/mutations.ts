@@ -1,4 +1,4 @@
-import { isServer } from './constants'
+import { IS_SERVER_RUNTIME } from '@take-out/helpers'
 import { getDidRunPermissionCheck } from './helpers/didRunPermissionCheck'
 import { setMutationsPermissions } from './modelRegistry'
 
@@ -170,7 +170,7 @@ export function mutations<
           }
 
           // only validate on the server
-          if (isServer) {
+          if (IS_SERVER_RUNTIME) {
             await ctx.can(permissions, obj)
           }
         }

@@ -1,4 +1,4 @@
-import { isAndroid } from '@take-out/helpers'
+import { IS_ANDROID } from '@take-out/helpers'
 import { memo } from 'react'
 import { View } from 'tamagui'
 
@@ -18,7 +18,7 @@ export const GlassView = memo(
     isInteractive = true,
   }: GlassViewProps) => {
     // android fallback
-    if (isAndroid) {
+    if (IS_ANDROID) {
       return (
         <View bg="$color4" style={[{ borderRadius, overflow: 'hidden' }, containerStyle]}>
           {children}

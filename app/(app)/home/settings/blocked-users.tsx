@@ -1,5 +1,5 @@
 import { LegendList } from '@legendapp/list'
-import { isNative } from '@take-out/helpers'
+import { IS_NATIVE } from '@take-out/helpers'
 import { memo, useCallback } from 'react'
 import { Alert, RefreshControl } from 'react-native'
 import { ListItem, ScrollView, SizableText, Spinner, View, YStack } from 'tamagui'
@@ -53,7 +53,7 @@ const EmptyState = memo(() => {
         No blocked users
       </SizableText>
 
-      {isNative && (
+      {IS_NATIVE && (
         <SizableText size="$3" color="$color10" mt="$2">
           Pull to refresh
         </SizableText>
@@ -68,7 +68,7 @@ export const ProfileBlockedUsersPage = () => {
 
   const handleUnblock = useCallback(
     async (user: User) => {
-      if (isNative) {
+      if (IS_NATIVE) {
         Alert.alert(
           'Unblock User',
           `Are you sure you want to unblock ${user.username}?`,
@@ -124,7 +124,7 @@ export const ProfileBlockedUsersPage = () => {
   }
 
   // web: use simple ScrollView to avoid LegendList style issues
-  if (!isNative) {
+  if (!IS_NATIVE) {
     return (
       <PageLayout>
         <ScrollView

@@ -192,9 +192,8 @@ description: Archived Takeout updates from early 2026
   singleton, preventing Vite's module duplication from creating separate
   server/client state instances that caused permission filters to not apply
   during SSR
-- on-zero server-side detection improved with `isServerRuntime()` helper that
-  auto-detects Node/Bun without relying on Vite environment variables, fixing
-  mutator permission checks outside Vite contexts
+- on-zero server-side detection improved with the `IS_SERVER_RUNTIME` helper
+  constant, fixing mutator permission checks outside Vite contexts
 - on-zero code generation now includes read-only models (those without a mutate
   export), ensuring Zero schema registration works for all tables
 - on-zero code generation handles Symbol.iterator and other symbol-keyed
@@ -223,7 +222,7 @@ description: Archived Takeout updates from early 2026
   of your component tree to conditionally disable all Zero queries underneath
 - on-zero `getQuery()` for accessing raw query objects outside React components
 - on-zero `setAuthData` exported from public API for manual auth state control
-- on-zero dynamic environment state replaces static isServer detection, fixing
+- on-zero dynamic environment state replaces static `IS_SERVER` detection, fixing
   edge cases where server/client detection was wrong
 - `--default-all` flag for CLI script groups - automatically selects all scripts
   in a group without prompting

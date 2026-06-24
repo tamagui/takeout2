@@ -1,4 +1,4 @@
-import { IS_SAFARI, isAndroid, isWeb, sleep } from '@take-out/helpers'
+import { IS_SAFARI, IS_ANDROID, IS_WEB, sleep } from '@take-out/helpers'
 import { createElement, forwardRef, isValidElement } from 'react'
 import { Platform } from 'react-native'
 import {
@@ -12,7 +12,7 @@ import {
   XStack,
 } from 'tamagui'
 
-import { isNative } from '~/constants/platform'
+import { IS_NATIVE } from '~/constants/platform'
 
 import { GlassView } from '../effects/GlassView'
 import { Glint } from '../effects/Glint'
@@ -71,24 +71,24 @@ const context = createStyledContext({
 const useContext = context.useStyledContext
 
 const buttonBorderRadius: Record<ButtonSizes, RadiusTokens> = {
-  small: isWeb ? '$4' : '$5',
-  medium: isWeb ? '$5' : '$6',
-  large: isWeb ? '$6' : '$7',
-  xl: isWeb ? '$7' : '$8',
-  xxl: isWeb ? '$9' : '$8',
-  tiny: isWeb ? '$3' : '$4',
+  small: IS_WEB ? '$4' : '$5',
+  medium: IS_WEB ? '$5' : '$6',
+  large: IS_WEB ? '$6' : '$7',
+  xl: IS_WEB ? '$7' : '$8',
+  xxl: IS_WEB ? '$9' : '$8',
+  tiny: IS_WEB ? '$3' : '$4',
   square: 0,
 }
 
 // = minW and height
 const buttonSizes: Record<ButtonSizes, number> = {
-  small: isWeb ? 30 : 40,
-  medium: isWeb ? 38 : 44,
-  large: isWeb ? 46 : 52,
-  xl: isWeb ? 52 : 60,
-  xxl: isWeb ? 60 : 72,
-  tiny: isWeb ? 16 : 32,
-  square: isWeb ? 36 : 44,
+  small: IS_WEB ? 30 : 40,
+  medium: IS_WEB ? 38 : 44,
+  large: IS_WEB ? 46 : 52,
+  xl: IS_WEB ? 52 : 60,
+  xxl: IS_WEB ? 60 : 72,
+  tiny: IS_WEB ? 16 : 32,
+  square: IS_WEB ? 36 : 44,
 }
 
 const iconSizes: Record<ButtonSizes, number> = {
@@ -165,34 +165,34 @@ const ButtonFrame = styled(XStack, {
         minW: buttonSizes.small,
         rounded: buttonBorderRadius.small,
         gap: '$2',
-        px: isWeb ? '$2.5' : '$4',
+        px: IS_WEB ? '$2.5' : '$4',
       },
       large: {
         minH: buttonSizes.large,
         minW: buttonSizes.large,
         rounded: buttonBorderRadius.large,
         gap: '$3',
-        px: isWeb ? '$4' : '$5',
+        px: IS_WEB ? '$4' : '$5',
       },
       xl: {
         minH: buttonSizes.xl,
         minW: buttonSizes.xl,
         rounded: buttonBorderRadius.xl,
         gap: '$3.5',
-        px: isWeb ? '$5' : '$6',
+        px: IS_WEB ? '$5' : '$6',
       },
       xxl: {
         minH: buttonSizes.xxl,
         minW: buttonSizes.xxl,
         rounded: buttonBorderRadius.xxl,
         gap: '$4',
-        px: isWeb ? '$6' : '$7',
+        px: IS_WEB ? '$6' : '$7',
       },
       medium: {
         minH: buttonSizes.medium,
         minW: buttonSizes.medium,
         rounded: buttonBorderRadius.medium,
-        px: isWeb ? '$2.5' : '$4',
+        px: IS_WEB ? '$2.5' : '$4',
       },
       square: {
         width: buttonSizes.square,
@@ -400,7 +400,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonProps>(
       if (variant === 'transparent' || variant === 'subtle') return false
 
       // on web, show glint even with glass
-      if ((isWeb || isAndroid) && glass) return true
+      if ((IS_WEB || IS_ANDROID) && glass) return true
 
       // on native, don't show glint with glass
       return !glass
@@ -455,7 +455,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonProps>(
 
     // wrap with glass view if requested (not supported on web)
     const glassWrappedElement =
-      glass && isNative ? (
+      glass && IS_NATIVE ? (
         <GlassView
           glassEffectStyle="clear"
           isInteractive={isInteractive}

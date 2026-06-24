@@ -1,3 +1,22 @@
+import { afterAll, vi } from 'vitest'
+
+const isJsdomRuntime = typeof window !== 'undefined' && typeof document !== 'undefined'
+const previousViteEnvironment = process.env.VITE_ENVIRONMENT
+
+if (isJsdomRuntime) {
+  process.env.VITE_ENVIRONMENT = 'client'
+  vi.resetModules()
+}
+
+afterAll(() => {
+  if (!isJsdomRuntime) return
+  if (previousViteEnvironment === undefined) {
+    delete process.env.VITE_ENVIRONMENT
+  } else {
+    process.env.VITE_ENVIRONMENT = previousViteEnvironment
+  }
+})
+
 if (typeof globalThis.localStorage?.getItem !== 'function') {
   const store = new Map<string, string>()
   Object.defineProperty(globalThis, 'localStorage', {

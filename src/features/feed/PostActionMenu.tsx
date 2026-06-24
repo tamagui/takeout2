@@ -1,4 +1,4 @@
-import { isNative, randomId } from '@take-out/helpers'
+import { IS_NATIVE, randomId } from '@take-out/helpers'
 import { Menu } from '@tamagui/menu'
 import { router } from 'one'
 import { useIsTouchDevice } from 'tamagui'
@@ -199,7 +199,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
                 justify="space-between"
                 textValue="Report"
               >
-                {isNative && (
+                {IS_NATIVE && (
                   <Menu.ItemIcon
                     ios={{ name: 'exclamationmark.triangle' }}
                     androidIconName="ic_menu_report"

@@ -1,4 +1,4 @@
-import { isBrowser } from '~/constants/platform'
+import { IS_BROWSER } from '~/constants/platform'
 import { useEffect, useState } from 'react'
 import { XStack, YStack } from 'tamagui'
 
@@ -8,7 +8,7 @@ export const ScrollHeader = ({ children }: { children: ReactNode }) => {
   const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
-    if (!isBrowser) return
+    if (!IS_BROWSER) return
 
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 30)

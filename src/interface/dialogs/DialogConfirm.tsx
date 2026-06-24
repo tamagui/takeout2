@@ -1,4 +1,4 @@
-import { isWeb, useEmitterSelector } from '@take-out/helpers'
+import { IS_WEB, useEmitterSelector } from '@take-out/helpers'
 import { useState } from 'react'
 import { useWindowDimensions, XStack, YStack } from 'tamagui'
 
@@ -10,7 +10,7 @@ import { closeDialogLayer2, dialogLayer2Emitter } from './shared'
 
 export const DialogConfirm = () => {
   const { width } = useWindowDimensions()
-  const minW = isWeb ? 450 : width * 0.9
+  const minW = IS_WEB ? 450 : width * 0.9
   const [extraConfirm, setExtraConfirm] = useState('')
   const state = useEmitterSelector(dialogLayer2Emitter, (next) => {
     return next.type === 'confirm' ? next : null

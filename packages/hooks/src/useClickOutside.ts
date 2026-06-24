@@ -1,4 +1,4 @@
-import { isWeb } from '@take-out/helpers'
+import { IS_WEB } from '@take-out/helpers'
 import { useEffect } from 'react'
 
 type UseClickOutsideProps = {
@@ -13,7 +13,7 @@ export const useClickOutside = ({
   onClickOutside,
 }: UseClickOutsideProps) => {
   useEffect(() => {
-    if (!isWeb) return
+    if (!IS_WEB) return
     if (!active) return
     if (!onClickOutside) return
 

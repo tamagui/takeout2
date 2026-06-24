@@ -1,4 +1,4 @@
-import { isActiveElementFormField, isWeb } from '@take-out/helpers'
+import { isActiveElementFormField, IS_WEB } from '@take-out/helpers'
 import { useEffect } from 'react'
 import { useEvent } from 'tamagui'
 
@@ -119,7 +119,7 @@ export function handleKeyboardEscape() {
  */
 export const KeyboardEscapeHandler = () => {
   useEffect(() => {
-    if (!isWeb) return
+    if (!IS_WEB) return
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {

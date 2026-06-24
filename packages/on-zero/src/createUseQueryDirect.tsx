@@ -4,7 +4,7 @@ import {
   DEFAULT_TTL_MS,
   deepClone,
 } from '@rocicorp/zero/bindings'
-import { useEmitterValue, type Emitter } from '@take-out/helpers'
+import { IS_SERVER_RUNTIME, useEmitterValue, type Emitter } from '@take-out/helpers'
 import { useContext, useMemo, useRef, useSyncExternalStore, type Context } from 'react'
 
 import {
@@ -264,7 +264,7 @@ export function createUseQueryDirect<Schema extends ZeroSchema>({
   // steady-state client path. without this, a singular .one() query returned
   // [] on SSR while the client returned undefined, manifesting as a hydration
   // mismatch wherever code destructured [row] from a singular query.
-  if (typeof window === 'undefined') {
+  if (IS_SERVER_RUNTIME) {
     return ((fn: any, paramsOrOptions: any, optionsArg: any) => {
       const { params } = parseUseQueryArgs(paramsOrOptions, optionsArg)
       const queryRequest = resolveQuery({ customQueries, fn, params })

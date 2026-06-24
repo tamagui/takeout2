@@ -1,8 +1,8 @@
-import { isWeb } from './platform'
+import { IS_WEB } from './platform'
 
-export const isTauri: boolean = typeof window !== 'undefined' && '__TAURI__' in window
+export const IS_TAURI: boolean = typeof window !== 'undefined' && '__TAURI__' in window
 
-export const isNative: boolean = !isWeb && !isTauri
+export const IS_NATIVE: boolean = !IS_WEB && !IS_TAURI
 
 // TODO move to probably ~/interface/constants
 
@@ -10,7 +10,7 @@ export const IS_MAC_DESKTOP: boolean =
   typeof navigator !== 'undefined' && /Macintosh|MacIntel/.test(navigator.platform)
 
 export const IS_SAFARI: boolean =
-  isTauri ||
+  IS_TAURI ||
   (typeof navigator !== 'undefined' &&
     /Version\/[\d.]+.*Safari/.test(navigator.userAgent) &&
     typeof navigator.vendor === 'string' &&

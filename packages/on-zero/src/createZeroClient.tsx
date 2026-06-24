@@ -5,7 +5,7 @@ import {
   ZeroContext,
   ZeroProvider,
 } from '@rocicorp/zero/react'
-import { createEmitter, type Emitter } from '@take-out/helpers'
+import { createEmitter, IS_SERVER_RUNTIME, type Emitter } from '@take-out/helpers'
 import {
   createContext,
   memo,
@@ -303,7 +303,7 @@ export function createZeroClientInternal<
   // here (factory-time) instead of per-call keeps hook order stable so
   // rules-of-hooks stays happy.
   const createUsePermission = (useQueryImpl: UseQueryHook<Schema>) => {
-    if (typeof window === 'undefined') {
+    if (IS_SERVER_RUNTIME) {
       return (() => null) as (
         table: TableName | (string & {}),
         objOrId: string | Partial<Row<any>> | undefined,
@@ -401,7 +401,10 @@ export function createZeroClientInternal<
     connection: { state: DISABLED_ZERO_STUB_CONNECTION_STATE },
   } as unknown as ZeroInstance
 
-  type ProvideZeroProps = Omit<ZeroOptions<Schema, ZeroMutators>, 'schema' | 'mutators'> & {
+  type ProvideZeroProps = Omit<
+    ZeroOptions<Schema, ZeroMutators>,
+    'schema' | 'mutators'
+  > & {
     children: ReactNode
     authData?: AuthData | null
     // when true, ProvideZero renders a stable shell with stub Zero — no real
@@ -425,32 +428,33 @@ export function createZeroClientInternal<
     beforeReload?: () => Promise<void>
   }
 
-  // ProvideZero is ONE component (no inner ProvideZeroActive wrapper). a
-  // single component shape on both SSR and client means React's useId() —
-  // which keys on the consuming fiber's tree position — produces identical
-  // ids on both sides for every descendant. an extra wrapper fiber (the
-  // previous shape: SSR returned the 3 providers directly while the client
-  // wrapped them in a ProvideZeroActive intermediate) shifted every
-  // descendant's tree id by a step and broke hydration on every useId
-  // consumer (SVG ids, form ids, etc).
-  //
-  // SSR path: EARLY-RETURN before any hook call. on-zero's hooks
-  // (useRef/useState/useEffect) call through a React copy whose hook
-  // dispatcher is null on the SSG runtime (because react isn't deduplicated
-  // across the build's bundle for on-zero's slot), so any hook call here
-  // throws "Cannot read properties of null (reading 'useRef')". the SSR
-  // shell renders the same 3-provider 3-child shape as the client.
-  //
-  // CLIENT path: hooks ALWAYS run, regardless of `disable`. only the
-  // returned JSX changes when `disable` flips — so a caller can toggle
-  // active ↔ inert at runtime without violating rules-of-hooks (no
-  // remount, no key-rotation needed). this is the structural guarantee
-  // consumers like soot's ProjectZeroGate depend on to flip from
-  // disable=true (anon-ssr hydration first render) to disable=false
-  // (active project mounted) without re-parenting children — children
-  // stay at the same fiber position whether the wrapper is inert or
-  // active.
-  const ProvideZero = ({
+  // providezero keeps the same provider/fiber layout on ssr and client so
+  // useId() stays stable across hydration. the server implementation has no
+  // hooks because the ssg runtime can load on-zero through a non-deduped react
+  // copy whose dispatcher is null; the client implementation always calls its
+  // hooks, regardless of `disable`.
+  const ProvideZeroServer = ({ children, authData: authDataIn }: ProvideZeroProps) => {
+    return (
+      <AuthDataContext.Provider value={(authDataIn ?? {}) as AuthData}>
+        <DisabledContext.Provider value="empty">
+          <ZeroContext.Provider value={DISABLED_ZERO_STUB as any}>
+            {/* match the active path's 3-child layout exactly so descendant
+                useId() lands at the same fiber index in both branches. the
+                two leading nulls reserve the SetZeroInstance + ConnectionMonitor
+                slots; the active path puts those components there only once
+                an instance exists. without these placeholder slots, children
+                would sit at child index 0 here but index 2 in the active
+                path, shifting every descendant useId. */}
+            {null}
+            {null}
+            {children}
+          </ZeroContext.Provider>
+        </DisabledContext.Provider>
+      </AuthDataContext.Provider>
+    )
+  }
+
+  const ProvideZeroClient = ({
     children,
     authData: authDataIn,
     transport,
@@ -459,27 +463,6 @@ export function createZeroClientInternal<
     disable,
     ...props
   }: ProvideZeroProps) => {
-    if (typeof window === 'undefined') {
-      return (
-        <AuthDataContext.Provider value={(authDataIn ?? {}) as AuthData}>
-          <DisabledContext.Provider value="empty">
-            <ZeroContext.Provider value={DISABLED_ZERO_STUB as any}>
-              {/* match the active path's 3-child layout EXACTLY so descendant
-                  useId() lands at the same fiber index in both branches. the
-                  two leading nulls reserve the SetZeroInstance + ConnectionMonitor
-                  slots; the active path puts those components there only once
-                  an instance exists. without these placeholder slots, children
-                  would sit at child index 0 here but index 2 in the active
-                  path, shifting every descendant useId. */}
-              {null}
-              {null}
-              {children}
-            </ZeroContext.Provider>
-          </DisabledContext.Provider>
-        </AuthDataContext.Provider>
-      )
-    }
-
     // resolve the auth token first: a real logout (token gone) must clear
     // authData so client mutators don't keep running as the old user, while a
     // transient authData blip with the token still present (session refresh, tab
@@ -644,6 +627,8 @@ export function createZeroClientInternal<
       </AuthDataContext.Provider>
     )
   }
+
+  const ProvideZero = IS_SERVER_RUNTIME ? ProvideZeroServer : ProvideZeroClient
 
   const SetZeroInstance = () => {
     const zeroInstance = useZero<Schema, ZeroMutators>()

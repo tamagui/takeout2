@@ -9,6 +9,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    setupFiles: [resolve(rootDir, 'packages/on-zero/src/testSetup.ts')],
     include: [
       'src/test/unit/**/*.test.ts',
       'src/test/unit/**/*.test.tsx',

@@ -264,6 +264,10 @@ export function createZeroClientInternal<
           `Zero instance not initialized. Ensure ZeroProvider is mounted before accessing 'zero'.`,
         )
       }
+      if (key === 'delete') {
+        const instanceToDelete = latestZeroInstance
+        return () => deleteZeroInstance(instanceToDelete)
+      }
       return getZeroProxyValue(latestZeroInstance, key)
     },
   })
@@ -372,6 +376,35 @@ export function createZeroClientInternal<
   // per client (true of every consumer); two simultaneously mounted providers
   // with different identities would thrash this slot.
   let cachedZero: { key: string; instance: ZeroInstance } | null = null
+
+  function invalidateZeroInstance(instanceToInvalidate: ZeroInstance | null): void {
+    if (!instanceToInvalidate) return
+
+    if (cachedZero?.instance === instanceToInvalidate) {
+      cachedZero = null
+    }
+    if (latestZeroInstance === instanceToInvalidate) {
+      latestZeroInstance = null
+      instance.runner = null
+      setRunner(null)
+      zeroInstanceVersion?.emit(zeroInstanceVersion.value + 1)
+    }
+    try {
+      instanceToInvalidate.close()
+    } catch {
+      // a deleted client is already unusable; close is best-effort cleanup.
+    }
+  }
+
+  async function deleteZeroInstance(
+    instanceToDelete: ZeroInstance | null,
+  ): Promise<unknown> {
+    try {
+      return await instanceToDelete?.delete()
+    } finally {
+      invalidateZeroInstance(instanceToDelete)
+    }
+  }
 
   // when ProvideZero is rendered without a real Zero instance (SSG, disable=true,
   // or transiently while the active path is still creating its first instance),
@@ -553,7 +586,7 @@ export function createZeroClientInternal<
         // the handlers only fire post-mount).
         const instanceRef: { current: ZeroInstance | null } = { current: null }
         const recoveryDeps: ZeroRecoveryDeps = {
-          deleteLocalState: () => instanceRef.current?.delete() ?? Promise.resolve(),
+          deleteLocalState: () => deleteZeroInstance(instanceRef.current),
           zeroEvents,
           beforeReload,
         }

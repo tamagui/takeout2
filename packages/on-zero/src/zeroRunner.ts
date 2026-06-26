@@ -16,7 +16,7 @@ export type ZeroRunner = <TReturn>(
 
 let runner: ZeroRunner | null = null
 
-export function setRunner(r: ZeroRunner) {
+export function setRunner(r: ZeroRunner | null) {
   runner = r
 }
 

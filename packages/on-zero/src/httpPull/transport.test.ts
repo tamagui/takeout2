@@ -382,6 +382,25 @@ describe('zero-http transport', () => {
     view.destroy()
   })
 
+  test('transient pull failures back off reconnect attempts', async () => {
+    const requests: RequestRecord[] = []
+    const fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const request = recordRequest(input, init)
+      requests.push(request)
+      expect(request.path).toBe('/pull')
+      throw new TypeError('Failed to fetch')
+    })
+    install(fetch)
+    createZero()
+
+    await eventually(() => expect(requests.length).toBe(1))
+    await sleep(150)
+    expect(requests.length).toBe(1)
+    await eventually(() => expect(requests.length).toBe(2), 1_500)
+    await sleep(150)
+    expect(requests.length).toBe(2)
+  })
+
   test('non-origin WebSockets pass through to the native implementation', () => {
     const previous = globalThis.WebSocket
     class NativeWebSocket {

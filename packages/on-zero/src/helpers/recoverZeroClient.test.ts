@@ -4,6 +4,7 @@ import { UpdateNeededReasonType } from '@rocicorp/zero'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 import {
+  classifyZeroRecoveryLog,
   composeRecoveryLogSink,
   makeZeroRecovery,
   resetRecoveryStateForTests,
@@ -131,6 +132,38 @@ describe('zero recovery', () => {
     expect(reload).toHaveBeenCalledTimes(1)
   })
 
+  test('logSink recovers on native sqlite finalized-statement local-store loss', async () => {
+    const { deps, deleteLocalState, reload } = setup()
+    const sqliteError = new Error('This statement has been finalized')
+    sqliteError.name = 'SqliteError'
+    const sink = composeRecoveryLogSink(deps)
+    sink.log('error', { bgIntervalProcess: 'Heartbeat' }, 'Error running.', sqliteError)
+    await flush()
+    expect(deleteLocalState).toHaveBeenCalledTimes(1)
+    expect(reload).toHaveBeenCalledTimes(1)
+  })
+
+  test('logSink recovers on repeated store-closed local-store loss', async () => {
+    const nowSpy = vi.spyOn(Date, 'now')
+    const { deps, deleteLocalState, reload } = setup()
+    try {
+      const sink = composeRecoveryLogSink(deps)
+      nowSpy.mockReturnValue(10_000)
+      sink.log('error', undefined, 'Failed to connect.', new Error('Store is closed'))
+      await flush()
+      expect(deleteLocalState).not.toHaveBeenCalled()
+      expect(reload).not.toHaveBeenCalled()
+
+      nowSpy.mockReturnValue(13_000)
+      sink.log('error', undefined, 'Failed to connect.', new Error('Store is closed'))
+      await flush()
+      expect(deleteLocalState).toHaveBeenCalledTimes(1)
+      expect(reload).toHaveBeenCalledTimes(1)
+    } finally {
+      nowSpy.mockRestore()
+    }
+  })
+
   test('logSink with no consumer preserves console output and still watches', async () => {
     const { deps, deleteLocalState, reload } = setup()
     const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {})
@@ -168,6 +201,39 @@ describe('zero recovery', () => {
     await flush()
     expect(deleteLocalState).not.toHaveBeenCalled()
     expect(reload).not.toHaveBeenCalled()
+  })
+
+  test('recovery log classification is narrow', () => {
+    const sqliteError = new Error('This statement has been finalized')
+    sqliteError.name = 'SqliteError'
+    expect(
+      classifyZeroRecoveryLog('error', ['Error running.', sqliteError]),
+    ).toMatchObject({
+      reason: 'sqlite-statement-finalized',
+      dropLocalState: true,
+    })
+    expect(
+      classifyZeroRecoveryLog('error', [
+        { name: 'SqliteError', message: 'database is locked' },
+      ]),
+    ).toBeUndefined()
+    expect(
+      classifyZeroRecoveryLog('warn', ['Expected IndexedDB not found']),
+    ).toBeUndefined()
+    expect(classifyZeroRecoveryLog('error', ['Store is closed'], 10_000)).toBeUndefined()
+    expect(classifyZeroRecoveryLog('error', ['Store is closed'], 11_000)).toBeUndefined()
+    expect(classifyZeroRecoveryLog('error', ['Store is closed'], 14_000)).toMatchObject({
+      reason: 'store-closed-repeat',
+      dropLocalState: true,
+    })
+    resetRecoveryStateForTests()
+    expect(
+      classifyZeroRecoveryLog(
+        'error',
+        ['Mutator "send" error on server', 'Store is closed'],
+        20_000,
+      ),
+    ).toBeUndefined()
   })
 
   // a host with a `window` shim but no real `location` — the sootsim tenant

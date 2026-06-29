@@ -10,6 +10,23 @@ const RECOVER_GUARD_MS = 60_000
 // the fatal local-store-loss signature Zero logs when the IndexedDB it expects
 // is gone (evicted, or deleted by another tab).
 const LOCAL_STORE_LOST = 'Expected IndexedDB not found'
+const SQLITE_ERROR_NAME = 'SqliteError'
+const SQLITE_STATEMENT_FINALIZED = 'This statement has been finalized'
+const STORE_CLOSED = 'Store is closed'
+const STORE_CLOSED_REPEAT_MIN_MS = 2_000
+const STORE_CLOSED_REPEAT_MAX_MS = 60_000
+
+export type ZeroRecoveryLogReason =
+  | 'indexeddb-not-found'
+  | 'sqlite-statement-finalized'
+  | 'store-closed-repeat'
+
+export type ZeroRecoveryLogClassification = {
+  reason: ZeroRecoveryLogReason
+  reasonKey: string
+  message: string
+  dropLocalState: boolean
+}
 
 export type ZeroRecoveryDeps = {
   // delete THIS client's local persistent state (its own scoped IDB). pass the
@@ -38,14 +55,21 @@ const pendingDeletes: Array<Promise<unknown>> = []
 function recoveryGuardOpen(reasonKey: string): boolean {
   try {
     const key = `on-zero-recover-${reasonKey}`
-    const last = Number(window.sessionStorage.getItem(key) || 0)
-    if (Date.now() - last < RECOVER_GUARD_MS) return false
-    window.sessionStorage.setItem(key, String(Date.now()))
+    const rawLast = window.sessionStorage.getItem(key)
+    const now = Date.now()
+    const last = rawLast ? Number(rawLast) : 0
+    if (last > 0 && now - last < RECOVER_GUARD_MS) return false
+    window.sessionStorage.setItem(key, String(now))
   } catch {
     // no sessionStorage (private mode) — fall back to the in-memory latch.
   }
   return true
 }
+
+// "Store is closed" is noisy during intentional instance replacement. One log is
+// teardown noise; repeated logs seconds apart mean a live client is stuck using a
+// closed local store and needs fresh local state.
+let lastStoreClosedAtMs = 0
 
 function recover(
   deps: ZeroRecoveryDeps,
@@ -137,6 +161,66 @@ function logToConsole(
   console[method](...(prefix ? [prefix] : []), ...args)
 }
 
+function logArgText(arg: unknown): string {
+  if (typeof arg === 'string') return arg
+  if (arg instanceof Error) return `${arg.name} ${arg.message} ${arg.stack || ''}`
+  if (arg && typeof arg === 'object') {
+    const message = 'message' in arg ? (arg as { message?: unknown }).message : undefined
+    const name = 'name' in arg ? (arg as { name?: unknown }).name : undefined
+    if (typeof message === 'string')
+      return `${typeof name === 'string' ? name : ''} ${message}`
+  }
+  return ''
+}
+
+function isBenignStoreClosedLog(text: string): boolean {
+  if (/Mutator\s+".*"\s+error on server/i.test(text)) return true
+  if (/Mutator\s+".*"\s+app error on client/i.test(text)) return true
+  return false
+}
+
+export function classifyZeroRecoveryLog(
+  level: LogLevel | string,
+  args: readonly unknown[],
+  nowMs = Date.now(),
+): ZeroRecoveryLogClassification | undefined {
+  if (level !== 'error') return undefined
+  const text = args.map(logArgText).join(' ')
+  if (text.includes(LOCAL_STORE_LOST)) {
+    return {
+      reason: 'indexeddb-not-found',
+      reasonKey: 'local-store',
+      message: 'local store lost',
+      dropLocalState: true,
+    }
+  }
+  if (text.includes(SQLITE_ERROR_NAME) && text.includes(SQLITE_STATEMENT_FINALIZED)) {
+    return {
+      reason: 'sqlite-statement-finalized',
+      reasonKey: 'sqlite-statement-finalized',
+      message: 'sqlite statement finalized',
+      dropLocalState: true,
+    }
+  }
+  if (text.includes(STORE_CLOSED) && !isBenignStoreClosedLog(text)) {
+    const prevMs = lastStoreClosedAtMs
+    lastStoreClosedAtMs = nowMs
+    if (
+      prevMs > 0 &&
+      nowMs - prevMs >= STORE_CLOSED_REPEAT_MIN_MS &&
+      nowMs - prevMs <= STORE_CLOSED_REPEAT_MAX_MS
+    ) {
+      return {
+        reason: 'store-closed-repeat',
+        reasonKey: 'store-closed-repeat',
+        message: 'local store closed repeatedly',
+        dropLocalState: true,
+      }
+    }
+  }
+  return undefined
+}
+
 // watch error-level logs for the local-store-lost signature (the one fatal Zero
 // surfaces only through the log, not the structured callbacks) and trigger the
 // same recovery. forwards to the consumer sink, or to the console when there is
@@ -151,18 +235,9 @@ export function composeRecoveryLogSink(
     log(level: LogLevel, context: Context | undefined, ...args: unknown[]): void {
       if (consumerLogSink) consumerLogSink.log(level, context, ...args)
       else logToConsole(level, context, ...args)
-      if (level !== 'error') return
-      const text = args
-        .map((arg) =>
-          typeof arg === 'string'
-            ? arg
-            : arg && typeof arg === 'object' && 'message' in arg
-              ? String((arg as { message: unknown }).message)
-              : '',
-        )
-        .join(' ')
-      if (text.includes(LOCAL_STORE_LOST)) {
-        recover(deps, 'local-store', 'local store lost', true)
+      const recovery = classifyZeroRecoveryLog(level, args)
+      if (recovery) {
+        recover(deps, recovery.reasonKey, recovery.message, recovery.dropLocalState)
       }
     },
     // call through the consumer sink so a class-based sink keeps its `this`,
@@ -176,4 +251,5 @@ export function composeRecoveryLogSink(
 export function resetRecoveryStateForTests() {
   reloadScheduled = false
   pendingDeletes.length = 0
+  lastStoreClosedAtMs = 0
 }

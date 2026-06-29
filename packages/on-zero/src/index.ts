@@ -42,7 +42,10 @@ export {
   type ZeroClientErrorInfo,
 } from './helpers/showZeroClientError'
 export {
+  classifyZeroRecoveryLog,
   makeZeroRecovery,
   composeRecoveryLogSink,
+  type ZeroRecoveryLogClassification,
+  type ZeroRecoveryLogReason,
   type ZeroRecoveryDeps,
 } from './helpers/recoverZeroClient'

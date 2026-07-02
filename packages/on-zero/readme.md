@@ -578,6 +578,26 @@ constraints:
 - the server stays single: one `createZeroServer` per backend process.
 - omitting `instanceName` keeps the exact single-instance behavior.
 
+**guarding the partition against drift.** a generated namespace that ends up in
+NEITHER instance's split silently un-registers its queries (a `useQuery` then
+throws "query not registered" at runtime, error-boundarying a whole screen). run
+`assertZeroInstancePartition` at module eval over each split so the drift is a
+boot throw instead — it also catches a namespace listed in more than one
+partition:
+
+```ts
+import { assertZeroInstancePartition } from 'on-zero/multi'
+
+assertZeroInstancePartition('query namespace', groupedQueries, {
+  control: controlQueries,
+  project: projectQueries,
+})
+assertZeroInstancePartition('model namespace', models, {
+  control: controlModels,
+  project: projectModels,
+})
+```
+
 ### server validation hooks
 
 add custom validation for all queries and mutations:
@@ -747,6 +767,112 @@ import { ensureAuth } from 'on-zero'
 
 const auth = ensureAuth() // AuthData (throws if not authenticated)
 ```
+
+## recovery
+
+on-zero self-heals a client whose local sync state is lost or rejected. this is
+**on by default** — a consumer that passes nothing gets the full behavior. the
+hooks below let you compose ONE extra behavior (gate the reload, reload
+natively, drop a benign log, refresh auth) without re-implementing the stack.
+
+### what's on by default
+
+`ProvideZero` installs Zero's `onUpdateNeeded` / `onClientStateNotFound` and a
+log sink that watches for the fatal store-loss / desync signatures. on a match it
+drops the affected instance's local store and reloads the page ONCE. this covers:
+
+- **update-needed** — `SchemaVersionNotSupported` (drops local state, the rows
+  are now incompatible), `NewClientGroup` / `VersionNotSupported` (reload
+  without dropping, so a sibling tab's shared IndexedDB survives).
+- **client-state-not-found** — the store is unusable; drop it and reload.
+- **log-only fatals** — `Expected IndexedDB not found`, native sqlite
+  `This statement has been finalized`, and repeated `Store is closed`.
+- **the mutation/connection desync class** — `sent mutation ID … but expected`,
+  `oooMutation`, `already processed`, `InvalidConnectionRequestBaseCookie` /
+  `…LastMutationID`, `ClientNotFound`, `connection userID mismatch`. these
+  surface only through the error log, so the log sink recovers on them too.
+
+genuinely app-infra signatures (your own synthesized ack-timeout marker, a
+cold-boot connect timeout) are NOT in this list — keep those app-side and use
+`benignLogFilter` to stop them from tripping recovery.
+
+### the hooks (all optional props on `ProvideZero`)
+
+- **`scheduleReload?: (ctx) => void`** — take over WHEN/HOW the recovery reload
+  happens. `ctx = { reason, reasonKey, dropLocalState, performReload }`. the
+  default is an immediate reload; inject this to gate it (only reload when the
+  user is on a safe surface), show a countdown toast, or reload natively —
+  then call `ctx.performReload()` to run the real deletes-then-reload work. the
+  store delete is deferred until `performReload` runs, so a gated reload never
+  leaves the app on an already-deleted store. `performReload` is idempotent.
+
+  ```tsx
+  // native (expo): reload the bundle instead of location.reload()
+  <ProvideZero
+    scheduleReload={(ctx) => {
+      void ctx
+        .performReload()
+        .then(() => Updates.reloadAsync())
+        .catch(() => DevSettings.reload())
+    }}
+    …
+  />
+  ```
+
+- **`beforeReload?: () => Promise<void>`** — awaited right before the reload
+  (e.g. wait for the dev origin to come back so the reload doesn't hit a
+  restarting server). composes with `scheduleReload`.
+
+- **`benignLogFilter?: (message) => boolean`** — return `true` for a classified
+  recovery log you want treated as benign so it does NOT recover (your app's
+  cold-boot timeout, say). only affects recovery; the log still reaches the sink.
+
+- **`refreshAuth?: () => Promise<string | undefined>`** — called when the
+  connection enters `needs-auth` (an expired token). return a fresh token and
+  on-zero reconnects in place — no reload. fires once per needs-auth transition.
+
+- **`guardStorage?: { getItem, setItem }`** — the loop-guard's cross-reload
+  backing store. defaults to `sessionStorage` on web; inject a native KV
+  (MMKV/sqlite) on Hermes so native gets real cross-reload loop protection.
+
+- **`connectionDataset?: boolean`** — mirror this instance's connection state
+  onto `document.body.dataset.zero*` (`zeroState`, `zeroConnected`,
+  `zeroReason`, `zeroCacheUrl`) for e2e/diagnostics. enable on ONE instance so
+  multiple instances don't clobber the dataset.
+
+### guard + latch semantics
+
+- a **per-reason guard** (60s window) means the SAME reason re-failing right
+  after its reload is surfaced as `fatal` instead of reload-storming; distinct
+  reasons never suppress each other. it's two-tier: an in-memory map (real loop
+  protection within a page-load, works on Hermes) plus the cross-reload
+  `guardStorage` (survives the reload to catch an immediate re-fire).
+- a **one-reload latch** means every affected instance of a combined client
+  drops its own store but only ONE reload fires. the latch **times out** (15s)
+  so a reload that never lands (a gated/native reload, a failed `reload()`)
+  can't kill recovery for the rest of the page's life.
+
+### remint — in-place recovery without a reload
+
+`createZeroClient` returns **`remint(opts?)`** — the supported, native-safe
+recovery path (a reload may never land on prod native, wedging the latch).
+it drops the current instance's local store (unless `dropLocalState: false`) and
+reconstructs a fresh Zero client in place, no page reload. it is rate-guarded
+in-memory (12s between mints, 5 attempts before backing off, reset after 60s
+stable) and returns `false` when suppressed. route your own
+`onClientStateNotFound` to it if you need in-place recovery:
+
+```tsx
+const { remint, ProvideZero } = createZeroClient({ … })
+<ProvideZero onClientStateNotFound={() => { void remint() }} … />
+```
+
+### stale-poke resume (automatic)
+
+a recoverable stale-cookie / stale-poke error (`Server returned unexpected base
+cookie during sync`; `Received cookie … is < than last snapshot cookie … ignoring
+client view`) is generic Zero behavior — on-zero's connection monitor reconnects
+instead of surfacing a fatal error, deduped per reason. no configuration.
 
 ## patterns
 

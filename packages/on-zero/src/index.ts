@@ -45,7 +45,10 @@ export {
   classifyZeroRecoveryLog,
   makeZeroRecovery,
   composeRecoveryLogSink,
+  isRecoverableZeroStalePokeMessage,
   type ZeroRecoveryLogClassification,
   type ZeroRecoveryLogReason,
   type ZeroRecoveryDeps,
+  type ScheduleReloadContext,
+  type RecoveryGuardStorage,
 } from './helpers/recoverZeroClient'

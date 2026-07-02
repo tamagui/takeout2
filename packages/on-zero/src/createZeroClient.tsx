@@ -29,7 +29,10 @@ import { registerClientInstance } from './instanceRegistry'
 import { createMutators } from './helpers/createMutators'
 import {
   composeRecoveryLogSink,
+  isRecoverableZeroStalePokeMessage,
   makeZeroRecovery,
+  type RecoveryGuardStorage,
+  type ScheduleReloadContext,
   type ZeroRecoveryDeps,
 } from './helpers/recoverZeroClient'
 import { getAuth } from './helpers/getAuth'
@@ -377,6 +380,20 @@ export function createZeroClientInternal<
   // with different identities would thrash this slot.
   let cachedZero: { key: string; instance: ZeroInstance } | null = null
 
+  // in-place re-mint: drop the current instance's local state then reconstruct a
+  // fresh client WITHOUT a page reload — the native-safe recovery path (a reload
+  // may never land on prod native, wedging the module latch). the mounted
+  // provider registers a bump() that changes its instanceKey; remint() drives it
+  // through the same rotate effect a real identity change uses. guarded in-memory
+  // (Hermes has no sessionStorage) so a client-not-found storm can't reconstruct
+  // in a tight loop.
+  const REMINT_GUARD_MS = 12_000
+  const REMINT_MAX_ATTEMPTS = 5
+  const REMINT_ATTEMPT_RESET_MS = 60_000
+  const remintControl: { bump: (() => void) | null } = { bump: null }
+  let lastRemintAt = 0
+  let remintAttempts = 0
+
   function invalidateZeroInstance(instanceToInvalidate: ZeroInstance | null): void {
     if (!instanceToInvalidate) return
 
@@ -404,6 +421,34 @@ export function createZeroClientInternal<
     } finally {
       invalidateZeroInstance(instanceToDelete)
     }
+  }
+
+  // supported in-place recovery: reconstruct a fresh Zero client without a page
+  // reload. by default drops the current instance's local store first (a
+  // ClientNotFound / desync means it's unusable), then bumps the provider's
+  // instanceKey so the rotate effect mints a clean client. returns false when
+  // suppressed by the rate guard or when no provider is mounted.
+  async function remint(opts: { dropLocalState?: boolean } = {}): Promise<boolean> {
+    // no mounted provider to reconstruct through — bail BEFORE the guard so an
+    // unmounted call doesn't burn an attempt or start the cooldown.
+    if (!remintControl.bump) return false
+    const now = Date.now()
+    const sinceLast = now - lastRemintAt
+    if (lastRemintAt > 0 && sinceLast < REMINT_GUARD_MS) return false
+    if (sinceLast > REMINT_ATTEMPT_RESET_MS) remintAttempts = 0
+    if (remintAttempts >= REMINT_MAX_ATTEMPTS) return false
+    lastRemintAt = now
+    remintAttempts += 1
+
+    const { dropLocalState = true } = opts
+    if (dropLocalState && latestZeroInstance) {
+      await deleteZeroInstance(latestZeroInstance).catch(() => {})
+    }
+    // re-check: the provider may have unmounted during the async delete.
+    const bump = remintControl.bump
+    if (!bump) return false
+    bump()
+    return true
   }
 
   // when ProvideZero is rendered without a real Zero instance (SSG, disable=true,
@@ -459,6 +504,23 @@ export function createZeroClientInternal<
     // awaited before a self-healing recovery reload — e.g. wait for the dev
     // origin to be reachable so the reload doesn't hit a restarting server.
     beforeReload?: () => Promise<void>
+    // take over WHEN/HOW the recovery reload happens (IDE gate + countdown,
+    // native expo-updates reload, …) while still driving the same
+    // deletes-then-reload work via ctx.performReload. default: immediate reload.
+    scheduleReload?: (ctx: ScheduleReloadContext) => void
+    // cross-reload loop-guard backing store; defaults to sessionStorage on web.
+    // inject a native KV so Hermes gets real cross-reload protection.
+    guardStorage?: RecoveryGuardStorage
+    // return true for a classified recovery log the app wants treated as benign
+    // (its own cold-boot timeout, say) so it does NOT trigger recovery.
+    benignLogFilter?: (message: string) => boolean
+    // called when the connection needs auth; return a fresh token to reconnect
+    // in place. lets an expired token auto-recover without a reload.
+    refreshAuth?: () => Promise<string | undefined>
+    // when true, mirror this instance's connection state onto
+    // document.body.dataset.zero* for e2e/diagnostics. enable on ONE instance
+    // (the control/primary) so multiple instances don't fight over the dataset.
+    connectionDataset?: boolean
   }
 
   // providezero keeps the same provider/fiber layout on ssr and client so
@@ -493,6 +555,11 @@ export function createZeroClientInternal<
     transport,
     pullIntervalMs = 30_000,
     beforeReload,
+    scheduleReload,
+    guardStorage,
+    benignLogFilter,
+    refreshAuth,
+    connectionDataset,
     disable,
     ...props
   }: ProvideZeroProps) => {
@@ -532,10 +599,23 @@ export function createZeroClientInternal<
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    // remint() reconstructs the client in place by bumping this counter, which
+    // changes instanceKey and drives the rotate effect exactly as a real
+    // identity change does. register the bump so the imperative remint() API can
+    // reach this mounted provider.
+    const [remintGeneration, setRemintGeneration] = useState(0)
+    useEffect(() => {
+      remintControl.bump = () => setRemintGeneration((generation) => generation + 1)
+      return () => {
+        remintControl.bump = null
+      }
+    }, [])
+
     // identity = every primitive option except the auth token value (token
     // changes refresh in place below; logged-in <-> logged-out still rotates
     // via hasAuth, matching zero's documented provider semantics). function
     // props (callbacks, logSink, batchViewUpdates) are bound at construction.
+    // remintGeneration is included so remint() forces a fresh instance.
     const instanceKey = JSON.stringify([
       Object.entries({ kvStore: 'mem', ...props })
         .filter(
@@ -545,6 +625,7 @@ export function createZeroClientInternal<
         .sort(([a], [b]) => (a < b ? -1 : 1)),
       hasAuth,
       transport,
+      remintGeneration,
     ])
 
     // create/rotate in an effect — commit-safe: a discarded concurrent render
@@ -589,6 +670,9 @@ export function createZeroClientInternal<
           deleteLocalState: () => deleteZeroInstance(instanceRef.current),
           zeroEvents,
           beforeReload,
+          scheduleReload,
+          guardStorage,
+          benignLogFilter,
         }
         const recovery = makeZeroRecovery(recoveryDeps)
         const createdInstance = new ZeroClient<Schema, ZeroMutators>({
@@ -653,7 +737,19 @@ export function createZeroClientInternal<
         <DisabledContext.Provider value={liveInstance ? false : 'empty'}>
           <ZeroContext.Provider value={liveInstance ?? (DISABLED_ZERO_STUB as any)}>
             {liveInstance ? <SetZeroInstance /> : null}
-            {liveInstance ? <ConnectionMonitor zeroEvents={zeroEvents} /> : null}
+            {liveInstance ? (
+              <ConnectionMonitor
+                zeroEvents={zeroEvents}
+                refreshAuth={refreshAuth}
+                exposeDataset={connectionDataset}
+                datasetCacheUrl={
+                  connectionDataset
+                    ? ((props as { cacheURL?: string; server?: string }).cacheURL ??
+                      (props as { cacheURL?: string; server?: string }).server)
+                    : undefined
+                }
+              />
+            ) : null}
             {children}
           </ZeroContext.Provider>
         </DisabledContext.Provider>
@@ -689,30 +785,79 @@ export function createZeroClientInternal<
     return null
   }
 
-  // monitors connection state and emits events (replaces onError callback removed in 0.25)
+  // monitors connection state and emits events (replaces onError callback removed
+  // in 0.25). also owns the generic-Zero connection recovery that used to live in
+  // each consumer: stale-poke reconnect, needs-auth token refresh, and optional
+  // e2e dataset bookkeeping.
   const ConnectionMonitor = memo(
     ({
       zeroEvents,
+      refreshAuth,
+      exposeDataset,
+      datasetCacheUrl,
     }: {
       zeroEvents: ReturnType<typeof createEmitter<ZeroEvent | null>>
+      refreshAuth?: () => Promise<string | undefined>
+      exposeDataset?: boolean
+      datasetCacheUrl?: string
     }) => {
+      const zeroInstance = useZero<Schema, ZeroMutators>()
       const state = useConnectionState()
       const prevState = useRef(state.name)
+      // one reconnect per distinct stale-poke reason / one refresh per needs-auth
+      // transition, so a stuck error state doesn't retry-storm.
+      const staleReconnectRef = useRef<string | null>(null)
+      const needsAuthRef = useRef(false)
 
       useEffect(() => {
-        if (state.name !== prevState.current) {
-          const reason = 'reason' in state ? state.reason : ''
-          prevState.current = state.name
+        const name = state.name
+        const reason =
+          'reason' in state && typeof state.reason === 'string' ? state.reason : ''
 
-          if (state.name === 'error' || state.name === 'needs-auth') {
-            const message = typeof reason === 'string' ? reason : state.name
-            zeroEvents.emit({
-              type: 'error',
-              message,
-            })
+        // mirror connection state onto the body dataset for e2e/diagnostics
+        // (enabled on one instance so instances don't clobber each other).
+        if (exposeDataset && typeof document !== 'undefined' && document.body) {
+          document.body.dataset.zeroState = name
+          if (datasetCacheUrl) document.body.dataset.zeroCacheUrl = datasetCacheUrl
+          if (reason) document.body.dataset.zeroReason = reason.slice(0, 200)
+          else delete document.body.dataset.zeroReason
+          if (name === 'connected') document.body.dataset.zeroConnected = 'true'
+          else delete document.body.dataset.zeroConnected
+        }
+
+        // stale-poke / stale-cookie: the local view is behind the server
+        // snapshot; a plain reconnect resolves it. not fatal — don't emit error.
+        if (name === 'error' && isRecoverableZeroStalePokeMessage(reason)) {
+          if (staleReconnectRef.current !== reason) {
+            staleReconnectRef.current = reason
+            void Promise.resolve(zeroInstance.connection?.connect?.()).catch(() => {})
+          }
+          return
+        }
+        if (name !== 'error') staleReconnectRef.current = null
+
+        // needs-auth: the token expired and zero won't auto-resume unless the
+        // auth string changes. refresh it and reconnect in place, once.
+        if (name === 'needs-auth') {
+          if (refreshAuth && !needsAuthRef.current) {
+            needsAuthRef.current = true
+            void refreshAuth()
+              .then((token) => {
+                if (token) zeroInstance.connection?.connect?.({ auth: token })
+              })
+              .catch(() => {})
+          }
+        } else {
+          needsAuthRef.current = false
+        }
+
+        if (name !== prevState.current) {
+          prevState.current = name
+          if (name === 'error' || name === 'needs-auth') {
+            zeroEvents.emit({ type: 'error', message: reason || name })
           }
         }
-      }, [state, zeroEvents])
+      }, [state, zeroEvents, zeroInstance, refreshAuth, exposeDataset, datasetCacheUrl])
 
       return null
     },
@@ -779,5 +924,6 @@ export function createZeroClientInternal<
     zero,
     preload,
     getQuery,
+    remint,
   }
 }

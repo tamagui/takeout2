@@ -1,6 +1,6 @@
 import { useConnectionState, useZero } from '@rocicorp/zero/react'
 import { createZeroClient, run } from 'on-zero'
-import { Component, memo, useEffect, useMemo, useRef, type ReactNode } from 'react'
+import { Component, memo, useEffect, useMemo, type ReactNode } from 'react'
 import { debounce, SizableText, YStack } from 'tamagui'
 
 import { Button } from '~/interface/buttons/Button'
@@ -35,14 +35,6 @@ const ProvideZeroImpl = ({ children }: { children: ReactNode }) => {
   const auth = useAuth()
   const userId = auth?.user?.id || 'anon'
 
-  // stabilize authData across auth transitions to prevent mutations from
-  // seeing null during brief re-render gaps (e.g. session refresh, tab wake)
-  const stableAuthDataRef = useRef(auth.authData)
-  if (auth.authData) {
-    stableAuthDataRef.current = auth.authData
-  }
-  const stableAuthData = auth.authData ?? stableAuthDataRef.current
-
   const authed = !!auth?.user?.email
 
   const kvStore = useMemo(() => createKVStore(userId), [userId])
@@ -74,8 +66,16 @@ const ProvideZeroImpl = ({ children }: { children: ReactNode }) => {
       userID={userId}
       auth={zeroAuth}
       kvStore={kvStore}
-      authData={stableAuthData}
+      authData={auth.authData}
       cacheURL={ZERO_SERVER_URL}
+      connectionDataset
+      refreshAuth={async () => {
+        // zero-cache rejected our token (expired); hand back a fresh one so
+        // on-zero reconnects in place instead of stranding the run loop in
+        // needs-auth (it only auto-resumes when the auth string changes).
+        const { data } = await authClient.getSession()
+        return data?.session?.token
+      }}
       {...(unstable_batchedUpdates ? { batchViewUpdates: unstable_batchedUpdates } : {})}
     >
       {children}
@@ -146,52 +146,16 @@ const announceDisconnected = debounce(() => {
 
 let hasEverConnected = false
 
-// refresh the better-auth session and resume zero when zero-cache rejected our
-// auth (expired token). ZeroProvider only auto-resumes when the auth string
-// CHANGES, so an expired token strands the run loop in needs-auth until we
-// manually reconnect with a fresh token.
-const recoverNeedsAuth = async (zero: ReturnType<typeof useZero>) => {
-  const { data } = await authClient.getSession()
-  const token = data?.session?.token
-  if (token) {
-    await zero.connection.connect({ auth: token })
-  }
-}
-
+// takeout-specific reconnect UX. dataset bookkeeping + needs-auth token refresh
+// now live in on-zero's ConnectionMonitor (via connectionDataset + refreshAuth);
+// this only owns the disconnect/reconnect toasts.
 const ZeroConnectionMonitor = () => {
   // must use useConnectionState (not the module-level zero proxy): ZeroProvider
   // recreates the zero instance on userID/auth changes (anon -> authed on every
   // authed page load), and a proxy subscription stays bound to the dead instance.
   const connectionState = useConnectionState()
-  const zero = useZero()
-  const needsAuthAttempted = useRef(false)
 
   useEffect(() => {
-    const reason =
-      'reason' in connectionState && typeof connectionState.reason === 'string'
-        ? connectionState.reason
-        : ''
-
-    if (typeof document !== 'undefined') {
-      document.body.dataset.zeroState = connectionState.name
-      if (reason) {
-        document.body.dataset.zeroReason = reason.slice(0, 200)
-      } else {
-        delete document.body.dataset.zeroReason
-      }
-    }
-
-    if (process.env.NODE_ENV === 'development' || process.env.IS_TESTING === '1') {
-      console.info(
-        `[zero] connection ${connectionState.name}`,
-        reason ? `reason=${reason}` : '',
-      )
-    }
-
-    if (connectionState.name !== 'needs-auth') {
-      needsAuthAttempted.current = false
-    }
-
     if (connectionState.name === 'connected') {
       announceDisconnected.cancel()
       if (hasEverConnected && lastConnectionState === 'disconnected') {
@@ -199,24 +163,6 @@ const ZeroConnectionMonitor = () => {
       }
       hasEverConnected = true
       lastConnectionState = 'connected'
-      // signal readiness for e2e tests waiting on zero sync
-      if (typeof document !== 'undefined') {
-        document.body.dataset.zeroConnected = 'true'
-      }
-      return
-    }
-
-    if (connectionState.name === 'needs-auth') {
-      if (typeof document !== 'undefined') {
-        delete document.body.dataset.zeroConnected
-      }
-      // attempt recovery at most once per transition into needs-auth
-      if (!needsAuthAttempted.current) {
-        needsAuthAttempted.current = true
-        recoverNeedsAuth(zero).catch((error: unknown) => {
-          console.warn('[zero] needs-auth recovery failed', error)
-        })
-      }
       return
     }
 
@@ -226,15 +172,12 @@ const ZeroConnectionMonitor = () => {
       connectionState.name === 'closed'
     ) {
       lastConnectionState = 'disconnected'
-      if (typeof document !== 'undefined') {
-        delete document.body.dataset.zeroConnected
-      }
       if (hasEverConnected) {
         announceDisconnected()
       }
       return
     }
-  }, [connectionState, zero])
+  }, [connectionState])
 
   useEffect(() => {
     return zeroEvents.listen((event) => {

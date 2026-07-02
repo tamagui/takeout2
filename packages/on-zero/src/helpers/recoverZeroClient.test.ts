@@ -6,11 +6,12 @@ import { beforeEach, describe, expect, test, vi } from 'vitest'
 import {
   classifyZeroRecoveryLog,
   composeRecoveryLogSink,
+  isRecoverableZeroStalePokeMessage,
   makeZeroRecovery,
   resetRecoveryStateForTests,
 } from './recoverZeroClient'
 
-import type { ZeroRecoveryDeps } from './recoverZeroClient'
+import type { ScheduleReloadContext, ZeroRecoveryDeps } from './recoverZeroClient'
 import type { ZeroEvent } from '../types'
 
 let emitterSeq = 0
@@ -273,5 +274,207 @@ describe('zero recovery', () => {
       type: 'recovering',
       reason: 'client state not found',
     })
+  })
+
+  test('scheduleReload defers the reload AND the store delete until performReload runs', async () => {
+    const { deps, deleteLocalState, reload } = setup()
+    let captured: ScheduleReloadContext | undefined
+    deps.scheduleReload = (ctx) => {
+      captured = ctx
+    }
+    makeZeroRecovery(deps).onClientStateNotFound()
+    await flush()
+    // deferred: nothing reloaded and the store is NOT yet deleted (so the app
+    // isn't left running on a deleted store while the reload is gated).
+    expect(reload).not.toHaveBeenCalled()
+    expect(deleteLocalState).not.toHaveBeenCalled()
+    expect(captured).toMatchObject({
+      reasonKey: 'client-state-not-found',
+      dropLocalState: true,
+    })
+    await captured!.performReload()
+    await flush()
+    expect(deleteLocalState).toHaveBeenCalledTimes(1)
+    expect(reload).toHaveBeenCalledTimes(1)
+  })
+
+  test('scheduleReload that reloads directly skips the delete and beforeReload', async () => {
+    const { deps, deleteLocalState, reload } = setup()
+    const nativeReload = vi.fn()
+    const beforeReload = vi.fn(async () => {})
+    deps.beforeReload = beforeReload
+    deps.scheduleReload = () => {
+      nativeReload()
+    }
+
+    makeZeroRecovery(deps).onClientStateNotFound()
+    await flush()
+
+    expect(nativeReload).toHaveBeenCalledTimes(1)
+    expect(deleteLocalState).not.toHaveBeenCalled()
+    expect(beforeReload).not.toHaveBeenCalled()
+    expect(reload).not.toHaveBeenCalled()
+  })
+
+  test('scheduleReload performReload is idempotent (one reload even if called twice)', async () => {
+    const { deps, deleteLocalState, reload } = setup()
+    let captured: ScheduleReloadContext | undefined
+    deps.scheduleReload = (ctx) => {
+      captured = ctx
+    }
+    makeZeroRecovery(deps).onClientStateNotFound()
+    await flush()
+    await captured!.performReload()
+    await captured!.performReload()
+    await flush()
+    expect(deleteLocalState).toHaveBeenCalledTimes(1)
+    expect(reload).toHaveBeenCalledTimes(1)
+  })
+
+  test('scheduleReload deferred PAST the latch timeout still deletes and reloads exactly once', async () => {
+    vi.useFakeTimers()
+    try {
+      const { deps, deleteLocalState, reload } = setup()
+      let captured: ScheduleReloadContext | undefined
+      deps.scheduleReload = (ctx) => {
+        captured = ctx
+      }
+      makeZeroRecovery(deps).onClientStateNotFound()
+      expect(captured).toBeDefined()
+
+      // the consumer holds performReload behind a gate for longer than the latch
+      // timeout (soot's IDE gate can hold for minutes). the timeout re-opens
+      // scheduling but must NOT drop the pending delete thunk.
+      await vi.advanceTimersByTimeAsync(20_000)
+      expect(deleteLocalState).not.toHaveBeenCalled()
+      expect(reload).not.toHaveBeenCalled()
+
+      // when the consumer finally commits, the store STILL gets dropped and the
+      // reload fires exactly once — never a bare reload back onto the bad store.
+      await captured!.performReload()
+      expect(deleteLocalState).toHaveBeenCalledTimes(1)
+      expect(reload).toHaveBeenCalledTimes(1)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  test('a slow beforeReload holds the latch through the timeout window (no double reload)', async () => {
+    vi.useFakeTimers()
+    try {
+      const { deps, reload } = setup()
+      let releaseBeforeReload: () => void = () => {}
+      deps.beforeReload = () =>
+        new Promise<void>((resolve) => {
+          releaseBeforeReload = resolve
+        })
+      const recovery = makeZeroRecovery(deps)
+      // default path: performReload runs immediately, disarms the latch, then
+      // blocks on beforeReload (soot's waitForOriginReachable can exceed 15s).
+      recovery.onClientStateNotFound()
+      await vi.advanceTimersByTimeAsync(20_000)
+      // a second recovery arrives while the first reload is still in-flight.
+      recovery.onClientStateNotFound()
+      await vi.advanceTimersByTimeAsync(0)
+      expect(reload).not.toHaveBeenCalled()
+      // releasing the first beforeReload reloads exactly once, never twice.
+      releaseBeforeReload()
+      await vi.advanceTimersByTimeAsync(0)
+      expect(reload).toHaveBeenCalledTimes(1)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  test('injectable guardStorage gives cross-reload loop protection (Hermes has no sessionStorage)', async () => {
+    const store = new Map<string, string>()
+    const { deps, reload, events } = setup()
+    deps.guardStorage = {
+      getItem: (key) => store.get(key) ?? null,
+      setItem: (key, value) => {
+        store.set(key, value)
+      },
+    }
+    const recovery = makeZeroRecovery(deps)
+    recovery.onClientStateNotFound()
+    await flush()
+    expect(reload).toHaveBeenCalledTimes(1)
+    // a reload wipes in-memory state but NOT the injected store.
+    resetRecoveryStateForTests()
+    recovery.onClientStateNotFound()
+    await flush()
+    // the injected store catches the immediate re-fire → fatal, no reload storm.
+    expect(reload).toHaveBeenCalledTimes(1)
+    expect(events.some((event) => event.type === 'fatal')).toBe(true)
+  })
+
+  test('a guardStorage that throws never crashes recovery (in-memory is the floor)', async () => {
+    const { deps, reload } = setup()
+    deps.guardStorage = {
+      getItem: () => {
+        throw new Error('no storage on this platform')
+      },
+      setItem: () => {
+        throw new Error('no storage on this platform')
+      },
+    }
+    makeZeroRecovery(deps).onClientStateNotFound()
+    await flush()
+    expect(reload).toHaveBeenCalledTimes(1)
+  })
+
+  test('classifier recognizes the mutation / connection desync class', () => {
+    const cases: Array<[readonly unknown[], string]> = [
+      [['sent mutation ID 5 but expected 4'], 'mutation-desync'],
+      [['oooMutation detected'], 'mutation-desync'],
+      [['Server reported an out-of-order mutation'], 'mutation-desync'],
+      [['Ignoring mutation 3, already processed. Expected: 4'], 'mutation-desync'],
+      [['InvalidConnectionRequestLastMutationID'], 'mutation-desync'],
+      [['InvalidConnectionRequestBaseCookie'], 'connection-cookie-invalid'],
+      [['ClientNotFound: client gone'], 'client-not-found'],
+      [['connection userID mismatch'], 'connection-userid-mismatch'],
+    ]
+    for (const [args, reason] of cases) {
+      expect(classifyZeroRecoveryLog('error', args)).toMatchObject({
+        reason,
+        dropLocalState: true,
+      })
+    }
+    // still narrow: app-infra strings and non-error levels do NOT classify.
+    expect(
+      classifyZeroRecoveryLog('error', ['consecutive server-ack timeouts']),
+    ).toBeUndefined()
+    expect(
+      classifyZeroRecoveryLog('error', ['Connection attempt timed out after 10 seconds']),
+    ).toBeUndefined()
+    expect(classifyZeroRecoveryLog('warn', ['ClientNotFound'])).toBeUndefined()
+  })
+
+  test('benignLogFilter suppresses recovery for a matching classified log', async () => {
+    const { deps, deleteLocalState, reload } = setup()
+    deps.benignLogFilter = (message) => message.includes('ClientNotFound')
+    const sink = composeRecoveryLogSink(deps)
+    sink.log('error', undefined, 'ClientNotFound: gone')
+    await flush()
+    expect(deleteLocalState).not.toHaveBeenCalled()
+    expect(reload).not.toHaveBeenCalled()
+    // a non-benign desync still recovers through the same sink.
+    sink.log('error', undefined, 'sent mutation ID 5 but expected 4')
+    await flush()
+    expect(reload).toHaveBeenCalledTimes(1)
+  })
+
+  test('isRecoverableZeroStalePokeMessage matches only the stale-cookie signatures', () => {
+    expect(
+      isRecoverableZeroStalePokeMessage(
+        'Server returned unexpected base cookie during sync',
+      ),
+    ).toBe(true)
+    expect(
+      isRecoverableZeroStalePokeMessage(
+        'Received cookie 5 is < than last snapshot cookie 9, ignoring client view',
+      ),
+    ).toBe(true)
+    expect(isRecoverableZeroStalePokeMessage('client state not found')).toBe(false)
   })
 })

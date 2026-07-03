@@ -258,11 +258,40 @@ export function createZeroClientInternal<
 
   let latestZeroInstance: ZeroInstance | null = null
 
+  // the provider creates the instance one effect-tick after mount, so on a
+  // fresh page load (deep link) components render once before it exists. the
+  // documented `useMutation(zero.mutate.x.y)` pattern dereferences `mutate`
+  // during that render — hand back a lazy path that resolves the live instance
+  // at CALL time instead of throwing at property access. a call that fires
+  // with still-no instance throws the same error, so real misuse stays loud.
+  function lazyMutatePath(path: string[]): any {
+    const resolve = () => {
+      if (latestZeroInstance === null) {
+        throw new Error(
+          `Zero instance not initialized. Ensure ZeroProvider is mounted before accessing 'zero'.`,
+        )
+      }
+      let target: any = (latestZeroInstance as any).mutate
+      for (const key of path) target = target[key]
+      return target
+    }
+    return new Proxy(function lazyMutator() {} as any, {
+      get(_, key) {
+        if (typeof key === 'symbol') return undefined
+        return lazyMutatePath([...path, key])
+      },
+      apply(_, __, args) {
+        return resolve()(...args)
+      },
+    })
+  }
+
   // Proxy allows swapping the Zero instance on login without breaking existing references.
   // Ideally rocicorp/zero would support .setAuth() natively, but for now we swap instances.
   const zero: ZeroInstance = new Proxy({} as never, {
     get(_, key) {
       if (latestZeroInstance === null) {
+        if (key === 'mutate') return lazyMutatePath([])
         throw new Error(
           `Zero instance not initialized. Ensure ZeroProvider is mounted before accessing 'zero'.`,
         )

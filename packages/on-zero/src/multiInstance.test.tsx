@@ -232,6 +232,19 @@ describe('multi-instance isolation', () => {
     expect(() => a.zero.clientID).toThrow(/not initialized/)
     expect(() => b.zero.clientID).toThrow(/not initialized/)
   })
+
+  test('unmounted zero.mutate is a lazy path that resolves at call time', () => {
+    const { client } = makeClient('proxy-lazy-mutate', 'proxyLazyMutate')
+    // dereferencing mutate paths before the provider mounts must NOT throw —
+    // the documented `useMutation(zero.mutate.x.y)` pattern runs during the
+    // deep-link first render, one effect-tick before the instance exists
+    const insert = (client.zero.mutate as any).user.insert
+    expect(typeof insert).toBe('function')
+    // calling with still-no instance stays loud
+    expect(() => insert({ id: '1', name: 'a' })).toThrow(/not initialized/)
+    // other keys keep the immediate guard
+    expect(() => client.zero.clientID).toThrow(/not initialized/)
+  })
 })
 
 describe('combineZeroClients facade', () => {

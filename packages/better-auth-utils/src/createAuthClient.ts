@@ -188,6 +188,13 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
 
   let dispose: Function | null = null
   let retryTimer: ReturnType<typeof setTimeout> | null = null
+  // consecutive poll failures drive exponential backoff. a fixed retry clock
+  // is self-defeating against a rate limiter: one 429 puts the client on a
+  // cadence that keeps it over the limit forever (a real device wedged this
+  // way — every 4s retry re-tripped the server's window and the session never
+  // confirmed). backoff doubles per consecutive failure up to 60s and resets
+  // on any successful poll.
+  let consecutiveFailures = 0
 
   function subscribeToAuthEffect() {
     dispose?.()
@@ -202,9 +209,14 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
         if (!hasPersistedSession) {
           setState({ state: 'logged-out', session: null, user: null })
         }
-        scheduleAuthRetry(retryDelay)
+        consecutiveFailures++
+        scheduleAuthRetry(
+          Math.min(retryDelay * 2 ** (consecutiveFailures - 1), 60_000),
+        )
         return
       }
+
+      consecutiveFailures = 0
 
       const data = dataGeneric as
         | undefined

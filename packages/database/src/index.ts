@@ -35,3 +35,4 @@ export {
   type ZeroDatabaseOptions,
   type ZeroPublicationOptions,
 } from './zero'
+export { applySeed, type SeedClient, type SeedData, type SeedRows } from './seed'

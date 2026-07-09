@@ -251,11 +251,13 @@
         "react-native": "*",
       },
       "peerDependencies": {
+        "@rocicorp/zero": "*",
         "expo-clipboard": "*",
         "react": "*",
         "react-native": "*",
       },
       "optionalPeers": [
+        "@rocicorp/zero",
         "expo-clipboard",
         "react",
         "react-native",
@@ -302,7 +304,11 @@
         "expo-application": "*",
         "react": "*",
         "react-native": "*",
+        "react-native-mmkv": "*",
       },
+      "optionalPeers": [
+        "react-native-mmkv",
+      ],
     },
     "packages/on-zero": {
       "name": "on-zero",

@@ -1,6 +1,6 @@
 {
   "name": "@take-out/database",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "sideEffects": false,
   "source": "src/index.ts",
   "main": "dist/cjs",

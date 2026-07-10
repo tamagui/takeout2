@@ -330,7 +330,12 @@ class ZeroHttpSocket {
         this.openWakeChannel()
       }, 500)
     }
-    socket.onmessage = () => this.run(this.pull())
+    // route through requestPullAfterCurrent, NOT pull() directly: a wake that
+    // lands while a pull is already in flight must set pullAfterCurrent so the
+    // in-flight pull re-runs and picks up the woken change. calling pull()
+    // directly would return the existing promise and silently drop the wake,
+    // leaving convergence to the safety poll (a burst-storm latency bug).
+    socket.onmessage = () => this.requestPullAfterCurrent()
     socket.onclose = reconnect
     socket.onerror = reconnect
   }

@@ -505,8 +505,14 @@ export function createZeroClientInternal<
     subscribe: () => () => {},
   }
   const DISABLED_ZERO_STUB = {
+    clientID: 'disabled',
     context: {},
     connection: { state: DISABLED_ZERO_STUB_CONNECTION_STATE },
+    materialize: () => ({
+      addListener: () => {},
+      destroy: () => {},
+      updateTTL: () => {},
+    }),
   } as unknown as ZeroInstance
 
   type ProvideZeroProps = Omit<

@@ -778,7 +778,15 @@ describe('zero-http query-aware extension', () => {
 
     openRawSocketWithMessages({
       desiredQueriesPatch: [
-        { op: 'put', hash: 'h3', name: 'byOwner', args: [{ ownerId: 'u1' }] },
+        {
+          op: 'put',
+          hash: 'h3',
+          name: 'byOwner',
+          args: [{ ownerId: 'u1' }],
+          // Zero may include a locally evaluable AST on a named query put.
+          // queryForward must discard it so the server remains authoritative.
+          ast: { table: 'secret' },
+        },
       ],
     })
 

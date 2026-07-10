@@ -66,6 +66,7 @@ type TransportState = {
   readonly pullIntervalMs: number | undefined
   readonly wakeEnabled: boolean
   readonly queryTransform: QueryTransform | undefined
+  readonly queryForward: boolean
   readonly queryAware: boolean
   nextPokeID: number
   transientFailureCount: number
@@ -124,6 +125,7 @@ export function installHttpPullTransport(
     pullIntervalMs: opts.pullIntervalMs,
     wakeEnabled: opts.wake ?? false,
     queryTransform: opts.queryTransform,
+    queryForward: opts.queryForward === true,
     queryAware: opts.queryTransform !== undefined || opts.queryForward === true,
     nextPokeID: 0,
     transientFailureCount: 0,
@@ -421,7 +423,9 @@ class ZeroHttpSocket {
         const name = (op as { name?: string }).name ?? ''
         const args = ((op as { args?: readonly unknown[] }).args ??
           []) as readonly unknown[]
-        if (inline !== undefined) {
+        if (this.state.queryForward) {
+          this.desiredQueryPatch.push({ op: 'put', hash: op.hash, name, args })
+        } else if (inline !== undefined) {
           this.desiredQueryPatch.push({ op: 'put', hash: op.hash, ast: inline })
         } else if (transform) {
           this.desiredQueryPatch.push({
@@ -429,8 +433,6 @@ class ZeroHttpSocket {
             hash: op.hash,
             ast: transform(name, args),
           })
-        } else {
-          this.desiredQueryPatch.push({ op: 'put', hash: op.hash, name, args })
         }
       }
     }

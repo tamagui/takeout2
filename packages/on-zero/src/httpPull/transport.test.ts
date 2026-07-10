@@ -761,4 +761,30 @@ describe('zero-http query-aware extension', () => {
       { op: 'put', hash: 'h1', ast: { resolved: 'byOwner' } },
     ])
   })
+
+  test('queryForward ships name+args for the server to resolve (no client transform)', async () => {
+    const requests: RequestRecord[] = []
+    const fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      requests.push(recordRequest(input, init))
+      return jsonResponse({ cookie: 1, unchanged: true })
+    })
+    // queryForward on, no transform: the permission transform stays server-side
+    const transport = installHttpPullTransport({
+      origin: ORIGIN,
+      fetch,
+      queryForward: true,
+    })
+    transports.push(transport)
+
+    openRawSocketWithMessages({
+      desiredQueriesPatch: [
+        { op: 'put', hash: 'h3', name: 'byOwner', args: [{ ownerId: 'u1' }] },
+      ],
+    })
+
+    await eventually(() => expect(requests.length).toBeGreaterThan(0))
+    expect(requests[0].body.queries.patch).toEqual([
+      { op: 'put', hash: 'h3', name: 'byOwner', args: [{ ownerId: 'u1' }] },
+    ])
+  })
 })

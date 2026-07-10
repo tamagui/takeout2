@@ -25,18 +25,20 @@ type DesiredQueryPatchOp =
 
 type GotQueryPatchOp = { op: 'clear' } | { op: 'put' | 'del'; hash: string }
 
-// a client's desired-query put carries name+args for a named query (the
-// transform resolves them to an AST) or an ast directly for an ad-hoc query.
+// a shipped desired-query put carries an AST (client-resolved by a
+// queryTransform, or an ad-hoc query's inline ast) OR name+args for the server
+// to resolve. name+args is the auth-sensitive path: the permission transform
+// stays server-side, so a client cannot forge the AST.
 type QueryPatchOp =
   | { op: 'put'; hash: string; ast: unknown }
+  | { op: 'put'; hash: string; name: string; args: readonly unknown[] }
   | { op: 'del'; hash: string }
   | { op: 'clear' }
 
 // transforms a named query's (name, args) into its Zero v51 AST. providing one
-// turns the query-aware extension on; the transport then ships desired queries
-// to the server and takes got-query acks from the server instead of
-// synthesizing them locally. this is the consumer transform seam (the harness
-// resolves via its query registry; a production worker resolves with auth).
+// turns the query-aware extension on and resolves desired queries CLIENT-side
+// (ship the AST). use for a native host with no query registry, or a trusted
+// harness. omit it (with queryForward) to ship name+args and resolve SERVER-side.
 export type QueryTransform = (name: string, args: readonly unknown[]) => unknown
 
 type ServerGotQueries = { version: number; patch: GotQueryPatchOp[] }
@@ -64,6 +66,7 @@ type TransportState = {
   readonly pullIntervalMs: number | undefined
   readonly wakeEnabled: boolean
   readonly queryTransform: QueryTransform | undefined
+  readonly queryAware: boolean
   nextPokeID: number
   transientFailureCount: number
 }
@@ -90,10 +93,14 @@ export type HttpPullTransportOptions = {
   // and zero correctness weight: a lost or duplicated wake can never cause
   // missed or wrong data because convergence comes from the pull protocol.
   wake?: boolean
-  // when provided, the query-aware extension is on: desired queries ship to the
-  // server with pull state and got-query acks come from the server. omit for
-  // the baseline dialect (client-local got-query synthesis).
+  // when provided, the query-aware extension is on and desired queries are
+  // resolved client-side to an AST before shipping (native host / trusted
+  // harness). omit for the baseline dialect (client-local got-query synthesis).
   queryTransform?: QueryTransform
+  // turns the query-aware extension on WITHOUT a client-side transform: desired
+  // queries ship as name+args for the SERVER (consumer worker) to resolve with
+  // auth. the production path for permission-transformed queries.
+  queryForward?: boolean
 }
 
 export function installHttpPullTransport(
@@ -117,6 +124,7 @@ export function installHttpPullTransport(
     pullIntervalMs: opts.pullIntervalMs,
     wakeEnabled: opts.wake ?? false,
     queryTransform: opts.queryTransform,
+    queryAware: opts.queryTransform !== undefined || opts.queryForward === true,
     nextPokeID: 0,
     transientFailureCount: 0,
   }
@@ -298,7 +306,7 @@ class ZeroHttpSocket {
     if (this.pullInFlight) return this.pullInFlight
     this.pullInFlight = this.fetchPull(this.clientGroupID, this.cookie, true)
       .then((response) => {
-        if (this.state.queryTransform) this.applyServerGotQueries(response)
+        if (this.state.queryAware) this.applyServerGotQueries(response)
         if (response.unchanged) {
           this.emitGotQueriesPatch(response.cookie)
           return
@@ -393,28 +401,37 @@ class ZeroHttpSocket {
     const desiredQueriesPatch = (body as { desiredQueriesPatch?: unknown })
       ?.desiredQueriesPatch
     if (!Array.isArray(desiredQueriesPatch)) return
-    const transform = this.state.queryTransform
-    if (!transform) {
+    if (!this.state.queryAware) {
       // baseline dialect: synthesize the got-query ack locally
       this.pendingGotQueriesPatch.push(...gotQueriesPatch(desiredQueriesPatch))
       return
     }
-    // query-aware: accumulate the desired-query delta to ship to the server,
-    // resolving a named query's name+args to its AST (an ad-hoc query already
-    // carries its ast). the server owns the got-query ack.
+    // query-aware: accumulate the desired-query delta to ship to the server. a
+    // put ships its inline ast, or a client-resolved ast (queryTransform), or
+    // name+args for the server to resolve (queryForward). the server owns the
+    // got-query ack.
+    const transform = this.state.queryTransform
     for (const op of desiredQueriesPatch as DesiredQueryPatchOp[]) {
       if (op.op === 'clear') {
         this.desiredQueryPatch.push({ op: 'clear' })
       } else if (op.op === 'del') {
         this.desiredQueryPatch.push({ op: 'del', hash: op.hash })
       } else if (op.op === 'put') {
-        const ast =
-          (op as { ast?: unknown }).ast ??
-          transform(
-            (op as { name?: string }).name ?? '',
-            ((op as { args?: readonly unknown[] }).args ?? []) as readonly unknown[],
-          )
-        this.desiredQueryPatch.push({ op: 'put', hash: op.hash, ast })
+        const inline = (op as { ast?: unknown }).ast
+        const name = (op as { name?: string }).name ?? ''
+        const args = ((op as { args?: readonly unknown[] }).args ??
+          []) as readonly unknown[]
+        if (inline !== undefined) {
+          this.desiredQueryPatch.push({ op: 'put', hash: op.hash, ast: inline })
+        } else if (transform) {
+          this.desiredQueryPatch.push({
+            op: 'put',
+            hash: op.hash,
+            ast: transform(name, args),
+          })
+        } else {
+          this.desiredQueryPatch.push({ op: 'put', hash: op.hash, name, args })
+        }
       }
     }
     this.queryVersion++
@@ -502,11 +519,7 @@ class ZeroHttpSocket {
     // ship the un-acked desired-query delta with the pull; remember what we
     // sent so the server ack can clear exactly that prefix. a recovery pull
     // (includeQueries=false) never carries desires.
-    if (
-      includeQueries &&
-      this.state.queryTransform &&
-      this.desiredQueryPatch.length > 0
-    ) {
+    if (includeQueries && this.state.queryAware && this.desiredQueryPatch.length > 0) {
       this.sentQueryVersion = this.queryVersion
       this.sentQueryPatchLen = this.desiredQueryPatch.length
       body.queries = { version: this.queryVersion, patch: [...this.desiredQueryPatch] }

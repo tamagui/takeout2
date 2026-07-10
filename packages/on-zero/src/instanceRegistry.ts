@@ -8,9 +8,7 @@
 // matching the package's other cross-module registries.
 
 import { globalValue } from '@take-out/helpers'
-
 import { getQueryName } from './queryRegistry'
-
 import type { ZeroRunner } from './zeroRunner'
 import type { AnyQueryRegistry } from '@rocicorp/zero'
 
@@ -28,21 +26,35 @@ const getInstancesByNamespace = () =>
     () => new Map(),
   )
 
+const getInstancesByQueryName = () =>
+  globalValue<Map<string, ZeroClientInstance>>(
+    'on-zero:instances-by-query-name',
+    () => new Map(),
+  )
+
 export function registerClientInstance({
   name,
   namespaces,
   customQueries,
+  queryNames = [],
 }: {
   name: string
   namespaces: string[]
   customQueries: AnyQueryRegistry
+  queryNames?: string[]
 }): ZeroClientInstance {
   const instancesByNamespace = getInstancesByNamespace()
+  const instancesByQueryName = getInstancesByQueryName()
 
   // re-creating an instance under the same name (hmr) replaces its claims
   for (const [namespace, owner] of instancesByNamespace) {
     if (owner.name === name) {
       instancesByNamespace.delete(namespace)
+    }
+  }
+  for (const [queryName, owner] of instancesByQueryName) {
+    if (owner.name === name) {
+      instancesByQueryName.delete(queryName)
     }
   }
 
@@ -59,6 +71,17 @@ export function registerClientInstance({
     instancesByNamespace.set(namespace, instance)
   }
 
+  for (const queryName of queryNames) {
+    const existing = instancesByQueryName.get(queryName)
+    if (existing) {
+      throw new Error(
+        `[on-zero] query '${queryName}' is already claimed by zero client instance '${existing.name}' ` +
+          `(while creating instance '${name}'). Each query function must belong to exactly one createZeroClient instance.`,
+      )
+    }
+    instancesByQueryName.set(queryName, instance)
+  }
+
   return instance
 }
 
@@ -71,5 +94,7 @@ export function getInstanceForNamespace(
 export function getInstanceForQueryFn(fn: Function): ZeroClientInstance | undefined {
   const queryName = getQueryName(fn)
   if (!queryName) return undefined
+  const queryOwner = getInstancesByQueryName().get(queryName)
+  if (queryOwner) return queryOwner
   return getInstanceForNamespace(queryName.split('.', 1)[0])
 }

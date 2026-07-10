@@ -210,9 +210,7 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
           setState({ state: 'logged-out', session: null, user: null })
         }
         consecutiveFailures++
-        scheduleAuthRetry(
-          Math.min(retryDelay * 2 ** (consecutiveFailures - 1), 60_000),
-        )
+        scheduleAuthRetry(Math.min(retryDelay * 2 ** (consecutiveFailures - 1), 60_000))
         return
       }
 

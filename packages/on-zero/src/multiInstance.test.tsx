@@ -1,16 +1,18 @@
 import { createSchema, string, table } from '@rocicorp/zero'
 import { createEmitter } from '@take-out/helpers'
 import { describe, expect, test, vi } from 'vitest'
-
 import { combineZeroClients } from './combineZeroClients'
 import { createZeroClient } from './createZeroClient'
 import { runWithContext } from './helpers/mutatorContext'
-import { getInstanceForNamespace, registerClientInstance } from './instanceRegistry'
+import {
+  getInstanceForNamespace,
+  getInstanceForQueryFn,
+  registerClientInstance,
+} from './instanceRegistry'
 import { registerQuery } from './queryRegistry'
 import { run } from './run'
 import { setRunner, type ZeroRunner } from './zeroRunner'
 import { zql } from './zql'
-
 import type { ZeroEvent } from './types'
 import type { AnyQueryRegistry, Query } from '@rocicorp/zero'
 import type { ReactNode } from 'react'
@@ -74,8 +76,8 @@ describe('multi-instance namespace dispatch', () => {
     // simulate each instance's provider mount (SetZeroInstance)
     const controlRunner = vi.fn(async (..._args: unknown[]) => ({ from: 'control' }))
     const projectRunner = vi.fn(async (..._args: unknown[]) => ({ from: 'project' }))
-    getInstanceForNamespace('runUser')!.runner = controlRunner as ZeroRunner
-    getInstanceForNamespace('runTask')!.runner = projectRunner as ZeroRunner
+    getInstanceForQueryFn(control.byId)!.runner = controlRunner as ZeroRunner
+    getInstanceForQueryFn(project.byId)!.runner = projectRunner as ZeroRunner
 
     // the last mount also claims the ambient runner — owned namespaces must
     // not use it (this is the "second mount steals run()" bug)
@@ -94,7 +96,7 @@ describe('multi-instance namespace dispatch', () => {
   test('run() rejects named queries inside server mutation context', async () => {
     const { byId } = makeClient('run-ctx-owner', 'runCtxThing')
     const ownerRunner = vi.fn(async (..._args: unknown[]) => ({ from: 'owner' }))
-    getInstanceForNamespace('runCtxThing')!.runner = ownerRunner as ZeroRunner
+    getInstanceForQueryFn(byId)!.runner = ownerRunner as ZeroRunner
     const txRun = vi.fn(async (..._args: unknown[]) => ({ from: 'tx' }))
 
     await expect(
@@ -116,7 +118,7 @@ describe('multi-instance namespace dispatch', () => {
   test('run() keeps named queries on their owning client runner when browser context leaks', async () => {
     const { byId } = makeClient('run-client-leak-owner', 'runClientLeakThing')
     const ownerRunner = vi.fn(async (..._args: unknown[]) => ({ from: 'owner' }))
-    getInstanceForNamespace('runClientLeakThing')!.runner = ownerRunner as ZeroRunner
+    getInstanceForQueryFn(byId)!.runner = ownerRunner as ZeroRunner
     const txRun = vi.fn(async (..._args: unknown[]) => ({ from: 'tx' }))
 
     await expect(
@@ -173,9 +175,9 @@ describe('multi-instance namespace dispatch', () => {
   })
 
   test('re-creating an instance under the same name re-claims without throwing (hmr)', () => {
-    makeClient('hmr', 'hmrNs')
+    const first = makeClient('hmr', 'hmrNs')
     expect(() => makeClient('hmr', 'hmrNs')).not.toThrow()
-    expect(getInstanceForNamespace('hmrNs')?.name).toBe('hmr')
+    expect(getInstanceForQueryFn(first.byId)?.name).toBe('hmr')
   })
 
   test('model namespaces are claimed too', () => {

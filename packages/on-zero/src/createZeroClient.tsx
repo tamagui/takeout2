@@ -17,16 +17,14 @@ import {
   type Context,
   type ReactNode,
 } from 'react'
-
 import { createPermissions } from './createPermissions'
-import { ensureHttpPullTransport } from './httpPullTransport'
 import {
   createUseQuery,
   type QueryControlMode,
   type UseQueryHook,
 } from './createUseQuery'
-import { registerClientInstance } from './instanceRegistry'
 import { createMutators } from './helpers/createMutators'
+import { getAuth } from './helpers/getAuth'
 import {
   composeRecoveryLogSink,
   isRecoverableZeroStalePokeMessage,
@@ -35,7 +33,8 @@ import {
   type ScheduleReloadContext,
   type ZeroRecoveryDeps,
 } from './helpers/recoverZeroClient'
-import { getAuth } from './helpers/getAuth'
+import { ensureHttpPullTransport } from './httpPullTransport'
+import { registerClientInstance } from './instanceRegistry'
 import { getAllMutationsPermissions, getMutationsPermissions } from './modelRegistry'
 import { registerQuery } from './queryRegistry'
 import { resolveQuery, type PlainQueryFn } from './resolveQuery'
@@ -44,7 +43,6 @@ import { getEnvironment, setAuthData, setEnvironment, setSchema } from './state'
 import { getRawWhere, setEvaluatingPermission } from './where'
 import { setRunner, type ZeroRunner } from './zeroRunner'
 import { zql } from './zql'
-
 import type { AuthData, GenericModels, GetZeroMutators, ZeroEvent } from './types'
 import type {
   AnyQueryRegistry,
@@ -247,8 +245,11 @@ export function createZeroClientInternal<
   // auto-generated 'permission' namespace stays unclaimed (per-instance).
   const instance = registerClientInstance({
     name: instanceName,
-    namespaces: Object.keys({ ...groupedQueries, ...models }),
+    namespaces: Object.keys(models),
     customQueries,
+    queryNames: Object.entries(groupedQueries).flatMap(([namespace, queries]) =>
+      Object.keys(queries).map((name) => `${namespace}.${name}`),
+    ),
   })
 
   // register for global run() helper

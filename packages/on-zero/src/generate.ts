@@ -1,7 +1,6 @@
 import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { basename, dirname, resolve } from 'node:path'
-
 import {
   formatObjectKey,
   generateGroupedQueriesFile,
@@ -467,6 +466,16 @@ function tsTypeToValibot(
   if (flags & ts.TypeFlags.Null) return 'v.null_()'
   if (flags & ts.TypeFlags.Any || flags & ts.TypeFlags.Unknown) return 'v.unknown()'
   if (flags & ts.TypeFlags.Never) return 'v.never()'
+  if (flags & ts.TypeFlags.TemplateLiteral) return 'v.string()'
+  if (
+    flags & ts.TypeFlags.Object &&
+    (checker.isArrayType?.(type) || checker.isArrayLikeType?.(type))
+  ) {
+    const typeArgs =
+      checker.getTypeArguments?.(type as import('typescript').TypeReference) ?? []
+    const elementType = typeArgs.length === 1 ? typeArgs[0] : type.getNumberIndexType?.()
+    return `v.array(${elementType ? recurse(elementType) : 'v.unknown()'})`
+  }
 
   // string/number/boolean literals
   if (flags & ts.TypeFlags.StringLiteral) {

@@ -7,6 +7,7 @@
 // queries get `[undefined, info]` instead (the established zero-react shape).
 
 import { createSchema, number, string, table } from '@rocicorp/zero'
+import { useQuery as useRawZeroQuery } from '@rocicorp/zero/react'
 import { IS_SERVER, IS_SERVER_RUNTIME } from '@take-out/helpers'
 import { act } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
@@ -100,5 +101,12 @@ test('useQuery returns undefined (not null) for singular queries under DisabledC
   const [data, info] = renderWithDisabled(() => client.useQuery(oneTodo, { id: 'x' }))
   // singular queries match zero-react: data is undefined while loading/disabled.
   expect(data).toBeUndefined()
+  expect(info?.type).toBe('unknown')
+})
+
+test('raw zero-react useQuery stays inert under a disabled provider', () => {
+  const query = client.getQuery(allTodos)
+  const [data, info] = renderWithDisabled(() => useRawZeroQuery(query))
+  expect(data).toEqual([])
   expect(info?.type).toBe('unknown')
 })

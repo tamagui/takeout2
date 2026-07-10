@@ -5,6 +5,7 @@
     "@better-auth/expo/client",
     "@docsearch/react",
     "@rocicorp/zero",
+    "@rocicorp/zero/bindings",
     "@rocicorp/zero/pg",
     "@rocicorp/zero/react",
     "@rocicorp/zero/server",

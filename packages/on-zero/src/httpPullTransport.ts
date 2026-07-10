@@ -573,11 +573,23 @@ class ZeroHttpSocket {
   }
 
   private emitPoke(response: Exclude<PullResponse, { unchanged: true }>) {
-    const nextCookie = toWebSocketCookie(response.cookie)
-    if (isStaleCookie(this.cookie, response.cookie)) {
+    const currentServer = toHttpCookie(this.cookie)
+    let nextCookie: string
+    if (currentServer !== null && response.cookie < currentServer) {
+      // the server watermark is BEHIND the client: a real reset/restore. mirror
+      // the 409 stale path instead of poking the client backwards.
       throw new Error(
         `zero-http pull returned stale cookie ${response.cookie} for ${this.cookie}`,
       )
+    } else if (currentServer !== null && response.cookie === currentServer) {
+      // same server watermark but a non-empty patch: a query-aware membership
+      // delta (a desired-query change recomputes rows without advancing the
+      // change log). bump a client-local cookie id so replicache sees a changed
+      // cookie — otherwise it trips "cookie did not change, but patch is not
+      // empty" and drops the patch.
+      nextCookie = toLocalWebSocketCookie(response.cookie, ++this.nextLocalCookieID)
+    } else {
+      nextCookie = toWebSocketCookie(response.cookie) as string
     }
 
     const pokeID = `zero-http-${++this.state.nextPokeID}`
@@ -737,11 +749,6 @@ function toLocalWebSocketCookie(cookie: number, localID: number): string {
     6,
     '0',
   )}`
-}
-
-function isStaleCookie(current: string | null, next: number) {
-  const currentNumber = toHttpCookie(current)
-  return currentNumber !== null && next <= currentNumber
 }
 
 function errorMessage(error: unknown) {

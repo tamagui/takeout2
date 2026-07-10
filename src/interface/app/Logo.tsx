@@ -1,6 +1,5 @@
 import { SizableText, XStack } from 'tamagui'
 
-import { BetaBadge } from './BetaBadge'
 import { LogoIcon } from './LogoIcon'
 
 export const Logo = ({ height = 24 }: { height?: number }) => {
@@ -18,7 +17,6 @@ export const Logo = ({ height = 24 }: { height?: number }) => {
       >
         Takeout
       </SizableText>
-      <BetaBadge />
     </XStack>
   )
 }

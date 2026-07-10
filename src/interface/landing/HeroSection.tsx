@@ -6,7 +6,6 @@ import { ArrowRightIcon } from '~/interface/icons/phosphor/ArrowRightIcon'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { CopyIcon } from '~/interface/icons/phosphor/CopyIcon'
 
-import { BetaBadge } from '../app/BetaBadge'
 import { Button } from '../buttons/Button'
 import { Span, Strong } from '../text/Text'
 
@@ -526,7 +525,7 @@ export function HeroSection() {
             <Strong fontWeight="600" color="$color11">
               fastest way to build something&nbsp;great
             </Strong>{' '}
-            on both React Native and web. <BetaBadge x={9} display="inline-flex" />
+            on both React Native and web.
           </HeroSubtitle>
 
           <XStack maxW="100%" gap="$3" mt="$2" items="center">

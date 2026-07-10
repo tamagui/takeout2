@@ -662,3 +662,103 @@ function defer<T>() {
   })
   return { promise, resolve, reject }
 }
+
+// installs the transport with the query-aware extension on (a queryTransform
+// resolver), pushing it for afterEach cleanup.
+function installWithQueries(
+  fetch: typeof globalThis.fetch,
+  queryTransform: (name: string, args: readonly unknown[]) => unknown,
+) {
+  const transport = installHttpPullTransport({ origin: ORIGIN, fetch, queryTransform })
+  transports.push(transport)
+  return transport
+}
+
+describe('zero-http query-aware extension', () => {
+  test('ships desired queries with pull state (transformed AST) and emits server got-query ack', async () => {
+    const requests: RequestRecord[] = []
+    const fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const request = recordRequest(input, init)
+      requests.push(request)
+      return jsonResponse({
+        cookie: 1,
+        lastMutationIDChanges: {},
+        rowsPatch: [{ op: 'clear' }],
+        gotQueries: { version: 1, patch: [{ op: 'put', hash: 'h1' }] },
+      })
+    })
+    installWithQueries(fetch, (name, args) => ({ resolved: name, args }))
+
+    const { messages } = openRawSocketWithMessages({
+      desiredQueriesPatch: [
+        { op: 'put', hash: 'h1', name: 'byOwner', args: [{ ownerId: 'u1' }] },
+      ],
+    })
+
+    await eventually(() => expect(requests.length).toBeGreaterThan(0))
+    // the pull body ships {queries:{version, patch:[{op:'put',hash,ast}]}} with
+    // name+args resolved to the AST by the transform
+    expect(requests[0].body.queries).toEqual({
+      version: 1,
+      patch: [
+        {
+          op: 'put',
+          hash: 'h1',
+          ast: { resolved: 'byOwner', args: [{ ownerId: 'u1' }] },
+        },
+      ],
+    })
+    // the server's got-query ack is emitted to the client (not synthesized)
+    await eventually(() => {
+      const poke = messages.find(
+        (m) => m[0] === 'pokePart' && Array.isArray(m[1].gotQueriesPatch),
+      )
+      expect(poke?.[1].gotQueriesPatch).toEqual([{ op: 'put', hash: 'h1' }])
+    })
+  })
+
+  test('an ad-hoc put with an inline ast ships that ast unchanged', async () => {
+    const requests: RequestRecord[] = []
+    const fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      requests.push(recordRequest(input, init))
+      return jsonResponse({ cookie: 1, unchanged: true })
+    })
+    // a transform that would throw if called — an inline ast must bypass it
+    installWithQueries(fetch, () => {
+      throw new Error('transform should not run for an inline ast')
+    })
+
+    openRawSocketWithMessages({
+      desiredQueriesPatch: [{ op: 'put', hash: 'h2', ast: { inline: true } }],
+    })
+
+    await eventually(() => expect(requests.length).toBeGreaterThan(0))
+    expect(requests[0].body.queries.patch).toEqual([
+      { op: 'put', hash: 'h2', ast: { inline: true } },
+    ])
+  })
+
+  test('reconnect re-ships the desired set', async () => {
+    const requests: RequestRecord[] = []
+    const fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      requests.push(recordRequest(input, init))
+      // never ack the query version, so the desire stays un-acked
+      return jsonResponse({ cookie: 1, unchanged: true })
+    })
+    installWithQueries(fetch, (name) => ({ resolved: name }))
+
+    const desired = [{ op: 'put', hash: 'h1', name: 'byOwner', args: [] }]
+    const first = openRawSocketWithMessages({ desiredQueriesPatch: desired })
+    await eventually(() => expect(requests.length).toBeGreaterThan(0))
+    first.socket.close()
+
+    const before = requests.length
+    openRawSocketWithMessages({ desiredQueriesPatch: desired })
+    await eventually(() => expect(requests.length).toBeGreaterThan(before))
+    // the reconnected socket re-ships the (still un-acked) desired query
+    const replay = requests[requests.length - 1].body.queries
+    expect(replay.patch).toEqual([
+      { op: 'put', hash: 'h1', ast: { resolved: 'byOwner' } },
+    ])
+  })
+})

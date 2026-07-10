@@ -131,13 +131,18 @@ export function createMutators<Models extends GenericModels>({
     timeoutMs: number = time.ms.minutes(1),
   ) {
     return async (...args: Args): Promise<void> => {
+      let timeoutId: ReturnType<typeof setTimeout> | undefined
       const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => {
+        timeoutId = setTimeout(() => {
           reject(new Error(`[mutator] ${name} timeout after ${timeoutMs}ms`))
         }, timeoutMs)
       })
 
-      return Promise.race([fn(...args), timeoutPromise])
+      try {
+        return await Promise.race([fn(...args), timeoutPromise])
+      } finally {
+        if (timeoutId !== undefined) clearTimeout(timeoutId)
+      }
     }
   }
 

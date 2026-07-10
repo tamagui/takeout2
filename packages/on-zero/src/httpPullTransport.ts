@@ -25,16 +25,34 @@ type DesiredQueryPatchOp =
 
 type GotQueryPatchOp = { op: 'clear' } | { op: 'put' | 'del'; hash: string }
 
+// a client's desired-query put carries name+args for a named query (the
+// transform resolves them to an AST) or an ast directly for an ad-hoc query.
+type QueryPatchOp =
+  | { op: 'put'; hash: string; ast: unknown }
+  | { op: 'del'; hash: string }
+  | { op: 'clear' }
+
+// transforms a named query's (name, args) into its Zero v51 AST. providing one
+// turns the query-aware extension on; the transport then ships desired queries
+// to the server and takes got-query acks from the server instead of
+// synthesizing them locally. this is the consumer transform seam (the harness
+// resolves via its query registry; a production worker resolves with auth).
+export type QueryTransform = (name: string, args: readonly unknown[]) => unknown
+
+type ServerGotQueries = { version: number; patch: GotQueryPatchOp[] }
+
 type PullResponse =
   | {
       cookie: number
       lastMutationIDChanges: Record<string, number>
       rowsPatch: unknown[]
       unchanged?: false
+      gotQueries?: ServerGotQueries
     }
   | {
       cookie: number | null
       unchanged: true
+      gotQueries?: ServerGotQueries
     }
 
 type TransportState = {
@@ -45,6 +63,7 @@ type TransportState = {
   readonly sockets: Set<ZeroHttpSocket>
   readonly pullIntervalMs: number | undefined
   readonly wakeEnabled: boolean
+  readonly queryTransform: QueryTransform | undefined
   nextPokeID: number
   transientFailureCount: number
 }
@@ -71,6 +90,10 @@ export type HttpPullTransportOptions = {
   // and zero correctness weight: a lost or duplicated wake can never cause
   // missed or wrong data because convergence comes from the pull protocol.
   wake?: boolean
+  // when provided, the query-aware extension is on: desired queries ship to the
+  // server with pull state and got-query acks come from the server. omit for
+  // the baseline dialect (client-local got-query synthesis).
+  queryTransform?: QueryTransform
 }
 
 export function installHttpPullTransport(
@@ -93,6 +116,7 @@ export function installHttpPullTransport(
     sockets: new Set(),
     pullIntervalMs: opts.pullIntervalMs,
     wakeEnabled: opts.wake ?? false,
+    queryTransform: opts.queryTransform,
     nextPokeID: 0,
     transientFailureCount: 0,
   }
@@ -169,6 +193,14 @@ class ZeroHttpSocket {
   private readonly wsid: string
   private cookie: string | null
   private pendingGotQueriesPatch: GotQueryPatchOp[] = []
+  // query-aware extension state: the accumulated un-acked desired-query delta
+  // to ship, a client-side query-state version that bumps on each change, and
+  // the version/length of the delta the in-flight pull sent (to clear the
+  // acked prefix on the server's ack).
+  private desiredQueryPatch: QueryPatchOp[] = []
+  private queryVersion = 0
+  private sentQueryVersion: number | undefined
+  private sentQueryPatchLen = 0
   private pullInFlight: Promise<void> | undefined
   private pullAfterCurrent = false
   private pushChain: Promise<void> = Promise.resolve()
@@ -264,8 +296,9 @@ class ZeroHttpSocket {
   pull(): Promise<void> {
     if (this.readyState !== this.OPEN) return Promise.resolve()
     if (this.pullInFlight) return this.pullInFlight
-    this.pullInFlight = this.fetchPull(this.clientGroupID, this.cookie)
+    this.pullInFlight = this.fetchPull(this.clientGroupID, this.cookie, true)
       .then((response) => {
+        if (this.state.queryTransform) this.applyServerGotQueries(response)
         if (response.unchanged) {
           this.emitGotQueriesPatch(response.cookie)
           return
@@ -360,7 +393,31 @@ class ZeroHttpSocket {
     const desiredQueriesPatch = (body as { desiredQueriesPatch?: unknown })
       ?.desiredQueriesPatch
     if (!Array.isArray(desiredQueriesPatch)) return
-    this.pendingGotQueriesPatch.push(...gotQueriesPatch(desiredQueriesPatch))
+    const transform = this.state.queryTransform
+    if (!transform) {
+      // baseline dialect: synthesize the got-query ack locally
+      this.pendingGotQueriesPatch.push(...gotQueriesPatch(desiredQueriesPatch))
+      return
+    }
+    // query-aware: accumulate the desired-query delta to ship to the server,
+    // resolving a named query's name+args to its AST (an ad-hoc query already
+    // carries its ast). the server owns the got-query ack.
+    for (const op of desiredQueriesPatch as DesiredQueryPatchOp[]) {
+      if (op.op === 'clear') {
+        this.desiredQueryPatch.push({ op: 'clear' })
+      } else if (op.op === 'del') {
+        this.desiredQueryPatch.push({ op: 'del', hash: op.hash })
+      } else if (op.op === 'put') {
+        const ast =
+          (op as { ast?: unknown }).ast ??
+          transform(
+            (op as { name?: string }).name ?? '',
+            ((op as { args?: readonly unknown[] }).args ?? []) as readonly unknown[],
+          )
+        this.desiredQueryPatch.push({ op: 'put', hash: op.hash, ast })
+      }
+    }
+    this.queryVersion++
   }
 
   private async push(body: unknown) {
@@ -397,12 +454,30 @@ class ZeroHttpSocket {
     this.run(this.pull())
   }
 
+  // in query-aware mode the got-query ack is authoritative from the server:
+  // take the server's gotQueries.patch as the got patch to emit (replacing
+  // local synthesis), and clear the acked prefix of the shipped desired delta
+  // once the server acks that version (the ack never leads its row effects —
+  // invariant 13 — so the client marks a query got only after its rows land).
+  private applyServerGotQueries(response: PullResponse) {
+    const got = response.gotQueries
+    this.pendingGotQueriesPatch = got ? got.patch : []
+    if (
+      got &&
+      this.sentQueryVersion !== undefined &&
+      got.version >= this.sentQueryVersion
+    ) {
+      this.desiredQueryPatch.splice(0, this.sentQueryPatchLen)
+      this.sentQueryVersion = undefined
+    }
+  }
+
   private async answerMutationRecoveryPull(body: {
     clientGroupID: string
     cookie: string | null
     requestID: string
   }) {
-    const response = await this.fetchPull(body.clientGroupID, body.cookie)
+    const response = await this.fetchPull(body.clientGroupID, body.cookie, false)
     const cookie = toWebSocketCookie(response.cookie)
     this.emitMessage([
       'pull',
@@ -414,12 +489,31 @@ class ZeroHttpSocket {
     ])
   }
 
-  private async fetchPull(clientGroupID: string, cookie: string | null) {
-    return (await this.postJSON('/pull', {
+  private async fetchPull(
+    clientGroupID: string,
+    cookie: string | null,
+    includeQueries: boolean,
+  ) {
+    const body: Record<string, unknown> = {
       clientID: this.clientID,
       clientGroupID,
       cookie: toHttpCookie(cookie),
-    })) as PullResponse
+    }
+    // ship the un-acked desired-query delta with the pull; remember what we
+    // sent so the server ack can clear exactly that prefix. a recovery pull
+    // (includeQueries=false) never carries desires.
+    if (
+      includeQueries &&
+      this.state.queryTransform &&
+      this.desiredQueryPatch.length > 0
+    ) {
+      this.sentQueryVersion = this.queryVersion
+      this.sentQueryPatchLen = this.desiredQueryPatch.length
+      body.queries = { version: this.queryVersion, patch: [...this.desiredQueryPatch] }
+    } else {
+      this.sentQueryVersion = undefined
+    }
+    return (await this.postJSON('/pull', body)) as PullResponse
   }
 
   private async postJSON(path: '/pull' | '/push', body: unknown) {

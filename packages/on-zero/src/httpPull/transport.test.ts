@@ -134,6 +134,52 @@ describe('zero-http transport', () => {
     )
   })
 
+  test('pushOrigin routes mutations through the authoritative application server', async () => {
+    const requests: RequestRecord[] = []
+    const fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const request = recordRequest(input, init)
+      requests.push(request)
+      if (request.path === '/pull') {
+        return jsonResponse({ cookie: request.body.cookie, unchanged: true })
+      }
+      const mutation = request.body.mutations[0]
+      return jsonResponse({
+        pushResponse: {
+          mutations: [
+            {
+              id: { clientID: mutation.clientID, id: mutation.id },
+              result: {},
+            },
+          ],
+        },
+      })
+    })
+    const transport = installHttpPullTransport({
+      origin: ORIGIN,
+      pushOrigin: 'https://app.local/zero-http',
+      fetch,
+    })
+    transports.push(transport)
+    const zero = createZero()
+
+    await eventually(() =>
+      expect(requests.some((request) => request.path === '/pull')).toBe(true),
+    )
+    const mutation = zero.mutate.project.create({
+      id: 'p1',
+      ownerId: 'u1',
+      name: 'created',
+    })
+    await mutation.client
+    await mutation.server
+
+    const push = requests.find((request) => request.path.endsWith('/push'))
+    expect(push?.url).toBe('https://app.local/zero-http/push')
+    expect(requests.find((request) => request.path === '/pull')?.url).toBe(
+      'https://zero-http.local/pull',
+    )
+  })
+
   test('updateAuth frame updates bearer headers for later requests', async () => {
     const requests: RequestRecord[] = []
     const fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {

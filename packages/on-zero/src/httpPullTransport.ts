@@ -60,6 +60,7 @@ type PullResponse =
 type TransportState = {
   readonly origin: URL
   readonly originString: string
+  readonly pushOriginString: string
   readonly fetch: typeof fetch
   readonly nativeWebSocket: WebSocketConstructor | undefined
   readonly sockets: Set<ZeroHttpSocket>
@@ -84,6 +85,10 @@ export type HttpPullTransport = {
 
 export type HttpPullTransportOptions = {
   origin: string
+  // optional authoritative mutation endpoint base. reads and wake stay on
+  // origin, while push POSTs to <pushOrigin>/push. this supports a native read
+  // host paired with an application server that owns custom mutator execution.
+  pushOrigin?: string
   fetch?: typeof fetch
   // when set, every open connection also pulls on this interval so
   // server-initiated changes arrive without a client-side trigger
@@ -116,6 +121,9 @@ export function installHttpPullTransport(
   const state: TransportState = {
     origin: new URL(opts.origin),
     originString: trimTrailingSlash(new URL(opts.origin).toString()),
+    pushOriginString: trimTrailingSlash(
+      new URL(opts.pushOrigin ?? opts.origin).toString(),
+    ),
     // the transport invokes this as `state.fetch(...)` — without binding,
     // window.fetch sees `state` as its receiver and browsers throw
     // "Illegal invocation" (node's fetch doesn't care, so tests can't catch it)
@@ -532,7 +540,8 @@ class ZeroHttpSocket {
   }
 
   private async postJSON(path: '/pull' | '/push', body: unknown) {
-    const response = await this.state.fetch(`${this.state.originString}${path}`, {
+    const base = path === '/push' ? this.state.pushOriginString : this.state.originString
+    const response = await this.state.fetch(`${base}${path}`, {
       method: 'POST',
       headers: {
         authorization: this.authToken ? `Bearer ${this.authToken}` : '',

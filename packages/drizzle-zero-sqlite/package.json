@@ -1,0 +1,48 @@
+{
+  "name": "@take-out/drizzle-zero-sqlite",
+  "version": "0.6.12",
+  "description": "Generate Zero schemas from Drizzle SQLite schemas",
+  "sideEffects": false,
+  "source": "src/index.ts",
+  "main": "dist/cjs",
+  "module": "dist/esm",
+  "type": "module",
+  "types": "./types/index.d.ts",
+  "files": ["src", "types", "dist", "LICENSE", "README.md"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tamagui-build --skip-native",
+    "clean": "tamagui-build clean",
+    "clean:build": "tamagui-build clean:build",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "lint": "oxlint src",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.test.json"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs",
+      "default": "./dist/esm/index.mjs"
+    }
+  },
+  "peerDependencies": {
+    "@rocicorp/zero": ">=1.5.0",
+    "drizzle-orm": ">=1.0.0-beta.0 <2"
+  },
+  "devDependencies": {
+    "@rocicorp/zero": "1.6.1",
+    "@tamagui/build": "2.3.1",
+    "drizzle-orm": "1.0.0-beta.9-e89174b",
+    "oxfmt": "^0.16.0",
+    "oxlint": "^1.31.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  },
+  "license": "MIT"
+}

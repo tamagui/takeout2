@@ -616,8 +616,9 @@ function tsTypeToValibot(
 
 type SchemaTable = {
   name: string
+  serverName?: string
   columns: Record<string, SchemaColumn>
-  primaryKey: string[]
+  primaryKey: readonly string[]
 }
 
 type SchemaRelationHop = {
@@ -687,7 +688,10 @@ export function generateDrizzleSchemaFile(schema: DrizzleZeroSchema): string {
       .join('\n')
     const pkArgs = t.primaryKey.map((k) => `'${k}'`).join(', ')
 
-    lines.push(`const ${tableName}Table = table('${t.name}')`)
+    const tableSource = t.serverName
+      ? `table(${JSON.stringify(t.name)}).from(${JSON.stringify(t.serverName)})`
+      : `table(${JSON.stringify(t.name)})`
+    lines.push(`const ${tableName}Table = ${tableSource}`)
     lines.push(`  .columns({`)
     lines.push(colEntries)
     lines.push(`  })`)
@@ -713,15 +717,24 @@ export function generateDrizzleSchemaFile(schema: DrizzleZeroSchema): string {
           return `    ${relName}: ${fn}({\n      sourceField: [${sf}],\n      destSchema: ${hop.destSchema}Table,\n      destField: [${df}],\n    })`
         }
         // many-to-many (2 hops)
+        if (hops.length !== 2) {
+          throw new Error(
+            `Relationship ${tableName}.${relName} must have one or two hops`,
+          )
+        }
+        const cardinality = hops[0]!.cardinality
+        if (hops.some((hop) => hop.cardinality !== cardinality)) {
+          throw new Error(`Relationship ${tableName}.${relName} must use one cardinality`)
+        }
+        const fn = cardinality === 'one' ? 'one' : 'many'
         const hopCode = hops
           .map((hop) => {
-            const fn = hop.cardinality === 'one' ? 'one' : 'many'
             const sf = hop.sourceField.map((f) => `'${f}'`).join(', ')
             const df = hop.destField.map((f) => `'${f}'`).join(', ')
-            return `${fn}({ sourceField: [${sf}], destSchema: ${hop.destSchema}Table, destField: [${df}] })`
+            return `{ sourceField: [${sf}], destSchema: ${hop.destSchema}Table, destField: [${df}] }`
           })
           .join(', ')
-        return `    ${relName}: [${hopCode}]`
+        return `    ${relName}: ${fn}(${hopCode})`
       })
       .join(',\n')
 

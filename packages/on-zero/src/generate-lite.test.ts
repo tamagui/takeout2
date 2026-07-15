@@ -402,6 +402,8 @@ describe('generateLite', () => {
       [`${DIR}/models/README.md`]: 'not a model',
       [`${DIR}/models/helpers/util.ts`]: 'nested should be ignored',
       [`${DIR}/models/post.d.ts`]: 'declaration file, ignored',
+      [`${DIR}/models/post.test.ts`]: 'test file, ignored',
+      [`${DIR}/models/post.spec.ts`]: 'spec file, ignored',
     }
 
     const fixtures: Record<string, LiteParsedFile> = {
@@ -422,6 +424,8 @@ describe('generateLite', () => {
     expect(models).toContain("import * as post from '../models/post'")
     expect(models).not.toContain('util')
     expect(models).not.toContain('README')
+    expect(models).not.toContain('post.test')
+    expect(models).not.toContain('post.spec')
   })
 
   test('infers mutations/ directory when present', () => {

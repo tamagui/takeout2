@@ -136,6 +136,7 @@ function listDirectTsFiles(files: Record<string, string>, dirPrefix: string): st
     if (rest.includes('/')) continue
     if (!rest.endsWith('.ts')) continue
     if (rest.endsWith('.d.ts')) continue
+    if (rest.endsWith('.test.ts') || rest.endsWith('.spec.ts')) continue
     out.push(path)
   }
   return out.sort()

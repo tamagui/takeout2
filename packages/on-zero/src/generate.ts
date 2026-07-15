@@ -18,6 +18,12 @@ import type { ExtractedMutation, ModelMutations, SchemaColumn } from './generate
 
 const hash = (s: string) => createHash('sha256').update(s).digest('hex')
 
+const isGeneratorSourceFile = (name: string) =>
+  name.endsWith('.ts') &&
+  !name.endsWith('.d.ts') &&
+  !name.endsWith('.test.ts') &&
+  !name.endsWith('.spec.ts')
+
 // hash every .ts input the generator reads (all of baseDir except the generated
 // output dir + node_modules) so a dev-boot regen can be skipped when nothing
 // changed. the expensive part of generate() — loading the typescript compiler
@@ -36,11 +42,7 @@ function hashInputTree(baseDir: string, generatedDir: string): string {
       if (entry.isDirectory()) {
         if (entry.name === 'node_modules' || full === generatedDir) continue
         walk(full)
-      } else if (
-        entry.isFile() &&
-        entry.name.endsWith('.ts') &&
-        !entry.name.endsWith('.d.ts')
-      ) {
+      } else if (entry.isFile() && isGeneratorSourceFile(entry.name)) {
         parts.push(`${full}\0${readFileSync(full, 'utf-8')}`)
       }
     }
@@ -813,9 +815,7 @@ export async function generate(options: GenerateOptions): Promise<GenerateResult
     }
   }
 
-  const allModelFiles = readdirSync(modelsDir)
-    .filter((f) => f.endsWith('.ts'))
-    .sort()
+  const allModelFiles = readdirSync(modelsDir).filter(isGeneratorSourceFile).sort()
 
   const filesWithSchema = allModelFiles.filter((f) =>
     readFileSync(resolve(modelsDir, f), 'utf-8').includes('export const schema = table('),
@@ -867,7 +867,7 @@ export async function generate(options: GenerateOptions): Promise<GenerateResult
 
   // generate query files if queries directory exists
   if (existsSync(queriesDir)) {
-    const queryFiles = readdirSync(queriesDir).filter((f) => f.endsWith('.ts'))
+    const queryFiles = readdirSync(queriesDir).filter(isGeneratorSourceFile)
 
     const allQueries: Array<{
       name: string
@@ -881,7 +881,7 @@ export async function generate(options: GenerateOptions): Promise<GenerateResult
     const getQueryResolver = () => {
       if (!queryResolver) {
         const allFiles = readdirSync(queriesDir)
-          .filter((f) => f.endsWith('.ts'))
+          .filter(isGeneratorSourceFile)
           .map((f) => ({
             path: resolve(queriesDir, f),
             content: readFileSync(resolve(queriesDir, f), 'utf-8'),
@@ -1037,11 +1037,7 @@ export async function generate(options: GenerateOptions): Promise<GenerateResult
         const fullPath = resolve(dir, entry.name)
         if (entry.isDirectory() && entry.name !== 'node_modules') {
           results.push(...collectTsFiles(fullPath))
-        } else if (
-          entry.isFile() &&
-          entry.name.endsWith('.ts') &&
-          !entry.name.endsWith('.d.ts')
-        ) {
+        } else if (entry.isFile() && isGeneratorSourceFile(entry.name)) {
           results.push({ path: fullPath, content: readFileSync(fullPath, 'utf-8') })
         }
       }

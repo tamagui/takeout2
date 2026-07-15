@@ -45,6 +45,15 @@ export const schema = table('comment', {
 `,
     )
 
+    writeFileSync(
+      join(testDir, 'models/post.test.ts'),
+      `throw new Error('test files must not be generated as models')`,
+    )
+    writeFileSync(
+      join(testDir, 'queries/comment.spec.ts'),
+      `throw new Error('spec files must not be generated as queries')`,
+    )
+
     const result = await generate({ dir: testDir, silent: true })
 
     expect(result.modelCount).toBe(2)
@@ -60,6 +69,7 @@ export const schema = table('comment', {
     const modelsContent = readFileSync(join(testDir, 'generated/models.ts'), 'utf-8')
     expect(modelsContent).toContain("import * as comment from '../models/comment'")
     expect(modelsContent).toContain("import * as post from '../models/post'")
+    expect(modelsContent).not.toContain('post.test')
     expect(modelsContent).toContain('export const models = {')
 
     // check types.ts content

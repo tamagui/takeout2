@@ -60,6 +60,11 @@
       "import": "./dist/esm/server.mjs",
       "require": "./dist/cjs/server.cjs"
     },
+    "./sqlite": {
+      "types": "./types/createZeroSQLiteServer.d.ts",
+      "import": "./dist/esm/createZeroSQLiteServer.mjs",
+      "require": "./dist/cjs/createZeroSQLiteServer.cjs"
+    },
     "./vite": {
       "types": "./types/vite-plugin.d.ts",
       "import": "./dist/esm/vite-plugin.mjs",

@@ -43,7 +43,10 @@ class FakePgClient {
       }
     }
 
-    if (sql.includes('INSERT INTO "zero_0"."mutations"')) {
+    if (
+      sql.includes('INSERT INTO "zero_0"."mutations"') ||
+      sql.includes('INSERT INTO "zero_0".mutations')
+    ) {
       this.mutationResultInserts.push(params)
       return { rows: [] }
     }
@@ -91,6 +94,41 @@ function pushRequest(mutationIDs: number | number[]) {
 }
 
 describe('createZeroServer mutation recovery', () => {
+  test('discards async tasks from a rolled-back PostgreSQL mutation', async () => {
+    const pg = new FakePgClient()
+    let effectRuns = 0
+    const zeroServer = createZeroServer({
+      schema: zeroHttpFixtureSchema,
+      models: {
+        project: {
+          mutate: {
+            touch: async ({ server }) => {
+              server?.asyncTasks.push(async () => {
+                effectRuns++
+              })
+              throw new Error('rejected')
+            },
+          },
+        },
+      },
+      createServerActions: () => ({}),
+      pool: pg as any,
+    })
+
+    const result = await zeroServer.handleMutationRequest({
+      authData: null,
+      request: pushRequest(1),
+      skipAsyncTasks: true,
+    })
+
+    expect((result.response as any).mutations[0].result).toMatchObject({
+      error: 'app',
+      message: 'rejected',
+    })
+    expect(result.asyncTasks).toEqual([])
+    expect(effectRuns).toBe(0)
+  })
+
   test('persists alreadyProcessed duplicate results for zero-cache recovery rows', async () => {
     const pg = new FakePgClient()
     const zeroServer = createZeroServer({

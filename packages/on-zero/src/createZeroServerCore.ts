@@ -1,0 +1,519 @@
+import { mustGetQuery } from '@rocicorp/zero'
+import {
+  PushProcessor,
+  handleQueryRequest as zeroHandleQueryRequest,
+} from '@rocicorp/zero/server'
+
+import { createPermissions } from './createPermissions'
+import { createMutators } from './helpers/createMutators'
+import {
+  getScopedAuthData,
+  isInZeroMutation,
+  mutatorContext,
+  runWithAuthScope,
+} from './helpers/mutatorContext'
+import { runWithQueryContext } from './helpers/queryContext'
+import { getMutationsPermissions } from './modelRegistry'
+import { setCustomQueries } from './run'
+import { getZQL, setEnvironment, setSchema } from './state'
+import { setEvaluatingPermission } from './where'
+import { setRunner } from './zeroRunner'
+
+import type {
+  AdminRoleMode,
+  AsyncAction,
+  AuthData,
+  GenericModels,
+  MutatorContext,
+  QueryBuilder,
+  Transaction,
+} from './types'
+import type {
+  AnyQueryRegistry,
+  HumanReadable,
+  Query,
+  Schema as ZeroSchema,
+} from '@rocicorp/zero'
+import type { Database, TransactionProviderInput } from '@rocicorp/zero/server'
+
+type MutateAuthData = Pick<AuthData, 'email' | 'id'> & Partial<AuthData>
+
+type MutateOptions = {
+  authData?: MutateAuthData
+  awaitEffects?: boolean
+}
+
+type AlreadyProcessedMutation = {
+  id: {
+    clientID: string
+    id: number
+  }
+  result: {
+    error: 'alreadyProcessed'
+    details?: unknown
+  }
+}
+
+type PushRequestBody = {
+  clientGroupID?: unknown
+}
+
+type ServerMutate<Models extends GenericModels> = {
+  [Key in keyof Models]: {
+    [K in keyof Models[Key]['mutate']]: Models[Key]['mutate'][K] extends (
+      ctx: MutatorContext,
+      arg: infer Arg,
+    ) => any
+      ? (arg: Arg, options?: MutateOptions) => Promise<void>
+      : (options?: MutateOptions) => Promise<void>
+  }
+}
+
+export type ValidateQueryArgs = {
+  authData: AuthData | null
+  queryName: string
+  params: unknown
+}
+
+export type ValidateMutationArgs = {
+  authData: AuthData | null
+  mutatorName: string
+  tableName: string
+  args: unknown
+}
+
+export type ValidateQueryFn = (args: ValidateQueryArgs) => void
+export type ValidateMutationFn = (args: ValidateMutationArgs) => void | Promise<void>
+
+export type TransactionAttemptLifecycle = {
+  beginAttempt(): void
+  completeAttempt(): void
+  rollbackAttempt(): void
+  commitTransaction(): void
+  rollbackTransaction(): void
+}
+
+export type ZeroServerDatabase = Database<Transaction>
+
+export type PersistAlreadyProcessedArgs = {
+  clientGroupID: string
+  mutations: AlreadyProcessedMutation[]
+  upstreamSchema: string
+}
+
+export type ZeroServerCommonOptions<
+  Schema extends ZeroSchema,
+  Models extends GenericModels,
+  ServerActions extends Record<string, unknown>,
+> = {
+  schema: Schema
+  models: Models
+  createServerActions: () => ServerActions
+  queries?: AnyQueryRegistry
+  /** generated validators keyed by model and mutation name */
+  mutations?: Record<string, Record<string, any>>
+  /** synchronous query authorization hook; throw to reject */
+  validateQuery?: ValidateQueryFn
+  /** mutation authorization hook; throw to reject */
+  validateMutation?: ValidateMutationFn
+  /** controls which operations the admin role bypasses */
+  defaultAllowAdminRole?: AdminRoleMode
+  /** auth data used by direct server mutations when no scope provides it */
+  defaultMutateAuthData?: MutateAuthData
+}
+
+type ZeroServerCoreOptions<
+  Schema extends ZeroSchema,
+  Models extends GenericModels,
+  ServerActions extends Record<string, unknown>,
+> = ZeroServerCommonOptions<Schema, Models, ServerActions> & {
+  createDatabase: () => ZeroServerDatabase
+  persistAlreadyProcessed?: (args: PersistAlreadyProcessedArgs) => Promise<void>
+}
+
+function createAsyncTaskCollector() {
+  const committed: AsyncAction[] = []
+  let attempt: AsyncAction[] | undefined
+  let completedAttempt: AsyncAction[] | undefined
+  const current = () => attempt ?? committed
+  const queue = new Proxy([] as AsyncAction[], {
+    deleteProperty(_target, property) {
+      return Reflect.deleteProperty(current(), property)
+    },
+    get(_target, property) {
+      const target = current()
+      const value = Reflect.get(target, property, target)
+      return typeof value === 'function' ? value.bind(target) : value
+    },
+    getOwnPropertyDescriptor(_target, property) {
+      return Reflect.getOwnPropertyDescriptor(current(), property)
+    },
+    has(_target, property) {
+      return Reflect.has(current(), property)
+    },
+    ownKeys() {
+      return Reflect.ownKeys(current())
+    },
+    set(_target, property, value) {
+      return Reflect.set(current(), property, value)
+    },
+  })
+
+  const lifecycle: TransactionAttemptLifecycle = {
+    beginAttempt() {
+      attempt = []
+      completedAttempt = undefined
+    },
+    completeAttempt() {
+      completedAttempt = attempt
+      attempt = undefined
+    },
+    rollbackAttempt() {
+      attempt = undefined
+      completedAttempt = undefined
+    },
+    commitTransaction() {
+      if (completedAttempt) committed.push(...completedAttempt)
+      completedAttempt = undefined
+    },
+    rollbackTransaction() {
+      attempt = undefined
+      completedAttempt = undefined
+    },
+  }
+
+  return { committed, lifecycle, queue }
+}
+
+export function createZeroServerCore<
+  Schema extends ZeroSchema,
+  Models extends GenericModels,
+  ServerActions extends Record<string, unknown>,
+>({
+  createDatabase,
+  createServerActions,
+  defaultAllowAdminRole = 'all',
+  defaultMutateAuthData = {} as MutateAuthData,
+  models,
+  mutations: mutationValidators,
+  persistAlreadyProcessed,
+  queries,
+  schema,
+  validateMutation,
+  validateQuery,
+}: ZeroServerCoreOptions<Schema, Models, ServerActions>) {
+  setSchema(schema)
+  setEnvironment('server')
+
+  const permissions = createPermissions<Schema>({
+    environment: 'server',
+    schema,
+    adminRoleMode: defaultAllowAdminRole,
+  })
+
+  const handleMutationRequest = async ({
+    authData,
+    request,
+    skipAsyncTasks,
+  }: {
+    authData: AuthData | null
+    request: Request
+    skipAsyncTasks?: boolean
+  }) => {
+    const tasks = createAsyncTaskCollector()
+    const recoveryRequest = request.clone()
+    const mutators = createMutators({
+      asyncTasks: tasks.queue,
+      can: permissions.can,
+      createServerActions,
+      environment: 'server',
+      models,
+      authData,
+      validateMutation,
+      mutationValidators,
+    })
+    const processor = new PushProcessor(
+      withTransactionLifecycle(createDatabase(), tasks.lifecycle),
+    )
+    const response = await processor.process(mutators, request)
+
+    if (persistAlreadyProcessed) {
+      const parsed = await parseAlreadyProcessed(recoveryRequest, response)
+      if (parsed) await persistAlreadyProcessed(parsed)
+    }
+
+    if (!skipAsyncTasks && tasks.committed.length) {
+      Promise.all(tasks.committed.map((task) => runWithAuthScope(authData, task))).catch(
+        (err: unknown) => {
+          console.error('[push] async tasks failed', err)
+        },
+      )
+    }
+
+    return {
+      response,
+      asyncTasks: tasks.committed,
+    }
+  }
+
+  const handleQueryRequest = async ({
+    authData,
+    request,
+  }: {
+    authData: AuthData | null
+    request: Request
+  }) => {
+    if (!queries) {
+      throw new Error(
+        'No queries registered with createZeroServer. ' +
+          'Pass the syncedQueries registry to createZeroServer via the queries option.',
+      )
+    }
+
+    const handler = (name: string, args: unknown) => {
+      if (name.startsWith('permission.')) {
+        const table = name.slice('permission.'.length)
+        const { objOrId } = args as {
+          objOrId: string | Record<string, any>
+        }
+        const perm = getMutationsPermissions(table)
+        if (!perm) {
+          throw new Error(`[permission] no permission defined for table: ${table}`)
+        }
+        setEvaluatingPermission(true)
+        try {
+          return (getZQL() as any)[table]
+            .where((eb: any) => {
+              return permissions.buildPermissionQuery(authData, eb, perm, objOrId, table)
+            })
+            .one()
+        } finally {
+          setEvaluatingPermission(false)
+        }
+      }
+
+      if (validateQuery) {
+        validateQuery({ authData, queryName: name, params: args })
+      }
+
+      const query = (mustGetQuery as any)(queries, name)
+      return query.fn({ args, ctx: authData })
+    }
+
+    const userID = typeof authData?.id === 'string' ? authData.id : undefined
+    const response = await runWithQueryContext(
+      { authData: authData || ({} as AuthData) },
+      () =>
+        // the legacy overload omits userID when auth does not identify a user.
+        userID === undefined
+          ? zeroHandleQueryRequest(handler, schema, request)
+          : zeroHandleQueryRequest({ handler, schema, request, userID }),
+    )
+
+    return {
+      response,
+    }
+  }
+
+  async function runTransaction<
+    CB extends (tx: Transaction) => Promise<any>,
+    Returns extends CB extends (tx: Transaction) => Promise<infer X> ? X : never,
+  >(database: ZeroServerDatabase, query: CB): Promise<Returns> {
+    try {
+      if (isInZeroMutation()) {
+        const { tx } = mutatorContext()
+        return await query(tx)
+      }
+      return (await database.transaction(query, dummyTransactionInput)) as Returns
+    } catch (err) {
+      if ((err as any)?.name !== 'PermissionError') {
+        console.error(`Error running transaction(): ${err}`)
+      }
+      throw err
+    }
+  }
+
+  async function transaction<
+    CB extends (tx: Transaction) => Promise<any>,
+    Returns extends CB extends (tx: Transaction) => Promise<infer X> ? X : never,
+  >(query: CB): Promise<Returns> {
+    return runTransaction(createDatabase(), query)
+  }
+
+  async function runMutate(
+    modelName: string,
+    mutatorName: string,
+    mutatorArg: unknown,
+    options?: MutateOptions,
+  ) {
+    let authData = options?.authData
+    if (!authData) {
+      const scoped = getScopedAuthData()
+      if (scoped) authData = scoped as MutateAuthData
+    }
+
+    const tasks = createAsyncTaskCollector()
+    const mutators = createMutators({
+      models,
+      environment: 'server',
+      asyncTasks: tasks.queue,
+      authData: {
+        ...defaultMutateAuthData,
+        ...authData,
+      },
+      createServerActions,
+      can: permissions.can,
+      validateMutation,
+      mutationValidators,
+    })
+    const modelMutators = mutators[modelName as keyof typeof mutators] as Record<
+      string,
+      (tx: Transaction, arg?: unknown) => Promise<void>
+    >
+    const mutator = modelMutators[mutatorName]
+
+    await runTransaction(
+      withTransactionLifecycle(createDatabase(), tasks.lifecycle),
+      async (tx) => {
+        await mutator(tx, mutatorArg)
+      },
+    )
+
+    if (tasks.committed.length) {
+      const resolvedAuth = authData ?? null
+      const promise = Promise.all(
+        tasks.committed.map((task) => runWithAuthScope(resolvedAuth, task)),
+      )
+      if (options?.awaitEffects) {
+        await promise
+      } else {
+        promise.catch((err: unknown) => {
+          console.error('[mutate] async tasks failed', err)
+        })
+      }
+    }
+  }
+
+  const mutate = new Proxy({} as ServerMutate<Models>, {
+    get(_, modelName: string) {
+      return new Proxy(
+        {},
+        {
+          get(_, mutatorName: string) {
+            return (arg: unknown, options?: MutateOptions) =>
+              runMutate(modelName, mutatorName, arg, options)
+          },
+        },
+      )
+    },
+  })
+
+  function query<R>(
+    cb: (q: QueryBuilder) => Query<any, Schema, R>,
+    authData?: AuthData | null,
+  ): Promise<HumanReadable<R>> {
+    const run = () =>
+      transaction(async (tx) => {
+        return tx.run(cb(getZQL()))
+      }) as any
+
+    if (authData !== undefined) {
+      return runWithQueryContext({ authData }, run)
+    }
+    return run()
+  }
+
+  if (queries) {
+    setCustomQueries(queries)
+  }
+
+  setRunner((queryObj) => {
+    return transaction(async (tx) => {
+      return tx.run(queryObj)
+    })
+  })
+
+  return {
+    handleMutationRequest,
+    handleQueryRequest,
+    transaction,
+    mutate,
+    query,
+  }
+}
+
+function withTransactionLifecycle(
+  database: ZeroServerDatabase,
+  lifecycle: TransactionAttemptLifecycle,
+): ZeroServerDatabase {
+  return {
+    async transaction(callback, input) {
+      try {
+        const value = await database.transaction(async (tx, hooks) => {
+          lifecycle.beginAttempt()
+          try {
+            const result = await callback(tx, hooks)
+            lifecycle.completeAttempt()
+            return result
+          } catch (error) {
+            lifecycle.rollbackAttempt()
+            throw error
+          }
+        }, input)
+        lifecycle.commitTransaction()
+        return value
+      } catch (error) {
+        lifecycle.rollbackTransaction()
+        throw error
+      }
+    },
+  }
+}
+
+async function parseAlreadyProcessed(
+  request: Request,
+  response: unknown,
+): Promise<PersistAlreadyProcessedArgs | undefined> {
+  const mutations = alreadyProcessedMutations(response)
+  if (mutations.length === 0) return
+
+  const upstreamSchema = new URL(request.url).searchParams.get('schema')
+  if (!upstreamSchema) return
+
+  const body = (await request.json()) as PushRequestBody
+  if (typeof body.clientGroupID !== 'string') return
+
+  return {
+    clientGroupID: body.clientGroupID,
+    mutations,
+    upstreamSchema,
+  }
+}
+
+function alreadyProcessedMutations(response: unknown): AlreadyProcessedMutation[] {
+  if (!response || typeof response !== 'object') return []
+  const mutations = (response as { mutations?: unknown }).mutations
+  if (!Array.isArray(mutations)) return []
+
+  return mutations.filter((mutation): mutation is AlreadyProcessedMutation => {
+    if (!mutation || typeof mutation !== 'object') return false
+    const id = (mutation as { id?: unknown }).id
+    const result = (mutation as { result?: unknown }).result
+    return (
+      !!id &&
+      typeof id === 'object' &&
+      typeof (id as { clientID?: unknown }).clientID === 'string' &&
+      typeof (id as { id?: unknown }).id === 'number' &&
+      !!result &&
+      typeof result === 'object' &&
+      (result as { error?: unknown }).error === 'alreadyProcessed'
+    )
+  })
+}
+
+const dummyTransactionInput: TransactionProviderInput = {
+  clientGroupID: 'unused',
+  clientID: 'unused',
+  mutationID: 42,
+  upstreamSchema: 'unused',
+}

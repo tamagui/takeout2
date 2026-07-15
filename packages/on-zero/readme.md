@@ -517,6 +517,30 @@ app.post('/api/zero/pull', async (req) => {
 })
 ```
 
+SQLite uses the same handler surface through a separate entrypoint that does
+not import the PostgreSQL adapter:
+
+```ts
+import { createZeroSQLiteServer } from 'on-zero/sqlite'
+
+export const zeroServer = createZeroSQLiteServer({
+  schema,
+  models,
+  queries: syncedQueries,
+  mutations: mutationValidators,
+  createServerActions: () => ({ ... }),
+  transactionProvider: (callback) =>
+    storage.transaction(() => callback(sqliteExecutor)),
+})
+```
+
+`sqliteExecutor` implements `exec`, `query`, and `queryAst`. The provider must
+run the callback inside the authoritative SQLite transaction. If the storage
+engine retries the callback, on-zero discards tasks from the abandoned attempt
+and returns only tasks from the committed attempt. The first push creates the
+`<schema>_clients` and `<schema>_mutations` ledger tables in that transaction;
+for example, `schema=zero_0` creates `zero_0_clients` and `zero_0_mutations`.
+
 ### multiple client instances
 
 one page can run several zero clients (e.g. a global control-plane instance

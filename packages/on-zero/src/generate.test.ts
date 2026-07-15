@@ -1,10 +1,12 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { runInNewContext } from 'node:vm'
 
+import * as zero from '@rocicorp/zero'
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 
-import { generate } from './generate'
+import { generate, generateDrizzleSchemaFile } from './generate'
 
 const testDir = join(tmpdir(), 'on-zero-test-' + Date.now())
 
@@ -680,5 +682,79 @@ export const filteredPosts = (filter: PostFilter) => zero.query.post
     expect(content).toContain('v.object')
     expect(content).toContain('authorId')
     expect(content).toContain('v.boolean()')
+  })
+})
+
+describe('generateDrizzleSchemaFile', () => {
+  test('preserves table server names and executable two-hop relationships', () => {
+    const schema = {
+      tables: {
+        users: {
+          name: 'users',
+          serverName: 'user_records',
+          primaryKey: ['id'],
+          columns: {
+            id: { type: 'string', optional: false, customType: null },
+          },
+        },
+        groups: {
+          name: 'groups',
+          primaryKey: ['id'],
+          columns: {
+            id: { type: 'string', optional: false, customType: null },
+          },
+        },
+        memberships: {
+          name: 'memberships',
+          primaryKey: ['userId', 'groupId'],
+          columns: {
+            userId: { type: 'string', optional: false, customType: null },
+            groupId: { type: 'string', optional: false, customType: null },
+          },
+        },
+      },
+      relationships: {
+        users: {
+          groups: [
+            {
+              sourceField: ['id'],
+              destField: ['userId'],
+              destSchema: 'memberships',
+              cardinality: 'many' as const,
+            },
+            {
+              sourceField: ['groupId'],
+              destField: ['id'],
+              destSchema: 'groups',
+              cardinality: 'many' as const,
+            },
+          ],
+        },
+      },
+    }
+    const source = generateDrizzleSchemaFile(schema)
+    const executableSource = source
+      .replace(
+        "import { boolean, createSchema, json, number, relationships, string, table } from '@rocicorp/zero'",
+        '',
+      )
+      .replace('export const schema =', 'globalThis.generatedSchema =')
+    const context: Record<string, unknown> = { ...zero }
+
+    runInNewContext(executableSource, context)
+
+    expect(source).toContain('const usersTable = table("users").from("user_records")')
+    expect(context.generatedSchema).toMatchObject({
+      tables: {
+        users: {
+          serverName: 'user_records',
+        },
+      },
+      relationships: {
+        users: {
+          groups: schema.relationships.users.groups,
+        },
+      },
+    })
   })
 })

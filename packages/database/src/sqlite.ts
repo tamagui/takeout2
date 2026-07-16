@@ -15,12 +15,16 @@ export type SQLiteQueryFormat = {
   singular: boolean
 }
 
+export type SQLiteRunResult = {
+  changes: number
+}
+
 export type SQLiteTransactionExecutor = {
   exec(
     sql: string,
     params?: readonly unknown[],
     metadata?: SqlStatementMetadata,
-  ): void | Promise<void>
+  ): SQLiteRunResult | Promise<SQLiteRunResult>
   query<Row extends Record<string, unknown> = Record<string, unknown>>(
     sql: string,
     params?: readonly unknown[],
@@ -97,8 +101,8 @@ export function createSQLiteDrizzle<
   return drizzle<TSchema, TRelations>(
     async (sql, params, method) => {
       if (method === 'run') {
-        await executor.exec(sql, params)
-        return { rows: [] }
+        const result = await executor.exec(sql, params)
+        return { changes: result.changes, rows: [] }
       }
 
       const rows = await executor.query(sql, params)
@@ -130,7 +134,8 @@ export function createBunSQLiteExecutor({
 }: CreateBunSQLiteExecutorOptions): SQLiteTransactionExecutor {
   return {
     exec(sql, params = []) {
-      database.prepare(sql).run(...bunBindings(params))
+      const result = database.prepare(sql).run(...bunBindings(params))
+      return { changes: result.changes }
     },
     query<Row extends Record<string, unknown>>(
       sql: string,

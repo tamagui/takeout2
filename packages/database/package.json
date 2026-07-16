@@ -49,10 +49,14 @@
     "citty": "^0.1.6"
   },
   "peerDependencies": {
+    "better-auth": ">=1.6.0 <2",
     "drizzle-orm": "*",
     "pg": "^8.16.3"
   },
   "peerDependenciesMeta": {
+    "better-auth": {
+      "optional": true
+    },
     "pg": {
       "optional": true
     }

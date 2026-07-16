@@ -40,7 +40,8 @@ describe('createZeroSyncHostAdapter', () => {
     executor = {
       exec(sql, params = [], metadata) {
         if (metadata) statements.push(metadata)
-        db.prepare(sql).run(...(params as SQLInputValue[]))
+        const result = db.prepare(sql).run(...(params as SQLInputValue[]))
+        return { changes: Number(result.changes) }
       },
       query<Row extends Record<string, unknown>>(sql, params = []) {
         return db.prepare(sql).all(...(params as SQLInputValue[])) as Row[]

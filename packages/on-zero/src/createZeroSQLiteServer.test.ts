@@ -132,7 +132,8 @@ describe('createZeroSQLiteServer', () => {
     const executor: SQLiteTransactionExecutor = {
       async exec(sql, params = [], metadata) {
         if (metadata) statements.push(metadata)
-        db.prepare(sql).run(...(params as SQLInputValue[]))
+        const result = db.prepare(sql).run(...(params as SQLInputValue[]))
+        return { changes: Number(result.changes) }
       },
       async query<Row extends Record<string, unknown>>(sql, params = []) {
         return db.prepare(sql).all(...(params as SQLInputValue[])) as Row[]
@@ -445,7 +446,9 @@ describe('createZeroSQLiteServer', () => {
     }
     let receivedQueryName: string | undefined
     const hydratedExecutor = {
-      async exec() {},
+      async exec() {
+        return { changes: 0 }
+      },
       async query() {
         return []
       },

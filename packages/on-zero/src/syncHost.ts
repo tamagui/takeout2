@@ -6,6 +6,7 @@ import {
   createZeroSQLiteServer,
   createZeroSQLiteTransaction,
   type SqlStatementMetadata,
+  type SQLiteRunResult,
   type SQLiteTransactionExecutor,
   type ZeroSQLiteTransactionOptions,
 } from './createZeroSQLiteServer'
@@ -39,7 +40,7 @@ export type SyncHostTransactionExecutor = {
     sql: string,
     params?: readonly unknown[],
     metadata?: SqlStatementMetadata,
-  ): void | Promise<void>
+  ): SQLiteRunResult | Promise<SQLiteRunResult>
   query<Row extends Record<string, unknown> = Record<string, unknown>>(
     sql: string,
     params?: readonly unknown[],

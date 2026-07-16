@@ -54,7 +54,7 @@ export type SQLiteQueryFormat = {
 }
 
 export type SQLiteTransactionProvider = <R>(
-  callback: (tx: SQLiteTransactionExecutor) => Promise<R>,
+  callback: (tx: SQLiteTransactionExecutor) => R | Promise<R>,
 ) => Promise<R>
 
 type SQLiteColumn = ZeroSchema['tables'][string]['columns'][string]

@@ -170,7 +170,9 @@ describe('createZeroSQLiteServer', () => {
         return (format.singular ? rows[0] : rows) as Result
       },
     }
-    const run = async <R>(callback: (tx: SQLiteTransactionExecutor) => Promise<R>) => {
+    const run = async <R>(
+      callback: (tx: SQLiteTransactionExecutor) => R | Promise<R>,
+    ) => {
       db.exec('BEGIN')
       try {
         const value = await callback(executor)
@@ -182,7 +184,7 @@ describe('createZeroSQLiteServer', () => {
       }
     }
     transactionProvider = async <R>(
-      callback: (tx: SQLiteTransactionExecutor) => Promise<R>,
+      callback: (tx: SQLiteTransactionExecutor) => R | Promise<R>,
     ) => {
       if (retryNextTransaction) {
         retryNextTransaction = false

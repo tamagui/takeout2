@@ -474,6 +474,12 @@ export function createZeroServerCore<
   }
 }
 
+export type ZeroServer<
+  Schema extends ZeroSchema,
+  Models extends GenericModels,
+  ServerActions extends Record<string, unknown>,
+> = ReturnType<typeof createZeroServerCore<Schema, Models, ServerActions>>
+
 function withTransactionLifecycle(
   database: ZeroServerDatabase,
   lifecycle: TransactionAttemptLifecycle,

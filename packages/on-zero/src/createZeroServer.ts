@@ -6,6 +6,7 @@ import { createZeroServerCore } from './createZeroServerCore'
 
 import type {
   PersistAlreadyProcessedArgs,
+  ZeroServer,
   ZeroServerCommonOptions,
   ZeroServerDatabase,
 } from './createZeroServerCore'
@@ -39,7 +40,7 @@ export function createZeroServer<
    * Not required when pool is provided.
    */
   database?: string
-}) {
+}): ZeroServer<Schema, Models, ServerActions> {
   let pool: NodePgTransaction
   if (externalPool) {
     pool = externalPool

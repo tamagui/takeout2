@@ -4,6 +4,7 @@ import { asQueryInternals } from '@rocicorp/zero/bindings'
 import {
   createZeroServerCore,
   type PersistAlreadyProcessedArgs,
+  type ZeroServer,
   type ZeroServerCommonOptions,
   type ZeroServerDatabase,
 } from './createZeroServerCore'
@@ -74,7 +75,11 @@ export function createZeroSQLiteServer<
   ledgerTables = defaultLedgerTables,
   transactionProvider,
   ...options
-}: CreateZeroSQLiteServerOptions<Schema, Models, ServerActions>) {
+}: CreateZeroSQLiteServerOptions<Schema, Models, ServerActions>): ZeroServer<
+  Schema,
+  Models,
+  ServerActions
+> {
   const databaseOptions = {
     encodeValue,
     initializedLedgers: new Set<string>(),

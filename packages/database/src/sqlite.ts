@@ -37,7 +37,7 @@ export type SQLiteTransactionExecutor = {
 }
 
 export type SQLiteTransactionProvider = <Value>(
-  work: (executor: SQLiteTransactionExecutor) => Promise<Value>,
+  work: (executor: SQLiteTransactionExecutor) => Value | Promise<Value>,
 ) => Promise<Value>
 
 export type SQLiteSchema = Record<string, SQLiteTable>
@@ -64,7 +64,9 @@ export type SQLiteDatabase<
   TRelations extends AnyRelations,
 > = {
   transaction<Value>(
-    work: (transaction: SQLiteDatabaseTransaction<TSchema, TRelations>) => Promise<Value>,
+    work: (
+      transaction: SQLiteDatabaseTransaction<TSchema, TRelations>,
+    ) => Value | Promise<Value>,
   ): Promise<Value>
 }
 

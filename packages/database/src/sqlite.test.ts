@@ -53,6 +53,15 @@ describe('createSQLiteDatabase', () => {
     await expect(
       database.transaction(async ({ drizzle }) => drizzle.select().from(todo).get()),
     ).resolves.toEqual({ id: 1, title: 'first' })
+
+    await expect(
+      database.transaction(({ executor }) =>
+        executor.query<{ id: number; title: string }>('SELECT * FROM todo ORDER BY id'),
+      ),
+    ).resolves.toEqual([
+      { id: 1, title: 'first' },
+      { id: 2, title: 'second' },
+    ])
   })
 
   test('uses a remote owner transaction without sqlite-proxy transaction SQL', async () => {

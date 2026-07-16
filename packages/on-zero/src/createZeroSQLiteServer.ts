@@ -21,10 +21,11 @@ export type SQLiteTransactionExecutor = {
     sql: string,
     params?: readonly unknown[],
   ): Row[] | Promise<Row[]>
-  queryAst<Row extends Record<string, unknown> = Record<string, unknown>>(
+  queryAst<Result = unknown>(
     ast: AST,
-    format?: SQLiteQueryFormat,
-  ): Row[] | Promise<Row[]>
+    format: SQLiteQueryFormat,
+    queryName?: string,
+  ): Result | Promise<Result>
 }
 
 export type SQLiteQueryFormat = {
@@ -57,7 +58,6 @@ export type CreateZeroSQLiteServerOptions<
   transactionProvider: SQLiteTransactionProvider
   ledgerTables?: (upstreamSchema: string) => SQLiteLedgerTables
   encodeValue?: (value: unknown, context: SQLiteValueContext) => unknown
-  decodeValue?: (value: unknown, context: SQLiteValueContext) => unknown
 }
 
 export function createZeroSQLiteServer<
@@ -65,14 +65,12 @@ export function createZeroSQLiteServer<
   Models extends GenericModels,
   ServerActions extends Record<string, unknown>,
 >({
-  decodeValue = decodeSQLiteValue,
   encodeValue = encodeSQLiteValue,
   ledgerTables = defaultLedgerTables,
   transactionProvider,
   ...options
 }: CreateZeroSQLiteServerOptions<Schema, Models, ServerActions>) {
   const databaseOptions = {
-    decodeValue,
     encodeValue,
     initializedLedgers: new Set<string>(),
     ledgerTables,
@@ -89,7 +87,6 @@ export function createZeroSQLiteServer<
 }
 
 type SQLiteDatabaseOptions<Schema extends ZeroSchema> = {
-  decodeValue: (value: unknown, context: SQLiteValueContext) => unknown
   encodeValue: (value: unknown, context: SQLiteValueContext) => unknown
   initializedLedgers: Set<string>
   ledgerTables: (upstreamSchema: string) => SQLiteLedgerTables
@@ -164,11 +161,11 @@ function createSQLiteTransaction<Schema extends ZeroSchema>(
     },
   )
 
-  const runQuery = async (ast: AST, format: SQLiteQueryFormat): Promise<unknown> => {
-    const rows = await executor.queryAst(ast, format)
-    const decoded = rows.map((row) => decodeQueryRow(options, ast, format, row))
-    return format.singular ? decoded[0] : decoded
-  }
+  const runQuery = (
+    ast: AST,
+    format: SQLiteQueryFormat,
+    queryName?: string,
+  ): Promise<unknown> => Promise.resolve(executor.queryAst(ast, format, queryName))
   const dbTransaction = {
     wrappedTransaction: executor,
     query: (sql: string, args: unknown[]) => executor.query(sql, args),
@@ -184,13 +181,13 @@ function createSQLiteTransaction<Schema extends ZeroSchema>(
     query: options.schema.enableLegacyQueries
       ? createLegacyQueryBuilder(options.schema, (query) => {
           const internals = asQueryInternals(query as never)
-          return runQuery(internals.ast, internals.format)
+          return runQuery(internals.ast, internals.format, internals.customQueryID?.name)
         })
       : undefined,
     reason: 'authoritative',
     async run(query: unknown) {
       const internals = asQueryInternals(query as never)
-      return runQuery(internals.ast, internals.format)
+      return runQuery(internals.ast, internals.format, internals.customQueryID?.name)
     },
   } as unknown as Transaction
 }
@@ -324,68 +321,6 @@ function encodeColumn<Schema extends ZeroSchema>(
     columnName,
     tableName,
   })
-}
-
-function decodeRow<Schema extends ZeroSchema>(
-  options: SQLiteDatabaseOptions<Schema>,
-  tableName: string,
-  row: Record<string, unknown>,
-) {
-  const table = options.schema.tables[tableName]
-  if (!table) return row
-  const decoded = { ...row }
-  for (const [columnName, column] of Object.entries(table.columns)) {
-    const physicalName = column.serverName ?? columnName
-    const hasLogical = Object.hasOwn(row, columnName)
-    const hasPhysical = Object.hasOwn(row, physicalName)
-    if (!hasLogical && !hasPhysical) continue
-    const value = hasLogical ? row[columnName] : row[physicalName]
-    decoded[columnName] = options.decodeValue(value, {
-      column,
-      columnName,
-      tableName,
-    })
-    if (physicalName !== columnName) delete decoded[physicalName]
-  }
-  return decoded
-}
-
-function decodeQueryRow<Schema extends ZeroSchema>(
-  options: SQLiteDatabaseOptions<Schema>,
-  ast: AST,
-  format: SQLiteQueryFormat,
-  row: Record<string, unknown>,
-): Record<string, unknown> {
-  const decoded = decodeRow(options, ast.table, row)
-  for (const related of ast.related ?? []) {
-    const junctionAst = related.subquery
-    const relatedAst = related.hidden ? junctionAst.related?.[0]?.subquery : junctionAst
-    if (!relatedAst) continue
-    const name = junctionAst.alias ?? relatedAst.alias ?? relatedAst.table
-    const relatedFormat = format.relationships[name]
-    const value = decoded[name]
-    if (!relatedFormat || value === null || value === undefined) continue
-    if (Array.isArray(value)) {
-      decoded[name] = value.map((child) =>
-        child && typeof child === 'object' && !Array.isArray(child)
-          ? decodeQueryRow(
-              options,
-              relatedAst,
-              relatedFormat,
-              child as Record<string, unknown>,
-            )
-          : child,
-      )
-    } else if (typeof value === 'object') {
-      decoded[name] = decodeQueryRow(
-        options,
-        relatedAst,
-        relatedFormat,
-        value as Record<string, unknown>,
-      )
-    }
-  }
-  return decoded
 }
 
 function createLegacyQueryBuilder<Schema extends ZeroSchema>(
@@ -562,17 +497,6 @@ function encodeSQLiteValue(value: unknown, { column }: SQLiteValueContext) {
   if (value === null) return null
   if (column.type === 'boolean') return value ? 1 : 0
   if (column.type === 'json') return JSON.stringify(value)
-  return value
-}
-
-function decodeSQLiteValue(value: unknown, { column }: SQLiteValueContext) {
-  if (value === null) return null
-  if (column.type === 'boolean') {
-    return value !== false && value !== 0 && value !== '0'
-  }
-  if (column.type === 'json' && typeof value === 'string') {
-    return JSON.parse(value)
-  }
   return value
 }
 

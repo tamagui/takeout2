@@ -1,6 +1,7 @@
 import { DatabaseSync, type SQLInputValue } from 'node:sqlite'
 
 import { boolean, createSchema, json, relationships, string, table } from '@rocicorp/zero'
+import { asQueryInternals } from '@rocicorp/zero/bindings'
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 
 import { createZeroSQLiteServer } from './createZeroSQLiteServer'
@@ -132,30 +133,36 @@ describe('createZeroSQLiteServer', () => {
       async query<Row extends Record<string, unknown>>(sql, params = []) {
         return db.prepare(sql).all(...(params as SQLInputValue[])) as Row[]
       },
-      async queryAst<Row extends Record<string, unknown>>(ast) {
+      async queryAst<Result>(ast, format) {
+        let rows: Record<string, unknown>[]
         if (ast.table === 'project') {
-          return db.prepare('SELECT * FROM project ORDER BY id').all() as Row[]
-        }
-        if (ast.table === 'note') {
-          return db
+          rows = db.prepare('SELECT * FROM project ORDER BY id').all()
+        } else if (ast.table === 'note') {
+          rows = db
             .prepare('SELECT note_id, done, data FROM note_records ORDER BY note_id')
-            .all() as Row[]
-        }
-        if (ast.table === 'person') {
-          return [
+            .all()
+            .map((row) => ({
+              id: row.note_id,
+              done: row.done !== 0,
+              data: typeof row.data === 'string' ? JSON.parse(row.data) : row.data,
+            }))
+        } else if (ast.table === 'person') {
+          rows = [
             {
               id: 'p1',
               teams: [
                 {
-                  team_id: 't1',
-                  is_active: 1,
-                  metadata_json: JSON.stringify({ label: 'core' }),
+                  id: 't1',
+                  active: true,
+                  metadata: { label: 'core' },
                 },
               ],
             },
-          ] as unknown as Row[]
+          ]
+        } else {
+          throw new Error('unexpected table ' + ast.table)
         }
-        throw new Error('unexpected table ' + ast.table)
+        return (format.singular ? rows[0] : rows) as Result
       },
     }
     const run = async <R>(callback: (tx: SQLiteTransactionExecutor) => Promise<R>) => {
@@ -418,5 +425,37 @@ describe('createZeroSQLiteServer', () => {
         ],
       },
     ])
+  })
+
+  test('accepts a hydrated singular query result from the transaction executor', async () => {
+    const hydrated = {
+      id: 'n1',
+      done: false,
+      data: { label: 'already decoded' },
+    }
+    let receivedQueryName: string | undefined
+    const hydratedExecutor = {
+      async exec() {},
+      async query() {
+        return []
+      },
+      async queryAst(_ast: unknown, _format: unknown, queryName?: string) {
+        receivedQueryName = queryName
+        return hydrated
+      },
+    } as unknown as SQLiteTransactionExecutor
+    const hydratedProvider: SQLiteTransactionProvider = async (callback) =>
+      callback(hydratedExecutor)
+    const server = createZeroSQLiteServer({
+      schema: sqliteTypesSchema,
+      models: {},
+      createServerActions: () => ({}),
+      transactionProvider: hydratedProvider,
+    })
+
+    await expect(
+      server.query((q) => asQueryInternals(q.note.one()).nameAndArgs('noteByID', ['n1'])),
+    ).resolves.toEqual(hydrated)
+    expect(receivedQueryName).toBe('noteByID')
   })
 })

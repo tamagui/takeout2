@@ -534,12 +534,14 @@ export const zeroServer = createZeroSQLiteServer({
 })
 ```
 
-`sqliteExecutor` implements `exec`, `query`, and `queryAst`. The provider must
-run the callback inside the authoritative SQLite transaction. If the storage
-engine retries the callback, on-zero discards tasks from the abandoned attempt
-and returns only tasks from the committed attempt. The first push creates the
-`<schema>_clients` and `<schema>_mutations` ledger tables in that transaction;
-for example, `schema=zero_0` creates `zero_0_clients` and `zero_0_mutations`.
+`sqliteExecutor` implements `exec`, `query`, and `queryAst`. `queryAst` receives
+the query format and returns the fully materialized logical result, including
+nested relationships and singular shaping. The provider must run the callback
+inside the authoritative SQLite transaction. If the storage engine retries the
+callback, on-zero discards tasks from the abandoned attempt and returns only
+tasks from the committed attempt. The first push creates the `<schema>_clients`
+and `<schema>_mutations` ledger tables in that transaction; for example,
+`schema=zero_0` creates `zero_0_clients` and `zero_0_mutations`.
 
 ### multiple client instances
 

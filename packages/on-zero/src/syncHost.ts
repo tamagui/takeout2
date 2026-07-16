@@ -1,15 +1,22 @@
 import { asQueryInternals } from '@rocicorp/zero/bindings'
 
 import { createPermissions } from './createPermissions'
-import { resolveServerQuery, type ZeroServerCommonOptions } from './createZeroServerCore'
 import {
-  createZeroSQLiteServer,
+  createZeroDirectServer,
+  resolveServerQuery,
+  type ZeroServerCommonOptions,
+} from './createZeroDirectServer'
+import {
+  createSQLiteDatabase,
   createZeroSQLiteTransaction,
+  defaultLedgerTables,
+  encodeSQLiteValue,
   type SqlStatementMetadata,
   type SQLiteExecResult,
   type SQLiteTransactionExecutor,
+  type SQLiteTransactionProvider,
   type ZeroSQLiteTransactionOptions,
-} from './createZeroSQLiteServer'
+} from './sqliteRuntime'
 import { createMutators } from './helpers/createMutators'
 import { runWithAuthScope } from './helpers/mutatorContext'
 import { runWithQueryContext } from './helpers/queryContext'
@@ -47,7 +54,7 @@ export type SyncHostTransactionExecutor = {
   ): Row[] | Promise<Row[]>
   queryAst<Result = unknown>(
     ast: SyncHostJsonValue,
-    format: import('./createZeroSQLiteServer').SQLiteQueryFormat,
+    format: import('./sqliteRuntime').SQLiteQueryFormat,
     queryName?: string,
   ): Result | Promise<Result>
 }
@@ -169,11 +176,18 @@ export function createZeroSyncHostAdapter<
   // creating a second on-zero cleanup ledger.
   mutators._zero_cleanupResults = async () => {}
 
-  const direct = createZeroSQLiteServer({
+  const transactionProvider: SQLiteTransactionProvider = (work) =>
+    transaction((executor) => work(toSQLiteExecutor(executor)))
+  const directDatabaseOptions = {
+    encodeValue: encodeValue ?? encodeSQLiteValue,
+    initializedLedgers: new Set<string>(),
+    ledgerTables: defaultLedgerTables,
+    schema: options.schema,
+    transactionProvider,
+  }
+  const direct = createZeroDirectServer({
     ...options,
-    encodeValue,
-    transactionProvider: (work) =>
-      transaction((executor) => work(toSQLiteExecutor(executor))),
+    createDatabase: () => createSQLiteDatabase(directDatabaseOptions),
   })
 
   return {

@@ -1,4 +1,11 @@
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { runInNewContext } from 'node:vm'
@@ -615,6 +622,55 @@ export const mutate = mutations(schema, perm, {
     // description and count should NOT be in the rename validator
     expect(content).not.toMatch(/rename:[\s\S]*description/)
     expect(content).not.toMatch(/rename:[\s\S]*count/)
+  })
+
+  test('resolves instantiated Zero row fields through Partial and Omit', async () => {
+    symlinkSync(
+      join(import.meta.dirname, '../../../node_modules'),
+      join(testDir, 'node_modules'),
+      'dir',
+    )
+    writeFileSync(
+      join(testDir, 'models/types.ts'),
+      `
+import type { Row } from '@rocicorp/zero'
+import { drizzleZeroConfig } from 'drizzle-zero-sqlite'
+import { sqliteTable, text } from 'drizzle-orm/sqlite-core'
+
+const item = sqliteTable('item', {
+  id: text().primaryKey(),
+  name: text().notNull(),
+  description: text().notNull(),
+})
+const schema = drizzleZeroConfig({ item })
+
+export type Item = Row<(typeof schema)['tables']['item']>
+`,
+    )
+
+    writeFileSync(
+      join(testDir, 'models/item.ts'),
+      `
+import { mutations } from 'on-zero'
+import type { Item } from './types'
+
+type ItemUpdate = { id: string } & Partial<Omit<Item, 'id'>>
+
+export const mutate = mutations('item', {
+  update: async ({ tx }, props: ItemUpdate) => {
+    await tx.mutate.item.update(props)
+  },
+})
+`,
+    )
+
+    await generate({ dir: testDir, silent: true })
+
+    const content = readFileSync(join(testDir, 'generated/syncedMutations.ts'), 'utf-8')
+    expect(content).toContain('name: v.optional(v.string())')
+    expect(content).toContain('description: v.optional(v.string())')
+    expect(content).not.toContain('name: v.optional(v.unknown())')
+    expect(content).not.toContain('description: v.optional(v.unknown())')
   })
 
   test('skips symbol-keyed properties when resolving imported mutation param types', async () => {

@@ -442,6 +442,19 @@ function extractSchemaColumns(
   visit(sourceFile)
 }
 
+function getInstantiatedPropertyType(
+  checker: import('typescript').TypeChecker,
+  parent: import('typescript').Type,
+  name: string,
+) {
+  const resolveProperty: unknown = Reflect.get(checker, 'getTypeOfPropertyOfType')
+  if (typeof resolveProperty !== 'function') return undefined
+  // typescript exposes this runtime method but omits it from TypeChecker.
+  return Reflect.apply(resolveProperty, checker, [parent, name]) as
+    | import('typescript').Type
+    | undefined
+}
+
 // convert a ts.Type to valibot code by walking the type checker AST
 function tsTypeToValibot(
   ts: typeof import('typescript'),
@@ -528,7 +541,14 @@ function tsTypeToValibot(
   }
 
   // resolve symbol property type with fallbacks
-  const resolveSymbolType = (prop: import('typescript').Symbol) => {
+  const resolveSymbolType = (
+    parent: import('typescript').Type,
+    prop: import('typescript').Symbol,
+  ) => {
+    // mapped and conditional types can expose transient symbols with no
+    // declaration, so resolve each property against its concrete parent.
+    const instantiated = getInstantiatedPropertyType(checker, parent, prop.getName())
+    if (instantiated) return instantiated
     if (prop.valueDeclaration)
       return checker.getTypeOfSymbolAtLocation(prop, prop.valueDeclaration)
     if ((prop as any).declarations?.[0])
@@ -544,7 +564,7 @@ function tsTypeToValibot(
     for (const prop of props) {
       const name = prop.getName()
       if (shouldSkipObjectKey(name)) continue
-      const propType = resolveSymbolType(prop)
+      const propType = resolveSymbolType(type, prop)
       const isOptional = !!(prop.getFlags() & ts.SymbolFlags.Optional)
       let val = recurse(propType)
       if (isOptional && !val.startsWith('v.optional(')) {
@@ -589,7 +609,7 @@ function tsTypeToValibot(
     for (const prop of props) {
       const name = prop.getName()
       if (shouldSkipObjectKey(name)) continue
-      const propType = resolveSymbolType(prop)
+      const propType = resolveSymbolType(type, prop)
       const isOptional = !!(prop.getFlags() & ts.SymbolFlags.Optional)
       let val = recurse(propType)
       if (isOptional && !val.startsWith('v.optional(')) {

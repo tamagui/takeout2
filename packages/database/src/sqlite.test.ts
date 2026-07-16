@@ -167,4 +167,27 @@ describe('createSQLiteDatabase', () => {
       { id: 2, title: 'kept' },
     ])
   })
+
+  test('rejects a nested transaction before it waits on its own connection', async () => {
+    const native = new Database(':memory:')
+    databases.push(native)
+    native.exec('CREATE TABLE todo (id INTEGER PRIMARY KEY, title TEXT NOT NULL)')
+    const database = createSQLiteDatabase({
+      schema: { todo },
+      transactionProvider: createBunSQLiteTransactionProvider({
+        database: native,
+        queryAst: unavailableQueryAst,
+      }),
+    })
+
+    await expect(
+      database.transaction(() => database.transaction(() => undefined)),
+    ).rejects.toThrow('nested SQLite transactions are not supported')
+
+    await expect(
+      database.transaction(async ({ drizzle }) =>
+        drizzle.insert(todo).values({ id: 1, title: 'still usable' }).run(),
+      ),
+    ).resolves.toBeDefined()
+  })
 })

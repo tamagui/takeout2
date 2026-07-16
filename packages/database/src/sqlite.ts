@@ -1,4 +1,5 @@
 import { drizzle, type SqliteRemoteDatabase } from 'drizzle-orm/sqlite-proxy'
+import { AsyncLocalStorage } from 'node:async_hooks'
 
 import type { AnyRelations, EmptyRelations } from 'drizzle-orm'
 import type { SQLiteTable } from 'drizzle-orm/sqlite-core'
@@ -161,10 +162,14 @@ export function createBunSQLiteTransactionProvider({
   queryAst,
 }: CreateBunSQLiteTransactionProviderOptions): SQLiteTransactionProvider {
   const executor = createBunSQLiteExecutor({ database, queryAst })
+  const transactionContext = new AsyncLocalStorage<boolean>()
   let tail = Promise.resolve()
 
   return async (work) => {
-    // Keep the native connection's transaction state exclusive across awaits.
+    if (transactionContext.getStore()) {
+      throw new Error('nested SQLite transactions are not supported')
+    }
+    // keep the native connection's transaction state exclusive across awaits.
     const previous = tail
     let release!: () => void
     tail = new Promise<void>((resolve) => {
@@ -172,17 +177,21 @@ export function createBunSQLiteTransactionProvider({
     })
 
     await previous
-    let began = false
     try {
-      database.exec('BEGIN')
-      began = true
-      const value = await work(executor)
-      database.exec('COMMIT')
-      began = false
-      return value
-    } catch (error) {
-      if (began) database.exec('ROLLBACK')
-      throw error
+      return await transactionContext.run(true, async () => {
+        let began = false
+        try {
+          database.exec('BEGIN')
+          began = true
+          const value = await work(executor)
+          database.exec('COMMIT')
+          began = false
+          return value
+        } catch (error) {
+          if (began) database.exec('ROLLBACK')
+          throw error
+        }
+      })
     } finally {
       release()
     }

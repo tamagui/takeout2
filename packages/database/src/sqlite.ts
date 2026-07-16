@@ -154,16 +154,30 @@ export function createBunSQLiteTransactionProvider({
   queryAst,
 }: CreateBunSQLiteTransactionProviderOptions): SQLiteTransactionProvider {
   const executor = createBunSQLiteExecutor({ database, queryAst })
+  let tail = Promise.resolve()
 
   return async (work) => {
-    database.exec('BEGIN')
+    // Keep the native connection's transaction state exclusive across awaits.
+    const previous = tail
+    let release!: () => void
+    tail = new Promise<void>((resolve) => {
+      release = resolve
+    })
+
+    await previous
+    let began = false
     try {
+      database.exec('BEGIN')
+      began = true
       const value = await work(executor)
       database.exec('COMMIT')
+      began = false
       return value
     } catch (error) {
-      database.exec('ROLLBACK')
+      if (began) database.exec('ROLLBACK')
       throw error
+    } finally {
+      release()
     }
   }
 }

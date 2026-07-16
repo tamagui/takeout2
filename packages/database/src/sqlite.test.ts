@@ -113,4 +113,49 @@ describe('createSQLiteDatabase', () => {
       database.transaction(async ({ drizzle }) => drizzle.select().from(todo)),
     ).resolves.toEqual([])
   })
+
+  test('queues a concurrent request until a failed transaction rolls back', async () => {
+    const native = new Database(':memory:')
+    databases.push(native)
+    native.exec('CREATE TABLE todo (id INTEGER PRIMARY KEY, title TEXT NOT NULL)')
+    const database = createSQLiteDatabase({
+      schema: { todo },
+      transactionProvider: createBunSQLiteTransactionProvider({
+        database: native,
+        queryAst: unavailableQueryAst,
+      }),
+    })
+    let releaseFailure!: () => void
+    const failureReady = new Promise<void>((resolve) => {
+      releaseFailure = resolve
+    })
+    let failureInserted!: () => void
+    const failureInsertedPromise = new Promise<void>((resolve) => {
+      failureInserted = resolve
+    })
+    let succeedingTransactionStarted = false
+
+    const failingTransaction = database.transaction(async ({ drizzle }) => {
+      await drizzle.insert(todo).values({ id: 1, title: 'failed' }).run()
+      failureInserted()
+      await failureReady
+      throw new Error('reject')
+    })
+    await failureInsertedPromise
+
+    const succeedingTransaction = database.transaction(async ({ drizzle }) => {
+      succeedingTransactionStarted = true
+      await drizzle.insert(todo).values({ id: 2, title: 'kept' }).run()
+    })
+    await Promise.resolve()
+    expect(succeedingTransactionStarted).toBe(false)
+
+    releaseFailure()
+    await expect(failingTransaction).rejects.toThrow('reject')
+    await expect(succeedingTransaction).resolves.toBeUndefined()
+
+    expect(native.prepare('SELECT * FROM todo ORDER BY id').all()).toEqual([
+      { id: 2, title: 'kept' },
+    ])
+  })
 })

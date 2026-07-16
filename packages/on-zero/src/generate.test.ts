@@ -218,6 +218,27 @@ export const allPosts = () => zero.query.post
     const second = await generate({ dir: testDir, silent: true })
     expect(second.filesChanged).toBe(0)
   })
+
+  test('regenerates after dependency manifest changes', async () => {
+    writeFileSync(
+      join(testDir, 'models/post.ts'),
+      `export const schema = table('post', { id: string() })`,
+    )
+    writeFileSync(
+      join(testDir, 'queries/post.ts'),
+      `export const allPosts = () => zero.query.post`,
+    )
+    writeFileSync(join(testDir, 'package.json'), '{"dependencies":{"on-zero":"1"}}')
+
+    await generate({ dir: testDir, silent: true })
+    const syncedQueriesPath = join(testDir, 'generated/syncedQueries.ts')
+    rmSync(syncedQueriesPath)
+
+    writeFileSync(join(testDir, 'package.json'), '{"dependencies":{"on-zero":"2"}}')
+    await generate({ dir: testDir, silent: true })
+
+    expect(existsSync(syncedQueriesPath)).toBe(true)
+  })
 })
 
 describe('mutations', () => {

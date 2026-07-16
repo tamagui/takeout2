@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "@take-out/helpers": "0.6.15",
+    "@types/async-retry": "1.4.9",
     "async-retry": "^1.3.3",
     "citty": "^0.1.6"
   },
@@ -63,7 +64,6 @@
   },
   "devDependencies": {
     "@tamagui/build": "2.3.1",
-    "@types/async-retry": "^1.4.8",
     "@types/node": "24.0.3",
     "drizzle-orm": "1.0.0-beta.9-e89174b",
     "oxfmt": "^0.16.0",

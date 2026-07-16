@@ -9,7 +9,7 @@ import { zeroHttpFixtureSchema } from './httpPull/fixtureSchema'
 import { createZeroSyncHostAdapter } from './syncHost'
 import { zql } from './zql'
 
-import type { SQLiteQueryFormat } from './createZeroSQLiteServer'
+import type { SqlStatementMetadata, SQLiteQueryFormat } from './createZeroSQLiteServer'
 import type {
   SyncHostApplicationTransaction,
   SyncHostMutatorContext,
@@ -29,14 +29,17 @@ describe('createZeroSyncHostAdapter', () => {
   let executor: SyncHostTransactionExecutor
   let transaction: SyncHostApplicationTransaction
   let lastQueryFormat: SQLiteQueryFormat | undefined
+  let statements: SqlStatementMetadata[]
 
   beforeEach(() => {
     db = new DatabaseSync(':memory:')
     db.exec(
       'CREATE TABLE project (id TEXT PRIMARY KEY, ownerId TEXT NOT NULL, name TEXT NOT NULL)',
     )
+    statements = []
     executor = {
-      exec(sql, params = []) {
+      exec(sql, params = [], metadata) {
+        if (metadata) statements.push(metadata)
         db.prepare(sql).run(...(params as SQLInputValue[]))
       },
       query<Row extends Record<string, unknown>>(sql, params = []) {
@@ -114,6 +117,9 @@ describe('createZeroSyncHostAdapter', () => {
     ])
     expect(validatedAuthID).toBe('u1')
     expect(effectAuthID).toBe('u1')
+    expect(statements).toEqual([
+      { table: 'project', publicTable: 'project', kind: 'insert' },
+    ])
   })
 
   test('returns a structural application error and drops rolled-back effects', async () => {

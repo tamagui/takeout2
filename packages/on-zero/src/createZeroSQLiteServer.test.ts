@@ -8,6 +8,7 @@ import { createZeroSQLiteServer } from './createZeroSQLiteServer'
 import { zeroHttpFixtureSchema } from './httpPull/fixtureSchema'
 
 import type {
+  SqlStatementMetadata,
   SQLiteTransactionExecutor,
   SQLiteTransactionProvider,
 } from './createZeroSQLiteServer'
@@ -115,6 +116,7 @@ describe('createZeroSQLiteServer', () => {
   let db: DatabaseSync
   let retryNextTransaction: boolean
   let transactionProvider: SQLiteTransactionProvider
+  let statements: SqlStatementMetadata[]
 
   beforeEach(() => {
     db = new DatabaseSync(':memory:')
@@ -126,8 +128,10 @@ describe('createZeroSQLiteServer', () => {
     )
 
     retryNextTransaction = false
+    statements = []
     const executor: SQLiteTransactionExecutor = {
-      async exec(sql, params = []) {
+      async exec(sql, params = [], metadata) {
+        if (metadata) statements.push(metadata)
         db.prepare(sql).run(...(params as SQLInputValue[]))
       },
       async query<Row extends Record<string, unknown>>(sql, params = []) {
@@ -403,6 +407,12 @@ describe('createZeroSQLiteServer', () => {
 
     await server.mutate.note.delete({ id: 'n1' })
     expect(db.prepare('SELECT * FROM note_records').all()).toEqual([])
+    expect(statements).toEqual([
+      { table: 'note_records', publicTable: 'note', kind: 'insert' },
+      { table: 'note_records', publicTable: 'note', kind: 'upsert' },
+      { table: 'note_records', publicTable: 'note', kind: 'update' },
+      { table: 'note_records', publicTable: 'note', kind: 'delete' },
+    ])
   })
 
   test('decodes destination rows through a hidden two-hop junction', async () => {

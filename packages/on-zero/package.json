@@ -105,10 +105,10 @@
     "valibot": "^1.1.0"
   },
   "peerDependencies": {
-    "pg": ">=8.0.0",
     "@rocicorp/zero": ">=1.5.0",
     "drizzle-orm": ">=1.0.0-beta.0 <2",
-    "drizzle-zero": ">=1.0.0-beta.0",
+    "drizzle-zero-sqlite": "^0.5.20",
+    "pg": ">=8.0.0",
     "react": "*",
     "react-native": "*"
   },
@@ -122,7 +122,7 @@
     "drizzle-orm": {
       "optional": true
     },
-    "drizzle-zero": {
+    "drizzle-zero-sqlite": {
       "optional": true
     }
   },
@@ -131,7 +131,6 @@
     "@types/node": "25.2.0",
     "@types/pg": "^8.11.10",
     "@types/react": "^19.0.0",
-    "drizzle-zero": "1.0.0-beta.0",
     "jsdom": "29.1.1",
     "oxfmt": "^0.16.0",
     "oxlint": "^1.31.0",

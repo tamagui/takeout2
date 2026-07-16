@@ -196,6 +196,7 @@
     "chrome-devtools-mcp": "^0.16.0",
     "dotenv": "^17.2.3",
     "drizzle-kit": "1.0.0-beta.9-e89174b",
+    "drizzle-zero-sqlite": "0.5.20",
     "fs-extra": "^11.2.0",
     "knip": "^5.82.0",
     "orez": "0.3.1",

@@ -5,6 +5,7 @@ import { resolveServerQuery, type ZeroServerCommonOptions } from './createZeroSe
 import {
   createZeroSQLiteServer,
   createZeroSQLiteTransaction,
+  type SqlStatementMetadata,
   type SQLiteTransactionExecutor,
   type ZeroSQLiteTransactionOptions,
 } from './createZeroSQLiteServer'
@@ -34,7 +35,11 @@ export type SyncHostTransactionContext = {
 }
 
 export type SyncHostTransactionExecutor = {
-  exec(sql: string, params?: readonly unknown[]): void | Promise<void>
+  exec(
+    sql: string,
+    params?: readonly unknown[],
+    metadata?: SqlStatementMetadata,
+  ): void | Promise<void>
   query<Row extends Record<string, unknown> = Record<string, unknown>>(
     sql: string,
     params?: readonly unknown[],
@@ -214,8 +219,8 @@ function toSQLiteExecutor(
   executor: SyncHostTransactionExecutor,
 ): SQLiteTransactionExecutor {
   return {
-    exec(sql, params) {
-      return executor.exec(sql, params)
+    exec(sql, params, metadata) {
+      return executor.exec(sql, params, metadata)
     },
     query<Row extends Record<string, unknown>>(sql: string, params?: readonly unknown[]) {
       return executor.query<Row>(sql, params)

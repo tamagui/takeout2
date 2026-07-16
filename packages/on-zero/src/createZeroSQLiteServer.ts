@@ -17,7 +17,11 @@ import type {
 } from '@rocicorp/zero/server'
 
 export type SQLiteTransactionExecutor = {
-  exec(sql: string, params?: readonly unknown[]): void | Promise<void>
+  exec(
+    sql: string,
+    params?: readonly unknown[],
+    metadata?: SqlStatementMetadata,
+  ): void | Promise<void>
   query<Row extends Record<string, unknown> = Record<string, unknown>>(
     sql: string,
     params?: readonly unknown[],
@@ -27,6 +31,17 @@ export type SQLiteTransactionExecutor = {
     format: SQLiteQueryFormat,
     queryName?: string,
   ): Result | Promise<Result>
+}
+
+/**
+ * Identifies an application write without asking the host to parse its SQL.
+ * `table` is the physical SQLite table used by storage triggers; `publicTable`
+ * is the logical Zero table name exposed by the change feed.
+ */
+export type SqlStatementMetadata = {
+  table: string
+  publicTable: string
+  kind: 'delete' | 'insert' | 'update' | 'upsert'
 }
 
 export type SQLiteQueryFormat = {
@@ -256,6 +271,7 @@ async function executeCrud<Schema extends ZeroSchema>(
     await executor.exec(
       `DELETE FROM ${serverTableName} WHERE ${primaryWhere}`,
       primaryValues,
+      { table: table.serverName ?? table.name, publicTable: tableName, kind },
     )
     return
   }
@@ -276,7 +292,11 @@ async function executeCrud<Schema extends ZeroSchema>(
   )}) VALUES (${columnNames.map(() => '?').join(', ')})`
 
   if (kind === 'insert') {
-    await executor.exec(insert, params)
+    await executor.exec(insert, params, {
+      table: table.serverName ?? table.name,
+      publicTable: tableName,
+      kind,
+    })
     return
   }
 
@@ -299,6 +319,7 @@ async function executeCrud<Schema extends ZeroSchema>(
     await executor.exec(
       `${insert} ON CONFLICT (${conflictColumns}) ${conflictAction}`,
       params,
+      { table: table.serverName ?? table.name, publicTable: tableName, kind },
     )
     return
   }
@@ -319,6 +340,7 @@ async function executeCrud<Schema extends ZeroSchema>(
       ),
       ...primaryValues,
     ],
+    { table: table.serverName ?? table.name, publicTable: tableName, kind },
   )
 }
 

@@ -21,6 +21,7 @@
   },
   "scripts": {
     "build": "tamagui-build --skip-native --skip-types",
+    "test": "bun test",
     "watch": "tamagui-build --skip-native --skip-types --watch",
     "typecheck": "tko run typecheck",
     "lint": "oxlint src",

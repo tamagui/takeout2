@@ -1,5 +1,5 @@
 import { createZeroServer } from 'on-zero/server'
-import { createZeroSQLiteServer } from 'on-zero/sqlite'
+import { createZeroSQLiteServer, type SqlStatementMetadata } from 'on-zero/sqlite'
 
 import type { Config, MutatorContext } from 'on-zero'
 import type { Schema as ZeroSchema } from '@rocicorp/zero'
@@ -36,6 +36,13 @@ const authData: Config['authData'] = {
   id: 'admin',
   role: 'admin',
 }
+
+const sqliteWrite: SqlStatementMetadata = {
+  table: 'project_records',
+  publicTable: 'project',
+  kind: 'upsert',
+}
+void sqliteWrite
 
 postgresServer.mutate.project.create(
   { id: 'pg' },

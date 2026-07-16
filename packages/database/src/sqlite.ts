@@ -15,7 +15,7 @@ export type SQLiteQueryFormat = {
   singular: boolean
 }
 
-export type SQLiteRunResult = {
+export type SQLiteExecResult = {
   changes: number
 }
 
@@ -24,7 +24,7 @@ export type SQLiteTransactionExecutor = {
     sql: string,
     params?: readonly unknown[],
     metadata?: SqlStatementMetadata,
-  ): SQLiteRunResult | Promise<SQLiteRunResult>
+  ): SQLiteExecResult | Promise<SQLiteExecResult>
   query<Row extends Record<string, unknown> = Record<string, unknown>>(
     sql: string,
     params?: readonly unknown[],

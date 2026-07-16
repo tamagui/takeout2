@@ -21,7 +21,7 @@ export type SQLiteTransactionExecutor = {
     sql: string,
     params?: readonly unknown[],
     metadata?: SqlStatementMetadata,
-  ): SQLiteRunResult | Promise<SQLiteRunResult>
+  ): SQLiteExecResult | Promise<SQLiteExecResult>
   query<Row extends Record<string, unknown> = Record<string, unknown>>(
     sql: string,
     params?: readonly unknown[],
@@ -33,7 +33,7 @@ export type SQLiteTransactionExecutor = {
   ): Result | Promise<Result>
 }
 
-export type SQLiteRunResult = {
+export type SQLiteExecResult = {
   changes: number
 }
 

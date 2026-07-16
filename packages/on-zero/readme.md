@@ -338,6 +338,7 @@ generates all files needed to connect your mutations and queries:
   (default: `src/data`)
 - `--watch` - watch for changes and regenerate automatically
 - `--after` - command to run after generation completes
+- `--force` - ignore cached inputs and regenerate all outputs
 
 **examples:**
 
@@ -353,6 +354,9 @@ bun on-zero generate ./app/data
 
 # run linter after generation
 bun on-zero generate --after "bun lint:fix"
+
+# regenerate after upgrading schema or type dependencies
+bun on-zero generate --force
 ```
 
 **types.ts:**

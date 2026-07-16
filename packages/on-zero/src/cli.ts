@@ -28,10 +28,16 @@ const generateCommand = defineCommand({
       description: 'Command to run after generation completes',
       required: false,
     },
+    force: {
+      type: 'boolean',
+      description: 'Ignore cached inputs and regenerate all outputs',
+      required: false,
+      default: false,
+    },
   },
 
   async run({ args }) {
-    const opts = { dir: resolve(args.dir), after: args.after }
+    const opts = { dir: resolve(args.dir), after: args.after, force: args.force }
 
     if (args.watch) {
       await watch(opts)

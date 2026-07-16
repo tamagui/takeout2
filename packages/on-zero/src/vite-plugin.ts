@@ -62,6 +62,7 @@ export function onZeroPlugin(options: OnZeroPluginOptions = {}): Plugin[] {
       dir: dataDir,
       after: options.after,
       silent,
+      force: options.force,
     })
 
   return [

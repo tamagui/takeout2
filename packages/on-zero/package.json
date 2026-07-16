@@ -65,6 +65,16 @@
       "import": "./dist/esm/createZeroSQLiteServer.mjs",
       "require": "./dist/cjs/createZeroSQLiteServer.cjs"
     },
+    "./sync-host": {
+      "types": "./types/syncHost.d.ts",
+      "import": "./dist/esm/syncHost.mjs",
+      "require": "./dist/cjs/syncHost.cjs"
+    },
+    "./http-pull": {
+      "types": "./types/httpPullTransport.d.ts",
+      "import": "./dist/esm/httpPullTransport.mjs",
+      "require": "./dist/cjs/httpPullTransport.cjs"
+    },
     "./vite": {
       "types": "./types/vite-plugin.d.ts",
       "import": "./dist/esm/vite-plugin.mjs",

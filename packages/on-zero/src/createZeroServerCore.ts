@@ -85,6 +85,58 @@ export type ValidateMutationArgs = {
 export type ValidateQueryFn = (args: ValidateQueryArgs) => void
 export type ValidateMutationFn = (args: ValidateMutationArgs) => void | Promise<void>
 
+export type ServerQueryResolverOptions = {
+  authData: AuthData | null
+  name: string
+  args: unknown
+  queries: AnyQueryRegistry
+  permissions: ReturnType<typeof createPermissions>
+  validateQuery?: ValidateQueryFn
+}
+
+export function resolveServerQuery({
+  authData,
+  name,
+  args,
+  queries,
+  permissions,
+  validateQuery,
+}: ServerQueryResolverOptions) {
+  if (name.startsWith('permission.')) {
+    const table = name.slice('permission.'.length)
+    const { objOrId } = args as {
+      objOrId: string | Record<string, any>
+    }
+    const permission = getMutationsPermissions(table)
+    if (!permission) {
+      throw new Error(`[permission] no permission defined for table: ${table}`)
+    }
+    setEvaluatingPermission(true)
+    try {
+      return (getZQL() as any)[table]
+        .where((eb: any) => {
+          return permissions.buildPermissionQuery(
+            authData,
+            eb,
+            permission,
+            objOrId,
+            table,
+          )
+        })
+        .one()
+    } finally {
+      setEvaluatingPermission(false)
+    }
+  }
+
+  if (validateQuery) {
+    validateQuery({ authData, queryName: name, params: args })
+  }
+
+  const query = (mustGetQuery as any)(queries, name)
+  return query.fn({ args, ctx: authData })
+}
+
 export type TransactionAttemptLifecycle = {
   beginAttempt(): void
   completeAttempt(): void
@@ -270,35 +322,15 @@ export function createZeroServerCore<
       )
     }
 
-    const handler = (name: string, args: unknown) => {
-      if (name.startsWith('permission.')) {
-        const table = name.slice('permission.'.length)
-        const { objOrId } = args as {
-          objOrId: string | Record<string, any>
-        }
-        const perm = getMutationsPermissions(table)
-        if (!perm) {
-          throw new Error(`[permission] no permission defined for table: ${table}`)
-        }
-        setEvaluatingPermission(true)
-        try {
-          return (getZQL() as any)[table]
-            .where((eb: any) => {
-              return permissions.buildPermissionQuery(authData, eb, perm, objOrId, table)
-            })
-            .one()
-        } finally {
-          setEvaluatingPermission(false)
-        }
-      }
-
-      if (validateQuery) {
-        validateQuery({ authData, queryName: name, params: args })
-      }
-
-      const query = (mustGetQuery as any)(queries, name)
-      return query.fn({ args, ctx: authData })
-    }
+    const handler = (name: string, args: unknown) =>
+      resolveServerQuery({
+        authData,
+        name,
+        args,
+        queries,
+        permissions,
+        validateQuery,
+      })
 
     const userID = typeof authData?.id === 'string' ? authData.id : undefined
     const response = await runWithQueryContext(

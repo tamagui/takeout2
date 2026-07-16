@@ -134,12 +134,12 @@ describe('zero-http transport', () => {
     )
   })
 
-  test('pushOrigin routes mutations through the authoritative application server', async () => {
+  test('pullOrigin and pushOrigin route sync through the authoritative application server', async () => {
     const requests: RequestRecord[] = []
     const fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const request = recordRequest(input, init)
       requests.push(request)
-      if (request.path === '/pull') {
+      if (request.path.endsWith('/pull')) {
         return jsonResponse({ cookie: request.body.cookie, unchanged: true })
       }
       const mutation = request.body.mutations[0]
@@ -156,6 +156,7 @@ describe('zero-http transport', () => {
     })
     const transport = installHttpPullTransport({
       origin: ORIGIN,
+      pullOrigin: 'https://app.local/zero-http',
       pushOrigin: 'https://app.local/zero-http',
       fetch,
     })
@@ -163,7 +164,7 @@ describe('zero-http transport', () => {
     const zero = createZero()
 
     await eventually(() =>
-      expect(requests.some((request) => request.path === '/pull')).toBe(true),
+      expect(requests.some((request) => request.path.endsWith('/pull'))).toBe(true),
     )
     const mutation = zero.mutate.project.create({
       id: 'p1',
@@ -175,8 +176,8 @@ describe('zero-http transport', () => {
 
     const push = requests.find((request) => request.path.endsWith('/push'))
     expect(push?.url).toBe('https://app.local/zero-http/push')
-    expect(requests.find((request) => request.path === '/pull')?.url).toBe(
-      'https://zero-http.local/pull',
+    expect(requests.find((request) => request.path.endsWith('/pull'))?.url).toBe(
+      'https://app.local/zero-http/pull',
     )
   })
 

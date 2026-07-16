@@ -45,6 +45,11 @@ export type SQLiteValueContext = {
   tableName: string
 }
 
+export type ZeroSQLiteTransactionOptions<Schema extends ZeroSchema> = {
+  schema: Schema
+  encodeValue?: (value: unknown, context: SQLiteValueContext) => unknown
+}
+
 export type SQLiteLedgerTables = {
   clients: string
   mutations: string
@@ -86,13 +91,17 @@ export function createZeroSQLiteServer<
   })
 }
 
-type SQLiteDatabaseOptions<Schema extends ZeroSchema> = {
+type SQLiteTransactionOptions<Schema extends ZeroSchema> = {
   encodeValue: (value: unknown, context: SQLiteValueContext) => unknown
-  initializedLedgers: Set<string>
-  ledgerTables: (upstreamSchema: string) => SQLiteLedgerTables
   schema: Schema
-  transactionProvider: SQLiteTransactionProvider
 }
+
+type SQLiteDatabaseOptions<Schema extends ZeroSchema> =
+  SQLiteTransactionOptions<Schema> & {
+    initializedLedgers: Set<string>
+    ledgerTables: (upstreamSchema: string) => SQLiteLedgerTables
+    transactionProvider: SQLiteTransactionProvider
+  }
 
 function createSQLiteDatabase<Schema extends ZeroSchema>(
   options: SQLiteDatabaseOptions<Schema>,
@@ -117,7 +126,7 @@ function createSQLiteDatabase<Schema extends ZeroSchema>(
           await createLedgerTables(executor, tables)
           attemptLedgers.add(key)
         }
-        const transaction = createSQLiteTransaction(options, executor, input)
+        const transaction = createZeroSQLiteTransaction(options, executor, input)
         const result = await callback(
           transaction,
           createLedgerHooks(options, executor, ensureLedger, input),
@@ -131,11 +140,15 @@ function createSQLiteDatabase<Schema extends ZeroSchema>(
   }
 }
 
-function createSQLiteTransaction<Schema extends ZeroSchema>(
-  options: SQLiteDatabaseOptions<Schema>,
+export function createZeroSQLiteTransaction<Schema extends ZeroSchema>(
+  options: ZeroSQLiteTransactionOptions<Schema>,
   executor: SQLiteTransactionExecutor,
   input?: TransactionProviderInput,
 ): Transaction {
+  const transactionOptions = {
+    encodeValue: options.encodeValue ?? encodeSQLiteValue,
+    schema: options.schema,
+  }
   const clientID = input?.clientID ?? ''
   const mutationID = input?.mutationID ?? 0
   const mutate = new Proxy(
@@ -153,7 +166,7 @@ function createSQLiteTransaction<Schema extends ZeroSchema>(
               const kind = String(kindKey)
               if (!isCrudKind(kind)) return
               return (value: unknown) =>
-                executeCrud(options, executor, tableName, kind, value)
+                executeCrud(transactionOptions, executor, tableName, kind, value)
             },
           },
         )
@@ -178,8 +191,8 @@ function createSQLiteTransaction<Schema extends ZeroSchema>(
     location: 'server',
     mutate,
     mutationID,
-    query: options.schema.enableLegacyQueries
-      ? createLegacyQueryBuilder(options.schema, (query) => {
+    query: transactionOptions.schema.enableLegacyQueries
+      ? createLegacyQueryBuilder(transactionOptions.schema, (query) => {
           const internals = asQueryInternals(query as never)
           return runQuery(internals.ast, internals.format, internals.customQueryID?.name)
         })
@@ -201,7 +214,7 @@ function isCrudKind(value: string): value is CrudKind {
 }
 
 async function executeCrud<Schema extends ZeroSchema>(
-  options: SQLiteDatabaseOptions<Schema>,
+  options: SQLiteTransactionOptions<Schema>,
   executor: SQLiteTransactionExecutor,
   tableName: string,
   kind: CrudKind,
@@ -311,7 +324,7 @@ function serverColumn(table: ZeroSchema['tables'][string], columnName: string) {
 }
 
 function encodeColumn<Schema extends ZeroSchema>(
-  options: SQLiteDatabaseOptions<Schema>,
+  options: SQLiteTransactionOptions<Schema>,
   tableName: string,
   columnName: string,
   value: unknown,

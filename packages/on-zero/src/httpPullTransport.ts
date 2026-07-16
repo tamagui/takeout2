@@ -60,6 +60,7 @@ type PullResponse =
 type TransportState = {
   readonly origin: URL
   readonly originString: string
+  readonly pullOriginString: string
   readonly pushOriginString: string
   readonly fetch: typeof fetch
   readonly nativeWebSocket: WebSocketConstructor | undefined
@@ -85,9 +86,9 @@ export type HttpPullTransport = {
 
 export type HttpPullTransportOptions = {
   origin: string
-  // optional authoritative mutation endpoint base. reads and wake stay on
-  // origin, while push POSTs to <pushOrigin>/push. this supports a native read
-  // host paired with an application server that owns custom mutator execution.
+  // optional authoritative sync endpoint bases. websocket interception and
+  // wake stay on origin, while pull/push POST to their configured bases.
+  pullOrigin?: string
   pushOrigin?: string
   fetch?: typeof fetch
   // when set, every open connection also pulls on this interval so
@@ -121,6 +122,9 @@ export function installHttpPullTransport(
   const state: TransportState = {
     origin: new URL(opts.origin),
     originString: trimTrailingSlash(new URL(opts.origin).toString()),
+    pullOriginString: trimTrailingSlash(
+      new URL(opts.pullOrigin ?? opts.origin).toString(),
+    ),
     pushOriginString: trimTrailingSlash(
       new URL(opts.pushOrigin ?? opts.origin).toString(),
     ),
@@ -540,7 +544,8 @@ class ZeroHttpSocket {
   }
 
   private async postJSON(path: '/pull' | '/push', body: unknown) {
-    const base = path === '/push' ? this.state.pushOriginString : this.state.originString
+    const base =
+      path === '/push' ? this.state.pushOriginString : this.state.pullOriginString
     const response = await this.state.fetch(`${base}${path}`, {
       method: 'POST',
       headers: {

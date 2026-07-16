@@ -34,12 +34,12 @@ import type { Database, TransactionProviderInput } from '@rocicorp/zero/server'
 
 type MutateAuthData = Pick<AuthData, 'email' | 'id'> & Partial<AuthData>
 
-type MutateOptions = {
+export type MutateOptions = {
   authData?: MutateAuthData
   awaitEffects?: boolean
 }
 
-type ServerMutate<Models extends GenericModels> = {
+export type ServerMutate<Models extends GenericModels> = {
   [Key in keyof Models]: {
     [K in keyof Models[Key]['mutate']]: Models[Key]['mutate'][K] extends (
       ctx: MutatorContext,
@@ -157,6 +157,20 @@ export type ZeroDirectServerOptions<
   createDatabase: () => ZeroServerDatabase
 }
 
+export type ZeroDirectServer<Schema extends ZeroSchema, Models extends GenericModels> = {
+  transaction: <
+    CB extends (tx: Transaction) => Promise<any>,
+    Returns extends CB extends (tx: Transaction) => Promise<infer X> ? X : never,
+  >(
+    query: CB,
+  ) => Promise<Returns>
+  mutate: ServerMutate<Models>
+  query: <R>(
+    cb: (q: QueryBuilder) => Query<any, Schema, R>,
+    authData?: AuthData | null,
+  ) => Promise<HumanReadable<R>>
+}
+
 export function createAsyncTaskCollector() {
   const committed: AsyncAction[] = []
   let attempt: AsyncAction[] | undefined
@@ -226,7 +240,10 @@ export function createZeroDirectServerRuntime<
   schema,
   validateMutation,
   validateQuery,
-}: ZeroDirectServerOptions<Schema, Models, ServerActions>) {
+}: ZeroDirectServerOptions<Schema, Models, ServerActions>): {
+  permissions: ReturnType<typeof createPermissions<Schema>>
+  server: ZeroDirectServer<Schema, Models>
+} {
   setSchema(schema)
   setEnvironment('server')
 
@@ -368,7 +385,9 @@ export function createZeroDirectServer<
   Schema extends ZeroSchema,
   Models extends GenericModels,
   ServerActions extends Record<string, unknown>,
->(options: ZeroDirectServerOptions<Schema, Models, ServerActions>) {
+>(
+  options: ZeroDirectServerOptions<Schema, Models, ServerActions>,
+): ZeroDirectServer<Schema, Models> {
   return createZeroDirectServerRuntime(options).server
 }
 

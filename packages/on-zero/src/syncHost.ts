@@ -4,6 +4,7 @@ import { createPermissions } from './createPermissions'
 import {
   createZeroDirectServer,
   resolveServerQuery,
+  type ZeroDirectServer,
   type ZeroServerCommonOptions,
 } from './createZeroDirectServer'
 import {
@@ -92,6 +93,19 @@ export type CreateZeroSyncHostAdapterOptions<
     defaultMutateAuthData?: Pick<AuthData, 'email' | 'id'> & Partial<AuthData>
   }
 
+export type ZeroSyncHostAdapter<
+  Schema extends ZeroSchema,
+  Models extends GenericModels,
+> = {
+  mutators: Readonly<Record<string, SyncHostRegisteredMutator>>
+  resolveQuery(
+    name: string,
+    args: readonly SyncHostJsonValue[],
+    claims: SyncHostClaims,
+  ): Promise<SyncHostJsonValue>
+  server: ZeroDirectServer<Schema, Models>
+}
+
 export class MutationApplicationError extends Error {
   constructor(
     readonly details: string,
@@ -111,7 +125,10 @@ export function createZeroSyncHostAdapter<
   mapAuthData = defaultMapAuthData,
   transaction,
   ...options
-}: CreateZeroSyncHostAdapterOptions<Schema, Models, ServerActions>) {
+}: CreateZeroSyncHostAdapterOptions<Schema, Models, ServerActions>): ZeroSyncHostAdapter<
+  Schema,
+  Models
+> {
   setSchema(options.schema)
   setEnvironment('server')
 

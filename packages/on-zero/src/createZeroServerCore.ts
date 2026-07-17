@@ -3,6 +3,7 @@ import {
   handleQueryRequest as zeroHandleQueryRequest,
 } from '@rocicorp/zero/server'
 
+import { runAsyncTaskEntries } from './asyncTasks'
 import {
   createAsyncTaskCollector,
   createZeroDirectServerRuntime,
@@ -90,7 +91,7 @@ export function createZeroServerCore<
     const tasks = createAsyncTaskCollector()
     const recoveryRequest = request.clone()
     const mutators = createMutators({
-      asyncTasks: tasks.queue,
+      enqueueTask: tasks.enqueueTask,
       can: permissions.can,
       createServerActions,
       environment: 'server',
@@ -110,11 +111,11 @@ export function createZeroServerCore<
     }
 
     if (!skipAsyncTasks && tasks.committed.length) {
-      Promise.all(tasks.committed.map((task) => runWithAuthScope(authData, task))).catch(
-        (err: unknown) => {
-          console.error('[push] async tasks failed', err)
-        },
-      )
+      const entries = tasks.committed.map((entry) => ({
+        ...entry,
+        task: () => runWithAuthScope(authData, entry.task),
+      }))
+      await runAsyncTaskEntries(entries, { background: () => undefined })
     }
 
     return {

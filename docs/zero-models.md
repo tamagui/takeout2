@@ -30,7 +30,7 @@ export const mutate = mutations(schema, permissions, {
     await ctx.tx.mutate.post.insert(post)
 
     if (ctx.server) {
-      ctx.server.asyncTasks.push(() =>
+      ctx.server.enqueueTask(() =>
         ctx.server.actions.analyticsActions().logEvent(ctx.authData.id, 'post_created')
       )
     }
@@ -56,7 +56,7 @@ type MutatorContext = {
   can: (where, obj) => Promise<void>
   server?: {
     actions: ServerActions
-    asyncTasks: AsyncAction[]  // runs after transaction commits
+    enqueueTask(task: AsyncTask, opts?: { barrier?: boolean }): void
   }
 }
 ```
@@ -67,11 +67,14 @@ move slow work out of transactions:
 
 ```ts
 if (ctx.server) {
-  ctx.server.asyncTasks.push(async () => {
+  ctx.server.enqueueTask(async () => {
     await ctx.server.actions.sendPushNotification(message)
   })
 }
 ```
+
+Tasks run in the background after commit by default. Pass `{ barrier: true }`
+only when the client must wait for the effect before issuing its next writes.
 
 ## convergence
 

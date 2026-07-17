@@ -1,5 +1,6 @@
 import { mustGetQuery } from '@rocicorp/zero'
 
+import { runAsyncTaskEntries } from './asyncTasks'
 import { createPermissions } from './createPermissions'
 import { createMutators } from './helpers/createMutators'
 import {
@@ -17,7 +18,9 @@ import { setRunner } from './zeroRunner'
 
 import type {
   AdminRoleMode,
-  AsyncAction,
+  AsyncTask,
+  AsyncTaskEntry,
+  AsyncTaskOptions,
   AuthData,
   GenericModels,
   MutatorContext,
@@ -172,32 +175,14 @@ export type ZeroDirectServer<Schema extends ZeroSchema, Models extends GenericMo
 }
 
 export function createAsyncTaskCollector() {
-  const committed: AsyncAction[] = []
-  let attempt: AsyncAction[] | undefined
-  let completedAttempt: AsyncAction[] | undefined
-  const current = () => attempt ?? committed
-  const queue = new Proxy([] as AsyncAction[], {
-    deleteProperty(_target, property) {
-      return Reflect.deleteProperty(current(), property)
-    },
-    get(_target, property) {
-      const target = current()
-      const value = Reflect.get(target, property, target)
-      return typeof value === 'function' ? value.bind(target) : value
-    },
-    getOwnPropertyDescriptor(_target, property) {
-      return Reflect.getOwnPropertyDescriptor(current(), property)
-    },
-    has(_target, property) {
-      return Reflect.has(current(), property)
-    },
-    ownKeys() {
-      return Reflect.ownKeys(current())
-    },
-    set(_target, property, value) {
-      return Reflect.set(current(), property, value)
-    },
-  })
+  const committed: AsyncTaskEntry[] = []
+  let attempt: AsyncTaskEntry[] | undefined
+  let completedAttempt: AsyncTaskEntry[] | undefined
+
+  const enqueueTask = (task: AsyncTask, opts?: AsyncTaskOptions) => {
+    const entries = attempt ?? committed
+    entries.push({ task, barrier: opts?.barrier === true })
+  }
 
   const lifecycle: TransactionAttemptLifecycle = {
     beginAttempt() {
@@ -222,7 +207,7 @@ export function createAsyncTaskCollector() {
     },
   }
 
-  return { committed, lifecycle, queue }
+  return { committed, enqueueTask, lifecycle }
 }
 
 export function createZeroDirectServerRuntime<
@@ -294,7 +279,7 @@ export function createZeroDirectServerRuntime<
     const mutators = createMutators({
       models,
       environment: 'server',
-      asyncTasks: tasks.queue,
+      enqueueTask: tasks.enqueueTask,
       authData: {
         ...defaultMutateAuthData,
         ...authData,
@@ -319,15 +304,14 @@ export function createZeroDirectServerRuntime<
 
     if (tasks.committed.length) {
       const resolvedAuth = authData ?? null
-      const promise = Promise.all(
-        tasks.committed.map((task) => runWithAuthScope(resolvedAuth, task)),
-      )
+      const entries = tasks.committed.map((entry) => ({
+        ...entry,
+        task: () => runWithAuthScope(resolvedAuth, entry.task),
+      }))
       if (options?.awaitEffects) {
-        await promise
+        await Promise.all(entries.map(({ task }) => task()))
       } else {
-        promise.catch((err: unknown) => {
-          console.error('[mutate] async tasks failed', err)
-        })
+        await runAsyncTaskEntries(entries, { background: () => undefined })
       }
     }
   }

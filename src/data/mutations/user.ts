@@ -17,7 +17,7 @@ export const mutate = mutations('userPublic', permissions, {
     })
 
     if (process.env.VITE_ENVIRONMENT === 'ssr' && server) {
-      server.asyncTasks.push(async () => {
+      server.enqueueTask(async () => {
         await server.actions.analyticsActions().logEvent(authData.id, 'user_onboarded', {
           userId: authData.id,
           hasCompletedProfile: true,
@@ -57,7 +57,7 @@ export const mutate = mutations('userPublic', permissions, {
 
     if (process.env.VITE_ENVIRONMENT === 'ssr' && server) {
       const fieldsUpdated = Object.keys(user).filter((key) => key !== 'id')
-      server.asyncTasks.push(() =>
+      server.enqueueTask(() =>
         server.actions.analyticsActions().logEvent(authData.id, 'profile_updated', {
           fieldsUpdated,
         }),

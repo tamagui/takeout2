@@ -86,7 +86,7 @@ describe('createZeroSyncHostAdapter', () => {
             create: async ({ authData, server, tx }, value: Record<string, unknown>) => {
               expect(authData?.id).toBe('u1')
               await tx.mutate.project.insert(value as never)
-              server?.asyncTasks.push(async () => {
+              server?.enqueueTask(async () => {
                 effectAuthID = getScopedAuthData()?.id as string
               })
             },
@@ -132,7 +132,7 @@ describe('createZeroSyncHostAdapter', () => {
           mutate: {
             reject: async ({ server, tx }, value: Record<string, unknown>) => {
               await tx.mutate.project.insert(value as never)
-              server?.asyncTasks.push(async () => {
+              server?.enqueueTask(async () => {
                 effectRuns++
               })
               throw new Error('denied')

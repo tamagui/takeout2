@@ -30,7 +30,7 @@ export const mutate = mutations('post', permissions, {
     await tx.mutate.post.insert(post)
 
     if (process.env.VITE_ENVIRONMENT === 'ssr' && server && authData) {
-      server.asyncTasks.push(() =>
+      server.enqueueTask(() =>
         server.actions.analyticsActions().logEvent(authData.id, 'post_created', {
           postId: post.id,
           hasImage: Boolean(post.image),
@@ -46,7 +46,7 @@ export const mutate = mutations('post', permissions, {
       const post = await tx.run(zql.post.where('id', obj.id).one())
 
       if (post) {
-        server.asyncTasks.push(() =>
+        server.enqueueTask(() =>
           server.actions.analyticsActions().logEvent(authData.id, 'post_deleted', {
             postId: obj.id,
             postAge: post?.createdAt ? Date.now() - post.createdAt : undefined,

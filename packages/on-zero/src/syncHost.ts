@@ -23,7 +23,7 @@ import { runWithAuthScope } from './helpers/mutatorContext'
 import { runWithQueryContext } from './helpers/queryContext'
 import { setEnvironment, setSchema } from './state'
 
-import type { AuthData, GenericModels } from './types'
+import type { AsyncTaskEntry, AuthData, GenericModels } from './types'
 import type { Schema as ZeroSchema } from '@rocicorp/zero'
 
 export type SyncHostJsonValue =
@@ -147,9 +147,11 @@ export function createZeroSyncHostAdapter<
     for (const mutatorName of Object.keys(model.mutate ?? {})) {
       mutators[`${modelName}|${mutatorName}`] = async (executor, args, context) => {
         const authData = mapAuthData(context.claims)
-        const asyncTasks: Array<() => Promise<void>> = []
+        const asyncTaskEntries: AsyncTaskEntry[] = []
         const modelMutators = createMutators({
-          asyncTasks,
+          enqueueTask(task, opts) {
+            asyncTaskEntries.push({ task, barrier: opts?.barrier === true })
+          },
           authData,
           can: permissions.can,
           createServerActions: options.createServerActions,
@@ -181,7 +183,7 @@ export function createZeroSyncHostAdapter<
         } catch (error) {
           throw asMutationApplicationError(error)
         }
-        for (const task of asyncTasks) {
+        for (const { task } of asyncTaskEntries) {
           context.defer(() => runWithAuthScope(authData, task))
         }
       }

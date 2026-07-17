@@ -13,7 +13,7 @@ const asyncContext =
   contextStore.__onZeroMutatorContext__ ??
   (contextStore.__onZeroMutatorContext__ = createAsyncContext<MutatorContext>())
 
-// lightweight auth-only scope for asyncTasks (where mutation context is gone but authData is needed)
+// lightweight auth-only scope for async tasks (where mutation context is gone but authData is needed)
 const authScopeContext =
   contextStore.__onZeroAuthScopeContext__ ??
   (contextStore.__onZeroAuthScopeContext__ = createAsyncContext<AuthData | null>())

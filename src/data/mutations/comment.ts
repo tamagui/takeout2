@@ -29,7 +29,7 @@ export const mutate = mutations('comment', permissions, {
     await tx.mutate.comment.insert(comment)
 
     if (process.env.VITE_ENVIRONMENT === 'ssr' && server && authData) {
-      server.asyncTasks.push(async () => {
+      server.enqueueTask(async () => {
         await server.actions.pushNotificationActions().notifyCommentOnPost({
           postId: comment.postId,
           commentId: comment.id,

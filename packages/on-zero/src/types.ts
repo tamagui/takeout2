@@ -60,6 +60,17 @@ export type ServerActions =
 
 export type QueryBuilder = SchemaQuery<Schema>
 
+export type AsyncTask = () => Promise<void>
+
+export type AsyncTaskOptions = {
+  barrier?: boolean
+}
+
+export type AsyncTaskEntry = {
+  task: AsyncTask
+  barrier: boolean
+}
+
 /**
  * ➗0️⃣ END OVERRIDDEN TYPES
  */
@@ -71,7 +82,16 @@ export type MutatorContext = {
   environment: 'server' | 'client'
   server?: {
     actions: ServerActions
-    asyncTasks: Array<() => Promise<void>>
+    /**
+     * Schedules work after the mutation transaction commits. Tasks run in the
+     * background by default, following Zero's async task model, so they do not
+     * block the push response.
+     *
+     * Set `barrier: true` only when the client's next writes depend on the
+     * effect, such as provisioning a namespace before the client writes
+     * through a new instance. Barrier tasks finish before the push response.
+     */
+    enqueueTask(task: AsyncTask, opts?: AsyncTaskOptions): void
   }
   can: Can
 }
@@ -111,8 +131,6 @@ export type Can = <PWhere extends Where>(
   where: PWhere,
   obj: string | Record<string, unknown>,
 ) => Promise<void>
-
-export type AsyncAction = () => Promise<void>
 
 type GenericTable = TableBuilderWithColumns<any>
 

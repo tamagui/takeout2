@@ -121,7 +121,7 @@ export const mutate = mutations('message', permissions, {
     })
 
     if (ctx.server) {
-      ctx.server.asyncTasks.push(async () => {
+      ctx.server.enqueueTask(async () => {
         await ctx.server.actions.sendNotification(props)
       })
     }
@@ -744,7 +744,7 @@ type MutatorContext = {
   can: (where, obj) => Promise<void> // permission checker
   server?: {
     actions: ServerActions // async server functions
-    asyncTasks: AsyncAction[] // run after transaction
+    enqueueTask(task: AsyncTask, opts?: { barrier?: boolean }): void
   }
 }
 ```
@@ -757,7 +757,7 @@ export const mutate = mutations('message', permissions, {
     await ctx.can(permissions, messageId)
     await ctx.tx.mutate.message.update({ id: messageId, archived: true })
 
-    ctx.server?.asyncTasks.push(async () => {
+    ctx.server?.enqueueTask(async () => {
       await ctx.server.actions.indexForSearch(messageId)
 
       // zeroServer.mutate works here too - authData is auto-inherited
@@ -770,6 +770,11 @@ export const mutate = mutations('message', permissions, {
   },
 })
 ```
+
+`enqueueTask()` runs after the transaction commits and does not block the push
+response by default. Pass `{ barrier: true }` only when the client's next writes
+depend on the effect, such as provisioning a namespace before the client writes
+through a new Zero instance.
 
 ## getAuth
 
@@ -927,7 +932,7 @@ authData is automatically resolved in this order:
 
 1. explicit `authData` in options (if passed)
 2. current mutation context (inside a mutation)
-3. auth scope (inside asyncTasks - automatically inherited)
+3. auth scope (inside async tasks - automatically inherited)
 4. `defaultMutateAuthData` from `createZeroServer` config (defaults to `{}`)
 
 **one-off queries with `run()`:**

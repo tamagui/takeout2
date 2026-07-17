@@ -209,12 +209,12 @@ describe('createZeroSQLiteServer', () => {
           mutate: {
             create: async ({ tx, server }, value: Record<string, unknown>) => {
               await tx.mutate.project.insert(value as never)
-              server?.asyncTasks.push(async () => {})
-              expect(server?.asyncTasks).toHaveLength(1)
-              server?.asyncTasks.splice(0, 1, async () => {})
-              server!.asyncTasks[0] = async () => {
-                effectRuns++
-              }
+              server?.enqueueTask(
+                async () => {
+                  effectRuns++
+                },
+                { barrier: true },
+              )
             },
           },
         },
@@ -242,7 +242,8 @@ describe('createZeroSQLiteServer', () => {
       { clientGroupID: 'cg1', clientID: 'client-a', lastMutationID: 1 },
     ])
     expect(result.asyncTasks).toHaveLength(1)
-    await result.asyncTasks[0]!()
+    expect(result.asyncTasks[0]!.barrier).toBe(true)
+    await result.asyncTasks[0]!.task()
     expect(effectRuns).toBe(1)
   })
 

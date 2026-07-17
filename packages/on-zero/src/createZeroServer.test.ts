@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 
 import { createZeroServer } from './createZeroServer'
 import { zeroHttpFixtureSchema } from './httpPull/fixtureSchema'
@@ -103,7 +103,7 @@ describe('createZeroServer mutation recovery', () => {
         project: {
           mutate: {
             touch: async ({ server }) => {
-              server?.asyncTasks.push(async () => {
+              server?.enqueueTask(async () => {
                 effectRuns++
               })
               throw new Error('rejected')
@@ -127,6 +127,90 @@ describe('createZeroServer mutation recovery', () => {
     })
     expect(result.asyncTasks).toEqual([])
     expect(effectRuns).toBe(0)
+  })
+
+  test('awaits barrier tasks before resolving the push response', async () => {
+    const pg = new FakePgClient()
+    let releaseBarrier!: () => void
+    let markBarrierStarted!: () => void
+    const barrierStarted = new Promise<void>((resolve) => {
+      markBarrierStarted = resolve
+    })
+    const barrier = new Promise<void>((resolve) => {
+      releaseBarrier = resolve
+    })
+    const zeroServer = createZeroServer({
+      schema: zeroHttpFixtureSchema,
+      models: {
+        project: {
+          mutate: {
+            touch: async ({ server }) => {
+              server?.enqueueTask(
+                async () => {
+                  markBarrierStarted()
+                  await barrier
+                },
+                { barrier: true },
+              )
+            },
+          },
+        },
+      },
+      createServerActions: () => ({}),
+      pool: pg as any,
+    })
+
+    let responseResolved = false
+    const resultPromise = zeroServer
+      .handleMutationRequest({
+        authData: null,
+        request: pushRequest(1),
+      })
+      .then((result) => {
+        responseResolved = true
+        return result
+      })
+
+    await barrierStarted
+    await Promise.resolve()
+    expect(responseResolved).toBe(false)
+
+    releaseBarrier()
+    const result = await resultPromise
+    expect((result.response as any).mutations[0].result).toEqual({})
+  })
+
+  test('does not fail the push when a background task rejects', async () => {
+    const pg = new FakePgClient()
+    const error = new Error('background failed')
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const zeroServer = createZeroServer({
+      schema: zeroHttpFixtureSchema,
+      models: {
+        project: {
+          mutate: {
+            touch: async ({ server }) => {
+              server?.enqueueTask(async () => {
+                throw error
+              })
+            },
+          },
+        },
+      },
+      createServerActions: () => ({}),
+      pool: pg as any,
+    })
+
+    const result = await zeroServer.handleMutationRequest({
+      authData: null,
+      request: pushRequest(1),
+    })
+
+    expect((result.response as any).mutations[0].result).toEqual({})
+    await vi.waitFor(() => {
+      expect(consoleError).toHaveBeenCalledWith('[on-zero] async task failed', error)
+    })
+    consoleError.mockRestore()
   })
 
   test('persists alreadyProcessed duplicate results for zero-cache recovery rows', async () => {

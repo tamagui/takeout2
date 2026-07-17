@@ -1,4 +1,8 @@
-import { createZeroServer } from 'on-zero/server'
+import {
+  createZeroServer,
+  runAsyncTaskEntries,
+  type AsyncTaskEntry,
+} from 'on-zero/server'
 import { createZeroSQLiteServer, type SqlStatementMetadata } from 'on-zero/sqlite'
 
 import type { Config, MutatorContext } from 'on-zero'
@@ -30,6 +34,7 @@ type SQLiteServer = ReturnType<typeof createZeroSQLiteServer<ZeroSchema, Models,
 
 declare const postgresServer: PostgresServer
 declare const sqliteServer: SQLiteServer
+declare const taskEntries: AsyncTaskEntry[]
 
 const authData: Config['authData'] = {
   email: 'admin@example.com',
@@ -43,6 +48,12 @@ const sqliteWrite: SqlStatementMetadata = {
   kind: 'upsert',
 }
 void sqliteWrite
+
+void runAsyncTaskEntries(taskEntries, {
+  background(promise) {
+    void promise
+  },
+})
 
 postgresServer.mutate.project.create(
   { id: 'pg' },

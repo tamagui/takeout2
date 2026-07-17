@@ -17,7 +17,7 @@ export const mutate = mutations('block', permissions, {
     })
 
     if (process.env.VITE_ENVIRONMENT === 'ssr' && server) {
-      server.asyncTasks.push(() =>
+      server.enqueueTask(() =>
         server.actions.analyticsActions().logEvent(authData.id, 'user_blocked', {
           targetUserId: data.blockedId,
         }),
@@ -34,7 +34,7 @@ export const mutate = mutations('block', permissions, {
     const blockedUserId = data.blockedUserId
 
     if (process.env.VITE_ENVIRONMENT === 'ssr' && server && blockedUserId) {
-      server.asyncTasks.push(() =>
+      server.enqueueTask(() =>
         server.actions.analyticsActions().logEvent(authData.id, 'user_unblocked', {
           targetUserId: blockedUserId,
         }),

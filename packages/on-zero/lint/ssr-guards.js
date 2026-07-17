@@ -4,7 +4,7 @@
  * jsPlugins entry in the consumer's .oxlintrc.json.
  *
  * it enforces on-zero's own footgun contract: run() and
- * server.asyncTasks.push() must appear only inside a tree-shakeable
+ * server.enqueueTask() must appear only inside a tree-shakeable
  * `if (process.env.VITE_ENVIRONMENT === 'ssr')` block, never in the
  * non-tree-shakeable `!== 'ssr'` early-return form.
  *
@@ -119,18 +119,19 @@ const runCallRule = createSSRGuardRule(
   'run() is a footgun on client, must be inside `if (process.env.VITE_ENVIRONMENT === "ssr")`',
 )
 
-const asyncTasksRule = createSSRGuardRule(
+const enqueueTaskRule = createSSRGuardRule(
   (node) => {
     const callee = node.callee
+    const object = callee.object
     return (
       callee.type === 'MemberExpression' &&
-      callee.property?.name === 'push' &&
-      callee.object?.type === 'MemberExpression' &&
-      callee.object?.property?.name === 'asyncTasks'
+      callee.property?.name === 'enqueueTask' &&
+      ((object.type === 'Identifier' && object.name === 'server') ||
+        (object.type === 'MemberExpression' && object.property?.name === 'server'))
     )
   },
   'missingGuard',
-  'server.asyncTasks.push must be inside `if (process.env.VITE_ENVIRONMENT === "ssr")`',
+  'server.enqueueTask must be inside `if (process.env.VITE_ENVIRONMENT === "ssr")`',
 )
 
 const noEarlyReturnRule = {
@@ -158,7 +159,7 @@ export default {
   meta: { name: 'ssr-guards' },
   rules: {
     'run-call': runCallRule,
-    'async-tasks': asyncTasksRule,
+    'async-tasks': enqueueTaskRule,
     'no-early-return': noEarlyReturnRule,
   },
 }

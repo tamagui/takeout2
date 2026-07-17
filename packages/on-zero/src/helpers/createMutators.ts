@@ -25,7 +25,7 @@ export function createMutators<Models extends GenericModels>({
   environment,
   authData,
   createServerActions,
-  asyncTasks = [],
+  enqueueTask = () => {},
   can,
   models,
   validateMutation,
@@ -35,7 +35,7 @@ export function createMutators<Models extends GenericModels>({
   authData: AuthData | null
   can: Can
   models: Models
-  asyncTasks?: Array<() => Promise<void>>
+  enqueueTask?: NonNullable<MutatorContext['server']>['enqueueTask']
   createServerActions?: () => Record<string, any>
   validateMutation?: ValidateMutationFn
   /** valibot schemas keyed by model.mutationName, auto-validates args before running */
@@ -61,7 +61,7 @@ export function createMutators<Models extends GenericModels>({
           environment === 'server'
             ? ({
                 actions: serverActions || {},
-                asyncTasks: asyncTasks || {},
+                enqueueTask,
               } as MutatorContext['server'])
             : undefined,
       }

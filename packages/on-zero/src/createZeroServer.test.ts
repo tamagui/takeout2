@@ -213,6 +213,112 @@ describe('createZeroServer mutation recovery', () => {
     consoleError.mockRestore()
   })
 
+  test('registers a promise that settles every background task with the request scheduler', async () => {
+    const pg = new FakePgClient()
+    const error = new Error('background failed')
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    let releaseSibling!: () => void
+    const siblingGate = new Promise<void>((resolve) => {
+      releaseSibling = resolve
+    })
+    let siblingFinished = false
+    let scheduled: Promise<void> | undefined
+    const zeroServer = createZeroServer({
+      schema: zeroHttpFixtureSchema,
+      models: {
+        project: {
+          mutate: {
+            touch: async ({ server }) => {
+              server?.enqueueTask(async () => {
+                throw error
+              })
+              server?.enqueueTask(async () => {
+                await siblingGate
+                siblingFinished = true
+              })
+            },
+          },
+        },
+      },
+      createServerActions: () => ({}),
+      pool: pg as any,
+    })
+
+    const result = await zeroServer.handleMutationRequest({
+      authData: null,
+      request: pushRequest(1),
+      scheduleBackgroundTask: (promise) => {
+        scheduled = promise
+      },
+    })
+
+    expect((result.response as any).mutations[0].result).toEqual({})
+    expect(scheduled).toBeInstanceOf(Promise)
+    expect(siblingFinished).toBe(false)
+
+    let scheduledSettled = false
+    void scheduled!.then(() => {
+      scheduledSettled = true
+    })
+    await Promise.resolve()
+    expect(scheduledSettled).toBe(false)
+
+    releaseSibling()
+    await scheduled
+
+    expect(siblingFinished).toBe(true)
+    expect(consoleError).toHaveBeenCalledWith('[on-zero] async task failed', error)
+    consoleError.mockRestore()
+  })
+
+  test('awaits background tasks when the request has no scheduler', async () => {
+    const pg = new FakePgClient()
+    let markTaskStarted!: () => void
+    const taskStarted = new Promise<void>((resolve) => {
+      markTaskStarted = resolve
+    })
+    let releaseTask!: () => void
+    const taskGate = new Promise<void>((resolve) => {
+      releaseTask = resolve
+    })
+    const zeroServer = createZeroServer({
+      schema: zeroHttpFixtureSchema,
+      models: {
+        project: {
+          mutate: {
+            touch: async ({ server }) => {
+              server?.enqueueTask(async () => {
+                markTaskStarted()
+                await taskGate
+              })
+            },
+          },
+        },
+      },
+      createServerActions: () => ({}),
+      pool: pg as any,
+    })
+
+    let responseResolved = false
+    const resultPromise = zeroServer
+      .handleMutationRequest({
+        authData: null,
+        request: pushRequest(1),
+      })
+      .then((result) => {
+        responseResolved = true
+        return result
+      })
+
+    await taskStarted
+    await Promise.resolve()
+    expect(responseResolved).toBe(false)
+
+    releaseTask()
+    const result = await resultPromise
+    expect((result.response as any).mutations[0].result).toEqual({})
+  })
+
   test('persists alreadyProcessed duplicate results for zero-cache recovery rows', async () => {
     const pg = new FakePgClient()
     const zeroServer = createZeroServer({

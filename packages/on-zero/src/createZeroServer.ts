@@ -15,6 +15,8 @@ import type { Schema as ZeroSchema } from '@rocicorp/zero'
 import type { NodePgTransaction } from '@rocicorp/zero/server/adapters/pg'
 
 export type {
+  BackgroundTaskScheduler,
+  HandleMutationRequestOptions,
   ValidateMutationArgs,
   ValidateMutationFn,
   ValidateQueryArgs,

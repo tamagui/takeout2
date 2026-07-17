@@ -505,7 +505,8 @@ app.post('/api/zero/push', async (req) => {
   const authData = await getAuthFromRequest(req)
   const { response } = await zeroServer.handleMutationRequest({
     authData,
-    request: req
+    request: req,
+    scheduleBackgroundTask: (promise) => host.waitUntil(promise)
   })
   return response
 })
@@ -520,6 +521,12 @@ app.post('/api/zero/pull', async (req) => {
   return response
 })
 ```
+
+`scheduleBackgroundTask` is the request host's lifetime hook, such as
+Cloudflare Workers' `ctx.waitUntil`. on-zero passes it one promise that settles
+after every non-barrier mutator task settles, including when a sibling rejects.
+Without a scheduler, `handleMutationRequest` waits for those tasks before it
+returns.
 
 SQLite uses the same handler surface through a separate entrypoint that does
 not import the PostgreSQL adapter:

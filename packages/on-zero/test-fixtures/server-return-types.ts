@@ -2,6 +2,8 @@ import {
   createZeroServer,
   runAsyncTaskEntries,
   type AsyncTaskEntry,
+  type BackgroundTaskScheduler,
+  type HandleMutationRequestOptions,
 } from 'on-zero/server'
 import { createZeroSQLiteServer, type SqlStatementMetadata } from 'on-zero/sqlite'
 
@@ -54,6 +56,16 @@ void runAsyncTaskEntries(taskEntries, {
     void promise
   },
 })
+
+const scheduleBackgroundTask: BackgroundTaskScheduler = (promise) => {
+  void promise
+}
+const mutationRequest: HandleMutationRequestOptions = {
+  authData,
+  request: new Request('https://example.com/api/zero/push'),
+  scheduleBackgroundTask,
+}
+void postgresServer.handleMutationRequest(mutationRequest)
 
 postgresServer.mutate.project.create(
   { id: 'pg' },

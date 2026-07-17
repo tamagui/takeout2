@@ -34,6 +34,15 @@ type PushRequestBody = {
   clientGroupID?: unknown
 }
 
+export type BackgroundTaskScheduler = (promise: Promise<void>) => void
+
+export type HandleMutationRequestOptions = {
+  authData: AuthData | null
+  request: Request
+  scheduleBackgroundTask?: BackgroundTaskScheduler
+  skipAsyncTasks?: boolean
+}
+
 export type PersistAlreadyProcessedArgs = {
   clientGroupID: string
   mutations: AlreadyProcessedMutation[]
@@ -82,12 +91,9 @@ export function createZeroServerCore<
   const handleMutationRequest = async ({
     authData,
     request,
+    scheduleBackgroundTask,
     skipAsyncTasks,
-  }: {
-    authData: AuthData | null
-    request: Request
-    skipAsyncTasks?: boolean
-  }) => {
+  }: HandleMutationRequestOptions) => {
     const tasks = createAsyncTaskCollector()
     const recoveryRequest = request.clone()
     const mutators = createMutators({
@@ -115,7 +121,7 @@ export function createZeroServerCore<
         ...entry,
         task: () => runWithAuthScope(authData, entry.task),
       }))
-      await runAsyncTaskEntries(entries, { background: () => undefined })
+      await runAsyncTaskEntries(entries, { background: scheduleBackgroundTask })
     }
 
     return {

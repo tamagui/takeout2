@@ -1,6 +1,6 @@
 {
   "name": "@take-out/native-hot-update",
-  "version": "0.6.17",
+  "version": "0.6.18",
   "main": "dist/cjs",
   "module": "dist/esm",
   "devDependencies": {

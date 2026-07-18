@@ -20,17 +20,18 @@ type SchemaTableBuilder<TName extends TableName> = TableBuilderWithColumns<
 // HMR registry - stores mutation implementations and proxies by table name
 // allows hot-swapping implementations without changing object references
 // stored on globalThis to persist across HMR module reloads
-const registryKey = '__onZeroMutationRegistry__'
-const proxyKey = '__onZeroProxyRegistry__'
-
 function mutationRegistry(): Map<string, Record<string, Function>> {
-  // @ts-ignore
-  return (globalThis[registryKey] ||= new Map())
+  const global = globalThis as typeof globalThis & {
+    __onZeroMutationRegistry__?: Map<string, Record<string, Function>>
+  }
+  return (global.__onZeroMutationRegistry__ ||= new Map())
 }
 
 function proxyRegistry(): Map<string, any> {
-  // @ts-ignore
-  return (globalThis[proxyKey] ||= new Map())
+  const global = globalThis as typeof globalThis & {
+    __onZeroProxyRegistry__?: Map<string, any>
+  }
+  return (global.__onZeroProxyRegistry__ ||= new Map())
 }
 
 // get or create a proxy that delegates to the registry

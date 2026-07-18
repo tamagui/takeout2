@@ -108,6 +108,10 @@ export function createZeroServerCore<
     })
     const processor = new PushProcessor(
       withTransactionLifecycle(createDatabase(), tasks.lifecycle),
+      undefined,
+      // zero replays prior-client mutations during recovery; the response
+      // acknowledges them, while real processor failures still log as errors.
+      'error',
     )
     const response = await processor.process(mutators, request)
 

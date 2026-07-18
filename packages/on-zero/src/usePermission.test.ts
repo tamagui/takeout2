@@ -1,4 +1,4 @@
-import { boolean, string, table } from '@rocicorp/zero'
+import { boolean, createBuilder, string, table } from '@rocicorp/zero'
 import { describe, expect, test } from 'vitest'
 
 import {
@@ -29,7 +29,8 @@ describe('usePermission _uid query identity', () => {
       })
       .primaryKey('id')
 
-    setSchema({ tables: { testEntity: testTable }, version: 1 } as any)
+    const schema = { tables: { testEntity: testTable }, version: 1 } as any
+    setSchema(schema, createBuilder(schema) as any)
     setEnvironment('client')
 
     // simulate what createPermissionCheckFn does:

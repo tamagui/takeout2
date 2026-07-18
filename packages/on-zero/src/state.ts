@@ -1,4 +1,4 @@
-import { createBuilder, type Schema } from '@rocicorp/zero'
+import type { Schema, SchemaQuery } from '@rocicorp/zero'
 import { globalValue } from '@take-out/helpers'
 
 import type { AuthData, QueryBuilder } from './types'
@@ -32,10 +32,10 @@ export const getSchema = () => {
   return schema
 }
 
-export const setSchema = (_: Schema) => {
+export const setSchema = <S extends Schema>(_: S, zql: SchemaQuery<S>) => {
   const state = getState()
   state.schema = _
-  state.zql = createBuilder(_) as QueryBuilder
+  state.zql = zql as QueryBuilder
 }
 
 export const getAuthData = () => {

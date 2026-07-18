@@ -1,4 +1,5 @@
 import { asQueryInternals } from '@rocicorp/zero/bindings'
+import { createBuilder, type Schema as ZeroSchema } from '@rocicorp/zero'
 
 import { createPermissions } from './createPermissions'
 import {
@@ -24,7 +25,6 @@ import { runWithQueryContext } from './helpers/queryContext'
 import { setEnvironment, setSchema } from './state'
 
 import type { AsyncTaskEntry, AuthData, GenericModels } from './types'
-import type { Schema as ZeroSchema } from '@rocicorp/zero'
 
 export type SyncHostJsonValue =
   | string
@@ -129,7 +129,7 @@ export function createZeroSyncHostAdapter<
   Schema,
   Models
 > {
-  setSchema(options.schema)
+  setSchema(options.schema, createBuilder(options.schema))
   setEnvironment('server')
 
   const permissions = createPermissions({

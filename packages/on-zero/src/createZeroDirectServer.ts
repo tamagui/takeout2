@@ -1,4 +1,4 @@
-import { mustGetQuery } from '@rocicorp/zero'
+import { createBuilder, mustGetQuery } from '@rocicorp/zero'
 
 import { runAsyncTaskEntries } from './asyncTasks'
 import { createPermissions } from './createPermissions'
@@ -229,7 +229,7 @@ export function createZeroDirectServerRuntime<
   permissions: ReturnType<typeof createPermissions<Schema>>
   server: ZeroDirectServer<Schema, Models>
 } {
-  setSchema(schema)
+  setSchema(schema, createBuilder(schema))
   setEnvironment('server')
 
   const permissions = createPermissions<Schema>({

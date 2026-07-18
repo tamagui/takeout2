@@ -1,4 +1,9 @@
-import { defineQueries, defineQuery, Zero as ZeroClient } from '@rocicorp/zero'
+import {
+  createBuilder,
+  defineQueries,
+  defineQuery,
+  Zero as ZeroClient,
+} from '@rocicorp/zero'
 import {
   useConnectionState,
   useZero,
@@ -136,7 +141,7 @@ export function createZeroClientInternal<
   type ZeroInstance = Zero<Schema, ZeroMutators>
   type TableName = keyof Schema['tables'] & string
 
-  setSchema(schema)
+  setSchema(schema, createBuilder(schema))
 
   // only set environment to 'client' if server hasn't already claimed it
   // (during SSR, createZeroServer runs first and sets 'server')

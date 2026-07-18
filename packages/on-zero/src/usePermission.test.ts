@@ -1,7 +1,11 @@
 import { boolean, string, table } from '@rocicorp/zero'
 import { describe, expect, test } from 'vitest'
 
-import { getMutationsPermissions, setMutationsPermissions } from './modelRegistry'
+import {
+  getAllMutationsPermissions,
+  getMutationsPermissions,
+  setMutationsPermissions,
+} from './modelRegistry'
 import { registerQuery, getQueryName } from './queryRegistry'
 import { setEnvironment, setSchema } from './state'
 
@@ -73,6 +77,7 @@ describe('usePermission _uid query identity', () => {
     const perm = getMutationsPermissions('testEntity')
     expect(perm).toBeDefined()
     expect(perm).toBe(mockWhere)
+    expect(getAllMutationsPermissions().get('testEntity')).toBe(mockWhere)
   })
 
   test('query name registration preserves permission namespace', () => {

@@ -849,22 +849,6 @@ export function createZeroClientInternal<
       // transition, so a stuck error state doesn't retry-storm.
       const staleReconnectRef = useRef<string | null>(null)
       const needsAuthRef = useRef(false)
-      // fatal 'error' states pause zero permanently: upstream documents that the
-      // host application must call connect() to resume. a transient internal
-      // client error (e.g. zero 1.7's late-socket-open race after a /pull 500)
-      // otherwise kills every subsequent mutation until page reload. resume with
-      // bounded exponential backoff; attempts reset on the next 'connected'.
-      const fatalResumeRef = useRef<{
-        attempts: number
-        timer: ReturnType<typeof setTimeout> | null
-      }>({ attempts: 0, timer: null })
-
-      useEffect(() => {
-        const resume = fatalResumeRef.current
-        return () => {
-          if (resume.timer) clearTimeout(resume.timer)
-        }
-      }, [])
 
       useEffect(() => {
         const name = state.name
@@ -892,28 +876,6 @@ export function createZeroClientInternal<
           return
         }
         if (name !== 'error') staleReconnectRef.current = null
-
-        // fatal error: schedule one resume per error entry, backing off per
-        // consecutive failure (5s, 10s, 20s, 40s, capped 60s) so a persistent
-        // server failure cannot retry-storm, while a one-off client race
-        // recovers without a reload. 'closed' stays terminal.
-        const fatalResume = fatalResumeRef.current
-        if (name === 'error') {
-          if (!fatalResume.timer) {
-            const delay = Math.min(5_000 * 2 ** fatalResume.attempts, 60_000)
-            fatalResume.timer = setTimeout(() => {
-              fatalResume.timer = null
-              fatalResume.attempts += 1
-              void Promise.resolve(zeroInstance.connection?.connect?.()).catch(() => {})
-            }, delay)
-          }
-        } else {
-          if (fatalResume.timer) {
-            clearTimeout(fatalResume.timer)
-            fatalResume.timer = null
-          }
-          if (name === 'connected') fatalResume.attempts = 0
-        }
 
         // needs-auth: the token expired and zero won't auto-resume unless the
         // auth string changes. refresh it and reconnect in place, once.

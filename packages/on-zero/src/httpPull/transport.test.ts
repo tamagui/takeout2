@@ -429,23 +429,33 @@ describe('zero-http transport', () => {
     view.destroy()
   })
 
-  test('transient pull failures back off reconnect attempts', async () => {
-    const requests: RequestRecord[] = []
-    const fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-      const request = recordRequest(input, init)
-      requests.push(request)
-      expect(request.path).toBe('/pull')
+  test('transient failures never delay a synthetic open beyond Zero timeout', async () => {
+    vi.useFakeTimers()
+    const fetch = vi.fn(async () => {
       throw new TypeError('Failed to fetch')
     })
     install(fetch)
-    createZero()
 
-    await eventually(() => expect(requests.length).toBe(1))
-    await sleep(150)
-    expect(requests.length).toBe(1)
-    await eventually(() => expect(requests.length).toBe(2), 1_500)
-    await sleep(150)
-    expect(requests.length).toBe(2)
+    // each failed socket used to increase one transport-global delay. after
+    // five failures the next synthetic open waited 16s, exceeding stock Zero's
+    // 10s connection timeout and letting the abandoned open poison the client.
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const { socket } = openRawSocketWithMessages()
+      let closed = false
+      socket.addEventListener('close', () => {
+        closed = true
+      })
+      await vi.advanceTimersByTimeAsync(1)
+      expect(closed).toBe(true)
+    }
+
+    const { socket } = openRawSocketWithMessages()
+    let opened = false
+    socket.addEventListener('open', () => {
+      opened = true
+    })
+    await vi.advanceTimersByTimeAsync(1)
+    expect(opened).toBe(true)
   })
 
   test('non-origin WebSockets pass through to the native implementation', () => {

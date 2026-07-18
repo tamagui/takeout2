@@ -161,10 +161,14 @@ test('connectionDataset mirrors connection state onto the body dataset', async (
   expect(document.body.dataset.zeroReason).toBe('boom')
 })
 
-test('fatal error state resumes with backoff and resets attempts on connected', async () => {
+test('fatal error state stays terminal and reports the reason', async () => {
   vi.useFakeTimers()
   try {
     const instance = await mount({}, 'conn-fatal')
+    const events: Array<{ type: string; message?: string }> = []
+    const off = client.zeroEvents.listen((event) => {
+      if (event) events.push(event)
+    })
 
     await act(async () => {
       instance.connection.state.set({
@@ -174,44 +178,16 @@ test('fatal error state resumes with backoff and resets attempts on connected', 
       await Promise.resolve()
     })
 
-    // fatal (non-stale-poke) error: no immediate reconnect, one scheduled at 5s.
+    await act(async () => {
+      vi.advanceTimersByTime(60_000)
+      await Promise.resolve()
+    })
     expect(instance.connection.connect).not.toHaveBeenCalled()
-    await act(async () => {
-      vi.advanceTimersByTime(5_000)
-      await Promise.resolve()
+    expect(events).toContainEqual({
+      type: 'error',
+      message: 'Got open event but connect start time is undefined',
     })
-    expect(instance.connection.connect).toHaveBeenCalledTimes(1)
-
-    // the resume fails back to error: next attempt backs off to 10s.
-    await act(async () => {
-      instance.connection.state.set({ name: 'connecting' })
-      await Promise.resolve()
-      instance.connection.state.set({ name: 'error', reason: 'still broken' })
-      await Promise.resolve()
-    })
-    await act(async () => {
-      vi.advanceTimersByTime(5_000)
-      await Promise.resolve()
-    })
-    expect(instance.connection.connect).toHaveBeenCalledTimes(1)
-    await act(async () => {
-      vi.advanceTimersByTime(5_000)
-      await Promise.resolve()
-    })
-    expect(instance.connection.connect).toHaveBeenCalledTimes(2)
-
-    // a successful resume resets the backoff for the next incident.
-    await act(async () => {
-      instance.connection.state.set({ name: 'connected' })
-      await Promise.resolve()
-      instance.connection.state.set({ name: 'error', reason: 'new incident' })
-      await Promise.resolve()
-    })
-    await act(async () => {
-      vi.advanceTimersByTime(5_000)
-      await Promise.resolve()
-    })
-    expect(instance.connection.connect).toHaveBeenCalledTimes(3)
+    off()
   } finally {
     vi.useRealTimers()
   }

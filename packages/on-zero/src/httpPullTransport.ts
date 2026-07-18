@@ -71,12 +71,9 @@ type TransportState = {
   readonly queryForward: boolean
   readonly queryAware: boolean
   nextPokeID: number
-  transientFailureCount: number
 }
 
 const COOKIE_WIDTH = 20
-const TRANSIENT_RECONNECT_BACKOFF_BASE_MS = 1_000
-const TRANSIENT_RECONNECT_BACKOFF_MAX_MS = 30_000
 
 export type HttpPullTransport = {
   pull(): Promise<void>
@@ -140,7 +137,6 @@ export function installHttpPullTransport(
     queryForward: opts.queryForward === true,
     queryAware: opts.queryTransform !== undefined || opts.queryForward === true,
     nextPokeID: 0,
-    transientFailureCount: 0,
   }
 
   const Shim = class {
@@ -258,7 +254,10 @@ class ZeroHttpSocket {
     this.queueDesiredQueries(decoded.initConnectionMessage?.[1])
 
     this.state.sockets.add(this)
-    this.openTimer = setTimeout(() => this.open(), reconnectDelayMs(this.state))
+    // open on the next task so Zero can attach its listeners. Zero owns the
+    // connection timeout and retry cadence; delaying this synthetic open here
+    // can outlive Zero's 10s attempt and deliver an event to abandoned state.
+    this.openTimer = setTimeout(() => this.open(), 0)
   }
 
   addEventListener(type: SocketEventType, listener: SocketListener | null) {
@@ -557,7 +556,6 @@ class ZeroHttpSocket {
     if (!response.ok) {
       throw new ZeroHttpResponseError(path, response.status)
     }
-    resetTransientFailures(this.state)
     return response.json()
   }
 
@@ -596,7 +594,6 @@ class ZeroHttpSocket {
       if (this.readyState !== this.CLOSED) this.close(1000, error.message)
       return
     }
-    recordTransientFailure(this.state)
     this.emit('error', { error })
     this.close(1011, errorMessage(error))
   }
@@ -822,26 +819,4 @@ function isStaleClientCookieError(error: unknown): error is ZeroHttpResponseErro
     error.path === '/pull' &&
     error.status === 409
   )
-}
-
-function reconnectDelayMs(state: TransportState) {
-  if (state.transientFailureCount === 0) return 0
-  return Math.min(
-    TRANSIENT_RECONNECT_BACKOFF_BASE_MS * 2 ** (state.transientFailureCount - 1),
-    TRANSIENT_RECONNECT_BACKOFF_MAX_MS,
-  )
-}
-
-function recordTransientFailure(state: TransportState) {
-  const maxExponent = Math.log2(
-    TRANSIENT_RECONNECT_BACKOFF_MAX_MS / TRANSIENT_RECONNECT_BACKOFF_BASE_MS,
-  )
-  state.transientFailureCount = Math.min(
-    state.transientFailureCount + 1,
-    Math.ceil(maxExponent) + 1,
-  )
-}
-
-function resetTransientFailures(state: TransportState) {
-  state.transientFailureCount = 0
 }

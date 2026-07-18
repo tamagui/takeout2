@@ -23,12 +23,15 @@ type SchemaTableBuilder<TName extends TableName> = TableBuilderWithColumns<
 const registryKey = '__onZeroMutationRegistry__'
 const proxyKey = '__onZeroProxyRegistry__'
 
-// @ts-ignore
-const mutationRegistry: Map<string, Record<string, Function>> = globalThis[registryKey] ||
-(globalThis[registryKey] = new Map())
-// @ts-ignore
-const proxyRegistry: Map<string, any> =
-  globalThis[proxyKey] || (globalThis[proxyKey] = new Map())
+function mutationRegistry(): Map<string, Record<string, Function>> {
+  // @ts-ignore
+  return (globalThis[registryKey] ||= new Map())
+}
+
+function proxyRegistry(): Map<string, any> {
+  // @ts-ignore
+  return (globalThis[proxyKey] ||= new Map())
+}
 
 // get or create a proxy that delegates to the registry
 // returns the SAME proxy object on subsequent calls so HMR works
@@ -37,10 +40,10 @@ function getOrCreateMutationProxy<T extends Record<string, Function>>(
   implementations: T,
 ): T {
   // always update implementations (supports HMR)
-  mutationRegistry.set(tableName, implementations)
+  mutationRegistry().set(tableName, implementations)
 
   // return existing proxy if we have one (HMR case)
-  const existing = proxyRegistry.get(tableName)
+  const existing = proxyRegistry().get(tableName)
   if (existing) {
     return existing as T
   }
@@ -48,25 +51,25 @@ function getOrCreateMutationProxy<T extends Record<string, Function>>(
   // first time - create the proxy
   const proxy = new Proxy({} as T, {
     get(_, key: string) {
-      return mutationRegistry.get(tableName)?.[key]
+      return mutationRegistry().get(tableName)?.[key]
     },
     ownKeys() {
-      const current = mutationRegistry.get(tableName)
+      const current = mutationRegistry().get(tableName)
       return current ? Object.keys(current) : []
     },
     getOwnPropertyDescriptor(_, key: string) {
-      const current = mutationRegistry.get(tableName)
+      const current = mutationRegistry().get(tableName)
       if (current && key in current) {
         return { enumerable: true, configurable: true, value: current[key] }
       }
     },
     has(_, key: string) {
-      const current = mutationRegistry.get(tableName)
+      const current = mutationRegistry().get(tableName)
       return current ? key in current : false
     },
   })
 
-  proxyRegistry.set(tableName, proxy)
+  proxyRegistry().set(tableName, proxy)
   return proxy
 }
 

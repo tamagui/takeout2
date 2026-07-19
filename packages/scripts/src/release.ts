@@ -585,7 +585,7 @@ await cmd`publish takeout packages to npm`
         }
 
         // revert version changes after dry-run
-        if (dryRun) {
+        if (dryRun && !rePublish) {
           await run(`git checkout -- packages/*/package.json`, { silent: true })
           console.info('Reverted version changes\n')
         }

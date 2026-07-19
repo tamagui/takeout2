@@ -56,7 +56,9 @@ git log --oneline <last-synced-commit>..HEAD
 **Takeout and on-zero are pre-1.0. Minor and patch releases may contain
 significant breaking changes. Treat every version change as a migration. Never
 assume an upgrade is safe from its semver shape, and never stop after updating
-package versions or the lockfile.**
+package versions or the lockfile. Derive migration work from the exact release
+commits and source diff instead of relying on migration details from an older
+release.**
 
 For each commit:
 
@@ -124,19 +126,6 @@ Check if the user has ejected from the monorepo setup:
 - Preserve any local modifications to these packages
 
 ### 6. Handle Special Cases
-
-**on-zero 0.7 custom CRUD:**
-
-- In `mutations(table, permissions, handlers)`, a supplied `insert`, `upsert`,
-  `update`, or `delete` handler is fully custom
-- A custom CRUD handler no longer receives an automatic permission check or an
-  automatic `ctx.tx.mutate.<table>.<operation>()` call
-- Audit every model overriding a CRUD name; each handler must perform its
-  intended write and explicitly call `ctx.can(...)` when authorization is
-  required
-- CRUD names omitted from `handlers` remain generated and automatically
-  permissioned; do not duplicate checks in those generated paths
-- Test allowed and denied paths and confirm denial rolls back the transaction
 
 **Environment variables:**
 

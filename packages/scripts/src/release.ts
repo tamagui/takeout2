@@ -11,7 +11,7 @@ await cmd`publish takeout packages to npm`
   .args(
     `--patch boolean --minor boolean --major boolean --canary boolean
      --rerun boolean --republish boolean --finish boolean --skip-finish boolean
-     --dry-run boolean --skip-test boolean --skip-build boolean --skip-version boolean
+     --dry-run boolean --skip-test boolean --skip-build boolean --skip-version boolean --skip-publish boolean
      --dirty boolean --tamagui-git-user boolean --sync-on-zero boolean --skip-on-zero-sync boolean
      --undocumented boolean --skip-all boolean`,
   )
@@ -45,6 +45,7 @@ await cmd`publish takeout packages to npm`
       args.skipTest ||
       process.argv.includes('--skip-tests')
     const skipBuild = finish || rePublish || skipAll || args.skipBuild
+    const skipPublish = args.skipPublish
     const dryRun = args.dryRun
     const tamaguiGitUser = args.tamaguiGitUser
     const syncOnZeroOnly = args.syncOnZero
@@ -289,7 +290,7 @@ await cmd`publish takeout packages to npm`
 
       // ensure we are up to date
       // ensure we are on main
-      if (!canary) {
+      if (!canary && !process.env.CI) {
         if ((await run(`git rev-parse --abbrev-ref HEAD`)).stdout.trim() !== 'main') {
           throw new Error(`Not on main`)
         }
@@ -343,7 +344,7 @@ await cmd`publish takeout packages to npm`
       console.info('install and build')
 
       if (!rePublish && !finish) {
-        await run(`bun install`)
+        await run(process.env.CI ? `bun install --frozen-lockfile` : `bun install`)
       }
 
       if (!skipBuild && !finish) {
@@ -422,7 +423,7 @@ await cmd`publish takeout packages to npm`
         await run(`git diff`)
       }
 
-      if (!finish) {
+      if (!finish && !skipPublish) {
         const packDir = path.join(os.tmpdir(), `takeout-release-${nextVersion}`)
         await fs.ensureDir(packDir)
 
@@ -432,22 +433,35 @@ await cmd`publish takeout packages to npm`
             .filter(Boolean)
             .join(' ')
           const tgzPath = path.join(packDir, `${name.replace('/', '-')}.tgz`)
+          const packageJsonPath = path.join(cwd, 'package.json')
+          const packageJsonBeforePack = await fs.readFile(packageJsonPath, 'utf8')
+          const packageJsonForPublish = JSON.parse(packageJsonBeforePack)
+          packageJsonForPublish.repository = {
+            type: 'git',
+            url: 'https://github.com/tamagui/takeout2.git',
+            directory: path.relative(process.cwd(), cwd),
+          }
+          await writeJSON(packageJsonPath, packageJsonForPublish, { spaces: 2 })
 
           // pack with bun (properly converts workspace:* to versions)
           // use swap-exports for packages with build scripts, otherwise just pack
-          if (json.scripts?.build) {
-            await run(
-              `bun run build --swap-exports -- bun pm pack --filename ${tgzPath}`,
-              {
+          try {
+            if (json.scripts?.build) {
+              await run(
+                `bun run build --swap-exports -- bun pm pack --filename ${tgzPath}`,
+                {
+                  cwd,
+                  silent: true,
+                },
+              )
+            } else {
+              await run(`bun pm pack --filename ${tgzPath}`, {
                 cwd,
                 silent: true,
-              },
-            )
-          } else {
-            await run(`bun pm pack --filename ${tgzPath}`, {
-              cwd,
-              silent: true,
-            })
+              })
+            }
+          } finally {
+            await fs.writeFile(packageJsonPath, packageJsonBeforePack)
           }
 
           try {

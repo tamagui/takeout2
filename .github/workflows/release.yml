@@ -34,7 +34,6 @@ jobs:
           BEFORE_SHA: ${{ github.event.before }}
         run: |
           set -euo pipefail
-          git fetch --no-tags origin main
 
           if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
             version=$(node -p "require('./packages/helpers/package.json').version")

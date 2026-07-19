@@ -425,10 +425,45 @@ await cmd`publish takeout packages to npm`
 
       if (!finish && !skipPublish) {
         const packDir = path.join(os.tmpdir(), `takeout-release-${nextVersion}`)
+        await fs.remove(packDir)
         await fs.ensureDir(packDir)
 
-        const failedPublishes: string[] = []
-        const publishOne = async ({ name, cwd, json }: (typeof packageJsons)[number]) => {
+        const isPublished = async ({ name }: (typeof packageJsons)[number]) => {
+          try {
+            const result = await run(`npm view ${name}@${nextVersion} version --json`, {
+              cwd: packDir,
+              captureOutput: true,
+              silent: true,
+            })
+            return JSON.parse(result.stdout.trim()) === nextVersion
+          } catch (error) {
+            const message = String(error)
+            const cause = error instanceof Error ? (error.cause as any) : undefined
+            const output = `${message}\n${cause?.stdout || ''}\n${cause?.stderr || ''}`
+            if (/E404|404 Not Found|is not in this registry/i.test(output)) {
+              return false
+            }
+            throw new Error(`Could not verify ${name}@${nextVersion} on npm:\n${output}`)
+          }
+        }
+
+        console.info(`Checking ${packageJsons.length} package versions on npm...`)
+        const publishedChecks = await pMap(
+          packageJsons,
+          async (pkg) => ({ pkg, published: await isPublished(pkg) }),
+          { concurrency: 8 },
+        )
+        const pendingPackages = publishedChecks
+          .filter(({ pkg, published }) => {
+            if (published) {
+              console.info(`Skipping ${pkg.name}: this version is already published`)
+              return false
+            }
+            return true
+          })
+          .map(({ pkg }) => pkg)
+
+        const prepareOne = async ({ name, cwd, json }: (typeof packageJsons)[number]) => {
           const publishOptions = [canary && `--tag canary`, dryRun && `--dry-run`]
             .filter(Boolean)
             .join(' ')
@@ -464,48 +499,68 @@ await cmd`publish takeout packages to npm`
             await fs.writeFile(packageJsonPath, packageJsonBeforePack)
           }
 
-          try {
-            await run(`npm publish ${tgzPath} ${publishOptions}`.trim(), {
-              cwd: packDir,
-              interactive: true,
-            })
-            publishedNames.push(name)
-            console.info(`${dryRun ? '[dry-run] ' : ''}Published ${name}`)
-          } catch (err) {
-            if (rePublish) {
-              console.warn(
-                `⚠️  ${name}: publish failed (likely already published), continuing`,
-              )
-              return
-            }
-            console.error(`Failed to publish ${name}:`, err)
-            failedPublishes.push(name)
+          const workspaceDir = path.join(packDir, 'workspaces', name.replace('/', '_'))
+          await fs.ensureDir(workspaceDir)
+          await run(
+            `tar -xzf ${JSON.stringify(tgzPath)} -C ${JSON.stringify(workspaceDir)} --strip-components=1`,
+            { silent: true },
+          )
+
+          return {
+            workspace: path.relative(packDir, workspaceDir),
+            publishOptions,
           }
         }
 
-        if (process.stdin.isTTY && process.stdout.isTTY) {
-          console.info(
-            'npm will open the browser for 2FA. Select “do not challenge for the next 5 minutes” so the remaining packages can publish without more prompts.',
-          )
-        }
+        if (pendingPackages.length > 0) {
+          if (process.stdin.isTTY && process.stdout.isTTY && !dryRun) {
+            console.info(
+              'npm will open the browser for 2FA once. Select “do not challenge for the next 5 minutes” so the same short-lived approval can publish the remaining packages.',
+            )
+          }
 
-        const [firstPackage, ...restPackages] = packageJsons
-        if (firstPackage) {
-          await publishOne(firstPackage)
-        }
-        if (failedPublishes.length > 0) {
-          throw new Error(
-            `Failed to publish ${failedPublishes.length} packages:\n${failedPublishes.join('\n')}\n\nRe-run after fixing the publish error.`,
+          const prepared = await pMap(pendingPackages, prepareOne, { concurrency: 8 })
+          await writeJSON(
+            path.join(packDir, 'package.json'),
+            {
+              name: 'takeout-release',
+              private: true,
+              workspaces: prepared.map(({ workspace }) => workspace),
+            },
+            { spaces: 2 },
           )
-        }
-        await pMap(restPackages, publishOne, {
-          concurrency: 15,
-        })
 
-        if (failedPublishes.length > 0) {
-          throw new Error(
-            `Failed to publish ${failedPublishes.length} packages:\n${failedPublishes.join('\n')}\n\nRe-run with --republish to retry.`,
-          )
+          const publishOptions = prepared[0]?.publishOptions || ''
+          const webAuthCache = path.join(process.cwd(), 'scripts/cache-npm-webauth.cjs')
+          const nodeOptions = [process.env.NODE_OPTIONS, `--require=${webAuthCache}`]
+            .filter(Boolean)
+            .join(' ')
+
+          try {
+            await run(
+              `npm publish --workspaces --ignore-scripts --access public ${publishOptions}`.trim(),
+              {
+                cwd: packDir,
+                env: { NODE_OPTIONS: nodeOptions },
+                interactive: true,
+              },
+            )
+            publishedNames.push(...pendingPackages.map(({ name }) => name))
+          } catch (error) {
+            const postflight = await pMap(
+              pendingPackages,
+              async (pkg) => ({ pkg, published: await isPublished(pkg) }),
+              { concurrency: 8 },
+            )
+            const completed = postflight.filter(({ published }) => published)
+            const missing = postflight.filter(({ published }) => !published)
+            publishedNames.push(...completed.map(({ pkg }) => pkg.name))
+
+            throw new Error(
+              `Publish stopped after ${completed.length} packages. Still missing:\n${missing.map(({ pkg }) => pkg.name).join('\n')}\n\nRe-run with --republish to retry only these packages.`,
+              { cause: error },
+            )
+          }
         }
 
         publishSucceeded = true

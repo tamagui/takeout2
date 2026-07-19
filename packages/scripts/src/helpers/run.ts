@@ -49,10 +49,20 @@ export async function run(
     detached?: boolean
     timeout?: number
     timing?: boolean | string
+    interactive?: boolean
   },
 ) {
-  const { env, cwd, silent, captureOutput, prefix, detached, timeout, timing } =
-    options || {}
+  const {
+    env,
+    cwd,
+    silent,
+    captureOutput,
+    prefix,
+    detached,
+    timeout,
+    timing,
+    interactive,
+  } = options || {}
 
   if (timing) {
     const name = typeof timing === 'string' ? timing : command
@@ -91,7 +101,7 @@ export async function run(
       const shell = spawn('bash', ['-c', command], {
         env: { ...process.env, ...env },
         cwd,
-        stdio: ['ignore', 'pipe', 'pipe'],
+        stdio: interactive ? 'inherit' : ['ignore', 'pipe', 'pipe'],
         detached: detached ?? false,
       })
 

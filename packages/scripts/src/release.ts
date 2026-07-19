@@ -2,23 +2,6 @@
 
 import { cmd } from './cmd'
 
-function isPublishAuthOrOtpError(error: unknown) {
-  return /EOTP|one-time password/i.test(getPublishErrorMessage(error))
-}
-
-function redactNpmOtp(message: string) {
-  return message.replace(/--otp(?:=|\s+)\S+/g, '--otp=******')
-}
-
-function getPublishErrorMessage(error: unknown) {
-  const cause = error instanceof Error ? (error.cause as any) : undefined
-  return redactNpmOtp(
-    [error instanceof Error ? error.message : String(error), cause?.stdout, cause?.stderr]
-      .filter(Boolean)
-      .join('\n'),
-  )
-}
-
 // avoid emitter error
 process.setMaxListeners(50)
 process.stderr.setMaxListeners(50)
@@ -32,7 +15,7 @@ await cmd`publish takeout packages to npm`
      --dirty boolean --tamagui-git-user boolean --sync-on-zero boolean --skip-on-zero-sync boolean
      --undocumented boolean --skip-all boolean`,
   )
-  .run(async ({ args, $, run, path, os, prompt }) => {
+  .run(async ({ args, $, run, path, os }) => {
     const fs = (await import('fs-extra')).default
     const { writeJSON } = await import('fs-extra')
     const pMap = (await import('p-map')).default
@@ -66,8 +49,6 @@ await cmd`publish takeout packages to npm`
     const tamaguiGitUser = args.tamaguiGitUser
     const syncOnZeroOnly = args.syncOnZero
     const skipOnZeroSync = args.skipOnZeroSync
-    const canPromptForNpmOtp =
-      !finish && !undocumented && !process.argv.includes('--ci') && !process.env.CI
 
     async function syncOnZeroIn() {
       if (!(await fs.pathExists(onZeroGithub))) return
@@ -445,47 +426,6 @@ await cmd`publish takeout packages to npm`
         const packDir = path.join(os.tmpdir(), `takeout-release-${nextVersion}`)
         await fs.ensureDir(packDir)
 
-        let cachedOtp = process.env.npm_config_otp || process.env.NPM_CONFIG_OTP
-        let otpPromptInFlight: Promise<string> | undefined
-        const getOtp = (reason: string, optional = false): Promise<string> => {
-          if (otpPromptInFlight) return otpPromptInFlight
-          otpPromptInFlight = (async () => {
-            console.info(`\n${reason}`)
-            const code = await prompt.text({
-              message: optional
-                ? 'npm 2FA code (6 digits, empty to skip)'
-                : 'npm 2FA code (6 digits)',
-              validate: (value) => {
-                const next = String(value ?? '').trim()
-                if (optional && !next) return
-                if (/^\d{6}$/.test(next)) return
-                return 'Enter a 6-digit code'
-              },
-            })
-            if (prompt.isCancel(code)) {
-              prompt.cancel('Publish cancelled')
-              throw new Error('No OTP provided, aborting publish')
-            }
-            const otp = String(code ?? '').trim()
-            if (!otp) {
-              if (optional) return ''
-              throw new Error('No OTP provided, aborting publish')
-            }
-            cachedOtp = otp
-            return otp
-          })().finally(() => {
-            otpPromptInFlight = undefined
-          })
-          return otpPromptInFlight
-        }
-
-        if (!cachedOtp && canPromptForNpmOtp && !dryRun) {
-          await getOtp(
-            'Most Takeout npm publishes require 2FA. Provide the current code now so every package publish uses it.',
-            true,
-          )
-        }
-
         const failedPublishes: string[] = []
         const publishOne = async ({ name, cwd, json }: (typeof packageJsons)[number]) => {
           const publishOptions = [canary && `--tag canary`, dryRun && `--dry-run`]
@@ -510,42 +450,29 @@ await cmd`publish takeout packages to npm`
             })
           }
 
-          let attempt = 0
-          let otp = cachedOtp
-          while (true) {
-            attempt++
-            try {
-              const otpOption = otp ? `--otp=${otp}` : ''
-              await run(`npm publish ${tgzPath} ${publishOptions} ${otpOption}`.trim(), {
-                cwd: packDir,
-                silent: true,
-                captureOutput: true,
-                env: otp ? { npm_config_otp: otp } : undefined,
-              })
-              publishedNames.push(name)
-              console.info(`${dryRun ? '[dry-run] ' : ''}Published ${name}`)
-              return
-            } catch (err) {
-              if (isPublishAuthOrOtpError(err) && attempt < 3) {
-                if (otp && cachedOtp === otp) cachedOtp = undefined
-                otp = await getOtp(
-                  attempt === 1
-                    ? `npm requires a 2FA code to publish ${name}`
-                    : `npm 2FA code expired, need a fresh one for ${name}`,
-                )
-                continue
-              }
-              if (rePublish) {
-                console.warn(
-                  `⚠️  ${name}: publish failed (likely already published), continuing`,
-                )
-                return
-              }
-              console.error(`Failed to publish ${name}:`, getPublishErrorMessage(err))
-              failedPublishes.push(name)
+          try {
+            await run(`npm publish ${tgzPath} ${publishOptions}`.trim(), {
+              cwd: packDir,
+              interactive: true,
+            })
+            publishedNames.push(name)
+            console.info(`${dryRun ? '[dry-run] ' : ''}Published ${name}`)
+          } catch (err) {
+            if (rePublish) {
+              console.warn(
+                `⚠️  ${name}: publish failed (likely already published), continuing`,
+              )
               return
             }
+            console.error(`Failed to publish ${name}:`, err)
+            failedPublishes.push(name)
           }
+        }
+
+        if (process.stdin.isTTY && process.stdout.isTTY) {
+          console.info(
+            'npm will open the browser for 2FA. Select “do not challenge for the next 5 minutes” so the remaining packages can publish without more prompts.',
+          )
         }
 
         const [firstPackage, ...restPackages] = packageJsons

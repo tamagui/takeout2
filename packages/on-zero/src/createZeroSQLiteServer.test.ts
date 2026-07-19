@@ -6,6 +6,8 @@ import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 
 import { createZeroSQLiteServer } from './createZeroSQLiteServer'
 import { zeroHttpFixtureSchema } from './httpPull/fixtureSchema'
+import { mutations, skipMutation } from './mutations'
+import { serverWhere } from './serverWhere'
 
 import type {
   SqlStatementMetadata,
@@ -288,6 +290,71 @@ describe('createZeroSQLiteServer', () => {
       error: 'app',
       message: 'rejected',
     })
+  })
+
+  test('allows a custom insert to no-op when it leaves no row to authorize', async () => {
+    const projectPermission = serverWhere('project', (q) => q.cmp('ownerId', 'u1'))
+    const projectMutations = mutations('project', projectPermission, {
+      insert: async ({ tx }, value: { id: string; ownerId: string; name: string }) => {
+        if (value.name === 'skip') return skipMutation
+        await tx.mutate.project.insert(value)
+      },
+    })
+    const server = createZeroSQLiteServer({
+      schema: zeroHttpFixtureSchema,
+      models: {
+        project: { mutate: projectMutations },
+      },
+      createServerActions: () => ({}),
+      transactionProvider,
+    })
+
+    const skipped = await server.handleMutationRequest({
+      authData: { id: 'u1', role: 'user' },
+      request: pushRequest(1, 'project.insert', {
+        id: 'p1',
+        ownerId: 'u1',
+        name: 'skip',
+      }),
+    })
+    expect((skipped.response as any).mutations[0].result).toEqual({})
+    expect(db.prepare('SELECT * FROM project').all()).toEqual([])
+  })
+
+  test('still permission-checks a custom insert that writes its target row', async () => {
+    let inserted: Record<string, unknown> | undefined
+    let permissionChecks = 0
+    const projectPermission = serverWhere('project', (q) => q.cmp('ownerId', 'u1'))
+    const projectMutations = mutations('project', projectPermission, {
+      insert: async ({ tx }, value: { id: string; ownerId: string; name: string }) => {
+        await tx.mutate.project.insert(value)
+      },
+    })
+    const value = { id: 'p2', ownerId: 'u2', name: 'unauthorized' }
+
+    await expect(
+      projectMutations.insert(
+        {
+          tx: {
+            mutate: {
+              project: {
+                insert: async (row: Record<string, unknown>) => {
+                  inserted = row
+                },
+              },
+            },
+          },
+          can: async (_where, row) => {
+            permissionChecks++
+            expect(row).toEqual(value)
+            throw new Error('denied')
+          },
+        } as never,
+        value,
+      ),
+    ).rejects.toThrow('denied')
+    expect(inserted).toEqual(value)
+    expect(permissionChecks).toBe(1)
   })
 
   test('recovers duplicate results and deletes them through the cleanup mutation', async () => {

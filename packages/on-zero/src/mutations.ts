@@ -78,7 +78,12 @@ function getOrCreateMutationProxy<T extends Record<string, Function>>(
 //  - mutations({}) which doesn't add the "allowed" helper or add CRUD
 //  - mutation('tableName', permissions) adds CRUD with permissions, adds allowed
 
-type MutationBuilder<Obj = any> = (ctx: MutatorContext, obj?: Obj) => Promise<void>
+export const skipMutation = Symbol('on-zero.skip-mutation')
+
+type MutationBuilder<Obj = any> = (
+  ctx: MutatorContext,
+  obj?: Obj,
+) => Promise<void | typeof skipMutation>
 type MutationBuilders = Record<string, MutationBuilder>
 
 // start of adding custom can.write(message) style
@@ -187,7 +192,11 @@ export function mutations<
         const existing = mutations?.[action]
 
         if (existing) {
-          await existing(ctx, obj)
+          const result = await existing(ctx, obj)
+          // an intentional no-op has no target row to authorize. require the
+          // explicit sentinel so a handler that writes related rows cannot
+          // bypass its target-table permission by leaving the target absent.
+          if (result === skipMutation) return
         } else {
           type TableName = keyof typeof ctx.tx.mutate // weird type foo because we declare this module and then type check
           await ctx.tx.mutate[tableName as TableName]![action](obj)

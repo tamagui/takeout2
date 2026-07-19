@@ -21,7 +21,7 @@ migrate-dist.js
 
 .sst
 
-# generated claude skills from packages/docs (run `bun tko skills generate` to regenerate)
+# generated claude skills from docs (run `bun tko skills generate` to regenerate)
 .claude/skills/takeout-*
 # used for syncing with upstream
 .claude/sync

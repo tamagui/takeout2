@@ -1,12 +1,12 @@
 ---
-name: takeout-sync-prompt
-description: Sync forked Takeout with upstream tamagui/takeout2 — git merge, preserve customizations.
+name: takeout-upgrade
+description: Upgrade or sync a Takeout app with upstream tamagui/takeout2 while preserving customizations and migrating breaking changes. Use for `bun tko sync`, `bun up takeout`, Takeout version updates, on-zero upgrades, and @take-out package upgrades.
 ---
 
-# Takeout Repository Sync Prompt
+# Upgrade Takeout
 
-You are helping sync a fork of the Takeout starter kit with the latest upstream
-changes.
+You are helping upgrade a fork of the Takeout starter kit to the latest upstream
+code and package versions.
 
 ## Context
 
@@ -16,8 +16,9 @@ production-ready apps. The upstream repository is at
 
 ## Your Task
 
-Intelligently sync the latest Takeout changes into this repository while
-preserving all user customizations.
+Intelligently apply the latest Takeout changes while preserving user
+customizations, migrate every changed API, and leave the application passing its
+normal checks.
 
 ## Process
 
@@ -52,6 +53,11 @@ repository:
 git log --oneline <last-synced-commit>..HEAD
 ```
 
+**Takeout and on-zero are pre-1.0. Minor and patch releases may contain
+significant breaking changes. Treat every version change as a migration. Never
+assume an upgrade is safe from its semver shape, and never stop after updating
+package versions or the lockfile.**
+
 For each commit:
 
 1. **Read the commit message and diff** to understand what changed
@@ -67,6 +73,12 @@ For each commit:
    - Does this repository still contain the code being modified?
    - Has the user customized this area significantly?
    - Is this a core Takeout feature or something the user likely removed?
+
+4. **Trace changed interfaces through the application**:
+   - Search for every caller of changed exports, types, and runtime behavior
+   - Update sender and receiver together
+   - Regenerate outputs from their source inputs
+   - Delete compatibility code for APIs removed upstream
 
 ### 4. Apply Changes Intelligently
 
@@ -101,10 +113,10 @@ Check if the user has ejected from the monorepo setup:
 **If ejected:**
 
 - DO NOT copy any changes from `./packages/*` directories
-- Instead, at the end of syncing, check the latest `@take-out/*` package
-  versions in the upstream `package.json`
-- Run: `bun add @take-out/cli@^X.X.X @take-out/helpers@^X.X.X` (etc.) with the
-  latest versions
+- Record the installed `on-zero` and `@take-out/*` versions
+- Run `bun up takeout` to update the complete Takeout upgrade set
+- Compare the exact old and new versions, then apply every required application
+  migration from the release commits and source diff
 
 **If NOT ejected:**
 
@@ -112,6 +124,19 @@ Check if the user has ejected from the monorepo setup:
 - Preserve any local modifications to these packages
 
 ### 6. Handle Special Cases
+
+**on-zero 0.7 custom CRUD:**
+
+- In `mutations(table, permissions, handlers)`, a supplied `insert`, `upsert`,
+  `update`, or `delete` handler is fully custom
+- A custom CRUD handler no longer receives an automatic permission check or an
+  automatic `ctx.tx.mutate.<table>.<operation>()` call
+- Audit every model overriding a CRUD name; each handler must perform its
+  intended write and explicitly call `ctx.can(...)` when authorization is
+  required
+- CRUD names omitted from `handlers` remain generated and automatically
+  permissioned; do not duplicate checks in those generated paths
+- Test allowed and denied paths and confirm denial rolls back the transaction
 
 **Environment variables:**
 
@@ -176,6 +201,11 @@ After processing all commits:
    ```
 
 4. If checks fail, report the errors and suggest fixes
+
+5. Report the version or commit range inspected, breaking changes found, call
+   sites migrated, generated outputs refreshed, and checks run. Do not call the
+   upgrade complete merely because the merge, `bun up takeout`, or install
+   command succeeded.
 
 ## Important Guidelines
 

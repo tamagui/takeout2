@@ -68,6 +68,5 @@
       "project": ["src/**/*.ts"],
       "ignore": ["src/build-initial.ts"]
     }
-  },
-  "ignoreWorkspaces": ["packages/docs"]
+  }
 }

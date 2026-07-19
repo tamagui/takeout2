@@ -71,12 +71,10 @@ And the high-level structure worth learning:
 
 ## Documentation
 
-For docs we intend to update over time as we upgrade the repo, we have the
-takeout command. See those docs with `bun tko docs list`.
-
-For docs specific to your app, use the [docs](./docs) directory. Any markdown
-file with YAML frontmatter containing `name` and `description` will be
-automatically symlinked to `.claude/skills/` for Claude Code integration:
+Takeout documentation lives in the [docs](./docs) directory so it can evolve
+with your app. See it with `bun tko docs list`. Any markdown file with YAML
+frontmatter containing `name` and `description` will be automatically symlinked
+to `.claude/skills/` for Claude Code integration:
 
 ```yaml
 ---
@@ -105,10 +103,9 @@ Takeout comes with a CLI (`bun tko`) that has a variety of commands.
 Use:
 
 - `bun tko` to see commands
-- `bun docs list` to see docs
+- `bun tko docs list` to see docs
 
-If you want to eject the docs and scripts into your repo you can use
-`bun tko docs eject` and `bun tko scripts eject`.
+Use `bun tko scripts eject` if you want local copies of the packaged scripts.
 
 ## Development
 

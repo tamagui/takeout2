@@ -63,7 +63,8 @@ takeout check
 
 #### `takeout docs`
 
-Manage and retrieve documentation files:
+Read documentation from the current repository's `skills/` or `docs/`
+directory:
 
 ```bash
 # list available docs
@@ -75,9 +76,6 @@ takeout docs get zero tamagui
 # get path to docs directory
 takeout docs path
 
-# eject docs to local ./docs folder
-takeout docs eject
-
 # generate Claude Code skills from docs
 takeout skills generate
 takeout skills generate --clean  # clean and regenerate
@@ -87,7 +85,7 @@ takeout skills generate --clean  # clean and regenerate
 
 The `skills generate` command generates Claude Code skills from your documentation:
 
-1. scans docs from both `./docs/` (local) and package docs
+1. scans docs from `./skills/` when present, otherwise `./docs/`
 2. only docs with YAML frontmatter containing `name` and `description` become skills
 3. those docs are symlinked into `.claude/skills/`
 

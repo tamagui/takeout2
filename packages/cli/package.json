@@ -52,7 +52,6 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.8.2",
-    "@take-out/docs": "0.7.0",
     "@take-out/run": "0.7.0",
     "@take-out/scripts": "0.7.0",
     "citty": "^0.1.6",

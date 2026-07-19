@@ -15,21 +15,12 @@ import {
   unlinkSync,
   writeFileSync,
 } from 'node:fs'
-import { createRequire } from 'node:module'
-import { dirname, join, relative, resolve } from 'node:path'
+import { join, relative, resolve } from 'node:path'
 
 import { defineCommand } from 'citty'
 import pc from 'picocolors'
 
 // --- doc skills generation ---
-
-const require = createRequire(import.meta.url)
-let DOCS_DIR: string
-try {
-  DOCS_DIR = dirname(require.resolve('@take-out/docs/package.json'))
-} catch {
-  DOCS_DIR = ''
-}
 
 const SKILL_PREFIX = 'takeout-'
 
@@ -66,29 +57,15 @@ function resolveLocalDocsDir(cwd: string): string {
   return join(cwd, 'docs')
 }
 
-function collectAllDocs(
-  cwd: string,
-): Array<{ name: string; path: string; source: 'package' | 'local' }> {
-  const docs: Array<{ name: string; path: string; source: 'package' | 'local' }> = []
-  const seen = new Set<string>()
+function collectAllDocs(cwd: string): Array<{ name: string; path: string }> {
+  const docs: Array<{ name: string; path: string }> = []
 
   const localDocsDir = resolveLocalDocsDir(cwd)
   if (existsSync(localDocsDir)) {
     const files = readdirSync(localDocsDir).filter((f) => f.endsWith('.md'))
     for (const file of files) {
       const name = file.replace(/\.md$/, '')
-      docs.push({ name, path: join(localDocsDir, file), source: 'local' })
-      seen.add(name)
-    }
-  }
-
-  if (DOCS_DIR && existsSync(DOCS_DIR)) {
-    const files = readdirSync(DOCS_DIR).filter((f) => f.endsWith('.md'))
-    for (const file of files) {
-      const name = file.replace(/\.md$/, '')
-      if (!seen.has(name)) {
-        docs.push({ name, path: join(DOCS_DIR, file), source: 'package' })
-      }
+      docs.push({ name, path: join(localDocsDir, file) })
     }
   }
 
@@ -179,10 +156,7 @@ async function generateDocSkills(
       symlinkSync(relativePath, skillFile)
       symlinked++
 
-      const sourceLabel = doc.source === 'local' ? pc.blue('local') : pc.dim('package')
-      console.info(
-        `  ${pc.green('⟷')} ${skillName} ${sourceLabel} ${pc.dim('(symlink)')}`,
-      )
+      console.info(`  ${pc.green('⟷')} ${skillName} ${pc.dim('(symlink)')}`)
     } else {
       if (!hasFrontmatter) {
         skipped++
@@ -214,9 +188,7 @@ async function generateDocSkills(
       if (stat.isSymbolicLink()) {
         const linkTarget = readlinkSync(skillFile)
         const resolvedTarget = resolve(skillDir, linkTarget)
-        shouldUnlink =
-          resolvedTarget.startsWith(`${localDocsDir}/`) ||
-          (!!DOCS_DIR && resolvedTarget.startsWith(`${DOCS_DIR}/`))
+        shouldUnlink = resolvedTarget.startsWith(`${localDocsDir}/`)
       }
     } catch {
       // ignore unrelated skill directories

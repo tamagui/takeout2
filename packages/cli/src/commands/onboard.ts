@@ -367,7 +367,7 @@ export const onboardCommand = defineCommand({
       console.info()
       console.info('  bun ios            # build iOS dev app')
       console.info('  bun android        # build Android dev app')
-      console.info('  bun tko docs list  # view Takeout docs')
+      console.info('  bun tko docs list  # view repository docs')
       console.info()
     }
 
@@ -981,7 +981,7 @@ async function setupUncloudDeployment(cwd: string): Promise<void> {
   console.info(pc.gray('   uc machine add --name server-2 root@IP'))
   console.info(pc.gray('   uc scale web 3    # run 3 instances'))
   console.info()
-  console.info(pc.gray('view detailed guide: bun tko docs read deployment-uncloud'))
+  console.info(pc.gray('view detailed guide: bun tko docs get deploy-uncloud'))
   console.info(pc.gray('or see: docs/deployment-uncloud.md'))
 }
 

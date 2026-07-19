@@ -5,8 +5,7 @@
 import { execSync, spawn, spawnSync } from 'node:child_process'
 import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { dirname, join, parse } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
 
 import { defineCommand } from 'citty'
 import pc from 'picocolors'
@@ -25,26 +24,14 @@ const UPSTREAM_REMOTE = 'takeout-upstream'
 const TAKEOUT_FILE = '.takeout'
 
 function getSyncPrompt(): string {
-  try {
-    // find monorepo root by looking for packages/docs
-    const currentDir = dirname(fileURLToPath(import.meta.url))
-    let monorepoRoot = currentDir
-
-    // go up directories until we find packages/docs/sync-prompt.md
-    while (monorepoRoot !== parse(monorepoRoot).root) {
-      const promptPath = join(monorepoRoot, 'packages', 'docs', 'sync-prompt.md')
-      if (existsSync(promptPath)) {
-        return readFileSync(promptPath, 'utf-8')
-      }
-      monorepoRoot = dirname(monorepoRoot)
-    }
-
-    throw new Error('Could not find sync-prompt.md in packages/docs')
-  } catch (error) {
+  const promptPath = join(process.cwd(), 'docs', 'upgrade.md')
+  if (!existsSync(promptPath)) {
     throw new Error(
-      `Could not load sync prompt: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      'Missing docs/upgrade.md. Copy it from https://github.com/tamagui/takeout2/blob/main/docs/upgrade.md and rerun `bun tko sync`.',
     )
   }
+
+  return readFileSync(promptPath, 'utf-8')
 }
 
 function checkToolAvailable(command: string): boolean {

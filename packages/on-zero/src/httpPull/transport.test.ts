@@ -517,6 +517,71 @@ describe('zero-http transport', () => {
     ).toBe(false)
   })
 
+  test('a pull 500 cannot let a timed-out socket construction open on the abandoned attempt', async () => {
+    vi.useFakeTimers()
+    const lifecycle: HttpPullLifecycleEvent[] = []
+    let pullCount = 0
+    const fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const request = recordRequest(input, init)
+      pullCount++
+      if (pullCount === 1) {
+        return jsonResponse({ error: 'injected pull outage' }, { status: 500 })
+      }
+      return jsonResponse({ cookie: request.body.cookie, unchanged: true })
+    })
+    const transport = installHttpPullTransport({
+      origin: ORIGIN,
+      fetch,
+      lifecycle: (event) => lifecycle.push(event),
+    })
+    transports.push(transport)
+    const first = openRawSocketWithMessages({ wsid: 'before-pull-500' })
+    await vi.advanceTimersByTimeAsync(1)
+    expect(first.socket.readyState).toBe(first.socket.CLOSED)
+
+    let delayedOpened = false
+    let delayedClosed = 0
+    const delayed = openRawSocketWithMessages({
+      wsid: 'delayed-reconnect',
+      attemptStartedAt: performance.now() - 10_001,
+    })
+    delayed.socket.addEventListener('open', () => {
+      delayedOpened = true
+    })
+    delayed.socket.addEventListener('close', () => {
+      delayedClosed++
+    })
+    await vi.advanceTimersByTimeAsync(1)
+
+    expect(delayedOpened).toBe(false)
+    expect(delayedClosed).toBe(1)
+    expect(lifecycle.filter((event) => event.type === 'open')).toHaveLength(1)
+    const aborted = lifecycle.find((event) => event.type === 'aborted')
+    expect(aborted).toMatchObject({
+      pageID: transport.pageID,
+      transportID: transport.transportID,
+      zeroInstanceID: `${transport.pageID}:zero:c1`,
+      clientID: 'c1',
+      clientGroupID: 'cg1',
+      connectionAttemptID: `${transport.pageID}:zero:c1:attempt:delayed-reconnect`,
+      socketID: `${transport.transportID}:socket:2`,
+      wsid: 'delayed-reconnect',
+      generation: 2,
+      activeGeneration: 2,
+      code: 1000,
+    })
+    expect(aborted?.attemptAgeMs).toBeGreaterThanOrEqual(10_000)
+    expect(
+      lifecycle.filter(
+        (event) =>
+          event.generation === 2 &&
+          (event.type === 'aborted' ||
+            event.type === 'close' ||
+            event.type === 'superseded'),
+      ),
+    ).toHaveLength(1)
+  })
+
   test('a replacement socket supersedes stale open and connected events for the same client', async () => {
     vi.useFakeTimers()
     const lifecycle: HttpPullLifecycleEvent[] = []
@@ -557,8 +622,22 @@ describe('zero-http transport', () => {
         ]),
     ).toEqual([[2, 2, 'current']])
     expect(lifecycle).toContainEqual(
-      expect.objectContaining({ type: 'superseded', generation: 1, wsid: 'stale' }),
+      expect.objectContaining({
+        type: 'superseded',
+        generation: 1,
+        activeGeneration: 2,
+        wsid: 'stale',
+      }),
     )
+    expect(
+      lifecycle.filter(
+        (event) =>
+          event.generation === 1 &&
+          (event.type === 'aborted' ||
+            event.type === 'close' ||
+            event.type === 'superseded'),
+      ),
+    ).toHaveLength(1)
     expect(errors).toEqual([])
   })
 
@@ -589,12 +668,18 @@ describe('zero-http transport', () => {
     globalThis.WebSocket = previous
   })
 
-  test('ensureHttpPullTransport installs once per origin', () => {
-    // unique origin: the ensure registry is module-global and page-lifetime
+  test('ensureHttpPullTransport installs once per origin across module evaluation', async () => {
+    // unique origin: the ensure registry is page-global and page-lifetime
     const origin = 'http://127.0.0.1:65501'
     const first = ensureHttpPullTransport({ origin, fetch: vi.fn() })
-    const second = ensureHttpPullTransport({ origin, fetch: vi.fn() })
+    vi.resetModules()
+    const reloaded = await import('../httpPullTransport')
+    const second = reloaded.ensureHttpPullTransport({ origin, fetch: vi.fn() })
     expect(second).toBe(first)
+    expect(first.pageID).toMatch(/^page-/)
+    expect(first.transportID).toMatch(
+      new RegExp(`^${first.pageID}:transport:[1-9][0-9]*$`),
+    )
     first.uninstall()
   })
 
@@ -771,6 +856,7 @@ function openRawSocketWithMessages(opts?: {
   authToken?: string
   desiredQueriesPatch?: unknown[]
   wsid?: string
+  attemptStartedAt?: number
 }) {
   const url = new URL(`${ORIGIN}/sync/v51/connect`)
   url.protocol = 'wss:'
@@ -780,6 +866,9 @@ function openRawSocketWithMessages(opts?: {
   url.searchParams.set('baseCookie', '')
   url.searchParams.set('lmid', '0')
   url.searchParams.set('wsid', opts?.wsid ?? 'ws-test')
+  if (opts?.attemptStartedAt !== undefined) {
+    url.searchParams.set('ts', String(opts.attemptStartedAt))
+  }
   const messages: Array<[string, any]> = []
   const socket = new WebSocket(
     url,

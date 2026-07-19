@@ -810,6 +810,24 @@ import { ensureAuth } from 'on-zero'
 const auth = ensureAuth() // AuthData (throws if not authenticated)
 ```
 
+## HTTP pull transport lifecycle
+
+`ensureHttpPullTransport()` installs one transport per normalized origin in a
+page-global registry. Zero instance rotation and duplicate module evaluation
+therefore reuse the same WebSocket shim instead of chaining installations.
+
+Every socket lifecycle event carries stable `pageID`, `transportID`,
+`zeroInstanceID`, `clientGroupID`, `connectionAttemptID`, and `socketID` fields,
+plus Zero's `clientID` / `wsid`, the socket generation, and attempt age. on-zero
+logs each event as one `[on-zero:http-pull]` JSON line by default. Pass
+`lifecycle(event)` to collect the same events yourself instead.
+
+`close`, `superseded`, and `aborted` are mutually exclusive terminal events for
+one socket generation. An attempt whose Zero `ts` is already beyond the stock
+connection deadline is aborted through `close` without emitting `open`; this
+prevents delayed socket construction from opening after Zero has discarded that
+attempt's connection state.
+
 ## recovery
 
 on-zero self-heals a client whose local sync state is lost or rejected. this is

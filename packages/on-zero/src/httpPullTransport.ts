@@ -58,6 +58,8 @@ type PullResponse =
     }
 
 type TransportState = {
+  readonly pageID: string
+  readonly transportID: string
   readonly origin: URL
   readonly originString: string
   readonly pullOriginString: string
@@ -78,10 +80,15 @@ type TransportState = {
 }
 
 const COOKIE_WIDTH = 20
+// @rocicorp/zero 1.6 starts this deadline before its async createSocket work.
+// the connect URL's `ts` is captured at the same attempt boundary.
+const ZERO_CONNECT_TIMEOUT_MS = 10_000
 
 export type HttpPullTransport = {
   pull(): Promise<void>
   readonly connections: number
+  readonly pageID: string
+  readonly transportID: string
   uninstall(): void
 }
 
@@ -109,24 +116,74 @@ export type HttpPullTransportOptions = {
   // queries ship as name+args for the SERVER (consumer worker) to resolve with
   // auth. the production path for permission-transformed queries.
   queryForward?: boolean
-  // optional generation trace for connection-lifecycle diagnostics
+  // receives the structured connection lifecycle. when omitted, on-zero logs
+  // each event as one JSON line so production failures retain their owners.
   lifecycle?: (event: HttpPullLifecycleEvent) => void
 }
 
 export type HttpPullLifecycleEvent = {
-  type: 'created' | 'listener' | 'open' | 'close' | 'failure' | 'superseded'
+  type: 'created' | 'listener' | 'open' | 'close' | 'failure' | 'superseded' | 'aborted'
+  pageID: string
+  transportID: string
+  zeroInstanceID: string
+  clientGroupID: string
+  connectionAttemptID: string
+  socketID: string
   generation: number
   activeGeneration: number
   clientID: string
   wsid: string
+  timestamp: number
+  attemptStartedAt: number | undefined
+  attemptAgeMs: number | undefined
   listener?: SocketEventType
   code?: number
   reason?: string
 }
 
+type HttpPullPageRegistry = {
+  readonly pageID: string
+  nextTransportGeneration: number
+  readonly transportsByOrigin: Map<string, HttpPullTransport>
+}
+
+const HTTP_PULL_PAGE_REGISTRY = Symbol.for('on-zero.http-pull.page-registry')
+
+function isHttpPullPageRegistry(value: unknown): value is HttpPullPageRegistry {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'pageID' in value &&
+    typeof value.pageID === 'string' &&
+    'nextTransportGeneration' in value &&
+    typeof value.nextTransportGeneration === 'number' &&
+    'transportsByOrigin' in value &&
+    value.transportsByOrigin instanceof Map
+  )
+}
+
+function getHttpPullPageRegistry(): HttpPullPageRegistry {
+  const existing = Reflect.get(globalThis, HTTP_PULL_PAGE_REGISTRY)
+  if (isHttpPullPageRegistry(existing)) return existing
+  const registry: HttpPullPageRegistry = {
+    pageID: `page-${Date.now().toString(36)}`,
+    nextTransportGeneration: 0,
+    transportsByOrigin: new Map(),
+  }
+  Reflect.set(globalThis, HTTP_PULL_PAGE_REGISTRY, registry)
+  return registry
+}
+
+function logHttpPullLifecycle(event: HttpPullLifecycleEvent) {
+  if (process.env.NODE_ENV === 'test') return
+  console.info(`[on-zero:http-pull] ${JSON.stringify(event)}`)
+}
+
 export function installHttpPullTransport(
   opts: HttpPullTransportOptions,
 ): HttpPullTransport {
+  const pageRegistry = getHttpPullPageRegistry()
+  const transportID = `${pageRegistry.pageID}:transport:${++pageRegistry.nextTransportGeneration}`
   const previousWebSocket = globalThis.WebSocket as WebSocketConstructor | undefined
   const fetchImpl = opts.fetch ?? globalThis.fetch
   if (!fetchImpl) {
@@ -134,6 +191,8 @@ export function installHttpPullTransport(
   }
 
   const state: TransportState = {
+    pageID: pageRegistry.pageID,
+    transportID,
     origin: new URL(opts.origin),
     originString: trimTrailingSlash(new URL(opts.origin).toString()),
     pullOriginString: trimTrailingSlash(
@@ -157,7 +216,7 @@ export function installHttpPullTransport(
     nextSocketGeneration: 0,
     activeSocketGenerationByClient: new Map(),
     activeSocketByClient: new Map(),
-    lifecycle: opts.lifecycle,
+    lifecycle: opts.lifecycle ?? logHttpPullLifecycle,
   }
 
   const Shim = class {
@@ -179,34 +238,40 @@ export function installHttpPullTransport(
 
   globalThis.WebSocket = Shim as unknown as typeof WebSocket
 
-  return {
+  const transport: HttpPullTransport = {
     pull: async () => {
       await Promise.all([...state.sockets].map((socket) => socket.pull()))
     },
     get connections() {
       return state.sockets.size
     },
+    pageID: state.pageID,
+    transportID: state.transportID,
     uninstall: () => {
       if (globalThis.WebSocket === (Shim as unknown as typeof WebSocket)) {
         globalThis.WebSocket = previousWebSocket as typeof WebSocket
       }
+      const registered = pageRegistry.transportsByOrigin.get(state.originString)
+      if (registered === transport) {
+        pageRegistry.transportsByOrigin.delete(state.originString)
+      }
     },
   }
+  return transport
 }
 
 // per-origin idempotent install for app usage (ProvideZero rotates zero
 // instances against the same server; installing per rotation would chain
 // shims unboundedly). installed transports live for the page lifetime.
-const transportsByOrigin = new Map<string, HttpPullTransport>()
-
 export function ensureHttpPullTransport(
   opts: HttpPullTransportOptions,
 ): HttpPullTransport {
+  const pageRegistry = getHttpPullPageRegistry()
   const key = trimTrailingSlash(new URL(opts.origin).toString())
-  const existing = transportsByOrigin.get(key)
+  const existing = pageRegistry.transportsByOrigin.get(key)
   if (existing) return existing
   const transport = installHttpPullTransport(opts)
-  transportsByOrigin.set(key, transport)
+  pageRegistry.transportsByOrigin.set(key, transport)
   return transport
 }
 
@@ -249,6 +314,11 @@ class ZeroHttpSocket {
   private wakeSocket: { close(): void } | undefined
   private wakeReconnectTimer: ReturnType<typeof setTimeout> | undefined
   private readonly generation: number
+  private readonly zeroInstanceID: string
+  private readonly connectionAttemptID: string
+  private readonly socketID: string
+  private readonly attemptStartedAt: number | undefined
+  private settled = false
 
   constructor(
     private readonly state: TransportState,
@@ -261,9 +331,19 @@ class ZeroHttpSocket {
     this.clientGroupID = this.connectURL.searchParams.get('clientGroupID') ?? ''
     this.wsid = this.connectURL.searchParams.get('wsid') ?? `zero-http-${Date.now()}`
     this.generation = ++this.state.nextSocketGeneration
-    this.state.activeSocketByClient.get(this.clientID)?.supersede()
+    this.zeroInstanceID = `${this.state.pageID}:zero:${this.clientID}`
+    this.connectionAttemptID = `${this.zeroInstanceID}:attempt:${this.wsid}`
+    this.socketID = `${this.state.transportID}:socket:${this.generation}`
+    const attemptStartedAtParam = this.connectURL.searchParams.get('ts')
+    const attemptStartedAt = Number(attemptStartedAtParam)
+    this.attemptStartedAt =
+      attemptStartedAtParam !== null && Number.isFinite(attemptStartedAt)
+        ? attemptStartedAt
+        : undefined
+    const previousSocket = this.state.activeSocketByClient.get(this.clientID)
     this.state.activeSocketGenerationByClient.set(this.clientID, this.generation)
     this.state.activeSocketByClient.set(this.clientID, this)
+    previousSocket?.supersede()
     this.emitLifecycle('created')
     const baseCookie = this.connectURL.searchParams.get('baseCookie')
     this.cookie = baseCookie ? baseCookie : null
@@ -281,9 +361,9 @@ class ZeroHttpSocket {
     this.queueDesiredQueries(decoded.initConnectionMessage?.[1])
 
     this.state.sockets.add(this)
-    // open on the next task so Zero can attach its listeners. Zero owns the
-    // connection timeout and retry cadence; delaying this synthetic open here
-    // can outlive Zero's 10s attempt and deliver an event to abandoned state.
+    // open on the next task so Zero can attach its listeners. open() checks the
+    // attempt timestamp first, so async socket construction that outlived Zero's
+    // deadline closes without delivering an event to abandoned state.
     this.openTimer = setTimeout(() => this.open(), 0)
   }
 
@@ -335,17 +415,7 @@ class ZeroHttpSocket {
   }
 
   close(code = 1000, reason = '') {
-    if (this.readyState === this.CLOSED) return
-    if (this.openTimer) clearTimeout(this.openTimer)
-    if (this.pullTimer) clearInterval(this.pullTimer)
-    this.closeWakeChannel()
-    this.readyState = this.CLOSED
-    this.state.sockets.delete(this)
-    if (this.state.activeSocketByClient.get(this.clientID) === this) {
-      this.state.activeSocketByClient.delete(this.clientID)
-      this.state.activeSocketGenerationByClient.delete(this.clientID)
-    }
-    this.emitLifecycle('close', { code, reason })
+    if (!this.settle('close', { code, reason })) return
     this.emit('close', { code, reason, wasClean: code <= 1001 })
   }
 
@@ -376,6 +446,15 @@ class ZeroHttpSocket {
 
   private open() {
     if (this.readyState !== this.CONNECTING) return
+    const attemptAgeMs = this.getAttemptAgeMs()
+    if (attemptAgeMs !== undefined && attemptAgeMs >= ZERO_CONNECT_TIMEOUT_MS) {
+      const reason = `zero-http connection attempt ${this.wsid} expired after ${Math.round(
+        attemptAgeMs,
+      )}ms before socket construction completed`
+      if (!this.settle('aborted', { code: 1000, reason })) return
+      this.emit('close', { code: 1000, reason, wasClean: true })
+      return
+    }
     this.readyState = this.OPEN
     this.emitLifecycle('open')
     this.emit('open', {})
@@ -740,13 +819,32 @@ class ZeroHttpSocket {
   }
 
   private supersede() {
-    if (this.readyState === this.CLOSED) return
+    this.settle('superseded')
+  }
+
+  private settle(
+    type: Extract<HttpPullLifecycleEvent['type'], 'close' | 'superseded' | 'aborted'>,
+    detail: Pick<HttpPullLifecycleEvent, 'code' | 'reason'> = {},
+  ) {
+    if (this.settled) return false
+    this.settled = true
     if (this.openTimer !== undefined) clearTimeout(this.openTimer)
     if (this.pullTimer !== undefined) clearInterval(this.pullTimer)
     this.closeWakeChannel()
     this.readyState = this.CLOSED
     this.state.sockets.delete(this)
-    this.emitLifecycle('superseded')
+    if (this.state.activeSocketByClient.get(this.clientID) === this) {
+      this.state.activeSocketByClient.delete(this.clientID)
+      this.state.activeSocketGenerationByClient.delete(this.clientID)
+    }
+    this.emitLifecycle(type, detail)
+    return true
+  }
+
+  private getAttemptAgeMs() {
+    return this.attemptStartedAt === undefined
+      ? undefined
+      : performance.now() - this.attemptStartedAt
   }
 
   private emitLifecycle(
@@ -755,11 +853,20 @@ class ZeroHttpSocket {
   ) {
     this.state.lifecycle?.({
       type,
+      pageID: this.state.pageID,
+      transportID: this.state.transportID,
+      zeroInstanceID: this.zeroInstanceID,
+      clientGroupID: this.clientGroupID,
+      connectionAttemptID: this.connectionAttemptID,
+      socketID: this.socketID,
       generation: this.generation,
       activeGeneration:
         this.state.activeSocketGenerationByClient.get(this.clientID) ?? this.generation,
       clientID: this.clientID,
       wsid: this.wsid,
+      timestamp: Date.now(),
+      attemptStartedAt: this.attemptStartedAt,
+      attemptAgeMs: this.getAttemptAgeMs(),
       ...detail,
     })
   }

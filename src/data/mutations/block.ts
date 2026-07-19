@@ -6,7 +6,7 @@ const permissions = serverWhere('block', (_, auth) => {
 
 export const mutate = mutations('block', permissions, {
   insert: async (
-    { tx, server },
+    { tx, server, can },
     data: { blockedId: string; id: string; createdAt: number },
   ) => {
     const authData = ensureLoggedIn()
@@ -15,6 +15,7 @@ export const mutate = mutations('block', permissions, {
       ...data,
       blockerId: authData.id,
     })
+    await can(permissions, data.id)
 
     if (process.env.VITE_ENVIRONMENT === 'ssr' && server) {
       server.enqueueTask(() =>
@@ -25,10 +26,10 @@ export const mutate = mutations('block', permissions, {
     }
   },
 
-  delete: async ({ tx, server }, data: { id: string; blockedUserId?: string }) => {
+  delete: async ({ tx, server, can }, data: { id: string; blockedUserId?: string }) => {
     const authData = ensureLoggedIn()
 
-    // permissions already ensure user can only delete their own blocks
+    await can(permissions, data.id)
     await tx.mutate.block.delete({ id: data.id })
 
     const blockedUserId = data.blockedUserId

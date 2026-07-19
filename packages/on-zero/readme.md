@@ -101,7 +101,7 @@ derived from drizzle — no need to define it here.
 
 ```ts
 // src/data/mutations/message.ts
-import { mutations, serverWhere } from 'on-zero'
+import { ensureLoggedIn, mutations, serverWhere } from 'on-zero'
 
 const permissions = serverWhere('message', (q, auth) => {
   return q.cmp('authorId', auth?.id || '')
@@ -109,16 +109,20 @@ const permissions = serverWhere('message', (q, auth) => {
 
 // pass table name as string — types are inferred from schema
 export const mutate = mutations('message', permissions, {
-  async send(ctx, props: { content: string; channelId: string }) {
-    await ctx.can(permissions, props)
+  async send(
+    ctx,
+    props: { id: string; content: string; channelId: string; createdAt: number },
+  ) {
+    const auth = ensureLoggedIn()
 
     await ctx.tx.mutate.message.insert({
-      id: randomId(),
+      id: props.id,
       content: props.content,
       channelId: props.channelId,
-      authorId: ctx.authData!.id,
-      createdAt: Date.now(),
+      authorId: auth.id,
+      createdAt: props.createdAt,
     })
+    await ctx.can(permissions, props.id)
 
     if (ctx.server) {
       ctx.server.enqueueTask(async () => {
@@ -132,7 +136,12 @@ export const mutate = mutations('message', permissions, {
 call mutations from react:
 
 ```tsx
-await zero.mutate.message.send({ content: 'hello', channelId: 'ch-1' })
+await zero.mutate.message.send({
+  id: randomId(),
+  content: 'hello',
+  channelId: 'ch-1',
+  createdAt: Date.now(),
+})
 ```
 
 the second argument (`permissions`) enables auto-generated crud that checks
@@ -144,6 +153,14 @@ zero.mutate.message.update(message)
 zero.mutate.message.delete(message)
 zero.mutate.message.upsert(message)
 ```
+
+if you define `insert`, `upsert`, `update`, or `delete` in the third argument,
+that handler replaces the generated operation completely. on-zero does not add
+an automatic permission check or write. validate however the handler needs to;
+`ctx.can()` is available for query-based permissions, but any thrown error
+rejects and rolls back the transaction. when using `ctx.can()`, check before an
+update or delete. for an insert, write first and then check so the permission
+query can see the new row. a custom handler can no-op with a normal `return`.
 
 ## permissions
 
@@ -190,7 +207,9 @@ const permissions = serverWhere('message', (q, auth) => {
 })
 ```
 
-CRUD mutations automatically apply them, but for custom mutations use `can()`:
+built-in CRUD mutations automatically apply them. custom mutations, including
+CRUD overrides, own their validation. they can use `can()` for query-based
+permissions or throw from any other validation:
 
 ```ts
 await ctx.can(permissions, messageId)

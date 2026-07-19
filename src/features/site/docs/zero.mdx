@@ -114,8 +114,9 @@ const permissions = serverWhere('post', (_, auth) => {
 })
 
 export const mutate = mutations(schema, permissions, {
-  insert: async ({ tx, environment, server, authData }, post: Post) => {
+  insert: async ({ tx, environment, server, authData, can }, post: Post) => {
     await tx.mutate.post.insert(post)
+    await can(permissions, post.id)
 
     if (environment === 'server' && server && authData) {
       server.enqueueTask(() =>
@@ -130,9 +131,8 @@ export const mutate = mutations(schema, permissions, {
 })
 ```
 
-The `mutations()` function takes the schema and permissions, then auto-generates
-CRUD operations. This is an optional but helpful feature that `on-zero`
-provides:
+The `mutations()` function takes the schema and permissions, then generates any
+CRUD operations omitted from the third argument:
 
 ```tsx
 await zero.mutate.post.insert(post)
@@ -141,8 +141,16 @@ await zero.mutate.post.delete({ id })
 await zero.mutate.post.upsert(post)
 ```
 
-Custom mutations go in the third argument. They receive a context with the
-transaction, auth data, and server actions.
+Custom mutations go in the third argument. Defining `insert`, `upsert`,
+`update`, or `delete` replaces that generated operation completely. The custom
+handler owns both the write and its validation. `ctx.can()` is available for
+query-based permissions, but any thrown error rejects and rolls back the
+transaction. When using `ctx.can()`, check before an update or delete. For an
+insert, write first and then check so the permission query can see the new row.
+A normal `return` can intentionally no-op.
+
+Custom handlers receive a context with the transaction, auth data, permissions,
+and server actions.
 
 ### Mutation Context
 

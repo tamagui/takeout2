@@ -10,7 +10,7 @@ const permissions = serverWhere('post', (_, auth) => {
 })
 
 export const mutate = mutations('post', permissions, {
-  insert: async ({ tx, environment, server, authData }, post: Post) => {
+  insert: async ({ tx, server, authData, can }, post: Post) => {
     // check caption for profanity on server
     if (process.env.VITE_ENVIRONMENT === 'ssr') {
       if (post.caption) {
@@ -28,6 +28,7 @@ export const mutate = mutations('post', permissions, {
     }
 
     await tx.mutate.post.insert(post)
+    await can(permissions, post.id)
 
     if (process.env.VITE_ENVIRONMENT === 'ssr' && server && authData) {
       server.enqueueTask(() =>
@@ -39,12 +40,12 @@ export const mutate = mutations('post', permissions, {
     }
   },
 
-  delete: async ({ tx, environment, server, authData }, obj: { id: string }) => {
+  delete: async ({ tx, server, authData, can }, obj: { id: string }) => {
+    await can(permissions, obj.id)
+    const post = await tx.run(zql.post.where('id', obj.id).one())
     await tx.mutate.post.delete({ id: obj.id })
 
     if (process.env.VITE_ENVIRONMENT === 'ssr' && server && authData) {
-      const post = await tx.run(zql.post.where('id', obj.id).one())
-
       if (post) {
         server.enqueueTask(() =>
           server.actions.analyticsActions().logEvent(authData.id, 'post_deleted', {

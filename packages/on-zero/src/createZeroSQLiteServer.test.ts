@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 
 import { createZeroSQLiteServer } from './createZeroSQLiteServer'
 import { zeroHttpFixtureSchema } from './httpPull/fixtureSchema'
-import { mutations, skipMutation } from './mutations'
+import { mutations } from './mutations'
 import { serverWhere } from './serverWhere'
 
 import type {
@@ -292,12 +292,39 @@ describe('createZeroSQLiteServer', () => {
     })
   })
 
-  test('allows a custom insert to no-op when it leaves no row to authorize', async () => {
+  test('allows a custom CRUD mutation to no-op without an automatic permission check', async () => {
+    const projectPermission = serverWhere('project', (q) => q.cmp('ownerId', 'u1'))
+    const projectMutations = mutations('project', projectPermission, {
+      insert: async () => {},
+    })
+    const server = createZeroSQLiteServer({
+      schema: zeroHttpFixtureSchema,
+      models: {
+        project: { mutate: projectMutations },
+      },
+      createServerActions: () => ({}),
+      transactionProvider,
+    })
+
+    const result = await server.handleMutationRequest({
+      authData: { id: 'u1', role: 'user' },
+      request: pushRequest(1, 'project.insert', {
+        id: 'p1',
+        ownerId: 'u1',
+        name: 'skip',
+      }),
+    })
+
+    expect((result.response as any).mutations[0].result).toEqual({})
+    expect(db.prepare('SELECT * FROM project').all()).toEqual([])
+  })
+
+  test('rolls back when a custom CRUD mutation throws', async () => {
     const projectPermission = serverWhere('project', (q) => q.cmp('ownerId', 'u1'))
     const projectMutations = mutations('project', projectPermission, {
       insert: async ({ tx }, value: { id: string; ownerId: string; name: string }) => {
-        if (value.name === 'skip') return skipMutation
         await tx.mutate.project.insert(value)
+        throw new Error('denied by custom validation')
       },
     })
     const server = createZeroSQLiteServer({
@@ -309,28 +336,28 @@ describe('createZeroSQLiteServer', () => {
       transactionProvider,
     })
 
-    const skipped = await server.handleMutationRequest({
-      authData: { id: 'u1', role: 'user' },
+    const result = await server.handleMutationRequest({
+      authData: { id: 'u2', role: 'user' },
       request: pushRequest(1, 'project.insert', {
-        id: 'p1',
-        ownerId: 'u1',
-        name: 'skip',
+        id: 'p2',
+        ownerId: 'u2',
+        name: 'unauthorized',
       }),
     })
-    expect((skipped.response as any).mutations[0].result).toEqual({})
+
+    expect((result.response as any).mutations[0].result).toMatchObject({
+      error: 'app',
+      message: 'denied by custom validation',
+    })
     expect(db.prepare('SELECT * FROM project').all()).toEqual([])
   })
 
-  test('still permission-checks a custom insert that writes its target row', async () => {
+  test('permission-checks generated CRUD mutations', async () => {
     let inserted: Record<string, unknown> | undefined
     let permissionChecks = 0
     const projectPermission = serverWhere('project', (q) => q.cmp('ownerId', 'u1'))
-    const projectMutations = mutations('project', projectPermission, {
-      insert: async ({ tx }, value: { id: string; ownerId: string; name: string }) => {
-        await tx.mutate.project.insert(value)
-      },
-    })
-    const value = { id: 'p2', ownerId: 'u2', name: 'unauthorized' }
+    const projectMutations = mutations('project', projectPermission)
+    const value = { id: 'p3', ownerId: 'u2', name: 'unauthorized' }
 
     await expect(
       projectMutations.insert(

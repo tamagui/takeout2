@@ -1,7 +1,7 @@
 import { IS_SERVER_RUNTIME } from '@take-out/helpers'
-import { getDidRunPermissionCheck } from './helpers/didRunPermissionCheck'
 import { setMutationsPermissions } from './modelRegistry'
 
+import type { TableBuilderWithColumns } from '@rocicorp/zero'
 import type {
   MutatorContext,
   Schema,
@@ -10,7 +10,6 @@ import type {
   TableUpdateRow,
   Where,
 } from './types'
-import type { TableBuilderWithColumns } from '@rocicorp/zero'
 
 // derive a TableBuilderWithColumns from the global schema by table name
 type SchemaTableBuilder<TName extends TableName> = TableBuilderWithColumns<
@@ -74,16 +73,7 @@ function getOrCreateMutationProxy<T extends Record<string, Function>>(
   return proxy
 }
 
-// two ways to use it:
-//  - mutations({}) which doesn't add the "allowed" helper or add CRUD
-//  - mutation('tableName', permissions) adds CRUD with permissions, adds allowed
-
-export const skipMutation = Symbol('on-zero.skip-mutation')
-
-type MutationBuilder<Obj = any> = (
-  ctx: MutatorContext,
-  obj?: Obj,
-) => Promise<void | typeof skipMutation>
+type MutationBuilder<Obj = any> = (ctx: MutatorContext, obj?: Obj) => Promise<void>
 type MutationBuilders = Record<string, MutationBuilder>
 
 // start of adding custom can.write(message) style
@@ -163,6 +153,9 @@ export function mutations<
         : ((table as Table).schema.name as TableName)
 
     const createCRUDMutation = (action: CRUDNames) => {
+      const customMutation = mutations?.[action]
+      if (customMutation) return customMutation
+
       return async (ctx: MutatorContext, obj: any) => {
         /**
          * CRUD mutations have permissions handled automatically using `can`:
@@ -173,11 +166,6 @@ export function mutations<
          *   - for the rest: check runs before mutation
          */
         const runServerPermissionCheck = async () => {
-          if (getDidRunPermissionCheck(ctx)) {
-            // if the user-defined CRUD mutation runs their own "can", we avoid running ours
-            return
-          }
-
           // only validate on the server
           if (IS_SERVER_RUNTIME) {
             await ctx.can(permissions, obj)
@@ -188,19 +176,8 @@ export function mutations<
           await runServerPermissionCheck()
         }
 
-        // if user defines insert run theirs, if not run plain zero:
-        const existing = mutations?.[action]
-
-        if (existing) {
-          const result = await existing(ctx, obj)
-          // an intentional no-op has no target row to authorize. require the
-          // explicit sentinel so a handler that writes related rows cannot
-          // bypass its target-table permission by leaving the target absent.
-          if (result === skipMutation) return
-        } else {
-          type TableName = keyof typeof ctx.tx.mutate // weird type foo because we declare this module and then type check
-          await ctx.tx.mutate[tableName as TableName]![action](obj)
-        }
+        type TableName = keyof typeof ctx.tx.mutate // weird type foo because we declare this module and then type check
+        await ctx.tx.mutate[tableName as TableName]![action](obj)
 
         if (action === 'insert' || action === 'upsert') {
           await runServerPermissionCheck()
@@ -217,7 +194,7 @@ export function mutations<
 
     const finalMutations = {
       ...mutations,
-      // overwrite regular mutations but call them if they are defined by user
+      // generated CRUD fills missing operations; custom CRUD runs as-is
       ...crudMutations,
     } as any as Mutations
 

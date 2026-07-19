@@ -10,7 +10,7 @@ const permissions = serverWhere('comment', (_, auth) => {
 })
 
 export const mutate = mutations('comment', permissions, {
-  insert: async ({ tx, server, authData }, comment: Comment) => {
+  insert: async ({ tx, server, authData, can }, comment: Comment) => {
     if (process.env.VITE_ENVIRONMENT === 'ssr') {
       if (comment.content) {
         const profanityCheck = checkProfanity(comment.content)
@@ -27,6 +27,7 @@ export const mutate = mutations('comment', permissions, {
     }
 
     await tx.mutate.comment.insert(comment)
+    await can(permissions, comment.id)
 
     if (process.env.VITE_ENVIRONMENT === 'ssr' && server && authData) {
       server.enqueueTask(async () => {

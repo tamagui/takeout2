@@ -1,6 +1,5 @@
 import { ensure } from '@take-out/helpers'
 
-import { setDidRunPermissionCheck } from './helpers/didRunPermissionCheck'
 import { mutatorContext } from './helpers/mutatorContext'
 import { prettyFormatZeroQuery } from './helpers/prettyFormatZeroQuery'
 import { getZQL } from './state'
@@ -106,7 +105,6 @@ export function createPermissions<Schema extends ZeroSchema>({
         throw new Error(`Must use where('table') style where to pass to can()`)
       }
       await ensurePermission(ctx.tx, ctx.authData, tableName, where, obj)
-      setDidRunPermissionCheck(ctx)
     }
   }
 

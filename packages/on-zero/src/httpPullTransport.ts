@@ -2,7 +2,7 @@
 // by intercepting its /sync/v51/connect WebSocket with a shim that translates
 // pull responses into v51 pokes. ported from the orez zero-http spike — the
 // wire contract (lexicographic string cookies, gotQueriesPatch poke-part
-// ordering, FIFO push serialization, updateAuth, 401→Unauthorized frame,
+// ordering, bounded FIFO push batching, updateAuth, 401→Unauthorized frame,
 // teardown drain) is pinned by the tests in ./httpPull/ and documented in
 // ~/orez/plans/zero-http.md. do not "simplify" any of it without re-running
 // those tests against a stock zero client.
@@ -57,6 +57,16 @@ type PullResponse =
       gotQueries?: ServerGotQueries
     }
 
+type PushBody = Record<string, unknown> & {
+  mutations: unknown[]
+}
+
+type PushBatch = {
+  body: unknown
+  frameCount: number
+  mutationCount: number
+}
+
 type TransportState = {
   readonly pageID: string
   readonly transportID: string
@@ -80,6 +90,11 @@ type TransportState = {
 }
 
 const COOKIE_WIDTH = 20
+// the stock zero-cache pusher drains queued frames into a single request once
+// its current request completes. keep the same backpressure relief here, but
+// cap the number of mutations so one response cannot monopolize the HTTP
+// transport indefinitely under a sustained producer.
+const MAX_PUSH_BATCH_MUTATIONS = 64
 // @rocicorp/zero 1.6 starts this deadline before its async createSocket work.
 // the connect URL's `ts` is captured at the same attempt boundary.
 const ZERO_CONNECT_TIMEOUT_MS = 10_000
@@ -122,7 +137,15 @@ export type HttpPullTransportOptions = {
 }
 
 export type HttpPullLifecycleEvent = {
-  type: 'created' | 'listener' | 'open' | 'close' | 'failure' | 'superseded' | 'aborted'
+  type:
+    | 'created'
+    | 'listener'
+    | 'open'
+    | 'close'
+    | 'failure'
+    | 'superseded'
+    | 'aborted'
+    | 'push'
   pageID: string
   transportID: string
   zeroInstanceID: string
@@ -139,6 +162,8 @@ export type HttpPullLifecycleEvent = {
   listener?: SocketEventType
   code?: number
   reason?: string
+  pushFrameCount?: number
+  mutationCount?: number
 }
 
 type HttpPullPageRegistry = {
@@ -307,7 +332,8 @@ class ZeroHttpSocket {
   private sentQueryPatchLen = 0
   private pullInFlight: Promise<void> | undefined
   private pullAfterCurrent = false
-  private pushChain: Promise<void> = Promise.resolve()
+  private pendingPushes: unknown[] = []
+  private pushInFlight = false
   private nextLocalCookieID: number
   private openTimer: ReturnType<typeof setTimeout> | undefined
   private pullTimer: ReturnType<typeof setInterval> | undefined
@@ -565,10 +591,14 @@ class ZeroHttpSocket {
     this.queryVersion++
   }
 
-  private async push(body: unknown) {
+  private async push({ body, frameCount, mutationCount }: PushBatch) {
     const response = (await this.postJSON('/push', body)) as {
       pushResponse?: unknown
     }
+    this.emitLifecycle('push', {
+      pushFrameCount: frameCount,
+      mutationCount,
+    })
     // mutation RECOVERY pushes carry a PREVIOUS client's pending mutations,
     // and the server response echoes that old clientID. zero-cache's pusher
     // groups results by clientID and only delivers a client its OWN results
@@ -583,12 +613,50 @@ class ZeroHttpSocket {
   }
 
   private enqueuePush(body: unknown) {
-    const nextPush = this.pushChain.then(async () => {
-      if (this.readyState === this.CLOSED) return
-      await this.push(body)
-    })
-    this.pushChain = nextPush.catch(() => {})
-    this.run(nextPush)
+    this.pendingPushes.push(body)
+    if (this.pushInFlight) return
+    this.run(this.drainPushes())
+  }
+
+  private async drainPushes() {
+    this.pushInFlight = true
+    try {
+      while (this.readyState !== this.CLOSED && this.pendingPushes.length > 0) {
+        await this.push(this.takePushBatch())
+      }
+    } finally {
+      this.pushInFlight = false
+    }
+  }
+
+  private takePushBatch(): PushBatch {
+    const first = this.pendingPushes.shift()
+    const firstBody = parsePushBody(first)
+    if (!firstBody) {
+      return { body: first, frameCount: 1, mutationCount: 0 }
+    }
+
+    const mutations = [...firstBody.mutations]
+    let frameCount = 1
+    while (this.pendingPushes.length > 0) {
+      const nextBody = parsePushBody(this.pendingPushes[0])
+      if (
+        !nextBody ||
+        !areCompatiblePushBodies(firstBody, nextBody) ||
+        mutations.length + nextBody.mutations.length > MAX_PUSH_BATCH_MUTATIONS
+      ) {
+        break
+      }
+      this.pendingPushes.shift()
+      mutations.push(...nextBody.mutations)
+      frameCount++
+    }
+
+    return {
+      body: frameCount === 1 ? firstBody : { ...firstBody, mutations },
+      frameCount,
+      mutationCount: mutations.length,
+    }
   }
 
   private requestPullAfterCurrent() {
@@ -849,7 +917,10 @@ class ZeroHttpSocket {
 
   private emitLifecycle(
     type: HttpPullLifecycleEvent['type'],
-    detail: Pick<HttpPullLifecycleEvent, 'listener' | 'code' | 'reason'> = {},
+    detail: Pick<
+      HttpPullLifecycleEvent,
+      'listener' | 'code' | 'reason' | 'pushFrameCount' | 'mutationCount'
+    > = {},
   ) {
     this.state.lifecycle?.({
       type,
@@ -870,6 +941,21 @@ class ZeroHttpSocket {
       ...detail,
     })
   }
+}
+
+function parsePushBody(value: unknown): PushBody | undefined {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return
+  if (!('mutations' in value) || !Array.isArray(value.mutations)) return
+  // the runtime checks above establish the only fields batching reads.
+  return value as PushBody
+}
+
+function areCompatiblePushBodies(left: PushBody, right: PushBody) {
+  return (
+    left.clientGroupID === right.clientGroupID &&
+    left.pushVersion === right.pushVersion &&
+    left.schemaVersion === right.schemaVersion
+  )
 }
 
 function shouldIntercept(origin: URL, url: string | URL) {

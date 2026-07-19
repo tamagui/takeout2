@@ -205,10 +205,11 @@ describe('zero-http transport', () => {
     expect(requests.at(-1)?.headers.authorization).toBe('Bearer token-new')
   })
 
-  test('push frames are serialized per socket', async () => {
+  test('push frames are serialized and queued bursts are batched per socket', async () => {
     const firstPushStarted = defer<void>()
     const releaseFirstPush = defer<void>()
-    const pushIDs: number[] = []
+    const pushRequests: number[][] = []
+    const lifecycle: HttpPullLifecycleEvent[] = []
     const fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const request = recordRequest(input, init)
       if (request.path === '/pull') {
@@ -216,9 +217,9 @@ describe('zero-http transport', () => {
       }
 
       expect(request.path).toBe('/push')
-      const mutationID = request.body.mutations[0].id
-      pushIDs.push(mutationID)
-      if (mutationID === 1) {
+      const mutationIDs = request.body.mutations.map((mutation: any) => mutation.id)
+      pushRequests.push(mutationIDs)
+      if (mutationIDs[0] === 1) {
         firstPushStarted.resolve()
         await releaseFirstPush.promise
       }
@@ -231,7 +232,12 @@ describe('zero-http transport', () => {
         },
       })
     })
-    install(fetch)
+    const transport = installHttpPullTransport({
+      origin: ORIGIN,
+      fetch,
+      lifecycle: (event) => lifecycle.push(event),
+    })
+    transports.push(transport)
     const { messages, socket } = openRawSocketWithMessages()
 
     await eventually(() =>
@@ -240,19 +246,34 @@ describe('zero-http transport', () => {
     socket.send(JSON.stringify(['push', pushBody(1)]))
     await firstPushStarted.promise
     socket.send(JSON.stringify(['push', pushBody(2)]))
+    socket.send(JSON.stringify(['push', pushBody(3)]))
+    socket.send(JSON.stringify(['push', pushBody(4)]))
     await sleep(25)
 
-    expect(pushIDs).toEqual([1])
+    expect(pushRequests).toEqual([[1]])
     releaseFirstPush.resolve()
-    await eventually(() => expect(pushIDs).toEqual([1, 2]))
+    await eventually(() => expect(pushRequests).toEqual([[1], [2, 3, 4]]))
     await eventually(() =>
       expect(messages.filter((message) => message[0] === 'pushResponse')).toHaveLength(2),
     )
     expect(
       messages
         .filter((message) => message[0] === 'pushResponse')
-        .map((message) => message[1].mutations[0].id.id),
-    ).toEqual([1, 2])
+        .flatMap((message) =>
+          message[1].mutations.map((mutation: any) => mutation.id.id),
+        ),
+    ).toEqual([1, 2, 3, 4])
+    expect(
+      lifecycle
+        .filter((event) => event.type === 'push')
+        .map(({ pushFrameCount, mutationCount }) => ({
+          pushFrameCount,
+          mutationCount,
+        })),
+    ).toEqual([
+      { pushFrameCount: 1, mutationCount: 1 },
+      { pushFrameCount: 3, mutationCount: 3 },
+    ])
   })
 
   test('cookie discipline skips unchanged pokes, chains changed pokes, and coalesces concurrent pulls', async () => {

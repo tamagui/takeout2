@@ -108,10 +108,6 @@ export function createZeroServerCore<
     })
     const processor = new PushProcessor(
       withTransactionLifecycle(createDatabase(), tasks.lifecycle),
-      undefined,
-      // zero replays prior-client mutations during recovery; the response
-      // acknowledges them, while real processor failures still log as errors.
-      'error',
     )
     const response = await processor.process(mutators, request)
 
@@ -194,7 +190,20 @@ function withTransactionLifecycle(
         const value = await database.transaction(async (tx, hooks) => {
           lifecycle.beginAttempt()
           try {
-            const result = await callback(tx, hooks)
+            const result = await callback(tx, {
+              ...hooks,
+              async updateClientMutationID() {
+                const result = await hooks.updateClientMutationID()
+                if (input && input.mutationID < result.lastMutationID) {
+                  throw new ExpectedDuplicateMutation(
+                    input.clientID,
+                    input.mutationID,
+                    result.lastMutationID,
+                  )
+                }
+                return result
+              },
+            })
             lifecycle.completeAttempt()
             return result
           } catch (error) {
@@ -206,9 +215,33 @@ function withTransactionLifecycle(
         return value
       } catch (error) {
         lifecycle.rollbackTransaction()
+        if (error instanceof ExpectedDuplicateMutation) {
+          return {
+            id: {
+              clientID: error.clientID,
+              id: error.mutationID,
+            },
+            result: {
+              error: 'alreadyProcessed',
+              details: error.message,
+            },
+          } as never
+        }
         throw error
       }
     },
+  }
+}
+
+class ExpectedDuplicateMutation extends Error {
+  constructor(
+    readonly clientID: string,
+    readonly mutationID: number,
+    expectedMutationID: number | bigint,
+  ) {
+    super(
+      `Ignoring mutation from ${clientID} with ID ${mutationID} as it was already processed. Expected: ${expectedMutationID}`,
+    )
   }
 }
 

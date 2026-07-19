@@ -7,7 +7,12 @@ import {
 } from 'on-zero/server'
 import { createZeroSQLiteServer, type SqlStatementMetadata } from 'on-zero/sqlite'
 
-import type { Config, MutatorContext } from 'on-zero'
+import {
+  runAsyncTaskEntries as runAsyncTaskEntriesFromRoot,
+  type Config,
+  type MutatorContext,
+  type RunAsyncTaskEntriesOptions,
+} from 'on-zero'
 import type { Schema as ZeroSchema } from '@rocicorp/zero'
 
 type AppAuthData = {
@@ -56,6 +61,13 @@ void runAsyncTaskEntries(taskEntries, {
     void promise
   },
 })
+
+const rootTaskOptions: RunAsyncTaskEntriesOptions = {
+  background(promise) {
+    void promise
+  },
+}
+void runAsyncTaskEntriesFromRoot(taskEntries, rootTaskOptions)
 
 const scheduleBackgroundTask: BackgroundTaskScheduler = (promise) => {
   void promise

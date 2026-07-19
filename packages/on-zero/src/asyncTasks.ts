@@ -1,4 +1,7 @@
-import type { AsyncTaskEntry } from './types'
+type AsyncTaskEntry = {
+  task: () => Promise<void>
+  barrier: boolean
+}
 
 export type RunAsyncTaskEntriesOptions = {
   /** Receives the background-task promise. Omit this to await all entries. */

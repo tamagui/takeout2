@@ -97,6 +97,7 @@ describe('createZeroServer mutation recovery', () => {
   test('discards async tasks from a rolled-back PostgreSQL mutation', async () => {
     const pg = new FakePgClient()
     let effectRuns = 0
+    const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const zeroServer = createZeroServer({
       schema: zeroHttpFixtureSchema,
       models: {
@@ -127,6 +128,12 @@ describe('createZeroServer mutation recovery', () => {
     })
     expect(result.asyncTasks).toEqual([])
     expect(effectRuns).toBe(0)
+    expect(consoleWarn).toHaveBeenCalledWith(
+      'PushProcessor',
+      expect.stringContaining('Error processing mutation'),
+      expect.stringContaining('rejected'),
+    )
+    consoleWarn.mockRestore()
   })
 
   test('awaits barrier tasks before resolving the push response', async () => {
@@ -321,6 +328,7 @@ describe('createZeroServer mutation recovery', () => {
 
   test('persists alreadyProcessed duplicate results for zero-cache recovery rows', async () => {
     const pg = new FakePgClient()
+    const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const zeroServer = createZeroServer({
       schema: zeroHttpFixtureSchema,
       models: {
@@ -362,6 +370,8 @@ describe('createZeroServer mutation recovery', () => {
         }),
       ],
     ])
+    expect(consoleWarn).not.toHaveBeenCalled()
+    consoleWarn.mockRestore()
   })
 
   test('persists only alreadyProcessed results in a mixed recovery push', async () => {

@@ -337,13 +337,20 @@ export function createBetterAuthClient<const Opts extends BetterAuthClientProps<
   const proxiedAuthClient = new Proxy(authClient, {
     get(_target, key) {
       if (key === 'signOut') {
-        return () => {
+        return async () => {
+          // an explicit empty body makes better-fetch send JSON instead of a
+          // bodyless POST, which Better Auth rejects with 415.
+          const result = await authClient.$fetch('/sign-out', {
+            method: 'POST',
+            body: {},
+          })
+          if (result.error) throw result.error
+
           clearState()
-          // @ts-expect-error better-auth type issue
-          authClient.signOut?.()
           if (typeof window !== 'undefined') {
             window.location?.reload?.()
           }
+          return result
         }
       }
       return Reflect.get(authClient, key)

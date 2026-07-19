@@ -16,7 +16,7 @@ module.exports.webAuthOpener = async () => ({ token: String(++calls) })
 `,
     )
 
-    const process = Bun.spawn(
+    const child = Bun.spawn(
       [
         'node',
         '-e',
@@ -25,7 +25,7 @@ module.exports.webAuthOpener = async () => ({ token: String(++calls) })
       {
         cwd: root,
         env: {
-          ...Bun.env,
+          ...process.env,
           NODE_PATH: join(root, 'node_modules'),
           NODE_OPTIONS: `--require=${join(import.meta.dir, 'cache-npm-webauth.cjs')}`,
         },
@@ -34,9 +34,9 @@ module.exports.webAuthOpener = async () => ({ token: String(++calls) })
       },
     )
     const [exitCode, , stderr] = await Promise.all([
-      process.exited,
-      new Response(process.stdout).text(),
-      new Response(process.stderr).text(),
+      child.exited,
+      new Response(child.stdout).text(),
+      new Response(child.stderr).text(),
     ])
 
     expect(exitCode, stderr).toBe(0)

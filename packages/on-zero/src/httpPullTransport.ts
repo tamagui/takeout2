@@ -71,6 +71,10 @@ type TransportState = {
   readonly queryForward: boolean
   readonly queryAware: boolean
   nextPokeID: number
+  nextSocketGeneration: number
+  readonly activeSocketGenerationByClient: Map<string, number>
+  readonly activeSocketByClient: Map<string, ZeroHttpSocket>
+  readonly lifecycle: ((event: HttpPullLifecycleEvent) => void) | undefined
 }
 
 const COOKIE_WIDTH = 20
@@ -105,6 +109,19 @@ export type HttpPullTransportOptions = {
   // queries ship as name+args for the SERVER (consumer worker) to resolve with
   // auth. the production path for permission-transformed queries.
   queryForward?: boolean
+  // optional generation trace for connection-lifecycle diagnostics
+  lifecycle?: (event: HttpPullLifecycleEvent) => void
+}
+
+export type HttpPullLifecycleEvent = {
+  type: 'created' | 'listener' | 'open' | 'close' | 'failure' | 'superseded'
+  generation: number
+  activeGeneration: number
+  clientID: string
+  wsid: string
+  listener?: SocketEventType
+  code?: number
+  reason?: string
 }
 
 export function installHttpPullTransport(
@@ -137,6 +154,10 @@ export function installHttpPullTransport(
     queryForward: opts.queryForward === true,
     queryAware: opts.queryTransform !== undefined || opts.queryForward === true,
     nextPokeID: 0,
+    nextSocketGeneration: 0,
+    activeSocketGenerationByClient: new Map(),
+    activeSocketByClient: new Map(),
+    lifecycle: opts.lifecycle,
   }
 
   const Shim = class {
@@ -227,6 +248,7 @@ class ZeroHttpSocket {
   private pullTimer: ReturnType<typeof setInterval> | undefined
   private wakeSocket: { close(): void } | undefined
   private wakeReconnectTimer: ReturnType<typeof setTimeout> | undefined
+  private readonly generation: number
 
   constructor(
     private readonly state: TransportState,
@@ -238,6 +260,11 @@ class ZeroHttpSocket {
     this.clientID = this.connectURL.searchParams.get('clientID') ?? ''
     this.clientGroupID = this.connectURL.searchParams.get('clientGroupID') ?? ''
     this.wsid = this.connectURL.searchParams.get('wsid') ?? `zero-http-${Date.now()}`
+    this.generation = ++this.state.nextSocketGeneration
+    this.state.activeSocketByClient.get(this.clientID)?.supersede()
+    this.state.activeSocketGenerationByClient.set(this.clientID, this.generation)
+    this.state.activeSocketByClient.set(this.clientID, this)
+    this.emitLifecycle('created')
     const baseCookie = this.connectURL.searchParams.get('baseCookie')
     this.cookie = baseCookie ? baseCookie : null
     // the local cookie ID is encoded into the suffix of any cookie we
@@ -261,7 +288,10 @@ class ZeroHttpSocket {
   }
 
   addEventListener(type: SocketEventType, listener: SocketListener | null) {
-    if (listener) this.listeners[type]?.add(listener)
+    if (listener) {
+      this.listeners[type]?.add(listener)
+      this.emitLifecycle('listener', { listener: type })
+    }
   }
 
   removeEventListener(type: SocketEventType, listener: SocketListener | null) {
@@ -311,6 +341,11 @@ class ZeroHttpSocket {
     this.closeWakeChannel()
     this.readyState = this.CLOSED
     this.state.sockets.delete(this)
+    if (this.state.activeSocketByClient.get(this.clientID) === this) {
+      this.state.activeSocketByClient.delete(this.clientID)
+      this.state.activeSocketGenerationByClient.delete(this.clientID)
+    }
+    this.emitLifecycle('close', { code, reason })
     this.emit('close', { code, reason, wasClean: code <= 1001 })
   }
 
@@ -342,6 +377,7 @@ class ZeroHttpSocket {
   private open() {
     if (this.readyState !== this.CONNECTING) return
     this.readyState = this.OPEN
+    this.emitLifecycle('open')
     this.emit('open', {})
     this.emitMessage(['connected', { wsid: this.wsid, timestamp: Date.now() }])
     setTimeout(() => this.run(this.pull()), 0)
@@ -565,6 +601,7 @@ class ZeroHttpSocket {
 
   private fail(error: unknown) {
     if (this.readyState === this.CLOSED) return
+    this.emitLifecycle('failure', { reason: errorMessage(error) })
     if (isAuthHTTPError(error)) {
       this.emitMessage([
         'error',
@@ -700,6 +737,31 @@ class ZeroHttpSocket {
       if (typeof listener === 'function') listener(event)
       else listener.handleEvent(event)
     }
+  }
+
+  private supersede() {
+    if (this.readyState === this.CLOSED) return
+    if (this.openTimer !== undefined) clearTimeout(this.openTimer)
+    if (this.pullTimer !== undefined) clearInterval(this.pullTimer)
+    this.closeWakeChannel()
+    this.readyState = this.CLOSED
+    this.state.sockets.delete(this)
+    this.emitLifecycle('superseded')
+  }
+
+  private emitLifecycle(
+    type: HttpPullLifecycleEvent['type'],
+    detail: Pick<HttpPullLifecycleEvent, 'listener' | 'code' | 'reason'> = {},
+  ) {
+    this.state.lifecycle?.({
+      type,
+      generation: this.generation,
+      activeGeneration:
+        this.state.activeSocketGenerationByClient.get(this.clientID) ?? this.generation,
+      clientID: this.clientID,
+      wsid: this.wsid,
+      ...detail,
+    })
   }
 }
 

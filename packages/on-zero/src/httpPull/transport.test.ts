@@ -2,7 +2,11 @@ import { Zero } from '@rocicorp/zero'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 
 import { zeroHttpFixtureMutators, zeroHttpFixtureSchema } from './fixtureSchema'
-import { ensureHttpPullTransport, installHttpPullTransport } from '../httpPullTransport'
+import {
+  ensureHttpPullTransport,
+  installHttpPullTransport,
+  type HttpPullLifecycleEvent,
+} from '../httpPullTransport'
 
 const ORIGIN = 'https://zero-http.local'
 
@@ -429,33 +433,133 @@ describe('zero-http transport', () => {
     view.destroy()
   })
 
-  test('transient failures never delay a synthetic open beyond Zero timeout', async () => {
-    vi.useFakeTimers()
-    const fetch = vi.fn(async () => {
-      throw new TypeError('Failed to fetch')
-    })
-    install(fetch)
-
-    // each failed socket used to increase one transport-global delay. after
-    // five failures the next synthetic open waited 16s, exceeding stock Zero's
-    // 10s connection timeout and letting the abandoned open poison the client.
-    for (let attempt = 0; attempt < 5; attempt++) {
-      const { socket } = openRawSocketWithMessages()
-      let closed = false
-      socket.addEventListener('close', () => {
-        closed = true
+  test('pull and push 500 reconnects keep socket opens on their current Zero attempt', async () => {
+    const lifecycle: HttpPullLifecycleEvent[] = []
+    const zeroLogs: Array<{ context: Record<string, unknown>; args: unknown[] }> = []
+    let failPull = false
+    let failPush = false
+    const fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const request = recordRequest(input, init)
+      if (request.path === '/pull') {
+        if (failPull) {
+          failPull = false
+          return jsonResponse({ error: 'injected pull outage' }, { status: 500 })
+        }
+        return jsonResponse({ cookie: request.body.cookie, unchanged: true })
+      }
+      if (failPush) {
+        failPush = false
+        return jsonResponse({ error: 'injected push outage' }, { status: 500 })
+      }
+      const mutation = request.body.mutations[0]
+      return jsonResponse({
+        pushResponse: {
+          mutations: [
+            {
+              id: { clientID: mutation.clientID, id: mutation.id },
+              result: {},
+            },
+          ],
+        },
       })
-      await vi.advanceTimersByTimeAsync(1)
-      expect(closed).toBe(true)
+    })
+    const transport = installHttpPullTransport({
+      origin: ORIGIN,
+      fetch,
+      lifecycle: (event) => lifecycle.push(event),
+    })
+    transports.push(transport)
+    const zero = createZero({
+      logSink: {
+        log: (_level, context, ...args) => {
+          zeroLogs.push({ context: context ?? {}, args })
+        },
+      },
+    })
+
+    await eventually(() => expect(zero.connection.state.current.name).toBe('connected'))
+    failPull = true
+    await transport.pull().catch(() => {})
+    await eventually(
+      () => expect(lifecycle.filter((event) => event.type === 'open')).toHaveLength(2),
+      5_000,
+    )
+
+    failPush = true
+    const mutation = zero.mutate.project.create({
+      id: 'p1',
+      ownerId: 'u1',
+      name: 'after reconnect',
+    })
+    await mutation.client
+    await mutation.server.catch(() => {})
+    await eventually(
+      () => expect(lifecycle.filter((event) => event.type === 'open')).toHaveLength(3),
+      5_000,
+    )
+    await eventually(
+      () => expect(zero.connection.state.current.name).toBe('connected'),
+      5_000,
+    )
+
+    const opens = lifecycle.filter((event) => event.type === 'open')
+    expect(
+      opens.map(({ generation, activeGeneration }) => [generation, activeGeneration]),
+    ).toEqual([
+      [1, 1],
+      [2, 2],
+      [3, 3],
+    ])
+    expect(
+      zeroLogs.some(({ args }) =>
+        args.some((arg) => String(arg).includes('connect start time is undefined')),
+      ),
+    ).toBe(false)
+  })
+
+  test('a replacement socket supersedes stale open and connected events for the same client', async () => {
+    vi.useFakeTimers()
+    const lifecycle: HttpPullLifecycleEvent[] = []
+    const transport = installHttpPullTransport({
+      origin: ORIGIN,
+      fetch: vi.fn(async () => jsonResponse({ cookie: null, unchanged: true })),
+      lifecycle: (event) => lifecycle.push(event),
+    })
+    transports.push(transport)
+
+    let connectStart: number | undefined = Date.now()
+    const errors: string[] = []
+    const attachStockLifecycle = (socket: WebSocket) => {
+      socket.addEventListener('open', () => {
+        if (connectStart === undefined) {
+          errors.push('Got open event but connect start time is undefined.')
+        }
+      })
+      socket.addEventListener('message', (event) => {
+        const message = JSON.parse(String(event.data)) as [string, unknown]
+        if (message[0] === 'connected') connectStart = undefined
+      })
     }
 
-    const { socket } = openRawSocketWithMessages()
-    let opened = false
-    socket.addEventListener('open', () => {
-      opened = true
-    })
+    const stale = openRawSocketWithMessages({ wsid: 'stale' }).socket
+    attachStockLifecycle(stale)
+    const current = openRawSocketWithMessages({ wsid: 'current' }).socket
+    attachStockLifecycle(current)
     await vi.advanceTimersByTimeAsync(1)
-    expect(opened).toBe(true)
+
+    expect(
+      lifecycle
+        .filter((event) => event.type === 'open')
+        .map(({ generation, activeGeneration, wsid }) => [
+          generation,
+          activeGeneration,
+          wsid,
+        ]),
+    ).toEqual([[2, 2, 'current']])
+    expect(lifecycle).toContainEqual(
+      expect.objectContaining({ type: 'superseded', generation: 1, wsid: 'stale' }),
+    )
+    expect(errors).toEqual([])
   })
 
   test('non-origin WebSockets pass through to the native implementation', () => {
@@ -567,7 +671,17 @@ function install(fetch: typeof globalThis.fetch) {
 }
 
 function createZero(
-  options: { pingTimeoutMs?: number; onClientStateNotFound?: () => void } = {},
+  options: {
+    pingTimeoutMs?: number
+    onClientStateNotFound?: () => void
+    logSink?: {
+      log(
+        level: string,
+        context: Record<string, unknown> | undefined,
+        ...args: unknown[]
+      ): void
+    }
+  } = {},
 ) {
   const zero = new Zero({
     server: ORIGIN,
@@ -579,6 +693,8 @@ function createZero(
     mutators: zeroHttpFixtureMutators,
     pingTimeoutMs: options.pingTimeoutMs,
     onClientStateNotFound: options.onClientStateNotFound,
+    logLevel: options.logSink ? 'debug' : undefined,
+    logSink: options.logSink,
   })
   zeros.push(zero)
   return zero
@@ -654,6 +770,7 @@ function openRawSocket() {
 function openRawSocketWithMessages(opts?: {
   authToken?: string
   desiredQueriesPatch?: unknown[]
+  wsid?: string
 }) {
   const url = new URL(`${ORIGIN}/sync/v51/connect`)
   url.protocol = 'wss:'
@@ -662,7 +779,7 @@ function openRawSocketWithMessages(opts?: {
   url.searchParams.set('userID', 'u1')
   url.searchParams.set('baseCookie', '')
   url.searchParams.set('lmid', '0')
-  url.searchParams.set('wsid', 'ws-test')
+  url.searchParams.set('wsid', opts?.wsid ?? 'ws-test')
   const messages: Array<[string, any]> = []
   const socket = new WebSocket(
     url,

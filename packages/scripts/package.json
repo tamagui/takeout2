@@ -1,6 +1,6 @@
 {
   "name": "@take-out/scripts",
-  "version": "0.6.19",
+  "version": "0.6.20",
   "type": "module",
   "main": "./src/cmd.ts",
   "sideEffects": false,
@@ -29,8 +29,8 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.8.2",
-    "@take-out/helpers": "0.6.19",
-    "@take-out/run": "0.6.19",
+    "@take-out/helpers": "0.6.20",
+    "@take-out/run": "0.6.20",
     "picocolors": "^1.1.1"
   }
 }

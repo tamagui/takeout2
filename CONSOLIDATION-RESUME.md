@@ -52,10 +52,10 @@ coherent but need final validation and lock resolution on the faster machine:
   `>=1.7.0`, but that Orez version is not published yet.
 - Root `package.json`: the live Takeout app is pinned to Zero 1.7.0 and requires
   `orez >=0.5.31`.
-- Root `bun.lock`: intentionally remains unchanged because Bun cannot resolve
-  unpublished `orez >=0.5.31`; it still records the old Orez and Zero versions.
-  Regenerate it against a packed/local stage-1 Orez build or after that version
-  exists. Do not weaken the manifest range to make the lock command pass.
+- Root `bun.lock` was regenerated with Zero 1.7.0 and a local link to the packed
+  unpublished Orez 0.5.31 artifacts. Both manifests still require
+  `orez >=0.5.31`. The link entry is the pre-publication validation source and
+  must be replaced by the registry resolution after Orez 0.5.31 is published.
 - `src/zero/server.ts`, both `app/api/zero/*` routes, the SSR fixtures, and
   `src/test/unit/anon-zero-validation.test.ts`: targeted type and validation
   checks passed with the local Orez build, but the full Takeout repository suite
@@ -73,21 +73,18 @@ coherent but need final validation and lock resolution on the faster machine:
 
 ## Test state
 
-- `bun run typecheck` in `packages/on-zero` passed after the final API cleanup.
-  Log: `/tmp/on-zero-typecheck.log`.
-- The last `bun run test` in `packages/on-zero` was red: 139 tests passed and 5
-  tests in `src/generate.test.ts` hit their 5-second timeout. All five are
-  TypeScript/codegen tests that took 6.4 to 20.5 seconds while the concurrent
-  Orez Rust/WASM build drove system load near 100. No assertion failed, and the
-  same full package suite had passed earlier at normal load before the small
-  removal of the unused `defaultMutateAuthData` option. These are strongly
-  believed to be load flakes, but the continuation agent must prove that with a
-  clean terminal run. Log: `/tmp/on-zero-suite.log`.
+- `bun run typecheck` and `bun run lint` in `packages/on-zero` passed. Logs:
+  `/tmp/on-zero-typecheck.log` and `/tmp/on-zero-lint.log`.
+- The five prior `src/generate.test.ts` timeouts passed in 2.8 seconds at calm
+  load. The full package suite then passed 144 tests plus build and consumer
+  types. Logs: `/tmp/on-zero-generate-timeouts-rerun.log` and
+  `/tmp/on-zero-suite.log`.
 - Anonymous Zero validation passed. Log:
   `/tmp/takeout-anon-zero-validation-final.log`.
 - Targeted on-zero lint passed. Log: `/tmp/takeout-onzero-lint-final.log`.
-- `bun install --lockfile-only` failed only because npm has no version matching
-  `orez >=0.5.31`. Log: `/tmp/takeout-lock-update.log`.
+- Local Orez 0.5.31 pack, link registration, lock regeneration, and installation
+  passed without publishing. Logs: `/tmp/orez-local-pack-0.5.31.log`,
+  `/tmp/takeout-lock-update.log`, and `/tmp/takeout-local-orez-install.log`.
 
 ## Precise next steps
 
@@ -105,4 +102,3 @@ coherent but need final validation and lock resolution on the faster machine:
 5. If a test fails by assertion at normal load, fix the demonstrated source
    issue and re-run the complete package command. Do not port deleted semantics
    tests or add compatibility exports.
-

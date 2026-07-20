@@ -807,9 +807,30 @@ const auth = ensureAuth() // AuthData (throws if not authenticated)
 
 ## HTTP pull transport lifecycle
 
+Configure HTTP pull on the provider so transport installation and Zero instance
+creation share one owner:
+
+```tsx
+<client.ProvideZero
+  cacheURL={syncOrigin}
+  transport={{
+    type: 'http-pull',
+    options: { pullIntervalMs: 15_000, queryForward: true },
+  }}
+>
+  {children}
+</client.ProvideZero>
+```
+
 `ensureHttpPullTransport()` installs one transport per normalized origin in a
 page-global registry. Zero instance rotation and duplicate module evaluation
-therefore reuse the same WebSocket shim instead of chaining installations.
+therefore reuse the same WebSocket shim instead of chaining installations. A
+second installation for the same origin throws when any transport behavior
+differs, rather than silently retaining whichever configuration ran first.
+
+Imperative consumers can call `client.waitForZero()` to await the provider's
+active instance without polling the throwing `client.zero` facade. Pass an
+`AbortSignal` when the wait belongs to a component effect.
 
 Every socket lifecycle event carries stable `pageID`, `transportID`,
 `zeroInstanceID`, `clientGroupID`, `connectionAttemptID`, and `socketID` fields,

@@ -176,8 +176,37 @@ export type HttpPullLifecycleEvent = {
 type HttpPullPageRegistry = {
   readonly pageID: string
   nextTransportGeneration: number
-  readonly transportsByOrigin: Map<string, HttpPullTransport>
+  readonly transportsByOrigin: Map<string, HttpPullTransportRegistration>
 }
+
+type HttpPullTransportRegistration = {
+  readonly transport: HttpPullTransport
+  readonly options: NormalizedHttpPullTransportOptions
+}
+
+type NormalizedHttpPullTransportOptions = {
+  readonly origin: string
+  readonly pullOrigin: string
+  readonly pushOrigin: string
+  readonly fetch: typeof fetch | undefined
+  readonly pullIntervalMs: number | undefined
+  readonly wake: false | true | (() => Promise<string>)
+  readonly queryTransform: QueryTransform | undefined
+  readonly queryForward: boolean
+  readonly lifecycle: ((event: HttpPullLifecycleEvent) => void) | undefined
+}
+
+const HTTP_PULL_OPTION_FIELDS = [
+  'origin',
+  'pullOrigin',
+  'pushOrigin',
+  'fetch',
+  'pullIntervalMs',
+  'wake',
+  'queryTransform',
+  'queryForward',
+  'lifecycle',
+] satisfies readonly (keyof NormalizedHttpPullTransportOptions)[]
 
 const HTTP_PULL_PAGE_REGISTRY = Symbol.for('on-zero.http-pull.page-registry')
 
@@ -284,7 +313,7 @@ export function installHttpPullTransport(
         globalThis.WebSocket = previousWebSocket as typeof WebSocket
       }
       const registered = pageRegistry.transportsByOrigin.get(state.originString)
-      if (registered === transport) {
+      if (registered?.transport === transport) {
         pageRegistry.transportsByOrigin.delete(state.originString)
       }
     },
@@ -300,10 +329,31 @@ export function ensureHttpPullTransport(
 ): HttpPullTransport {
   const pageRegistry = getHttpPullPageRegistry()
   const key = trimTrailingSlash(new URL(opts.origin).toString())
+  const options: NormalizedHttpPullTransportOptions = {
+    origin: key,
+    pullOrigin: trimTrailingSlash(new URL(opts.pullOrigin ?? opts.origin).toString()),
+    pushOrigin: trimTrailingSlash(new URL(opts.pushOrigin ?? opts.origin).toString()),
+    fetch: opts.fetch ?? globalThis.fetch,
+    pullIntervalMs: opts.pullIntervalMs,
+    wake: typeof opts.wake === 'object' ? opts.wake.getToken : (opts.wake ?? false),
+    queryTransform: opts.queryTransform,
+    queryForward: opts.queryForward === true,
+    lifecycle: opts.lifecycle,
+  }
   const existing = pageRegistry.transportsByOrigin.get(key)
-  if (existing) return existing
+  if (existing) {
+    const conflicts = HTTP_PULL_OPTION_FIELDS.filter(
+      (field) => !Object.is(existing.options[field], options[field]),
+    )
+    if (conflicts.length > 0) {
+      throw new Error(
+        `HTTP pull transport for ${key} is already installed with different ${conflicts.join(', ')}`,
+      )
+    }
+    return existing.transport
+  }
   const transport = installHttpPullTransport(opts)
-  pageRegistry.transportsByOrigin.set(key, transport)
+  pageRegistry.transportsByOrigin.set(key, { transport, options })
   return transport
 }
 

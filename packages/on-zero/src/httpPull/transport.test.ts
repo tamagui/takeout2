@@ -804,11 +804,17 @@ describe('zero-http transport', () => {
   test('ensureHttpPullTransport installs once per origin across module evaluation', async () => {
     // unique origin: the ensure registry is page-global and page-lifetime
     const origin = 'http://127.0.0.1:65501'
-    const first = ensureHttpPullTransport({ origin, fetch: vi.fn() })
+    const fetch = vi.fn()
+    const first = ensureHttpPullTransport({ origin, fetch })
     vi.resetModules()
     const reloaded = await import('../httpPullTransport')
-    const second = reloaded.ensureHttpPullTransport({ origin, fetch: vi.fn() })
+    const second = reloaded.ensureHttpPullTransport({ origin, fetch })
     expect(second).toBe(first)
+    expect(() =>
+      reloaded.ensureHttpPullTransport({ origin, fetch, pullIntervalMs: 1_000 }),
+    ).toThrow(
+      `HTTP pull transport for ${origin} is already installed with different pullIntervalMs`,
+    )
     expect(first.pageID).toMatch(/^page-/)
     expect(first.transportID).toMatch(
       new RegExp(`^${first.pageID}:transport:[1-9][0-9]*$`),

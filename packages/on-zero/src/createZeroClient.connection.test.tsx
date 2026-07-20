@@ -102,6 +102,31 @@ async function mount(extraProps: Record<string, unknown> = {}, userID = 'conn') 
   return fakeZero.instances.at(-1)!
 }
 
+test('waitForZero resolves when the provider publishes its active instance', async () => {
+  const readinessClient = createZeroClient({
+    schema,
+    models: {},
+    groupedQueries: {},
+    instanceName: 'readiness-test',
+  })
+  const ready = readinessClient.waitForZero()
+
+  root = createRoot(container)
+  await act(async () => {
+    root?.render(
+      <readinessClient.ProvideZero
+        cacheURL="http://127.0.0.1:7788/zero"
+        userID="readiness"
+      >
+        <span>ok</span>
+      </readinessClient.ProvideZero>,
+    )
+    await Promise.resolve()
+  })
+
+  expect(await ready).toBe(fakeZero.instances.at(-1))
+})
+
 test('refreshAuth reconnects in place on needs-auth, once per transition', async () => {
   const refreshAuth = vi.fn(async () => 'fresh-token')
   const instance = await mount({ refreshAuth }, 'conn-auth')

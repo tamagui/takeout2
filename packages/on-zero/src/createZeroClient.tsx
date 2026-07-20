@@ -38,7 +38,10 @@ import {
   type ScheduleReloadContext,
   type ZeroRecoveryDeps,
 } from './helpers/recoverZeroClient'
-import { ensureHttpPullTransport } from './httpPullTransport'
+import {
+  ensureHttpPullTransport,
+  type HttpPullTransportOptions,
+} from './httpPullTransport'
 import { registerClientInstance } from './instanceRegistry'
 import { getAllMutationsPermissions, getMutationsPermissions } from './modelRegistry'
 import { registerQuery } from './queryRegistry'
@@ -67,6 +70,15 @@ export type GroupedQueries = Record<string, Record<string, (...args: any[]) => a
 //  - 'optimistic-deny': return false until server confirms
 //  - 'optimistic-allow': return true until server confirms
 export type PermissionStrategy = 'optimistic' | 'optimistic-deny' | 'optimistic-allow'
+
+export type HttpPullProviderTransport = {
+  type: 'http-pull'
+  options?: Omit<HttpPullTransportOptions, 'origin'>
+}
+
+export type WaitForZeroOptions = {
+  signal?: AbortSignal
+}
 
 export type CreateZeroClientOptions<
   Schema extends ZeroSchema,
@@ -263,6 +275,29 @@ export function createZeroClientInternal<
   const DisabledContext = createContext<QueryControlMode>(false)
 
   let latestZeroInstance: ZeroInstance | null = null
+  const zeroReadyWaiters = new Set<(instance: ZeroInstance) => void>()
+
+  function waitForZero({ signal }: WaitForZeroOptions = {}): Promise<ZeroInstance> {
+    if (latestZeroInstance) return Promise.resolve(latestZeroInstance)
+    if (signal?.aborted) {
+      return Promise.reject(
+        signal.reason ?? new Error('Waiting for the Zero instance was aborted'),
+      )
+    }
+
+    return new Promise((resolve, reject) => {
+      const onReady = (instance: ZeroInstance) => {
+        signal?.removeEventListener('abort', onAbort)
+        resolve(instance)
+      }
+      const onAbort = () => {
+        zeroReadyWaiters.delete(onReady)
+        reject(signal?.reason ?? new Error('Waiting for the Zero instance was aborted'))
+      }
+      zeroReadyWaiters.add(onReady)
+      signal?.addEventListener('abort', onAbort, { once: true })
+    })
+  }
 
   // the provider creates the instance one effect-tick after mount, so on a
   // fresh page load (deep link) components render once before it exists. the
@@ -429,9 +464,7 @@ export function createZeroClientInternal<
   let lastRemintAt = 0
   let remintAttempts = 0
 
-  function invalidateZeroInstance(instanceToInvalidate: ZeroInstance | null): void {
-    if (!instanceToInvalidate) return
-
+  function clearZeroInstanceReferences(instanceToInvalidate: ZeroInstance): boolean {
     if (cachedZero?.instance === instanceToInvalidate) {
       cachedZero = null
     }
@@ -439,6 +472,15 @@ export function createZeroClientInternal<
       latestZeroInstance = null
       instance.runner = null
       setRunner(null)
+      return true
+    }
+    return false
+  }
+
+  function invalidateZeroInstance(instanceToInvalidate: ZeroInstance | null): void {
+    if (!instanceToInvalidate) return
+
+    if (clearZeroInstanceReferences(instanceToInvalidate)) {
       zeroInstanceVersion?.emit(zeroInstanceVersion.value + 1)
     }
     try {
@@ -535,13 +577,11 @@ export function createZeroClientInternal<
     // provider tree mounted (e.g. inside a marketing splash that lazily
     // upgrades to the real IDE) without paying for Zero until activation.
     disable?: boolean
-    // 'http-pull' runs the stock zero client over stateless HTTP pull/push
+    // http-pull runs the stock zero client over stateless HTTP pull/push
     // (no websocket, no resident server state) by intercepting the sync
-    // socket for this instance's server origin. see httpPullTransport.ts.
-    transport?: 'http-pull'
-    // http-pull only: every open connection also pulls on this interval so
-    // server-initiated changes arrive without a client-side trigger
-    pullIntervalMs?: number
+    // socket for this instance's server origin. all transport behavior belongs
+    // here so the provider installs exactly the transport it uses.
+    transport?: HttpPullProviderTransport
     // awaited before a self-healing recovery reload — e.g. wait for the dev
     // origin to be reachable so the reload doesn't hit a restarting server.
     beforeReload?: () => Promise<void>
@@ -594,7 +634,6 @@ export function createZeroClientInternal<
     children,
     authData: authDataIn,
     transport,
-    pullIntervalMs = 30_000,
     beforeReload,
     scheduleReload,
     guardStorage,
@@ -686,22 +725,34 @@ export function createZeroClientInternal<
         return
       }
       let cached = cachedZero
+      const options = props as Omit<
+        ZeroOptions<Schema, ZeroMutators>,
+        'schema' | 'mutators'
+      >
+
+      // install before construction so the instance's first connect goes
+      // through HTTP. per-origin idempotence is strict: a second provider may
+      // reuse this transport only when every behavior option matches.
+      if (transport?.type === 'http-pull') {
+        // same precedence as zero's own getServer (cacheURL is the current
+        // option name; server is its deprecated alias)
+        const serverURL = options.cacheURL ?? options.server
+        if (typeof serverURL !== 'string') {
+          throw new Error(`transport 'http-pull' requires a server URL`)
+        }
+        ensureHttpPullTransport({
+          origin: serverURL,
+          pullIntervalMs: 30_000,
+          ...transport.options,
+        })
+      }
+
       if (cached?.key !== instanceKey) {
-        cached?.instance.close()
-        const options = props as Omit<
-          ZeroOptions<Schema, ZeroMutators>,
-          'schema' | 'mutators'
-        >
-        // install before construction so the instance's first connect goes
-        // through HTTP. per-origin idempotent — rotation reuses the install.
-        if (transport === 'http-pull') {
-          // same precedence as zero's own getServer (cacheURL is the current
-          // option name; server is its deprecated alias)
-          const serverURL = options.cacheURL ?? options.server
-          if (typeof serverURL !== 'string') {
-            throw new Error(`transport 'http-pull' requires a server URL`)
-          }
-          ensureHttpPullTransport({ origin: serverURL, pullIntervalMs })
+        if (cached) {
+          // the replacement's SetZeroInstance effect publishes one version
+          // change; clearing the old references here must not emit a second.
+          clearZeroInstanceReferences(cached.instance)
+          cached.instance.close()
         }
         // recovery closures reach the instance through this ref so they always
         // delete the CURRENT instance's own store (set right after construction;
@@ -740,11 +791,11 @@ export function createZeroClientInternal<
         cachedZero = cached
       }
       setInstance(cached.instance)
-      // identity is fully captured by instanceKey; function props are bound
-      // at construction by design. `disable` is a dep so a true → false
-      // transition runs the effect and mints the instance.
+      // identity is captured by instanceKey; function props are bound at
+      // construction. transport is also a dependency so a same-origin behavior
+      // change reaches the strict conflict check above.
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [instanceKey, disable])
+    }, [instanceKey, disable, transport])
 
     // a changed token on the same identity refreshes auth in place — zero
     // sends an auth update over the live connection instead of reconnecting
@@ -803,12 +854,8 @@ export function createZeroClientInternal<
   const SetZeroInstance = () => {
     const zeroInstance = useZero<Schema, ZeroMutators>()
 
-    // TODO last hack zero wants us to use useZero but its a big migration
-    // and has some downsides (global zero import leads to simpler code)
-    // they plan to support .setAuth() at some point, and so long as we refresh
-    // when we do change zero, this should be safe - that said we don't refresh
-    // the browser for now, but we also don't handle new auth keys in general
-    // we'll need to add that soon
+    // publish the active external instance through the stable facade and query
+    // runner before descendant effects perform imperative work.
     if (zeroInstance !== latestZeroInstance) {
       latestZeroInstance = zeroInstance
       const runner: ZeroRunner = (query, options) =>
@@ -817,6 +864,9 @@ export function createZeroClientInternal<
       // to; the global runner stays as the ambient fallback (inline zql)
       instance.runner = runner
       setRunner(runner)
+      const waiters = [...zeroReadyWaiters]
+      zeroReadyWaiters.clear()
+      for (const onReady of waiters) onReady(zeroInstance)
     }
 
     useEffect(() => {
@@ -965,6 +1015,7 @@ export function createZeroClientInternal<
     zero,
     preload,
     getQuery,
+    waitForZero,
     remint,
   }
 }

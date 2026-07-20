@@ -501,77 +501,57 @@ export const { ProvideZero, useQuery, zero, usePermission } = createZeroClient({
 </ProvideZero>
 ```
 
-server:
+server bindings:
 
 ```ts
-import { createZeroServer } from 'on-zero/server'
+import { createOrezBindings } from 'on-zero/orez'
+import {
+  createPostgreSQLApplicationDatabase,
+  createSyncExecutor,
+  handleSyncExecutorPushRequest,
+} from 'orez/sync-executor'
 import { syncedQueries } from '~/data/generated/syncedQueries'
 import { mutationValidators } from '~/data/generated/syncedMutations'
 
-export const zeroServer = createZeroServer({
+export const zeroBindings = createOrezBindings({
   schema,
   models,
-  database: process.env.DATABASE_URL,
-  queries: syncedQueries, // required for synced queries / pull endpoint
-  mutations: mutationValidators, // auto-validates mutation args with valibot
+  queries: syncedQueries,
+  mutations: mutationValidators,
   createServerActions: () => ({
     sendEmail: async (to, subject, body) => { ... }
   })
 })
 
-// push endpoint for mutations
-app.post('/api/zero/push', async (req) => {
-  const authData = await getAuthFromRequest(req)
-  const { response } = await zeroServer.handleMutationRequest({
-    authData,
-    request: req,
-    scheduleBackgroundTask: (promise) => host.waitUntil(promise)
-  })
-  return response
-})
-
-// pull endpoint for synced queries
-app.post('/api/zero/pull', async (req) => {
-  const authData = await getAuthFromRequest(req)
-  const { response } = await zeroServer.handleQueryRequest({
-    authData,
-    request: req
-  })
-  return response
-})
-```
-
-`scheduleBackgroundTask` is the request host's lifetime hook, such as
-Cloudflare Workers' `ctx.waitUntil`. on-zero passes it one promise that settles
-after every non-barrier mutator task settles, including when a sibling rejects.
-Without a scheduler, `handleMutationRequest` waits for those tasks before it
-returns.
-
-SQLite uses the same handler surface through a separate entrypoint that does
-not import the PostgreSQL adapter:
-
-```ts
-import { createZeroSQLiteServer } from 'on-zero/sqlite'
-
-export const zeroServer = createZeroSQLiteServer({
+export const zeroExecutor = createSyncExecutor({
   schema,
-  models,
-  queries: syncedQueries,
-  mutations: mutationValidators,
-  createServerActions: () => ({ ... }),
-  transactionProvider: (callback) =>
-    storage.transaction(() => callback(sqliteExecutor)),
+  mutators: zeroBindings.mutators,
+  database: createPostgreSQLApplicationDatabase(pool, {
+    schema,
+    internalSchema: 'zero_0',
+  }),
+  effects: {
+    runBackground: (promise) => host.waitUntil(promise),
+    report: (error) => console.error(error),
+  },
+})
+
+export const zeroServer = zeroBindings.server(zeroExecutor)
+
+app.post('/api/zero/push', async (request) => {
+  const claims = await getClaimsFromRequest(request)
+  return handleSyncExecutorPushRequest({ executor: zeroExecutor, request, claims })
+})
+
+app.post('/api/zero/pull', async (request) => {
+  const authData = await getAuthFromRequest(request)
+  return Response.json(await zeroBindings.transformQueryRequest({ authData, request }))
 })
 ```
 
-`sqliteExecutor` implements `exec`, `query`, and `queryAst`. `queryAst` receives
-the query format and returns the fully materialized logical result, including
-nested relationships and singular shaping. The provider must run the callback
-inside the authoritative SQLite transaction. If the storage engine retries the
-callback, on-zero discards tasks from the abandoned attempt and returns only
-tasks from the committed attempt. The first push creates the `<schema>_clients`
-and `<schema>_mutations` ledger tables in that transaction; for example,
-`schema=zero_0` creates `zero_0_clients` and `zero_0_mutations`.
+Orez owns the transaction, CRUD SQL, client ledger, replay, and effect
+scheduling. on-zero supplies the mutator registry, auth/query helpers, and typed
+direct-call facade.
 
 ### multiple client instances
 
@@ -631,7 +611,7 @@ constraints:
 - a mutator may only read/write tables owned by its own instance. its
   transaction runs on that instance alone; cross-instance writes are not
   detectable at registration and will silently miss the other store.
-- the server stays single: one `createZeroServer` per backend process.
+- the server stays single: one Orez executor and binding registry per database.
 - omitting `instanceName` keeps the exact single-instance behavior.
 
 **guarding the partition against drift.** a generated namespace that ends up in
@@ -659,10 +639,9 @@ assertZeroInstancePartition('model namespace', models, {
 add custom validation for all queries and mutations:
 
 ```ts
-export const zeroServer = createZeroServer({
+export const zeroBindings = createOrezBindings({
   schema,
   models,
-  database: process.env.DATABASE_URL,
   queries: syncedQueries,
   createServerActions: () => ({ ... }),
 
@@ -687,9 +666,6 @@ export const zeroServer = createZeroServer({
   // - 'off': no admin bypass, normal permission checks apply
   defaultAllowAdminRole: 'all',
 
-  // default authData for zeroServer.mutate when none is provided or in scope
-  // defaults to {}
-  defaultMutateAuthData: { id: 'system', email: 'system@example.com' },
 })
 ```
 
@@ -700,12 +676,12 @@ generator uses the TypeScript type checker to deeply resolve param types -
 including imported types, aliases, and cross-file references - then converts them
 to valibot schemas.
 
-pass the generated `mutationValidators` to `createZeroServer`:
+pass the generated `mutationValidators` to `createOrezBindings`:
 
 ```ts
 import { mutationValidators } from '~/data/generated/syncedMutations'
 
-export const zeroServer = createZeroServer({
+export const zeroBindings = createOrezBindings({
   // ...
   mutations: mutationValidators,
 })
@@ -963,21 +939,17 @@ await zeroServer.mutate.user.insert(user)
 // with explicit auth (optional - authData auto-resolves from context)
 await zeroServer.mutate.user.insert(user, { authData: { id: userId, email } })
 
-// await async tasks (effects) before returning
-await zeroServer.mutate.user.insert(user, { awaitEffects: true })
 ```
 
 the second argument is an options object:
 
 - `authData` — override auth for this call (optional, auto-resolves from context)
-- `awaitEffects` — if `true`, awaits async tasks before returning (default: fire-and-forget)
 
 authData is automatically resolved in this order:
 
 1. explicit `authData` in options (if passed)
 2. current mutation context (inside a mutation)
 3. auth scope (inside async tasks - automatically inherited)
-4. `defaultMutateAuthData` from `createZeroServer` config (defaults to `{}`)
 
 **one-off queries with `run()`:**
 
@@ -1046,7 +1018,10 @@ useful for prefetching data before navigation to avoid loading states.
 for ad-hoc queries that don't use query functions:
 
 ```ts
-const user = await zeroServer.query((q) => q.user.where('id', userId).one())
+const user = await zeroServer.query(
+  { userID: userId },
+  (q) => q.user.where('id', userId).one(),
+)
 ```
 
 **controlling queries with `ControlQueries`:**

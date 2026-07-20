@@ -30,6 +30,7 @@ export function createMutators<Models extends GenericModels>({
   models,
   validateMutation,
   mutationValidators,
+  resolveAuthData,
 }: {
   environment: 'server' | 'client'
   authData: AuthData | null
@@ -40,6 +41,7 @@ export function createMutators<Models extends GenericModels>({
   validateMutation?: ValidateMutationFn
   /** valibot schemas keyed by model.mutationName, auto-validates args before running */
   mutationValidators?: Record<string, Record<string, any>>
+  resolveAuthData?: () => AuthData | null
 }): GetZeroMutators<Models> {
   const serverActions = createServerActions?.()
 
@@ -54,7 +56,8 @@ export function createMutators<Models extends GenericModels>({
         tx,
         // on client, read authData dynamically to avoid stale closure during auth transitions
         // (ZeroProvider recreates Zero instance in useEffect, but mutations can run before that)
-        authData: environment === 'client' ? getAuthData() : authData,
+        authData:
+          environment === 'client' ? getAuthData() : (resolveAuthData?.() ?? authData),
         environment,
         can,
         server:
@@ -168,7 +171,8 @@ export function createMutators<Models extends GenericModels>({
       // then run user-provided validation hook as escape hatch
       if (validateMutation) {
         await validateMutation({
-          authData: environment === 'client' ? getAuthData() : authData,
+          authData:
+            environment === 'client' ? getAuthData() : (resolveAuthData?.() ?? authData),
           tableName,
           mutatorName,
           args: args[1],

@@ -7,8 +7,6 @@
 import { createRoute, useLoader } from 'one'
 import { Text, YStack } from 'tamagui'
 
-import type { AuthData } from 'on-zero'
-
 const route = createRoute<'/test/ssr-permissions'>()
 
 export const loader = route.createLoader(async ({ request }) => {
@@ -20,19 +18,12 @@ export const loader = route.createLoader(async ({ request }) => {
   const url = new URL(request!.url)
   const viewerId = url.searchParams.get('viewerId')
 
-  // fetch posts as the specified viewer (or anonymous if not provided)
-  const authData: AuthData | null = viewerId
-    ? { id: viewerId, email: '', role: undefined }
-    : null
-
-  const posts = await zeroServer.query(
-    () =>
-      zql.post
-        .where(notBlockedByViewer)
-        .orderBy('createdAt', 'desc')
-        .limit(50)
-        .related('user', (q) => q.one()),
-    authData,
+  const posts = await zeroServer.query({ userID: viewerId ?? 'anon' }, () =>
+    zql.post
+      .where(notBlockedByViewer)
+      .orderBy('createdAt', 'desc')
+      .limit(50)
+      .related('user', (q) => q.one()),
   )
 
   return {

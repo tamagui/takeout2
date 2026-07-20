@@ -9,24 +9,16 @@ import { zql } from 'on-zero'
 import { notBlockedByViewer } from '~/data/where/notBlockedByViewer'
 import { zeroServer } from '~/zero/server'
 
-import type { AuthData } from 'on-zero'
-
 export async function GET(request: Request) {
   const url = new URL(request.url)
   const viewerId = url.searchParams.get('viewerId')
 
-  const authData: AuthData | null = viewerId
-    ? { id: viewerId, email: '', role: undefined }
-    : null
-
-  const posts = await zeroServer.query(
-    () =>
-      zql.post
-        .where(notBlockedByViewer)
-        .orderBy('createdAt', 'desc')
-        .limit(50)
-        .related('user', (q) => q.one()),
-    authData,
+  const posts = await zeroServer.query({ userID: viewerId ?? 'anon' }, () =>
+    zql.post
+      .where(notBlockedByViewer)
+      .orderBy('createdAt', 'desc')
+      .limit(50)
+      .related('user', (q) => q.one()),
   )
 
   const postData = posts.map((p) => ({

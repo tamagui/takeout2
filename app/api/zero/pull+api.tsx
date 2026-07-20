@@ -1,7 +1,7 @@
 import { getAuthDataFromRequest } from '@take-out/better-auth-utils/server'
 
 import { authServer } from '~/features/auth/server/authServer'
-import { zeroServer } from '~/zero/server'
+import { zeroBindings } from '~/zero/server'
 
 import type { Endpoint } from 'one'
 
@@ -11,7 +11,7 @@ import type { Endpoint } from 'one'
 export const POST: Endpoint = async (request) => {
   try {
     const authData = await getAuthDataFromRequest(authServer, request)
-    const { response } = await zeroServer.handleQueryRequest({
+    const response = await zeroBindings.transformQueryRequest({
       authData,
       request,
     })

@@ -2,13 +2,11 @@ import { createBuilder, mustGetQuery } from '@rocicorp/zero'
 import { asQueryInternals } from '@rocicorp/zero/bindings'
 import { handleQueryRequest as zeroHandleQueryRequest } from '@rocicorp/zero/server'
 import { createAsyncContext } from '@take-out/helpers'
-import {
-  MutationApplicationError,
-  registerMutators,
-  type JsonValue,
-  type MutatorRegistry,
-  type NormalizedClaims,
-  type SyncExecutor,
+import type {
+  JsonValue,
+  MutatorRegistry,
+  NormalizedClaims,
+  SyncExecutor,
 } from 'orez/sync-executor'
 
 import { createPermissions } from './createPermissions'
@@ -177,7 +175,9 @@ export function createOrezBindings<
   }
 
   const bindings: OrezBindings<Schema, Models> = {
-    mutators: registerMutators<Schema, typeof registry>(registry),
+    // orez's registerMutators is exactly this freeze; inlining it keeps the
+    // engine out of on-zero's runtime graph
+    mutators: Object.freeze({ ...registry }),
     async resolveQuery(name, args, claims) {
       if (!options.queries) {
         throw new Error('No queries registered with createOrezBindings.')
@@ -336,6 +336,21 @@ function defaultMapClaims(claims: NormalizedClaims): AuthData | null {
 
 function authToClaims(authData: AuthData | null | undefined): NormalizedClaims {
   return authDataToClaims(authData, 'server')
+}
+
+// orez recognises an application error by shape, never by instanceof: it checks
+// name === 'MutationApplicationError' with a string message and JSON-safe
+// details. matching that shape here is what keeps orez out of on-zero's runtime
+// dependencies — importing the class would pull the engine into every consumer
+// that only wanted the packaging.
+class MutationApplicationError extends Error {
+  readonly details: JsonValue
+
+  constructor(details: JsonValue, message?: string) {
+    super(message ?? (typeof details === 'string' ? details : 'mutation rejected'))
+    this.name = 'MutationApplicationError'
+    this.details = details
+  }
 }
 
 function mutationApplicationError(error: unknown): MutationApplicationError {

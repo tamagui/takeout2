@@ -87,25 +87,24 @@ describe('createOrezBindings', () => {
       },
     })
 
-    const result = await executor
-      .push(
-        {
-          clientGroupID: 'group-anon',
-          mutations: [
-            {
-              type: 'custom',
-              id: 1,
-              clientID: 'client-anon',
-              name: 'project|create',
-              args: [{ id: 'project-1', ownerId: 'anon', name: 'sneaky' }],
-              timestamp: 1,
-            },
-          ],
-          pushVersion: 1,
-          requestID: 'request-anon',
-        },
-        authDataToClaims(null),
-      )
+    const result = await executor.push(
+      {
+        clientGroupID: 'group-anon',
+        mutations: [
+          {
+            type: 'custom',
+            id: 1,
+            clientID: 'client-anon',
+            name: 'project|create',
+            args: [{ id: 'project-1', ownerId: 'anon', name: 'sneaky' }],
+            timestamp: 1,
+          },
+        ],
+        pushVersion: 1,
+        requestID: 'request-anon',
+      },
+      authDataToClaims(null),
+    )
 
     expect(seenAuthData).toBe(null)
     expect(result.pushResponse).toMatchObject({

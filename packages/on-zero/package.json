@@ -90,7 +90,6 @@
     "@take-out/helpers": "0.7.6",
     "chokidar": "^4.0.3",
     "citty": "^0.1.6",
-    "orez": ">=0.5.34",
     "valibot": "^1.1.0"
   },
   "peerDependencies": {
@@ -98,7 +97,8 @@
     "drizzle-orm": ">=1.0.0-beta.0 <2",
     "drizzle-zero-sqlite": "^0.5.20",
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "orez": ">=0.5.34"
   },
   "peerDependenciesMeta": {
     "react-native": {
@@ -108,6 +108,9 @@
       "optional": true
     },
     "drizzle-zero-sqlite": {
+      "optional": true
+    },
+    "orez": {
       "optional": true
     }
   },
@@ -122,6 +125,7 @@
     "react-dom": "^19.0.0",
     "react-native": "*",
     "typescript": "^5.9.3",
-    "vitest": "^3.1.1"
+    "vitest": "^3.1.1",
+    "orez": ">=0.5.34"
   }
 }

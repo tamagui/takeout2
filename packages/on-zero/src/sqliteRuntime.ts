@@ -257,9 +257,12 @@ async function executeCrud<Schema extends ZeroSchema>(
   const insert = `INSERT INTO ${serverTableName} (${serverColumns.join(
     ', ',
   )}) VALUES (${columnNames.map(() => '?').join(', ')})`
+  const conflictColumns = table.primaryKey
+    .map((columnName) => quoteSQLiteIdentifier(serverColumn(table, columnName)))
+    .join(', ')
 
   if (kind === 'insert') {
-    await executor.exec(insert, params, {
+    await executor.exec(`${insert} ON CONFLICT (${conflictColumns}) DO NOTHING`, params, {
       table: table.serverName ?? table.name,
       publicTable: tableName,
       kind,
@@ -271,9 +274,6 @@ async function executeCrud<Schema extends ZeroSchema>(
     const mutableColumns = columnNames.filter(
       (columnName) => !table.primaryKey.includes(columnName),
     )
-    const conflictColumns = table.primaryKey
-      .map((columnName) => quoteSQLiteIdentifier(serverColumn(table, columnName)))
-      .join(', ')
     const conflictAction =
       mutableColumns.length === 0
         ? 'DO NOTHING'

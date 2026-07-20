@@ -249,6 +249,49 @@ describe('createZeroSQLiteServer', () => {
     expect(effectRuns).toBe(1)
   })
 
+  test('keeps later writes after inserting an existing primary key', async () => {
+    db.prepare('INSERT INTO project (id, ownerId, name) VALUES (?, ?, ?)').run(
+      'p1',
+      'u1',
+      'original',
+    )
+    db.prepare('INSERT INTO project (id, ownerId, name) VALUES (?, ?, ?)').run(
+      'p2',
+      'u1',
+      'before',
+    )
+    const server = createZeroSQLiteServer({
+      schema: zeroHttpFixtureSchema,
+      models: {
+        project: {
+          mutate: {
+            converge: async ({ tx }) => {
+              await tx.mutate.project.insert({
+                id: 'p1',
+                ownerId: 'u2',
+                name: 'replacement',
+              })
+              await tx.mutate.project.update({ id: 'p2', name: 'after' })
+            },
+          },
+        },
+      },
+      createServerActions: () => ({}),
+      transactionProvider,
+    })
+
+    const result = await server.handleMutationRequest({
+      authData: null,
+      request: pushRequest(1, 'project.converge', {}),
+    })
+
+    expect((result.response as any).mutations[0].result).toEqual({})
+    expect(db.prepare('SELECT * FROM project ORDER BY id').all()).toEqual([
+      { id: 'p1', ownerId: 'u1', name: 'original' },
+      { id: 'p2', ownerId: 'u1', name: 'after' },
+    ])
+  })
+
   test('rolls back row writes and persists an application error with its LMID', async () => {
     const server = createZeroSQLiteServer({
       schema: zeroHttpFixtureSchema,

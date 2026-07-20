@@ -55,21 +55,10 @@
       "require": "./dist/cjs/index.cjs",
       "default": "./dist/esm/index.mjs"
     },
-    "./server": {
-      "react-native": "./dist/esm/server.native.js",
-      "types": "./types/server.d.ts",
-      "import": "./dist/esm/server.mjs",
-      "require": "./dist/cjs/server.cjs"
-    },
-    "./sqlite": {
-      "types": "./types/createZeroSQLiteServer.d.ts",
-      "import": "./dist/esm/createZeroSQLiteServer.mjs",
-      "require": "./dist/cjs/createZeroSQLiteServer.cjs"
-    },
-    "./sync-host": {
-      "types": "./types/syncHost.d.ts",
-      "import": "./dist/esm/syncHost.mjs",
-      "require": "./dist/cjs/syncHost.cjs"
+    "./orez": {
+      "types": "./types/orez.d.ts",
+      "import": "./dist/esm/orez.mjs",
+      "require": "./dist/cjs/orez.cjs"
     },
     "./http-pull": {
       "types": "./types/httpPullTransport.d.ts",
@@ -102,21 +91,18 @@
     "@take-out/helpers": "0.7.1",
     "chokidar": "^4.0.3",
     "citty": "^0.1.6",
+    "orez": ">=0.5.31",
     "valibot": "^1.1.0"
   },
   "peerDependencies": {
-    "@rocicorp/zero": ">=1.5.0",
+    "@rocicorp/zero": ">=1.7.0",
     "drizzle-orm": ">=1.0.0-beta.0 <2",
     "drizzle-zero-sqlite": "^0.5.20",
-    "pg": ">=8.0.0",
     "react": "*",
     "react-native": "*"
   },
   "peerDependenciesMeta": {
     "react-native": {
-      "optional": true
-    },
-    "pg": {
       "optional": true
     },
     "drizzle-orm": {
@@ -129,7 +115,6 @@
   "devDependencies": {
     "@tamagui/build": "2.3.1",
     "@types/node": "25.2.0",
-    "@types/pg": "^8.11.10",
     "@types/react": "^19.0.0",
     "jsdom": "29.1.1",
     "oxfmt": "^0.16.0",

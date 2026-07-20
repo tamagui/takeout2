@@ -1,19 +1,8 @@
-import {
-  createZeroServer,
-  runAsyncTaskEntries,
-  type AsyncTaskEntry,
-  type BackgroundTaskScheduler,
-  type HandleMutationRequestOptions,
-} from 'on-zero/server'
-import { createZeroSQLiteServer, type SqlStatementMetadata } from 'on-zero/sqlite'
+import { createOrezBindings } from 'on-zero/orez'
 
-import {
-  runAsyncTaskEntries as runAsyncTaskEntriesFromRoot,
-  type Config,
-  type MutatorContext,
-  type RunAsyncTaskEntriesOptions,
-} from 'on-zero'
 import type { Schema as ZeroSchema } from '@rocicorp/zero'
+import type { NormalizedClaims, SyncExecutor } from 'orez/sync-executor'
+import type { Config, MutatorContext } from 'on-zero'
 
 type AppAuthData = {
   email: string
@@ -36,57 +25,31 @@ type Models = {
 }
 
 type Actions = Record<string, never>
-type PostgresServer = ReturnType<typeof createZeroServer<ZeroSchema, Models, Actions>>
-type SQLiteServer = ReturnType<typeof createZeroSQLiteServer<ZeroSchema, Models, Actions>>
 
-declare const postgresServer: PostgresServer
-declare const sqliteServer: SQLiteServer
-declare const taskEntries: AsyncTaskEntry[]
+const bindings = createOrezBindings<ZeroSchema, Models, Actions>({
+  schema: {} as ZeroSchema,
+  models: {} as Models,
+  createServerActions: () => ({}),
+})
+
+declare const executor: SyncExecutor<ZeroSchema>
+const server = bindings.server(executor)
 
 const authData: Config['authData'] = {
   email: 'admin@example.com',
   id: 'admin',
   role: 'admin',
 }
-
-const sqliteWrite: SqlStatementMetadata = {
-  table: 'project_records',
-  publicTable: 'project',
-  kind: 'upsert',
+const claims: NormalizedClaims = {
+  email: authData.email,
+  role: authData.role ?? null,
+  userID: authData.id,
 }
-void sqliteWrite
 
-void runAsyncTaskEntries(taskEntries, {
-  background(promise) {
-    void promise
-  },
-})
+void bindings.resolveQuery('project|byID', [{ id: 'project' }], claims)
+void server.mutate.project.create({ id: 'project' }, { authData })
+void server.transaction(claims, async (tx) => tx.location)
+void server.query(claims, () => null as never)
 
-const rootTaskOptions: RunAsyncTaskEntriesOptions = {
-  background(promise) {
-    void promise
-  },
-}
-void runAsyncTaskEntriesFromRoot(taskEntries, rootTaskOptions)
-
-const scheduleBackgroundTask: BackgroundTaskScheduler = (promise) => {
-  void promise
-}
-const mutationRequest: HandleMutationRequestOptions = {
-  authData,
-  request: new Request('https://example.com/api/zero/push'),
-  scheduleBackgroundTask,
-}
-void postgresServer.handleMutationRequest(mutationRequest)
-
-postgresServer.mutate.project.create(
-  { id: 'pg' },
-  { authData: { email: authData.email, id: authData.id, role: authData.role } },
-)
-sqliteServer.mutate.project.create(
-  { id: 'sqlite' },
-  { authData: { email: authData.email, id: authData.id, role: authData.role } },
-)
-
-// @ts-expect-error consumer auth augmentation must remain enforced
-postgresServer.mutate.project.create({ id: 'invalid' }, { authData: { id: 'admin' } })
+// @ts-expect-error mutation argument types remain enforced through the Orez facade
+void server.mutate.project.create({ id: 42 }, { authData })

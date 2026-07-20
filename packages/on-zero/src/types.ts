@@ -66,11 +66,6 @@ export type AsyncTaskOptions = {
   barrier?: boolean
 }
 
-export type AsyncTaskEntry = {
-  task: AsyncTask
-  barrier: boolean
-}
-
 /**
  * ➗0️⃣ END OVERRIDDEN TYPES
  */

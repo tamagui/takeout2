@@ -2,9 +2,10 @@ import {
   getAuthDataFromRequest,
   NotAuthenticatedError,
 } from '@take-out/better-auth-utils/server'
+import { handleSyncExecutorPushRequest } from 'orez/sync-executor'
 
 import { authServer } from '~/features/auth/server/authServer'
-import { zeroServer } from '~/zero/server'
+import { normalizeZeroClaims, zeroExecutor } from '~/zero/server'
 
 import type { Endpoint } from 'one'
 
@@ -13,11 +14,11 @@ import type { Endpoint } from 'one'
 export const POST: Endpoint = async (request) => {
   try {
     const authData = await getAuthDataFromRequest(authServer, request)
-    const { response } = await zeroServer.handleMutationRequest({
-      authData,
+    return handleSyncExecutorPushRequest({
+      executor: zeroExecutor,
       request,
+      claims: normalizeZeroClaims(authData),
     })
-    return Response.json(response)
   } catch (err) {
     if (err instanceof NotAuthenticatedError) {
       console.warn(`[zero] push+api not authenticated!`)

@@ -19,7 +19,7 @@ export function setCustomQueries(queries: AnyQueryRegistry) {
 function getCustomQueries(): AnyQueryRegistry {
   if (!customQueriesRef) {
     throw new Error(
-      'Custom queries not initialized. Ensure createZeroClient or createZeroServer has been called.',
+      'Custom queries not initialized. Ensure client or server bindings have been created.',
     )
   }
   return customQueriesRef

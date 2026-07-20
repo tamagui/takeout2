@@ -624,19 +624,34 @@ Storage backends:
 The server is configured in `src/zero/server.ts`:
 
 ```ts
-import { createZeroServer } from 'on-zero/server'
+import { createOrezBindings } from 'on-zero/orez'
+import {
+  createPostgreSQLApplicationDatabase,
+  createSyncExecutor,
+} from 'orez/sync-executor'
 import { models } from '~/data/generated/models'
 import { queries } from '~/data/generated/syncedQueries'
 import { schema } from '~/data/schema'
 import { createServerActions } from '~/data/server/createServerActions'
 
-export const zeroServer = createZeroServer({
+export const zeroBindings = createOrezBindings({
   schema,
   models,
   createServerActions,
   queries,
-  database: process.env.ZERO_UPSTREAM_DB,
 })
+
+export const zeroExecutor = createSyncExecutor({
+  schema,
+  mutators: zeroBindings.mutators,
+  database: createPostgreSQLApplicationDatabase(pool, {
+    schema,
+    internalSchema: 'zero_0',
+  }),
+  effects,
+})
+
+export const zeroServer = zeroBindings.server(zeroExecutor)
 ```
 
 Zero needs two API routes. These are already set up in `app/api/zero/`.

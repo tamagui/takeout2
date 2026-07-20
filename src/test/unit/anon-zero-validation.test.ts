@@ -1,6 +1,6 @@
 import { handleQueryRequest as zeroHandleQueryRequest } from '@rocicorp/zero/server'
+import { createOrezBindings } from 'on-zero/orez'
 import { describe, expect, test } from 'vitest'
-import { createZeroServer } from 'on-zero/server'
 
 import * as Queries from '~/data/generated/groupedQueries'
 import { models } from '~/data/generated/models'
@@ -16,15 +16,14 @@ import { queries } from '~/data/generated/syncedQueries'
 // no authenticated user so zero uses its client-fallback path and trusts the
 // declared id; authenticated users are still pinned to their real id.
 //
-// this drives the real handleQueryRequest. transforming a query only builds its AST,
-// so no database connection happens (the pool is created lazily and never queried).
-const zeroServer = createZeroServer({
+// this drives the real handleQueryRequest through the orez binding. transforming a
+// query only builds its AST, so no application database is involved.
+const zeroBindings = createOrezBindings({
   schema,
   models,
   queries,
   mutations: mutationValidators,
   createServerActions: () => ({}),
-  database: 'postgresql://unused:unused@127.0.0.1:1/unused',
 })
 
 function transformRequest(name: string, args: unknown) {
@@ -37,7 +36,7 @@ function transformRequest(name: string, args: unknown) {
 
 describe('zero query handler userID validation', () => {
   test('logged-out request omits userID (zero client-fallback)', async () => {
-    const { response } = await zeroServer.handleQueryRequest({
+    const response = await zeroBindings.transformQueryRequest({
       authData: null,
       request: transformRequest('user.userById', { userId: 'someone' }),
     })
@@ -48,7 +47,7 @@ describe('zero query handler userID validation', () => {
   })
 
   test('authenticated request pins userID (zero server-validated)', async () => {
-    const { response } = await zeroServer.handleQueryRequest({
+    const response = await zeroBindings.transformQueryRequest({
       authData: { id: 'user-123', email: 'demo@takeout.tamagui.dev' } as any,
       request: transformRequest('user.userById', { userId: 'someone' }),
     })
@@ -63,7 +62,7 @@ describe('zero query handler userID validation', () => {
   // branch soot always takes and takeout never does — the fix must leave it
   // untouched. any string id (real user or stable-anon) stays server-validated.
   test('stable string anon id stays server-validated (soot pattern)', async () => {
-    const { response } = await zeroServer.handleQueryRequest({
+    const response = await zeroBindings.transformQueryRequest({
       authData: { id: 'anon' } as any,
       request: transformRequest('user.userById', { userId: 'someone' }),
     })

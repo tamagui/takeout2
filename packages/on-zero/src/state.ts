@@ -18,7 +18,7 @@ const getState = () =>
     environment: null,
   }))
 
-const errMessage = `Haven't called createZeroClient or createZeroServer yet!`
+const errMessage = `Zero client or server bindings have not been created yet!`
 
 export const getZQL = () => {
   const { zql } = getState()

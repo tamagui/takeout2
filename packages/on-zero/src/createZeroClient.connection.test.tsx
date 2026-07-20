@@ -127,6 +127,15 @@ test('waitForZero resolves when the provider publishes its active instance', asy
   expect(await ready).toBe(fakeZero.instances.at(-1))
 })
 
+test('installs the supplied Orez client transport for the provider server', async () => {
+  const install = vi.fn()
+
+  await mount({ transport: { type: 'orez-client', install } }, 'transport-test')
+
+  expect(install).toHaveBeenCalledOnce()
+  expect(install).toHaveBeenCalledWith('http://127.0.0.1:7788/zero')
+})
+
 test('refreshAuth reconnects in place on needs-auth, once per transition', async () => {
   const refreshAuth = vi.fn(async () => 'fresh-token')
   const instance = await mount({ refreshAuth }, 'conn-auth')

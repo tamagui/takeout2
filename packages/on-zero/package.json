@@ -90,7 +90,7 @@
     "@take-out/helpers": "0.7.5",
     "chokidar": "^4.0.3",
     "citty": "^0.1.6",
-    "orez": ">=0.5.31",
+    "orez": ">=0.5.34",
     "valibot": "^1.1.0"
   },
   "peerDependencies": {

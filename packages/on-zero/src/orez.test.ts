@@ -87,10 +87,7 @@ describe('createOrezBindings', () => {
       },
     })
 
-    // how a rejected mutator surfaces (app result vs thrown) is the executor's
-    // contract and is covered in orez; what this pins is that an anonymous push
-    // never receives an authData, so the guard runs at all
-    await executor
+    const result = await executor
       .push(
         {
           clientGroupID: 'group-anon',
@@ -109,9 +106,11 @@ describe('createOrezBindings', () => {
         },
         authDataToClaims(null),
       )
-      .catch(() => undefined)
 
     expect(seenAuthData).toBe(null)
+    expect(result.pushResponse).toMatchObject({
+      mutations: [{ result: { error: 'app', message: 'not authenticated' } }],
+    })
     expect(sqlite.prepare('SELECT * FROM project').all()).toEqual([])
   })
 

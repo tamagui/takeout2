@@ -457,6 +457,31 @@ describe('zero-http transport', () => {
     view.destroy()
   })
 
+  test('400 pull failure is terminal and does not reconnect a stock Zero client', async () => {
+    const requests: RequestRecord[] = []
+    const fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const request = recordRequest(input, init)
+      requests.push(request)
+      expect(request.path).toBe('/pull')
+      return jsonResponse(
+        { error: 'query not registered: expense.expensesInRange' },
+        { status: 400 },
+      )
+    })
+    const transport = install(fetch)
+    const zero = createZero()
+
+    await eventually(() => expect(zero.connection.state.current.name).toBe('error'))
+    await sleep(100)
+
+    expect(requests).toHaveLength(1)
+    expect(transport.connections).toBe(0)
+    expect(zero.connection.state.current).toMatchObject({
+      name: 'error',
+      reason: expect.stringContaining('query not registered: expense.expensesInRange'),
+    })
+  })
+
   test('pull and push 500 reconnects keep socket opens on their current Zero attempt', async () => {
     const lifecycle: HttpPullLifecycleEvent[] = []
     const zeroLogs: Array<{ context: Record<string, unknown>; args: unknown[] }> = []

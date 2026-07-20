@@ -769,7 +769,14 @@ class ZeroHttpSocket {
       body: JSON.stringify(body),
     })
     if (!response.ok) {
-      throw new ZeroHttpResponseError(path, response.status)
+      let bodyPreview: string | undefined
+      try {
+        const body = await response.text()
+        bodyPreview = body.length > 512 ? `${body.slice(0, 512)}...` : body || undefined
+      } catch {
+        // the status still owns the failure when the response body is unreadable
+      }
+      throw new ZeroHttpResponseError(path, response.status, bodyPreview)
     }
     return response.json()
   }
@@ -803,6 +810,25 @@ class ZeroHttpSocket {
         'error',
         {
           kind: 'InvalidConnectionRequestBaseCookie',
+          message: error.message,
+          origin: 'server',
+        },
+      ])
+      if (this.readyState !== this.CLOSED) this.close(1000, error.message)
+      return
+    }
+    if (
+      error instanceof ZeroHttpResponseError &&
+      error.status >= 400 &&
+      error.status < 500 &&
+      error.status !== 408 &&
+      error.status !== 425 &&
+      error.status !== 429
+    ) {
+      this.emitMessage([
+        'error',
+        {
+          kind: error.path === '/pull' ? 'InvalidConnectionRequest' : 'InvalidPush',
           message: error.message,
           origin: 'server',
         },
@@ -1072,8 +1098,11 @@ class ZeroHttpResponseError extends Error {
   constructor(
     readonly path: '/pull' | '/push',
     readonly status: number,
+    bodyPreview: string | undefined,
   ) {
-    super(`zero-http ${path} failed with ${status}`)
+    super(
+      `zero-http ${path} failed with ${status}${bodyPreview ? `: ${bodyPreview}` : ''}`,
+    )
   }
 }
 

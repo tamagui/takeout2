@@ -838,8 +838,8 @@ therefore reuse the same WebSocket shim instead of chaining installations.
 Every socket lifecycle event carries stable `pageID`, `transportID`,
 `zeroInstanceID`, `clientGroupID`, `connectionAttemptID`, and `socketID` fields,
 plus Zero's `clientID` / `wsid`, the socket generation, and attempt age. on-zero
-logs each event as one `[on-zero:http-pull]` JSON line by default. Pass
-`lifecycle(event)` to collect the same events yourself instead.
+logs failures as `[on-zero:http-pull]` JSON lines by default. Pass
+`lifecycle(event)` to collect every event yourself instead.
 
 `close`, `superseded`, and `aborted` are mutually exclusive terminal events for
 one socket generation. An attempt whose Zero `ts` is already beyond the stock

@@ -132,7 +132,8 @@ export type HttpPullTransportOptions = {
   // auth. the production path for permission-transformed queries.
   queryForward?: boolean
   // receives the structured connection lifecycle. when omitted, on-zero logs
-  // each event as one JSON line so production failures retain their owners.
+  // failures so production errors retain their owners without logging routine
+  // connection and mutation traffic.
   lifecycle?: (event: HttpPullLifecycleEvent) => void
 }
 
@@ -200,8 +201,8 @@ function getHttpPullPageRegistry(): HttpPullPageRegistry {
 }
 
 function logHttpPullLifecycle(event: HttpPullLifecycleEvent) {
-  if (process.env.NODE_ENV === 'test') return
-  console.info(`[on-zero:http-pull] ${JSON.stringify(event)}`)
+  if (process.env.NODE_ENV === 'test' || event.type !== 'failure') return
+  console.error(`[on-zero:http-pull] ${JSON.stringify(event)}`)
 }
 
 export function installHttpPullTransport(

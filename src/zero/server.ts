@@ -1,4 +1,4 @@
-import { authDataToClaims, createOrezBindings } from 'on-zero/orez'
+import { authDataToClaims, createZeroServerBindings } from 'on-zero/server'
 import {
   createPostgreSQLApplicationDatabase,
   createSyncExecutor,
@@ -15,7 +15,7 @@ import { server } from '~/env'
 
 import type { AuthData } from 'on-zero'
 
-export const zeroBindings = createOrezBindings({
+export const zeroBindings = createZeroServerBindings({
   schema,
   models,
   createServerActions,

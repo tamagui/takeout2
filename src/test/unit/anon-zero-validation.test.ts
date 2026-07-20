@@ -1,5 +1,5 @@
 import { handleQueryRequest as zeroHandleQueryRequest } from '@rocicorp/zero/server'
-import { createOrezBindings } from 'on-zero/orez'
+import { createZeroServerBindings } from 'on-zero/server'
 import { describe, expect, test } from 'vitest'
 
 import * as Queries from '~/data/generated/groupedQueries'
@@ -18,7 +18,7 @@ import { queries } from '~/data/generated/syncedQueries'
 //
 // this drives the real handleQueryRequest through the orez binding. transforming a
 // query only builds its AST, so no application database is involved.
-const zeroBindings = createOrezBindings({
+const zeroBindings = createZeroServerBindings({
   schema,
   models,
   queries,

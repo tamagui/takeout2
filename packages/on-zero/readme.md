@@ -504,16 +504,16 @@ export const { ProvideZero, useQuery, zero, usePermission } = createZeroClient({
 server bindings:
 
 ```ts
-import { createOrezBindings } from 'on-zero/orez'
+import { createZeroServerBindings } from 'on-zero/server'
 import {
-  createPostgreSQLApplicationDatabase,
+  createApplicationDatabase,
   createSyncExecutor,
-  handleSyncExecutorPushRequest,
-} from 'orez/sync-executor'
+  handlePushRequest,
+} from 'your-zero-server'
 import { syncedQueries } from '~/data/generated/syncedQueries'
 import { mutationValidators } from '~/data/generated/syncedMutations'
 
-export const zeroBindings = createOrezBindings({
+export const zeroBindings = createZeroServerBindings({
   schema,
   models,
   queries: syncedQueries,
@@ -526,7 +526,7 @@ export const zeroBindings = createOrezBindings({
 export const zeroExecutor = createSyncExecutor({
   schema,
   mutators: zeroBindings.mutators,
-  database: createPostgreSQLApplicationDatabase(pool, {
+  database: createApplicationDatabase(pool, {
     schema,
     internalSchema: 'zero_0',
   }),
@@ -540,7 +540,7 @@ export const zeroServer = zeroBindings.server(zeroExecutor)
 
 app.post('/api/zero/push', async (request) => {
   const claims = await getClaimsFromRequest(request)
-  return handleSyncExecutorPushRequest({ executor: zeroExecutor, request, claims })
+  return handlePushRequest({ executor: zeroExecutor, request, claims })
 })
 
 app.post('/api/zero/pull', async (request) => {
@@ -549,9 +549,9 @@ app.post('/api/zero/pull', async (request) => {
 })
 ```
 
-Orez owns the transaction, CRUD SQL, client ledger, replay, and effect
-scheduling. on-zero supplies the mutator registry, auth/query helpers, and typed
-direct-call facade.
+The server implementation owns transactions, CRUD SQL, the client ledger,
+replay, and effect scheduling. on-zero supplies the structural executor seam,
+mutator registry, auth/query helpers, and typed direct-call facade.
 
 ### multiple client instances
 
@@ -611,7 +611,7 @@ constraints:
 - a mutator may only read/write tables owned by its own instance. its
   transaction runs on that instance alone; cross-instance writes are not
   detectable at registration and will silently miss the other store.
-- the server stays single: one Orez executor and binding registry per database.
+- the server stays single: one executor and binding registry per database.
 - omitting `instanceName` keeps the exact single-instance behavior.
 
 **guarding the partition against drift.** a generated namespace that ends up in
@@ -639,7 +639,7 @@ assertZeroInstancePartition('model namespace', models, {
 add custom validation for all queries and mutations:
 
 ```ts
-export const zeroBindings = createOrezBindings({
+export const zeroBindings = createZeroServerBindings({
   schema,
   models,
   queries: syncedQueries,
@@ -676,12 +676,12 @@ generator uses the TypeScript type checker to deeply resolve param types -
 including imported types, aliases, and cross-file references - then converts them
 to valibot schemas.
 
-pass the generated `mutationValidators` to `createOrezBindings`:
+pass the generated `mutationValidators` to `createZeroServerBindings`:
 
 ```ts
 import { mutationValidators } from '~/data/generated/syncedMutations'
 
-export const zeroBindings = createOrezBindings({
+export const zeroBindings = createZeroServerBindings({
   // ...
   mutations: mutationValidators,
 })

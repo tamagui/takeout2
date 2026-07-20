@@ -55,9 +55,9 @@
       "require": "./dist/cjs/index.cjs",
       "default": "./dist/esm/index.mjs"
     },
-    "./orez": {
-      "types": "./types/orez.d.ts",
-      "import": "./dist/esm/orez.mjs"
+    "./server": {
+      "types": "./types/server.d.ts",
+      "import": "./dist/esm/server.mjs"
     },
     "./vite": {
       "types": "./types/vite-plugin.d.ts",
@@ -92,8 +92,7 @@
     "drizzle-orm": ">=1.0.0-beta.0 <2",
     "drizzle-zero-sqlite": "^0.5.20",
     "react": "*",
-    "react-native": "*",
-    "orez": ">=0.5.39"
+    "react-native": "*"
   },
   "peerDependenciesMeta": {
     "react-native": {
@@ -103,9 +102,6 @@
       "optional": true
     },
     "drizzle-zero-sqlite": {
-      "optional": true
-    },
-    "orez": {
       "optional": true
     }
   },
@@ -120,7 +116,6 @@
     "react-dom": "^19.0.0",
     "react-native": "*",
     "typescript": "^5.9.3",
-    "vitest": "^3.1.1",
-    "orez": ">=0.5.39"
+    "vitest": "^3.1.1"
   }
 }

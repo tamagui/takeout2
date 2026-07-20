@@ -1,17 +1,11 @@
 import { createBuilder, mustGetQuery } from '@rocicorp/zero'
 import { asQueryInternals } from '@rocicorp/zero/bindings'
-// type-only: @rocicorp/zero/server pulls Node and PostgreSQL formatting in, and
-// importing it eagerly means merely importing on-zero/orez drags that into a
-// browser worker, where the tenant tree then never paints. the real import
-// happens inside transformQueryRequest, which only ever runs on a server.
+// type-only: @rocicorp/zero/server pulls node and postgresql formatting in, and
+// importing it eagerly means merely importing on-zero/server drags that into a
+// browser worker. the real import happens inside transformQueryRequest, which
+// only ever runs on a server.
 import type { handleQueryRequest as zeroHandleQueryRequest } from '@rocicorp/zero/server'
 import { createAsyncContext } from '@take-out/helpers'
-import type {
-  JsonValue,
-  MutatorRegistry,
-  NormalizedClaims,
-  SyncExecutor,
-} from 'orez/sync-executor'
 
 import { createPermissions } from './createPermissions'
 import { createMutators } from './helpers/createMutators'
@@ -36,7 +30,83 @@ import type {
   HumanReadable,
   Query,
   Schema as ZeroSchema,
+  ServerTransaction as RocicorpServerTransaction,
 } from '@rocicorp/zero'
+
+export type JsonPrimitive = string | number | boolean | null
+export type JsonValue =
+  | JsonPrimitive
+  | readonly JsonValue[]
+  | { readonly [key: string]: JsonValue }
+
+export type NormalizedClaims = {
+  readonly userID: string
+  readonly [claim: string]: JsonValue
+}
+
+export type TransactionQueryFormat = {
+  readonly relationships: Readonly<Record<string, TransactionQueryFormat>>
+  readonly singular: boolean
+}
+
+export type SqlStatementMetadata = {
+  readonly table: string
+  readonly publicTable: string
+  readonly kind: 'delete' | 'insert' | 'update' | 'upsert'
+}
+
+export interface ZeroServerApplicationTransaction {
+  exec(
+    sql: string,
+    params?: readonly unknown[],
+    metadata?: SqlStatementMetadata,
+  ): Promise<{ readonly changes: number }>
+  query<Row extends Record<string, unknown> = Record<string, unknown>>(
+    sql: string,
+    params?: readonly unknown[],
+  ): Promise<readonly Row[]>
+  queryAst<Result = unknown>(
+    ast: JsonValue,
+    format: TransactionQueryFormat,
+    queryName?: string,
+  ): Promise<Result>
+}
+
+export type ZeroServerTransaction<Schema extends ZeroSchema> = RocicorpServerTransaction<
+  Schema,
+  ZeroServerApplicationTransaction
+>
+
+export type ZeroServerMutationContext = {
+  readonly claims: NormalizedClaims
+  defer(
+    effect: () => void | Promise<void>,
+    options?: { readonly barrier?: boolean },
+  ): void
+}
+
+export type ZeroServerRegisteredMutator<Schema extends ZeroSchema = ZeroSchema> =
+  (input: {
+    readonly tx: ZeroServerTransaction<Schema>
+    readonly args: JsonValue
+    readonly ctx: ZeroServerMutationContext
+  }) => void | Promise<void>
+
+export type ZeroServerMutatorRegistry<Schema extends ZeroSchema = ZeroSchema> = Readonly<
+  Record<string, ZeroServerRegisteredMutator<Schema>>
+>
+
+export interface ZeroServerExecutor<Schema extends ZeroSchema> {
+  execute(name: string, args: JsonValue, claims: NormalizedClaims): Promise<void>
+  transaction<Value>(
+    claims: NormalizedClaims,
+    work: (tx: ZeroServerTransaction<Schema>) => Value | Promise<Value>,
+  ): Promise<Value>
+  query<Result>(
+    claims: NormalizedClaims,
+    work: (tx: ZeroServerTransaction<Schema>) => Result | Promise<Result>,
+  ): Promise<Result>
+}
 
 export type ValidateQueryArgs = {
   authData: AuthData | null
@@ -71,7 +141,7 @@ export type ServerMutate<Models extends GenericModels> = {
   }
 }
 
-export type CreateOrezBindingsOptions<
+export type CreateZeroServerBindingsOptions<
   Schema extends ZeroSchema,
   Models extends GenericModels,
   ServerActions extends Record<string, unknown>,
@@ -87,8 +157,11 @@ export type CreateOrezBindingsOptions<
   mapClaims?: (claims: NormalizedClaims) => AuthData | null
 }
 
-export type OrezBindings<Schema extends ZeroSchema, Models extends GenericModels> = {
-  mutators: MutatorRegistry<Schema>
+export type ZeroServerBindings<
+  Schema extends ZeroSchema,
+  Models extends GenericModels,
+> = {
+  mutators: ZeroServerMutatorRegistry<Schema>
   resolveQuery(
     name: string,
     args: readonly JsonValue[],
@@ -98,7 +171,7 @@ export type OrezBindings<Schema extends ZeroSchema, Models extends GenericModels
     authData: AuthData | null
     request: Request
   }): ReturnType<typeof zeroHandleQueryRequest>
-  server(executor: SyncExecutor<Schema>): {
+  server(executor: ZeroServerExecutor<Schema>): {
     mutate: ServerMutate<Models>
     transaction<Value>(
       claims: NormalizedClaims,
@@ -111,13 +184,13 @@ export type OrezBindings<Schema extends ZeroSchema, Models extends GenericModels
   }
 }
 
-export function createOrezBindings<
+export function createZeroServerBindings<
   Schema extends ZeroSchema,
   Models extends GenericModels,
   ServerActions extends Record<string, unknown>,
 >(
-  options: CreateOrezBindingsOptions<Schema, Models, ServerActions>,
-): OrezBindings<Schema, Models> {
+  options: CreateZeroServerBindingsOptions<Schema, Models, ServerActions>,
+): ZeroServerBindings<Schema, Models> {
   setSchema(options.schema, createBuilder(options.schema))
   setEnvironment('server')
   if (options.queries) setCustomQueries(options.queries)
@@ -128,10 +201,10 @@ export function createOrezBindings<
     schema: options.schema,
     adminRoleMode: options.defaultAllowAdminRole ?? 'all',
   })
-  const registry: Record<string, MutatorRegistry<Schema>[string]> = {}
+  const registry: Record<string, ZeroServerMutatorRegistry<Schema>[string]> = {}
   const invocation = createAsyncContext<{
     authData: AuthData | null
-    ctx: Parameters<MutatorRegistry<Schema>[string]>[0]['ctx']
+    ctx: Parameters<ZeroServerMutatorRegistry<Schema>[string]>[0]['ctx']
   }>()
   const decoratedMutators = createMutators({
     authData: null,
@@ -152,7 +225,7 @@ export function createOrezBindings<
     resolveAuthData: () => invocation.get()?.authData ?? null,
     enqueueTask(task, taskOptions) {
       const current = invocation.get()
-      if (!current) throw new Error('on-zero task scheduled outside an Orez mutation')
+      if (!current) throw new Error('on-zero task scheduled outside a server mutation')
       current.ctx.defer(() => runWithAuthScope(current.authData, task), taskOptions)
     },
   }) as Record<string, Record<string, (tx: Transaction, args: unknown) => Promise<void>>>
@@ -178,13 +251,13 @@ export function createOrezBindings<
     }
   }
 
-  const bindings: OrezBindings<Schema, Models> = {
-    // orez's registerMutators is exactly this freeze; inlining it keeps the
-    // engine out of on-zero's runtime graph
+  const bindings: ZeroServerBindings<Schema, Models> = {
+    // freezing the registry makes the server seam immutable without importing
+    // any particular executor implementation.
     mutators: Object.freeze({ ...registry }),
     async resolveQuery(name, args, claims) {
       if (!options.queries) {
-        throw new Error('No queries registered with createOrezBindings.')
+        throw new Error('No queries registered with createZeroServerBindings.')
       }
       const authData = mapClaims(claims)
       const query = await runWithQueryContext({ authData }, () =>
@@ -201,7 +274,7 @@ export function createOrezBindings<
     },
     async transformQueryRequest({ authData, request }) {
       if (!options.queries) {
-        throw new Error('No queries registered with createOrezBindings.')
+        throw new Error('No queries registered with createZeroServerBindings.')
       }
       const handler = (name: string, args: unknown) =>
         resolveServerQuery({
@@ -343,11 +416,8 @@ function authToClaims(authData: AuthData | null | undefined): NormalizedClaims {
   return authDataToClaims(authData, 'server')
 }
 
-// orez recognises an application error by shape, never by instanceof: it checks
-// name === 'MutationApplicationError' with a string message and JSON-safe
-// details. matching that shape here is what keeps orez out of on-zero's runtime
-// dependencies — importing the class would pull the engine into every consumer
-// that only wanted the packaging.
+// compatible executors recognize an application error by shape, never by
+// instanceof: name, message, and json-safe details cross package boundaries.
 class MutationApplicationError extends Error {
   readonly details: JsonValue
 

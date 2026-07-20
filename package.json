@@ -150,7 +150,7 @@
     "motion": "12.36.0",
     "on-zero": "workspace:*",
     "one": "1.19.4",
-    "orez": ">=0.5.34",
+    "orez": "0.6.0",
     "pg": "8.18.0",
     "posthog-js": "^1.252.0",
     "posthog-node": "^5.5.1",

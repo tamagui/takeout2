@@ -283,6 +283,36 @@ await cmd`publish takeout packages to npm`
     const publishedNames: string[] = []
 
     try {
+      const hasTrustedPublishingIdentity =
+        process.env.GITHUB_ACTIONS === 'true' &&
+        Boolean(process.env.ACTIONS_ID_TOKEN_REQUEST_URL) &&
+        Boolean(process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN)
+
+      if (!finish && !skipPublish && !dryRun && !hasTrustedPublishingIdentity) {
+        try {
+          await run(`npm whoami`, { silent: true, captureOutput: true })
+        } catch {
+          if (!process.stdin.isTTY || !process.stdout.isTTY) {
+            throw new Error(
+              'npm authentication is required to publish. Run `npm login` in a terminal, then retry the release.',
+            )
+          }
+
+          console.info(
+            'npm authentication is required. Complete the browser login to continue.',
+          )
+          await run(`npm login`, { interactive: true })
+
+          try {
+            await run(`npm whoami`, { silent: true, captureOutput: true })
+          } catch {
+            throw new Error(
+              'npm authentication still failed after `npm login`. Verify `npm whoami` succeeds, then retry the release.',
+            )
+          }
+        }
+      }
+
       // sync on-zero IN (before release)
       if (!skipOnZeroSync && !finish && !rePublish) {
         await syncOnZeroIn()

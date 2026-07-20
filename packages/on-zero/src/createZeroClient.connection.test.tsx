@@ -130,7 +130,7 @@ test('waitForZero resolves when the provider publishes its active instance', asy
 test('installs the supplied Orez client transport for the provider server', async () => {
   const install = vi.fn()
 
-  await mount({ transport: { type: 'orez-client', install } }, 'transport-test')
+  await mount({ transport: { install } }, 'transport-test')
 
   expect(install).toHaveBeenCalledOnce()
   expect(install).toHaveBeenCalledWith('http://127.0.0.1:7788/zero')

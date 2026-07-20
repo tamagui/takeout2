@@ -12,11 +12,10 @@ export {
   createZeroClient,
   type CreateZeroClientOptions,
   type GroupedQueries,
-  type HttpPullProviderTransport,
   type PermissionStrategy,
   type WaitForZeroOptions,
+  type ZeroProviderTransport,
 } from './createZeroClient'
-export * from './orezClientTransport'
 export * from './createUseQuery'
 export * from './resolveQuery'
 export * from './run'

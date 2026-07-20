@@ -1,6 +1,6 @@
 {
   "name": "@take-out/hooks",
-  "version": "0.7.6",
+  "version": "0.7.7",
   "sideEffects": false,
   "source": "src/index.ts",
   "type": "module",
@@ -32,7 +32,7 @@
     }
   },
   "dependencies": {
-    "@take-out/helpers": "0.7.6"
+    "@take-out/helpers": "0.7.7"
   },
   "peerDependencies": {
     "react": "*",

@@ -1,7 +1,10 @@
-import { createOrezBindings } from 'on-zero/orez'
+import {
+  createZeroServerBindings,
+  type NormalizedClaims,
+  type ZeroServerExecutor,
+} from 'on-zero/server'
 
 import type { Schema as ZeroSchema } from '@rocicorp/zero'
-import type { NormalizedClaims, SyncExecutor } from 'orez/sync-executor'
 import type { Config, MutatorContext } from 'on-zero'
 
 type AppAuthData = {
@@ -26,13 +29,13 @@ type Models = {
 
 type Actions = Record<string, never>
 
-const bindings = createOrezBindings<ZeroSchema, Models, Actions>({
+const bindings = createZeroServerBindings<ZeroSchema, Models, Actions>({
   schema: {} as ZeroSchema,
   models: {} as Models,
   createServerActions: () => ({}),
 })
 
-declare const executor: SyncExecutor<ZeroSchema>
+declare const executor: ZeroServerExecutor<ZeroSchema>
 const server = bindings.server(executor)
 
 const authData: Config['authData'] = {
@@ -51,5 +54,5 @@ void server.mutate.project.create({ id: 'project' }, { authData })
 void server.transaction(claims, async (tx) => tx.location)
 void server.query(claims, () => null as never)
 
-// @ts-expect-error mutation argument types remain enforced through the Orez facade
+// @ts-expect-error mutation argument types remain enforced through the server facade
 void server.mutate.project.create({ id: 42 }, { authData })

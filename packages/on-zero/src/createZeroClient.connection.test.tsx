@@ -127,7 +127,7 @@ test('waitForZero resolves when the provider publishes its active instance', asy
   expect(await ready).toBe(fakeZero.instances.at(-1))
 })
 
-test('installs the supplied Orez client transport for the provider server', async () => {
+test('installs the supplied client transport for the provider server', async () => {
   const install = vi.fn()
 
   await mount({ transport: { install } }, 'transport-test')

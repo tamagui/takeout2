@@ -576,7 +576,7 @@ export function createZeroClientInternal<
     // upgrades to the real IDE) without paying for Zero until activation.
     disable?: boolean
     // install a client transport before constructing Zero so its first sync
-    // connection uses that transport. Orez owns the transport implementation.
+    // connection uses the transport supplied by the application.
     transport?: ZeroProviderTransport
     // awaited before a self-healing recovery reload — e.g. wait for the dev
     // origin to be reachable so the reload doesn't hit a restarting server.

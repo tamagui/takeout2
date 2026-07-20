@@ -16,6 +16,7 @@ import {
   memo,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -464,17 +465,19 @@ export function createZeroClientInternal<
   let lastRemintAt = 0
   let remintAttempts = 0
 
+  function unpublishZeroInstance(instanceToInvalidate: ZeroInstance): boolean {
+    if (latestZeroInstance !== instanceToInvalidate) return false
+    latestZeroInstance = null
+    instance.runner = null
+    setRunner(null)
+    return true
+  }
+
   function clearZeroInstanceReferences(instanceToInvalidate: ZeroInstance): boolean {
     if (cachedZero?.instance === instanceToInvalidate) {
       cachedZero = null
     }
-    if (latestZeroInstance === instanceToInvalidate) {
-      latestZeroInstance = null
-      instance.runner = null
-      setRunner(null)
-      return true
-    }
-    return false
+    return unpublishZeroInstance(instanceToInvalidate)
   }
 
   function invalidateZeroInstance(instanceToInvalidate: ZeroInstance | null): void {
@@ -715,6 +718,16 @@ export function createZeroClientInternal<
     // provider matches ZeroProvider's internal-creation timing, which consumer
     // boot orchestration observes.
     const [instance, setInstance] = useState<ZeroInstance | undefined>()
+
+    // a changed identity or disabled provider stops being ready before
+    // descendant passive effects run. the outgoing instance remains cached
+    // until the commit-safe rotation effect below closes or reuses it.
+    useLayoutEffect(() => {
+      if (latestZeroInstance && (disable || cachedZero?.key !== instanceKey)) {
+        unpublishZeroInstance(latestZeroInstance)
+      }
+    }, [disable, instanceKey])
+
     useEffect(() => {
       // disable=true: do not create / rotate any instance. consumers can
       // toggle disable on/off mid-mount without violating rules-of-hooks

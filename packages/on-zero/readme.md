@@ -805,19 +805,13 @@ import { ensureAuth } from 'on-zero'
 const auth = ensureAuth() // AuthData (throws if not authenticated)
 ```
 
-## HTTP pull transport lifecycle
+## Client transport lifecycle
 
-Create the browser transport with Orez, then pass that plugin to the provider so
-transport installation and Zero instance creation share one owner:
+Pass a client transport plugin to the provider so transport installation and
+Zero instance creation share one owner. The application chooses the transport;
+on-zero only calls its `install(serverURL)` method:
 
 ```tsx
-import { createZeroClientTransport } from 'orez/client'
-
-const transport = createZeroClientTransport({
-  pullIntervalMs: 15_000,
-  queryForward: true,
-})
-
 <client.ProvideZero
   cacheURL={syncOrigin}
   transport={transport}
@@ -826,27 +820,14 @@ const transport = createZeroClientTransport({
 </client.ProvideZero>
 ```
 
-The plugin installs one transport per normalized origin in a page-global
-registry. Zero instance rotation and duplicate module evaluation therefore
-reuse the same WebSocket shim instead of chaining installations. A second
-installation for the same origin throws when any transport behavior differs.
-`on-zero/http-pull` remains a compatibility re-export of `orez/client`.
+The provider installs the plugin before constructing Zero, including after an
+instance rotation. The plugin owns its own idempotence and conflict behavior.
 
 Imperative consumers can call `client.waitForZero()` to await the provider's
 active instance without polling the throwing `client.zero` facade. Pass an
 `AbortSignal` when the wait belongs to a component effect.
 
-Every socket lifecycle event carries stable `pageID`, `transportID`,
-`zeroInstanceID`, `clientGroupID`, `connectionAttemptID`, and `socketID` fields,
-plus Zero's `clientID` / `wsid`, the socket generation, and attempt age. Orez
-logs failures as `[orez:client]` JSON lines by default. Pass
-`lifecycle(event)` to collect every event yourself instead.
-
-`close`, `superseded`, and `aborted` are mutually exclusive terminal events for
-one socket generation. An attempt whose Zero `ts` is already beyond the stock
-connection deadline is aborted through `close` without emitting `open`; this
-prevents delayed socket construction from opening after Zero has discarded that
-attempt's connection state.
+Transport-specific lifecycle events and logging belong to the selected plugin.
 
 ## recovery
 

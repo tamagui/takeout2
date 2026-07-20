@@ -59,11 +59,6 @@
       "types": "./types/orez.d.ts",
       "import": "./dist/esm/orez.mjs"
     },
-    "./http-pull": {
-      "types": "./types/orezClientTransport.d.ts",
-      "import": "./dist/esm/orezClientTransport.mjs",
-      "require": "./dist/cjs/orezClientTransport.cjs"
-    },
     "./vite": {
       "types": "./types/vite-plugin.d.ts",
       "import": "./dist/esm/vite-plugin.mjs",

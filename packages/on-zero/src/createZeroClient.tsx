@@ -39,7 +39,6 @@ import {
   type ScheduleReloadContext,
   type ZeroRecoveryDeps,
 } from './helpers/recoverZeroClient'
-import type { ZeroClientTransportPlugin } from 'orez/client'
 import { registerClientInstance } from './instanceRegistry'
 import { getAllMutationsPermissions, getMutationsPermissions } from './modelRegistry'
 import { registerQuery } from './queryRegistry'
@@ -69,7 +68,9 @@ export type GroupedQueries = Record<string, Record<string, (...args: any[]) => a
 //  - 'optimistic-allow': return true until server confirms
 export type PermissionStrategy = 'optimistic' | 'optimistic-deny' | 'optimistic-allow'
 
-export type HttpPullProviderTransport = ZeroClientTransportPlugin
+export type ZeroProviderTransport = {
+  install(serverURL: string): unknown
+}
 
 export type WaitForZeroOptions = {
   signal?: AbortSignal
@@ -576,7 +577,7 @@ export function createZeroClientInternal<
     disable?: boolean
     // install a client transport before constructing Zero so its first sync
     // connection uses that transport. Orez owns the transport implementation.
-    transport?: HttpPullProviderTransport
+    transport?: ZeroProviderTransport
     // awaited before a self-healing recovery reload — e.g. wait for the dev
     // origin to be reachable so the reload doesn't hit a restarting server.
     beforeReload?: () => Promise<void>

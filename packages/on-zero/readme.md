@@ -14,6 +14,9 @@ it's what we use for our [takeout stack](https://takeout.tamagui.dev).
 
 on-zero tries to bring Rails-like structure and DRY code to Zero + React.
 
+it uses vanilla Zero and `zero-cache` by default. an experimental Orez Lite path
+is noted separately at the end of setup.
+
 it provides a few things:
 
 - **generation** - cli with watch and generate commands
@@ -476,7 +479,7 @@ global schema type — no need to import table builders.
 
 ## setup
 
-client:
+the supported setup uses vanilla Zero and `zero-cache`:
 
 ```tsx
 import { createZeroClient } from 'on-zero'
@@ -489,10 +492,17 @@ export const { ProvideZero, useQuery, zero, usePermission } = createZeroClient({
   models,
   groupedQueries,
 })
+```
 
+### vanilla Zero
+
+vanilla Zero uses the standard `zero-cache` server and its built-in WebSocket
+transport. mount the shared client without a `transport` prop:
+
+```tsx
 // in your app root
 <ProvideZero
-  server="http://localhost:4848"
+  cacheURL="http://localhost:4848"
   userID={user.id}
   auth={sessionToken}
   authData={{ id: user.id, email: user.email, role: user.role }}
@@ -501,57 +511,8 @@ export const { ProvideZero, useQuery, zero, usePermission } = createZeroClient({
 </ProvideZero>
 ```
 
-server bindings:
-
-```ts
-import { createZeroServerBindings } from 'on-zero/server'
-import {
-  createApplicationDatabase,
-  createSyncExecutor,
-  handlePushRequest,
-} from 'your-zero-server'
-import { syncedQueries } from '~/data/generated/syncedQueries'
-import { mutationValidators } from '~/data/generated/syncedMutations'
-
-export const zeroBindings = createZeroServerBindings({
-  schema,
-  models,
-  queries: syncedQueries,
-  mutations: mutationValidators,
-  createServerActions: () => ({
-    sendEmail: async (to, subject, body) => { ... }
-  })
-})
-
-export const zeroExecutor = createSyncExecutor({
-  schema,
-  mutators: zeroBindings.mutators,
-  database: createApplicationDatabase(pool, {
-    schema,
-    internalSchema: 'zero_0',
-  }),
-  effects: {
-    runBackground: (promise) => host.waitUntil(promise),
-    report: (error) => console.error(error),
-  },
-})
-
-export const zeroServer = zeroBindings.server(zeroExecutor)
-
-app.post('/api/zero/push', async (request) => {
-  const claims = await getClaimsFromRequest(request)
-  return handlePushRequest({ executor: zeroExecutor, request, claims })
-})
-
-app.post('/api/zero/pull', async (request) => {
-  const authData = await getAuthFromRequest(request)
-  return Response.json(await zeroBindings.transformQueryRequest({ authData, request }))
-})
-```
-
-The server implementation owns transactions, CRUD SQL, the client ledger,
-replay, and effect scheduling. on-zero supplies the structural executor seam,
-mutator registry, auth/query helpers, and typed direct-call facade.
+configure `zero-cache`, `ZERO_QUERY_URL`, and `ZERO_MUTATE_URL` using the
+standard [Zero installation guide](https://zero.rocicorp.dev/docs/install).
 
 ### multiple client instances
 
@@ -590,8 +551,8 @@ export const { useQuery, zero, run, preload, getQuery, zeroEvents } =
 // instance from context, so only the inner instance rides that path. all
 // other instances must opt into the context-free direct adapter through
 // createZeroClientWithDirectQueries.
-;<control.ProvideZero server={controlUrl} userID={user.id}>
-  <project.ProvideZero server={projectUrl} userID={`${user.id}:${projectId}`}>
+;<control.ProvideZero cacheURL={controlUrl} userID={user.id}>
+  <project.ProvideZero cacheURL={projectUrl} userID={`${user.id}:${projectId}`}>
     <App />
   </project.ProvideZero>
 </control.ProvideZero>
@@ -600,7 +561,7 @@ export const { useQuery, zero, run, preload, getQuery, zeroEvents } =
 constraints:
 
 - each instance needs its own client-group identity (separate `userID` /
-  storage key / server url) — never swap the backing namespace under a live
+  storage key / cache url) — never swap the backing namespace under a live
   instance.
 - most apps should use plain `createZeroClient`; the `on-zero/multi` entrypoint
   is only for this nested-provider edge case.
@@ -611,7 +572,6 @@ constraints:
 - a mutator may only read/write tables owned by its own instance. its
   transaction runs on that instance alone; cross-instance writes are not
   detectable at registration and will silently miss the other store.
-- the server stays single: one executor and binding registry per database.
 - omitting `instanceName` keeps the exact single-instance behavior.
 
 **guarding the partition against drift.** a generated namespace that ends up in
@@ -734,6 +694,11 @@ declare module 'on-zero' {
 }
 ```
 
+### Orez Lite (experimental)
+
+Orez Lite is our custom Rust engine and a separate alternative to vanilla Zero.
+it is still pre-alpha, so its setup is intentionally not documented here yet.
+
 ## mutation context
 
 every mutation receives `MutatorContext` as first argument:
@@ -804,30 +769,6 @@ import { ensureAuth } from 'on-zero'
 
 const auth = ensureAuth() // AuthData (throws if not authenticated)
 ```
-
-## Client transport lifecycle
-
-Pass a client transport plugin to the provider so transport installation and
-Zero instance creation share one owner. The application chooses the transport;
-on-zero only calls its `install(serverURL)` method:
-
-```tsx
-<client.ProvideZero
-  cacheURL={syncOrigin}
-  transport={transport}
->
-  {children}
-</client.ProvideZero>
-```
-
-The provider installs the plugin before constructing Zero, including after an
-instance rotation. The plugin owns its own idempotence and conflict behavior.
-
-Imperative consumers can call `client.waitForZero()` to await the provider's
-active instance without polling the throwing `client.zero` facade. Pass an
-`AbortSignal` when the wait belongs to a component effect.
-
-Transport-specific lifecycle events and logging belong to the selected plugin.
 
 ## recovery
 

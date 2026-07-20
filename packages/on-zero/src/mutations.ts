@@ -39,8 +39,16 @@ function getOrCreateMutationProxy<T extends Record<string, Function>>(
   tableName: string,
   implementations: T,
 ): T {
-  // always update implementations (supports HMR)
-  mutationRegistry().set(tableName, implementations)
+  // merge with any prior registration for this table: multiple modules may
+  // register mutators on the same table (a seed.ts alongside the table's own
+  // mutations file) and module import order is arbitrary, so replacing
+  // wholesale drops whichever module registered first. per-key replacement
+  // still supports HMR updates of edited handlers.
+  const prior = mutationRegistry().get(tableName)
+  mutationRegistry().set(
+    tableName,
+    prior ? { ...prior, ...implementations } : implementations,
+  )
 
   // return existing proxy if we have one (HMR case)
   const existing = proxyRegistry().get(tableName)

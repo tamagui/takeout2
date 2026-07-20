@@ -1,6 +1,10 @@
 import { createBuilder, mustGetQuery } from '@rocicorp/zero'
 import { asQueryInternals } from '@rocicorp/zero/bindings'
-import { handleQueryRequest as zeroHandleQueryRequest } from '@rocicorp/zero/server'
+// type-only: @rocicorp/zero/server pulls Node and PostgreSQL formatting in, and
+// importing it eagerly means merely importing on-zero/orez drags that into a
+// browser worker, where the tenant tree then never paints. the real import
+// happens inside transformQueryRequest, which only ever runs on a server.
+import type { handleQueryRequest as zeroHandleQueryRequest } from '@rocicorp/zero/server'
 import { createAsyncContext } from '@take-out/helpers'
 import type {
   JsonValue,
@@ -209,10 +213,11 @@ export function createOrezBindings<
           validateQuery: options.validateQuery,
         })
       const userID = typeof authData?.id === 'string' ? authData.id : undefined
+      const { handleQueryRequest } = await import('@rocicorp/zero/server')
       return runWithQueryContext({ authData: authData || ({} as AuthData) }, () =>
         userID === undefined
-          ? zeroHandleQueryRequest(handler as never, options.schema, request)
-          : zeroHandleQueryRequest({
+          ? handleQueryRequest(handler as never, options.schema, request)
+          : handleQueryRequest({
               handler: handler as never,
               schema: options.schema,
               request,

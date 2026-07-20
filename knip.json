@@ -52,10 +52,6 @@
     "packages/better-auth-utils": {
       "project": ["src/**/*.ts"]
     },
-    "packages/on-zero": {
-      "entry": ["src/index.ts", "src/cli.ts", "src/server.ts"],
-      "project": ["src/**/*.ts"]
-    },
     "packages/native-hot-update": {
       "project": ["src/**/*.ts"]
     },

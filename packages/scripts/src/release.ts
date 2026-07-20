@@ -12,17 +12,13 @@ await cmd`publish takeout packages to npm`
     `--patch boolean --minor boolean --major boolean --canary boolean
      --rerun boolean --republish boolean --finish boolean --skip-finish boolean
      --dry-run boolean --skip-test boolean --skip-build boolean --skip-version boolean --skip-publish boolean
-     --dirty boolean --tamagui-git-user boolean --sync-on-zero boolean --skip-on-zero-sync boolean
+     --dirty boolean --tamagui-git-user boolean
      --undocumented boolean --skip-all boolean`,
   )
   .run(async ({ args, $, run, path, os }) => {
     const fs = (await import('fs-extra')).default
     const { writeJSON } = await import('fs-extra')
     const pMap = (await import('p-map')).default
-
-    // on-zero sync paths
-    const onZeroGithub = path.join(os.homedir(), 'github', 'on-zero')
-    const onZeroTakeout = path.join(process.cwd(), 'packages', 'on-zero')
 
     // for failed publishes that need to re-run
     const reRun = args.rerun
@@ -48,117 +44,6 @@ await cmd`publish takeout packages to npm`
     const skipPublish = args.skipPublish
     const dryRun = args.dryRun
     const tamaguiGitUser = args.tamaguiGitUser
-    const syncOnZeroOnly = args.syncOnZero
-    const skipOnZeroSync = args.skipOnZeroSync
-
-    async function syncOnZeroIn() {
-      if (!(await fs.pathExists(onZeroGithub))) return
-
-      // check if there are commits after the last sync commit
-      const log = (
-        await $`git -C ${onZeroGithub} log --oneline --format=%s`.text()
-      ).trim()
-      const commits = log.split('\n')
-      const lastSyncIdx = commits.findIndex((c) => c.startsWith('sync: from takeout'))
-
-      // no commits before sync, or first commit is a sync = nothing to pull in
-      if (lastSyncIdx <= 0) {
-        console.info('  ← on-zero: no new github commits to sync in')
-        return
-      }
-
-      const newCommits = commits
-        .slice(0, lastSyncIdx)
-        .filter((c) => !c.match(/^v\d+\.\d+\.\d+/))
-      if (!newCommits.length) {
-        console.info('  ← on-zero: no new github commits to sync in')
-        return
-      }
-
-      console.info(`  ← on-zero: syncing ${newCommits.length} commits from github`)
-      for (const c of newCommits) console.info(`      ${c}`)
-
-      if (dryRun) {
-        console.info('    [dry-run] would copy src from github')
-        return
-      }
-
-      await fs.copy(path.join(onZeroGithub, 'src'), path.join(onZeroTakeout, 'src'), {
-        overwrite: true,
-      })
-
-      const status = (await $`git status --porcelain`.text()).trim()
-      if (status) {
-        await $`git add packages/on-zero`
-        await $`git commit -m "on-zero: sync from github"`
-      }
-    }
-
-    async function syncOnZeroOut(version: string) {
-      if (!(await fs.pathExists(onZeroGithub))) return
-
-      // copy src files from takeout to github
-      await fs.copy(path.join(onZeroTakeout, 'src'), path.join(onZeroGithub, 'src'), {
-        overwrite: true,
-      })
-      await fs.copy(
-        path.join(onZeroTakeout, 'cli.cjs'),
-        path.join(onZeroGithub, 'cli.cjs'),
-      )
-      await fs.copy(
-        path.join(onZeroTakeout, 'tsconfig.json'),
-        path.join(onZeroGithub, 'tsconfig.json'),
-      )
-
-      // update package.json preserving github-specific fields
-      const takeoutPkg = await fs.readJSON(path.join(onZeroTakeout, 'package.json'))
-      const githubPkg = await fs.readJSON(path.join(onZeroGithub, 'package.json'))
-      const convertDeps = (deps: Record<string, string>) =>
-        Object.fromEntries(
-          Object.entries(deps || {}).map(([k, v]) => [
-            k,
-            v.startsWith('workspace:') ? `^${version}` : v,
-          ]),
-        )
-      await fs.writeJSON(
-        path.join(onZeroGithub, 'package.json'),
-        {
-          ...takeoutPkg,
-          files: githubPkg.files,
-          repository: githubPkg.repository,
-          homepage: githubPkg.homepage,
-          bugs: githubPkg.bugs,
-          dependencies: convertDeps(takeoutPkg.dependencies),
-          devDependencies: convertDeps(takeoutPkg.devDependencies),
-        },
-        { spaces: 2 },
-      )
-
-      // only commit if there are actual changes
-      const status = (await $`git -C ${onZeroGithub} status --porcelain`.text()).trim()
-      if (!status) return
-
-      console.info('  → on-zero: syncing out to github')
-
-      if (dryRun) {
-        console.info(`    [dry-run] would push: sync: from takeout v${version}`)
-        await $`git -C ${onZeroGithub} checkout -- .`
-        return
-      }
-
-      await $`git -C ${onZeroGithub} add -A`
-      await $`git -C ${onZeroGithub} commit -m ${'sync: from takeout v' + version}`
-      await $`git -C ${onZeroGithub} push origin main`
-    }
-
-    // sync on-zero: copy src from github to takeout, then takeout to github after release
-    async function syncOnZero() {
-      if (!(await fs.pathExists(onZeroGithub))) return
-      const pkg = await fs.readJSON(path.join(onZeroTakeout, 'package.json'))
-      await syncOnZeroIn()
-      await syncOnZeroOut(pkg.version)
-    }
-
     async function getWorkspacePackages() {
       // read workspaces from root package.json
       const rootPackageJson = await fs.readJSON(path.join(process.cwd(), 'package.json'))
@@ -222,17 +107,6 @@ await cmd`publish takeout packages to npm`
       )
 
       return { allPackageJsons, publishablePackages }
-    }
-
-    // handle --sync-on-zero standalone mode
-    if (syncOnZeroOnly) {
-      try {
-        await syncOnZero()
-      } catch (err) {
-        console.error('sync failed:', err)
-        process.exit(1)
-      }
-      return
     }
 
     // main release flow
@@ -311,11 +185,6 @@ await cmd`publish takeout packages to npm`
             )
           }
         }
-      }
-
-      // sync on-zero IN (before release)
-      if (!skipOnZeroSync && !finish && !rePublish) {
-        await syncOnZeroIn()
       }
 
       // ensure we are up to date
@@ -660,11 +529,6 @@ await cmd`publish takeout packages to npm`
 
             console.info(`✅ Pushed and versioned\n`)
           }
-        }
-
-        // sync on-zero OUT (after release)
-        if (!skipOnZeroSync) {
-          await syncOnZeroOut(nextVersion)
         }
       }
 

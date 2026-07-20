@@ -336,17 +336,16 @@ export function ContentSection() {
           </ContentParagraph>
 
           <ContentParagraph>
-            Our <CodeInline>on-zero</CodeInline>
-            {/* <Link
-              href="https://github.com/tamagui/takeout-free/blob/main/packages/on-zero/readme.md"
+            Our{' '}
+            <Link
+              href="https://github.com/natew/orez/tree/main/packages/on-zero"
               target="_blank"
               hideExternalIcon
             >
               <InlineLink fontWeight="600">on-zero</InlineLink>
-            </Link>{' '} */}{' '}
-            library (repo coming) makes it feel like Rails, and auto generating
-            boilerplate, gluing things together, giving you simple CRUD and permissions,
-            and more.
+            </Link>{' '}
+            library makes it feel like Rails, auto-generating boilerplate, gluing things
+            together, giving you simple CRUD and permissions, and more.
           </ContentParagraph>
         </TechCard>
 

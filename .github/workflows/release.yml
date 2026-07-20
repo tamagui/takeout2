@@ -101,8 +101,8 @@ jobs:
 
       - name: Publish canary
         if: steps.release.outputs.mode == 'canary'
-        run: bun packages/scripts/src/release.ts --canary --ci --dirty --skip-test --skip-finish --skip-on-zero-sync
+        run: bun packages/scripts/src/release.ts --canary --ci --dirty --skip-test --skip-finish
 
       - name: Publish stable release
         if: steps.release.outputs.mode == 'stable'
-        run: bun packages/scripts/src/release.ts --ci --dirty --skip-version --skip-test --skip-finish --skip-on-zero-sync
+        run: bun packages/scripts/src/release.ts --ci --dirty --skip-version --skip-test --skip-finish

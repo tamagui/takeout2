@@ -148,7 +148,7 @@
     "hot-updater": "^0.25.8",
     "jsonwebtoken": "^9.0.2",
     "motion": "12.36.0",
-    "on-zero": "workspace:*",
+    "on-zero": "0.7.10",
     "one": "1.19.4",
     "orez": "0.6.0",
     "pg": "8.18.0",

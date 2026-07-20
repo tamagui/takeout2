@@ -16,7 +16,7 @@ export {
   type PermissionStrategy,
   type WaitForZeroOptions,
 } from './createZeroClient'
-export * from './httpPullTransport'
+export * from './orezClientTransport'
 export * from './createUseQuery'
 export * from './resolveQuery'
 export * from './run'

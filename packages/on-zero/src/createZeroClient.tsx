@@ -39,10 +39,7 @@ import {
   type ScheduleReloadContext,
   type ZeroRecoveryDeps,
 } from './helpers/recoverZeroClient'
-import {
-  ensureHttpPullTransport,
-  type HttpPullTransportOptions,
-} from './httpPullTransport'
+import type { ZeroClientTransportPlugin } from 'orez/client'
 import { registerClientInstance } from './instanceRegistry'
 import { getAllMutationsPermissions, getMutationsPermissions } from './modelRegistry'
 import { registerQuery } from './queryRegistry'
@@ -72,10 +69,7 @@ export type GroupedQueries = Record<string, Record<string, (...args: any[]) => a
 //  - 'optimistic-allow': return true until server confirms
 export type PermissionStrategy = 'optimistic' | 'optimistic-deny' | 'optimistic-allow'
 
-export type HttpPullProviderTransport = {
-  type: 'http-pull'
-  options?: Omit<HttpPullTransportOptions, 'origin'>
-}
+export type HttpPullProviderTransport = ZeroClientTransportPlugin
 
 export type WaitForZeroOptions = {
   signal?: AbortSignal
@@ -580,10 +574,8 @@ export function createZeroClientInternal<
     // provider tree mounted (e.g. inside a marketing splash that lazily
     // upgrades to the real IDE) without paying for Zero until activation.
     disable?: boolean
-    // http-pull runs the stock zero client over stateless HTTP pull/push
-    // (no websocket, no resident server state) by intercepting the sync
-    // socket for this instance's server origin. all transport behavior belongs
-    // here so the provider installs exactly the transport it uses.
+    // install a client transport before constructing Zero so its first sync
+    // connection uses that transport. Orez owns the transport implementation.
     transport?: HttpPullProviderTransport
     // awaited before a self-healing recovery reload — e.g. wait for the dev
     // origin to be reachable so the reload doesn't hit a restarting server.
@@ -746,18 +738,14 @@ export function createZeroClientInternal<
       // install before construction so the instance's first connect goes
       // through HTTP. per-origin idempotence is strict: a second provider may
       // reuse this transport only when every behavior option matches.
-      if (transport?.type === 'http-pull') {
+      if (transport) {
         // same precedence as zero's own getServer (cacheURL is the current
         // option name; server is its deprecated alias)
         const serverURL = options.cacheURL ?? options.server
         if (typeof serverURL !== 'string') {
-          throw new Error(`transport 'http-pull' requires a server URL`)
+          throw new Error(`client transport requires a server URL`)
         }
-        ensureHttpPullTransport({
-          origin: serverURL,
-          pullIntervalMs: 30_000,
-          ...transport.options,
-        })
+        transport.install(serverURL)
       }
 
       if (cached?.key !== instanceKey) {

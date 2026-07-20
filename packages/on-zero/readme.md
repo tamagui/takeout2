@@ -807,26 +807,30 @@ const auth = ensureAuth() // AuthData (throws if not authenticated)
 
 ## HTTP pull transport lifecycle
 
-Configure HTTP pull on the provider so transport installation and Zero instance
-creation share one owner:
+Create the browser transport with Orez, then pass that plugin to the provider so
+transport installation and Zero instance creation share one owner:
 
 ```tsx
+import { createZeroClientTransport } from 'orez/client'
+
+const transport = createZeroClientTransport({
+  pullIntervalMs: 15_000,
+  queryForward: true,
+})
+
 <client.ProvideZero
   cacheURL={syncOrigin}
-  transport={{
-    type: 'http-pull',
-    options: { pullIntervalMs: 15_000, queryForward: true },
-  }}
+  transport={transport}
 >
   {children}
 </client.ProvideZero>
 ```
 
-`ensureHttpPullTransport()` installs one transport per normalized origin in a
-page-global registry. Zero instance rotation and duplicate module evaluation
-therefore reuse the same WebSocket shim instead of chaining installations. A
-second installation for the same origin throws when any transport behavior
-differs, rather than silently retaining whichever configuration ran first.
+The plugin installs one transport per normalized origin in a page-global
+registry. Zero instance rotation and duplicate module evaluation therefore
+reuse the same WebSocket shim instead of chaining installations. A second
+installation for the same origin throws when any transport behavior differs.
+`on-zero/http-pull` remains a compatibility re-export of `orez/client`.
 
 Imperative consumers can call `client.waitForZero()` to await the provider's
 active instance without polling the throwing `client.zero` facade. Pass an
@@ -834,8 +838,8 @@ active instance without polling the throwing `client.zero` facade. Pass an
 
 Every socket lifecycle event carries stable `pageID`, `transportID`,
 `zeroInstanceID`, `clientGroupID`, `connectionAttemptID`, and `socketID` fields,
-plus Zero's `clientID` / `wsid`, the socket generation, and attempt age. on-zero
-logs failures as `[on-zero:http-pull]` JSON lines by default. Pass
+plus Zero's `clientID` / `wsid`, the socket generation, and attempt age. Orez
+logs failures as `[orez:client]` JSON lines by default. Pass
 `lifecycle(event)` to collect every event yourself instead.
 
 `close`, `superseded`, and `aborted` are mutually exclusive terminal events for

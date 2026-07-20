@@ -20,10 +20,13 @@ type RequestRecord = {
 const zeros: Zero<any, any>[] = []
 const transports: Array<{ uninstall(): void }> = []
 let storageID = 0
+let restoreNativeWebSocket: (() => void) | undefined
 
 afterEach(async () => {
   while (zeros.length) await zeros.pop()?.close()
   while (transports.length) transports.pop()?.uninstall()
+  restoreNativeWebSocket?.()
+  restoreNativeWebSocket = undefined
   vi.useRealTimers()
 })
 
@@ -662,6 +665,90 @@ describe('zero-http transport', () => {
     expect(errors).toEqual([])
   })
 
+  test('authenticated wake appends a freshly minted token when the socket opens', async () => {
+    const wakeSockets = useFakeNativeWebSocket()
+    const getToken = vi.fn(async () => 'signed token&scope=one')
+    const fetch = unchangedPullFetch()
+    const transport = installHttpPullTransport({
+      origin: ORIGIN,
+      fetch,
+      wake: { getToken },
+    })
+    transports.push(transport)
+
+    openRawSocketWithMessages()
+
+    await eventually(() => expect(wakeSockets).toHaveLength(1))
+    expect(getToken).toHaveBeenCalledTimes(1)
+    expect(wakeSockets[0].url).toBe(
+      'wss://zero-http.local/wake?clientID=c1&wakeToken=signed%20token%26scope%3Done',
+    )
+  })
+
+  test('authenticated wake gets a fresh token for every reconnect attempt', async () => {
+    const wakeSockets = useFakeNativeWebSocket()
+    const getToken = vi
+      .fn<() => Promise<string>>()
+      .mockResolvedValueOnce('wake-token-1')
+      .mockResolvedValueOnce('wake-token-2')
+    const transport = installHttpPullTransport({
+      origin: ORIGIN,
+      fetch: unchangedPullFetch(),
+      wake: { getToken },
+    })
+    transports.push(transport)
+
+    openRawSocketWithMessages()
+    await eventually(() => expect(wakeSockets).toHaveLength(1))
+    wakeSockets[0].onerror?.()
+
+    await eventually(() => expect(wakeSockets).toHaveLength(2), 1_000)
+    expect(getToken).toHaveBeenCalledTimes(2)
+    expect(wakeSockets.map((socket) => socket.url)).toEqual([
+      'wss://zero-http.local/wake?clientID=c1&wakeToken=wake-token-1',
+      'wss://zero-http.local/wake?clientID=c1&wakeToken=wake-token-2',
+    ])
+  })
+
+  test('wake token rejection leaves pulls healthy and retries the advisory channel', async () => {
+    const wakeSockets = useFakeNativeWebSocket()
+    const getToken = vi.fn(async () => {
+      throw new Error('mint route unavailable')
+    })
+    const fetch = unchangedPullFetch()
+    const transport = installHttpPullTransport({
+      origin: ORIGIN,
+      fetch,
+      wake: { getToken },
+    })
+    transports.push(transport)
+
+    openRawSocketWithMessages()
+    await eventually(() => expect(fetch).toHaveBeenCalled())
+    const pullsBeforeManualPull = fetch.mock.calls.length
+
+    await expect(transport.pull()).resolves.toBeUndefined()
+    expect(fetch.mock.calls.length).toBeGreaterThan(pullsBeforeManualPull)
+    await eventually(() => expect(getToken).toHaveBeenCalledTimes(2), 1_000)
+    expect(wakeSockets).toHaveLength(0)
+    expect(transport.connections).toBe(1)
+  })
+
+  test('wake true preserves the bare unauthenticated socket URL', async () => {
+    const wakeSockets = useFakeNativeWebSocket()
+    const transport = installHttpPullTransport({
+      origin: ORIGIN,
+      fetch: unchangedPullFetch(),
+      wake: true,
+    })
+    transports.push(transport)
+
+    openRawSocketWithMessages()
+
+    await eventually(() => expect(wakeSockets).toHaveLength(1))
+    expect(wakeSockets[0].url).toBe('wss://zero-http.local/wake?clientID=c1')
+  })
+
   test('non-origin WebSockets pass through to the native implementation', () => {
     const previous = globalThis.WebSocket
     class NativeWebSocket {
@@ -830,6 +917,51 @@ function jsonResponse(body: unknown, init?: ResponseInit) {
       ...(init?.headers as Record<string, string> | undefined),
     },
   })
+}
+
+function unchangedPullFetch() {
+  return vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+    const request = recordRequest(input, init)
+    expect(request.path).toBe('/pull')
+    return jsonResponse({ cookie: request.body.cookie, unchanged: true })
+  })
+}
+
+function useFakeNativeWebSocket() {
+  const previous = globalThis.WebSocket
+  const sockets: Array<{
+    url: string
+    onmessage: (() => void) | null
+    onclose: (() => void) | null
+    onerror: (() => void) | null
+  }> = []
+
+  class FakeNativeWebSocket {
+    static CONNECTING = 0
+    static OPEN = 1
+    static CLOSING = 2
+    static CLOSED = 3
+
+    readonly url: string
+    onmessage: (() => void) | null = null
+    onclose: (() => void) | null = null
+    onerror: (() => void) | null = null
+
+    constructor(url: string | URL) {
+      this.url = String(url)
+      sockets.push(this)
+    }
+
+    close() {
+      this.onclose?.()
+    }
+  }
+
+  globalThis.WebSocket = FakeNativeWebSocket as unknown as typeof WebSocket
+  restoreNativeWebSocket = () => {
+    globalThis.WebSocket = previous
+  }
+  return sockets
 }
 
 async function waitForComplete<T>(view: {

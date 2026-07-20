@@ -1,8 +1,7 @@
-import { createOrezBindings } from 'on-zero/orez'
+import { authDataToClaims, createOrezBindings } from 'on-zero/orez'
 import {
   createPostgreSQLApplicationDatabase,
   createSyncExecutor,
-  type JsonValue,
   type NormalizedClaims,
 } from 'orez/sync-executor'
 
@@ -45,10 +44,5 @@ export const zeroExecutor = createSyncExecutor({
 export const zeroServer = zeroBindings.server(zeroExecutor)
 
 export function normalizeZeroClaims(authData: AuthData | null): NormalizedClaims {
-  const claims: Record<string, JsonValue> = {
-    userID: typeof authData?.id === 'string' ? authData.id : 'anon',
-  }
-  if (typeof authData?.email === 'string') claims.email = authData.email
-  if (typeof authData?.role === 'string') claims.role = authData.role
-  return claims as NormalizedClaims
+  return authDataToClaims(authData)
 }

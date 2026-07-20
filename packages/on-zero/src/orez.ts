@@ -82,7 +82,7 @@ export type CreateOrezBindingsOptions<
   validateQuery?: ValidateQueryFn
   validateMutation?: ValidateMutationFn
   defaultAllowAdminRole?: AdminRoleMode
-  mapClaims?: (claims: NormalizedClaims) => AuthData
+  mapClaims?: (claims: NormalizedClaims) => AuthData | null
 }
 
 export type OrezBindings<Schema extends ZeroSchema, Models extends GenericModels> = {
@@ -128,7 +128,7 @@ export function createOrezBindings<
   })
   const registry: Record<string, MutatorRegistry<Schema>[string]> = {}
   const invocation = createAsyncContext<{
-    authData: AuthData
+    authData: AuthData | null
     ctx: Parameters<MutatorRegistry<Schema>[string]>[0]['ctx']
   }>()
   const decoratedMutators = createMutators({
@@ -312,17 +312,30 @@ function resolveServerQuery({
   return (mustGetQuery as any)(queries, name).fn({ args, ctx: authData })
 }
 
-function defaultMapClaims(claims: NormalizedClaims): AuthData {
-  return {
-    ...claims,
-    id: typeof claims.id === 'string' ? claims.id : claims.userID,
-  } as AuthData
+// claims.userID is the sync ledger identity and is always present — logged-out
+// clients still sync, as 'anon'. app auth is a separate, nullable payload:
+// deriving AuthData from userID would hand every anonymous push a truthy
+// authData and walk straight through `ensure(authData)` guards.
+const AUTH_CLAIM = 'authData'
+
+export function authDataToClaims(
+  authData: AuthData | null | undefined,
+  anonymousUserID = 'anon',
+): NormalizedClaims {
+  const userID = typeof authData?.id === 'string' ? authData.id : anonymousUserID
+  const claims: Record<string, JsonValue> = { userID }
+  if (authData) claims[AUTH_CLAIM] = authData as unknown as JsonValue
+  return claims as NormalizedClaims
+}
+
+function defaultMapClaims(claims: NormalizedClaims): AuthData | null {
+  const authData = (claims as unknown as Record<string, unknown>)[AUTH_CLAIM]
+  if (!authData || typeof authData !== 'object') return null
+  return authData as AuthData
 }
 
 function authToClaims(authData: AuthData | null | undefined): NormalizedClaims {
-  const data = (authData ?? {}) as unknown as Record<string, JsonValue>
-  const userID = typeof data.id === 'string' ? data.id : 'server'
-  return { ...data, userID }
+  return authDataToClaims(authData, 'server')
 }
 
 function mutationApplicationError(error: unknown): MutationApplicationError {

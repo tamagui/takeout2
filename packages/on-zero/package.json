@@ -57,8 +57,7 @@
     },
     "./orez": {
       "types": "./types/orez.d.ts",
-      "import": "./dist/esm/orez.mjs",
-      "require": "./dist/cjs/orez.cjs"
+      "import": "./dist/esm/orez.mjs"
     },
     "./http-pull": {
       "types": "./types/httpPullTransport.d.ts",

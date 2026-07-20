@@ -9,11 +9,11 @@ import {
 import * as v from 'valibot'
 import { afterEach, describe, expect, test } from 'vitest'
 
-import { createOrezBindings } from './orez'
+import { authDataToClaims, createOrezBindings } from './orez'
 import { getScopedAuthData } from './helpers/mutatorContext'
 import { zql } from './zql'
 
-import type { MutatorContext } from './types'
+import type { AuthData, MutatorContext } from './types'
 
 const project = table('project')
   .columns({
@@ -42,6 +42,77 @@ describe('createOrezBindings', () => {
 
   afterEach(() => {
     while (databases.length) databases.pop()!.close()
+  })
+
+  test('an anonymous push keeps authData null so auth-required mutators reject', async () => {
+    const sqlite = new DatabaseSync(':memory:')
+    databases.push(sqlite)
+    sqlite.exec(
+      'CREATE TABLE project (id TEXT PRIMARY KEY, ownerId TEXT NOT NULL, name TEXT NOT NULL)',
+    )
+
+    let seenAuthData: AuthData | null | undefined
+    const bindings = createOrezBindings({
+      schema,
+      models: {
+        project: {
+          mutate: {
+            create: async (
+              { authData, tx }: MutatorContext,
+              value: { id: string; ownerId: string; name: string },
+            ) => {
+              seenAuthData = authData
+              // the guard every takeout mutation relies on
+              if (!authData) throw new Error('not authenticated')
+              await tx.mutate.project.insert(value)
+            },
+          },
+        },
+      },
+      createServerActions: () => ({}),
+      queries,
+    })
+
+    const executor = createSyncExecutor({
+      database: sqliteApplicationDatabase(sqlite),
+      schema,
+      mutators: bindings.mutators,
+      effects: {
+        runBackground(promise) {
+          void promise
+        },
+        report(error) {
+          throw error
+        },
+      },
+    })
+
+    // how a rejected mutator surfaces (app result vs thrown) is the executor's
+    // contract and is covered in orez; what this pins is that an anonymous push
+    // never receives an authData, so the guard runs at all
+    await executor
+      .push(
+        {
+          clientGroupID: 'group-anon',
+          mutations: [
+            {
+              type: 'custom',
+              id: 1,
+              clientID: 'client-anon',
+              name: 'project|create',
+              args: [{ id: 'project-1', ownerId: 'anon', name: 'sneaky' }],
+              timestamp: 1,
+            },
+          ],
+          pushVersion: 1,
+          requestID: 'request-anon',
+        },
+        authDataToClaims(null),
+      )
+      .catch(() => undefined)
+
+    expect(seenAuthData).toBe(null)
+    expect(sqlite.prepare('SELECT * FROM project').all()).toEqual([])
   })
 
   test('binds auth, queries, pipe keys, effects, and replay to one Orez executor', async () => {
@@ -110,7 +181,7 @@ describe('createOrezBindings', () => {
         },
       },
     })
-    const claims = { userID: 'user-1', role: 'member' } as const
+    const claims = authDataToClaims({ id: 'user-1', role: 'member' } as AuthData)
     const body = {
       clientGroupID: 'group-1',
       mutations: [

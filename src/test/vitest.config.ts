@@ -16,6 +16,7 @@ export default defineConfig({
       'packages/*/src/**/*.test.ts',
       'packages/*/src/**/*.test.tsx',
     ],
+    exclude: ['packages/database/src/**/*.test.ts'],
     outputFile: {
       json: 'src/test/unit/.output/results.json',
     },

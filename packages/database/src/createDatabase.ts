@@ -33,9 +33,8 @@ export type DatabaseConfig<
   /**
    * Optional pre-built Pool-like client (e.g. a DoBackend-backed Pool for the
    * Cloudflare Durable Object runtime, where there is no external Postgres).
-   * When provided, `createPool` is skipped and this pool is used directly —
-   * mirrors `createZeroServer`'s `pool` option. `connectionString` is then only
-   * needed for the migration helpers.
+   * When provided, `createPool` is skipped and this pool is used directly.
+   * `connectionString` is then only needed for the migration helpers.
    */
   pool?: Pool
   /** Options forwarded to the default `createPool` (ignored when `pool` is set). */

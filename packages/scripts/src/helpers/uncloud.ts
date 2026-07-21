@@ -14,11 +14,12 @@ function ucCmd(config?: UncloudConfig): string {
 
 export async function checkUncloudCLI(): Promise<void> {
   try {
-    const { stdout } = await run('uc --version', { silent: true, captureOutput: true })
-    console.info(`✅ uncloud cli installed (${stdout.trim()})`)
-  } catch {
+    // uc has no --version flag; `uc version` is the cobra subcommand
+    const { stdout } = await run('uc version', { silent: true, captureOutput: true })
+    console.info(`✅ uncloud cli installed (${stdout.trim().split('\n')[0]})`)
+  } catch (error) {
     throw new Error(
-      `uncloud cli not found - install: curl -fsS https://get.uncloud.run/install.sh | sh`,
+      `uncloud cli check failed (install: curl -fsS https://get.uncloud.run/install.sh | sh): ${error}`,
     )
   }
 }

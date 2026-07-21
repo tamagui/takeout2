@@ -231,14 +231,18 @@ export function createEnv<
       : {}
   const refreshedKeys = new Set<string>()
 
-  // in dev mode with freshDev, clear only values that came from our managed
-  // .env.development file so computed defaults refresh without clobbering
-  // explicit overrides inherited from the parent process.
+  // in dev mode with freshDev, refresh only values that came from our managed
+  // .env.development file so computed defaults win over stale inherited values
+  // without clobbering explicit overrides from the parent process. resolution
+  // treats refreshed keys as unset; process.env itself is never mutated here —
+  // only apply() writes to it. deleting from process.env broke the built vite
+  // SSR server: apply()'s VITE_ENVIRONMENT guard constant-folds it to a no-op
+  // there, so cleared vars (e.g. BETTER_AUTH_SECRET read directly by
+  // better-auth) were never restored.
   if (NODE_ENV === 'development' && config.freshDev && modeEnv) {
     for (const key of Object.keys(modeEnv)) {
       const envVal = process.env[key]
       if (envVal !== undefined && managedDevEnv[key] === envVal) {
-        delete process.env[key]
         refreshedKeys.add(key)
       }
     }
@@ -255,7 +259,7 @@ export function createEnv<
 
   for (const [key, val] of Object.entries(merged)) {
     if (val === expected) {
-      const envVal = process.env[key]
+      const envVal = refreshedKeys.has(key) ? undefined : process.env[key]
       if (envVal !== undefined && envVal !== '') {
         resolvedEnv[key] = envVal
       } else if (NODE_ENV === 'production' && !process.env.ALLOW_MISSING_ENV) {
@@ -268,7 +272,7 @@ export function createEnv<
       // prefer process.env over config defaults, except when an explicit mode
       // override is active. In that case, mode-computed keys must resolve from
       // the requested mode rather than inherited parent-process values.
-      const envVal = process.env[key]
+      const envVal = refreshedKeys.has(key) ? undefined : process.env[key]
       resolvedEnv[key] =
         explicitMode && modeKeys.has(key)
           ? val

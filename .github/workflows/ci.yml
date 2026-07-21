@@ -46,6 +46,10 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
 
+      - name: Install uncloud CLI
+        if: github.ref == 'refs/heads/main'
+        run: curl -fsS https://get.uncloud.run/install.sh | sh
+
       - name: Setup Origin CA Certs
         if: github.ref == 'refs/heads/main'
         run: |

@@ -81,7 +81,6 @@ services:
       -c max_connections=256
     volumes:
       - pgdb_data:/var/lib/postgresql/data
-      - ./src/database/:/docker-entrypoint-initdb.d
 
   # no migrate service: migrations run as a one-off `docker run` (bun src/database/migrate.ts)
   # in scripts/uncloud/deploy-prod.ts, before this stack deploys, so the zero publication

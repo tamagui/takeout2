@@ -39,7 +39,3 @@ export const zeroExecutor = createSyncExecutor({
 })
 
 export const zeroServer = zeroBindings.server(zeroExecutor)
-
-// claims shape for the executor: userID is the always-present sync identity
-// ('anon' fallback), app auth rides as a separate nullable authData claim
-export { authDataToClaims } from 'on-zero/server'

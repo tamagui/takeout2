@@ -13,12 +13,13 @@ export const loader = route.createLoader(async ({ request }) => {
   // dynamic imports to prevent metro from bundling server-only modules into native
   const { zql } = await import('on-zero')
   const { notBlockedByViewer } = await import('~/data/where/notBlockedByViewer')
-  const { zeroServer } = await import('~/zero/server')
+  const { authDataToClaims, zeroServer } = await import('~/zero/server')
 
   const url = new URL(request!.url)
   const viewerId = url.searchParams.get('viewerId')
 
-  const posts = await zeroServer.query({ userID: viewerId ?? 'anon' }, () =>
+  const claims = authDataToClaims(viewerId ? { id: viewerId, role: undefined } : null)
+  const posts = await zeroServer.query(claims, () =>
     zql.post
       .where(notBlockedByViewer)
       .orderBy('createdAt', 'desc')

@@ -5,7 +5,7 @@ import {
 import { handleSyncExecutorPushRequest } from 'orez/sync-executor'
 
 import { authServer } from '~/features/auth/server/authServer'
-import { normalizeZeroClaims, zeroExecutor } from '~/zero/server'
+import { authDataToClaims, zeroExecutor } from '~/zero/server'
 
 import type { Endpoint } from 'one'
 
@@ -17,7 +17,7 @@ export const POST: Endpoint = async (request) => {
     return handleSyncExecutorPushRequest({
       executor: zeroExecutor,
       request,
-      claims: normalizeZeroClaims(authData),
+      claims: authDataToClaims(authData),
     })
   } catch (err) {
     if (err instanceof NotAuthenticatedError) {

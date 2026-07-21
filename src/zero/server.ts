@@ -1,8 +1,7 @@
-import { authDataToClaims, createZeroServerBindings } from 'on-zero/server'
+import { createZeroServerBindings } from 'on-zero/server'
 import {
   createPostgreSQLApplicationDatabase,
   createSyncExecutor,
-  type NormalizedClaims,
 } from 'orez/sync-executor'
 
 import { db } from '~/database/db'
@@ -12,8 +11,6 @@ import { queries } from '~/data/generated/syncedQueries'
 import { schema } from '~/data/generated/schema'
 import { createServerActions } from '~/data/server/createServerActions'
 import { server } from '~/env'
-
-import type { AuthData } from 'on-zero'
 
 export const zeroBindings = createZeroServerBindings({
   schema,
@@ -43,6 +40,6 @@ export const zeroExecutor = createSyncExecutor({
 
 export const zeroServer = zeroBindings.server(zeroExecutor)
 
-export function normalizeZeroClaims(authData: AuthData | null): NormalizedClaims {
-  return authDataToClaims(authData)
-}
+// claims shape for the executor: userID is the always-present sync identity
+// ('anon' fallback), app auth rides as a separate nullable authData claim
+export { authDataToClaims } from 'on-zero/server'

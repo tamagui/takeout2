@@ -1,5 +1,5 @@
 /**
- * skills command group - manage claude code skills
+ * skills command group - manage repository agent skills
  */
 
 import {
@@ -13,7 +13,6 @@ import {
   rmdirSync,
   symlinkSync,
   unlinkSync,
-  writeFileSync,
 } from 'node:fs'
 import { join, relative, resolve } from 'node:path'
 
@@ -23,6 +22,10 @@ import pc from 'picocolors'
 // --- doc skills generation ---
 
 const SKILL_PREFIX = 'takeout-'
+
+function getSkillsDirs(cwd: string): string[] {
+  return [join(cwd, '.claude', 'skills'), join(cwd, '.agents', 'skills')]
+}
 
 function hasSkillFrontmatter(content: string): boolean {
   if (!content.startsWith('---')) return false
@@ -38,15 +41,6 @@ function isDevOnly(content: string): boolean {
   if (endIndex === -1) return false
   const frontmatter = content.slice(3, endIndex)
   return /\bdev:\s*true\b/.test(frontmatter)
-}
-
-function toSkillName(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9-]/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
-    .slice(0, 64)
 }
 
 // prefer a project's ./skills dir if it exists, else fall back to ./docs. lets
@@ -82,7 +76,7 @@ async function generateDocSkills(
   removed: number
   skipped: number
 }> {
-  const skillsDir = join(cwd, '.claude', 'skills')
+  const skillsDirs = getSkillsDirs(cwd)
   const docs = collectAllDocs(cwd)
   const localDocsDir = resolveLocalDocsDir(cwd)
   const expectedSkillNames = new Set<string>()
@@ -93,17 +87,19 @@ async function generateDocSkills(
     console.info(pc.dim(`found ${docs.length} documentation files`))
   }
 
-  if (clean && existsSync(skillsDir)) {
-    const existing = readdirSync(skillsDir)
-    for (const dir of existing) {
-      if (dir.startsWith(SKILL_PREFIX)) {
-        rmSync(join(skillsDir, dir), { recursive: true })
+  for (const skillsDir of skillsDirs) {
+    if (clean && existsSync(skillsDir)) {
+      const existing = readdirSync(skillsDir)
+      for (const dir of existing) {
+        if (dir.startsWith(SKILL_PREFIX)) {
+          rmSync(join(skillsDir, dir), { recursive: true })
+        }
       }
     }
-  }
 
-  if (!existsSync(skillsDir)) {
-    mkdirSync(skillsDir, { recursive: true })
+    if (!existsSync(skillsDir)) {
+      mkdirSync(skillsDir, { recursive: true })
+    }
   }
 
   let symlinked = 0
@@ -125,38 +121,43 @@ async function generateDocSkills(
 
       const skillName = nameMatch[1]!.trim()
       expectedSkillNames.add(skillName)
-      const skillDir = join(skillsDir, skillName)
-      const skillFile = join(skillDir, 'SKILL.md')
 
-      if (!existsSync(skillDir)) {
-        mkdirSync(skillDir, { recursive: true })
-      }
+      for (const skillsDir of skillsDirs) {
+        const skillDir = join(skillsDir, skillName)
+        const skillFile = join(skillDir, 'SKILL.md')
 
-      const relativePath = relative(skillDir, doc.path)
+        if (!existsSync(skillDir)) {
+          mkdirSync(skillDir, { recursive: true })
+        }
 
-      let shouldCreate = true
-      try {
-        const stat = lstatSync(skillFile)
-        if (stat.isSymbolicLink() && existsSync(skillFile)) {
-          const existingContent = readFileSync(skillFile, 'utf-8')
-          if (existingContent === content) {
-            unchanged++
-            shouldCreate = false
+        const relativePath = relative(skillDir, doc.path)
+
+        let shouldCreate = true
+        try {
+          const stat = lstatSync(skillFile)
+          if (stat.isSymbolicLink() && existsSync(skillFile)) {
+            const existingContent = readFileSync(skillFile, 'utf-8')
+            if (existingContent === content) {
+              unchanged++
+              shouldCreate = false
+            }
           }
+          if (shouldCreate) {
+            unlinkSync(skillFile)
+          }
+        } catch {
+          // nothing exists
         }
-        if (shouldCreate) {
-          unlinkSync(skillFile)
-        }
-      } catch {
-        // nothing exists
+
+        if (!shouldCreate) continue
+
+        symlinkSync(relativePath, skillFile)
+        symlinked++
+
+        console.info(
+          `  ${pc.green('⟷')} ${skillName} ${pc.dim(`(${relative(cwd, skillsDir)})`)}`,
+        )
       }
-
-      if (!shouldCreate) continue
-
-      symlinkSync(relativePath, skillFile)
-      symlinked++
-
-      console.info(`  ${pc.green('⟷')} ${skillName} ${pc.dim('(symlink)')}`)
     } else {
       if (!hasFrontmatter) {
         skipped++
@@ -168,40 +169,44 @@ async function generateDocSkills(
     }
   }
 
-  for (const dir of readdirSync(skillsDir)) {
-    if (expectedSkillNames.has(dir)) continue
+  for (const skillsDir of skillsDirs) {
+    for (const dir of readdirSync(skillsDir)) {
+      if (expectedSkillNames.has(dir)) continue
 
-    const skillDir = join(skillsDir, dir)
-    const skillFile = join(skillDir, 'SKILL.md')
+      const skillDir = join(skillsDir, dir)
+      const skillFile = join(skillDir, 'SKILL.md')
 
-    if (dir.startsWith(SKILL_PREFIX)) {
-      rmSync(skillDir, { recursive: true, force: true })
-      removed++
-      console.info(`  ${pc.red('✕')} ${dir} ${pc.dim('(removed stale generated skill)')}`)
-      continue
-    }
-
-    let shouldUnlink = false
-
-    try {
-      const stat = lstatSync(skillFile)
-      if (stat.isSymbolicLink()) {
-        const linkTarget = readlinkSync(skillFile)
-        const resolvedTarget = resolve(skillDir, linkTarget)
-        shouldUnlink = resolvedTarget.startsWith(`${localDocsDir}/`)
+      if (dir.startsWith(SKILL_PREFIX)) {
+        rmSync(skillDir, { recursive: true, force: true })
+        removed++
+        console.info(
+          `  ${pc.red('✕')} ${dir} ${pc.dim('(removed stale generated skill)')}`,
+        )
+        continue
       }
-    } catch {
-      // ignore unrelated skill directories
-    }
 
-    if (!shouldUnlink) continue
+      let shouldUnlink = false
 
-    unlinkSync(skillFile)
-    if (readdirSync(skillDir).length === 0) {
-      rmdirSync(skillDir)
+      try {
+        const stat = lstatSync(skillFile)
+        if (stat.isSymbolicLink()) {
+          const linkTarget = readlinkSync(skillFile)
+          const resolvedTarget = resolve(skillDir, linkTarget)
+          shouldUnlink = resolvedTarget.startsWith(`${localDocsDir}/`)
+        }
+      } catch {
+        // ignore unrelated skill directories
+      }
+
+      if (!shouldUnlink) continue
+
+      unlinkSync(skillFile)
+      if (readdirSync(skillDir).length === 0) {
+        rmdirSync(skillDir)
+      }
+      removed++
+      console.info(`  ${pc.red('✕')} ${dir} ${pc.dim('(removed stale symlink)')}`)
     }
-    removed++
-    console.info(`  ${pc.red('✕')} ${dir} ${pc.dim('(removed stale symlink)')}`)
   }
 
   return { symlinked, generated, unchanged, removed, skipped }
@@ -212,7 +217,7 @@ async function generateDocSkills(
 const generateCommand = defineCommand({
   meta: {
     name: 'generate',
-    description: 'Generate Claude Code skills from documentation',
+    description: 'Generate Claude Code and Codex skills from documentation',
   },
   args: {
     clean: {
@@ -228,7 +233,7 @@ const generateCommand = defineCommand({
   },
   async run({ args }) {
     const cwd = process.cwd()
-    const skillsDir = join(cwd, '.claude', 'skills')
+    const skillsDirs = getSkillsDirs(cwd)
 
     console.info()
     console.info(pc.bold(pc.cyan('Generate all skills')))
@@ -265,7 +270,9 @@ const generateCommand = defineCommand({
       )
     if (unchanged > 0) console.info(`  ${pc.dim(`${unchanged} unchanged`)}`)
     if (removed > 0) console.info(`  ${pc.red(`${removed} removed`)}`)
-    console.info(pc.dim(`  skills in ${skillsDir}`))
+    for (const skillsDir of skillsDirs) {
+      console.info(pc.dim(`  skills in ${skillsDir}`))
+    }
     console.info()
   },
 })
@@ -273,7 +280,7 @@ const generateCommand = defineCommand({
 export const skillsCommand = defineCommand({
   meta: {
     name: 'skills',
-    description: 'Manage Claude Code skills',
+    description: 'Manage repository agent skills',
   },
   subCommands: {
     generate: generateCommand,

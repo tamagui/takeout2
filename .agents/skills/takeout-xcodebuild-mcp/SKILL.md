@@ -1,0 +1,1 @@
+../../../docs/xcodebuild-mcp.md

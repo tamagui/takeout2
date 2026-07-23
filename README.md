@@ -74,7 +74,7 @@ And the high-level structure worth learning:
 Takeout documentation lives in the [docs](./docs) directory so it can evolve
 with your app. See it with `bun tko docs list`. Any markdown file with YAML
 frontmatter containing `name` and `description` will be automatically symlinked
-to `.claude/skills/` for Claude Code integration:
+to `.claude/skills/` for Claude Code and `.agents/skills/` for Codex:
 
 ```yaml
 ---

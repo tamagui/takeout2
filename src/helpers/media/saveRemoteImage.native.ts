@@ -53,12 +53,11 @@ export async function saveRemoteImage(imageUrl: string): Promise<boolean> {
 /**
  * Save an image to the device's media library/gallery
  */
-export const saveImageToGallery = async (
-  uri: string,
-): Promise<MediaLibrary.Asset | null> => {
+export const saveImageToGallery = async (uri: string) => {
   try {
-    const asset = await MediaLibrary.createAssetAsync(uri)
-    return asset
+    // expo-media-library 57 moved the legacy createAssetAsync to
+    // expo-media-library/legacy and the top-level one now throws at runtime
+    return await MediaLibrary.Asset.create(uri)
   } catch (error) {
     console.info('Error saving image to gallery:', error)
     throw error

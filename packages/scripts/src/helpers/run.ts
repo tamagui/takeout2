@@ -204,11 +204,18 @@ export async function run(
         return { stdout: '', stderr: '' }
       }
 
-      if (exitCode !== 0) {
-        const errorMsg =
-          exitCode === 143 && didTimeOut
-            ? `Command timed out after ${timeout}ms: ${command}`
-            : `Command failed with exit code ${exitCode}: ${command}`
+      // a command we killed for exceeding its timeout failed, whatever exit code
+      // the kill happened to leave behind. shell.kill() signals the `bash -c`
+      // wrapper, and whether that surfaces as 143, as null, or as 0 depends on
+      // whether bash exec'd into the command or stayed its parent, so gating on
+      // the code alone reports a killed command as a completed one. that is not
+      // hypothetical: a production `wrangler deploy` was killed at its 10-minute
+      // timeout and this returned success, so the release printed a green check
+      // for a worker it never activated.
+      if (exitCode !== 0 || didTimeOut) {
+        const errorMsg = didTimeOut
+          ? `Command timed out after ${timeout}ms: ${command}`
+          : `Command failed with exit code ${exitCode}: ${command}`
 
         if (!silent && !getIsExiting()) {
           console.error(`run() error: ${errorMsg}: ${stderr || ''}`)

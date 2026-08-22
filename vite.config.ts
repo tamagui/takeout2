@@ -44,6 +44,7 @@ export default {
       'on-zero',
       '@vxrn/mdx',
       '@rocicorp/zero',
+      '@opentelemetry/semantic-conventions',
       'retext',
       'retext-smartypants',
       // og image generation - native node addons

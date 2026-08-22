@@ -2,7 +2,7 @@ import {
   getAuthDataFromRequest,
   NotAuthenticatedError,
 } from '@take-out/better-auth-utils/server'
-import { handleSyncExecutorPushRequest } from 'orez/sync-executor'
+import { handleSyncExecutorPushRequest } from 'orez-sync-executor'
 
 import { authServer } from '~/features/auth/server/authServer'
 import { zeroExecutor } from '~/zero/server'

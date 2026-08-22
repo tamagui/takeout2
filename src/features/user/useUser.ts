@@ -1,6 +1,6 @@
 import { ensure } from '@take-out/helpers'
 
-import { userById } from '~/data/queries/user'
+import { userById } from '~/data/user/queries'
 import { useAuth } from '~/features/auth/client/authClient'
 import { useQuery, zero } from '~/zero/client'
 

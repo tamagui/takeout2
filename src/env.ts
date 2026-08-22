@@ -4,6 +4,7 @@ const result = createEnv({
   freshDev: true,
   ports: {
     minio: 9200,
+    orezAdmin: 6477,
     postgres: 5433,
     web: 8081,
     zero: 4848,
@@ -56,6 +57,7 @@ const result = createEnv({
     COMPOSE_PROJECT_NAME: portOffset ? `takeout-${portOffset}` : 'takeout',
     ONE_SERVER_URL: `http://localhost:${ports.web}`,
     VITE_PORT_MINIO: String(ports.minio),
+    VITE_PORT_OREZ_ADMIN: String(ports.orezAdmin),
     VITE_PORT_POSTGRES: String(ports.postgres),
     VITE_PORT_WEB: String(ports.web),
     VITE_PORT_ZERO: String(ports.zero),
@@ -72,6 +74,7 @@ const result = createEnv({
   production: {
     ALLOW_MISSING_ENV: '',
     VITE_PORT_MINIO: '',
+    VITE_PORT_OREZ_ADMIN: '',
     VITE_PORT_POSTGRES: '',
     VITE_PORT_WEB: '',
     VITE_PORT_ZERO: '',

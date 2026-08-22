@@ -2,7 +2,7 @@ import {
   unreadNotificationCount,
   unreadNotifications,
   userNotifications,
-} from '~/data/queries/notification'
+} from '~/data/notification/queries'
 import { useQuery } from '~/zero/client'
 
 export const useNotifications = (userId: string, pageSize?: number) => {

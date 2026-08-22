@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { blockedByUser } from '~/data/queries/block'
+import { blockedByUser } from '~/data/block/queries'
 import { useAuth } from '~/features/auth/client/authClient'
 import { useQuery, zero } from '~/zero/client'
 

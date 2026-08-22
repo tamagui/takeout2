@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useDebounceValue } from 'tamagui'
 
-import { userByUsername } from '~/data/queries/user'
+import { userByUsername } from '~/data/user/queries'
 import { useUser } from '~/features/user/useUser'
 import { showToast } from '~/interface/toast/helpers'
 import { useQuery } from '~/zero/client'

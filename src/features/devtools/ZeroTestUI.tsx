@@ -1,7 +1,7 @@
 import { memo, useEffect, useState } from 'react'
 import { isWeb } from 'tamagui'
 
-import { feedPosts } from '~/data/queries/post'
+import { feedPosts } from '~/data/post/queries'
 import { useAuth } from '~/features/auth/client/authClient'
 import { usePermission, useQuery } from '~/zero/client'
 

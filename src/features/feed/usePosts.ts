@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { isWeb, useDebounceValue } from 'tamagui'
 
-import { feedPosts, postsPaginated, searchPosts } from '~/data/queries/post'
+import { feedPosts, postsPaginated, searchPosts } from '~/data/post/queries'
 import { useQuery } from '~/zero/client'
 
 import type { Post } from '~/data/types'

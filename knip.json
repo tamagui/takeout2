@@ -32,7 +32,8 @@
         "postmark",
         "react-native-launch-arguments",
         "chrome-devtools-mcp",
-        "xcodebuildmcp"
+        "xcodebuildmcp",
+        "orez"
       ]
     },
     "packages/cli": {

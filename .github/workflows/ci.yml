@@ -100,6 +100,7 @@ jobs:
           POSTMARK_SERVER_TOKEN: ${{ secrets.POSTMARK_SERVER_TOKEN }}
           VITE_DEMO_MODE: ${{ secrets.VITE_DEMO_MODE }}
           VITE_PORT_MINIO: ${{ secrets.VITE_PORT_MINIO }}
+          VITE_PORT_OREZ_ADMIN: ${{ secrets.VITE_PORT_OREZ_ADMIN }}
           VITE_PORT_POSTGRES: ${{ secrets.VITE_PORT_POSTGRES }}
           VITE_PORT_WEB: ${{ secrets.VITE_PORT_WEB }}
           VITE_PORT_ZERO: ${{ secrets.VITE_PORT_ZERO }}

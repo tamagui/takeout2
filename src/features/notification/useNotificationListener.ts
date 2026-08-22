@@ -1,7 +1,7 @@
 import { toast } from '@tamagui/toast/v2'
 import { useEffect, useRef } from 'react'
 
-import { newNotificationsSince } from '~/data/queries/notification'
+import { newNotificationsSince } from '~/data/notification/queries'
 import { useAuth } from '~/features/auth/client/authClient'
 import { useQuery } from '~/zero/client'
 

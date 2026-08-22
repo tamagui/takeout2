@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { isWeb } from 'tamagui'
 
-import { postsPaginated } from '~/data/queries/post'
+import { postsPaginated } from '~/data/post/queries'
 import { useQuery } from '~/zero/client'
 
 import type { UseProfilePostsOptions, UseProfilePostsResult } from './types'

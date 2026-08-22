@@ -1,4 +1,4 @@
-import { userById } from '~/data/queries/user'
+import { userById } from '~/data/user/queries'
 import { useQuery } from '~/zero/client'
 
 export function useUserById(userId: string | undefined) {

@@ -2,7 +2,7 @@ import { createZeroServerBindings } from 'on-zero/server'
 import {
   createPostgreSQLApplicationDatabase,
   createSyncExecutor,
-} from 'orez/sync-executor'
+} from 'orez-sync-executor'
 
 import { db } from '~/database/db'
 import { models } from '~/data/generated/models'

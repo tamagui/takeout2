@@ -33,7 +33,7 @@
     "on-zero",
     "on-zero/server",
     "one",
-    "orez/sync-executor",
+    "orez-sync-executor",
     "pg",
     "posthog-node",
     "react",

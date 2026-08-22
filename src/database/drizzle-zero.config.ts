@@ -1,4 +1,4 @@
-import { drizzleZeroConfig } from 'drizzle-zero-sqlite'
+import { drizzleZeroConfig } from 'drizzle-zero'
 import * as schema from './schema'
 import { relations } from './relations'
 

@@ -3,7 +3,7 @@ import { router, useParams } from 'one'
 import { memo, useRef, useState } from 'react'
 import { ScrollView, SizableText, useMedia, View, XStack, YStack } from 'tamagui'
 
-import { postDetail } from '~/data/queries/post'
+import { postDetail } from '~/data/post/queries'
 import { useAuth } from '~/features/auth/client/authClient'
 import { CommentInput } from '~/features/feed/CommentInput'
 import { CommentSection } from '~/features/feed/CommentSection'

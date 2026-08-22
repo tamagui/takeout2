@@ -11,9 +11,35 @@ system work together correctly, from the UI through the API to the database.
 
 ## Quick Start
 
-### Running All Tests (Recommended)
+### Running Integration Tests (Recommended)
 
-The easiest way to run the full test suite is through the CI command:
+`bun lite:demo` brings up postgres, zero-cache, an S3-compatible store, your
+migrations, the seed data, and the web dev server in one process tree. No docker.
+
+```bash
+# terminal 1: whole stack on port 8081, with seed data
+bun lite:demo
+
+# terminal 2: run the tests
+bun test:integration
+
+# or a specific test file
+cd src/test && bunx playwright test integration/basic.test.ts
+```
+
+Use `lite:demo`, not `lite`. Several tests look for seeded rows such as
+`seed-post-1` and fail against an empty database. If a plain `bun lite` stack is
+already running, seed it in place with
+`bun run:dev scripts/db/seed-demo.ts`.
+
+To run a second checkout at the same time, set `PORT_OFFSET=<n>`; every port
+(web, postgres, zero, S3, orez admin) shifts by it, and the tests read the
+shifted web port automatically.
+
+### Reproducing CI
+
+The CI pipeline is the only local test workflow that still needs docker - it
+uses the same compose services CI does:
 
 ```bash
 # full pipeline: backend, unit tests, build, integration tests
@@ -23,26 +49,9 @@ bun ops release --dry-run
 bun ops release --dry-run --dev
 ```
 
-This handles everything automatically - no manual setup needed.
-
-### Running Integration Tests Manually
-
-If you need to run integration tests separately:
-
-```bash
-# terminal 1: start backend (postgres, zero, minio)
-# optional: add backend:clean first if you have stale keys/data causing auth failures
-bun backend:clean && bun backend
-
-# terminal 2: start frontend (wait for backend migrations to complete)
-bun dev
-
-# terminal 3: run integration tests (requires port 8081 to be up)
-bun test:integration
-
-# or run a specific test file
-cd src/test && bunx playwright test integration/basic.test.ts
-```
+This handles everything automatically - no manual setup needed. Afterwards run
+`bun backend:clean` before your next `bun backend`, since CI may have changed
+auth keys. It does not affect `bun lite`.
 
 ### Production Mode Testing
 
@@ -59,12 +68,14 @@ bun test:integration
 
 ### Important: Database State Management
 
-For a clean database state between test runs:
+For a clean database state between test runs, stop `bun lite` and delete its
+data directory:
 
 ```bash
-# clean restart of backend (removes all data)
-bun backend:clean && bun backend
+rm -rf .orez && bun lite:demo
 ```
+
+On the docker backend the equivalent is `bun backend:clean && bun backend`.
 
 This is important because:
 
@@ -204,20 +215,21 @@ await page.waitForTimeout(800)
 
 Integration tests require a clean database state. This is managed through:
 
-1. Docker Compose: Spins up fresh PostgreSQL with pgvector
+1. A fresh PostgreSQL, from orez (`bun lite`) or docker compose (`bun backend`)
 2. Migrations: Automatically applied on startup
-3. Test Data: Created by individual tests as needed
+3. Seed data: Created by `scripts/db/seed-demo.ts`
+4. Test Data: Created by individual tests as needed
 
 ### Database Reset Strategy
 
 ```bash
-# manual database reset
-docker compose down
-docker compose up -d
-bun db:migrate
+# lite: drop the data directory and start over
+rm -rf .orez
+bun lite:demo
 
-# or simply restart the development environment
-bun ops start-all-dev
+# docker: drop the volumes and start over
+bun backend:clean
+bun backend
 ```
 
 ### Test Data Isolation
@@ -421,8 +433,11 @@ Solution:
 lsof -i :8081
 kill -9 <PID>
 
-# or use docker cleanup
+# on the docker backend
 docker compose down
+
+# or run this checkout on its own ports instead
+PORT_OFFSET=10 bun lite:demo
 ```
 
 #### Playwright Installation Issues

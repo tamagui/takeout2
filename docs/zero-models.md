@@ -1,44 +1,45 @@
 ---
 name: takeout-zero-models
-description: Zero models, mutations, CRUD — schema, table(), permissions, MutatorContext, optimistic updates, soft deletes.
+description: Zero models, mutations, CRUD — namespace folders, permissions, MutatorContext, optimistic updates, soft deletes.
 ---
 
 ## models
 
-models in `src/data/models/` define schema, permissions, and mutations:
+each namespace is a folder under `src/data/`, holding `mutations.ts` and
+optionally `queries.ts`. the folder name is the namespace name. mutations
+define permissions and the mutators:
 
 ```ts
-// src/data/models/post.ts
-import { boolean, number, string, table } from '@rocicorp/zero'
+// src/data/post/mutations.ts
 import { mutations, serverWhere } from 'on-zero'
 
-export const schema = table('post')
-  .columns({
-    id: string(),
-    userId: string(),
-    caption: string().optional(),
-    createdAt: number(),
-  })
-  .primaryKey('id')
+import type { Post } from '../types'
 
 const permissions = serverWhere('post', (q, auth) => {
   return q.cmp('userId', auth?.id || '')
 })
 
-export const mutate = mutations(schema, permissions, {
-  insert: async (ctx, post: Post) => {
-    await ctx.tx.mutate.post.insert(post)
+export const mutate = mutations('post', permissions, {
+  insert: async ({ tx, server, authData }, post: Post) => {
+    await tx.mutate.post.insert(post)
 
-    if (ctx.server) {
-      ctx.server.enqueueTask(() =>
-        ctx.server.actions.analyticsActions().logEvent(ctx.authData.id, 'post_created')
+    if (server) {
+      server.enqueueTask(() =>
+        server.actions.analyticsActions().logEvent(authData.id, 'post_created')
       )
     }
   },
 })
 ```
 
-passing `schema` and `permissions` to `mutations()` generates CRUD:
+the table name string resolves against the generated schema, which is derived
+from `src/database/schema.ts` via drizzle-zero - do not redeclare columns here.
+run `bun zero:generate` after a structural schema change.
+
+a flat `src/data/mutations/` or `src/data/models/` directory is not a valid
+layout; `on-zero generate` rejects it.
+
+passing a table name and `permissions` to `mutations()` generates CRUD:
 
 ```tsx
 zero.mutate.post.insert(post)

@@ -9,9 +9,15 @@ Before you begin, ensure you have:
 
 - **Bun** - [Install Bun](https://bun.sh) (we recommend using a version manager
   like [bunv](https://github.com/ianh/bunv))
-- **Docker** - [Install Docker](https://docs.docker.com/get-docker/) (on macOS,
-  we recommend [OrbStack](https://orbstack.dev) as a faster alternative)
 - **Git** - For version control
+
+Local development needs nothing else. `bun lite` runs postgres, zero, and S3
+in-process via [orez](https://github.com/natew/orez), so there is no container
+runtime in the loop.
+
+Docker is only needed for two things, and you can install it later if and when
+you hit them: the full CI pipeline (`bun ops release`) and building deploy
+images. See [Running everything (CI mode)](#running-all-tests-ci-mode).
 
 Note: Ensure bun matches the version in package.json. We've avoided 1.3 because we saw install times jump 10x, due to issues:
 
@@ -31,13 +37,16 @@ For mobile development:
 bun onboard              # setup wizard
 ```
 
-The onboarding wizard will guide you through setup. After onboarding, run in
-separate terminals:
+The onboarding wizard will guide you through setup. After onboarding, one
+command runs everything:
 
 ```bash
-bun backend      # start docker services (postgres, zero, minio)
-bun dev          # start web dev server at http://localhost:8081
+bun lite         # backend + web dev server at http://localhost:8081
 ```
+
+`bun lite` starts postgres, zero-cache, and an S3-compatible store in-process,
+runs your migrations, and then brings up the web dev server. Use `bun lite:demo`
+to also seed demo users, posts, and comments.
 
 ## Reporting Issues
 
@@ -87,14 +96,15 @@ Run `bun tko skills generate` to sync skills after adding new docs.
 
 ### Development
 
-You run two commands generally in separate terminals:
+One command runs the backend and your web app together, and typechecks as you
+edit:
 
 ```bash
-bun backend
-bun dev
+bun lite
 ```
 
-Which runs your backend services + your web app and checks in the other.
+If you want the backend and the app in separate terminals, run `bun lite:backend`
+in one and `bun dev` in the other.
 
 ## Scripts and Docs
 
@@ -113,10 +123,13 @@ Use `bun tko scripts eject` if you want local copies of the packaged scripts.
 
 ```bash
 # Development
-bun dev                      # Start web + mobile dev server
+bun lite                     # Backend + web dev server (no docker)
+bun lite:demo                # Same, plus seeded demo data
+bun lite:backend             # Just the backend (postgres, zero, S3)
+bun dev                      # Just the web + mobile dev server
 bun ios                      # Run iOS simulator
 bun android                  # Run Android emulator
-bun backend                  # Start Docker services
+bun backend                  # Backend via docker compose (CI parity)
 
 # Code Quality
 bun tko check                # Run all checks (lint, types, dependencies)
@@ -222,20 +235,26 @@ bun test:unit
 
 ### Integration Tests (Playwright)
 
-Integration tests run against a live server with the full backend:
+Integration tests run against a live server with the full backend. Start the
+stack with seeded data first, then run them:
 
 ```bash
-# requires backend + frontend running on port 8081
-bun test:integration
+bun lite:demo        # terminal 1 - backend + app on port 8081, with seed data
+bun test:integration # terminal 2
 ```
+
+The tests need the seed data, so use `lite:demo` rather than `lite`. If a stack
+is already running, `bun run:dev scripts/db/seed-demo.ts` seeds it in place.
 
 - Location: `src/test/integration/`
 - Config: `src/test/playwright.config.ts`
-- Requires: Docker backend + frontend server on port 8081
+- Requires: a running backend + frontend on port 8081
 
 ### Running All Tests (CI Mode)
 
-The easiest way to run everything correctly is through CI:
+To reproduce exactly what CI does, run the pipeline. **This is the one local
+workflow that still needs docker**, because it uses the same compose services CI
+does:
 
 ```bash
 bun ops release --dry-run    # full pipeline without deploying
@@ -243,11 +262,16 @@ bun ops release --skip-deploy # same thing
 ```
 
 This handles all the setup automatically:
-1. Starts Docker backend (postgres, zero, minio)
+1. Starts the docker backend (postgres, zero, minio)
 2. Waits for migrations to complete
-3. Runs unit tests
-4. Builds and serves the frontend
-5. Runs Playwright integration tests
+3. Seeds demo data
+4. Runs unit tests
+5. Builds and serves the frontend
+6. Runs Playwright integration tests
+
+After running it, `bun backend:clean` before you next use `bun backend`, since
+CI may have changed auth keys. `bun lite` keeps its data in `.orez` and is
+unaffected.
 
 Use `--dev` for faster iteration (runs frontend in dev mode instead of building):
 
@@ -259,11 +283,18 @@ bun ops release --dry-run --dev
 
 ### Local Development
 
-PostgreSQL runs in Docker on port 5433:
+`bun lite` runs PostgreSQL in-process (pglite) on port 5433 and stores it in
+`.orez/`. `bun backend` runs the same thing in docker on the same port. Either
+way:
 
 - Main database: `postgresql://user:password@localhost:5433/postgres`
 - Zero sync databases: `zero_cvr` and `zero_cdb`
 - Connect with TablePlus or any PostgreSQL client
+
+`bun lite` also serves an orez admin dashboard on port 6477 for logs, env, and
+restarting zero.
+
+To run two checkouts at once, set `PORT_OFFSET` — every port above shifts by it.
 
 ### Migrations
 

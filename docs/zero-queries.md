@@ -5,11 +5,11 @@ description: Zero queries with zql — useQuery, run(), .where, .related, .one, 
 
 ## queries
 
-queries are plain exported functions in `src/data/queries/` that use the global
-`zql` builder:
+queries are plain exported functions in `src/data/<namespace>/queries.ts` that
+use the global `zql` builder:
 
 ```ts
-// src/data/queries/post.ts
+// src/data/post/queries.ts
 import { serverWhere, zql } from 'on-zero'
 
 const permission = serverWhere('post', () => true)
@@ -26,7 +26,7 @@ use with `useQuery`:
 
 ```tsx
 import { useQuery } from '~/zero/client'
-import { allPosts } from '~/data/queries/post'
+import { allPosts } from '~/data/post/queries'
 
 const [posts, status] = useQuery(allPosts, { limit: 20 })
 ```
@@ -60,7 +60,7 @@ be exceptionally rare.
 
 ```ts
 import { run } from 'on-zero'
-import { allPosts } from '~/data/queries/post'
+import { allPosts } from '~/data/post/queries'
 
 // cache only (default on client)
 const posts = await run(allPosts, { limit: 10 })

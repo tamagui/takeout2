@@ -29,38 +29,38 @@ after completing work:
 two test types - unit (vitest) and integration (playwright):
 
 ```bash
-bun test:unit                      # unit tests only (fast, no backend needed)
-bun ops release --dry-run       # full test suite with backend setup
+bun test:unit                   # unit tests only (fast, no backend needed)
+bun lite:demo                   # full stack + seed data, no docker
+bun ops release --dry-run       # full CI pipeline (needs docker)
 bun ops release --dry-run --dev # faster: uses dev server instead of build
 ```
 
-integration tests require the full backend (docker) + frontend on port 8081.
-the CI command handles all setup automatically - it's the easiest way to run everything.
+integration tests need a backend + frontend on port 8081 and they read the
+demo seed data, so start `bun lite:demo` rather than `bun lite`.
 
-**faster iteration: long-running backend + dev server**
-
-for rapid test iteration, keep backend and dev server running in background:
+**normal loop: leave `bun lite:demo` running**
 
 ```bash
-# terminal 1: start backend (one time, leave running)
-bun backend:clean && bun backend   # clean is important after CI runs
+# terminal 1: whole stack (postgres, zero, S3, migrations, dev server)
+bun lite:demo
 
-# terminal 2: start dev server (one time, leave running)
-bun dev
-
-# terminal 3: run specific tests as needed
+# terminal 2: run specific tests as needed
 cd src/test
 bunx playwright test integration/auth.test.ts      # specific file
 bunx playwright test --grep "login"                # by test name
 bunx playwright test integration/*.test.ts         # pattern match
 ```
 
-**important**: after running CI, always do `bun backend:clean` before `bun backend` since CI may have changed auth keys/secrets.
+`bun lite` keeps its data in `.orez/`. delete that directory for a clean
+database; there is no `backend:clean` equivalent to run.
 
-to run integration tests manually (full setup):
-1. `bun backend:clean && bun backend` (wait for migrations)
-2. `bun dev` (port 8081)
-3. `cd src/test && bunx playwright test`
+set `PORT_OFFSET=<n>` to run a second checkout alongside the first - every
+port (web, postgres, zero, S3, orez admin) shifts by it.
+
+**docker is still required for `bun ops release`** (the full CI pipeline, which
+uses the same compose services CI does) and for deploy image builds. after
+running CI, do `bun backend:clean` before your next `bun backend`, since CI may
+have changed auth keys/secrets. that does not affect `bun lite`.
 
 ## code style
 

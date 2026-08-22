@@ -82,6 +82,29 @@ allow postinstall scripts for specific packages:
 ]
 ```
 
+## the zero / orez dependency set
+
+four packages move together and one of them is deliberately behind:
+
+- `orez` - the local backend CLI that `bun lite` runs (pglite, zero-cache, S3)
+- `on-zero` - the query/mutation layer the app imports
+- `drizzle-zero` - generates `src/data/generated/schema.ts` from the drizzle
+  schema. it must be `drizzle-zero`, not `drizzle-zero-sqlite`; the sqlite build
+  rejects `pgTable` and `bun zero:schema` fails with
+  `Unsupported table type ... Only SQLite tables are supported`
+- `orez-sync-executor` - **pinned to 0.13.2 on purpose.** it supplies the
+  Postgres server-mutator path (`createPostgreSQLApplicationDatabase`,
+  `createSyncExecutor`, `handleSyncExecutorPushRequest`) used by
+  `src/zero/server.ts` and `app/api/zero/push+api.tsx`. orez deleted its
+  PostgreSQL execution path in 0.14.0, so newer versions of this package do not
+  export `createPostgreSQLApplicationDatabase` and the build breaks. bun keeps
+  0.13.2 at the top level for the app while orez's own internals resolve their
+  matching 0.16.x nested copy
+
+do not bump `orez-sync-executor` until on-zero ships a supported Postgres
+executor again, or the app moves to Zero's own `PushProcessor` from
+`@rocicorp/zero/pg`.
+
 ## takeout section
 
 project-specific metadata for onboarding script etc:

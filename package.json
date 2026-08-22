@@ -2,6 +2,9 @@
   "name": "takeout",
   "version": "0.0.0",
   "private": true,
+  "patchedDependencies": {
+    "react-native-ios-utilities@5.2.0": "patches/react-native-ios-utilities@5.2.0.patch"
+  },
   "resolutions": {
     "sharp": "npm:@tamagui/proxy-worm@1.123.14"
   },

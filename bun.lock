@@ -331,6 +331,9 @@
   "trustedDependencies": [
     "oxc-parser",
   ],
+  "patchedDependencies": {
+    "react-native-ios-utilities@5.2.0": "patches/react-native-ios-utilities@5.2.0.patch",
+  },
   "overrides": {
     "@expo/fingerprint": "0.20.6",
     "@lydell/node-pty-darwin-arm64": "1.2.0-beta.10",

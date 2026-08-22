@@ -95,11 +95,15 @@ four packages move together and one of them is deliberately behind:
 - `orez-sync-executor` - **pinned to 0.13.2 on purpose.** it supplies the
   Postgres server-mutator path (`createPostgreSQLApplicationDatabase`,
   `createSyncExecutor`, `handleSyncExecutorPushRequest`) used by
-  `src/zero/server.ts` and `app/api/zero/push+api.tsx`. orez deleted its
-  PostgreSQL execution path in 0.14.0, so newer versions of this package do not
-  export `createPostgreSQLApplicationDatabase` and the build breaks. bun keeps
-  0.13.2 at the top level for the app while orez's own internals resolve their
-  matching 0.16.x nested copy
+  `src/zero/server.ts` and `app/api/zero/push+api.tsx`, and nothing else in the
+  app imports it. orez deleted its PostgreSQL execution path in 0.14.0, so
+  newer versions do not export `createPostgreSQLApplicationDatabase` and the
+  build breaks.
+
+  the `orez` CLI does not depend on this package at all. the 0.16.3 copies in
+  the tree arrive through `on-zero` -> `orez-lite` -> `orez-sync-executor` and
+  sit nested under `orez-lite` and `orez-sync-cf-host`; they are the sqlite
+  sync engine and never touch the app's Postgres push path
 
 do not bump `orez-sync-executor` until on-zero ships a supported Postgres
 executor again, or the app moves to Zero's own `PushProcessor` from

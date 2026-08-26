@@ -54,6 +54,11 @@ async function switchTheme() {
     throw new Error('theme toggle did not render')
   }
 
+  await page.waitForFunction(() => {
+    const element = document.querySelector('button[aria-label="Toggle theme"]')
+    return element && Object.keys(element).some((key) => key.startsWith('__reactProps$'))
+  })
+
   for (let attempt = 0; attempt < 3; attempt++) {
     const current = await page.evaluate(
       () => localStorage.getItem('vxrn-scheme') ?? 'system',
@@ -90,6 +95,7 @@ for (const route of routes) {
     throw new Error(`${route}: ${response?.status() ?? 'no response'}`)
   }
 
+  await switchTheme()
   await page.evaluate(() => document.fonts.ready)
   await page.addStyleTag({
     content: `
@@ -143,8 +149,6 @@ for (const route of routes) {
   if (!isComparisonBaseline && consoleErrors.length) {
     throw new Error(`${route}: browser console errors\n${consoleErrors.join('\n')}`)
   }
-  await switchTheme()
-
   if (route === '/' && !isComparisonBaseline) {
     const glintColors = await page
       .getByTestId('button-glint')

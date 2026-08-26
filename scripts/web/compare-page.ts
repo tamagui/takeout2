@@ -7,16 +7,25 @@ const current = process.argv[3]
 const diff = process.argv[4]
 const maxDifference = Number(process.argv[5] ?? 0.5)
 const fuzz = Number(process.argv[6] ?? 5)
+const maskInput = process.argv[7]
+const mask = maskInput?.split(',').map(Number)
 
 if (
   !baseline ||
   !current ||
   !diff ||
   !Number.isFinite(maxDifference) ||
-  !Number.isFinite(fuzz)
+  !Number.isFinite(fuzz) ||
+  (mask &&
+    (mask.length !== 4 ||
+      mask.some((value) => !Number.isFinite(value)) ||
+      mask[0]! < 0 ||
+      mask[1]! < 0 ||
+      mask[2]! <= 0 ||
+      mask[3]! <= 0))
 ) {
   throw new Error(
-    'usage: bun scripts/web/compare-page.ts <baseline.png> <current.png> <diff.png> [max-difference-percent] [fuzz-percent]',
+    'usage: bun scripts/web/compare-page.ts <baseline.png> <current.png> <diff.png> [max-difference-percent] [fuzz-percent] [mask-x,mask-y,mask-width,mask-height]',
   )
 }
 
@@ -56,7 +65,7 @@ for (const [source, size, destination] of [
   [currentPath, currentSize, normalizedCurrent],
 ] as const) {
   const cropWidth = Math.min(width, size.width)
-  const result = await run([
+  const command = [
     'magick',
     source,
     '-crop',
@@ -68,8 +77,18 @@ for (const [source, size, destination] of [
     'northwest',
     '-extent',
     `${width}x${height}`,
-    destination,
-  ])
+  ]
+  if (mask) {
+    const [x, y, maskWidth, maskHeight] = mask
+    command.push(
+      '-fill',
+      'white',
+      '-draw',
+      `rectangle ${x},${y} ${x! + maskWidth!},${y! + maskHeight!}`,
+    )
+  }
+  command.push(destination)
+  const result = await run(command)
   if (result.exitCode !== 0) throw new Error(result.stderr)
 }
 
@@ -99,6 +118,7 @@ console.info(
       differencePercent: difference,
       fuzzPercent: fuzz,
       maxDifferencePercent: maxDifference,
+      mask: mask ? { x: mask[0], y: mask[1], width: mask[2], height: mask[3] } : null,
       diff: diffPath,
     },
     null,

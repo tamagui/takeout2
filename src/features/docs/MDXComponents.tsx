@@ -1,3 +1,4 @@
+import { Children } from 'react'
 import { html, Paragraph, styled, XStack, YStack } from 'tamagui'
 
 import { Link } from '~/interface/app/Link'
@@ -16,19 +17,6 @@ const BaseParagraph = styled(html.p, {
   lineHeight: '5',
   my: '2',
 })
-
-const BaseListItem = styled(
-  html.p,
-  {
-    fontFamily: 'body',
-    fontSize: '5',
-    lineHeight: '5',
-    display: 'list-item',
-  },
-  {
-    Component: 'li',
-  },
-)
 
 const TableFrame = styled(YStack, {
   my: '4',
@@ -77,7 +65,17 @@ const components = {
 
   ul: (props: any) => <html.ul mt="3" mb="3" ml="2" pl={40} {...props} />,
   ol: (props: any) => <html.ol mt="3" mb="3" ml="2" pl={40} {...props} />,
-  li: (props: any) => <BaseListItem {...props} />,
+  li: ({ children, ...props }: any) => (
+    <html.li display="list-item" {...props}>
+      {Children.map(children, (child) =>
+        typeof child === 'string' || typeof child === 'number' ? (
+          <html.span>{child}</html.span>
+        ) : (
+          child
+        ),
+      )}
+    </html.li>
+  ),
 
   a: ({ href, children }: any) => {
     const isExternal = href?.startsWith('http')

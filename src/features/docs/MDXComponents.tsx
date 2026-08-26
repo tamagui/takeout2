@@ -17,6 +17,19 @@ const BaseParagraph = styled(html.p, {
   my: '2',
 })
 
+const BaseListItem = styled(
+  html.p,
+  {
+    fontFamily: 'body',
+    fontSize: '5',
+    lineHeight: '5',
+    display: 'list-item',
+  },
+  {
+    Component: 'li',
+  },
+)
+
 const TableFrame = styled(YStack, {
   my: '4',
   borderWidth: 1,
@@ -64,7 +77,7 @@ const components = {
 
   ul: (props: any) => <html.ul mt="3" mb="3" ml="2" pl={40} {...props} />,
   ol: (props: any) => <html.ol mt="3" mb="3" ml="2" pl={40} {...props} />,
-  li: (props: any) => <html.li display="list-item" {...props} />,
+  li: (props: any) => <BaseListItem {...props} />,
 
   a: ({ href, children }: any) => {
     const isExternal = href?.startsWith('http')

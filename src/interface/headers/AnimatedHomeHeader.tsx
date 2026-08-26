@@ -27,23 +27,20 @@ export const AnimatedHomeHeader = memo(
         r={0}
         z={999}
         pt={insets.top}
-        height={totalHeaderHeight}
-        bg="$background"
-        style={{
-          backdropFilter: 'blur(60px)',
-          WebkitBackdropFilter: 'blur(60px)',
-        }}
+        h={totalHeaderHeight}
+        bg="background"
+        backdropFilter="blur(60px)"
       >
-        <XStack flex={1} items="center" justify="space-between" px="$3" pb="$2">
-          <Pressable width={40} height={40} items="center" justify="center">
+        <XStack flex={1} items="center" justify="space-between" px="3" pb="2">
+          <Pressable w={40} h={40} items="center" justify="center">
             <PlusIcon size={24} color="$color" />
           </Pressable>
 
-          <SizableText fontSize="$6" fontWeight="700" color="$color">
+          <SizableText fontSize="6" fontWeight="700" color="color">
             Takeout
           </SizableText>
 
-          <Pressable width={40} height={40} items="center" justify="center">
+          <Pressable w={40} h={40} items="center" justify="center">
             <BellIcon size={22} color="$color" />
           </Pressable>
         </XStack>

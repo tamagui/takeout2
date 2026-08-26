@@ -16,11 +16,11 @@ import {
 import {
   Paragraph,
   Tooltip as TamaguiTooltip,
-  type SizableStackProps,
+  type GetProps,
   type TooltipProps as TamaguiTooltipProps,
 } from 'tamagui'
 
-import { animationClamped } from '../animations/animationClamped'
+import { transitionQuickerLessBouncyClamped } from '../animations/animationClamped'
 import { Z_INDICES } from '../constants'
 import { popoverEmitter, type PopoverName } from '../popover/Popover'
 
@@ -28,7 +28,7 @@ export type TooltipProps = TamaguiTooltipProps & {
   disabled?: boolean
   label?: React.ReactNode
   children?: React.ReactNode
-  contentProps?: SizableStackProps
+  contentProps?: GetProps<typeof TamaguiTooltip.Content>
   disableOnPopover?: string
 }
 
@@ -180,42 +180,31 @@ export const GlobalTooltipProvider = ({
 
       <TamaguiTooltip.Content
         theme="accent"
-        // @ts-expect-error
-        zIndex={Z_INDICES.tooltip}
-        enterStyle={{ x: 0, y: -3, opacity: 0 }}
-        exitStyle={{ x: 0, y: -3, opacity: 0 }}
-        x={0}
+        z={Z_INDICES.tooltip}
+        x="0 enter:0 exit:0"
+        y="0 enter:-3px exit:-3px"
+        opacity={`${disabled ? 0 : 1} enter:0 exit:0`}
         scale={1}
-        y={0}
         borderWidth={0}
-        opacity={disabled ? 0 : 1}
         pointerEvents="none"
-        py="$1.5"
-        px="$2"
-        rounded="$2"
-        animateOnly={['transform', 'opacity', 'width', 'height']}
-        // TODO this would make them really nice but it needs to avoid animation when re-targeting
-        animatePosition
-        transition={disabled ? null : animationClamped('quickerLessBouncy')}
-        $theme-dark={{
-          shadowColor: '$shadow4',
-          shadowRadius: 3,
-          shadowOffset: { height: 2, width: 0 },
-        }}
-        $theme-light={{
-          shadowColor: '$shadow6',
-          shadowRadius: 20,
-          shadowOffset: { height: 7, width: 0 },
-        }}
+        py="1-5"
+        px="2"
+        rounded="2"
+        transition={disabled ? null : transitionQuickerLessBouncyClamped}
+        shadowColor="shadow-color"
+        shadowRadius={'dark:3 light:20' as any}
+        shadowOffset={{ height: 2, width: 0 }}
         {...contentProps}
+        animateOnly={['transform', 'opacity', 'width', 'height']}
+        animatePosition
       >
         <TamaguiTooltip.Arrow
-          size="$3"
-          shadowColor="$shadow4"
+          size="3"
+          shadowColor="shadow-color"
           shadowRadius={1}
           shadowOffset={{ height: 2, width: 2 }}
         />
-        <Paragraph pointerEvents="none" fontFamily="$mono" size="$2">
+        <Paragraph pointerEvents="none" fontFamily="mono" size="2">
           {label}
         </Paragraph>
       </TamaguiTooltip.Content>

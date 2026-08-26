@@ -47,13 +47,14 @@ export const AvatarWithMenu = memo(
         <Menu.Portal zIndex={100}>
           <Menu.Content
             transition="quickestLessBouncy"
-            rounded="$4"
-            enterStyle={{ scale: 0.9, opacity: 0, y: -5 }}
-            exitStyle={{ scale: 0.95, opacity: 0, y: -3 }}
-            p="$2"
+            rounded="4"
+            scale="enter:0.9 exit:0.95"
+            opacity="enter:0 exit:0"
+            y="enter:-5px exit:-3px"
+            p="2"
             borderWidth={1}
-            borderColor="$borderColor"
-            boxShadow="0 4px 5px $shadowColor"
+            borderColor="border-color"
+            boxShadow="0 4px 5px shadow-color"
           >
             {!isOwnProfile && (
               <>

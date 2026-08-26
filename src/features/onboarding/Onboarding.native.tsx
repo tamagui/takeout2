@@ -68,7 +68,7 @@ export function Onboarding({ onComplete }: { onComplete?: () => void }) {
   return (
     <Theme name={currentTheme}>
       <View flex={1}>
-        <YStack flex={1} bg="$color2" pt={safeAreaInsets.top}>
+        <YStack flex={1} bg="color2" pt={safeAreaInsets.top}>
           <TitleTicker slides={slides} scrollPosition={scrollPosition} />
 
           <PagerView
@@ -91,7 +91,7 @@ export function Onboarding({ onComplete }: { onComplete?: () => void }) {
             ))}
           </PagerView>
 
-          <YStack pb={safeAreaInsets.bottom + 16} px="$5" gap="$4">
+          <YStack pb={safeAreaInsets.bottom + 16} px="5" gap="4">
             <OnboardingPageIndicator
               totalPages={slides.length}
               scrollPosition={scrollPosition}

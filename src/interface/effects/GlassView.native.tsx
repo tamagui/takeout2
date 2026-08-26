@@ -20,7 +20,7 @@ export const GlassView = memo(
     // android fallback
     if (IS_ANDROID) {
       return (
-        <View bg="$color4" style={[{ borderRadius, overflow: 'hidden' }, containerStyle]}>
+        <View bg="color4" style={[{ borderRadius, overflow: 'hidden' }, containerStyle]}>
           {children}
         </View>
       )

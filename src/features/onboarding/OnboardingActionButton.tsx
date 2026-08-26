@@ -9,20 +9,16 @@ import type { OnboardingActionButtonProps } from './types'
 export function OnboardingActionButton({ onPrev, onNext }: OnboardingActionButtonProps) {
   return (
     <XStack
-      gap="$2"
-      $platform-native={{
-        justify: 'space-between',
-        items: 'center',
-        width: '100%',
-      }}
+      gap="2"
+      justify="native:space-between"
+      items="native:center"
+      width="native:100%"
     >
       <Button
         onPress={onPrev}
         circular
         size={isWeb ? 'medium' : 'xl'}
-        bg="$color6"
-        hoverStyle={{ bg: '$color7' }}
-        pressStyle={{ bg: '$color4' }}
+        bg="color6 hover:color7 press:color4"
       >
         <CaretLeftIcon size={18} color="$color11" />
       </Button>
@@ -30,9 +26,7 @@ export function OnboardingActionButton({ onPrev, onNext }: OnboardingActionButto
         onPress={onNext}
         circular
         size={isWeb ? 'medium' : 'xl'}
-        bg="$color10"
-        hoverStyle={{ bg: '$color11' }}
-        pressStyle={{ bg: '$color4' }}
+        bg="color10 hover:color11 press:color4"
       >
         <CaretRightIcon size={18} color="white" />
       </Button>

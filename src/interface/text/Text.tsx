@@ -1,24 +1,19 @@
-import { SizableText, styled, Text as TamaguiText } from 'tamagui'
+import { html, SizableText, styled } from 'tamagui'
 
 export const Text = styled(SizableText, {
   name: 'Text',
 })
 
-export const Strong = styled(TamaguiText, {
-  render: 'strong',
+export const Strong = styled(html.strong, {
   fontWeight: '600',
 })
 
-export const Span = styled(TamaguiText, {
-  render: 'span',
-})
+export const Span = styled(html.span, {})
 
-export const Em = styled(TamaguiText, {
-  render: 'em',
+export const Em = styled(html.em, {
   fontStyle: 'italic',
 })
 
-export const InlineLink = styled(TamaguiText, {
-  render: 'span',
-  color: '$blue11',
+export const InlineLink = styled(html.span, {
+  color: 'accent11',
 })

@@ -1,4 +1,4 @@
-import { toast } from '@tamagui/toast/v2'
+import { toast } from '@tamagui/toast'
 import { useEffect, useRef } from 'react'
 
 import { newNotificationsSince } from '~/data/notification/queries'

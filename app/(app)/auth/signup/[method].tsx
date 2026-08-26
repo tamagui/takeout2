@@ -83,7 +83,7 @@ export const SignupPage = memo(() => {
     return (
       <StepPageLayout title="Sign Up">
         <YStack flex={1} items="center" justify="center">
-          <SizableText size="$4" color="$color10">
+          <SizableText size="4" color="color10">
             Invalid authentication method
           </SizableText>
         </YStack>
@@ -106,13 +106,10 @@ export const SignupPage = memo(() => {
             glass
             data-testid="next-button"
             size="large"
-            pressStyle={{
-              scale: 0.97,
-              opacity: 0.9,
-            }}
+            scale="press:0.97"
+            opacity={`${isDisabled ? 0.5 : 1} press:0.9`}
             onPress={handleContinue}
             disabled={isDisabled}
-            opacity={isDisabled ? 0.5 : 1}
           >
             {loading ? 'Processing...' : 'Next'}
           </Button>

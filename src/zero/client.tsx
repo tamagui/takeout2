@@ -1,7 +1,7 @@
 import { useConnectionState, useZero } from '@rocicorp/zero/react'
 import { createZeroClient, run } from 'on-zero'
 import { Component, memo, useEffect, useMemo, type ReactNode } from 'react'
-import { debounce, SizableText, YStack } from 'tamagui'
+import { debounce, html } from 'tamagui'
 
 import { Button } from '~/interface/buttons/Button'
 
@@ -114,17 +114,17 @@ class ZeroErrorBoundary extends Component<
 
 function ZeroErrorFallback({ error, onRetry }: { error: Error; onRetry: () => void }) {
   return (
-    <YStack flex={1} items="center" justify="center" gap="$4" px="$6">
-      <SizableText size="$7" fontWeight="700" color="$color12">
+    <html.div flex={1} items="center" justify="center" gap="4" px="6">
+      <html.h2 fontSize="7" fontWeight="700" color="color12">
         Sync Error
-      </SizableText>
-      <SizableText size="$4" color="$color10" text="center">
+      </html.h2>
+      <html.p fontSize="4" color="color10" text="center">
         {error.message}
-      </SizableText>
+      </html.p>
       <Button size="large" theme="accent" onPress={onRetry}>
         Retry
       </Button>
-    </YStack>
+    </html.div>
   )
 }
 

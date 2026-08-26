@@ -106,39 +106,34 @@ export const AnimatedHomeHeader = memo(({ scrollY }: AnimatedHomeHeaderProps) =>
     <>
       <GradientBlurView
         intensity={20}
-        width="100%"
-        height={isSmallScreen ? 30 : 60}
+        w="100%"
+        h={isSmallScreen ? 30 : 60}
         inverted
         t={0}
         z={999}
       />
       <Animated.View
         style={[
-          { backgroundColor: theme.background04.val },
+          { backgroundColor: theme.color2?.val },
           { paddingTop: insets.top, height: totalHeaderHeight, zIndex: 999 },
           { position: 'absolute' as const, top: 0, left: 0, right: 0, bottom: 0 },
           animatedHeaderStyle,
         ]}
       >
         <BlurView intensity={60} position="absolute" inset={0} />
-        <XStack flex={1} items="center" justify="space-between" px="$3" pb="$2">
+        <XStack flex={1} items="center" justify="space-between" px="3" pb="2">
           <Pressable
             onPress={handlePlusPress}
-            width={40}
-            height={40}
+            w={40}
+            h={40}
             items="center"
             justify="center"
           >
             <PlusIcon size={24} color="$color12" />
           </Pressable>
 
-          <Pressable
-            onPress={handleFeedPress}
-            flexDirection="row"
-            items="center"
-            gap="$2"
-          >
-            <SizableText fontSize="$6" fontWeight="700" color="$color">
+          <Pressable onPress={handleFeedPress} flexDirection="row" items="center" gap="2">
+            <SizableText fontSize="6" fontWeight="700" color="color">
               Takeout
             </SizableText>
             <Animated.View style={animatedCaretStyle}>
@@ -148,8 +143,8 @@ export const AnimatedHomeHeader = memo(({ scrollY }: AnimatedHomeHeaderProps) =>
 
           <Pressable
             onPress={handleBellPress}
-            width={40}
-            height={40}
+            w={40}
+            h={40}
             items="center"
             justify="center"
           >

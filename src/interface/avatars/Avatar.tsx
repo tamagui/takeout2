@@ -56,8 +56,8 @@ export const Avatar = memo(
           <Image
             src={image}
             alt={name ? `${name}'s avatar` : 'User avatar'}
-            width={size}
-            height={size}
+            w={size}
+            h={size}
             objectFit="cover"
           />
         ) : (
@@ -69,8 +69,8 @@ export const Avatar = memo(
     return (
       <YStack
         pointerEvents="none"
-        width={size + borderWidth * 2 + 2}
-        height={size + borderWidth * 2 + 2}
+        w={size + borderWidth * 2 + 2}
+        h={size + borderWidth * 2 + 2}
         position="relative"
         rounded={100}
         items="center"
@@ -81,8 +81,8 @@ export const Avatar = memo(
             colors={gradientColors as [string, string, ...string[]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            width={size + borderWidth * 2 + 2}
-            height={size + borderWidth * 2 + 2}
+            w={size + borderWidth * 2 + 2}
+            h={size + borderWidth * 2 + 2}
             rounded={100}
             items="center"
             justify="center"
@@ -95,12 +95,13 @@ export const Avatar = memo(
 
         {typeof isOnline === 'boolean' ? (
           <Circle
+            theme={isOnline ? 'green' : undefined}
             position="absolute"
             b={-1.1 * scale + (isBig ? 4.5 : 0)}
             r={-1.1 * scale + (isBig ? 4.5 : 0)}
-            size={7 * scale}
             opacity={1}
-            bg={isOnline ? '$green10' : '$color4'}
+            bg={isOnline ? 'color10' : 'color4'}
+            size={7 * scale}
           />
         ) : null}
       </YStack>
@@ -110,34 +111,21 @@ export const Avatar = memo(
 
 const SelectableCircle = styled(Circle, {
   select: 'none',
-  bg: '$background02',
-
+  bg: 'color1',
   variants: {
     active: {
       true: {
-        outlineColor: '#fff',
+        outlineColor: '#fff press:#ccc',
         outlineWidth: 2,
         outlineStyle: 'solid',
-
-        pressStyle: {
-          outlineColor: '#ccc',
-        },
       },
     },
 
     pressable: {
       true: {
-        hoverStyle: {
-          outlineColor: '$color5',
-          outlineWidth: 2,
-          outlineStyle: 'solid',
-        },
-
-        pressStyle: {
-          outlineColor: '#fff',
-          outlineWidth: 2,
-          outlineStyle: 'solid',
-        },
+        outlineColor: 'hover:color5 press:#fff',
+        outlineWidth: 'hover:2px press:2px',
+        outlineStyle: 'hover:solid press:solid',
       },
     },
   } as const,

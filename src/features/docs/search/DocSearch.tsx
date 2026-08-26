@@ -31,12 +31,12 @@ font-family: sans-serif;
   --docsearch-logo-color: var(--colorPress);
   --docsearch-footer-background: transparent;
   --docsearch-footer-shadow: none;
-  --docsearch-modal-shadow: inset 0 0 1px 1px var(--borderColor), 0 5px 20px 0 var(--shadowColor);
+  --docsearch-modal-shadow: inset 0 0 1px 1px var(--border-color), 0 5px 20px 0 var(--shadow-color);
   z-index: 10000000;
 }
 
 .DocSearch-Container {
-  background-color: var(--background075)
+  background-color: var(--background)
 }
 
 .DocSearch-Modal {
@@ -58,7 +58,7 @@ font-family: sans-serif;
 }
 
 .DocSearch-SearchBar {
-  border-bottom: 0.5px solid var(--borderColor);
+  border-bottom: 0.5px solid var(--border-color);
   padding-left: var(--space-1);
   padding-right: var(--space-1);
   padding-top: var(--space-2);

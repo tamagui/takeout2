@@ -114,16 +114,16 @@ export default function PostDetailModal() {
   )
 
   const postHeader = (
-    <XStack gap="$2" pr="$4">
+    <XStack gap="2" pr="4">
       <Avatar gradient image={author.image as string} size={32} />
       <XStack flex={1}>
-        <YStack flex={1} gap="$2">
-          <XStack items="center" gap="$1">
-            <SizableText size="$4" fontWeight="600" numberOfLines={1}>
+        <YStack flex={1} gap="2">
+          <XStack items="center" gap="1">
+            <SizableText size="4" fontWeight="600" numberOfLines={1}>
               {author.username}
             </SizableText>
             <DotIcon size={16} color="$color10" />
-            <SizableText size="$3" color="$color10">
+            <SizableText size="3" color="color10">
               {formatDistanceToNow(post.createdAt)}
             </SizableText>
           </XStack>
@@ -148,16 +148,16 @@ export default function PostDetailModal() {
         openGraph={ogImage}
       />
       <XStack
-        bg="$background"
+        bg="background"
         position="relative"
         rounded={16}
         overflow="hidden"
         borderWidth={1}
-        borderColor="$color4"
+        borderColor="color4"
         maxW={860}
         height={500}
         width="100%"
-        gap="$4"
+        gap="4"
       >
         <XStack position="absolute" l={8} t={8} z={10}>
           <Button
@@ -170,23 +170,23 @@ export default function PostDetailModal() {
             <XIcon size={24} color="$color12" />
           </Button>
         </XStack>
-        <YStack flex={1} bg="$color1">
+        <YStack flex={1} bg="color1">
           <Pressable flex={1} onPress={openGallery}>
             <PostImage postId={post.id} image={post.image} caption={post.caption} fill />
           </Pressable>
         </YStack>
 
-        <YStack width={380} pt="$4">
-          <YStack pb="$4" borderBottomWidth={1} borderColor="$borderColor">
+        <YStack width={380} pt="4">
+          <YStack pb="4" borderBottomWidth={1} borderColor="border-color">
             {postHeader}
           </YStack>
           <ScrollView ref={commentsScrollRef as any} flex={1}>
-            <YStack pl="$2" pb="$4">
+            <YStack pl="2" pb="4">
               <CommentSection comments={post.comments} />
             </YStack>
           </ScrollView>
 
-          <YStack pb="$4" pr="$4">
+          <YStack pb="4" pr="4">
             {commentInput}
           </YStack>
         </YStack>
@@ -199,12 +199,10 @@ export default function PostDetailModal() {
       <Dialog.Portal z={500_000}>
         <Dialog.Overlay
           key="overlay"
-          bg="$shadow6"
-          opacity={0.8}
+          bg="shadow-color"
+          opacity="0.8 enter:0 exit:0"
           transition="200ms"
           backdropFilter="blur(8px)"
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
           onPress={(e) => {
             handleClose()
             e.stopPropagation()
@@ -213,26 +211,16 @@ export default function PostDetailModal() {
 
         <Dialog.Content
           key="content"
-          unstyled
           z={1_000_000}
-          transition={[
-            '200ms',
-            {
-              opacity: {
-                overshootClamping: true,
-              },
-            },
-          ]}
+          transition={['200ms', { opacity: { overshootClamping: true } }]}
           borderWidth={0.5}
-          borderColor="$color3"
-          rounded="$6"
+          borderColor="color3"
+          rounded="6"
           overflow="hidden"
-          height={500}
-          opacity={1}
-          scale={1}
-          y={0}
-          enterStyle={{ y: -20, opacity: 0, scale: 0.9 }}
-          exitStyle={{ y: 10, opacity: 0, scale: 0.95 }}
+          h={500}
+          opacity="1 enter:0 exit:0"
+          scale="1 enter:0.9 exit:0.95"
+          y="0 enter:-20px exit:10px"
         >
           <VisuallyHidden>
             <Dialog.Title>{postTitle}</Dialog.Title>

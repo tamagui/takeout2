@@ -109,7 +109,7 @@ export const SocialLinks = memo(({ links, size = 'medium' }: SocialLinksProps) =
   const buttonSize = size === 'small' ? 32 : size === 'large' ? 48 : 40
 
   return (
-    <XStack gap="$2" flexWrap="wrap">
+    <XStack gap="2" flexWrap="wrap">
       {Object.entries(links).map(([platform, username], index) => {
         const platformInfo = SOCIAL_PLATFORMS[platform]
         if (!platformInfo || !username) return null

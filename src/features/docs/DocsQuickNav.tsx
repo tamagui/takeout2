@@ -1,4 +1,4 @@
-import { H4, Paragraph, ScrollView, XStack, YStack } from 'tamagui'
+import { H4, html, ScrollView, XStack, YStack } from 'tamagui'
 
 type Heading = {
   id: string
@@ -23,23 +23,19 @@ export const DocsQuickNav = ({ headings = [] }: { headings?: Heading[] }) => {
   }
 
   return (
-    <YStack
-      render="aside"
-      display="none"
-      $lg={{
-        display: 'flex',
-        width: 220,
-        shrink: 0,
-        position: 'sticky' as any,
-        t: 80,
-        height: 'calc(100vh - 100px)',
-      }}
+    <html.aside
+      display="none lg:flex"
+      width="lg:220px"
+      shrink="lg:0px"
+      position="lg:sticky"
+      t="lg:80px"
+      height="lg:calc(100vh - 100px)"
     >
-      <YStack gap="$4">
-        <YStack render="nav" aria-labelledby="site-quick-nav-heading" gap="$2">
-          <XStack items="center" mb="$2" id="site-quick-nav-heading">
+      <YStack gap="4">
+        <html.nav aria-labelledby="site-quick-nav-heading" gap="2">
+          <XStack items="center" mb="2" id="site-quick-nav-heading">
             <ListIcon />
-            <H4 fontFamily="$mono" size="$4" color="$color11">
+            <H4 fontFamily="mono" color="color11" size="4">
               On this page
             </H4>
           </XStack>
@@ -50,10 +46,10 @@ export const DocsQuickNav = ({ headings = [] }: { headings?: Heading[] }) => {
                 const isSubItem = priority > 2
 
                 return (
-                  <XStack key={`${id}-${index}`} py="$1.5" ml={isSubItem ? '$3' : 0}>
-                    <a
+                  <XStack key={`${id}-${index}`} py="1-5" ml={isSubItem ? '3' : 0}>
+                    <html.a
                       href={`#${id}`}
-                      onClick={(e) => {
+                      onClick={(e: any) => {
                         e.preventDefault()
                         const element = document.getElementById(id)
                         if (element) {
@@ -61,29 +57,24 @@ export const DocsQuickNav = ({ headings = [] }: { headings?: Heading[] }) => {
                           history.pushState(null, '', `#${id}`)
                         }
                       }}
-                      style={{ textDecoration: 'none' }}
+                      py="1-5"
+                      px={isSubItem ? '2' : 0}
+                      rounded="2"
+                      bg={`${isSubItem ? 'color3' : 'transparent'}`}
+                      color={`${priority === 2 ? 'color11' : 'color10'} hover:color12`}
+                      cursor="pointer"
+                      fontSize={priority === 2 ? '3' : '2'}
+                      textDecorationLine="none"
                     >
-                      <Paragraph
-                        render="span"
-                        py="$1.5"
-                        px={isSubItem ? '$2' : 0}
-                        rounded="$2"
-                        bg={isSubItem ? '$color3' : 'transparent'}
-                        size={priority === 2 ? '$3' : '$2'}
-                        color={priority === 2 ? '$color11' : '$color10'}
-                        cursor="pointer"
-                        hoverStyle={{ color: '$color12' }}
-                      >
-                        {title}
-                      </Paragraph>
-                    </a>
+                      {title}
+                    </html.a>
                   </XStack>
                 )
               })}
             </YStack>
           </ScrollView>
-        </YStack>
+        </html.nav>
       </YStack>
-    </YStack>
+    </html.aside>
   )
 }

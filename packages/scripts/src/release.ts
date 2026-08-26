@@ -418,7 +418,10 @@ await cmd`publish takeout packages to npm`
             )
           }
 
-          const prepared = await pMap(pendingPackages, prepareOne, { concurrency: 8 })
+          const prepared = await pMap(pendingPackages, prepareOne, {
+            concurrency: 8,
+            stopOnError: false,
+          })
           await writeJSON(
             path.join(packDir, 'package.json'),
             {
@@ -485,7 +488,7 @@ await cmd`publish takeout packages to npm`
 
         // revert version changes after dry-run
         if (dryRun && !rePublish) {
-          await run(`git checkout -- packages/*/package.json`, { silent: true })
+          await restorePackageJsons()
           console.info('Reverted version changes\n')
         }
 

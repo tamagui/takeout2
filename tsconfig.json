@@ -9,7 +9,6 @@
     "verbatimModuleSyntax": true,
     // blocked by expo-modules-core
     // "erasableSyntaxOnly": true,
-    "downlevelIteration": true,
     "esModuleInterop": true,
     "target": "ES2022",
     "allowImportingTsExtensions": true,

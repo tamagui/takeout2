@@ -362,11 +362,12 @@ export async function runParallelScripts(
       console.error(`${getPrefix(index)} Failed to start: ${error.message}`)
     })
 
-    proc.on('close', (code) => {
+    proc.on('close', (code, signal) => {
       if (getIsExiting()) return
 
-      if (code && code !== 0) {
-        console.error(`${getPrefix(index)} Process exited with code ${code}`)
+      if (code !== 0 || signal !== null) {
+        const result = signal ? `signal ${signal}` : `code ${code}`
+        console.error(`${getPrefix(index)} Process exited with ${result}`)
 
         if (watch) {
           // a process that ran stably for a while before crashing isn't a
@@ -395,6 +396,7 @@ export async function runParallelScripts(
                 extraArgs,
                 index,
                 directCommand,
+                deferredChildren,
               )
             }, delayMs)
           } else {

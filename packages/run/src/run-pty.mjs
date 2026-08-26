@@ -39,9 +39,12 @@ for (let i = 0; i < args.length; i++) {
 const noRoot = args.includes('--no-root')
 const runBun = args.includes('--bun')
 const flagsLast = args.includes('--flags=last')
+const watch = args.includes('--watch')
+const MAX_RESTARTS = 3
 
 const processes = []
 let focusedIndex = -1 // -1 = interleaved/dashboard
+let exiting = false
 
 function getPrefix(index) {
   const p = processes[index]
@@ -114,7 +117,7 @@ async function findWorkspaceScripts(scripts) {
   return result
 }
 
-function spawnScript(name, cwd, label, extraArgs, index) {
+function spawnScript(name, cwd, label, extraArgs, index, restarts = 0) {
   const runArgs = ['run', '--silent', runBun ? '--bun' : '', name, ...extraArgs].filter(
     Boolean,
   )
@@ -126,6 +129,8 @@ function spawnScript(name, cwd, label, extraArgs, index) {
   })
 
   const idx = index ?? processes.length
+  const startedAt = Date.now()
+  const previous = index === undefined ? undefined : processes[index]
   const managed = {
     terminal,
     name,
@@ -133,8 +138,10 @@ function spawnScript(name, cwd, label, extraArgs, index) {
     label,
     extraArgs,
     index: idx,
-    shortcut: '',
+    // Keep the same keyboard shortcut when a process is restarted in-place.
+    shortcut: previous?.shortcut || '',
     killed: false,
+    restartTimer: null,
   }
 
   if (index !== undefined) processes[index] = managed
@@ -157,14 +164,35 @@ function spawnScript(name, cwd, label, extraArgs, index) {
     }
   })
 
-  terminal.onExit(({ exitCode }) => {
+  terminal.onExit(({ exitCode, signal }) => {
     if (managed.killed) return
     if (focusedIndex === idx) {
       focusedIndex = -1
       showDashboard()
     }
-    if (exitCode !== 0) {
-      console.error(`${getPrefix(idx)} exited ${exitCode}`)
+    const terminatedBySignal = signal != null && signal !== 0
+    if (exitCode !== 0 || terminatedBySignal) {
+      const result = terminatedBySignal ? `signal ${signal}` : `code ${exitCode}`
+      console.error(`${getPrefix(idx)} exited with ${result}`)
+      if (watch && !exiting) {
+        const effectiveRestarts = Date.now() - startedAt >= 20_000 ? 0 : restarts
+        if (effectiveRestarts < MAX_RESTARTS) {
+          const nextRestart = effectiveRestarts + 1
+          const delayMs = Math.min(1_000 * 2 ** effectiveRestarts, 30_000)
+          managed.killed = true
+          console.info(
+            `${getPrefix(idx)} restarting (${nextRestart}/${MAX_RESTARTS}) in ${Math.round(delayMs / 1_000)}s`,
+          )
+          managed.restartTimer = setTimeout(() => {
+            if (exiting || processes[idx] !== managed) return
+            managed.restartTimer = null
+            spawnScript(name, cwd, label, extraArgs, idx, nextRestart)
+          }, delayMs)
+        } else {
+          console.error(`${getPrefix(idx)} gave up after ${MAX_RESTARTS} rapid restarts`)
+          cleanup(1)
+        }
+      }
     }
   })
 
@@ -257,15 +285,27 @@ function handleInput(data) {
     if (pendingAction === 'restart') {
       pendingAction = null
       console.log(match.shortcut)
-      match.killed = true
-      killProcessTree(match.terminal.pid)
-      setTimeout(() => {
+      if (match.restartTimer) {
+        clearTimeout(match.restartTimer)
+        match.restartTimer = null
+      }
+      if (!match.killed) {
+        match.killed = true
+        killProcessTree(match.terminal.pid)
+      }
+      match.restartTimer = setTimeout(() => {
+        if (exiting || processes[match.index] !== match) return
+        match.restartTimer = null
         spawnScript(match.name, match.cwd, match.label, match.extraArgs, match.index)
         console.log(`${getPrefix(match.index)} restarted`)
       }, 100)
     } else if (pendingAction === 'kill') {
       pendingAction = null
       console.log(match.shortcut)
+      if (match.restartTimer) {
+        clearTimeout(match.restartTimer)
+        match.restartTimer = null
+      }
       if (!match.killed) {
         match.killed = true
         killProcessTree(match.terminal.pid)
@@ -308,7 +348,9 @@ function killProcessTree(pid) {
   }, 100)
 }
 
-function cleanup() {
+function cleanup(exitCode = 0) {
+  if (exiting) return
+  exiting = true
   // restore terminal to cooked mode before exiting
   if (process.stdin.isTTY && process.stdin.setRawMode) {
     try {
@@ -326,7 +368,7 @@ function cleanup() {
   }
 
   // wait for kills to complete before exit
-  setTimeout(() => process.exit(0), 150)
+  setTimeout(() => process.exit(exitCode), 150)
 }
 
 async function main() {
@@ -386,8 +428,8 @@ async function main() {
     }
   })
 
-  process.on('SIGINT', cleanup)
-  process.on('SIGTERM', cleanup)
+  process.on('SIGINT', () => cleanup())
+  process.on('SIGTERM', () => cleanup())
 }
 
 // restore terminal on any unexpected exit

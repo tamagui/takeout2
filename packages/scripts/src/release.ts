@@ -372,7 +372,7 @@ await cmd`publish takeout packages to npm`
           const packageJsonForPublish = JSON.parse(packageJsonBeforePack)
           packageJsonForPublish.repository = {
             type: 'git',
-            url: 'https://github.com/tamagui/takeout2.git',
+            url: 'git+https://github.com/tamagui/takeout2.git',
             directory: path.relative(process.cwd(), cwd),
           }
           await writeJSON(packageJsonPath, packageJsonForPublish, { spaces: 2 })

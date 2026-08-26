@@ -8,7 +8,7 @@
   "type": "module",
   "types": "./src/index.ts",
   "bin": {
-    "database": "./cli.cjs"
+    "database": "cli.cjs"
   },
   "files": [
     "src",

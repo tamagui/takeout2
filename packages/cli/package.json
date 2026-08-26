@@ -9,8 +9,8 @@
   "module": "dist/esm",
   "types": "./src/index.ts",
   "bin": {
-    "takeout": "./src/cli.ts",
-    "tko": "./src/cli.ts"
+    "takeout": "src/cli.ts",
+    "tko": "src/cli.ts"
   },
   "files": [
     "src",

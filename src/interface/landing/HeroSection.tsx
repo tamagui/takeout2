@@ -521,11 +521,9 @@ export function HeroSection() {
         {/* right side */}
         <YStack
           my="12"
-          minW="300px"
-          maxW="480px"
+          w="300px"
           x="0px sm:20px lg:-50px"
           items="center"
-          transition="medium"
           position="relative"
           minH="600px"
           scale="1 sm:0.9 lg:1"

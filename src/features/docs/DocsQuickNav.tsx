@@ -25,11 +25,11 @@ export const DocsQuickNav = ({ headings = [] }: { headings?: Heading[] }) => {
   return (
     <html.aside
       display="none lg:flex"
-      width="lg:220px"
+      w="lg:220px"
       shrink="lg:0px"
       position="lg:sticky"
       t="lg:80px"
-      height="lg:calc(100vh - 100px)"
+      h="lg:calc(100vh - 100px)"
     >
       <YStack gap="4">
         <html.nav aria-labelledby="site-quick-nav-heading" gap="2">

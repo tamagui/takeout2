@@ -191,9 +191,12 @@ export const GlobalTooltipProvider = ({
         px="2"
         rounded="2"
         transition={disabled ? null : transitionQuickerLessBouncyClamped}
-        shadowColor="shadow-color"
-        shadowRadius={'dark:3 light:20' as any}
-        shadowOffset={{ height: 2, width: 0 }}
+        shadowColor="dark:shadow4 light:shadow6"
+        shadowRadius="dark:3 light:20"
+        shadowOffset={{
+          dark: { height: 2, width: 0 },
+          light: { height: 7, width: 0 },
+        }}
         {...contentProps}
         animateOnly={['transform', 'opacity', 'width', 'height']}
         animatePosition

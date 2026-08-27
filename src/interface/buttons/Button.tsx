@@ -29,7 +29,7 @@ import { wrapChildrenInText } from './wrapChildrenInText'
 
 import type { HapticStyle } from '../haptics/haptics'
 import type { IconProps } from '@tamagui/helpers-icon'
-import type { FontFamilyTokens, RadiusTokens } from 'tamagui'
+import type { RadiusTokens } from 'tamagui'
 
 type ButtonAdditionalProps = {
   delayPress?: boolean
@@ -63,7 +63,7 @@ const context = createStyledContext({
   active: false,
   cursor: 'pointer',
   size: 'medium' as ButtonSizes,
-  fontFamily: 'mono' as FontFamilyTokens,
+  fontFamily: 'mono',
   circular: false,
   variant: 'default' as ButtonVariants,
 })

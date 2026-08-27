@@ -1,5 +1,12 @@
-import { Children } from 'react'
+import {
+  Children,
+  isValidElement,
+  type ComponentProps,
+  type ElementType,
+  type ReactNode,
+} from 'react'
 import { html, Paragraph, styled, XStack, YStack } from 'tamagui'
+import type { MDXComponents } from 'mdx/types'
 
 import { Link } from '~/interface/app/Link'
 import { H1, H2, H3, H4, H5 } from '~/interface/text/Headings'
@@ -44,29 +51,94 @@ const TableHeaderCell = styled(YStack, {
   bg: 'color2',
 })
 
+type ContentProps<Component extends ElementType> = Pick<
+  ComponentProps<Component>,
+  Extract<'children' | 'className' | 'id', keyof ComponentProps<Component>>
+>
+
 const components = {
-  h1: (props: any) => <H1 fontSize="9" lineHeight="9" mb="4" data-heading {...props} />,
-  h2: (props: any) => (
-    <H2 fontSize="8" lineHeight="8" mb="2" pt="4" data-heading {...props} />
+  h1: ({ children, className, id }: ContentProps<typeof H1>) => (
+    <H1 fontSize="9" lineHeight="9" mb="4" data-heading className={className} id={id}>
+      {children}
+    </H1>
   ),
-  h3: (props: any) => (
-    <H3 fontSize="6" lineHeight="6" mt="3" mb="2" data-heading {...props} />
+  h2: ({ children, className, id }: ContentProps<typeof H2>) => (
+    <H2
+      fontSize="8"
+      lineHeight="8"
+      mb="2"
+      pt="4"
+      data-heading
+      className={className}
+      id={id}
+    >
+      {children}
+    </H2>
   ),
-  h4: (props: any) => (
-    <H4 fontSize="6" lineHeight="6" mt="4" mb="2" data-heading {...props} />
+  h3: ({ children, className, id }: ContentProps<typeof H3>) => (
+    <H3
+      fontSize="6"
+      lineHeight="6"
+      mt="3"
+      mb="2"
+      data-heading
+      className={className}
+      id={id}
+    >
+      {children}
+    </H3>
   ),
-  h5: (props: any) => (
-    <H5 fontSize="5" lineHeight="5" mt="3" mb="2" data-heading {...props} />
+  h4: ({ children, className, id }: ContentProps<typeof H4>) => (
+    <H4
+      fontSize="6"
+      lineHeight="6"
+      mt="4"
+      mb="2"
+      data-heading
+      className={className}
+      id={id}
+    >
+      {children}
+    </H4>
+  ),
+  h5: ({ children, className, id }: ContentProps<typeof H5>) => (
+    <H5
+      fontSize="5"
+      lineHeight="5"
+      mt="3"
+      mb="2"
+      data-heading
+      className={className}
+      id={id}
+    >
+      {children}
+    </H5>
   ),
 
-  p: (props: any) => <BaseParagraph {...props} />,
+  p: ({ children, className, id }: ContentProps<typeof BaseParagraph>) => (
+    <BaseParagraph className={className} id={id}>
+      {children}
+    </BaseParagraph>
+  ),
 
-  strong: (props: any) => <html.strong fontWeight="700" {...props} />,
+  strong: ({ children, className, id }: ContentProps<typeof html.strong>) => (
+    <html.strong fontWeight="700" className={className} id={id}>
+      {children}
+    </html.strong>
+  ),
 
-  ul: (props: any) => <html.ul mt="3" mb="3" ml="2" pl={40} {...props} />,
-  ol: (props: any) => <html.ol mt="3" mb="3" ml="2" pl={40} {...props} />,
-  li: ({ children, ...props }: any) => (
-    <html.li display="list-item" {...props}>
+  ul: ({ children, className, id }: ContentProps<typeof html.ul>) => (
+    <html.ul mt="3" mb="3" ml="2" pl={40} className={className} id={id}>
+      {children}
+    </html.ul>
+  ),
+  ol: ({ children, className, id }: ContentProps<typeof html.ol>) => (
+    <html.ol mt="3" mb="3" ml="2" pl={40} className={className} id={id}>
+      {children}
+    </html.ol>
+  ),
+  li: ({ children, className, id }: ContentProps<typeof html.li>) => (
+    <html.li display="list-item" className={className} id={id}>
       {Children.map(children, (child) =>
         typeof child === 'string' || typeof child === 'number' ? (
           <html.span>{child}</html.span>
@@ -77,25 +149,36 @@ const components = {
     </html.li>
   ),
 
-  a: ({ href, children }: any) => {
-    const isExternal = href?.startsWith('http')
+  a: ({ href, children }: Pick<ComponentProps<typeof html.a>, 'children' | 'href'>) => {
+    if (!href) {
+      return <>{children}</>
+    }
+    const isExternal = href.startsWith('http')
     return (
-      <Link href={href} target={isExternal ? '_blank' : undefined}>
+      <Link
+        href={href as ComponentProps<typeof Link>['href']}
+        target={isExternal ? '_blank' : undefined}
+      >
         {children}
       </Link>
     )
   },
 
-  code: ({ children }: any) => <CodeInline>{children}</CodeInline>,
+  code: ({ children }: Pick<ComponentProps<typeof CodeInline>, 'children'>) => (
+    <CodeInline>{children}</CodeInline>
+  ),
 
-  pre: ({ children }: any) => {
+  pre: ({ children }: { children?: ReactNode }) => {
     // children is the <code> element for fenced blocks
-    const className = children?.props?.className
-    const content = children?.props?.children
+    const code = isValidElement<{ className?: string; children?: ReactNode }>(children)
+      ? children
+      : undefined
+    const className = code?.props.className
+    const content = code?.props.children
     return <DocsCodeBlock className={className}>{content}</DocsCodeBlock>
   },
 
-  blockquote: (props: any) => (
+  blockquote: ({ children, className, id }: ContentProps<typeof html.blockquote>) => (
     <html.blockquote
       my="4"
       px="4"
@@ -105,30 +188,51 @@ const components = {
       borderLeftColor="color6"
       bg="color2"
       rounded="3"
-      {...props}
-    />
+      className={className}
+      id={id}
+    >
+      {children}
+    </html.blockquote>
   ),
 
   hr: () => <html.hr h={1} bg="color4" my="6" />,
 
-  img: (props: any) => <html.img maxW="100%" h="auto" my="4" rounded="3" {...props} />,
+  img: ({ alt, src }: Partial<Pick<ComponentProps<typeof html.img>, 'alt' | 'src'>>) => (
+    <html.img maxW="100%" h="auto" my="4" rounded="3" alt={alt} src={src} />
+  ),
 
-  table: (props: any) => <TableFrame {...props} />,
-  thead: (props: any) => <YStack {...props} />,
-  tbody: (props: any) => <YStack {...props} />,
-  tr: ({ children, ...props }: any) => (
-    <TableRow {...props} borderBottomWidth={1}>
+  table: ({ children, className, id }: ContentProps<typeof TableFrame>) => (
+    <TableFrame className={className} id={id}>
+      {children}
+    </TableFrame>
+  ),
+  thead: ({ children, className, id }: ContentProps<typeof YStack>) => (
+    <YStack className={className} id={id}>
+      {children}
+    </YStack>
+  ),
+  tbody: ({ children, className, id }: ContentProps<typeof YStack>) => (
+    <YStack className={className} id={id}>
+      {children}
+    </YStack>
+  ),
+  tr: ({ children, className, id }: ContentProps<typeof TableRow>) => (
+    <TableRow borderBottomWidth={1} className={className} id={id}>
       {children}
     </TableRow>
   ),
-  th: (props: any) => (
+  th: ({ children, className, id }: ContentProps<typeof Paragraph>) => (
     <TableHeaderCell>
-      <Paragraph size="4" fontWeight="600" {...props} />
+      <Paragraph size="4" fontWeight="600" className={className} id={id}>
+        {children}
+      </Paragraph>
     </TableHeaderCell>
   ),
-  td: (props: any) => (
+  td: ({ children, className, id }: ContentProps<typeof Paragraph>) => (
     <TableCell>
-      <Paragraph size="4" {...props} />
+      <Paragraph size="4" className={className} id={id}>
+        {children}
+      </Paragraph>
     </TableCell>
   ),
 
@@ -136,6 +240,6 @@ const components = {
   RouteTree,
   SimpleTable,
   WIPBadge,
-}
+} satisfies MDXComponents
 
 export { components }

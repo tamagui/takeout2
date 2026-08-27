@@ -13,6 +13,35 @@ import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
 export function Layout() {
   // One lets you use html like this only in your root layout, and strips
   // it out on native. it's an odd exception but we just found it useful
+  const contents = (
+    <PlatformSpecificRootProvider>
+      <TamaguiRootProvider>
+        <GlobalTooltipProvider>
+          <SafeAreaProvider>
+            {process.env.VITE_NATIVE ? (
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  animation: 'none',
+                }}
+              >
+                <Stack.Screen name="(app)" />
+              </Stack>
+            ) : (
+              <>
+                <LoadProgressBar startDelay={800} />
+                <HomeBackground />
+                <SiteRootLayout>
+                  <Slot />
+                </SiteRootLayout>
+              </>
+            )}
+          </SafeAreaProvider>
+        </GlobalTooltipProvider>
+      </TamaguiRootProvider>
+    </PlatformSpecificRootProvider>
+  )
+
   return (
     <html lang="en-US">
       <head>
@@ -27,34 +56,13 @@ export function Layout() {
       </head>
 
       <body>
-        <html.div display="contents" data-testid="app-container">
-          <PlatformSpecificRootProvider>
-            <TamaguiRootProvider>
-              <GlobalTooltipProvider>
-                <SafeAreaProvider>
-                  {process.env.VITE_NATIVE ? (
-                    <Stack
-                      screenOptions={{
-                        headerShown: false,
-                        animation: 'none',
-                      }}
-                    >
-                      <Stack.Screen name="(app)" />
-                    </Stack>
-                  ) : (
-                    <>
-                      <LoadProgressBar startDelay={800} />
-                      <HomeBackground />
-                      <SiteRootLayout>
-                        <Slot />
-                      </SiteRootLayout>
-                    </>
-                  )}
-                </SafeAreaProvider>
-              </GlobalTooltipProvider>
-            </TamaguiRootProvider>
-          </PlatformSpecificRootProvider>
-        </html.div>
+        {process.env.VITE_NATIVE ? (
+          contents
+        ) : (
+          <html.div display="contents" data-testid="app-container">
+            {contents}
+          </html.div>
+        )}
       </body>
     </html>
   )

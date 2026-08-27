@@ -5,7 +5,7 @@ import {
   type Href,
   type LinkProps as OneLinkProps,
 } from 'one'
-import { html, isWeb, useDebounce, type SizableTextProps } from 'tamagui'
+import { html, isWeb, Text, useDebounce, type SizableTextProps } from 'tamagui'
 
 import { ArrowUpRightIcon } from '~/interface/icons/phosphor/ArrowUpRightIcon'
 
@@ -64,8 +64,10 @@ export const Link = ({
   ...props
 }: LinkProps) => {
   const linkProps = useLinkTo({ href: href as string, replace })
-  // native html.a rejects DOM-only props like href (native has no navigation)
-  const { href: _domHref, ...nativeLinkProps } = linkProps
+  const nativeLinkProps = {
+    role: linkProps.role,
+    onPress: linkProps.onPress,
+  }
   const navigation = useNavigation()
 
   // use debounce to avoid multiple presses on accident that can cause navigation issues
@@ -135,7 +137,7 @@ export const Link = ({
   }
 
   const childrenElements =
-    target === '_blank' && !hideExternalIcon ? (
+    isWeb && target === '_blank' && !hideExternalIcon ? (
       <>
         {children}
 
@@ -155,9 +157,9 @@ export const Link = ({
     )
 
   const linkElement = (
-    <html.a
-      // native html.a rejects target (no native equivalent), even undefined
-      {...(isWeb && target ? { target } : null)}
+    <Text
+      render="a"
+      {...(isWeb && target ? { target } : {})}
       disabled={!!disabled}
       asChild={asChild ? 'except-style' : false}
       className="t_Link"
@@ -176,7 +178,7 @@ export const Link = ({
       onPress={handlePress}
     >
       {childrenElements}
-    </html.a>
+    </Text>
   )
 
   return wrapWithTooltip(linkElement, {

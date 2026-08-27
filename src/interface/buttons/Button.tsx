@@ -4,12 +4,12 @@ import { Platform } from 'react-native'
 import {
   createStyledContext,
   type GetProps,
-  html,
   styled,
   type TamaguiElement,
   Text,
   View,
   withStaticProperties,
+  XStack,
 } from 'tamagui'
 
 import { IS_NATIVE } from '~/constants/platform'
@@ -101,10 +101,9 @@ const iconSizes: Record<ButtonSizes, number> = {
   square: 14,
 }
 
-const ButtonFrame = styled(html.button, {
+const ButtonFrame = styled(XStack, {
   context,
-  display: 'flex',
-  flexDirection: 'row',
+  render: 'button',
   position: 'relative',
   group: 'button',
   bg: 'transparent',

@@ -111,7 +111,7 @@ export default {
       },
 
       react: {
-        compiler: process.env.NODE_ENV === 'production',
+        compiler: process.env.NODE_ENV === 'production' ? 'web' : false,
       },
 
       native: {

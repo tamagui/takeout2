@@ -1,47 +1,53 @@
-import { html, Separator, styled, XStack, type FontSizeTokens } from 'tamagui'
+import { Separator, SizableText, XStack, html, styled, type FontSizeTokens } from 'tamagui'
 
 import type { ReactNode } from 'react'
 
-export const H1 = styled(html.h1, {
+export const H1 = styled(SizableText, {
+  render: 'h1',
+  role: 'heading',
   fontFamily: 'heading',
+  size: '10',
   fontWeight: '800',
-  fontSize: '10',
-  lineHeight: '10',
 })
 
-export const H2 = styled(html.h2, {
+export const H2 = styled(SizableText, {
+  render: 'h2',
+  role: 'heading',
   fontFamily: 'heading',
+  size: '9',
   fontWeight: '700',
-  fontSize: '9',
-  lineHeight: '9',
 })
 
-export const H3 = styled(html.h3, {
+export const H3 = styled(SizableText, {
+  render: 'h3',
+  role: 'heading',
   fontFamily: 'heading',
+  size: '8',
   fontWeight: '600',
-  fontSize: '8',
-  lineHeight: '8',
 })
 
-export const H4 = styled(html.h4, {
+export const H4 = styled(SizableText, {
+  render: 'h4',
+  role: 'heading',
   fontFamily: 'heading',
+  size: '6',
   fontWeight: '600',
-  fontSize: '6',
-  lineHeight: '6',
 })
 
-export const H5 = styled(html.h5, {
+export const H5 = styled(SizableText, {
+  render: 'h5',
+  role: 'heading',
   fontFamily: 'heading',
+  size: '5',
   fontWeight: '500',
-  fontSize: '5',
-  lineHeight: '5',
 })
 
-export const H6 = styled(html.h6, {
+export const H6 = styled(SizableText, {
+  render: 'h6',
+  role: 'heading',
   fontFamily: 'heading',
+  size: '4',
   fontWeight: '500',
-  fontSize: '4',
-  lineHeight: '4',
 })
 
 export const SubHeading = styled(html.p, {

@@ -30,7 +30,7 @@ const HeroSubtitle = styled(html.p, {
 })
 
 const HighlightText = styled(html.span, {
-  backgroundImage: 'linear-gradient(90deg, #dc3e42 0%, #cc4e00 100%)',
+  backgroundImage: 'linear-gradient(90deg, red10 0%, orange11 100%)',
   color: 'transparent',
   backgroundClip: 'web:text',
 })

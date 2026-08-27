@@ -153,7 +153,7 @@ const DialogOverlay = styled(TamaguiDialog.Overlay, {
 const DialogContent = styled(TamaguiDialog.Content, {
   z: 1000000,
   transition: '200ms',
-  bg: 'background',
+  bg: 'background/80',
   borderWidth: 0.5,
   rounded: CONTENT_RADIUS,
   borderColor: 'color3',

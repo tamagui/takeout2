@@ -120,7 +120,7 @@ const ContentTitle = styled(html.h1, {
 
 const GradientText = styled(html.span, {
   fontWeight: '800',
-  backgroundImage: 'linear-gradient(90deg, #dc3e42 0%, #cc4e00 100%)',
+  backgroundImage: 'linear-gradient(90deg, red10 0%, orange11 100%)',
   color: 'transparent',
   backgroundClip: 'web:text',
 })

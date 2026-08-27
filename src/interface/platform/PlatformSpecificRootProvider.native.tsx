@@ -1,13 +1,11 @@
 import * as SplashScreen from 'expo-splash-screen'
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { LogBox } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { KeyboardProvider } from 'react-native-keyboard-controller'
 import { PortalProvider } from 'react-native-teleport'
 
 import { useAuth } from '~/features/auth/client/authClient'
-
-import { Splash } from '../splash/splash'
 
 // TODO properly clean these up
 LogBox.ignoreLogs([
@@ -20,36 +18,19 @@ LogBox.ignoreLogs([
   `Can't perform a React state update`,
 ])
 
-let splashHasBeenShown = false
-
 export function PlatformSpecificRootProvider({ children }: { children: ReactNode }) {
   const { state } = useAuth()
-  const [showSplash, setShowSplash] = useState<boolean>(!splashHasBeenShown)
 
   useEffect(() => {
     if (state !== 'loading') {
-      setTimeout(() => {
-        SplashScreen.hide()
-        // NOTE: just wait for the transition animation to complete
-      }, 500)
+      SplashScreen.hide()
     }
   }, [state])
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <KeyboardProvider>
-        <PortalProvider>
-          {showSplash && (
-            <Splash
-              isReady={true}
-              onAnimationEnd={() => {
-                splashHasBeenShown = true
-                setShowSplash(false)
-              }}
-            />
-          )}
-          {children}
-        </PortalProvider>
+        <PortalProvider>{children}</PortalProvider>
       </KeyboardProvider>
     </GestureHandlerRootView>
   )

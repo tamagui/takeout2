@@ -12,6 +12,7 @@ WORKDIR /app
 
 COPY package.json bun.lock ./
 COPY packages ./packages
+COPY patches ./patches
 
 # skip postinstall during docker build (it's dev-only setup)
 RUN bun install --ignore-scripts

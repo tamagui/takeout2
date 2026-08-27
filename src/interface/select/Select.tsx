@@ -15,6 +15,7 @@ import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 
 import type {
   FontSizeTokens,
+  SelectValueChangeDetails,
   SizeTokens,
   SelectProps as TamaguiSelectProps,
 } from 'tamagui'
@@ -34,7 +35,7 @@ export function Select({
   const [id, setId] = useState(defaultValue || items[0]?.id)
   const selected = items.find((x) => x.id === id)
 
-  const handleChange = (val: string, details?: any) => {
+  const handleChange = (val: string, details: SelectValueChangeDetails) => {
     setId(val)
     onValueChange?.(val, details)
   }

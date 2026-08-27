@@ -1,3 +1,6 @@
+import { join } from 'node:path'
+
+import { withTamagui } from '@tamagui/metro-plugin'
 import { tamaguiAliases, tamaguiPlugin } from '@tamagui/vite-plugin'
 import { autoWarmPlugin, one } from 'one/vite'
 import { visualizer } from 'rollup-plugin-visualizer'
@@ -115,6 +118,26 @@ export default {
         bundler: 'metro',
         bundlerOptions: {
           watchman: false, // had some slowness
+          // run the tamagui compiler on native - metro has no tamagui plugin by
+          // default so without this the native bundle gets zero flattening.
+          // one resolves the ~ alias in babel (module-resolver), which runs too
+          // late for the tamagui linker, so teach metro's resolver the alias too
+          defaultConfigOverrides: (config) => {
+            const srcDir = join(import.meta.dirname, 'src')
+            return withTamagui({
+              ...config,
+              resolver: {
+                ...config.resolver,
+                resolveRequest: (context, moduleName, platform) => {
+                  const resolve = config.resolver?.resolveRequest ?? context.resolveRequest
+                  if (moduleName.startsWith('~/')) {
+                    return resolve(context, join(srcDir, moduleName.slice(2)), platform)
+                  }
+                  return resolve(context, moduleName, platform)
+                },
+              },
+            })
+          },
           babelConfigOverrides: (config) => {
             return {
               ...config,

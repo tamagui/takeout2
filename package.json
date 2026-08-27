@@ -114,6 +114,7 @@
     "@tamagui/helpers-icon": "3.0.0-beta.755.1",
     "@tamagui/linear-gradient": "3.0.0-beta.755.1",
     "@tamagui/menu": "3.0.0-beta.755.1",
+    "@tamagui/metro-plugin": "3.0.0-beta.755.1",
     "@tamagui/native": "3.0.0-beta.755.1",
     "@tamagui/themes": "3.0.0-beta.755.1",
     "@tamagui/toast": "3.0.0-beta.755.1",

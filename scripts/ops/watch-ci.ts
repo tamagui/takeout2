@@ -1,5 +1,7 @@
 #!/usr/bin/env bun
 
+export {}
+
 type WorkflowRun = {
   conclusion: string
   status: string

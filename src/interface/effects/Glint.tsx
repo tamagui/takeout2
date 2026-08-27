@@ -13,7 +13,7 @@ export const Glint = styled(YStack, {
   borderLeftWidth: 'native:0.5px',
   borderRightWidth: 'native:0.5px',
   z: 100_000_000,
-  opacity: 'var(--button-glint-opacity)',
+  opacity: '0.8 web:var(--button-glint-opacity)',
   variants: {
     bottomShadow: {
       true: {

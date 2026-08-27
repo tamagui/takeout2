@@ -1,11 +1,9 @@
-import { LegendList, type LegendListRef } from '@legendapp/list'
+import type { LegendListRef } from '@legendapp/list'
+import { AnimatedLegendList } from '@legendapp/list/reanimated'
 import { useEmitter } from '@take-out/helpers'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { RefreshControl } from 'react-native'
-import Animated, {
-  useAnimatedScrollHandler,
-  useSharedValue,
-} from 'react-native-reanimated'
+import { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { scheduleOnRN } from 'react-native-worklets'
 import { AnimatePresence, SizableText, Spinner, Square, View, YStack } from 'tamagui'
@@ -19,14 +17,7 @@ import { ArrowUpIcon } from '~/interface/icons/phosphor/ArrowUpIcon'
 import { PageLayout } from '~/interface/pages/PageLayout'
 import { HomeShimmer } from '~/interface/shimmer/HomeShimmer'
 
-import type { LegendListProps } from '@legendapp/list'
 import type { Post } from '~/data/types'
-
-const AnimatedLegendList = Animated.createAnimatedComponent(
-  LegendList,
-) as React.ComponentType<
-  LegendListProps<Post> & { onScroll?: any } & React.RefAttributes<LegendListRef>
->
 
 export const HomePage = memo(() => {
   const listRef = useRef<LegendListRef>(null)
@@ -36,6 +27,7 @@ export const HomePage = memo(() => {
   const headerHeight = 44
   const insets = useSafeAreaInsets()
   const scrollY = useSharedValue(0)
+  const scrollToTopVisible = useSharedValue(false)
 
   // stop refreshing when data loads
   useEffect(() => {
@@ -57,7 +49,10 @@ export const HomePage = memo(() => {
     onScroll: (event) => {
       scrollY.value = event.contentOffset.y
       const shouldShow = event.contentOffset.y > 300
-      scheduleOnRN(updateScrollToTop, shouldShow)
+      if (shouldShow !== scrollToTopVisible.value) {
+        scrollToTopVisible.value = shouldShow
+        scheduleOnRN(updateScrollToTop, shouldShow)
+      }
     },
   })
 

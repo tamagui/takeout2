@@ -1,9 +1,15 @@
-import { LegendList, type LegendListRef } from '@legendapp/list'
+import {
+  LegendList,
+  type LegendListRef,
+  type LegendListRenderItemProps,
+} from '@legendapp/list'
 import { router } from 'one'
-import { memo, useCallback, useMemo, useRef } from 'react'
+import { memo, useCallback, useRef } from 'react'
 import { RefreshControl } from 'react-native'
 import Animated from 'react-native-reanimated'
 import { Spinner, useWindowDimensions, YStack } from 'tamagui'
+
+import type { Post } from '~/data/types'
 
 import { useUserById } from '~/features/user/useUserById'
 import { sharedTransition } from '~/helpers/animation/sharedTransition'
@@ -29,51 +35,33 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
 
   const postsCount = posts?.length || 0
 
-  const columns = useMemo(() => {
-    return Array.from({ length: NUM_COLUMNS }, (_, colIndex) => {
-      return (posts || []).filter((_, index) => index % NUM_COLUMNS === colIndex)
-    })
-  }, [posts])
-
-  const renderColumn = useCallback(
-    ({ item: columnData, index: columnIndex }: { item: any[]; index: number }) => {
+  const renderPost = useCallback(
+    ({ item }: LegendListRenderItemProps<Post>) => {
       return (
-        <YStack
-          flex={1}
-          gap={COLUMN_GAP}
-          pl={columnIndex === 0 ? 0 : COLUMN_GAP / 2}
-          pr={columnIndex === NUM_COLUMNS - 1 ? 0 : COLUMN_GAP / 2}
+        <Pressable
+          role="button"
+          aria-label={item.caption ? `Open post: ${item.caption}` : 'Open post'}
+          mb={COLUMN_GAP}
+          onPress={() => router.push(`/home/profile/post/${item.id}`)}
         >
-          {columnData.map((item) => {
-            const aspectRatio = 0.6 + Math.random() * 0.8
-            const height = columnWidth / aspectRatio
-
-            return (
-              <Pressable
-                key={item.id}
-                onPress={() => router.push(`/home/profile/post/${item.id}`)}
-              >
-                <Animated.Image
-                  source={{ uri: item.image }}
-                  style={{
-                    width: columnWidth,
-                    height,
-                    borderRadius: 8,
-                  }}
-                  sharedTransitionTag={`profile-post-image-${item.id}`}
-                  sharedTransitionStyle={sharedTransition}
-                  resizeMode="cover"
-                />
-              </Pressable>
-            )
-          })}
-        </YStack>
+          <Animated.Image
+            source={{ uri: item.image }}
+            style={{
+              width: columnWidth,
+              height: columnWidth,
+              borderRadius: 8,
+            }}
+            sharedTransitionTag={`profile-post-image-${item.id}`}
+            sharedTransitionStyle={sharedTransition}
+            resizeMode="cover"
+          />
+        </Pressable>
       )
     },
     [columnWidth],
   )
 
-  const keyExtractor = useCallback((_item: any, index: number) => `column-${index}`, [])
+  const keyExtractor = useCallback((item: Post) => item.id, [])
 
   const renderEmpty = useCallback(() => {
     if (isLoading) return null
@@ -108,10 +96,13 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
   const listContent = (
     <LegendList
       ref={listRef}
-      data={columns}
-      renderItem={renderColumn}
+      data={posts || []}
+      renderItem={renderPost}
       keyExtractor={keyExtractor}
-      numColumns={2}
+      numColumns={NUM_COLUMNS}
+      columnWrapperStyle={{ gap: COLUMN_GAP }}
+      getFixedItemSize={() => columnWidth + COLUMN_GAP}
+      recycleItems
       ListHeaderComponent={renderHeader}
       ListEmptyComponent={renderEmpty}
       ListFooterComponent={renderFooter}

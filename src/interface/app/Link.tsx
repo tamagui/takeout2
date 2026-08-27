@@ -64,6 +64,8 @@ export const Link = ({
   ...props
 }: LinkProps) => {
   const linkProps = useLinkTo({ href: href as string, replace })
+  // native html.a rejects DOM-only props like href (native has no navigation)
+  const { href: _domHref, ...nativeLinkProps } = linkProps
   const navigation = useNavigation()
 
   // use debounce to avoid multiple presses on accident that can cause navigation issues
@@ -154,7 +156,8 @@ export const Link = ({
 
   const linkElement = (
     <html.a
-      target={target}
+      // native html.a rejects target (no native equivalent), even undefined
+      {...(isWeb && target ? { target } : null)}
       disabled={!!disabled}
       asChild={asChild ? 'except-style' : false}
       className="t_Link"
@@ -165,7 +168,7 @@ export const Link = ({
       outlineStyle="focus-visible:solid"
       rounded="focus-visible:4"
       {...(props as any)}
-      {...linkProps}
+      {...(isWeb ? linkProps : nativeLinkProps)}
       onPressIn={() => {
         lastLinkMeta = linkMeta || { type: 'none' }
         lastLinkMetaAt = Date.now()

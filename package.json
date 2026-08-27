@@ -98,7 +98,7 @@
     "@hot-updater/bare": "0.25.8",
     "@hot-updater/react-native": "0.25.8",
     "@hot-updater/supabase": "0.25.8",
-    "@legendapp/list": "2.0.19",
+    "@legendapp/list": "3.3.8",
     "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-native-menu/menu": "^2.0.0",
     "@react-navigation/bottom-tabs": "^7.10.1",

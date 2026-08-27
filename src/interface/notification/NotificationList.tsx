@@ -1,4 +1,4 @@
-import { LegendList } from '@legendapp/list'
+import { LegendList } from '@legendapp/list/react-native'
 import { memo, useCallback } from 'react'
 import { SizableText, Spinner, YStack } from 'tamagui'
 

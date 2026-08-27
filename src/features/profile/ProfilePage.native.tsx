@@ -1,4 +1,4 @@
-import { LegendList, type LegendListRef } from '@legendapp/list'
+import { LegendList, type LegendListRef } from '@legendapp/list/react-native'
 import { router } from 'one'
 import { memo, useCallback, useMemo, useRef } from 'react'
 import { RefreshControl } from 'react-native'

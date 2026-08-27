@@ -65,7 +65,7 @@
     "run:dev": "NODE_ENV=development bun env:dev bun run",
     "run:prod": "NODE_ENV=production bun env:prod bun run",
     "test:integration": "bun run env:dev bun --cwd=./src/test playwright test",
-    "test:unit": "bun run --cwd packages/database test && bun run:dev vitest run -c ./src/test/vitest.config.ts",
+    "test:unit": "bun run --cwd packages/database test && bun run --cwd packages/run test:bun && bun run:dev vitest run -c ./src/test/vitest.config.ts",
     "test": "tko test",
     "up": "tko up",
     "watch:types": "tko run typecheck --watch",

@@ -22,9 +22,9 @@ export const SiteHeader = memo(() => {
   return (
     <ScrollHeader>
       <PageContainer>
-        <YStack width="100%" py="$2">
-          <XStack position="relative" width="100%" items="center" $md={{ px: '$4' }}>
-            <XStack display="none" $lg={{ display: 'flex' }} gap="$2" items="center">
+        <YStack width="100%" py="2">
+          <XStack position="relative" width="100%" items="center" px="md:4">
+            <XStack display="none lg:flex" gap="2" items="center">
               <SocialLinksRow />
               <PromoLinksRow />
             </XStack>
@@ -33,19 +33,16 @@ export const SiteHeader = memo(() => {
 
             <XStack
               position="absolute"
-              l="$4"
-              $lg={{
-                l: '50%',
-                t: '50%',
-                transform: 'translate(-50%, -50%)',
-              }}
+              l="4 lg:50%"
+              t="lg:50%"
+              transform="lg:translate(-50%, -50%)"
             >
               <Link href="/" aria-label="Home">
                 <Logo />
               </Link>
             </XStack>
 
-            <XStack gap="$2" items="center" display="none" $md={{ display: 'flex' }}>
+            <XStack gap="2" items="center" display="none md:flex">
               <LoginButton />
 
               <Link href="/docs/introduction">
@@ -74,10 +71,10 @@ const SiteHeaderMenu = memo(() => {
         size="large"
         variant="transparent"
         circular
-        icon={<ListIcon size="$1" />}
+        icon={<ListIcon size="1" />}
         aria-label="Menu"
         onPress={() => setOpen(true)}
-        $md={{ display: 'none' }}
+        display="md:none"
       />
 
       <Sheet
@@ -88,19 +85,14 @@ const SiteHeaderMenu = memo(() => {
         dismissOnSnapToBottom
         snapPoints={[isDocsPage ? 85 : 50]}
       >
-        <Sheet.Overlay
-          bg="$background"
-          opacity={0.5}
-          transition="quick"
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
-        />
+        <Sheet.Overlay bg="background" opacity="0.5 enter:0 exit:0" transition="quick" />
 
-        <Sheet.Frame bg="$color2" boxShadow="0 0 10px $shadow3">
-          <YStack flex={1} flexBasis="auto" gap="$2">
-            <XStack p="$4" pb="$3" justify="space-between" items="center">
+        <Sheet.Container>
+          <Sheet.Background bg="color2" boxShadow="0 0 10px shadow3" />
+          <YStack flex={1} flexBasis="auto" gap="2">
+            <XStack pt="4" pr="4" pl="4" pb="3" justify="space-between" items="center">
               <Logo />
-              <XStack gap="$2" items="center">
+              <XStack gap="2" items="center">
                 <PromoLinksRow />
                 <ThemeSwitch />
               </XStack>
@@ -108,7 +100,7 @@ const SiteHeaderMenu = memo(() => {
 
             <Separator />
 
-            <ScrollView group="frame" flex={1} px="$4" pt="$4" gap="$2">
+            <ScrollView group="frame" flex={1} px="4" pt="4" gap="2">
               <LoginListItem
                 onPressOut={() => {
                   setTimeout(() => {
@@ -116,6 +108,7 @@ const SiteHeaderMenu = memo(() => {
                   }, 250)
                 }}
               />
+
               {/* <Link href="/docs/introduction"> */}
               <ListItem
                 onPressOut={() => {
@@ -133,7 +126,7 @@ const SiteHeaderMenu = memo(() => {
 
               {isDocsPage && (
                 <>
-                  <SepHeading size="$5">Menu</SepHeading>
+                  <SepHeading size="5">Menu</SepHeading>
                   <YStack onPress={() => setOpen(false)}>
                     <DocsMenuContents />
                   </YStack>
@@ -141,8 +134,8 @@ const SiteHeaderMenu = memo(() => {
               )}
             </ScrollView>
 
-            <YStack p="$4" pt="$2">
-              <Separator mb="$3" />
+            <YStack pr="4" pb="4" pl="4" pt="2">
+              <Separator mb="3" />
               <XStack width="100%" items="center" justify="center">
                 <Spacer />
                 <SocialLinksRow />
@@ -150,7 +143,7 @@ const SiteHeaderMenu = memo(() => {
               </XStack>
             </YStack>
           </YStack>
-        </Sheet.Frame>
+        </Sheet.Container>
       </Sheet>
     </>
   )

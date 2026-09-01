@@ -25,28 +25,24 @@ export function AuthAndOnboardingLayout() {
       flexBasis="auto"
       items="center"
       justify="center"
-      $platform-web={{
-        mt: -50,
-      }}
+      mt="web:-50px"
     >
       <XStack
         width="100%"
-        maxW={860}
+        maxW="860px md:860px"
         maxH="auto"
-        minH={550}
-        rounded="$10"
+        minH="550px md:550px"
+        rounded="10"
         overflow="hidden"
         position="relative"
-        boxShadow="0 12px 24px $shadow2"
-        $md={{ maxW: 860, minH: 550, mt: 0 }}
-        $theme-dark={{
-          borderWidth: 0.5,
-          borderColor: '$borderColor',
-        }}
+        boxShadow="0 12px 24px shadow2"
+        mt="md:0px"
+        borderWidth="dark:0.5px"
+        borderColor="dark:border-color"
       >
         <Onboarding />
 
-        <YStack flex={1} $md={{ p: '$4' }}>
+        <YStack flex={1} p="md:4">
           <Slot />
         </YStack>
       </XStack>

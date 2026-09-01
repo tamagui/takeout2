@@ -93,9 +93,9 @@ export const NotificationPage = () => {
 
   return (
     <PageLayout>
-      <YStack px="$6" mb="$8" gap="$5" pt={top + 26}>
-        <YStack opacity={1} x={0} enterStyle={{ opacity: 0, x: -20 }} transition="medium">
-          <H5 size="$8" color="$color12" text="center">
+      <YStack px="6" mb="8" gap="5" pt={top + 26}>
+        <YStack opacity="1 enter:0" x="0 enter:-20px" transition="medium">
+          <H5 size="8" color="color12" text="center">
             Notifications
           </H5>
         </YStack>
@@ -123,10 +123,11 @@ export const NotificationPage = () => {
       </View>
 
       <YStack
-        px="$4"
-        gap="$3"
-        pb="$4"
-        enterStyle={{ opacity: 0, y: 20 }}
+        px="4"
+        gap="3"
+        pb="4"
+        opacity="enter:0"
+        y="enter:20px"
         transition={['medium', { delay: 1800 }]}
       >
         <Button
@@ -139,7 +140,7 @@ export const NotificationPage = () => {
         </Button>
 
         <Button size="large" onPress={handleSkip} variant="transparent">
-          <Button.Text color="$color11" opacity={0.8}>
+          <Button.Text color="color11" opacity={0.8}>
             Not now
           </Button.Text>
         </Button>

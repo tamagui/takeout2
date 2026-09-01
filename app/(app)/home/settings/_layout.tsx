@@ -50,18 +50,17 @@ export const SettingLayout = () => {
         <View
           width={260}
           borderRightWidth={1}
-          borderRightColor="$color2"
+          borderRightColor="color2"
           position="sticky"
           t={50}
           height="calc(100vh - 50px)"
           shrink={0}
-          display="none"
-          $md={{ display: 'flex' }}
+          display="none md:flex"
         >
           <SettingsSidebarContent />
         </View>
         <YStack flex={1} flexBasis="auto">
-          <PageMainContainer pt="$6" px="$2" $md={{ px: '$4' }} $xl={{ maxW: 680 }}>
+          <PageMainContainer pt="6" px="2 md:4" maxW="xl:680px">
             <Slot />
           </PageMainContainer>
         </YStack>

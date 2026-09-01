@@ -63,7 +63,7 @@ const context = createStyledContext({
   active: false,
   cursor: 'pointer',
   size: 'medium' as ButtonSizes,
-  fontFamily: '$mono' as FontFamilyTokens,
+  fontFamily: 'mono' as FontFamilyTokens,
   circular: false,
   variant: 'default' as ButtonVariants,
 })
@@ -71,12 +71,12 @@ const context = createStyledContext({
 const useContext = context.useStyledContext
 
 const buttonBorderRadius: Record<ButtonSizes, RadiusTokens> = {
-  small: IS_WEB ? '$4' : '$5',
-  medium: IS_WEB ? '$5' : '$6',
-  large: IS_WEB ? '$6' : '$7',
-  xl: IS_WEB ? '$7' : '$8',
-  xxl: IS_WEB ? '$9' : '$8',
-  tiny: IS_WEB ? '$3' : '$4',
+  small: IS_WEB ? '4' : '5',
+  medium: IS_WEB ? '5' : '6',
+  large: IS_WEB ? '6' : '7',
+  xl: IS_WEB ? '7' : '8',
+  xxl: IS_WEB ? '9' : '8',
+  tiny: IS_WEB ? '3' : '4',
   square: 0,
 }
 
@@ -101,33 +101,26 @@ const iconSizes: Record<ButtonSizes, number> = {
   square: 14,
 }
 
-const ButtonFrame = styled(XStack, {
+const ButtonFrameBase = styled(XStack, {
   context,
   render: 'button',
   position: 'relative',
-  role: 'button',
   group: 'button',
   bg: 'transparent',
   containerType: 'normal',
-  tabIndex: 0,
   borderWidth: 0,
   items: 'center',
   justify: 'center',
-  gap: '$2.5',
-  px: '$2.5',
-  rounded: '$5',
+  gap: '2-5',
+  px: '2-5',
+  rounded: '5',
   cursor: 'default',
-
-  pressStyle: {
-    opacity: 0.5,
-  },
-
-  focusVisibleStyle: {
-    outlineWidth: 1,
-    outlineStyle: 'solid',
-    outlineColor: '$color02',
-  },
-
+  opacity: 'press:0.5',
+  outlineWidth: 'focus-visible:1px',
+  outlineStyle: 'focus-visible:solid',
+  outlineColor: 'focus-visible:color02',
+  role: 'button',
+  tabIndex: 0,
   variants: {
     disabled: {
       true: {
@@ -137,12 +130,7 @@ const ButtonFrame = styled(XStack, {
 
     elevated: {
       true: {
-        hoverStyle: {
-          bg: '$color3',
-        },
-        pressStyle: {
-          bg: '$color1',
-        },
+        bg: 'hover:color3 press:color1',
       },
     },
 
@@ -164,35 +152,35 @@ const ButtonFrame = styled(XStack, {
         minH: buttonSizes.small,
         minW: buttonSizes.small,
         rounded: buttonBorderRadius.small,
-        gap: '$2',
-        px: IS_WEB ? '$2.5' : '$4',
+        gap: '2',
+        px: IS_WEB ? '2-5' : '4',
       },
       large: {
         minH: buttonSizes.large,
         minW: buttonSizes.large,
         rounded: buttonBorderRadius.large,
-        gap: '$3',
-        px: IS_WEB ? '$4' : '$5',
+        gap: '3',
+        px: IS_WEB ? '4' : '5',
       },
       xl: {
         minH: buttonSizes.xl,
         minW: buttonSizes.xl,
         rounded: buttonBorderRadius.xl,
-        gap: '$3.5',
-        px: IS_WEB ? '$5' : '$6',
+        gap: '3-5',
+        px: IS_WEB ? '5' : '6',
       },
       xxl: {
         minH: buttonSizes.xxl,
         minW: buttonSizes.xxl,
         rounded: buttonBorderRadius.xxl,
-        gap: '$4',
-        px: IS_WEB ? '$6' : '$7',
+        gap: '4',
+        px: IS_WEB ? '6' : '7',
       },
       medium: {
         minH: buttonSizes.medium,
         minW: buttonSizes.medium,
         rounded: buttonBorderRadius.medium,
-        px: IS_WEB ? '$2.5' : '$4',
+        px: IS_WEB ? '2-5' : '4',
       },
       square: {
         width: buttonSizes.square,
@@ -205,90 +193,75 @@ const ButtonFrame = styled(XStack, {
         minH: buttonSizes.tiny,
         minW: buttonSizes.tiny,
         rounded: buttonBorderRadius.tiny,
-        gap: '$1',
-        px: '$2',
+        gap: '1',
+        px: '2',
       },
     },
 
-    circular: {
-      true: (_, { props }) => {
-        const p = props as any
-        const size =
-          p.width || p.height || buttonSizes[(p.size as ButtonSizes) || 'medium']
-        return {
-          padding: 0,
-          rounded: 100,
-          width: size,
-          height: size,
-          maxWidth: size,
-          maxHeight: size,
-          minWidth: size,
-          minHeight: size,
-        }
-      },
-    },
+    circular: styled.dynamic<boolean>(),
 
     isAccent: {
       true: {
-        bg: '$color1',
-
-        hoverStyle: {
-          bg: '$color1',
-        },
-
-        pressStyle: {
-          bg: '$color1',
-          opacity: 0.6,
-        },
-
-        focusVisibleStyle: {
-          outlineWidth: 3,
-          outlineStyle: 'solid',
-          outlineColor: '$background04',
-        },
+        bg: 'color1 hover:color1 press:color1',
+        opacity: 'press:0.6',
+        outlineWidth: 'focus-visible:3px',
+        outlineStyle: 'focus-visible:solid',
+        outlineColor: 'focus-visible:background04',
       },
     },
   } as const,
 })
 
+const ButtonFrame = ButtonFrameBase.resolve((props) => {
+  if (!props.circular) return
+  const size =
+    props.width ||
+    props.height ||
+    buttonSizes[(props.size as ButtonSizes | undefined) ?? 'medium']
+  return {
+    padding: 0,
+    rounded: 100,
+    width: size,
+    height: size,
+    maxWidth: size,
+    maxHeight: size,
+    minWidth: size,
+    minHeight: size,
+  }
+})
+
 const ButtonText = styled(Text, {
   context,
-  color: '$color12',
+  color: 'color12 group-press/button:color8',
   cursor: 'default',
-  fontFamily: '$mono',
+  fontFamily: 'mono',
   fontWeight: '600',
-  ellipsis: true,
   select: 'none',
   y: IS_SAFARI ? 1 : 0,
-
-  '$group-button-press': {
-    color: '$color8',
-  },
-
+  ellipsis: true,
   variants: {
     size: {
       small: {
-        fontSize: '$3',
-        lineHeight: '$3',
+        fontSize: '3',
+        lineHeight: '3',
       },
 
       medium: {
-        fontSize: '$4',
-        lineHeight: '$4',
+        fontSize: '4',
+        lineHeight: '4',
       },
 
       large: {
-        fontSize: '$5',
-        lineHeight: '$5',
+        fontSize: '5',
+        lineHeight: '5',
       },
 
       xl: {
-        fontSize: '$7',
-        lineHeight: '$7',
+        fontSize: '7',
+        lineHeight: '7',
       },
     },
   } as const,
-
   defaultVariants: {
     size: 'medium',
   },
@@ -340,7 +313,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonProps>(
       disabled,
       disableGlint,
       disableBackground,
-      fontFamily = '$mono',
+      fontFamily = 'mono',
       glass,
       glassTint,
       glow,
@@ -376,6 +349,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonProps>(
     }
     // avoid de-structuring which messes up style order from parents
     const variant = rest.variant
+    const buttonSize = (rest.size as ButtonSizes | undefined) ?? 'medium'
     const isAction = variant === 'action'
     // action variant defaults to accent theme, but can be overridden
     const resolvedTheme = isAction && !theme ? 'accent' : theme
@@ -384,7 +358,7 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonProps>(
     const iconElement = icon ? (
       <ButtonIcon
         icon={icon}
-        iconSize={iconSizes[rest.size || 'medium']}
+        iconSize={iconSizes[buttonSize]}
         scaleIcon={scaleIcon}
         iconOpacity={resolvedTheme === 'accent' ? 1 : 0.5}
         {...iconProps}
@@ -464,8 +438,8 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonProps>(
           containerStyle={
             rest.circular
               ? {
-                  width: buttonSizes[rest.size || 'medium'],
-                  height: buttonSizes[rest.size || 'medium'],
+                  width: buttonSizes[buttonSize],
+                  height: buttonSizes[buttonSize],
                 }
               : ({
                   flex: rest.flex,
@@ -532,90 +506,39 @@ const ButtonBackground = styled(View, {
   pointerEvents: 'none',
   inset: 0,
   z: -1,
-  bg: '$color1',
-  opacity: 0.4,
-
-  '$group-button-hover': {
-    bg: '$color4',
-    opacity: 0.4,
-  },
-
-  '$group-button-press': {
-    bg: '$color12',
-    opacity: 0.05,
-  },
-
-  '$theme-light': {
-    borderWidth: 1,
-    borderColor: '$color5',
-  },
-
+  bg: 'color1 group-hover/button:color4 group-press/button:color12',
+  opacity: '0.4 group-hover/button:0.4 group-press/button:0.05',
+  borderWidth: 'light:1px',
+  borderColor: 'light:color5',
   variants: {
     ...buttonFrameVariants,
 
     active: {
       true: {
         // inset: 2, // inset 2 looks better on messagebottombar, this is better on buttonActive
-        bg: '$color4',
-        opacity: 0.5,
-
-        '$group-button-hover': {
-          bg: '$color4',
-          opacity: 1,
-
-          '$theme-light': {
-            bg: '$color11',
-            opacity: 1,
-          },
-        },
-
-        '$group-button-press': {
-          bg: '$color2',
-          opacity: 0.5,
-        },
+        bg: 'color4 group-hover/button:color4 group-hover/button:light:color11 group-press/button:color2',
+        opacity:
+          '0.5 group-hover/button:1 group-hover/button:light:1 group-press/button:0.5',
       },
     },
 
     variant: {
       transparent: {
-        bg: 'transparent',
-        opacity: 0,
-
-        '$group-button-hover': {
-          opacity: 0.2,
-        },
-
-        '$group-button-press': {
-          opacity: 0,
-          bg: 'transparent',
-        },
+        bg: 'transparent group-press/button:transparent',
+        opacity: '0 group-hover/button:0.2 group-press/button:0',
       },
 
       subtle: {
-        bg: '$color4',
-        opacity: 0,
-
-        '$group-button-hover': {
-          opacity: 0.2,
-        },
+        bg: 'color4',
+        opacity: '0 group-hover/button:0.2',
       },
 
       floating: {
-        opacity: 1,
-        bg: '$color4',
-        shadowColor: '$shadow1',
+        opacity: '1 group-hover/button:1 group-press/button:1',
+        bg: 'color4 group-hover/button:color5 group-press/button:color3',
+        shadowColor: 'shadow1',
         shadowRadius: 5,
         shadowOffset: { height: 2, width: 0 },
-
-        '$group-button-hover': {
-          opacity: 1,
-          bg: '$color5',
-        },
-
-        '$group-button-press': {
-          opacity: 1,
-          bg: '$color3',
-        },
       },
     },
   } as const,
@@ -628,30 +551,13 @@ const ButtonOutline = styled(View, {
   inset: 0,
   z: 0,
   borderWidth: 2,
-  borderColor: '$color2',
-
-  '$group-button-hover': {
-    borderColor: '$color3',
-  },
-
-  '$group-button-press': {
-    borderColor: '$color1',
-  },
-
+  borderColor: 'color2 group-hover/button:color3 group-press/button:color1',
   variants: {
     ...buttonFrameVariants,
 
     active: {
       true: {
-        borderColor: '$color8',
-
-        '$group-button-hover': {
-          borderColor: '$color8',
-        },
-
-        '$group-button-press': {
-          borderColor: '$color8',
-        },
+        borderColor: 'color8 group-hover/button:color8 group-press/button:color8',
       },
     },
   } as const,

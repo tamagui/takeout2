@@ -134,6 +134,7 @@ export const SearchProvider = memo(({ children }: { children: React.ReactNode })
                 })
             }}
           />,
+
           document.body,
         )}
     </>
@@ -150,7 +151,7 @@ const ResultItem = ({
   const url = typeof window !== 'undefined' ? window.location.origin + hit.url : hit.url
   return (
     <Link href={url as any}>
-      <Paragraph render="span" color="$color">
+      <Paragraph render="span" color="color">
         {children}
       </Paragraph>
     </Link>

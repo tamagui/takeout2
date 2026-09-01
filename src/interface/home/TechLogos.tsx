@@ -35,10 +35,9 @@ export function TechLogos() {
           <Link href={href} target="_blank" hideExternalIcon>
             <View
               transition="quick"
-              opacity={0.7}
-              px="$4"
-              hoverStyle={{ opacity: 1, scale: 1.1 }}
-              pressStyle={{ scale: 0.95 }}
+              opacity="0.7 hover:1"
+              px="4"
+              scale="hover:1.1 press:0.95"
               cursor="pointer"
             >
               <Logo size={LOGO_SIZE} />

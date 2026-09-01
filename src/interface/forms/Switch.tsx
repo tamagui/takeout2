@@ -23,14 +23,11 @@ export const Switch = memo((props: SwitchProps) => {
   return (
     <TamaguiSwitch
       transition={animationClamped('quickestLessBouncy')}
-      pressStyle={{
-        bg: '$color1',
-      }}
-      size="$4"
+      bg="color4 press:color1"
       p={0}
-      bg="$color4"
-      borderColor="$color6"
+      borderColor="color6"
       {...props}
+      size="4"
       checked={checked}
       onCheckedChange={setCheckedFn}
     >

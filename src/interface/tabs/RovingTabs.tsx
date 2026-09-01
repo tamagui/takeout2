@@ -130,7 +130,7 @@ function RovingTabsRoot({
           )}
         </AnimatePresence>
 
-        <Tabs.List loop={false} bg="transparent" gap="$2">
+        <Tabs.List loop={false} bg="transparent" gap="2">
           {typeof children === 'function'
             ? children({
                 handleOnInteraction,
@@ -155,18 +155,11 @@ function RovingTabsTab({
 } & Omit<ViewProps, 'children'>) {
   return (
     <Tabs.Tab
-      unstyled
       value={value}
       onInteraction={onInteraction}
       borderWidth={0}
-      bg="transparent"
-      rounded="$2"
-      hoverStyle={{
-        bg: 'transparent',
-      }}
-      pressStyle={{
-        bg: 'transparent',
-      }}
+      bg="transparent hover:transparent press:transparent"
+      rounded="2"
       {...rest}
     >
       {children}
@@ -178,26 +171,17 @@ function RovingTabsIndicator({
   active,
   variant = 'underline',
   ...props
-}: {
-  active?: boolean
-  variant?: IndicatorStyle
-} & ViewProps) {
+}: { active?: boolean; variant?: IndicatorStyle } & ViewProps) {
   const isUnderline = variant === 'underline'
 
   return (
     <View
       position="absolute"
-      bg={active ? '$color10' : '$color6'}
-      opacity={active ? 1 : 0.5}
-      rounded={isUnderline ? '$2' : '$4'}
+      bg={active ? 'color10' : 'color6'}
+      opacity={`${active ? 1 : 0.5} enter:0 exit:0`}
+      rounded={isUnderline ? '2' : '4'}
       transition={animationClamped('quickerLessBouncy')}
       pointerEvents="none"
-      enterStyle={{
-        opacity: 0,
-      }}
-      exitStyle={{
-        opacity: 0,
-      }}
       {...(active && {
         theme: 'blue',
       })}

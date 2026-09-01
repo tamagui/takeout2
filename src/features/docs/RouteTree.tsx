@@ -20,12 +20,12 @@ const TreeFrame = styled(YStack, {
     isRoot: {
       true: {
         borderWidth: 2,
-        borderColor: '$color4',
-        rounded: '$4',
-        my: '$4',
+        borderColor: 'color4',
+        rounded: '4',
+        my: '4',
       },
       false: {
-        borderTopColor: '$color4',
+        borderTopColor: 'color4',
         z: 1000,
         borderTopWidth: 1,
       },
@@ -35,7 +35,7 @@ const TreeFrame = styled(YStack, {
 
 const TreeRow = styled(YStack, {
   borderBottomWidth: 1,
-  borderBottomColor: '$color3',
+  borderBottomColor: 'color3',
   variants: {
     isLast: {
       true: {
@@ -44,29 +44,29 @@ const TreeRow = styled(YStack, {
     },
     isHighlighted: {
       true: {
-        bg: '$color2',
+        bg: 'color2',
       },
     },
   } as const,
 })
 
 const TreeRowContent = styled(XStack, {
-  px: '$2',
+  px: '2',
 })
 
 const TreeRowName = styled(XStack, {
   width: '30%',
   minW: 130,
   overflow: 'hidden',
-  px: '$2.5',
-  py: '$2',
+  px: '2-5',
+  py: '2',
   items: 'center',
-  gap: '$2',
+  gap: '2',
 })
 
 const TreeRowDescription = styled(YStack, {
-  px: '$2.5',
-  py: '$2',
+  px: '2-5',
+  py: '2',
 })
 
 export const RouteTree = ({
@@ -91,11 +91,7 @@ export const RouteTree = ({
           {routes.map((route, i) => {
             const Icon = route.children ? FolderOpenIcon : FileIcon
             const StatusIcon = route.delete ? MinusIcon : route.add ? PlusIcon : null
-            const statusColor = route.delete
-              ? '$red10'
-              : route.add
-                ? '$green10'
-                : undefined
+            const statusColor = route.delete ? 'red10' : route.add ? 'green10' : undefined
 
             return (
               <TreeRow
@@ -105,14 +101,14 @@ export const RouteTree = ({
               >
                 <TreeRowContent>
                   <TreeRowName pl={indent * 20}>
-                    <Icon size={12} color="$color10" opacity={route.children ? 1 : 0.5} />
+                    <Icon size={12} color="color10" opacity={route.children ? 1 : 0.5} />
                     {StatusIcon && <StatusIcon size={12} color={statusColor} />}
-                    <Paragraph flex={1} overflow="hidden" fontFamily="$mono" size="$3">
+                    <Paragraph flex={1} overflow="hidden" fontFamily="mono" size="3">
                       {route.name}
                     </Paragraph>
                   </TreeRowName>
                   <TreeRowDescription>
-                    <Paragraph size="$4" color="$color11">
+                    <Paragraph size="4" color="color11">
                       {route.description}
                     </Paragraph>
                   </TreeRowDescription>

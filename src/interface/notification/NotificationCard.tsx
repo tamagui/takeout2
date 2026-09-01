@@ -24,32 +24,28 @@ export const NotificationCard = memo(
         transition={['250ms', { delay: index * 100 }]}
         y={isSpread ? finalY : stackedY}
         rotate={isSpread ? '0deg' : `${stackedRotate}deg`}
-        scale={isSpread ? 1 : stackedScale}
-        opacity={1}
-        px="$4"
-        enterStyle={{
-          opacity: 0,
-          scale: 0.9,
-        }}
+        scale={`${isSpread ? 1 : stackedScale} enter:0.9`}
+        opacity="1 enter:0"
+        px="4"
         z={totalCount - index}
       >
         <GlassView borderRadius={12} intensity={40} isFallback>
           <XStack
             overflow="hidden"
             rounded={12}
-            bg="$background06"
+            bg="background06"
             backdropFilter="blur(20px)"
             items="center"
-            px="$3"
+            px="3"
             height={NOTIFICATION_CARD_HEIGHT}
             position="relative"
           >
             <View
               width={scaleSize(36)}
               height={scaleSize(36)}
-              rounded="$10"
+              rounded="10"
               overflow="hidden"
-              bg="$color3"
+              bg="color3"
             >
               <Image
                 src={notification.avatar}
@@ -59,16 +55,16 @@ export const NotificationCard = memo(
               />
             </View>
 
-            <YStack flex={1} ml="$3" justify="center">
+            <YStack flex={1} ml="3" justify="center">
               <XStack justify="space-between">
-                <SizableText size="$4" color="$color12" fontWeight="500">
+                <SizableText size="4" color="color12" fontWeight="500">
                   {notification.name}
                 </SizableText>
-                <SizableText size="$3" opacity={0.6} color="$color11" fontWeight="500">
+                <SizableText size="3" opacity={0.6} color="color11" fontWeight="500">
                   {notification.time}
                 </SizableText>
               </XStack>
-              <SizableText size="$3" color="$color11" fontWeight="500">
+              <SizableText size="3" color="color11" fontWeight="500">
                 {notification.message}
               </SizableText>
             </YStack>

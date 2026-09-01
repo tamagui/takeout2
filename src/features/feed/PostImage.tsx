@@ -21,7 +21,7 @@ export const PostImage = memo(
         width="100%"
         height={fill ? '100%' : undefined}
         objectFit="cover"
-        rounded={fill ? 0 : '$6'}
+        rounded={fill ? 0 : '6'}
         aspectRatio={fill ? undefined : aspectRatio}
         onLoad={
           onAspectRatioChange

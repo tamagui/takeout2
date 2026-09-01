@@ -343,6 +343,7 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
           tint="dark"
           style={{ position: 'absolute' as const, top: 0, left: 0, right: 0, bottom: 0 }}
         />
+
         <Pressable
           style={{ position: 'absolute' as const, top: 0, left: 0, right: 0, bottom: 0 }}
           onPress={collapseMenu}
@@ -386,7 +387,7 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
                   justifyContent: 'flex-end',
                 }}
               >
-                <View flex={1} p="$2" pb="$1" justify="flex-start" gap="$2">
+                <View flex={1} pt="2" pr="2" pl="2" pb="1" justify="flex-start" gap="2">
                   {EXPANDED_MENU_ITEMS.map((item, index) => (
                     <ExpandedMenuItem
                       key={item.route}
@@ -419,6 +420,7 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
                       animatedIndicatorStyle,
                     ]}
                   />
+
                   {ALL_TABS.map((tab) => {
                     const isFocused = currentTabName === tab.name
 

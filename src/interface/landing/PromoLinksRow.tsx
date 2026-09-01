@@ -10,33 +10,23 @@ const tooltipDelay = { open: 0, close: 150 }
 const PromoButton = styled(XStack, {
   items: 'center',
   justify: 'center',
-  gap: '$2',
+  gap: '2',
   minW: 72,
-  px: '$2.5',
-  py: '$2',
-  rounded: '$4',
+  px: '2-5',
+  py: '2',
+  rounded: '4',
   cursor: 'pointer',
-  bg: '$color3',
+  bg: 'color3 hover:color4 press:color5',
   borderWidth: 0.5,
-  borderColor: '$color5',
+  borderColor: 'color5 hover:color7',
   transition: 'quick',
-
-  hoverStyle: {
-    bg: '$color4',
-    borderColor: '$color7',
-    scale: 1.02,
-  },
-
-  pressStyle: {
-    bg: '$color5',
-    scale: 0.98,
-  },
+  scale: 'hover:1.02 press:0.98',
 })
 
 const PromoButtonText = styled(Text, {
-  fontFamily: '$mono',
+  fontFamily: 'mono',
   fontWeight: '600',
-  fontSize: '$2',
+  fontSize: '2',
   letterSpacing: 0.5,
 })
 
@@ -46,7 +36,7 @@ export function PromoLinksRow() {
   return (
     <TooltipGroup delay={tooltipDelay}>
       <Tooltip scope="promo-tooltip" offset={20} placement="bottom">
-        <XStack gap="$2.5" items="center" justify="center" z={1000}>
+        <XStack gap="2-5" items="center" justify="center" z={1000}>
           <Tooltip.Trigger
             scope="promo-tooltip"
             asChild
@@ -54,13 +44,13 @@ export function PromoLinksRow() {
           >
             <Link href="https://tamagui.dev/takeout" target="_blank" hideExternalIcon>
               <PromoButton theme="blue">
-                <SparkleIcon size={14} color="$color10" />
+                <SparkleIcon size={14} color="color10" />
                 <PromoButtonText>Pro</PromoButtonText>
               </PromoButton>
             </Link>
           </Tooltip.Trigger>
 
-          <View width={1} height={16} bg="$color6" />
+          <View width={1} height={16} bg="color6" />
 
           <Tooltip.Trigger
             scope="promo-tooltip"
@@ -73,7 +63,7 @@ export function PromoLinksRow() {
               hideExternalIcon
             >
               <PromoButton>
-                <GithubLogoIcon size={14} color="$color10" />
+                <GithubLogoIcon size={14} color="color10" />
                 <PromoButtonText>Free</PromoButtonText>
               </PromoButton>
             </Link>
@@ -84,14 +74,14 @@ export function PromoLinksRow() {
           theme="accent"
           animatePosition
           transition="medium"
-          rounded="$3"
-          px="$2.5"
-          py="$1.5"
-          enterStyle={{ y: -4, opacity: 0 }}
-          exitStyle={{ y: -4, opacity: 0 }}
+          rounded="3"
+          px="2-5"
+          py="1-5"
+          y="enter:-4px exit:-4px"
+          opacity="enter:0 exit:0"
         >
-          <Tooltip.Arrow size="$3" />
-          <Paragraph fontFamily="$mono" size="$2">
+          <Tooltip.Arrow size="3" />
+          <Paragraph fontFamily="mono" size="2">
             {label}
           </Paragraph>
         </Tooltip.Content>

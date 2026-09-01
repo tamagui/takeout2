@@ -17,11 +17,11 @@ export const InfoCard = ({ title, Icon, children, maxColumns }: InfoCardProps) =
         <Icon size={26} />
       </View>
 
-      <H5 fontFamily="$mono" size="$5" mt={-10}>
+      <H5 fontFamily="mono" mt={-10} size="5">
         {title}
       </H5>
 
-      <Paragraph mr="$6" size="$5" color="$color9">
+      <Paragraph mr="6" color="color9" size="5">
         {children}
       </Paragraph>
     </CardContainer>
@@ -29,12 +29,11 @@ export const InfoCard = ({ title, Icon, children, maxColumns }: InfoCardProps) =
 }
 
 const CardContainer = styled(YStack, {
-  gap: '$2',
-  mb: '$2',
-  py: '$4',
-  px: '$2',
+  gap: '2',
+  mb: '2',
+  py: '4',
+  px: '2',
   position: 'relative',
-
   variants: {
     maxColumns: {
       1: {
@@ -42,30 +41,16 @@ const CardContainer = styled(YStack, {
       },
 
       2: {
-        width: '100%',
-
-        $md: {
-          width: 'calc(50% - 12px)',
-          mb: '$4',
-        },
+        width: '100% md:calc(50% - 12px)',
+        mb: 'md:4',
       },
 
       3: {
-        width: '100%',
-
-        $md: {
-          width: 'calc(50% - 12px)',
-          mb: '$4',
-        },
-
-        $xl: {
-          width: 'calc(32% - 12px)',
-          mb: '$4',
-        },
+        width: '100% md:calc(50% - 12px) xl:calc(32% - 12px)',
+        mb: 'md:4 xl:4',
       },
     },
   } as const,
-
   defaultVariants: {
     maxColumns: 3,
   },

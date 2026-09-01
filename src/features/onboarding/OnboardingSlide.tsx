@@ -39,6 +39,7 @@ export function OnboardingSlide({
       transform: [
         { scale: interpolate(absDistance, [0, 1], [1, 0.9], Extrapolation.CLAMP) },
       ],
+
       opacity: interpolate(absDistance, [0, 1], [1, 0.5], Extrapolation.CLAMP),
     }
   })
@@ -63,7 +64,7 @@ export function OnboardingSlide({
 
   return (
     <View flex={1}>
-      <YStack flex={1} items="center" justify="center" px="$6">
+      <YStack flex={1} items="center" justify="center" px="6">
         <Animated.View style={containerAnimatedStyle}>
           <Animated.View style={contentAnimatedStyle}>
             <AnimatedLayout
@@ -183,8 +184,8 @@ function GridLayout({ features, cardWidth, currentPage, slideIndex }: LayoutProp
   const gridItemSize = (cardWidth - 24) / 2
 
   return (
-    <YStack gap="$3" width={cardWidth}>
-      <YStack flexDirection="row" gap="$3" justify="center">
+    <YStack gap="3" width={cardWidth}>
+      <YStack flexDirection="row" gap="3" justify="center">
         <AnimatedCardWrapper
           cardIndex={0}
           slideIndex={slideIndex}
@@ -202,7 +203,7 @@ function GridLayout({ features, cardWidth, currentPage, slideIndex }: LayoutProp
           <FeatureCard feature={features[1]} size={gridItemSize} />
         </AnimatedCardWrapper>
       </YStack>
-      <YStack flexDirection="row" gap="$3" justify="center">
+      <YStack flexDirection="row" gap="3" justify="center">
         <AnimatedCardWrapper
           cardIndex={2}
           slideIndex={slideIndex}
@@ -233,19 +234,19 @@ function FeatureCard({ feature, size, width, height, horizontal }: FeatureCardPr
 
   if (horizontal) {
     return (
-      <View width={cardWidth} height={cardHeight} bg="$color1" rounded={24}>
-        <YStack flex={1} flexDirection="row" items="center" gap="$4" px="$5">
+      <View width={cardWidth} height={cardHeight} bg="color1" rounded={24}>
+        <YStack flex={1} flexDirection="row" items="center" gap="4" px="5">
           <YStack
             width={48}
             height={48}
             items="center"
             justify="center"
-            bg="$color4"
+            bg="color4"
             rounded={14}
           >
-            <Icon size={26} color="$color10" />
+            <Icon size={26} color="color10" />
           </YStack>
-          <SizableText size="$5" fontWeight="600" color="$color12">
+          <SizableText size="5" fontWeight="600" color="color12">
             {title}
           </SizableText>
         </YStack>
@@ -256,21 +257,21 @@ function FeatureCard({ feature, size, width, height, horizontal }: FeatureCardPr
   return (
     <View position="relative" width={cardWidth} height={cardHeight} rounded={24}>
       <Glint rounded={24} />
-      <YStack flex={1} items="center" justify="center" gap="$3" p="$5">
+      <YStack flex={1} items="center" justify="center" gap="3" p="5">
         <YStack
           width={64}
           height={64}
           items="center"
           justify="center"
-          bg="$color4"
+          bg="color4"
           rounded={18}
         >
-          <Icon size={32} color="$color10" />
+          <Icon size={32} color="color10" />
         </YStack>
         <SizableText
-          size="$4"
+          size="4"
           fontWeight="600"
-          color="$color12"
+          color="color12"
           text="center"
           numberOfLines={2}
         >

@@ -10,53 +10,55 @@ import { SimpleTable } from './SimpleTable'
 import { WIPBadge } from './WIPBadge'
 
 const BaseParagraph = styled(Paragraph, {
-  size: '$5',
-  my: '$2',
+  size: '5',
+  my: '2',
 })
 
 const scrollMargin = { scrollMarginTop: 100 }
 
 const TableFrame = styled(YStack, {
-  my: '$4',
+  my: '4',
   borderWidth: 1,
-  borderColor: '$color4',
-  rounded: '$4',
+  borderColor: 'color4',
+  rounded: '4',
   overflow: 'hidden',
 })
 
 const TableRow = styled(XStack, {
   borderBottomWidth: 1,
-  borderBottomColor: '$color4',
+  borderBottomColor: 'color4',
 })
 
 const TableCell = styled(YStack, {
-  px: '$3',
-  py: '$2',
+  px: '3',
+  py: '2',
   flex: 1,
 })
 
 const TableHeaderCell = styled(YStack, {
-  px: '$3',
-  py: '$2',
+  px: '3',
+  py: '2',
   flex: 1,
-  bg: '$color2',
+  bg: 'color2',
 })
 
 const components = {
-  h1: (props: any) => (
-    <H1 size="$9" mb="$4" data-heading style={scrollMargin} {...props} />
-  ),
+  h1: (props: any) => <H1 size="9" mb="4" {...props} data-heading style={scrollMargin} />,
+
   h2: (props: any) => (
-    <H2 size="$8" mb="$2" pt="$4" data-heading style={scrollMargin} {...props} />
+    <H2 size="8" mb="2" pt="4" {...props} data-heading style={scrollMargin} />
   ),
+
   h3: (props: any) => (
-    <H3 size="$6" mt="$3" mb="$2" data-heading style={scrollMargin} {...props} />
+    <H3 size="6" mt="3" mb="2" {...props} data-heading style={scrollMargin} />
   ),
+
   h4: (props: any) => (
-    <H4 size="$6" mt="$4" mb="$2" data-heading style={scrollMargin} {...props} />
+    <H4 size="6" mt="4" mb="2" {...props} data-heading style={scrollMargin} />
   ),
+
   h5: (props: any) => (
-    <H5 size="$5" mt="$3" mb="$2" data-heading style={scrollMargin} {...props} />
+    <H5 size="5" mt="3" mb="2" {...props} data-heading style={scrollMargin} />
   ),
 
   p: (props: any) => <BaseParagraph {...props} />,
@@ -65,16 +67,14 @@ const components = {
     <Paragraph
       render="strong"
       fontWeight="700"
-      $platform-web={{
-        fontFamily: 'inherit',
-        fontSize: 'inherit',
-      }}
+      fontFamily="web:inherit"
+      fontSize="web:inherit"
       {...props}
     />
   ),
 
-  ul: (props: any) => <YStack render="ul" mt="$3" mb="$3" ml="$2" {...props} />,
-  ol: (props: any) => <YStack render="ol" mt="$3" mb="$3" ml="$2" {...props} />,
+  ul: (props: any) => <YStack render="ul" mt="3" mb="3" ml="2" {...props} />,
+  ol: (props: any) => <YStack render="ol" mt="3" mb="3" ml="2" {...props} />,
   li: (props: any) => <BaseParagraph render="li" display="list-item" mt={0} {...props} />,
 
   a: ({ href, children }: any) => {
@@ -103,27 +103,27 @@ const components = {
   blockquote: (props: any) => (
     <YStack
       render="blockquote"
-      my="$4"
-      px="$4"
-      py="$3"
-      ml="$3"
+      my="4"
+      px="4"
+      py="3"
+      ml="3"
       borderLeftWidth={3}
-      borderLeftColor="$color6"
-      bg="$color2"
-      borderRadius="$3"
+      borderLeftColor="color6"
+      bg="color2"
+      borderRadius="3"
       {...props}
     />
   ),
 
-  hr: () => <YStack height={1} bg="$color4" my="$6" />,
+  hr: () => <YStack height={1} bg="color4" my="6" />,
 
   img: (props: any) => (
     <YStack
       render="img"
       maxWidth="100%"
       height="auto"
-      my="$4"
-      borderRadius="$3"
+      my="4"
+      borderRadius="3"
       {...props}
     />
   ),
@@ -136,14 +136,16 @@ const components = {
       {children}
     </TableRow>
   ),
+
   th: (props: any) => (
     <TableHeaderCell>
-      <Paragraph size="$4" fontWeight="600" {...props} />
+      <Paragraph size="4" fontWeight="600" {...props} />
     </TableHeaderCell>
   ),
+
   td: (props: any) => (
     <TableCell>
-      <Paragraph size="$4" {...props} />
+      <Paragraph size="4" {...props} />
     </TableCell>
   ),
 

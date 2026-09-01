@@ -33,11 +33,11 @@ export const AvatarUpload = ({
   const image = uploadUrl || currentImage || ''
 
   return (
-    <XStack gap="$3" items="center" position="relative" {...viewProps}>
+    <XStack gap="3" items="center" position="relative" {...viewProps}>
       <Avatar key={image} size={100} image={image} />
 
       {dropOverlay}
-      <XStack gap="$2" position="absolute" b={0} r={0} z={999}>
+      <XStack gap="2" position="absolute" b={0} r={0} z={999}>
         <label htmlFor={id}>
           <input
             style={{ display: 'none' }}
@@ -47,15 +47,16 @@ export const AvatarUpload = ({
             accept=".jpg,.jpeg,.png,.gif,.webp"
             onChange={handleFileChange}
           />
-          <Button size="small" render="span" bg="$background">
+
+          <Button size="small" render="span" bg="background">
             Pick
           </Button>
         </label>
       </XStack>
       <YStack>
         {!!(progress && progress !== 100) && (
-          <Progress mt="$2" value={progress} bg="$color2">
-            <Progress.Indicator borderColor="$color7" transition="bouncy" />
+          <Progress mt="2" bg="color2" value={progress}>
+            <Progress.Indicator borderColor="color7" transition="bouncy" />
           </Progress>
         )}
 

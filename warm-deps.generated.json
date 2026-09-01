@@ -19,7 +19,6 @@
     "@tamagui/linear-gradient",
     "@tamagui/menu",
     "@tamagui/themes/v5",
-    "@tamagui/toast/v2",
     "@vxrn/color-scheme",
     "better-auth/client",
     "better-auth/client/plugins",

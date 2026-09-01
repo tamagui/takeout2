@@ -27,6 +27,7 @@
         "@vxrn/tslib-lite",
         "@vxrn/use-isomorphic-layout-effect",
         "@vxrn/vite-plugin-metro",
+        "@react-native-community/cli",
         "jsonwebtoken",
         "motion",
         "postmark",

@@ -25,7 +25,7 @@ export const DialogAdminPassword = () => {
         if (!open) closeDialog()
       }}
     >
-      <YStack pointerEvents="box-none" gap="$2" $md={{ flex: 1 }}>
+      <YStack pointerEvents="box-none" gap="2" flex="md:1">
         <Dialog.Header title="Admin Login" description="Enter password" />
         <Input
           type="password"
@@ -34,7 +34,7 @@ export const DialogAdminPassword = () => {
         />
       </YStack>
 
-      <XStack pointerEvents="box-none" justify="flex-end" gap="$2">
+      <XStack pointerEvents="box-none" justify="flex-end" gap="2">
         <Dialog.Close asChild>
           <Button onPress={closeDialog}>Cancel</Button>
         </Dialog.Close>

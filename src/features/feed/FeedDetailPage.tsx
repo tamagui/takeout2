@@ -101,16 +101,16 @@ export const FeedDetailPage = memo(() => {
   )
 
   const postHeader = (
-    <XStack gap="$2" pr="$4">
+    <XStack gap="2" pr="4">
       <Avatar gradient image={author.image as string} size={32} />
       <XStack flex={1}>
-        <YStack flex={1} gap="$2">
-          <XStack items="center" gap="$1">
-            <SizableText size="$4" fontWeight="600" numberOfLines={1}>
+        <YStack flex={1} gap="2">
+          <XStack items="center" gap="1">
+            <SizableText size="4" fontWeight="600" numberOfLines={1}>
               {author.username}
             </SizableText>
-            <DotIcon size={16} color="$color10" />
-            <SizableText size="$3" color="$color10">
+            <DotIcon size={16} color="color10" />
+            <SizableText size="3" color="color10">
               {formatDistanceToNow(post.createdAt)}
             </SizableText>
           </XStack>
@@ -130,23 +130,24 @@ export const FeedDetailPage = memo(() => {
   // wide screen: two-column layout
   if (isWideScreen) {
     return (
-      <YStack height="90vh" items="center" justify="center" p="$4">
+      <YStack height="90vh" items="center" justify="center" p="4">
         <HeadInfo
           title={postTitle}
           description={post.caption || undefined}
           openGraph={ogImage}
         />
+
         <XStack
-          bg="$background"
+          bg="background"
           position="relative"
           rounded={16}
           overflow="hidden"
           borderWidth={1}
-          borderColor="$color4"
+          borderColor="color4"
           maxW={860}
           height={500}
           width="100%"
-          gap="$4"
+          gap="4"
         >
           <XStack position="absolute" l={8} t={8} z={10}>
             <Button
@@ -156,10 +157,10 @@ export const FeedDetailPage = memo(() => {
               cursor="pointer"
               onPress={handleBack}
             >
-              <CaretLeftIcon size={24} color="$color12" />
+              <CaretLeftIcon size={24} color="color12" />
             </Button>
           </XStack>
-          <YStack flex={1} bg="$color1">
+          <YStack flex={1} bg="color1">
             <Pressable flex={1} onPress={openGallery}>
               <PostImage
                 postId={post.id}
@@ -170,17 +171,17 @@ export const FeedDetailPage = memo(() => {
             </Pressable>
           </YStack>
 
-          <YStack width={380} pt="$4">
-            <YStack pb="$4" borderBottomWidth={1} borderColor="$borderColor">
+          <YStack width={380} pt="4">
+            <YStack pb="4" borderBottomWidth={1} borderColor="border-color">
               {postHeader}
             </YStack>
             <ScrollView ref={commentsScrollRef as any} flex={1}>
-              <YStack pl="$2" pb="$4">
+              <YStack pl="2" pb="4">
                 <CommentSection comments={post.comments} />
               </YStack>
             </ScrollView>
 
-            <YStack pb="$4" pr="$4">
+            <YStack pb="4" pr="4">
               {commentInput}
             </YStack>
           </YStack>
@@ -195,7 +196,8 @@ export const FeedDetailPage = memo(() => {
       ref={pageScrollRef as any}
       flex={1}
       transition="medium"
-      enterStyle={{ opacity: 0, y: 10 }}
+      opacity="enter:0"
+      y="enter:10px"
       pb={60}
       showsVerticalScrollIndicator={false}
     >
@@ -204,8 +206,9 @@ export const FeedDetailPage = memo(() => {
         description={post.caption || undefined}
         openGraph={ogImage}
       />
-      <YStack py="$4">{postHeader}</YStack>
-      <Pressable onPress={openGallery} mb="$4">
+
+      <YStack py="4">{postHeader}</YStack>
+      <Pressable onPress={openGallery} mb="4">
         <PostImage postId={post.id} image={post.image} caption={post.caption} />
       </Pressable>
 
@@ -215,7 +218,7 @@ export const FeedDetailPage = memo(() => {
 
       <CommentSection comments={post.comments} />
 
-      <YStack py="$4">{commentInput}</YStack>
+      <YStack py="4">{commentInput}</YStack>
     </ScrollView>
   )
 })

@@ -5,9 +5,7 @@ import { useIsDark } from '~/features/theme/useIsDark'
 
 import type { BlurViewProps } from './types'
 
-const StyledBlurView = styled(ExpoBlurView, {
-  name: 'BlurView',
-})
+const StyledBlurView = styled(ExpoBlurView, {})
 
 export const BlurView = ({
   intensity,

@@ -43,29 +43,25 @@ export const SocialLinksRow = ({ large }: { large?: boolean }) => {
 }
 
 const Container = styled(YStack, {
-  gap: '$4',
+  gap: '4',
   mx: -5,
   items: 'center',
 })
 
 const SubTitle = styled(SizableText, {
-  size: '$4',
+  size: '4',
   self: 'center',
 })
 
 const HoverableLinkFrame = styled(SizableText, {
   render: 'a',
   cursor: 'pointer',
-  p: '$2',
-  opacity: 0.85,
+  p: '2',
+  opacity: '0.85 hover:1',
   textDecorationColor: 'transparent',
   items: 'center',
   justify: 'center',
   display: 'inline-flex',
-
-  hoverStyle: {
-    opacity: 1,
-  },
 })
 
 const HoverableLink = (props: SizableTextProps & LinkProps) => {

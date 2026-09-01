@@ -7,7 +7,7 @@ interface SimpleGridProps {
   gap?: SpaceTokens
 }
 
-export const SimpleGrid = ({ children, gap = '$3' }: SimpleGridProps) => {
+export const SimpleGrid = ({ children, gap = '3' }: SimpleGridProps) => {
   return (
     <XStack flexWrap="wrap" columnGap={gap} rowGap={gap}>
       {children}
@@ -22,13 +22,10 @@ export const SimpleGridItem = styled(YStack, {
         width: '100%',
       },
       2: {
-        width: '100%',
-        $sm: { width: 'calc(50% - 8px)' },
+        width: '100% sm:calc(50% - 8px)',
       },
       3: {
-        width: '100%',
-        $sm: { width: 'calc(50% - 8px)' },
-        $lg: { width: 'calc(33.33% - 8px)' },
+        width: '100% sm:calc(50% - 8px) lg:calc(33.33% - 8px)',
       },
     },
   } as const,

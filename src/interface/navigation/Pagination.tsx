@@ -21,7 +21,7 @@ export const Pagination = memo(
     }
 
     return (
-      <XStack justify="center" items="center" gap="$4" py="$4">
+      <XStack justify="center" items="center" gap="4" py="4">
         <Button
           size="small"
           glass
@@ -32,7 +32,7 @@ export const Pagination = memo(
           Previous
         </Button>
 
-        <SizableText size="$3" color="$color10">
+        <SizableText size="3" color="color10">
           Page {currentPage}
         </SizableText>
 

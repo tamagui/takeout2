@@ -42,7 +42,7 @@ export function OnboardingActionButton({
         opacity={isLastPage ? 0 : 1}
         disabled={isLastPage}
       >
-        <SizableText color="$color10" size="$4" fontWeight="500">
+        <SizableText color="color10" fontWeight="500" size="4">
           Skip
         </SizableText>
       </Pressable>
@@ -65,7 +65,7 @@ export function OnboardingActionButton({
             <CaretRightIcon size={28} color="white" />
           </Animated.View>
           <Animated.View style={[{ position: 'absolute' }, textAnimatedStyle]}>
-            <SizableText size="$5" fontWeight="600" color="$color8">
+            <SizableText size="5" fontWeight="600" color="color8">
               Get Started
             </SizableText>
           </Animated.View>

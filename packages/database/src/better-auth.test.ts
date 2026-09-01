@@ -228,7 +228,9 @@ describe('createBetterAuthSQLiteAdapter', () => {
   test('uses the write provider for reads when no read provider is given', async () => {
     const database = new Database(':memory:')
     databases.push(database)
-    database.exec('CREATE TABLE user (id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL UNIQUE, emailVerified INTEGER NOT NULL, image TEXT, createdAt INTEGER NOT NULL, updatedAt INTEGER NOT NULL)')
+    database.exec(
+      'CREATE TABLE user (id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL UNIQUE, emailVerified INTEGER NOT NULL, image TEXT, createdAt INTEGER NOT NULL, updatedAt INTEGER NOT NULL)',
+    )
     let calls = 0
     const nativeProvider = createBunSQLiteTransactionProvider({
       database,

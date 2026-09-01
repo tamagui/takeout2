@@ -5,6 +5,7 @@ import {
   type CreateSQLiteDatabaseOptions,
   type SQLiteSchema,
   type SQLiteTransactionExecutor,
+  type SQLiteTransactionProvider,
 } from './sqlite'
 
 import type { AnyRelations, EmptyRelations } from 'drizzle-orm'
@@ -15,8 +16,19 @@ export type CreateBetterAuthSQLiteAdapterOptions<
 > = Pick<
   CreateSQLiteDatabaseOptions<TSchema, TRelations>,
   'relations' | 'schema' | 'transactionProvider'
-> &
-  Omit<DrizzleAdapterConfig, 'provider' | 'schema' | 'transaction'>
+> & {
+  /**
+   * runs the adapter's read-only operations (`findOne`, `findMany`, `count`).
+   * the SQLite host decides what a read session means; on a host that admits
+   * one writer at a time and readers together, a session lookup no longer
+   * waits for the writer turn. defaults to `transactionProvider`.
+   */
+  readTransactionProvider?: SQLiteTransactionProvider
+} & Omit<DrizzleAdapterConfig, 'provider' | 'schema' | 'transaction'>
+
+// the adapter operations that only SELECT. every other operation, and the
+// explicit `transaction`, keeps the write provider.
+const READ_OPERATIONS: ReadonlySet<string> = new Set(['findOne', 'findMany', 'count'])
 
 /**
  * gives Better Auth its official Drizzle adapter inside the transaction
@@ -29,7 +41,13 @@ export function createBetterAuthSQLiteAdapter<
 >(
   options: CreateBetterAuthSQLiteAdapterOptions<TSchema, TRelations>,
 ): ReturnType<typeof drizzleAdapter> {
-  const { relations, schema, transactionProvider, ...drizzleOptions } = options
+  const {
+    relations,
+    schema,
+    transactionProvider,
+    readTransactionProvider = transactionProvider,
+    ...drizzleOptions
+  } = options
   const adapterConfig = {
     ...drizzleOptions,
     provider: 'sqlite',
@@ -68,8 +86,12 @@ export function createBetterAuthSQLiteAdapter<
         const value = Reflect.get(target, property, receiver)
         if (typeof value !== 'function') return value
 
+        const provider =
+          typeof property === 'string' && READ_OPERATIONS.has(property)
+            ? readTransactionProvider
+            : transactionProvider
         return (...args: unknown[]) =>
-          transactionProvider(async (executor) => {
+          provider(async (executor) => {
             const adapter = createAdapter(executor, authOptions)
             const operation = Reflect.get(adapter, property)
             if (typeof operation !== 'function') {

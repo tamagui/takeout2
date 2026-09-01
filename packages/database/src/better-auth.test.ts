@@ -86,9 +86,15 @@ describe('createBetterAuthSQLiteAdapter', () => {
       providerCalls++
       return nativeProvider(work)
     }
+    let readProviderCalls = 0
+    const readTransactionProvider: SQLiteTransactionProvider = (work) => {
+      readProviderCalls++
+      return nativeProvider(work)
+    }
     const adapterFactory = createBetterAuthSQLiteAdapter({
       schema: { account, user },
       transactionProvider,
+      readTransactionProvider,
     })
     const authOptions = {
       baseURL: 'http://localhost',
@@ -102,6 +108,7 @@ describe('createBetterAuthSQLiteAdapter', () => {
       auth,
       database,
       providerCalls: () => providerCalls,
+      readProviderCalls: () => readProviderCalls,
     }
   }
 
@@ -180,5 +187,61 @@ describe('createBetterAuthSQLiteAdapter', () => {
       { email: 'a@example.com', emailVerified: 1 },
       { email: 'b@example.com', emailVerified: 1 },
     ])
+  })
+
+  test('routes findOne, findMany, and count through the read provider only', async () => {
+    const { adapter, providerCalls, readProviderCalls } = setup()
+
+    const created = await adapter.create<User>({
+      model: 'user',
+      data: {
+        name: 'Ada',
+        email: 'ada@example.com',
+        emailVerified: false,
+        createdAt: new Date(1_700_000_000_000),
+        updatedAt: new Date(1_700_000_000_000),
+      },
+    })
+    expect(providerCalls()).toBe(1)
+    expect(readProviderCalls()).toBe(0)
+
+    const found = await adapter.findOne<User>({
+      model: 'user',
+      where: [{ field: 'email', value: 'ada@example.com' }],
+    })
+    expect(found?.id).toBe(created.id)
+    await expect(adapter.findMany<User>({ model: 'user' })).resolves.toHaveLength(1)
+    await expect(adapter.count({ model: 'user' })).resolves.toBe(1)
+    expect(providerCalls()).toBe(1)
+    expect(readProviderCalls()).toBe(3)
+
+    await adapter.update<User>({
+      model: 'user',
+      where: [{ field: 'id', value: created.id }],
+      update: { emailVerified: true },
+    })
+    await adapter.delete({ model: 'user', where: [{ field: 'id', value: created.id }] })
+    expect(providerCalls()).toBe(3)
+    expect(readProviderCalls()).toBe(3)
+  })
+
+  test('uses the write provider for reads when no read provider is given', async () => {
+    const database = new Database(':memory:')
+    databases.push(database)
+    database.exec('CREATE TABLE user (id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL UNIQUE, emailVerified INTEGER NOT NULL, image TEXT, createdAt INTEGER NOT NULL, updatedAt INTEGER NOT NULL)')
+    let calls = 0
+    const nativeProvider = createBunSQLiteTransactionProvider({
+      database,
+      queryAst: unavailableQueryAst,
+    })
+    const adapter = createBetterAuthSQLiteAdapter({
+      schema: { user },
+      transactionProvider: (work) => {
+        calls++
+        return nativeProvider(work)
+      },
+    })({ baseURL: 'http://localhost' })
+    await expect(adapter.count({ model: 'user' })).resolves.toBe(0)
+    expect(calls).toBe(1)
   })
 })

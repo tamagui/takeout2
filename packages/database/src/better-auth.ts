@@ -68,6 +68,9 @@ export function createBetterAuthSQLiteAdapter<
       exec() {
         throw new Error('Better Auth SQLite operations require a transaction callback')
       },
+      execMany() {
+        throw new Error('Better Auth SQLite operations require a transaction callback')
+      },
       query() {
         throw new Error('Better Auth SQLite operations require a transaction callback')
       },

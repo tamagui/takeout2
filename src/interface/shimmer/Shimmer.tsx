@@ -4,7 +4,7 @@ import { useLazyMount, getCurrentComponentStack } from '@take-out/helpers'
 import { memo, useEffect, useRef } from 'react'
 import { AnimatePresence, XStack, YStack } from 'tamagui'
 
-import { animationClamped } from '../animations/animationClamped'
+import { transitionMediumClamped } from '../animations/animationClamped'
 import { useShimmerEffect } from './ShimmerManager'
 
 export interface ShimmerNativeProps {
@@ -34,24 +34,19 @@ export const Shimmer = memo(() => {
 
   return (
     <XStack
-      opacity={1}
+      opacity={isMounted ? 1 : 0}
       justify="center"
       items="center"
       contain="paint layout"
-      transition={animationClamped('medium')}
-      {...(!isMounted && {
-        opacity: 0,
-      })}
+      transition={transitionMediumClamped}
     >
       <AnimatePresence>
         {!disableShimmer && (
           <YStack
             key="shimmer"
-            transition={animationClamped('medium')}
+            transition={transitionMediumClamped}
+            opacity="1 enter:0 exit:0"
             data-is-shimmer
-            opacity={1}
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
           >
             <ShimmerInner />
           </YStack>
@@ -60,12 +55,11 @@ export const Shimmer = memo(() => {
         {disableShimmer && (
           <YStack
             key="fallback"
-            fullscreen
-            transition={animationClamped('medium')}
-            bg="$color3"
-            opacity={0.8}
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
+            position="absolute"
+            inset={0}
+            transition={transitionMediumClamped}
+            bg="color3"
+            opacity="0.8 enter:0 exit:0"
           />
         )}
       </AnimatePresence>

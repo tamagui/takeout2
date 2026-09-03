@@ -4,7 +4,7 @@ import { isWeb, Input as TamaguiInput } from 'tamagui'
 import { GlassView } from '../effects/GlassView'
 
 import type { RefObject } from 'react'
-import type { GetProps, TamaguiElement, ViewProps } from 'tamagui'
+import type { GetProps, TamaguiElement } from 'tamagui'
 
 export type InputProps = GetProps<typeof TamaguiInput> & {
   ref?: RefObject<TamaguiElement | null>
@@ -17,13 +17,17 @@ export const Input = memo(({ ref, glass, ...props }: InputProps) => {
   const inputElement = (
     <TamaguiInput
       borderWidth={glass && !isWeb ? 0 : 0.5}
-      ref={ref}
-      focusVisibleStyle={inputFocusStyle}
+      borderColor="color5 focus:color5"
+      outlineWidth="focus-visible:3px"
+      outlineStyle="focus-visible:solid"
+      outlineColor="focus-visible:outline-color"
+      outlineOffset="focus-visible:1px"
       bg={glass ? 'transparent' : undefined}
-      placeholderTextColor="$color8"
-      height={50}
-      size="$5"
+      h={50}
       {...props}
+      ref={ref}
+      placeholderTextColor="color8"
+      size="5"
     />
   )
   if (glass && !isWeb) {
@@ -40,8 +44,8 @@ export const Input = memo(({ ref, glass, ...props }: InputProps) => {
 export const inputFocusStyle = {
   outlineWidth: 3,
   outlineStyle: 'solid',
-  outlineColor: '$background04',
+  outlineColor: 'outline-color',
   outlineOffset: 1,
   borderWidth: 0.5,
-  borderColor: '$color5',
-} satisfies ViewProps['focusVisibleStyle']
+  borderColor: 'color5',
+}

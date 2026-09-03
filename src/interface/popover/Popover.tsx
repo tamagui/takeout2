@@ -9,7 +9,7 @@ import {
   type PopoverContentProps as TamaguiPopoverContentProps,
 } from 'tamagui'
 
-import { animationClamped } from '../animations/animationClamped'
+import { transitionQuickestClamped } from '../animations/animationClamped'
 import { hasSelection } from '../forms/hasSelection'
 
 import type { RefObject } from 'react'
@@ -28,6 +28,7 @@ export const popoverEmitter = createEmitter<{
 export type PopoverName = 'menu' | 'user-profile' | 'post-actions'
 
 export type PopoverContentProps = TamaguiPopoverContentProps & {
+  unstyled?: boolean
   arrow?: boolean | PopoverArrowProps
   shadow?: 'light' | 'medium' | 'strong'
 }
@@ -69,27 +70,19 @@ const PopoverContent = ({
   return (
     <TamaguiPopover.Content
       z={200_000}
-      unstyled={unstyled}
       {...(!unstyled && {
-        transition: animationClamped('quickest'),
-        bg: '$color2',
+        transition: transitionQuickestClamped,
+        bg: 'color2',
         p: 0,
         items: 'flex-start',
         borderWidth: 0.5,
-        borderColor: '$color3',
-        y: 0,
-        opacity: 1,
-        enterStyle: { y: -4, opacity: 0 },
-        exitStyle: { y: 6, opacity: 0 },
-        shadowColor:
-          props.shadow === 'strong'
-            ? '$shadow5'
-            : props.shadow === 'medium'
-              ? '$shadow4'
-              : '$shadow3',
+        borderColor: 'color3',
+        y: '0 enter:-4px exit:6px',
+        opacity: '1 enter:0 exit:0',
+        shadowColor: 'shadow-color',
         shadowRadius: props.shadow === 'strong' ? 25 : 10,
         shadowOffset: { height: props.shadow === 'strong' ? 18 : 14, width: 0 },
-        rounded: '$5',
+        rounded: '5',
       })}
       {...props}
     >
@@ -97,21 +90,22 @@ const PopoverContent = ({
         {arrow && (
           <TamaguiPopover.Arrow
             borderWidth={0.5}
-            borderColor="$color3"
-            bg="$color2"
-            size="$3.5"
+            borderColor="color3"
+            bg="color2"
             {...(typeof arrow === 'object' && arrow)}
+            size="$3.5"
           />
         )}
       </AnimatePresence>
 
       {props.shadow === 'strong' ? (
         <YStack
-          fullscreen
+          position="absolute"
+          inset={0}
           pointerEvents="none"
           z={-1}
-          rounded="$5"
-          shadowColor="$shadow3"
+          rounded="5"
+          shadowColor="shadow-color"
           shadowRadius={40}
           shadowOffset={{ height: 20, width: 0 }}
         />

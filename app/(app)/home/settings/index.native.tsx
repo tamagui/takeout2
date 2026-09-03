@@ -17,13 +17,13 @@ const SettingRow = memo(({ item }: { item: SettingItem }) => {
   if (item.toggle) {
     return (
       <SettingRowFrame>
-        <XStack gap="$3" items="center" flex={1}>
+        <XStack gap="3" items="center" flex={1}>
           {Icon && (
-            <View width={24} items="center" justify="center">
+            <View w={24} items="center" justify="center">
               <Icon size={20} color="$color11" />
             </View>
           )}
-          <SizableText size="$5">{item.title}</SizableText>
+          <SizableText size="5">{item.title}</SizableText>
         </XStack>
         <Switch value={item.toggle.value} onValueChange={item.toggle.onValueChange} />
       </SettingRowFrame>
@@ -31,14 +31,14 @@ const SettingRow = memo(({ item }: { item: SettingItem }) => {
   }
 
   const content = (
-    <SettingRowFrame {...(item.onPress && { onPress: item.onPress })}>
-      <XStack gap="$3" items="center" flex={1}>
+    <SettingRowFrame onPress={item.onPress}>
+      <XStack gap="3" items="center" flex={1}>
         {Icon && (
-          <View width={24} items="center" justify="center">
+          <View w={24} items="center" justify="center">
             <Icon size={20} color="$color11" />
           </View>
         )}
-        <SizableText size="$5">{item.title}</SizableText>
+        <SizableText size="5">{item.title}</SizableText>
       </XStack>
       <CaretRightIcon size={16} color="$color8" />
     </SettingRowFrame>
@@ -51,13 +51,13 @@ const SettingRow = memo(({ item }: { item: SettingItem }) => {
   if (item.external && !isWeb) {
     return (
       <SettingRowFrame onPress={() => Linking.openURL(`https://${DOMAIN}${item.href}`)}>
-        <XStack gap="$3" items="center" flex={1}>
+        <XStack gap="3" items="center" flex={1}>
           {Icon && (
-            <View width={24} items="center" justify="center">
+            <View w={24} items="center" justify="center">
               <Icon size={20} color="$color11" />
             </View>
           )}
-          <SizableText size="$5">{item.title}</SizableText>
+          <SizableText size="5">{item.title}</SizableText>
         </XStack>
         <CaretRightIcon size={16} color="$color8" />
       </SettingRowFrame>
@@ -81,9 +81,9 @@ export const ProfileSettingsPage = () => {
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
       >
-        <YStack flex={1} flexBasis="auto" pb="$10">
+        <YStack flex={1} flexBasis="auto" pb="10">
           {sections.map((section) => (
-            <YStack key={section.title} mb="$6">
+            <YStack key={section.title} mb="6">
               <SepHeading>{section.title}</SepHeading>
               <YStack>
                 {section.items.map((item) => (
@@ -101,9 +101,9 @@ export const ProfileSettingsPage = () => {
 }
 
 const LogoAndVersion = memo(() => (
-  <YStack items="center" pb={100} pt="$4" gap="$3">
-    <XStack items="center" gap="$2">
-      <SizableText color="$color10" fontWeight="bold">
+  <YStack items="center" pb={100} pt="4" gap="3">
+    <XStack items="center" gap="2">
+      <SizableText color="color10" fontWeight="bold">
         {APP_NAME_LOWERCASE}
       </SizableText>
     </XStack>
@@ -113,10 +113,9 @@ const LogoAndVersion = memo(() => (
 
 const SettingRowFrame = styled(XStack, {
   cursor: 'pointer',
-  px: '$4',
-  py: '$4',
+  px: '4',
+  py: '4',
   items: 'center',
   justify: 'space-between',
-  hoverStyle: { bg: '$color2' },
-  pressStyle: { bg: '$background02' },
+  bg: 'hover:color2 press:color3',
 })

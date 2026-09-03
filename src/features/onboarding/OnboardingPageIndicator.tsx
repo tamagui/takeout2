@@ -8,7 +8,7 @@ export function OnboardingPageIndicator({
   currentPage = 0,
 }: OnboardingPageIndicatorProps) {
   return (
-    <XStack gap={8} justify="center" items="center" py="$3">
+    <XStack gap={8} justify="center" items="center" py="3">
       {Array.from({ length: totalPages }).map((_, idx) => (
         <IndicatorDot key={idx} isActive={idx === currentPage} />
       ))}
@@ -22,7 +22,7 @@ const IndicatorDot = memo(({ isActive }: { isActive: boolean }) => {
       width={isActive ? 28 : 8}
       height={8}
       rounded={4}
-      bg={isActive ? '$color10' : '$color7'}
+      bg={`${isActive ? 'color10' : 'color7'}`}
       transition="medium"
     />
   )

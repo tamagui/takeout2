@@ -18,10 +18,10 @@ export const PostImage = memo(
       <Image
         src={image}
         alt={caption || 'Post image'}
-        width="100%"
-        height={fill ? '100%' : undefined}
+        w="100%"
+        h={fill ? '100%' : undefined}
         objectFit="cover"
-        rounded={fill ? 0 : '$6'}
+        rounded={fill ? 0 : '6'}
         aspectRatio={fill ? undefined : aspectRatio}
         onLoad={
           onAspectRatioChange

@@ -21,14 +21,14 @@ type NotificationListProps = {
 }
 
 const LoadingState = (
-  <YStack flex={1} items="center" justify="center" py="$8">
+  <YStack flex={1} items="center" justify="center" py="8">
     <Spinner />
   </YStack>
 )
 
 const EmptyState = (
-  <YStack flex={1} items="center" justify="center" py="$8">
-    <SizableText size="$4" color="$color10">
+  <YStack flex={1} items="center" justify="center" py="8">
+    <SizableText size="4" color="color10">
       No notifications yet
     </SizableText>
   </YStack>

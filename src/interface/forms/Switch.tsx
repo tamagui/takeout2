@@ -6,7 +6,7 @@ import {
   type SwitchProps,
 } from 'tamagui'
 
-import { animationClamped } from '../animations/animationClamped'
+import { transitionQuickestLessBouncyClamped } from '../animations/animationClamped'
 
 export const Switch = memo((props: SwitchProps) => {
   const [checked, setChecked] = useControllableState({
@@ -22,19 +22,16 @@ export const Switch = memo((props: SwitchProps) => {
 
   return (
     <TamaguiSwitch
-      transition={animationClamped('quickestLessBouncy')}
-      pressStyle={{
-        bg: '$color1',
-      }}
-      size="$4"
+      transition={transitionQuickestLessBouncyClamped}
+      bg="color4 press:color1"
       p={0}
-      bg="$color4"
-      borderColor="$color6"
+      borderColor="color6"
       {...props}
+      size="4"
       checked={checked}
       onCheckedChange={setCheckedFn}
     >
-      <TamaguiSwitch.Thumb transition={animationClamped('quickestLessBouncy')} />
+      <TamaguiSwitch.Thumb transition={transitionQuickestLessBouncyClamped} />
     </TamaguiSwitch>
   )
 })

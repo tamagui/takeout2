@@ -1,5 +1,5 @@
 import { memo, useEffect, useRef, useState } from 'react'
-import { H1, Paragraph, Text, View, XStack, YStack, styled } from 'tamagui'
+import { html, Paragraph, Theme, View, XStack, YStack, styled } from 'tamagui'
 
 import { Link } from '~/interface/app/Link'
 import { ArrowRightIcon } from '~/interface/icons/phosphor/ArrowRightIcon'
@@ -9,100 +9,79 @@ import { CopyIcon } from '~/interface/icons/phosphor/CopyIcon'
 import { Button } from '../buttons/Button'
 import { Span, Strong } from '../text/Text'
 
-const HeroTitle = styled(H1, {
-  letterSpacing: -1,
-  color: '$color12',
-  size: '$12',
+const HeroTitle = styled(html.h1, {
+  fontFamily: 'heading',
+  color: 'color12',
   fontWeight: '800',
   maxW: 520,
-
-  '$max-lg': {
-    size: '$10',
-    fontWeight: '800',
-  },
+  fontSize: '10 lg:12',
+  lineHeight: '10 lg:12',
+  m: 0,
 })
 
-const HeroSubtitle = styled(Paragraph, {
-  color: '$color9',
-  size: '$6',
+const HeroSubtitle = styled(html.p, {
+  fontFamily: 'body',
+  color: 'color9',
   maxW: 490,
-  $xl: {
-    size: '$7',
-  },
-  '$platform-web': {
-    textWrap: 'balance',
-  },
+  textWrap: 'web:balance',
+  fontSize: '6 xl:7',
+  lineHeight: '6 xl:7',
+  m: 0,
 })
 
-const HighlightText = styled(Text, {
-  render: 'span',
-  backgroundImage: 'linear-gradient(90deg, $red10 0%, $orange11 100%)',
+const HighlightText = styled(html.span, {
+  backgroundImage: 'linear-gradient(90deg, #dc3e42 0%, #cc4e00 100%)',
   color: 'transparent',
-  '$platform-web': {
-    backgroundClip: 'text',
-    WebkitBackgroundClip: 'text',
-  },
+  backgroundClip: 'web:text',
 })
 
 const CommandBox = styled(XStack, {
-  rounded: '$6',
-  px: '$4',
-  py: '$3',
-  bg: '$color3',
+  rounded: '6',
+  px: '4',
+  py: '3',
+  bg: 'color3 hover:background-hover press:color5',
   items: 'center',
   flex: 1,
   mr: -20,
-  gap: '$3',
+  gap: '3',
   overflow: 'hidden',
   cursor: 'pointer',
   borderWidth: 1,
-  borderColor: '$color5',
+  borderColor: 'color5 hover:color6',
   style: {
     transition: 'background-color 200ms ease, border-color 200ms ease',
-  },
-
-  hoverStyle: {
-    bg: '$backgroundHover',
-    borderColor: '$color6',
-  },
-
-  pressStyle: {
-    bg: '$color5',
   },
 })
 
 const TerminalContainer = styled(YStack, {
   bg: '#0d0d0d',
-  rounded: '$6',
+  rounded: '6',
   overflow: 'hidden',
   borderWidth: 1,
   borderColor: 'rgba(255,255,255,0.1)',
-  width: '100%',
+  w: '100%',
   maxW: 520,
   shadowColor: '#000',
   shadowRadius: 40,
   shadowOffset: { width: 0, height: 20 },
   shadowOpacity: 0.4,
-  display: 'none',
-  $md: {
-    display: 'flex',
-  },
+  display: 'none md:flex',
 })
 
 const TerminalHeader = styled(XStack, {
   bg: '#1a1a1a',
   pointerEvents: 'none',
-  px: '$4',
-  py: '$2',
+  px: '4',
+  py: '2',
   items: 'center',
-  gap: '$2',
+  gap: '2',
   borderBottomWidth: 1,
   borderBottomColor: 'rgba(255,255,255,0.1)',
 })
 
 const TerminalDot = styled(YStack, {
-  width: 12,
-  height: 12,
+  w: 12,
+  h: 12,
   rounded: 999,
 })
 
@@ -116,7 +95,7 @@ interface CommandStep {
 // memoized window dots to prevent re-renders
 const TerminalDots = memo(function TerminalDots() {
   return (
-    <XStack gap="$2">
+    <XStack gap="2">
       <TerminalDot bg="#ff5f57" />
       <TerminalDot bg="#ffbd2e" />
       <TerminalDot bg="#28ca42" />
@@ -133,33 +112,28 @@ const HistoryEntry = memo(function HistoryEntry({
   output: string[]
 }) {
   return (
-    <YStack opacity={0.5} mb="$3" gap="$1">
+    <YStack opacity={0.5} mb="3" gap="1">
       <XStack>
         <Paragraph
-          fontFamily="$mono"
+          fontFamily="mono"
           fontSize={13}
           color="#22c55e"
-          mr="$2"
-          style={{ lineHeight: '1.7' }}
+          mr="2"
+          lineHeight="22.1px"
         >
           $
         </Paragraph>
-        <Paragraph
-          fontFamily="$mono"
-          fontSize={13}
-          color="#e5e5e5"
-          style={{ lineHeight: '1.7' }}
-        >
+        <Paragraph fontFamily="mono" fontSize={13} color="#e5e5e5" lineHeight="22.1px">
           {command}
         </Paragraph>
       </XStack>
       {output.map((line, j) => (
         <Paragraph
           key={j}
-          fontFamily="$mono"
+          fontFamily="mono"
           fontSize={13}
           color="#888"
-          style={{ lineHeight: '1.7' }}
+          lineHeight="22.1px"
         >
           {line}
         </Paragraph>
@@ -295,10 +269,10 @@ function HeroTerminal() {
         <Paragraph
           fontSize={12}
           color="#999"
-          fontFamily="$mono"
+          fontFamily="mono"
           flex={1}
           text="center"
-          mr="$8"
+          mr="8"
           select="none"
         >
           takeout-cli
@@ -308,49 +282,43 @@ function HeroTerminal() {
       <YStack
         ref={contentRef as any}
         className="terminal-content"
-        p="$4"
+        p="4"
         height={TERMINAL_HEIGHT}
         overflow="scroll"
-        gap="$1"
+        gap="1"
       >
         {history.map((entry, i) => (
           <HistoryEntry key={i} command={entry.command} output={entry.output} />
         ))}
 
         {!!typedCommand && (
-          <YStack gap="$1">
+          <YStack gap="1">
             <XStack items="center">
-              <Paragraph fontFamily="$mono" fontSize={13} color="#22c55e" mr="$2">
+              <Paragraph fontFamily="mono" fontSize={13} color="#22c55e" mr="2">
                 $
               </Paragraph>
-              <Paragraph fontFamily="$mono" fontSize={13} color="#e5e5e5">
+              <Paragraph fontFamily="mono" fontSize={13} color="#e5e5e5">
                 {typedCommand}
               </Paragraph>
               {!showOutput && (
-                <YStack
-                  className="terminal-cursor"
-                  width={8}
-                  height={16}
-                  bg="#e5e5e5"
-                  ml="$1"
-                />
+                <YStack className="terminal-cursor" w={8} h={16} bg="#e5e5e5" ml="1" />
               )}
             </XStack>
           </YStack>
         )}
 
         {outputLines.map((line, i) => (
-          <Paragraph key={i} fontFamily="$mono" fontSize={13} color="#888">
+          <Paragraph key={i} fontFamily="mono" fontSize={13} color="#888">
             {line}
           </Paragraph>
         ))}
 
         {!typedCommand && history.length === 0 && (
           <XStack items="center">
-            <Paragraph fontFamily="$mono" fontSize={13} color="#22c55e" mr="$2">
+            <Paragraph fontFamily="mono" fontSize={13} color="#22c55e" mr="2">
               $
             </Paragraph>
-            <YStack className="terminal-cursor" width={8} height={16} bg="#e5e5e5" />
+            <YStack className="terminal-cursor" w={8} h={16} bg="#e5e5e5" />
           </XStack>
         )}
       </YStack>
@@ -369,10 +337,8 @@ function PhoneMockup() {
       justify="center"
       self="center"
       aspectRatio="588 / 1176"
-      $lg={{
-        x: 0,
-        y: 20,
-      }}
+      x="0px lg:0px"
+      y="0px lg:20px"
     >
       <svg width="0" height="0" style={{ position: 'absolute' }}>
         <defs>
@@ -392,10 +358,10 @@ function PhoneMockup() {
         <YStack
           overflow="hidden"
           position="relative"
+          w="286px"
+          h="593px"
+          clipPath="url(#iphone-screen-clip)"
           style={{
-            width: 286,
-            height: 593,
-            clipPath: 'url(#iphone-screen-clip)',
             WebkitClipPath: 'url(#iphone-screen-clip)',
           }}
         >
@@ -446,11 +412,18 @@ function CopyCommand() {
   }
 
   return (
-    <CommandBox onPress={handleCopy} display="none" $sm={{ display: 'flex' }}>
-      <Paragraph fontFamily="$mono" fontSize={14} color="$color11">
+    <CommandBox onPress={handleCopy} display="none sm:flex">
+      <Paragraph fontFamily="mono" fontSize={14} color="color11">
         $
       </Paragraph>
-      <Paragraph pr="$4" flex={1} ellipsis fontFamily="$mono" fontWeight="700">
+      <Paragraph
+        pr="4"
+        flex={1}
+        fontFamily="mono"
+        fontSize="15px"
+        fontWeight="700"
+        ellipsis
+      >
         {INSTALL_COMMAND}
       </Paragraph>
       {copied ? (
@@ -462,58 +435,50 @@ function CopyCommand() {
   )
 }
 
+const HeroContainer = styled(YStack, {
+  style: {
+    minHeight: 'max(90vh, 850px)',
+  },
+  items: 'center',
+  gap: '8',
+  px: '4',
+  justify: 'center',
+})
+
 export function HeroSection() {
   return (
-    <YStack
-      $md={{
-        flex: 1,
-        items: 'center',
-        gap: '$8',
-        px: '$4',
-        minH: 'calc(max(90vh, 850px))',
-        maxH: 1000,
-        justify: 'center',
-      }}
-    >
+    <HeroContainer>
       <View
-        gap="$2"
+        gap="2"
         items="center"
         justify="space-between"
         maxW={1200}
-        width="100%"
-        pb="$14"
-        $md={{
-          flexDirection: 'row',
-        }}
+        w="100%"
+        pb="14"
+        flexDirection="column md:row"
       >
         {/* left side - hero content */}
         <YStack
-          scale={0.95}
+          scale="0.95 lg:1"
           transition="medium"
-          gap="$5"
+          gap="5"
           minW={320}
-          maxW={640}
+          maxW="640px max-sm:80%"
           items="flex-start"
-          $max-sm={{
-            maxW: '80%',
-            self: 'center',
-          }}
-          $lg={{
-            scale: 1,
-          }}
+          self="max-sm:center"
         >
-          <YStack gap="$1">
+          <YStack gap="1">
             <HeroTitle>
-              The <Span $max-xl={{ display: 'none' }}>startup</Span> starter that{' '}
+              The <Span display="max-xl:none">startup</Span> starter that{' '}
               <HighlightText fontStyle="italic">actually</HighlightText> delivers.
             </HeroTitle>
           </YStack>
 
           <HeroSubtitle>
-            <Strong color="$color11">
+            <Strong color="color11">
               Most starter kits <HighlightText fontWeight="700">suck</HighlightText>
             </Strong>
-            . <Strong color="$color11">Takeout sucks less.</Strong> We&nbsp;took
+            . <Strong color="color11">Takeout sucks less.</Strong> We&nbsp;took
             novel&nbsp;tech, made it work well, then&nbsp;added CI/CD, IaC, UI, lots of
             “agent” stuff, and <Link href="/docs/changelog">a changelog</Link> —
             it's&nbsp;what we use for ourselves, and our{' '}
@@ -522,30 +487,32 @@ export function HeroSection() {
 
           <HeroSubtitle>
             It's the{' '}
-            <Strong fontWeight="600" color="$color11">
+            <Strong fontWeight="600" color="color11">
               fastest way to build something&nbsp;great
             </Strong>{' '}
             on both React Native and web.
           </HeroSubtitle>
 
-          <XStack maxW="100%" gap="$3" mt="$2" items="center">
+          <XStack maxW="100%" gap="3" mt="2" items="center">
             <Link href="/docs/introduction">
-              <Button theme="accent" size="large" icon={ArrowRightIcon} iconAfter>
-                Docs
-              </Button>
+              <Theme name="dark">
+                <Button size="large" icon={ArrowRightIcon} iconAfter>
+                  Docs
+                </Button>
+              </Theme>
             </Link>
 
             <CopyCommand />
           </XStack>
 
-          <Paragraph size="$6" $lg={{ size: '$7' }} color="$color9">
+          <Paragraph size="6 lg:7" color="color9">
             Check the{' '}
             <Link href="https://tamagui.dev/takeout" target="_blank">
-              <Span color="$color12">pro version</Span>
+              <Span color="color12">pro version</Span>
             </Link>{' '}
             or the{' '}
             <Link href="https://github.com/tamagui/takeout-free" target="_blank">
-              <Span color="$color12">free one</Span>
+              <Span color="color12">free one</Span>
             </Link>
             .
           </Paragraph>
@@ -553,24 +520,16 @@ export function HeroSection() {
 
         {/* right side */}
         <YStack
-          my="$12"
-          minW={300}
-          maxW={480}
-          x={0}
+          my="12"
+          minW="300px"
+          maxW="480px"
+          x="0px sm:20px lg:-50px"
           items="center"
           transition="medium"
           position="relative"
-          minH={600}
-          $sm={{
-            scale: 0.9,
-            x: 20,
-            y: 20,
-          }}
-          $lg={{
-            scale: 1,
-            y: 20,
-            x: -50,
-          }}
+          minH="600px"
+          scale="1 sm:0.9 lg:1"
+          y="0px sm:20px lg:20px"
         >
           <PhoneMockup />
           <YStack position="absolute" z={-1} x={-200} y={200} scale={0.8}>
@@ -578,6 +537,6 @@ export function HeroSection() {
           </YStack>
         </YStack>
       </View>
-    </YStack>
+    </HeroContainer>
   )
 }

@@ -65,73 +65,60 @@ export function ReportPostDialog({ postId, open, onOpenChange }: ReportPostDialo
     <Dialog open={open} onOpenChange={onOpenChange}>
       <Adapt when="max-md" platform="touch">
         <Sheet transition="quickLessBouncy" modal dismissOnSnapToBottom snapPoints={[60]}>
-          <Sheet.Frame p="$4">
+          <Sheet.Container p="4">
             <Adapt.Contents />
-          </Sheet.Frame>
+          </Sheet.Container>
           <Sheet.Overlay
-            bg="$background"
-            opacity={0.5}
+            bg="background"
+            opacity="0.5 enter:0 exit:0"
             transition="quick"
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
           />
         </Sheet>
       </Adapt>
 
       <Dialog.Portal>
-        <Dialog.Overlay
-          key="overlay"
-          transition="quick"
-          opacity={0.5}
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
-        />
+        <Dialog.Overlay key="overlay" transition="quick" opacity="0.5 enter:0 exit:0" />
 
         <Dialog.Content
           key="content"
           animateOnly={['transform', 'opacity']}
-          transition={[
-            'quick',
-            {
-              opacity: {
-                overshootClamping: true,
-              },
-            },
-          ]}
-          enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
-          exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
-          p="$4"
-          bg="$color2"
+          transition={['quick', { opacity: { overshootClamping: true } }]}
+          x="enter:0 exit:0"
+          y="enter:-20px exit:10px"
+          opacity="enter:0 exit:0"
+          scale="enter:0.9 exit:0.95"
+          p="4"
+          bg="color2"
           borderWidth={1}
-          borderColor="$borderColor"
+          borderColor="border-color"
           elevate
         >
-          <YStack gap="$4" maxW={500}>
-            <Dialog.Title size="$6" fontWeight="600">
+          <YStack gap="4" maxW={500}>
+            <Dialog.Title size="6" fontWeight="600">
               Report Post
             </Dialog.Title>
 
-            <YStack gap="$3">
-              <SizableText size="$4" color="$color11">
+            <YStack gap="3">
+              <SizableText size="4" color="color11">
                 Why are you reporting this post?
               </SizableText>
 
               <RadioGroup value={reportReason} onValueChange={setReportReason}>
-                <YStack gap="$3">
+                <YStack gap="3">
                   {REPORT_REASONS.map((reason) => (
-                    <XStack key={reason.value} gap="$3" items="center">
+                    <XStack key={reason.value} gap="3" items="center">
                       <RadioGroup.Item
                         value={reason.value}
                         id={`report-reason-${reason.value}`}
-                        size="$3"
+                        size="3"
                       >
                         <RadioGroup.Indicator />
                       </RadioGroup.Item>
                       <Label
                         htmlFor={`report-reason-${reason.value}`}
                         flex={1}
-                        size="$4"
-                        color="$color12"
+                        color="color12"
+                        size="4"
                       >
                         {reason.label}
                       </Label>
@@ -141,9 +128,9 @@ export function ReportPostDialog({ postId, open, onOpenChange }: ReportPostDialo
               </RadioGroup>
             </YStack>
 
-            <XStack gap="$3" justify="flex-end">
+            <XStack gap="3" justify="flex-end">
               <Dialog.Close asChild>
-                <Button bg="$color3">Cancel</Button>
+                <Button bg="color3">Cancel</Button>
               </Dialog.Close>
               <Button
                 onPress={handleSubmit}

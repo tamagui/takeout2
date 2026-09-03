@@ -49,7 +49,7 @@ export const AIChatInput = memo(
 
     return (
       <View>
-        <XStack p="$2" gap="$2" items="flex-end">
+        <XStack p="2" gap="2" items="flex-end">
           <GlassView
             borderRadius={22}
             containerStyle={{ width: 44, height: 44, borderRadius: 22 }}
@@ -69,21 +69,19 @@ export const AIChatInput = memo(
                 {hasImage && (
                   <YStack
                     key="image-preview"
-                    height={IMAGE_SECTION_HEIGHT}
-                    opacity={1}
-                    scale={1}
+                    h={`${IMAGE_SECTION_HEIGHT}px enter:0px exit:0px`}
+                    opacity="1 enter:0 exit:0"
+                    scale="1 enter:0.9 exit:0.9"
                     transition="300ms"
-                    enterStyle={{ height: 0, opacity: 0, scale: 0.9 }}
-                    exitStyle={{ height: 0, opacity: 0, scale: 0.9 }}
                     overflow="hidden"
                   >
-                    <XStack p="$3" pb={0}>
+                    <XStack p="3" pb={0}>
                       <View position="relative">
-                        <View width={64} height={64} rounded="$4" overflow="hidden">
+                        <View w={64} h={64} rounded="4" overflow="hidden">
                           <Image
                             src={selectedImage ?? ''}
-                            width={64}
-                            height={64}
+                            w={64}
+                            h={64}
                             objectFit="cover"
                           />
                         </View>
@@ -91,19 +89,17 @@ export const AIChatInput = memo(
                           position="absolute"
                           t={-8}
                           r={-8}
-                          bg="$color4"
-                          width={24}
-                          height={24}
-                          rounded="$10"
+                          bg="color4"
+                          w={24}
+                          h={24}
+                          rounded="10"
                           items="center"
                           justify="center"
-                          onPress={onRemoveImage}
-                          pressStyle={{ opacity: 0.7 }}
-                          opacity={1}
-                          scale={1}
-                          rotate="0deg"
+                          opacity="1 press:0.7 enter:0"
+                          scale="1 enter:0"
+                          rotate="0deg enter:-90deg"
                           transition="quick"
-                          enterStyle={{ opacity: 0, scale: 0, rotate: '-90deg' }}
+                          onPress={onRemoveImage}
                         >
                           <XIcon size={14} color="$color11" />
                         </View>
@@ -114,16 +110,16 @@ export const AIChatInput = memo(
               </AnimatePresence>
 
               <Input
-                unstyled
                 value={message}
                 onChangeText={setMessage}
                 placeholder="Type a message"
                 minH={44}
                 maxH={100}
-                p="$3"
-                color="$color12"
+                p="3"
+                color="color12"
                 onSubmitEditing={handleSend}
-                rows={4}
+                multiline
+                numberOfLines={4}
               />
             </YStack>
           </GlassView>

@@ -56,7 +56,7 @@ export const AnimatedBlurHeader = memo(
         )
       }
 
-      return <XStack width={36} />
+      return <XStack w={36} />
     }
 
     return (
@@ -65,27 +65,24 @@ export const AnimatedBlurHeader = memo(
         t={0}
         l={0}
         r={0}
-        height={totalHeaderHeight}
+        h={totalHeaderHeight}
         z={100}
         pt={insets.top}
-        bg="$background"
-        style={{
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-        }}
+        bg="background"
+        backdropFilter="blur(20px)"
       >
-        <XStack flex={1} items="center" justify="space-between" px="$3">
-          <XStack width={60} items="center" justify="flex-start">
+        <XStack flex={1} items="center" justify="space-between" px="3">
+          <XStack w={60} items="center" justify="flex-start">
             {renderLeftContent()}
           </XStack>
 
           <XStack flex={1} items="center" justify="center">
-            <SizableText fontSize="$5" fontWeight="600" color="$color" numberOfLines={1}>
+            <SizableText fontSize="5" fontWeight="600" color="color" numberOfLines={1}>
               {title}
             </SizableText>
           </XStack>
 
-          <XStack width={60} items="center" justify="flex-end">
+          <XStack w={60} items="center" justify="flex-end">
             {rightContent}
           </XStack>
         </XStack>

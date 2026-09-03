@@ -88,7 +88,7 @@ export const DocsMenuContents = () => {
   // always render accordion layout to avoid SSR/client mismatch
   // mobile styling is handled via responsive props in SubSection
   return (
-    <YStack width="100%" ref={containerRef as any} position="relative">
+    <YStack w="100%" ref={containerRef as any} position="relative">
       <ActiveIndicator
         items={itemPositions}
         activeIndex={activeIndex}
@@ -114,7 +114,7 @@ const SubSection = ({ section, items }: { section: DocsSection; items: Item[] })
   const { currentPath } = useDocsMenu()
 
   const content = (
-    <YStack px="$2">
+    <YStack px="2">
       {items.map(({ page }, index) => {
         const isActive = currentPath === page.route
         return (
@@ -125,7 +125,7 @@ const SubSection = ({ section, items }: { section: DocsSection; items: Item[] })
             key={`${page.route}${index}`}
           >
             {page.title}
-            {page.pro && <ProBadge ml="$2" />}
+            {page.pro && <ProBadge ml="2" />}
           </DocsRouteNavItem>
         )
       })}
@@ -133,16 +133,16 @@ const SubSection = ({ section, items }: { section: DocsSection; items: Item[] })
   )
 
   if (!section.title) {
-    return <YStack mb="$2">{content}</YStack>
+    return <YStack mb="2">{content}</YStack>
   }
 
   return (
-    <Accordion.Item borderWidth={0} value={section.title || 'base'} mb="$4">
-      <Accordion.Trigger unstyled bg="transparent" borderWidth={0}>
+    <Accordion.Item borderWidth={0} mb="4" value={section.title || 'base'}>
+      <Accordion.Trigger bg="transparent" borderWidth={0} p="1px 6px">
         {({ open }: { open: boolean }) => {
           return (
-            <XStack p="$2" rounded="$3" items="center" width="100%">
-              <Paragraph size="$5" fontWeight="600" color="$color12">
+            <XStack p="2" rounded="3" items="center" w="100%">
+              <Paragraph size="5" fontWeight="600" color="color12">
                 {section.title}
               </Paragraph>
 
@@ -157,12 +157,7 @@ const SubSection = ({ section, items }: { section: DocsSection; items: Item[] })
       </Accordion.Trigger>
 
       <Accordion.HeightAnimator overflow="hidden" transition="medium">
-        <Accordion.Content
-          unstyled
-          transition="medium"
-          bg="transparent"
-          exitStyle={{ opacity: 0 }}
-        >
+        <Accordion.Content transition="medium" bg="transparent" p={0} opacity="exit:0">
           {content}
         </Accordion.Content>
       </Accordion.HeightAnimator>
@@ -192,13 +187,13 @@ const ActiveIndicator = ({
       position="absolute"
       l={0}
       t={topPosition}
-      height={indicatorHeight}
-      width={3}
-      bg="$color12"
-      rounded="$2"
+      h={indicatorHeight}
+      w={3}
+      bg="color12"
+      rounded="2"
       transition="quick"
       z={999}
-      enterStyle={{ opacity: 0 }}
+      opacity="enter:0"
     />
   )
 }

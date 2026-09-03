@@ -1,11 +1,15 @@
 import { memo } from 'react'
 import { G, Path, Rect, Svg } from 'react-native-svg'
 
+import { useIconProps } from '../useIconProps'
+
 import type { IconProps } from '../types'
 
-export const TamaguiLogo = memo(({ size = 24, ...svgProps }: IconProps) => {
+export const TamaguiLogo = memo((props: IconProps) => {
+  const { width, height, fill: _fill, ...svgProps } = useIconProps({ size: 24, ...props })
+
   return (
-    <Svg width={size} height={size} viewBox="0 0 32 32" fill="none" {...svgProps}>
+    <Svg width={width} height={height} viewBox="0 0 32 32" fill="none" {...svgProps}>
       <G stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
         <Rect fill="#000000" x="11" y="4" width="14" height="8" />
         <Path

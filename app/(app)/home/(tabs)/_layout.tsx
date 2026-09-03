@@ -9,7 +9,7 @@ export function TabsLayout() {
     <>
       <MainHeader />
       <Spacer height={50} />
-      <View flex={1} pb={60} $lg={{ pb: 0 }}>
+      <View flex={1} pb="60px lg:0px">
         <Slot />
       </View>
       <BottomTabBar />

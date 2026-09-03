@@ -3,7 +3,7 @@ import * as Notifications from 'expo-notifications'
 import { useRouter } from 'one'
 import { useEffect } from 'react'
 
-import { toast } from '@tamagui/toast/v2'
+import { toast } from '@tamagui/toast'
 
 type NotificationData = {
   postId?: string

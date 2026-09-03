@@ -78,8 +78,8 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
   const renderEmpty = useCallback(() => {
     if (isLoading) return null
     return (
-      <YStack p="$4" items="center" justify="center" mt="$4">
-        <H5 mt="$3">No posts yet</H5>
+      <YStack p="4" items="center" justify="center" mt="4">
+        <H5 mt="3">No posts yet</H5>
       </YStack>
     )
   }, [isLoading])
@@ -87,7 +87,7 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
   const renderFooter = useCallback(() => {
     if (isLoadingMore) {
       return (
-        <YStack p="$4" items="center" justify="center">
+        <YStack p="4" items="center" justify="center">
           <Spinner size="small" />
         </YStack>
       )

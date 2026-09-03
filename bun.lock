@@ -144,7 +144,7 @@
     },
     "packages/better-auth-utils": {
       "name": "@take-out/better-auth-utils",
-      "version": "0.7.14",
+      "version": "0.7.15",
       "dependencies": {
         "@take-out/helpers": "0.7.13",
         "jose": "^6.0.10",
@@ -165,7 +165,7 @@
     },
     "packages/cli": {
       "name": "@take-out/cli",
-      "version": "0.7.14",
+      "version": "0.7.15",
       "bin": {
         "takeout": "./src/cli.ts",
         "tko": "./src/cli.ts",
@@ -193,7 +193,7 @@
     },
     "packages/create-takeout": {
       "name": "create-takeout",
-      "version": "0.7.14",
+      "version": "0.7.15",
       "bin": "./run.js",
       "dependencies": {
         "citty": "^0.1.6",
@@ -208,7 +208,7 @@
     },
     "packages/database": {
       "name": "@take-out/database",
-      "version": "0.7.14",
+      "version": "0.7.15",
       "bin": {
         "database": "./cli.cjs",
       },
@@ -237,11 +237,11 @@
     },
     "packages/env": {
       "name": "@take-out/env",
-      "version": "0.7.14",
+      "version": "0.7.15",
     },
     "packages/helpers": {
       "name": "@take-out/helpers",
-      "version": "0.7.14",
+      "version": "0.7.15",
       "dependencies": {
         "dequal": "^2.0.3",
       },
@@ -255,11 +255,13 @@
         "react-native": "*",
       },
       "peerDependencies": {
+        "@rocicorp/zero": "*",
         "expo-clipboard": "*",
         "react": "*",
         "react-native": "*",
       },
       "optionalPeers": [
+        "@rocicorp/zero",
         "expo-clipboard",
         "react",
         "react-native",
@@ -267,7 +269,7 @@
     },
     "packages/hooks": {
       "name": "@take-out/hooks",
-      "version": "0.7.14",
+      "version": "0.7.15",
       "dependencies": {
         "@take-out/helpers": "0.7.13",
       },
@@ -286,14 +288,14 @@
     },
     "packages/native": {
       "name": "@take-out/native",
-      "version": "0.7.14",
+      "version": "0.7.15",
       "peerDependencies": {
         "expo-crypto": "*",
       },
     },
     "packages/native-hot-update": {
       "name": "@take-out/native-hot-update",
-      "version": "0.7.14",
+      "version": "0.7.15",
       "devDependencies": {
         "@tamagui/build": "2.3.1",
         "@types/react": "^18.3.18",
@@ -306,11 +308,15 @@
         "expo-application": "*",
         "react": "*",
         "react-native": "*",
+        "react-native-mmkv": "*",
       },
+      "optionalPeers": [
+        "react-native-mmkv",
+      ],
     },
     "packages/run": {
       "name": "@take-out/run",
-      "version": "0.7.14",
+      "version": "0.7.15",
       "dependencies": {
         "@lydell/node-pty": "^1.2.0-beta.3",
         "semver": "^7.7.3",
@@ -321,7 +327,7 @@
     },
     "packages/scripts": {
       "name": "@take-out/scripts",
-      "version": "0.7.14",
+      "version": "0.7.15",
       "dependencies": {
         "@clack/prompts": "^0.8.2",
         "@take-out/helpers": "0.7.13",

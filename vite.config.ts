@@ -112,9 +112,15 @@ export default {
       },
 
       native: {
-        bundler: 'metro',
+        // ONE_NATIVE_BUNDLER=vite runs the same app through vxrn's own native
+        // bundler instead of metro, so the two paths can be compared directly.
+        bundler: (process.env.ONE_NATIVE_BUNDLER === 'vite' ? 'vite' : 'metro') as 'metro',
         bundlerOptions: {
           watchman: false, // had some slowness
+          // the native transform path runs no babel, so hot-updater's plugin is
+          // replaced there by an oxc port of the one transform this app uses.
+          // resolved from the project root inside the metro worker.
+          nativeTransformModules: ['./scripts/hot-update/native-transform.cjs'],
           babelConfigOverrides: (config) => {
             return {
               ...config,
@@ -122,8 +128,10 @@ export default {
                 // React Compiler for automatic memoization - must run first
                 'babel-plugin-react-compiler',
                 ...(config?.plugins || []),
-                // Hot Updater (React Native OTA solution)
-                'hot-updater/babel-plugin',
+                // Hot Updater (React Native OTA solution). on the native
+                // transform path nativeTransformModules above does its job
+                // instead, since there is no babel there to run it.
+                ...(process.env.ONE_METRO_NATIVE_TRANSFORMS ? [] : ['hot-updater/babel-plugin']),
                 // reanimated worklet compilation - MUST be last
                 'react-native-reanimated/plugin',
               ],

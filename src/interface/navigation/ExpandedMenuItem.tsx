@@ -109,7 +109,7 @@ export const ExpandedMenuItem = memo(
           />
 
           <View w={28} h={28} items="center" justify="center" mr="3">
-            <Icon size={20} color={isSelected ? '$color12' : '$color10'} />
+            <Icon size={20} color={isSelected ? 'color12' : 'color10'} />
           </View>
 
           <SizableText

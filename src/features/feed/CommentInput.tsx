@@ -86,7 +86,7 @@ export function CommentInput({
                 {isSubmitting ? (
                   <Spinner size="small" color="color" />
                 ) : (
-                  <PaperPlaneTiltIcon size={18} color="$color" />
+                  <PaperPlaneTiltIcon size={18} color="color" />
                 )}
               </Button>
             </YStack>
@@ -126,7 +126,7 @@ export function CommentInput({
                 {isSubmitting ? (
                   <Spinner size="small" color="color" />
                 ) : (
-                  <PaperPlaneTiltIcon size={18} color="$color" />
+                  <PaperPlaneTiltIcon size={18} color="color" />
                 )}
               </Button>
             </YStack>

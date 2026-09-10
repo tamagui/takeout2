@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import {
   html,
   Paragraph,
@@ -14,6 +14,7 @@ import { Button } from '~/interface/buttons/Button'
 import { CheckIcon } from '~/interface/icons/phosphor/CheckIcon'
 import { CopyIcon } from '~/interface/icons/phosphor/CopyIcon'
 import { TerminalIcon } from '~/interface/icons/phosphor/TerminalIcon'
+import { getBashText } from './useBashCommand'
 
 const CodeBlockFrame = styled(YStack, {
   position: 'relative',
@@ -43,7 +44,7 @@ const Code = styled(SizableText, {
   p: '4',
   fontFamily: 'mono',
   fontSize: 15,
-  lineHeight: 25,
+  lineHeight: '25px',
   color: 'color12',
   whiteSpace: 'pre',
 })
@@ -66,7 +67,7 @@ export function DocsCodeBlock({
   className,
   fileName,
 }: {
-  children: any
+  children: ReactNode
   className?: string
   fileName?: string
 }) {
@@ -75,10 +76,10 @@ export function DocsCodeBlock({
   const isTerminal = className === 'language-bash' || className === 'language-sh'
   const showHeader = fileName
 
-  const handleCopy = () => {
-    const code = typeof children === 'string' ? children : children?.props?.children
+  const handleCopy = async () => {
+    const code = getBashText(children)
     if (code) {
-      navigator.clipboard.writeText(code)
+      await navigator.clipboard.writeText(code)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     }
@@ -88,7 +89,7 @@ export function DocsCodeBlock({
     <CodeBlockFrame>
       {showHeader && (
         <CodeBlockHeader>
-          {isTerminal && <TerminalIcon size={14} color="$color11" />}
+          {isTerminal && <TerminalIcon size={14} color="color11" />}
           <Paragraph size="3" color="color11">
             {fileName || (isTerminal ? 'Terminal' : '')}
           </Paragraph>

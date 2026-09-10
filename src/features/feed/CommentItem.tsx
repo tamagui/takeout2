@@ -21,7 +21,7 @@ export const CommentItem = memo(
         testID="comment-item"
         data-testid="comment-item"
         data-comment-content={content}
-        transition={['200ms', { delay: index * 100 }]}
+        transition={{ duration: 200, delay: index * 100 }}
         gap="3"
         py="1-5"
         opacity="enter:0"
@@ -33,7 +33,7 @@ export const CommentItem = memo(
             <SizableText size="3" fontWeight="600" color="color12">
               {username || 'Unknown'}
             </SizableText>
-            <DotIcon size={14} color="$color8" />
+            <DotIcon size={14} color="color8" />
             <SizableText size="2" color="color9">
               {formatDistanceToNow(createdAt)}
             </SizableText>

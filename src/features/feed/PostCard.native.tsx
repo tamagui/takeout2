@@ -112,7 +112,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
       <XStack items="center" gap="3" p="2">
         <Link href={`/home/feed/post/${post.id}`} asChild>
           <XStack items="center" gap="2">
-            <ChatCircleDotsIcon size={26} color="$color" />
+            <ChatCircleDotsIcon size={26} color="color" />
             {typeof post.commentCount === 'number' && post.commentCount > 0 && (
               <SizableText size="4" fontWeight="700">
                 {post.commentCount}

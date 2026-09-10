@@ -126,7 +126,7 @@ export const NotificationPage = () => {
         pb="4"
         opacity="enter:0"
         y="enter:20px"
-        transition={['medium', { delay: 1800 }]}
+        transition={{ preset: 'medium', delay: 1800 }}
       >
         <Button
           size="large"

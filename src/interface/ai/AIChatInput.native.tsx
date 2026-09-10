@@ -55,7 +55,7 @@ export const AIChatInput = memo(
             containerStyle={{ width: 44, height: 44, borderRadius: 22 }}
           >
             <View flex={1} items="center" justify="center" onPress={onPlusPress}>
-              <PlusIcon size={24} color="$color11" />
+              <PlusIcon size={24} color="color11" />
             </View>
           </GlassView>
 
@@ -101,7 +101,7 @@ export const AIChatInput = memo(
                           transition="quick"
                           onPress={onRemoveImage}
                         >
-                          <XIcon size={14} color="$color11" />
+                          <XIcon size={14} color="color11" />
                         </View>
                       </View>
                     </XStack>
@@ -141,7 +141,7 @@ export const AIChatInput = memo(
                 opacity={canSend ? 1 : 0}
                 scale={canSend ? 1 : 0.8}
               >
-                <ArrowUpIcon size={24} color="$color11" />
+                <ArrowUpIcon size={24} color="color11" />
               </View>
               <View
                 position="absolute"
@@ -149,7 +149,7 @@ export const AIChatInput = memo(
                 opacity={canSend ? 0 : 1}
                 scale={canSend ? 0.8 : 1}
               >
-                <MicrophoneIcon size={24} color="$color11" />
+                <MicrophoneIcon size={24} color="color11" />
               </View>
             </View>
           </GlassView>

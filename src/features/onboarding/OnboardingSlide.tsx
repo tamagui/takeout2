@@ -236,7 +236,7 @@ function FeatureCard({ feature, size, width, height, horizontal }: FeatureCardPr
       <View w={cardWidth} h={cardHeight} bg="color1" rounded={24}>
         <YStack flex={1} flexDirection="row" items="center" gap="4" px="5">
           <YStack w={48} h={48} items="center" justify="center" bg="color4" rounded={14}>
-            <Icon size={26} color="$color10" />
+            <Icon size={26} color="color10" />
           </YStack>
           <SizableText size="5" fontWeight="600" color="color12">
             {title}
@@ -251,7 +251,7 @@ function FeatureCard({ feature, size, width, height, horizontal }: FeatureCardPr
       <Glint rounded={24} />
       <YStack flex={1} items="center" justify="center" gap="3" p="5">
         <YStack w={64} h={64} items="center" justify="center" bg="color4" rounded={18}>
-          <Icon size={32} color="$color10" />
+          <Icon size={32} color="color10" />
         </YStack>
         <SizableText
           size="4"

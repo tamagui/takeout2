@@ -138,7 +138,7 @@ const components = {
     </html.ol>
   ),
   li: ({ children, className, id }: ContentProps<typeof html.li>) => (
-    <html.li display="list-item" className={className} id={id}>
+    <html.li className={className} id={id}>
       {Children.map(children, (child) =>
         typeof child === 'string' || typeof child === 'number' ? (
           <html.span>{child}</html.span>

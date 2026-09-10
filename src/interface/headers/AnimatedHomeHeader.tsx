@@ -33,7 +33,7 @@ export const AnimatedHomeHeader = memo(
       >
         <XStack flex={1} items="center" justify="space-between" px="3" pb="2">
           <Pressable w={40} h={40} items="center" justify="center">
-            <PlusIcon size={24} color="$color" />
+            <PlusIcon size={24} color="color" />
           </Pressable>
 
           <SizableText fontSize="6" fontWeight="700" color="color">
@@ -41,7 +41,7 @@ export const AnimatedHomeHeader = memo(
           </SizableText>
 
           <Pressable w={40} h={40} items="center" justify="center">
-            <BellIcon size={22} color="$color" />
+            <BellIcon size={22} color="color" />
           </Pressable>
         </XStack>
       </View>

@@ -35,8 +35,8 @@ export const SiteHeader = memo(() => {
               position="absolute"
               l="4 lg:0px"
               r="lg:0px"
-              t="0px"
-              b="0px"
+              t={0}
+              b={0}
               items="center"
               justify="lg:center"
               pointerEvents="none"
@@ -75,7 +75,7 @@ const SiteHeaderMenu = memo(() => {
         size="large"
         variant="transparent"
         circular
-        icon={<ListIcon size="$1" />}
+        icon={<ListIcon size="1" />}
         aria-label="Menu"
         onPress={() => setOpen(true)}
         display="md:none"

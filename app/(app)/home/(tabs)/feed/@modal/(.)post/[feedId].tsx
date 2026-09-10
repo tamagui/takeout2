@@ -122,7 +122,7 @@ export default function PostDetailModal() {
             <SizableText size="4" fontWeight="600" numberOfLines={1}>
               {author.username}
             </SizableText>
-            <DotIcon size={16} color="$color10" />
+            <DotIcon size={16} color="color10" />
             <SizableText size="3" color="color10">
               {formatDistanceToNow(post.createdAt)}
             </SizableText>
@@ -167,7 +167,7 @@ export default function PostDetailModal() {
             cursor="pointer"
             onPress={handleClose}
           >
-            <XIcon size={24} color="$color12" />
+            <XIcon size={24} color="color12" />
           </Button>
         </XStack>
         <YStack flex={1} bg="color1">
@@ -212,7 +212,10 @@ export default function PostDetailModal() {
         <Dialog.Content
           key="content"
           z={1_000_000}
-          transition={['200ms', { opacity: { overshootClamping: true } }]}
+          transition={{
+            duration: 200,
+            opacity: { duration: 200, spring: { overshootClamping: true } },
+          }}
           borderWidth={0.5}
           borderColor="color3"
           rounded="6"

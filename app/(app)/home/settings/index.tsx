@@ -23,7 +23,7 @@ const SettingRow = memo(
             justify="center"
             opacity={isActive ? 1 : 0.7}
           >
-            <Icon size="$6" color={isActive ? '$color12' : '$color11'} />
+            <Icon size="6" color={isActive ? 'color12' : 'color11'} />
           </View>
         )}
         <SizableText
@@ -49,7 +49,7 @@ const SettingRow = memo(
           >
             {Icon && (
               <View w={22} h={22} items="center" justify="center" opacity={0.7}>
-                <Icon size="$6" color="$color11" />
+                <Icon size="6" color="color11" />
               </View>
             )}
             <SizableText size="4" color="color11">
@@ -120,12 +120,12 @@ const MobileSettingRow = memo(({ item }: { item: SettingItem }) => {
       <XStack gap="3" items="center" flex={1}>
         {Icon && (
           <View w={24} items="center" justify="center">
-            <Icon size={20} color="$color11" />
+            <Icon size={20} color="color11" />
           </View>
         )}
         <SizableText size="5">{item.title}</SizableText>
       </XStack>
-      <CaretRightIcon size={16} color="$color8" />
+      <CaretRightIcon size={16} color="color8" />
     </MobileSettingRowFrame>
   )
 
@@ -141,12 +141,12 @@ const MobileSettingRow = memo(({ item }: { item: SettingItem }) => {
         <XStack gap="3" items="center" flex={1}>
           {Icon && (
             <View w={24} items="center" justify="center">
-              <Icon size={20} color="$color11" />
+              <Icon size={20} color="color11" />
             </View>
           )}
           <SizableText size="5">{item.title}</SizableText>
         </XStack>
-        <CaretRightIcon size={16} color="$color8" />
+        <CaretRightIcon size={16} color="color8" />
       </MobileSettingRowFrame>
     )
   }

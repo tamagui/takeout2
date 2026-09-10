@@ -13,22 +13,22 @@ export { showToast } from './helpers'
 const toastIcons = {
   success: (
     <Theme name="green">
-      <CheckCircleIcon size={18} color="$color10" />
+      <CheckCircleIcon size={18} color="color10" />
     </Theme>
   ),
   error: (
     <Theme name="red">
-      <XCircleIcon size={18} color="$color10" />
+      <XCircleIcon size={18} color="color10" />
     </Theme>
   ),
   warning: (
     <Theme name="yellow">
-      <WarningCircleIcon size={18} color="$color10" />
+      <WarningCircleIcon size={18} color="color10" />
     </Theme>
   ),
   info: (
     <Theme name="accent">
-      <InfoIcon size={18} color="$color10" />
+      <InfoIcon size={18} color="color10" />
     </Theme>
   ),
 }

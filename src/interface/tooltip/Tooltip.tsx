@@ -198,7 +198,6 @@ export const GlobalTooltipProvider = ({
           light: { height: 7, width: 0 },
         }}
         {...contentProps}
-        animateOnly={['transform', 'opacity', 'width', 'height']}
         animatePosition
       >
         <TamaguiTooltip.Arrow

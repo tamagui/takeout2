@@ -73,7 +73,7 @@ export const AvatarUpload = ({
           active
           size="medium"
           onPress={handleNativeImagePick}
-          icon={<PencilSimpleIcon size={16} color="$color10" />}
+          icon={<PencilSimpleIcon size={16} color="color10" />}
         />
       </XStack>
       <YStack>

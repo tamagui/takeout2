@@ -28,7 +28,7 @@ export const SearchButton = () => {
       bg="color2 hover:color3 press:color4"
       cursor="pointer"
     >
-      <MagnifyingGlassIcon size={14} color="$color8" />
+      <MagnifyingGlassIcon size={14} color="color8" />
       <Paragraph flex={1} text="left" ml="2" color="color9" size="3">
         Search
       </Paragraph>

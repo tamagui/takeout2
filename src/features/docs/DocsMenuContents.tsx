@@ -149,7 +149,7 @@ const SubSection = ({ section, items }: { section: DocsSection; items: Item[] })
               <XStack flex={1} />
 
               <Square transition="quick" rotate={open ? '90deg' : '0deg'}>
-                <CaretRightIcon color="$color9" size={10} />
+                <CaretRightIcon color="color9" size={10} />
               </Square>
             </XStack>
           )

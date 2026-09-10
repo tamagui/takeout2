@@ -19,7 +19,7 @@ export const FloatingCreateButton = () => {
           aria-label="Create post"
           onPress={() => dialogEmit({ type: 'create-post' })}
         >
-          <PlusIcon size={28} color="$color12" />
+          <PlusIcon size={28} color="color12" />
         </Button>
       </View>
     </View>

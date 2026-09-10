@@ -196,7 +196,7 @@ export const DialogCreatePost = () => {
             {!isUploading && !uploadError && (
               <Pressable position="absolute" t="3" r="3" onPress={handleRemoveImage}>
                 <Circle size={36} bg="background" items="center" justify="center">
-                  <XIcon size={20} color="$color11" />
+                  <XIcon size={20} color="color11" />
                 </Circle>
               </Pressable>
             )}
@@ -221,7 +221,7 @@ export const DialogCreatePost = () => {
               bg="color1"
             >
               <Circle size={56} bg="color2" items="center" justify="center">
-                <ImageIcon size={28} color="$color11" />
+                <ImageIcon size={28} color="color11" />
               </Circle>
               <YStack items="center" gap="2">
                 <SizableText size="5" fontWeight="600">

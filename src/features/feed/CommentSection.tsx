@@ -25,7 +25,7 @@ export function CommentSection({ comments }: CommentSectionProps) {
 
       {count === 0 ? (
         <YStack items="center" gap="3" py="6">
-          <ChatCircleDotsIcon size={36} color="$color8" />
+          <ChatCircleDotsIcon size={36} color="color8" />
           <Text size="3" color="color10">
             No comments yet
           </Text>

@@ -199,10 +199,11 @@ const ButtonFrame = styled(XStack, {
     },
 
     circular: {
-      true: (_, { props }) => {
-        const p = props as any
-        const size =
-          p.width || p.height || buttonSizes[(p.size as ButtonSizes) || 'medium']
+      true: (
+        _: boolean,
+        { props }: { props: { width?: number; height?: number; size?: ButtonSizes } },
+      ) => {
+        const size = props.width || props.height || buttonSizes[props.size || 'medium']
         return {
           padding: 0,
           rounded: 100,

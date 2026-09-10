@@ -24,17 +24,12 @@ import type {
 const SWIPE_THRESHOLD = 50
 
 // circle positions for each slide - adds visual variety
-const CIRCLE_POSITIONS: {
-  top?: number | string
-  bottom?: number | string
-  left?: number | string
-  right?: number | string
-}[] = [
+const CIRCLE_POSITIONS = [
   { top: -80, right: -80 }, // slide 0: top right
   { bottom: -60, left: -60 }, // slide 1: bottom left
   { top: -60, left: -60 }, // slide 2: top left
   { bottom: -80, right: -80 }, // slide 3: bottom right
-]
+] as const
 
 // web version - decorative panel for auth layout
 export function Onboarding(_props?: Partial<OnboardingProps>) {
@@ -334,7 +329,7 @@ function FeatureCard({
     >
       <Glint rounded={18} />
       <YStack w={36} h={36} items="center" justify="center" bg="color4" rounded={10}>
-        <Icon size={20} color="$color10" />
+        <Icon size={20} color="color10" />
       </YStack>
       <SizableText size="3" fontWeight="600" color="color12">
         {title}
@@ -368,7 +363,7 @@ function FeatureCardSquare({
     >
       <Glint rounded={18} />
       <YStack w={44} h={44} items="center" justify="center" bg="color5" rounded={12}>
-        <Icon size={24} color="$color11" />
+        <Icon size={24} color="color11" />
       </YStack>
       <SizableText
         size="2"

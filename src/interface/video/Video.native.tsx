@@ -1,6 +1,8 @@
 import { useEffect, useRef, type CSSProperties } from 'react'
 import { YStack, type YStackProps } from 'tamagui'
 
+import type { StackStyleBase } from '@tamagui/web'
+
 export type VideoProps = {
   src: string
   poster?: string
@@ -10,8 +12,8 @@ export type VideoProps = {
   muted?: boolean
   playsInline?: boolean
   preload?: 'none' | 'metadata' | 'auto'
-  width?: number | string
-  height?: number | string
+  width?: StackStyleBase['width']
+  height?: StackStyleBase['height']
   objectFit?: CSSProperties['objectFit']
   onLoadedData?: () => void
   onError?: (error: Event) => void

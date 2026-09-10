@@ -9,7 +9,7 @@ export const Logo = () => {
       <SizableText
         select="none"
         fontFamily="mono"
-        fontSize="16px"
+        fontSize={16}
         lineHeight="16px"
         fontWeight="600"
         letterSpacing={0.5}

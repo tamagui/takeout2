@@ -51,7 +51,7 @@ export const AnimatedBlurHeader = memo(
             glass
             circular
             onPress={handleBackPress}
-            icon={<CaretLeftIcon size={22} color="$color12" />}
+            icon={<CaretLeftIcon size={22} color="color12" />}
           />
         )
       }

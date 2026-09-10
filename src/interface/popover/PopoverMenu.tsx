@@ -23,7 +23,7 @@ export const PopoverMenu = ({
   snapPoints = [30],
 }: PopoverMenuProps) => {
   return (
-    <Popover name={name} size="$5" placement={placement}>
+    <Popover name={name} size="5" placement={placement}>
       <Popover.Trigger>{trigger}</Popover.Trigger>
 
       <Adapt when="max-md" platform="touch">

@@ -27,10 +27,10 @@ const IconContainer = styled(View, {
 
 const schemeSettings = ['light', 'dark', 'system'] as const
 
-export function ThemeSwitch({ size = '$2' }: { size?: SizeTokens }) {
+export function ThemeSwitch({ size = '2' }: { size?: SizeTokens }) {
   const { onPress, setting } = useToggleTheme()
 
-  const iconSize = size === '$1' ? 16 : size === '$2' ? 20 : size === '$3' ? 24 : 28
+  const iconSize = size === '1' ? 16 : size === '2' ? 20 : size === '3' ? 24 : 28
 
   return (
     <View items="center" gap="1">

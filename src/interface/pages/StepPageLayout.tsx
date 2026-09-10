@@ -59,7 +59,7 @@ export const StepPageLayout = ({
               glass
               circular
               onPress={() => router.back()}
-              icon={<CaretLeftIcon size={22} color="$color12" />}
+              icon={<CaretLeftIcon size={22} color="color12" />}
               disabled={disableBackButton}
             />
             {headerTitle && (
@@ -84,7 +84,7 @@ export const StepPageLayout = ({
               items="center"
               justify="center"
             >
-              <Icon size={28} color="$color11" />
+              <Icon size={28} color="color11" />
             </Circle>
           )}
 

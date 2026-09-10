@@ -20,7 +20,7 @@ const SettingRow = memo(({ item }: { item: SettingItem }) => {
         <XStack gap="3" items="center" flex={1}>
           {Icon && (
             <View w={24} items="center" justify="center">
-              <Icon size={20} color="$color11" />
+              <Icon size={20} color="color11" />
             </View>
           )}
           <SizableText size="5">{item.title}</SizableText>
@@ -35,12 +35,12 @@ const SettingRow = memo(({ item }: { item: SettingItem }) => {
       <XStack gap="3" items="center" flex={1}>
         {Icon && (
           <View w={24} items="center" justify="center">
-            <Icon size={20} color="$color11" />
+            <Icon size={20} color="color11" />
           </View>
         )}
         <SizableText size="5">{item.title}</SizableText>
       </XStack>
-      <CaretRightIcon size={16} color="$color8" />
+      <CaretRightIcon size={16} color="color8" />
     </SettingRowFrame>
   )
 
@@ -54,12 +54,12 @@ const SettingRow = memo(({ item }: { item: SettingItem }) => {
         <XStack gap="3" items="center" flex={1}>
           {Icon && (
             <View w={24} items="center" justify="center">
-              <Icon size={20} color="$color11" />
+              <Icon size={20} color="color11" />
             </View>
           )}
           <SizableText size="5">{item.title}</SizableText>
         </XStack>
-        <CaretRightIcon size={16} color="$color8" />
+        <CaretRightIcon size={16} color="color8" />
       </SettingRowFrame>
     )
   }

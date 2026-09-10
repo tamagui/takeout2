@@ -397,7 +397,7 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
                 justify="center"
                 rounded={14}
               >
-                <XIcon size={22} color="$color" />
+                <XIcon size={22} color="color" />
               </Pressable>
             </XStack>
 
@@ -552,7 +552,7 @@ const QuickMenuIcon = ({ item, index, isOpen, onPress }: QuickMenuIconProps) => 
         rounded={14}
         bg="color2"
       >
-        <Icon size={24} color="$color12" />
+        <Icon size={24} color="color12" />
       </Pressable>
     </Animated.View>
   )
@@ -645,7 +645,7 @@ const QuickMenuRow = ({ item, onPress, onRemove, onSwipeableRef }: QuickMenuRowP
             w="100%"
           >
             <View w={44} h={44} items="center" justify="center" rounded={12}>
-              <Icon size={20} color="$color12" />
+              <Icon size={20} color="color12" />
             </View>
             <SizableText fontSize="4" fontWeight="500" color="color">
               {item.label}

@@ -72,7 +72,7 @@ export function DocsLayout() {
                 <Link href={previous.route as Href} asChild>
                   <PaginationLinkFrame group="card">
                     <PaginationIcon side="previous">
-                      <CaretLeftIcon size={20} color="$color11" />
+                      <CaretLeftIcon size={20} color="color11" />
                     </PaginationIcon>
                     <PaginationTitle side="previous">
                       <SizableText select="none" size="5">
@@ -98,7 +98,7 @@ export function DocsLayout() {
                       </SizableText>
                     </PaginationTitle>
                     <PaginationIcon side="next">
-                      <CaretRightIcon size={20} color="$color11" />
+                      <CaretRightIcon size={20} color="color11" />
                     </PaginationIcon>
                   </PaginationLinkFrame>
                 </Link>

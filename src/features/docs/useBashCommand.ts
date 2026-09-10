@@ -121,7 +121,7 @@ export const stringIsCreateCommand = (text: string) => {
   )
 }
 
-function getBashText(children: ReactNode): string {
+export function getBashText(children: ReactNode): string {
   const extractText = (node: ReactNode): string => {
     if (typeof node === 'string') return node
     if (Array.isArray(node)) return node.map(extractText).join('')

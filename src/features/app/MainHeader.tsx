@@ -98,7 +98,7 @@ export const MainHeaderMenu = memo(() => {
         size="large"
         variant="transparent"
         circular
-        icon={<ListIcon size="$1" />}
+        icon={<ListIcon size="1" />}
         aria-label="Menu"
         onPress={() => setOpen(true)}
         display="md:none"

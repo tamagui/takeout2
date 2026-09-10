@@ -1,4 +1,5 @@
 import { createSystemFont, fonts as baseFonts } from '@tamagui/config/v5'
+import { withTailwindTypeScale } from '@tamagui/config/v6'
 import { isWeb } from 'tamagui'
 
 const mono = createSystemFont({
@@ -12,12 +13,12 @@ const mono = createSystemFont({
 })
 
 export const fonts = {
-  ...baseFonts,
-  body: {
+  heading: withTailwindTypeScale(baseFonts.heading),
+  body: withTailwindTypeScale({
     ...baseFonts.body,
     weight: {
       4: '400',
     },
-  },
-  mono,
+  }),
+  mono: withTailwindTypeScale(mono),
 }

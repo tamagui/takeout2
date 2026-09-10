@@ -70,7 +70,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
                       {username || 'Unknown'}
                     </SizableText>
                   </Link>
-                  <DotIcon size={16} color="$color10" />
+                  <DotIcon size={16} color="color10" />
                   <SizableText size="3" color="color10">
                     {formatDistanceToNow(post.createdAt)}
                   </SizableText>
@@ -100,7 +100,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
               <Button
                 variant="transparent"
                 size="medium"
-                icon={<ChatCircleIcon size={22} color="$color11" />}
+                icon={<ChatCircleIcon size={22} color="color11" />}
               >
                 {typeof post.commentCount === 'number' && post.commentCount > 0 && (
                   <Button.Text color="color11" fontWeight="600">

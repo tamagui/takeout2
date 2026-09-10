@@ -21,7 +21,7 @@ const EmptyState = memo(
   ({ style, sparklesStyle }: { style?: any; sparklesStyle?: any }) => (
     <Animated.View style={[{ alignItems: 'center', gap: 8 }, style]}>
       <Animated.View style={sparklesStyle}>
-        <SparkleIcon size={52} color="$color11" />
+        <SparkleIcon size={52} color="color11" />
       </Animated.View>
       <YStack items="center">
         <SizableText size="6" fontWeight="700">

@@ -120,7 +120,7 @@ export function Select({
                       </TamaguiSelect.ItemText>
                     </XStack>
                     <TamaguiSelect.ItemIndicator ml="auto">
-                      <CheckIcon size={12} color="$color9" />
+                      <CheckIcon size={12} color="color9" />
                     </TamaguiSelect.ItemIndicator>
                   </TamaguiSelect.Item>
                 )

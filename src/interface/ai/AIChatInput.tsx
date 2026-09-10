@@ -71,7 +71,7 @@ export const AIChatInput = memo(({ onSend, isLoading }: AIChatInputProps) => {
         {isLoading ? (
           <Spinner size="small" color="color11" />
         ) : (
-          <ArrowUpIcon size={24} color={canSend ? 'white' : '$color10'} />
+          <ArrowUpIcon size={24} color={canSend ? 'white' : 'color10'} />
         )}
       </SendButton>
     </XStack>

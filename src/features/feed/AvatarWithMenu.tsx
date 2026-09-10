@@ -71,7 +71,7 @@ export const AvatarWithMenu = memo(
                     }}
                     androidIconName={isFollowing ? 'ic_menu_delete' : 'ic_menu_add'}
                   >
-                    <HeartIcon size={18} color="$color10" />
+                    <HeartIcon size={18} color="color10" />
                   </Menu.ItemIcon>
                 </Menu.Item>
 
@@ -92,7 +92,7 @@ export const AvatarWithMenu = memo(
                 }}
                 androidIconName="ic_menu_myplaces"
               >
-                <UserIcon size={18} color="$color10" />
+                <UserIcon size={18} color="color10" />
               </Menu.ItemIcon>
             </Menu.Item>
           </Menu.Content>

@@ -73,7 +73,7 @@ export const AnimatedBlurHeader = memo(
             glass
             circular
             onPress={() => router.back()}
-            icon={<CaretLeftIcon size={22} color="$color12" />}
+            icon={<CaretLeftIcon size={22} color="color12" />}
           />
         )
       }

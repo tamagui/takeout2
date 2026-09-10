@@ -93,7 +93,7 @@ const PopoverContent = ({
             borderColor="color3"
             bg="color2"
             {...(typeof arrow === 'object' && arrow)}
-            size="$3.5"
+            size={40}
           />
         )}
       </AnimatePresence>

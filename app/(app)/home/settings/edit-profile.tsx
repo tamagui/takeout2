@@ -135,11 +135,11 @@ export const ProfileEditPage = () => {
                       <Spinner size="small" color="color10" />
                     ) : isUsernameInvalid || isUnavailable ? (
                       <Theme name="red">
-                        <XIcon size={18} color="$color10" />
+                        <XIcon size={18} color="color10" />
                       </Theme>
                     ) : isAvailable && debouncedUsername ? (
                       <Theme name="green">
-                        <CheckIcon size={18} color="$color10" />
+                        <CheckIcon size={18} color="color10" />
                       </Theme>
                     ) : null}
                   </XStack>

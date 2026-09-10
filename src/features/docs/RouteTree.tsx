@@ -100,10 +100,10 @@ export const RouteTree = ({
               >
                 <TreeRowContent>
                   <TreeRowName pl={indent * 20}>
-                    <Icon size={12} color="$color10" opacity={route.children ? 1 : 0.5} />
+                    <Icon size={12} color="color10" opacity={route.children ? 1 : 0.5} />
                     {StatusIcon && (
                       <Theme name={route.delete ? 'red' : 'green'}>
-                        <StatusIcon size={12} color="$color10" />
+                        <StatusIcon size={12} color="color10" />
                       </Theme>
                     )}
                     <Paragraph flex={1} overflow="hidden" fontFamily="mono" size="3">

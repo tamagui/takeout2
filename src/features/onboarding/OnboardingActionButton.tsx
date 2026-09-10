@@ -20,7 +20,7 @@ export function OnboardingActionButton({ onPrev, onNext }: OnboardingActionButto
         size={isWeb ? 'medium' : 'xl'}
         bg="color6 hover:color7 press:color4"
       >
-        <CaretLeftIcon size={18} color="$color11" />
+        <CaretLeftIcon size={18} color="color11" />
       </Button>
       <Button
         onPress={onNext}

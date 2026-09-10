@@ -60,8 +60,8 @@ const ZeroTestUIContent = memo(() => {
       bg="#1a1a2e"
       borderWidth={1}
       borderColor="#444"
-      rounded="8px"
-      p="12px"
+      rounded={8}
+      p={12}
       minW={320}
       maxH={500}
       overflow="auto"
@@ -69,9 +69,9 @@ const ZeroTestUIContent = memo(() => {
     >
       <html.span
         display="block"
-        mb="8px"
+        mb={8}
         fontFamily="mono"
-        fontSize="11px"
+        fontSize={11}
         fontWeight="700"
         color="#eee"
       >
@@ -100,14 +100,14 @@ function permStr(v: boolean | null | undefined): string {
 
 const Row = memo(({ label, value }: { label: string; value?: string | null }) => (
   <html.div flexDirection="row" gap={8} items="center" mb={2}>
-    <html.span minW={150} opacity={0.6} fontFamily="mono" fontSize="11px" color="#eee">
+    <html.span minW={150} opacity={0.6} fontFamily="mono" fontSize={11} color="#eee">
       {label}
     </html.span>
     <html.span
       data-testid={`zt-${label}`}
       overflowWrap="anywhere"
       fontFamily="mono"
-      fontSize="11px"
+      fontSize={11}
       color="#eee"
     >
       {value || '—'}

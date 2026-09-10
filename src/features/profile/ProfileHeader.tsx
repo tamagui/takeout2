@@ -92,7 +92,7 @@ export const ProfileHeader = memo(
 
           <ProfileActionPill>
             <ProfileActionItem onPress={handleShare}>
-              <ShareFatIcon size={18} color="$color11" />
+              <ShareFatIcon size={18} color="color11" />
             </ProfileActionItem>
             {isOwnProfile && (
               <>
@@ -100,7 +100,7 @@ export const ProfileHeader = memo(
                 <ProfileActionItem
                   onPress={() => router.push('/home/settings/edit-profile')}
                 >
-                  <PencilSimpleIcon size={18} color="$color11" />
+                  <PencilSimpleIcon size={18} color="color11" />
                 </ProfileActionItem>
               </>
             )}

@@ -44,7 +44,7 @@ export function PromoLinksRow() {
           >
             <Link href="https://tamagui.dev/takeout" target="_blank" hideExternalIcon>
               <PromoButton theme="accent">
-                <SparkleIcon size={14} color="$color10" />
+                <SparkleIcon size={14} color="color10" />
                 <PromoButtonText>Pro</PromoButtonText>
               </PromoButton>
             </Link>
@@ -63,7 +63,7 @@ export function PromoLinksRow() {
               hideExternalIcon
             >
               <PromoButton>
-                <GithubLogoIcon size={14} color="$color10" />
+                <GithubLogoIcon size={14} color="color10" />
                 <PromoButtonText>Free</PromoButtonText>
               </PromoButton>
             </Link>

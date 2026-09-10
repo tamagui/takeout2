@@ -358,8 +358,8 @@ function PhoneMockup() {
         <YStack
           overflow="hidden"
           position="relative"
-          w="286px"
-          h="593px"
+          w={286}
+          h={593}
           clipPath="url(#iphone-screen-clip)"
           style={{
             WebkitClipPath: 'url(#iphone-screen-clip)',
@@ -420,16 +420,16 @@ function CopyCommand() {
         pr="4"
         flex={1}
         fontFamily="mono"
-        fontSize="15px"
+        fontSize={15}
         fontWeight="700"
         ellipsis
       >
         {INSTALL_COMMAND}
       </Paragraph>
       {copied ? (
-        <CheckIcon size={18} color="$color10" />
+        <CheckIcon size={18} color="color10" />
       ) : (
-        <CopyIcon size={18} color="$color10" />
+        <CopyIcon size={18} color="color10" />
       )}
     </CommandBox>
   )
@@ -521,11 +521,11 @@ export function HeroSection() {
         {/* right side */}
         <YStack
           my="12"
-          w="300px"
+          w={300}
           x="0px sm:20px lg:-50px"
           items="center"
           position="relative"
-          minH="600px"
+          minH={600}
           scale="1 sm:0.9 lg:1"
           y="0px sm:20px lg:20px"
         >

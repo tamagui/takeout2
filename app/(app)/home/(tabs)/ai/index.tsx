@@ -16,7 +16,7 @@ interface Message {
 const EmptyState = memo(() => (
   <YStack items="center" gap="4" flex={1} justify="center" pb="10">
     <View w={80} h={80} rounded="6" bg="color3" items="center" justify="center">
-      <SparkleIcon size={40} color="$color11" />
+      <SparkleIcon size={40} color="color11" />
     </View>
     <YStack items="center" gap="2">
       <SizableText size="7" fontWeight="700">

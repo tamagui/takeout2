@@ -98,11 +98,11 @@ export const UserProfilePopoverContent = () => {
               <Spinner size="small" color="color10" />
             ) : isUsernameInvalid || isUnavailable ? (
               <Theme name="red">
-                <XIcon size={16} color="$color10" />
+                <XIcon size={16} color="color10" />
               </Theme>
             ) : isAvailable && debouncedUsername ? (
               <Theme name="green">
-                <CheckIcon size={16} color="$color10" />
+                <CheckIcon size={16} color="color10" />
               </Theme>
             ) : null}
           </XStack>

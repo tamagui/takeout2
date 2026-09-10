@@ -192,7 +192,7 @@ const DebugRow = memo(
       <SizableText
         size="1"
         color="color11"
-        fontFamily={`${mono ? 'mono' : undefined}`}
+        fontFamily={mono ? 'mono' : undefined}
         numberOfLines={1}
         ellipsizeMode="middle"
       >

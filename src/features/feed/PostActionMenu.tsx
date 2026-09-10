@@ -154,7 +154,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
               ios={{ name: 'arrow.down.circle' }}
               androidIconName="ic_menu_save"
             >
-              <DownloadSimpleIcon size={18} color="$color10" />
+              <DownloadSimpleIcon size={18} color="color10" />
             </Menu.ItemIcon>
           </Menu.Item>
 
@@ -170,7 +170,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
                 ios={{ name: 'person.circle' }}
                 androidIconName="ic_menu_myplaces"
               >
-                <UserCircleIcon size={18} color="$color10" />
+                <UserCircleIcon size={18} color="color10" />
               </Menu.ItemIcon>
             </Menu.Item>
           )}
@@ -186,7 +186,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
               >
                 <Menu.ItemTitle color="color10">Delete Post</Menu.ItemTitle>
                 <Menu.ItemIcon ios={{ name: 'trash' }} androidIconName="ic_menu_delete">
-                  <TrashIcon size={18} color="$color10" />
+                  <TrashIcon size={18} color="color10" />
                 </Menu.ItemIcon>
               </Menu.Item>
             </Theme>
@@ -209,7 +209,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
                   />
                 )}
                 <Menu.ItemTitle>Report</Menu.ItemTitle>
-                <CaretRightIcon size={18} color="$color10" />
+                <CaretRightIcon size={18} color="color10" />
               </Menu.SubTrigger>
 
               <Menu.Portal zIndex={200}>
@@ -253,7 +253,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
                   ios={{ name: 'xmark.circle' }}
                   androidIconName="ic_menu_close_clear_cancel"
                 >
-                  <XCircleIcon size={18} color="$color10" />
+                  <XCircleIcon size={18} color="color10" />
                 </Menu.ItemIcon>
               </Menu.Item>
             </Theme>
@@ -269,7 +269,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
               >
                 <Menu.ItemTitle color="color10">Hide Post (Admin)</Menu.ItemTitle>
                 <Menu.ItemIcon ios={{ name: 'eye.slash' }} androidIconName="ic_menu_view">
-                  <WarningCircleIcon size={18} color="$color10" />
+                  <WarningCircleIcon size={18} color="color10" />
                 </Menu.ItemIcon>
               </Menu.Item>
             </Theme>

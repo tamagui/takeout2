@@ -81,8 +81,11 @@ export function ReportPostDialog({ postId, open, onOpenChange }: ReportPostDialo
 
         <Dialog.Content
           key="content"
-          animateOnly={['transform', 'opacity']}
-          transition={['quick', { opacity: { overshootClamping: true } }]}
+          transition={{
+            preset: 'quick',
+            properties: 'transform, opacity',
+            opacity: { preset: 'quick', spring: { overshootClamping: true } },
+          }}
           x="enter:0 exit:0"
           y="enter:-20px exit:10px"
           opacity="enter:0 exit:0"

@@ -21,7 +21,7 @@ export const NotificationCard = memo(
       <YStack
         position="absolute"
         w="100%"
-        transition={['250ms', { delay: index * 100 }]}
+        transition={{ duration: 250, delay: index * 100 }}
         y={isSpread ? finalY : stackedY}
         rotate={isSpread ? '0deg' : `${stackedRotate}deg`}
         scale={`${isSpread ? 1 : stackedScale} enter:0.9`}

@@ -109,7 +109,7 @@ export const FeedDetailPage = memo(() => {
             <SizableText size="4" fontWeight="600" numberOfLines={1}>
               {author.username}
             </SizableText>
-            <DotIcon size={16} color="$color10" />
+            <DotIcon size={16} color="color10" />
             <SizableText size="3" color="color10">
               {formatDistanceToNow(post.createdAt)}
             </SizableText>
@@ -156,7 +156,7 @@ export const FeedDetailPage = memo(() => {
               cursor="pointer"
               onPress={handleBack}
             >
-              <CaretLeftIcon size={24} color="$color12" />
+              <CaretLeftIcon size={24} color="color12" />
             </Button>
           </XStack>
           <YStack flex={1} bg="color1">

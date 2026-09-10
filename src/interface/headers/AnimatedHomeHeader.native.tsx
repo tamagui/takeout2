@@ -129,7 +129,7 @@ export const AnimatedHomeHeader = memo(({ scrollY }: AnimatedHomeHeaderProps) =>
             items="center"
             justify="center"
           >
-            <PlusIcon size={24} color="$color12" />
+            <PlusIcon size={24} color="color12" />
           </Pressable>
 
           <Pressable onPress={handleFeedPress} flexDirection="row" items="center" gap="2">
@@ -137,7 +137,7 @@ export const AnimatedHomeHeader = memo(({ scrollY }: AnimatedHomeHeaderProps) =>
               Takeout
             </SizableText>
             <Animated.View style={animatedCaretStyle}>
-              <CaretDownIcon size={16} color="$color12" />
+              <CaretDownIcon size={16} color="color12" />
             </Animated.View>
           </Pressable>
 
@@ -148,7 +148,7 @@ export const AnimatedHomeHeader = memo(({ scrollY }: AnimatedHomeHeaderProps) =>
             items="center"
             justify="center"
           >
-            <BellIcon size={22} color="$color12" />
+            <BellIcon size={22} color="color12" />
           </Pressable>
         </XStack>
       </Animated.View>

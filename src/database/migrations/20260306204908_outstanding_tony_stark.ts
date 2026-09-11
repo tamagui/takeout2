@@ -7,5 +7,8 @@ CREATE INDEX "post_createdAt_id_desc_idx" ON "post" USING btree ("createdAt","id
 CREATE INDEX "userPublic_username_idx" ON "userPublic" USING btree ("username");`
 
 export async function up(client: PoolClient) {
-  await client.query(sql)
+  for (const stmt of sql.split('--> statement-breakpoint')) {
+    const trimmed = stmt.trim()
+    if (trimmed) await client.query(trimmed)
+  }
 }

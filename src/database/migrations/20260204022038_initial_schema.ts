@@ -216,5 +216,8 @@ FOR EACH ROW
 EXECUTE FUNCTION update_post_comment_count();`
 
 export async function up(client: PoolClient) {
-  await client.query(sql)
+  for (const stmt of sql.split('--> statement-breakpoint')) {
+    const trimmed = stmt.trim()
+    if (trimmed) await client.query(trimmed)
+  }
 }

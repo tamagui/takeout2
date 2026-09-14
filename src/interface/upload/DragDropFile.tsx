@@ -245,15 +245,15 @@ export const DropOverlay: Component<{ hidden: boolean }> = memo(({ hidden }) => 
       items="center"
       justify="center"
       transition="medium"
-      bg="$shadow4"
+      bg="shadow-color"
       opacity={hidden ? 0 : 1}
       backdropFilter="blur(10px)"
       pointerEvents="none"
     >
       {hidden ? null : (
-        <YStack items="center" justify="center" gap="$4">
+        <YStack items="center" justify="center" gap="4">
           <ImageIcon size={30} color="$color" />
-          <Paragraph fontFamily="$mono" size="$5" color="#fff">
+          <Paragraph fontFamily="mono" color="#fff" size="5">
             Drop to upload
           </Paragraph>
         </YStack>

@@ -16,28 +16,22 @@ import type { User } from '~/data/types'
 const BlockedUserItem = memo(
   ({ user, onUnblock }: { user: User; onUnblock: (user: User) => void }) => {
     return (
-      <ListItem
-        bg="$background"
-        hoverStyle={{ bg: '$color1' }}
-        pressStyle={{ bg: '$color3' }}
-        px="$4"
-        py="$3"
-      >
-        <Avatar image={user.image} size={44} mr="$3" />
+      <ListItem bg="background hover:color1 press:color3" px="4" py="3">
+        <Avatar image={user.image} size={44} mr="3" />
 
-        <YStack gap="$1" flex={1}>
-          <Text size="$3" color="$color10" numberOfLines={1}>
+        <YStack gap="1" flex={1}>
+          <Text size="3" color="color10" numberOfLines={1}>
             @{user.username}
           </Text>
         </YStack>
 
         <Button
           size="small"
-          bg="$color3"
+          bg="color3"
+          rounded="5"
+          px="3"
+          py="2"
           onPress={() => onUnblock(user)}
-          rounded="$5"
-          px="$3"
-          py="$2"
         >
           Unblock
         </Button>
@@ -48,13 +42,13 @@ const BlockedUserItem = memo(
 
 const EmptyState = memo(() => {
   return (
-    <YStack flex={1} items="center" justify="center" p="$4" minH={400}>
-      <SizableText size="$5" color="$color10">
+    <YStack flex={1} items="center" justify="center" p="4" minH={400}>
+      <SizableText size="5" color="color10">
         No blocked users
       </SizableText>
 
       {IS_NATIVE && (
-        <SizableText size="$3" color="$color10" mt="$2">
+        <SizableText size="3" color="color10" mt="2">
           Pull to refresh
         </SizableText>
       )}
@@ -107,7 +101,7 @@ export const ProfileBlockedUsersPage = () => {
   const renderFooter = useCallback(() => {
     if (!hasMore || blockedUsers.length === 0) return null
     return (
-      <YStack p="$4" items="center" justify="center">
+      <YStack p="4" items="center" justify="center">
         <Spinner size="small" />
       </YStack>
     )
@@ -117,7 +111,7 @@ export const ProfileBlockedUsersPage = () => {
     return (
       <PageLayout>
         <YStack flex={1} items="center" justify="center">
-          <Spinner size="large" color="$color10" />
+          <Spinner size="large" color="color10" />
         </YStack>
       </PageLayout>
     )
@@ -129,15 +123,16 @@ export const ProfileBlockedUsersPage = () => {
       <PageLayout>
         <ScrollView
           flex={1}
-          px="$4"
-          showsVerticalScrollIndicator={false}
+          px="4"
           transition="200ms"
-          enterStyle={{ opacity: 0, y: 10 }}
+          opacity="enter:0"
+          y="enter:10px"
+          showsVerticalScrollIndicator={false}
         >
           {blockedUsers.length === 0 ? (
             <EmptyState />
           ) : (
-            <YStack gap="$2">
+            <YStack gap="2">
               {blockedUsers.map((user) => (
                 <BlockedUserItem key={user.id} user={user} onUnblock={handleUnblock} />
               ))}
@@ -151,7 +146,7 @@ export const ProfileBlockedUsersPage = () => {
 
   return (
     <PageLayout>
-      <View flex={1} flexBasis="auto" px="$4">
+      <View flex={1} flexBasis="auto" px="4">
         <LegendList
           data={blockedUsers}
           renderItem={renderItem}

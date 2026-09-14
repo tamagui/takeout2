@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { AnimatePresence, Tabs, View, withStaticProperties } from 'tamagui'
 
-import { animationClamped } from '~/interface/animations/animationClamped'
+import { transitionQuickerLessBouncyClamped } from '~/interface/animations/animationClamped'
 
 import type { TabLayout, TabsTabProps, ViewProps } from 'tamagui'
 
@@ -106,8 +106,8 @@ function RovingTabsRoot({
             <RovingTabsIndicator
               key="intent"
               variant={indicatorStyle}
-              width={intentAt.width}
-              height={indicatorStyle === 'underline' ? 3 : intentAt.height}
+              w={intentAt.width}
+              h={indicatorStyle === 'underline' ? 3 : intentAt.height}
               x={intentAt.x}
               y={indicatorStyle === 'underline' ? undefined : intentAt.y}
               b={indicatorStyle === 'underline' ? 0 : undefined}
@@ -121,8 +121,8 @@ function RovingTabsRoot({
               key="active"
               active
               variant={indicatorStyle}
-              width={activeAt.width}
-              height={indicatorStyle === 'underline' ? 3 : activeAt.height}
+              w={activeAt.width}
+              h={indicatorStyle === 'underline' ? 3 : activeAt.height}
               x={activeAt.x}
               y={indicatorStyle === 'underline' ? undefined : activeAt.y}
               b={indicatorStyle === 'underline' ? 0 : undefined}
@@ -130,7 +130,7 @@ function RovingTabsRoot({
           )}
         </AnimatePresence>
 
-        <Tabs.List loop={false} bg="transparent" gap="$2">
+        <Tabs.List loop={false} bg="transparent" gap="2">
           {typeof children === 'function'
             ? children({
                 handleOnInteraction,
@@ -159,14 +159,8 @@ function RovingTabsTab({
       value={value}
       onInteraction={onInteraction}
       borderWidth={0}
-      bg="transparent"
-      rounded="$2"
-      hoverStyle={{
-        bg: 'transparent',
-      }}
-      pressStyle={{
-        bg: 'transparent',
-      }}
+      bg="transparent hover:transparent press:transparent"
+      rounded="2"
       {...rest}
     >
       {children}
@@ -187,19 +181,13 @@ function RovingTabsIndicator({
   return (
     <View
       position="absolute"
-      bg={active ? '$color10' : '$color6'}
-      opacity={active ? 1 : 0.5}
-      rounded={isUnderline ? '$2' : '$4'}
-      transition={animationClamped('quickerLessBouncy')}
+      bg={`${active ? 'color10' : 'color6'}`}
+      opacity={`${active ? 1 : 0.5} enter:0 exit:0`}
+      rounded={`${isUnderline ? '2' : '4'}`}
+      transition={transitionQuickerLessBouncyClamped}
       pointerEvents="none"
-      enterStyle={{
-        opacity: 0,
-      }}
-      exitStyle={{
-        opacity: 0,
-      }}
       {...(active && {
-        theme: 'blue',
+        theme: 'accent',
       })}
       {...props}
     />

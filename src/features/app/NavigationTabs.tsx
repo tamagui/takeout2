@@ -46,7 +46,7 @@ export function NavigationTabs() {
               value={route.name}
               onInteraction={handleOnInteraction}
             >
-              <Link href={route.href} items="center" px="$3" py="$2" $md={{ px: '$4' }}>
+              <Link href={route.href} items="center" px="3 md:4" py="2">
                 <Icon size={iconSize} color="$color" />
               </Link>
             </RovingTabs.Tab>

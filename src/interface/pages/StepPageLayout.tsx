@@ -51,7 +51,7 @@ export const StepPageLayout = ({
       hideBackButton={hideBackButton}
       keyboardOffset={keyboardOffset}
     >
-      <YStack gap="$4">
+      <YStack gap="4">
         {!hideBackButton && !isWeb && (
           <XStack justify="space-between" items="center">
             <Button
@@ -63,7 +63,7 @@ export const StepPageLayout = ({
               disabled={disableBackButton}
             />
             {headerTitle && (
-              <H5 fontFamily="$heading" color="$color12">
+              <H5 fontFamily="heading" color="color12">
                 {headerTitle}
               </H5>
             )}
@@ -71,16 +71,16 @@ export const StepPageLayout = ({
           </XStack>
         )}
 
-        <YStack gap="$4" mt="$2" items="center">
+        <YStack gap="4" mt="2" items="center">
           {Icon && (
             <Circle
               size={52}
-              bg="$color2"
-              shadowColor="$color12"
+              bg="color2"
+              shadowColor="color12"
               shadowOpacity={0.1}
               shadowRadius={12}
               borderWidth={0.5}
-              borderColor="$color3"
+              borderColor="color3"
               items="center"
               justify="center"
             >
@@ -98,7 +98,7 @@ export const StepPageLayout = ({
         </YStack>
       </YStack>
 
-      <YStack pt="$4" gap="$4">
+      <YStack pt="4" gap="4">
         {children}
       </YStack>
     </BaseStepPageLayout>

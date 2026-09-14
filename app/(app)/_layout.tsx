@@ -24,7 +24,7 @@ export function AppLayout() {
 
   if (state === 'loading') {
     return (
-      <SizableText m="auto" color="$color8">
+      <SizableText m="auto" color="color8">
         Loading...
       </SizableText>
     )

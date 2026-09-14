@@ -1,6 +1,6 @@
 import { router, useBlocker } from 'one'
 import { Keyboard } from 'react-native'
-import { isWeb, Spinner, View, XStack, YStack } from 'tamagui'
+import { isWeb, Spinner, Theme, View, XStack, YStack } from 'tamagui'
 
 import { useProfileEdit } from '~/features/user/useProfileEdit'
 import { Button } from '~/interface/buttons/Button'
@@ -64,7 +64,7 @@ export const ProfileEditPage = () => {
           title="Discard changes?"
           description="You have unsaved changes. Are you sure you want to discard them?"
         />
-        <XStack justify="flex-end" gap="$2">
+        <XStack justify="flex-end" gap="2">
           <Button onPress={() => blocker.reset?.()}>Stay</Button>
           <Button variant="action" onPress={handleDiscard}>
             Discard
@@ -73,21 +73,15 @@ export const ProfileEditPage = () => {
       </Dialog>
 
       <PageLayout>
-        <View
-          flex={1}
-          flexBasis="auto"
-          $platform-native={{
-            px: '$4',
-          }}
-        >
+        <View flex={1} flexBasis="auto" px="native:4">
           <KeyboardAwareScrollView
             showsVerticalScrollIndicator={false}
             bottomOffset={100}
             keyboardShouldPersistTaps="handled"
             contentInsetAdjustmentBehavior="automatic"
           >
-            <YStack pt="$3" gap="$3" width="100%" maxW={400} self="center" select="none">
-              <YStack py="$3" justify="center" items="center">
+            <YStack pt="3" gap="3" width="100%" maxW={400} self="center" select="none">
+              <YStack py="3" justify="center" items="center">
                 <AvatarUpload
                   id="avatar"
                   dropActive={false}
@@ -97,16 +91,16 @@ export const ProfileEditPage = () => {
                 />
               </YStack>
               <YStack>
-                <XStack justify="space-between" items="center" mb="$2">
-                  <Text size="$3" fontWeight="500" color="$color11">
+                <XStack justify="space-between" items="center" mb="2">
+                  <Text size="3" fontWeight="500" color="color11">
                     Name
                   </Text>
-                  <Text size="$3" color="$color9">
+                  <Text size="3" color="color9">
                     {name.length}/40
                   </Text>
                 </XStack>
                 <Input
-                  width="100%"
+                  w="100%"
                   glass
                   placeholder="Nate"
                   value={name}
@@ -117,41 +111,45 @@ export const ProfileEditPage = () => {
               </YStack>
 
               <YStack>
-                <XStack justify="space-between" items="center" mb="$2">
-                  <Text size="$3" fontWeight="500" color="$color11">
+                <XStack justify="space-between" items="center" mb="2">
+                  <Text size="3" fontWeight="500" color="color11">
                     Username
                   </Text>
-                  <Text size="$3" color="$color9">
+                  <Text size="3" color="color9">
                     {username.length}/30
                   </Text>
                 </XStack>
                 <View position="relative" justify="center">
                   <Input
-                    width="100%"
+                    w="100%"
                     glass
                     placeholder="johndoe"
                     value={username}
                     onChangeText={handleUsernameChange}
                     autoCapitalize="none"
                     autoCorrect="off"
-                    pr="$10"
+                    pr="10"
                   />
-                  <XStack position="absolute" r="$4">
+                  <XStack position="absolute" r="4">
                     {isCheckingAvailability ? (
-                      <Spinner size="small" color="$color10" />
+                      <Spinner size="small" color="color10" />
                     ) : isUsernameInvalid || isUnavailable ? (
-                      <XIcon size={18} color="$red10" />
+                      <Theme name="red">
+                        <XIcon size={18} color="$color10" />
+                      </Theme>
                     ) : isAvailable && debouncedUsername ? (
-                      <CheckIcon size={18} color="$green10" />
+                      <Theme name="green">
+                        <CheckIcon size={18} color="$color10" />
+                      </Theme>
                     ) : null}
                   </XStack>
                 </View>
                 {isUnavailable && !isCheckingAvailability ? (
-                  <Text size="$2" mt="$1" color="$red10">
+                  <Text theme="red" size="2" mt="1" color="color10">
                     Username is not available
                   </Text>
                 ) : isUsernameInvalid ? (
-                  <Text size="$2" mt="$1" color="$red10">
+                  <Text theme="red" size="2" mt="1" color="color10">
                     Must be 3+ chars, start with letter, only letters/numbers/_
                   </Text>
                 ) : null}

@@ -1,6 +1,6 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
 import { memo } from 'react'
-import { SizableText, XStack, YStack } from 'tamagui'
+import { html, SizableText, XStack } from 'tamagui'
 
 import type { PageHeaderProps } from './PageHeader.types'
 
@@ -14,7 +14,7 @@ export const usePageHeader = () => {
 
 export const PageHeader = memo(({ Icon, title, after }: PageHeaderProps) => {
   return (
-    <YStack
+    <html.header
       position="absolute"
       t={0}
       l={0}
@@ -33,16 +33,16 @@ export const PageHeader = memo(({ Icon, title, after }: PageHeaderProps) => {
         t={0}
         l={0}
         r={0}
-        height={44}
+        h={44}
       />
-      <XStack items="center" gap="$2">
+      <XStack items="center" gap="2">
         {Icon && <Icon size={24} />}
-        <SizableText size="$5" fontWeight="600">
+        <SizableText size="5" fontWeight="600">
           {title}
         </SizableText>
       </XStack>
 
-      <XStack gap="$4">{after}</XStack>
-    </YStack>
+      <XStack gap="4">{after}</XStack>
+    </html.header>
   )
 })

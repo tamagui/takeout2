@@ -2,47 +2,38 @@ import { TextArea as TamaguiTextArea, styled } from 'tamagui'
 
 export const TextArea = styled(TamaguiTextArea, {
   name: 'TextArea',
-  background: '$color1',
+  bg: 'color1',
   borderWidth: 0.5,
-  borderColor: '$borderColor',
-  placeholderTextColor: '$color8',
+  borderColor: 'border-color focus:color4',
   minH: 100,
-  fontSize: '$4',
-
-  focusStyle: {
-    borderColor: '$color4',
-  },
-
-  focusVisibleStyle: {
-    outlineColor: '$color3',
-    outlineWidth: 3,
-    outlineOffset: 2,
-  },
-
+  fontSize: '4',
+  outlineColor: 'focus-visible:color3',
+  outlineWidth: 'focus-visible:3px',
+  outlineOffset: 'focus-visible:2px',
+  placeholderTextColor: 'color8',
   variants: {
     size: {
       small: {
-        rounded: '$2',
-        fontSize: '$3',
-        minHeight: 80,
-        px: '$2.5',
-        py: '$2',
+        rounded: '2',
+        fontSize: '3',
+        minH: 80,
+        px: '2-5',
+        py: '2',
       },
       medium: {
-        rounded: '$4',
-        fontSize: '$4',
-        minHeight: 100,
+        rounded: '4',
+        fontSize: '4',
+        minH: 100,
       },
       large: {
-        rounded: '$6',
-        fontSize: '$5',
-        minHeight: 120,
-        px: '$4',
-        py: '$3',
+        rounded: '6',
+        fontSize: '5',
+        minH: 120,
+        px: '4',
+        py: '3',
       },
     },
   } as const,
-
   defaultVariants: {
     size: 'medium',
   },

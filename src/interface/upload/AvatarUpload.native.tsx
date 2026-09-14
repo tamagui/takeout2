@@ -63,10 +63,10 @@ export const AvatarUpload = ({
   const image = uploadUrl || localImageUri || currentImage || ''
 
   return (
-    <XStack gap="$3" items="center" {...viewProps}>
+    <XStack gap="3" items="center" {...viewProps}>
       <Avatar key={image} size={100} image={image} />
 
-      <XStack gap="$2" position="absolute" b={0} r={0}>
+      <XStack gap="2" position="absolute" b={0} r={0}>
         <Button
           glass
           circular
@@ -78,8 +78,8 @@ export const AvatarUpload = ({
       </XStack>
       <YStack>
         {!!(progress && progress !== 100) && (
-          <Progress mt="$2" value={progress} bg="$color2">
-            <Progress.Indicator borderColor="$color7" transition="bouncy" />
+          <Progress mt="2" bg="color2" value={progress}>
+            <Progress.Indicator borderColor="color7" transition="bouncy" />
           </Progress>
         )}
 

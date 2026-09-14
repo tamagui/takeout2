@@ -3,6 +3,7 @@ import './syntax-highlight.css'
 import { type Href, Link, Slot } from 'one'
 import {
   EnsureFlexed,
+  html,
   Paragraph,
   ScrollView,
   SizableText,
@@ -33,56 +34,40 @@ export function DocsLayout() {
         flex={1}
         flexBasis="auto"
         mx="auto"
-        width="100%"
+        w="100%"
         minH="calc(100vh - 50px)"
-        $md={{
-          flexDirection: 'row',
-        }}
+        flexDirection="md:row"
       >
         {/* Sidebar */}
-        <View
-          width="100%"
+        <html.aside
+          w="100% md:225px"
           borderRightWidth={1}
-          borderRightColor="$borderColor"
-          $md={{
-            position: 'sticky',
-            t: 50,
-            height: 'calc(100vh - 50px)',
-            width: 225,
-          }}
-          $max-md={{
-            display: 'none',
-          }}
+          borderRightColor="border-color"
+          position="md:sticky"
+          t="md:50px"
+          h="md:calc(100vh - 50px)"
+          display="max-md:none"
         >
           <ScrollView showsVerticalScrollIndicator={false}>
-            <View pt="$4" pb="$10">
+            <View pt="4" pb="10">
               <SearchButton />
               <DocsMenuContents />
-              <YStack height={200} />
+              <YStack h={200} />
             </View>
           </ScrollView>
-        </View>
+        </html.aside>
 
         {/* Main Content */}
-        <YStack
-          flex={1}
-          flexBasis="auto"
-          maxW={840}
-          mx="auto"
-          px="$4"
-          pt="$4"
-          pb="$6"
-          $md={{ px: '$8' }}
-        >
+        <YStack flex={1} flexBasis="auto" maxW={840} mx="auto" px="4 md:8" pt="4" pb="6">
           <EnsureFlexed />
 
-          <Spacer $md={{ display: 'none' }} />
+          <Spacer display="md:none" />
 
           <Slot />
 
           {/* Pagination */}
           {(previous || next) && (
-            <XStack mt="$14" mb="$10" justify="space-between" gap="$4" flexWrap="wrap">
+            <XStack mt="14" mb="10" justify="space-between" gap="4" flexWrap="wrap">
               {previous && (
                 <Link href={previous.route as Href} asChild>
                   <PaginationLinkFrame group="card">
@@ -90,10 +75,10 @@ export function DocsLayout() {
                       <CaretLeftIcon size={20} color="$color11" />
                     </PaginationIcon>
                     <PaginationTitle side="previous">
-                      <SizableText select="none" size="$5">
+                      <SizableText select="none" size="5">
                         Previous
                       </SizableText>
-                      <SizableText select="none" size="$3" color="$color10">
+                      <SizableText select="none" color="color10" size="3">
                         {previous.title}
                       </SizableText>
                     </PaginationTitle>
@@ -105,10 +90,10 @@ export function DocsLayout() {
                 <Link href={next.route as Href} asChild>
                   <PaginationLinkFrame justify="flex-end" group="card">
                     <PaginationTitle side="next">
-                      <SizableText select="none" size="$5">
+                      <SizableText select="none" size="5">
                         Next
                       </SizableText>
-                      <SizableText select="none" size="$3" color="$color10">
+                      <SizableText select="none" color="color10" size="3">
                         {next.title}
                       </SizableText>
                     </PaginationTitle>
@@ -129,19 +114,11 @@ export function DocsLayout() {
             rel="noopener noreferrer"
             target="_blank"
           >
-            <Paragraph
-              px="$4"
-              opacity={0.5}
-              hoverStyle={{
-                opacity: 1,
-              }}
-            >
+            <Paragraph px="4" opacity="0.5 hover:1">
               Edit this page on GitHub.
             </Paragraph>
           </Link>
         </YStack>
-
-        {/* Quick Nav (Table of Contents) rendered per-page with frontmatter.headings */}
       </XStack>
     </SearchProvider>
   )
@@ -151,21 +128,14 @@ const PaginationLinkFrame = styled(XStack, {
   render: 'a',
   flex: 1,
   minW: 200,
-  p: '$5',
-  rounded: '$4',
+  p: '5',
+  rounded: '4',
   borderWidth: 1.5,
-  borderColor: '$color2',
+  borderColor: 'color2 hover:color2',
   items: 'center',
-  gap: '$4',
+  gap: '4',
   cursor: 'pointer',
-
-  hoverStyle: {
-    borderColor: '$color2',
-  },
-
-  pressStyle: {
-    bg: '$backgroundPress',
-  },
+  bg: 'press:background-press',
 })
 
 const PaginationTitle = styled(YStack, {
@@ -173,10 +143,10 @@ const PaginationTitle = styled(YStack, {
   variants: {
     side: {
       previous: {
-        '$group-card-hover': { x: '$4' },
+        x: 'group-hover/card:4',
       },
       next: {
-        '$group-card-hover': { x: '$-4' },
+        x: 'group-hover/card:-4',
       },
     },
   },
@@ -188,10 +158,12 @@ const PaginationIcon = styled(View, {
   variants: {
     side: {
       previous: {
-        '$group-card-hover': { opacity: 1, x: '$2' },
+        opacity: 'group-hover/card:1',
+        x: 'group-hover/card:2',
       },
       next: {
-        '$group-card-hover': { opacity: 1, x: '$-2' },
+        opacity: 'group-hover/card:1',
+        x: 'group-hover/card:-2',
       },
     },
   },

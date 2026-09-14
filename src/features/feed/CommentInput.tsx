@@ -58,7 +58,7 @@ export function CommentInput({
   return (
     <>
       {isWeb && (
-        <XStack gap="$3" maxW={600}>
+        <XStack gap="3" maxW={600}>
           <YStack flex={1} position="relative">
             <TextArea
               size="large"
@@ -84,7 +84,7 @@ export function CommentInput({
                 data-testid="comment-submit"
               >
                 {isSubmitting ? (
-                  <Spinner size="small" color="$color" />
+                  <Spinner size="small" color="color" />
                 ) : (
                   <PaperPlaneTiltIcon size={18} color="$color" />
                 )}
@@ -96,14 +96,13 @@ export function CommentInput({
 
       {process.env.VITE_NATIVE && (
         <MaybeKeyboardStickyFooter disabled={disableStickyFooter}>
-          <XStack items="center" gap="$2" px="$3" py="$2" overflow="hidden">
+          <XStack items="center" gap="2" px="3" py="2" overflow="hidden">
             <Input
-              unstyled
               flex={1}
               rounded={24}
-              bg="$color2"
-              color="$color"
-              borderColor="$borderColor"
+              bg="color2"
+              color="color"
+              borderColor="border-color"
               placeholder="Add a comment..."
               value={content}
               onChange={(e) => setContent((e.target as HTMLInputElement).value)}
@@ -119,13 +118,13 @@ export function CommentInput({
               <Button
                 size="large"
                 circular
-                bg="$color6"
+                bg="color6"
                 disabled={isSubmitting || !content.trim()}
                 onPress={onSubmit}
                 testID="comment-submit"
               >
                 {isSubmitting ? (
-                  <Spinner size="small" color="$color" />
+                  <Spinner size="small" color="color" />
                 ) : (
                   <PaperPlaneTiltIcon size={18} color="$color" />
                 )}

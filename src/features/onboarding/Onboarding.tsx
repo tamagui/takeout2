@@ -54,15 +54,14 @@ export function Onboarding(_props?: Partial<OnboardingProps>) {
   }
 
   return (
-    <Theme name={(currentSlide?.theme ?? 'blue') as ThemeName}>
+    <Theme name={(currentSlide?.theme ?? 'brand') as ThemeName}>
       <YStack
         flex={1}
-        bg="$color3"
-        p="$4"
-        m="$3"
+        bg="color3"
+        p="4"
+        m="3"
         rounded={24}
-        display="none"
-        $md={{ display: 'flex' }}
+        display="none md:flex"
         position="relative"
         overflow="hidden"
       >
@@ -136,7 +135,7 @@ function OnboardingContent({
       flex={1}
       justify="space-between"
       cursor="pointer"
-      style={{ userSelect: 'none' }}
+      select="none"
     >
       {/* background circle with highlight - position varies per slide, fades in */}
       <AnimatePresence>
@@ -145,13 +144,11 @@ function OnboardingContent({
           position="absolute"
           z={0}
           transition="medium"
-          opacity={1}
-          scale={1}
-          enterStyle={{ opacity: 0, scale: 0.8 }}
-          exitStyle={{ opacity: 0, scale: 0.8 }}
+          opacity="1 enter:0 exit:0"
+          scale="1 enter:0.8 exit:0.8"
           {...CIRCLE_POSITIONS[slideIndex % CIRCLE_POSITIONS.length]}
         >
-          <YStack width={200} height={200} bg="$color4" rounded={100} overflow="hidden">
+          <YStack w={200} h={200} bg="color4" rounded={100} overflow="hidden">
             <Glint rounded={100} />
           </YStack>
         </YStack>
@@ -162,31 +159,31 @@ function OnboardingContent({
         <AnimatePresence>
           <YStack
             key={slide.id}
-            fullscreen
+            position="absolute"
+            inset={0}
             justify="center"
-            gap="$4"
+            gap="4"
             z={1}
             transition="medium"
-            x={0}
-            enterStyle={{ opacity: 0, x: direction === 'next' ? 20 : -20 }}
-            exitStyle={{ opacity: 0, x: direction === 'next' ? -20 : 20 }}
+            x={`0 enter:${direction === 'next' ? 20 : -20}px exit:${direction === 'next' ? -20 : 20}px`}
+            opacity="enter:0 exit:0"
           >
-            <YStack gap="$2">
+            <YStack gap="2">
               <SizableText
-                size="$8"
+                size="8"
                 fontWeight="800"
-                color="$color12"
-                fontFamily="$heading"
-                lineHeight="$8"
+                color="color12"
+                fontFamily="heading"
+                lineHeight="8"
               >
                 {slide.title}
               </SizableText>
-              <SizableText size="$3" color="$color11">
+              <SizableText size="3" color="color11">
                 {slide.description}
               </SizableText>
             </YStack>
 
-            <YStack items="center" pt="$4">
+            <YStack items="center" pt="4">
               <FeatureLayout
                 layout={slide.layout}
                 features={slide.features}
@@ -198,7 +195,7 @@ function OnboardingContent({
       </YStack>
 
       {/* controls */}
-      <XStack justify="space-between" items="center" pt="$3" z={2}>
+      <XStack justify="space-between" items="center" pt="3" z={2}>
         <OnboardingPageIndicator totalPages={totalSlides} currentPage={slideIndex} />
         <OnboardingActionButton onPrev={onPrev} onNext={onNext} />
       </XStack>
@@ -223,7 +220,7 @@ function FeatureLayout({
   const itemWidth = cardWidth * config.cardWidthRatio
 
   return (
-    <YStack width={cardWidth} height={config.containerHeight} position="relative">
+    <YStack w={cardWidth} h={config.containerHeight} position="relative">
       {features.map((feature, i) => {
         const pos = config.positions[i]
         if (!pos) return null
@@ -249,10 +246,9 @@ function FeatureLayout({
             z={features.length - i}
             rotate={pos.rotate !== '0deg' ? pos.rotate : undefined}
             transition="medium"
-            opacity={1}
-            scale={1}
-            y={0}
-            enterStyle={{ opacity: 0, scale: 0.9, y: 10 }}
+            opacity="1 enter:0"
+            scale="1 enter:0.9"
+            y="0 enter:10px"
           >
             <FeatureCard feature={feature} width={itemWidth} height={config.cardHeight} />
           </YStack>
@@ -272,43 +268,39 @@ function GridLayout({
   const gridItemSize = (cardWidth - 16) / 2
 
   return (
-    <YStack gap="$3" width={cardWidth} height={300} justify="center">
-      <XStack gap="$3" justify="center">
+    <YStack gap="3" w={cardWidth} h={300} justify="center">
+      <XStack gap="3" justify="center">
         <YStack
           rotate={GRID_ROTATIONS[0]}
           transition="medium"
-          opacity={1}
-          scale={1}
-          enterStyle={{ opacity: 0, scale: 0.9 }}
+          opacity="1 enter:0"
+          scale="1 enter:0.9"
         >
           <FeatureCardSquare feature={features[0]} size={gridItemSize} />
         </YStack>
         <YStack
           rotate={GRID_ROTATIONS[1]}
           transition="medium"
-          opacity={1}
-          scale={1}
-          enterStyle={{ opacity: 0, scale: 0.9 }}
+          opacity="1 enter:0"
+          scale="1 enter:0.9"
         >
           <FeatureCardSquare feature={features[1]} size={gridItemSize} />
         </YStack>
       </XStack>
-      <XStack gap="$3" justify="center">
+      <XStack gap="3" justify="center">
         <YStack
           rotate={GRID_ROTATIONS[2]}
           transition="medium"
-          opacity={1}
-          scale={1}
-          enterStyle={{ opacity: 0, scale: 0.9 }}
+          opacity="1 enter:0"
+          scale="1 enter:0.9"
         >
           <FeatureCardSquare feature={features[2]} size={gridItemSize} />
         </YStack>
         <YStack
           rotate={GRID_ROTATIONS[3]}
           transition="medium"
-          opacity={1}
-          scale={1}
-          enterStyle={{ opacity: 0, scale: 0.9 }}
+          opacity="1 enter:0"
+          scale="1 enter:0.9"
         >
           <FeatureCardSquare feature={features[3]} size={gridItemSize} />
         </YStack>
@@ -330,28 +322,21 @@ function FeatureCard({
 
   return (
     <XStack
-      width={width}
-      height={height}
-      bg="$color2"
+      w={width}
+      h={height}
+      bg="color2"
       rounded={18}
-      px="$4"
-      gap="$3"
+      px="4"
+      gap="3"
       items="center"
       position="relative"
       overflow="hidden"
     >
       <Glint rounded={18} />
-      <YStack
-        width={36}
-        height={36}
-        items="center"
-        justify="center"
-        bg="$color4"
-        rounded={10}
-      >
+      <YStack w={36} h={36} items="center" justify="center" bg="color4" rounded={10}>
         <Icon size={20} color="$color10" />
       </YStack>
-      <SizableText size="$3" fontWeight="600" color="$color12">
+      <SizableText size="3" fontWeight="600" color="color12">
         {title}
       </SizableText>
     </XStack>
@@ -370,32 +355,25 @@ function FeatureCardSquare({
 
   return (
     <YStack
-      width={size}
-      height={size}
-      bg="$color2"
+      w={size}
+      h={size}
+      bg="color2"
       rounded={18}
       items="center"
       justify="center"
-      gap="$2"
-      p="$3"
+      gap="2"
+      p="3"
       position="relative"
       overflow="hidden"
     >
       <Glint rounded={18} />
-      <YStack
-        width={44}
-        height={44}
-        items="center"
-        justify="center"
-        bg="$color5"
-        rounded={12}
-      >
+      <YStack w={44} h={44} items="center" justify="center" bg="color5" rounded={12}>
         <Icon size={24} color="$color11" />
       </YStack>
       <SizableText
-        size="$2"
+        size="2"
         fontWeight="600"
-        color="$color12"
+        color="color12"
         text="center"
         numberOfLines={2}
       >

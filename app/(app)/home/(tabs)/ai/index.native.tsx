@@ -24,10 +24,10 @@ const EmptyState = memo(
         <SparkleIcon size={52} color="$color11" />
       </Animated.View>
       <YStack items="center">
-        <SizableText size="$6" fontWeight="700">
+        <SizableText size="6" fontWeight="700">
           Takeout
         </SizableText>
-        <SizableText size="$4" color="$color10" px="$6" text="center">
+        <SizableText size="4" color="color10" px="6" text="center">
           Your AI-powered assistant
         </SizableText>
       </YStack>
@@ -41,13 +41,13 @@ const MessageBubble = memo(({ message }: { message: Message }) => {
   return (
     <View
       self={isUser ? 'flex-end' : 'flex-start'}
-      bg={isUser ? '$color4' : '$color2'}
-      px="$3"
-      py="$2"
-      rounded="$4"
+      bg={`${isUser ? 'color4' : 'color2'}`}
+      px="3"
+      py="2"
+      rounded="4"
       maxW="80%"
     >
-      <SizableText size="$4" color="$color12">
+      <SizableText size="4" color="color12">
         {message.content}
       </SizableText>
     </View>

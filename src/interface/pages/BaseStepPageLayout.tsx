@@ -26,7 +26,7 @@ export const BaseStepPageLayout = ({
   const content = (
     <>
       {isWeb ? (
-        <YStack flex={1} p="$5">
+        <YStack flex={1} p="5">
           <YStack width="100%" maxW={400}>
             {children}
             {bottomElement && bottomElement}
@@ -41,7 +41,7 @@ export const BaseStepPageLayout = ({
             keyboardDismissMode="interactive"
             showsVerticalScrollIndicator={false}
           >
-            <YStack minW="100%" flex={1} pt={!hideBackButton ? top + 24 : 0} rounded="$6">
+            <YStack minW="100%" flex={1} pt={!hideBackButton ? top + 24 : 0} rounded="6">
               <YStack maxW={600} self="center" px={14}>
                 <EnsureFlexed />
                 {children}
@@ -52,7 +52,7 @@ export const BaseStepPageLayout = ({
       )}
 
       {!isWeb && bottomElement && (
-        <YStack position="absolute" b={0} l={0} r={0} px="$4" z={999}>
+        <YStack position="absolute" b={0} l={0} r={0} px="4" z={999}>
           {bottomElement}
         </YStack>
       )}

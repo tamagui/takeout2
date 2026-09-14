@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from 'react'
-import { isWeb } from 'tamagui'
+import { html, isWeb } from 'tamagui'
 
 import { feedPosts } from '~/data/post/queries'
 import { useAuth } from '~/features/auth/client/authClient'
@@ -51,27 +51,32 @@ const ZeroTestUIContent = memo(() => {
   const visibleUserIds = [...new Set(posts?.map((p) => p.userId) ?? [])].join(',')
 
   return (
-    <div
+    <html.div
       data-testid="zero-test-ui"
-      style={{
-        position: 'fixed',
-        bottom: 10,
-        right: 10,
-        zIndex: 99999,
-        background: '#1a1a2e',
-        border: '1px solid #444',
-        borderRadius: 8,
-        padding: 12,
-        minWidth: 320,
-        maxHeight: 500,
-        overflow: 'auto',
-        boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
-        fontFamily: 'monospace',
-        fontSize: 11,
-        color: '#eee',
-      }}
+      position="fixed"
+      b={10}
+      r={10}
+      z={99999}
+      bg="#1a1a2e"
+      borderWidth={1}
+      borderColor="#444"
+      rounded="8px"
+      p="12px"
+      minW={320}
+      maxH={500}
+      overflow="auto"
+      boxShadow="0 4px 16px rgba(0,0,0,0.4)"
     >
-      <div style={{ fontWeight: 700, marginBottom: 8 }}>zero test ui</div>
+      <html.span
+        display="block"
+        mb="8px"
+        fontFamily="mono"
+        fontSize="11px"
+        fontWeight="700"
+        color="#eee"
+      >
+        zero test ui
+      </html.span>
 
       <Row label="user-id" value={user?.id} />
       <Row label="user-name" value={user?.name} />
@@ -84,7 +89,7 @@ const ZeroTestUIContent = memo(() => {
       <Row label="perm-other-post" value={permStr(permOtherPost)} />
       <Row label="perm-seed-post-1" value={permStr(permSeedPost1)} />
       <Row label="perm-seed-post-2" value={permStr(permSeedPost2)} />
-    </div>
+    </html.div>
   )
 })
 
@@ -94,10 +99,18 @@ function permStr(v: boolean | null | undefined): string {
 }
 
 const Row = memo(({ label, value }: { label: string; value?: string | null }) => (
-  <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 2 }}>
-    <span style={{ minWidth: 150, opacity: 0.6 }}>{label}</span>
-    <span data-testid={`zt-${label}`} style={{ wordBreak: 'break-all' }}>
+  <html.div flexDirection="row" gap={8} items="center" mb={2}>
+    <html.span minW={150} opacity={0.6} fontFamily="mono" fontSize="11px" color="#eee">
+      {label}
+    </html.span>
+    <html.span
+      data-testid={`zt-${label}`}
+      overflowWrap="anywhere"
+      fontFamily="mono"
+      fontSize="11px"
+      color="#eee"
+    >
       {value || '—'}
-    </span>
-  </div>
+    </html.span>
+  </html.div>
 ))

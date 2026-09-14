@@ -5,7 +5,7 @@ import {
   type Href,
   type LinkProps as OneLinkProps,
 } from 'one'
-import { isWeb, Text, useDebounce, View, type SizableTextProps } from 'tamagui'
+import { html, isWeb, useDebounce, type SizableTextProps } from 'tamagui'
 
 import { ArrowUpRightIcon } from '~/interface/icons/phosphor/ArrowUpRightIcon'
 
@@ -137,36 +137,34 @@ export const Link = ({
       <>
         {children}
 
-        <View
-          render="span"
+        <html.span
           ml={4}
           opacity={0.7}
-          $platform-web={{ display: 'inline-flex', marginRight: -5, y: -9, x: -2 }}
+          display="web:inline-flex"
+          mr="web:-5px"
+          y="web:-9px"
+          x="web:-2px"
         >
           <ArrowUpRightIcon size={8} />
-        </View>
+        </html.span>
       </>
     ) : (
       children
     )
 
   const linkElement = (
-    <Text
-      render="a"
+    <html.a
       target={target}
       disabled={!!disabled}
-      // always except-style
       asChild={asChild ? 'except-style' : false}
       className="t_Link"
       cursor="pointer"
-      focusVisibleStyle={{
-        outlineWidth: 2,
-        outlineColor: '$color02',
-        outlineOffset: 1,
-        outlineStyle: 'solid',
-        rounded: '$4',
-      }}
-      {...props}
+      outlineWidth="focus-visible:2px"
+      outlineColor="focus-visible:outline-color"
+      outlineOffset="focus-visible:1px"
+      outlineStyle="focus-visible:solid"
+      rounded="focus-visible:4"
+      {...(props as any)}
       {...linkProps}
       onPressIn={() => {
         lastLinkMeta = linkMeta || { type: 'none' }
@@ -175,7 +173,7 @@ export const Link = ({
       onPress={handlePress}
     >
       {childrenElements}
-    </Text>
+    </html.a>
   )
 
   return wrapWithTooltip(linkElement, {

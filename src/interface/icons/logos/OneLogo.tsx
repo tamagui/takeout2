@@ -2,11 +2,15 @@ import { memo } from 'react'
 
 import { Circle, Defs, Ellipse, FeGaussianBlur, Filter, G, Path, Svg } from '../svg'
 
+import { useIconProps } from '../useIconProps'
+
 import type { IconProps } from '../types'
 
-export const OneLogo = memo(({ size = 24, ...svgProps }: IconProps) => {
+export const OneLogo = memo((props: IconProps) => {
+  const { width, height, fill: _fill, ...svgProps } = useIconProps({ size: 24, ...props })
+
   return (
-    <Svg width={size} height={size} viewBox="0 0 590 590" fill="none" {...svgProps}>
+    <Svg width={width} height={height} viewBox="0 0 590 590" fill="none" {...svgProps}>
       <Defs>
         <Filter
           x="-93.3%"

@@ -132,10 +132,10 @@ export const DialogCreatePost = () => {
   const canPost = caption.trim() && uploadedUrl && !isUploading && !isPosting
 
   const content = (
-    <YStack p="$2" gap="$4">
+    <YStack p="2" gap="4">
       <Dialog.Header title="Create Post" />
 
-      <YStack gap="$4" mb="$4">
+      <YStack gap="4" mb="4">
         <TextArea
           verticalAlign="top"
           maxLength={6000}
@@ -151,13 +151,8 @@ export const DialogCreatePost = () => {
         />
 
         {previewUrl && (
-          <YStack position="relative" rounded="$6" overflow="hidden">
-            <Image
-              src={previewUrl}
-              aspectRatio={1}
-              objectFit="contain"
-              bg="$background04"
-            />
+          <YStack position="relative" rounded="6" overflow="hidden">
+            <Image src={previewUrl} aspectRatio={1} objectFit="contain" bg="color2" />
             {isUploading && (
               <YStack
                 position="absolute"
@@ -165,41 +160,42 @@ export const DialogCreatePost = () => {
                 l={0}
                 r={0}
                 b={0}
-                bg="$background"
+                bg="background"
                 opacity={0.8}
                 items="center"
                 justify="center"
               >
                 <Spinner size="large" />
-                <SizableText mt="$2" size="$3">
+                <SizableText mt="2" size="3">
                   Uploading...
                 </SizableText>
               </YStack>
             )}
             {uploadError && (
               <YStack
+                theme="red"
                 position="absolute"
                 t={0}
                 l={0}
                 r={0}
                 b={0}
-                bg="$red3"
+                bg="color3"
                 opacity={0.9}
                 items="center"
                 justify="center"
-                p="$4"
+                p="4"
               >
-                <SizableText size="$5" fontWeight="600" color="$red11">
+                <SizableText size="5" fontWeight="600" color="color11">
                   Upload failed
                 </SizableText>
-                <SizableText mt="$2" size="$3" color="$red10">
+                <SizableText mt="2" color="color10" size="3">
                   {uploadError}
                 </SizableText>
               </YStack>
             )}
             {!isUploading && !uploadError && (
-              <Pressable position="absolute" t="$3" r="$3" onPress={handleRemoveImage}>
-                <Circle size={36} bg="$background" items="center" justify="center">
+              <Pressable position="absolute" t="3" r="3" onPress={handleRemoveImage}>
+                <Circle size={36} bg="background" items="center" justify="center">
                   <XIcon size={20} color="$color11" />
                 </Circle>
               </Pressable>
@@ -215,23 +211,23 @@ export const DialogCreatePost = () => {
           >
             <YStack
               borderWidth={2}
-              borderColor="$color2"
+              borderColor="color2"
               borderStyle="dashed"
-              rounded="$6"
-              p="$6"
+              rounded="6"
+              p="6"
               items="center"
               justify="center"
-              gap="$3"
-              bg="$background02"
+              gap="3"
+              bg="color1"
             >
-              <Circle size={56} bg="$background04" items="center" justify="center">
+              <Circle size={56} bg="color2" items="center" justify="center">
                 <ImageIcon size={28} color="$color11" />
               </Circle>
-              <YStack items="center" gap="$2">
-                <SizableText size="$5" fontWeight="600">
+              <YStack items="center" gap="2">
+                <SizableText size="5" fontWeight="600">
                   Add Image
                 </SizableText>
-                <SizableText size="$3" color="$color">
+                <SizableText size="3" color="color">
                   {isWeb ? 'Click to select' : 'Tap to select from library'}
                 </SizableText>
               </YStack>

@@ -1,7 +1,7 @@
-import { Toast, useToastItem, type ToastT } from '@tamagui/toast/v2'
+import { Toast, useToastItem, type ToastT } from '@tamagui/toast'
 import type { ReactNode } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { isWeb, SizableText, XStack, YStack, type ColorTokens } from 'tamagui'
+import { isWeb, SizableText, Theme, XStack, YStack, type ThemeName } from 'tamagui'
 
 import { CheckCircleIcon } from '~/interface/icons/phosphor/CheckCircleIcon'
 import { InfoIcon } from '~/interface/icons/phosphor/InfoIcon'
@@ -11,24 +11,39 @@ import { XCircleIcon } from '~/interface/icons/phosphor/XCircleIcon'
 export { showToast } from './helpers'
 
 const toastIcons = {
-  success: <CheckCircleIcon size={18} color="$green10" />,
-  error: <XCircleIcon size={18} color="$red10" />,
-  warning: <WarningCircleIcon size={18} color="$yellow10" />,
-  info: <InfoIcon size={18} color="$blue10" />,
+  success: (
+    <Theme name="green">
+      <CheckCircleIcon size={18} color="$color10" />
+    </Theme>
+  ),
+  error: (
+    <Theme name="red">
+      <XCircleIcon size={18} color="$color10" />
+    </Theme>
+  ),
+  warning: (
+    <Theme name="yellow">
+      <WarningCircleIcon size={18} color="$color10" />
+    </Theme>
+  ),
+  info: (
+    <Theme name="accent">
+      <InfoIcon size={18} color="$color10" />
+    </Theme>
+  ),
 }
 
-const toastTitleColor: Record<string, ColorTokens> = {
-  success: '$green11',
-  error: '$red11',
-  warning: '$yellow11',
-  info: '$blue11',
-  default: '$color12',
-  loading: '$color12',
+const toastThemes: Record<string, ThemeName | undefined> = {
+  success: 'green',
+  error: 'red',
+  warning: 'yellow',
+  info: 'accent',
 }
 
 function ToastContent({ toast: t }: { toast: ToastT }) {
   const { handleClose } = useToastItem()
   const toastType = t.type ?? 'default'
+  const toastTheme = toastThemes[toastType]
 
   const title = typeof t.title === 'function' ? t.title() : t.title
   const description =
@@ -36,37 +51,36 @@ function ToastContent({ toast: t }: { toast: ToastT }) {
 
   return (
     <>
-      <XStack gap="$3" items="center">
+      <XStack gap="3" items="center">
         <Toast.Icon />
-        <YStack flex={1} gap="$0.5">
+        <YStack flex={1} gap="0-5">
           {title ? (
             <Toast.Title
+              theme={toastTheme}
               fontWeight="600"
-              size="$3"
-              color={toastTitleColor[toastType]}
+              size="3"
+              color={toastTheme ? 'color11' : 'color12'}
               numberOfLines={1}
             >
               {title}
             </Toast.Title>
           ) : null}
           {description ? (
-            <Toast.Description color="$color9" size="$2" numberOfLines={2}>
+            <Toast.Description color="color9" size="2" numberOfLines={2}>
               {description}
             </Toast.Description>
           ) : null}
           {t.action || t.cancel ? (
-            <XStack gap="$2" mt="$2">
+            <XStack gap="2" mt="2">
               {t.action ? (
                 <Toast.Action
-                  bg="$color12"
-                  hoverStyle={{ bg: '$color11' }}
-                  pressStyle={{ bg: '$color10' }}
+                  bg="color12 hover:color11 press:color10"
                   onPress={(e: any) => {
                     t.action?.onClick?.(e)
                     if (!e.defaultPrevented) handleClose()
                   }}
                 >
-                  <SizableText size="$1" fontWeight="600" color="$background">
+                  <SizableText size="1" fontWeight="600" color="background">
                     {t.action.label}
                   </SizableText>
                 </Toast.Action>
@@ -79,7 +93,7 @@ function ToastContent({ toast: t }: { toast: ToastT }) {
                     handleClose()
                   }}
                 >
-                  <SizableText size="$1" color="$color11">
+                  <SizableText size="1" color="color11">
                     {t.cancel.label}
                   </SizableText>
                 </Toast.Action>

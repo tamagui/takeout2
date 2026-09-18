@@ -101,8 +101,11 @@
     "@legendapp/list": "3.3.8",
     "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-native-menu/menu": "^2.0.0",
-    "@react-navigation/bottom-tabs": "^7.10.1",
-    "@react-navigation/native": "7.3.16",
+    "@react-navigation/bottom-tabs": "8.0.0-alpha.50",
+    "@react-navigation/core": "8.0.0-alpha.34",
+    "@react-navigation/elements": "3.0.0-alpha.48",
+    "@react-navigation/native": "8.0.0-alpha.44",
+    "@react-navigation/native-stack": "8.0.0-alpha.52",
     "@resvg/resvg-js": "^2.6.2",
     "@rocicorp/zero": "1.7.0",
     "@take-out/better-auth-utils": "workspace:*",
@@ -234,7 +237,8 @@
     }
   },
   "trustedDependencies": [
-    "oxc-parser"
+    "oxc-parser",
+    "@rocicorp/zero-sqlite3"
   ],
   "publishConfig": {
     "access": "public"

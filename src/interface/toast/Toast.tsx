@@ -1,4 +1,4 @@
-import { Toast, useToastItem, type ToastT } from '@tamagui/toast/v2'
+import { Toast, useToastItem, type ToastT } from '@tamagui/toast'
 import type { ReactNode } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { isWeb, SizableText, XStack, YStack, type ColorTokens } from 'tamagui'

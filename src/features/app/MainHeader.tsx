@@ -119,7 +119,8 @@ export const MainHeaderMenu = memo(() => {
           enterStyle={{ opacity: 0 }}
           exitStyle={{ opacity: 0 }}
         />
-        <YStack bg="$color2" boxShadow="0 0 10px $shadow4">
+        <Sheet.Container boxShadow="0 0 10px $shadow4">
+          <Sheet.Background bg="$color2" />
           <YStack flex={1} gap="$2">
             <XStack p="$4" pb="$3" justify="space-between" items="center">
               <XStack gap="$3" items="center">
@@ -163,7 +164,7 @@ export const MainHeaderMenu = memo(() => {
               </XStack>
             )}
           </YStack>
-        </YStack>
+        </Sheet.Container>
       </Sheet>
     </>
   )

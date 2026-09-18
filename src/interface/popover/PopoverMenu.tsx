@@ -42,9 +42,9 @@ export const PopoverMenu = ({
             exitStyle={{ opacity: 0 }}
           />
           <Sheet.Handle />
-          <Sheet.Frame p="$4">
+          <YStack p="$4">
             <Adapt.Contents />
-          </Sheet.Frame>
+          </YStack>
         </Sheet>
       </Adapt>
 

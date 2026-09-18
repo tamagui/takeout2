@@ -72,11 +72,11 @@ export function Select({
           dismissOnSnapToBottom
           transition="quickLessBouncy"
         >
-          <Sheet.Frame>
+          <YStack>
             <Sheet.ScrollView>
               <Adapt.Contents />
             </Sheet.ScrollView>
-          </Sheet.Frame>
+          </YStack>
           <Sheet.Overlay
             bg="$background"
             opacity={0.5}

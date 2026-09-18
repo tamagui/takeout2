@@ -96,7 +96,7 @@ const SiteHeaderMenu = memo(() => {
           exitStyle={{ opacity: 0 }}
         />
 
-        <Sheet.Frame bg="$color2" boxShadow="0 0 10px $shadow3">
+        <YStack bg="$color2" boxShadow="0 0 10px $shadow3">
           <YStack flex={1} flexBasis="auto" gap="$2">
             <XStack p="$4" pb="$3" justify="space-between" items="center">
               <Logo />
@@ -150,7 +150,7 @@ const SiteHeaderMenu = memo(() => {
               </XStack>
             </YStack>
           </YStack>
-        </Sheet.Frame>
+        </YStack>
       </Sheet>
     </>
   )

@@ -93,7 +93,7 @@ const DialogComponent = ({
                 props.onOpenChange?.(false)
               }}
             />
-            <Sheet.Frame
+            <YStack
               theme="surface2"
               p="$4"
               pb={insets.bottom + 100 + 30}
@@ -114,7 +114,7 @@ const DialogComponent = ({
               >
                 <TamaguiDialog.Adapt.Contents />
               </Sheet.ScrollView>
-            </Sheet.Frame>
+            </YStack>
           </Sheet>
         </TamaguiDialog.Adapt>
 

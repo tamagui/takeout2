@@ -144,7 +144,7 @@
     },
     "packages/better-auth-utils": {
       "name": "@take-out/better-auth-utils",
-      "version": "0.7.13",
+      "version": "0.7.14",
       "dependencies": {
         "@take-out/helpers": "0.7.13",
         "jose": "^6.0.10",
@@ -165,7 +165,7 @@
     },
     "packages/cli": {
       "name": "@take-out/cli",
-      "version": "0.7.13",
+      "version": "0.7.14",
       "bin": {
         "takeout": "./src/cli.ts",
         "tko": "./src/cli.ts",
@@ -193,7 +193,7 @@
     },
     "packages/create-takeout": {
       "name": "create-takeout",
-      "version": "0.7.13",
+      "version": "0.7.14",
       "bin": "./run.js",
       "dependencies": {
         "citty": "^0.1.6",
@@ -208,7 +208,7 @@
     },
     "packages/database": {
       "name": "@take-out/database",
-      "version": "0.7.13",
+      "version": "0.7.14",
       "bin": {
         "database": "./cli.cjs",
       },
@@ -237,11 +237,11 @@
     },
     "packages/env": {
       "name": "@take-out/env",
-      "version": "0.7.13",
+      "version": "0.7.14",
     },
     "packages/helpers": {
       "name": "@take-out/helpers",
-      "version": "0.7.13",
+      "version": "0.7.14",
       "dependencies": {
         "dequal": "^2.0.3",
       },
@@ -269,7 +269,7 @@
     },
     "packages/hooks": {
       "name": "@take-out/hooks",
-      "version": "0.7.13",
+      "version": "0.7.14",
       "dependencies": {
         "@take-out/helpers": "0.7.13",
       },
@@ -288,14 +288,14 @@
     },
     "packages/native": {
       "name": "@take-out/native",
-      "version": "0.7.13",
+      "version": "0.7.14",
       "peerDependencies": {
         "expo-crypto": "*",
       },
     },
     "packages/native-hot-update": {
       "name": "@take-out/native-hot-update",
-      "version": "0.7.13",
+      "version": "0.7.14",
       "devDependencies": {
         "@tamagui/build": "2.3.1",
         "@types/react": "^18.3.18",
@@ -316,7 +316,7 @@
     },
     "packages/run": {
       "name": "@take-out/run",
-      "version": "0.7.13",
+      "version": "0.7.14",
       "dependencies": {
         "@lydell/node-pty": "^1.2.0-beta.3",
         "semver": "^7.7.3",
@@ -327,7 +327,7 @@
     },
     "packages/scripts": {
       "name": "@take-out/scripts",
-      "version": "0.7.13",
+      "version": "0.7.14",
       "dependencies": {
         "@clack/prompts": "^0.8.2",
         "@take-out/helpers": "0.7.13",
@@ -5770,7 +5770,7 @@
 
     "youch/cookie": ["cookie@1.0.2", "", {}, "sha512-9Kr/j4O16ISv8zBBhJoi4bXOYNTkFLOqSL3UDB0njXxCXNezjeyVrJyGOWtgfs/q2km1gwBcfH8q1yEGoMYunA=="],
 
-    "zod-to-json-schema/zod": ["zod@3.24.2", "", {}, "sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ=="],
+    "zod-to-json-schema/zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
 
     "@aws-crypto/sha1-browser/@smithy/util-utf8/@smithy/util-buffer-from": ["@smithy/util-buffer-from@2.2.0", "", { "dependencies": { "@smithy/is-array-buffer": "^2.2.0", "tslib": "^2.6.2" } }, "sha512-IJdWBbTcMQ6DA0gdNhh/BwrLkDR+ADW5Kr1aZmd4k3DIF6ezMV4R2NIAmT08wQJ3yUK82thHWmC/TnK/wpMMIA=="],
 

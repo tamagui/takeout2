@@ -64,6 +64,34 @@ describe('createSQLiteDatabase', () => {
     ])
   })
 
+  test('runs a statement list through the Bun executor in order', async () => {
+    const native = new Database(':memory:')
+    databases.push(native)
+    native.exec('CREATE TABLE todo (id INTEGER PRIMARY KEY, title TEXT NOT NULL)')
+    const database = createSQLiteDatabase({
+      schema: { todo },
+      transactionProvider: createBunSQLiteTransactionProvider({
+        database: native,
+        queryAst: unavailableQueryAst,
+      }),
+    })
+
+    await expect(
+      database.transaction(({ executor }) =>
+        executor.execMany([
+          { sql: 'INSERT INTO todo (id, title) VALUES (?, ?)', params: [1, 'first'] },
+          { sql: 'INSERT INTO todo (id, title) VALUES (?, ?)', params: [2, 'second'] },
+          { sql: "UPDATE todo SET title = 'renamed' WHERE id <= 2" },
+        ]),
+      ),
+    ).resolves.toEqual([{ changes: 1 }, { changes: 1 }, { changes: 2 }])
+
+    expect(native.query('SELECT title FROM todo ORDER BY id').all()).toEqual([
+      { title: 'renamed' },
+      { title: 'renamed' },
+    ])
+  })
+
   test('uses a remote owner transaction without sqlite-proxy transaction SQL', async () => {
     const native = new Database(':memory:')
     databases.push(native)

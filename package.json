@@ -15,7 +15,7 @@
   "engines": {
     "node": "^24.3.0"
   },
-  "packageManager": "bun@1.3.9",
+  "packageManager": "bun@1.4.2",
   "workspaces": [
     "./packages/*"
   ],
@@ -65,7 +65,7 @@
     "run:dev": "NODE_ENV=development bun env:dev bun run",
     "run:prod": "NODE_ENV=production bun env:prod bun run",
     "test:integration": "bun run env:dev bun --cwd=./src/test playwright test",
-    "test:unit": "bun run --cwd packages/database test && bun run:dev vitest run -c ./src/test/vitest.config.ts",
+    "test:unit": "bun run --cwd packages/database test && bun run --cwd packages/run test:bun && bun run:dev vitest run -c ./src/test/vitest.config.ts",
     "test": "tko test",
     "up": "tko up",
     "watch:types": "tko run typecheck --watch",
@@ -98,7 +98,7 @@
     "@hot-updater/bare": "0.25.8",
     "@hot-updater/react-native": "0.25.8",
     "@hot-updater/supabase": "0.25.8",
-    "@legendapp/list": "2.0.19",
+    "@legendapp/list": "3.3.8",
     "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-native-menu/menu": "^2.0.0",
     "@react-navigation/bottom-tabs": "^7.10.1",

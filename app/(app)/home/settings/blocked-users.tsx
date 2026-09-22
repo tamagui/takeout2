@@ -1,4 +1,4 @@
-import { LegendList } from '@legendapp/list'
+import { LegendList } from '@legendapp/list/react-native'
 import { IS_NATIVE } from '@take-out/helpers'
 import { memo, useCallback } from 'react'
 import { Alert, RefreshControl } from 'react-native'

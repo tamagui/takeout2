@@ -15,7 +15,11 @@ export default defineConfig({
       'packages/*/src/**/*.test.ts',
       'packages/*/src/**/*.test.tsx',
     ],
-    exclude: ['packages/database/src/**/*.test.ts'],
+    exclude: [
+      'packages/database/src/**/*.test.ts',
+      'packages/run/src/run-supervision.test.ts',
+      'packages/run/src/run-pty-supervision.test.ts',
+    ],
     outputFile: {
       json: 'src/test/unit/.output/results.json',
     },

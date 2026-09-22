@@ -1,6 +1,6 @@
 {
   "name": "@take-out/helpers",
-  "version": "0.7.14",
+  "version": "0.7.15",
   "sideEffects": false,
   "type": "module",
   "source": "src/index.ts",
@@ -24,21 +24,21 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "types": "./src/index.ts",
+      "types": "./types/index.d.ts",
       "react-native": "./dist/esm/index.native.js",
       "import": "./dist/esm/index.mjs",
       "require": "./dist/cjs/index.cjs",
       "default": "./dist/esm/index.mjs"
     },
     "./server-only": {
-      "types": "./src/server-only.ts",
+      "types": "./types/server-only.d.ts",
       "react-native": "./dist/esm/server-only.native.js",
       "import": "./dist/esm/server-only.mjs",
       "require": "./dist/cjs/server-only.cjs",
       "default": "./dist/esm/server-only.mjs"
     },
     "./client-only": {
-      "types": "./src/client-only.ts",
+      "types": "./types/client-only.d.ts",
       "react-native": "./dist/esm/client-only.native.js",
       "import": "./dist/esm/client-only.mjs",
       "require": "./dist/cjs/client-only.cjs",
@@ -78,5 +78,10 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tamagui/takeout2.git",
+    "directory": "packages/helpers"
   }
 }

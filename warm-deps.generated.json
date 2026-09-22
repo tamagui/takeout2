@@ -19,6 +19,7 @@
     "@tamagui/helpers-icon",
     "@tamagui/linear-gradient",
     "@tamagui/menu",
+    "@tamagui/themes/v5",
     "@tamagui/toast",
     "@vxrn/color-scheme",
     "better-auth",

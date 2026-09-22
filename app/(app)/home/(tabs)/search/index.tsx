@@ -2,7 +2,7 @@ import {
   LegendList,
   type LegendListRef,
   type LegendListRenderItemProps,
-} from '@legendapp/list'
+} from '@legendapp/list/react-native'
 import { memo, useCallback, useRef } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { isWeb, SizableText, Spinner, View, YStack } from 'tamagui'

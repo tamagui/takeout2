@@ -16,9 +16,6 @@
     "node": "^24.3.0"
   },
   "packageManager": "bun@1.4.2",
-  "workspaces": [
-    "./packages/*"
-  ],
   "scripts": {
     "preinstall": "bun ./scripts/preinstall.ts",
     "postinstall": "bun run ./scripts/postinstall.ts",

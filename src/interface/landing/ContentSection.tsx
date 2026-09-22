@@ -1,118 +1,133 @@
-import { H1, H2, H3, H4, Paragraph, styled, Text, XStack, YStack } from 'tamagui'
+import { html, styled, XStack, YStack } from 'tamagui'
 
 import { Link } from '~/interface/app/Link'
 import { OneLogo } from '~/interface/icons/logos/OneLogo'
 import { TamaguiLogo } from '~/interface/icons/logos/TamaguiLogo'
 import { ZeroLogo } from '~/interface/icons/logos/ZeroLogo'
-import { Em, InlineLink, Strong } from '~/interface/text/Text'
+import { Em, Strong } from '~/interface/text/Text'
 
-const SectionContainer = styled(YStack, {
+const InlineLink = styled(html.span, {
+  color: '#0d74ce',
+})
+
+const SectionContainer = styled(html.section, {
   maxW: 680,
   self: 'center',
-  width: '100%',
-  px: '$4',
+  w: '100%',
+  px: '4',
 })
 
-const SectionHeading = styled(H2, {
-  size: '$6',
+const SectionHeading = styled(html.h2, {
+  fontFamily: 'heading',
+  fontSize: '6',
+  lineHeight: '6',
   fontWeight: '600',
-  color: '$color10',
+  color: 'color10',
+  m: 0,
 })
 
-const ContentParagraph = styled(Paragraph, {
-  size: '$7',
-  color: '$color10',
+const ContentParagraph = styled(html.p, {
+  fontFamily: 'body',
+  fontSize: '7',
+  lineHeight: '7',
+  color: 'color10',
+  m: 0,
 })
 
-const GoalTitle = styled(H4, {
-  size: '$9',
+const GoalTitle = styled(html.h4, {
+  fontFamily: 'heading',
+  fontSize: '9',
+  lineHeight: '9',
   fontWeight: '200',
+  color: 'color12',
+  m: 0,
 })
 
-const TechTitle = styled(H3, {
-  size: '$7',
+const TechTitle = styled(html.h3, {
+  fontFamily: 'heading',
+  fontSize: '7',
+  lineHeight: '7',
   fontWeight: '700',
+  color: 'color12',
+  m: 0,
 })
 
-const CodeInline = styled(Text, {
-  fontFamily: '$mono',
-  bg: '$color3',
-  render: 'code',
-  px: '$2',
-  py: '$1',
-  rounded: '$3',
-  color: '$color11',
+const CodeInline = styled(html.code, {
+  fontFamily: 'mono',
+  fontSize: 'inherit',
+  lineHeight: '22.25px',
+  bg: 'color3',
+  px: '2',
+  py: '1',
+  rounded: '3',
+  color: 'color11',
+  display: 'inline',
 })
 
 const SectionDivider = styled(XStack, {
   items: 'center',
-  gap: '$4',
-  my: '$8',
+  gap: '4',
+  my: '8',
 })
 
 const DividerLine = styled(YStack, {
   flex: 1,
-  height: 1,
-  bg: '$color3',
-  mx: '$6',
+  h: 1,
+  bg: 'color3',
+  mx: '6',
 })
 
 const GoalItem = styled(YStack, {
-  gap: '$2',
-  pl: '$4',
+  gap: '2',
+  pl: '4',
   borderLeftWidth: 2,
   ml: -2,
-  borderLeftColor: '$color5',
+  borderLeftColor: 'color5',
 })
 
 const SubGoalItem = styled(YStack, {
-  gap: '$1',
-  pl: '$4',
-  mt: '$3',
+  gap: '1',
+  pl: '4',
+  mt: '3',
 })
 
 const TechCard = styled(YStack, {
-  gap: '$3',
-  p: '$5',
-  bg: '$color2',
-  rounded: '$6',
+  gap: '3',
+  p: '5',
+  bg: 'color2',
+  rounded: '6',
   borderWidth: 0.5,
-  borderColor: '$color4',
+  borderColor: 'color4',
 })
 
 const LogoWrapper = styled(YStack, {
-  width: 40,
-  height: 40,
-  rounded: '$4',
+  w: 40,
+  h: 40,
+  rounded: '4',
   items: 'center',
   justify: 'center',
 })
 
-const ContentTitle = styled(H1, {
-  size: '$9',
+const ContentTitle = styled(html.h1, {
+  fontFamily: 'heading',
+  fontSize: '9 md:12',
+  lineHeight: '9 md:12',
   fontWeight: '800',
-  color: '$color12',
+  color: 'color12',
   text: 'center',
-
-  $md: {
-    size: '$12',
-  },
+  m: 0,
 })
 
-const GradientText = styled(Text, {
+const GradientText = styled(html.span, {
   fontWeight: '800',
-  render: 'span',
-  backgroundImage: 'linear-gradient(90deg, $red10 0%, $orange11 100%)',
+  backgroundImage: 'linear-gradient(90deg, #dc3e42 0%, #cc4e00 100%)',
   color: 'transparent',
-  '$platform-web': {
-    backgroundClip: 'text',
-    WebkitBackgroundClip: 'text',
-  },
+  backgroundClip: 'web:text',
 })
 
 export function ContentSection() {
   return (
-    <SectionContainer gap="$6">
+    <SectionContainer gap="6">
       {/* title */}
       <ContentTitle>
         <GradientText>Ultra high quality</GradientText> apps on every platform shipped{' '}
@@ -120,7 +135,7 @@ export function ContentSection() {
       </ContentTitle>
 
       {/* tldr */}
-      <ContentParagraph color="$color12">
+      <ContentParagraph color="color12">
         Takeout is the result of a many-year effort to create{' '}
         <Strong>
           a new stack, with some new frontend tech that dramatically simplifies
@@ -132,7 +147,7 @@ export function ContentSection() {
       <ContentParagraph>
         Today,{' '}
         <Link href="https://tamagui.dev/takeout" hideExternalIcon>
-          <InlineLink fontWeight="600">we're releasing Takeout 2 RC 1</InlineLink>
+          <InlineLink fontWeight="600">we're releasing Takeout 2</InlineLink>
         </Link>
         , bringing a more Rails-like cohesion to cross-platform React and React Native.
       </ContentParagraph>
@@ -161,7 +176,7 @@ export function ContentSection() {
         <DividerLine />
       </SectionDivider>
 
-      <YStack gap="$8">
+      <YStack gap="8">
         <GoalItem>
           <GoalTitle>Universal</GoalTitle>
           <ContentParagraph>
@@ -247,14 +262,14 @@ export function ContentSection() {
         <DividerLine />
       </SectionDivider>
 
-      <YStack gap="$5">
+      <YStack gap="5">
         <TechCard>
-          <XStack items="center" gap="$3">
+          <XStack items="center" gap="3">
             <LogoWrapper bg="rgba(245, 202, 5, 0.15)">
               <OneLogo size={24} />
             </LogoWrapper>
             <Link href="https://onestack.dev" target="_blank" hideExternalIcon>
-              <TechTitle color="$color12">One</TechTitle>
+              <TechTitle color="color12">One</TechTitle>
             </Link>
           </XStack>
 
@@ -269,25 +284,25 @@ export function ContentSection() {
             The new <Strong>Metro-mode</Strong> gives you Vite's simplicity for web, and
             Metro's maturity on native. One is stable for production use, and{' '}
             <Link href="https://onestack.dev/blog/version-one-rc1" hideExternalIcon>
-              <InlineLink fontWeight="600">read our v1 RC1 releae post here</InlineLink>
+              <InlineLink fontWeight="600">read our v1 release post here</InlineLink>
             </Link>
             .
           </ContentParagraph>
         </TechCard>
 
         <TechCard>
-          <XStack items="center" gap="$3">
+          <XStack items="center" gap="3">
             <LogoWrapper bg="rgba(236, 210, 10, 0.15)">
               <TamaguiLogo size={24} />
             </LogoWrapper>
             <Link href="https://tamagui.dev" target="_blank" hideExternalIcon>
-              <TechTitle color="$color12">Tamagui</TechTitle>
+              <TechTitle color="color12">Tamagui</TechTitle>
             </Link>
           </XStack>
 
           <ContentParagraph>
             Tamagui just gives you{' '}
-            <Strong color="$color11">
+            <Strong color="color11">
               so much good stuff in a vertically integrated package
             </Strong>
             , it's hard to beat. With version two, a lot of hard work is finally paying
@@ -296,7 +311,7 @@ export function ContentSection() {
 
           <ContentParagraph>
             Native feels amazing, and web catches up with all the latest styling features.
-            It's also <Strong color="$color11">great for LLMs</Strong>, and generates
+            It's also <Strong color="color11">great for LLMs</Strong>, and generates
             customized skills.
           </ContentParagraph>
 
@@ -306,24 +321,24 @@ export function ContentSection() {
               target="_blank"
               hideExternalIcon
             >
-              <InlineLink fontWeight="600">Version 2 RC1 is out now</InlineLink>
+              <InlineLink fontWeight="600">Version 2 is out now</InlineLink>
             </Link>{' '}
             with too much to list.
           </ContentParagraph>
         </TechCard>
 
         <TechCard>
-          <XStack items="center" gap="$3">
+          <XStack items="center" gap="3">
             <LogoWrapper bg="rgba(59, 130, 246, 0.15)">
               <ZeroLogo size={24} />
             </LogoWrapper>
             <Link href="https://zero.rocicorp.dev" target="_blank" hideExternalIcon>
-              <TechTitle color="$blue11">Zero</TechTitle>
+              <TechTitle color="#0d74ce">Zero</TechTitle>
             </Link>
           </XStack>
 
           <ContentParagraph>
-            <Strong color="$color12">
+            <Strong color="color12">
               Zero solves the worst area of frontend development today
             </Strong>
             : getting data to the client, keeping it in sync, and mutating it instantly.
@@ -354,10 +369,10 @@ export function ContentSection() {
           <ContentParagraph>
             This isn't just some thrown together starter, it's extracted from the stack
             we've always wanted, and we use it ourselves to start new projects.{' '}
-            <Strong color="$color12">There's 50+ interface folders alone</Strong>. Plus
-            the best libraries we can find, like{' '}
-            <Strong color="$color12">Better Auth</Strong> for auth, or{' '}
-            <Strong>Uncloud</Strong> and <Strong>SST</Strong> options for production.
+            <Strong color="color12">There's 50+ interface folders alone</Strong>. Plus the
+            best libraries we can find, like <Strong color="color12">Better Auth</Strong>{' '}
+            for auth, or <Strong>Uncloud</Strong> and <Strong>SST</Strong> options for
+            production.
           </ContentParagraph>
         </TechCard>
       </YStack>
@@ -367,7 +382,7 @@ export function ContentSection() {
         <DividerLine />
       </SectionDivider>
 
-      <YStack gap="$4">
+      <YStack gap="4">
         <ContentParagraph>
           We built Takeout for ourselves, much like Tamagui and One. They're passion
           projects born out of stubbornly wanting better things. We hope you enjoy this

@@ -19,7 +19,7 @@ await cmd`Build with analyzer, run Lighthouse, open reports and site`.run(
 
     console.info(`\n🔨 building with ANALYZE...\n`)
     await $`rm -rf dist`
-    await $`ANALYZE=1 bun run web build`
+    await $`ANALYZE=1 TAMAGUI_COMPILER_STATS=verbose TAMAGUI_COMPILER_STATS_FILE=dist/compiler-stats.json bun run web build`
     await $`mkdir -p ${dir}`
     await $`mv dist/client/bundle_stats.html ${bundle}`.nothrow()
 

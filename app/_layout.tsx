@@ -3,6 +3,7 @@ import './root.css'
 import { LoadProgressBar, Slot, Stack } from 'one'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
+import { html } from 'tamagui'
 import { SiteRootLayout } from '~/features/site/ui/SiteRootLayout'
 import { HomeBackground } from '~/interface/landing/HomeBackground'
 import { PlatformSpecificRootProvider } from '~/interface/platform/PlatformSpecificRootProvider'
@@ -26,7 +27,7 @@ export function Layout() {
       </head>
 
       <body>
-        <div style={{ display: 'contents' }} data-testid="app-container">
+        <html.div display="contents" data-testid="app-container">
           <PlatformSpecificRootProvider>
             <TamaguiRootProvider>
               <GlobalTooltipProvider>
@@ -53,7 +54,7 @@ export function Layout() {
               </GlobalTooltipProvider>
             </TamaguiRootProvider>
           </PlatformSpecificRootProvider>
-        </div>
+        </html.div>
       </body>
     </html>
   )

@@ -14,5 +14,5 @@ interface PostImageProps {
 export function PostImage({ image }: PostImageProps) {
   const dim = useWindowDimensions()
 
-  return <Image src={image} width={dim.width - 24} height={300} />
+  return <Image src={image} w={dim.width - 24} h={300} />
 }

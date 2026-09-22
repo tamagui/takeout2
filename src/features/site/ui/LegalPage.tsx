@@ -1,4 +1,4 @@
-import { SizableText, YStack } from 'tamagui'
+import { html, SizableText, YStack } from 'tamagui'
 
 import { H1 } from '~/interface/text/Headings'
 
@@ -11,9 +11,9 @@ type LegalPageProps = {
 
 export const LegalPage = ({ title, children }: LegalPageProps) => {
   return (
-    <YStack gap="$4" maxW={760}>
+    <html.article gap="4" maxW={760}>
       <H1>{title}</H1>
-      <SizableText size="$3" color="$color11">
+      <SizableText size="3" color="color11">
         Last updated:{' '}
         {new Date().toLocaleDateString('en-US', {
           year: 'numeric',
@@ -22,10 +22,10 @@ export const LegalPage = ({ title, children }: LegalPageProps) => {
         })}
       </SizableText>
 
-      <YStack gap="$4" mt="$4">
+      <YStack gap="4" mt="4">
         {children}
       </YStack>
-    </YStack>
+    </html.article>
   )
 }
 
@@ -36,27 +36,27 @@ type LegalSectionProps = {
 
 export const LegalSection = ({ title, children }: LegalSectionProps) => {
   return (
-    <YStack gap="$2">
-      <SizableText size="$5" fontWeight="600" color="$color12">
+    <html.section gap="2">
+      <SizableText size="5" fontWeight="600" color="color12">
         {title}
       </SizableText>
       {children}
-    </YStack>
+    </html.section>
   )
 }
 
 export const LegalText = ({ children }: { children: ReactNode }) => {
   return (
-    <SizableText size="$4" color="$color12" lineHeight="$4">
+    <html.p fontSize="4" color="color12" lineHeight="4">
       {children}
-    </SizableText>
+    </html.p>
   )
 }
 
 export const LegalList = ({ children }: { children: ReactNode }) => {
   return (
-    <YStack gap="$2" pl="$4">
+    <html.ul gap="2" pl="4">
       {children}
-    </YStack>
+    </html.ul>
   )
 }

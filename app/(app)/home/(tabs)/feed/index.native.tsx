@@ -78,8 +78,8 @@ export const HomePage = memo(() => {
       return null
     }
     return (
-      <YStack flex={1} items="center" justify="center" p="$4" minH={400}>
-        <SizableText size="$5" color="$color10">
+      <YStack flex={1} items="center" justify="center" p="4" minH={400}>
+        <SizableText size="5" color="color10">
           No posts yet
         </SizableText>
       </YStack>
@@ -89,7 +89,7 @@ export const HomePage = memo(() => {
   const renderFooter = useCallback(() => {
     if (!hasMore || posts.length === 0) return null
     return (
-      <YStack p="$4" items="center">
+      <YStack p="4" items="center">
         <Spinner size="small" />
       </YStack>
     )
@@ -103,9 +103,8 @@ export const HomePage = memo(() => {
           <YStack
             key="studio-shimmer"
             transition="200ms"
-            exitStyle={{ opacity: 0 }}
-            opacity={1}
-            bg="$background"
+            opacity="1 exit:0"
+            bg="background"
             z={1000}
             position="absolute"
             t={headerHeight + insets.top}
@@ -118,7 +117,7 @@ export const HomePage = memo(() => {
         )}
       </AnimatePresence>
 
-      <View flex={1} px="$2">
+      <View flex={1} px="2">
         <AnimatedLegendList
           ref={listRef}
           data={posts}
@@ -154,8 +153,8 @@ export const HomePage = memo(() => {
               b={88}
               r={32}
               z={1000}
-              enterStyle={{ scale: 0.5, y: 30 }}
-              exitStyle={{ scale: 0.5, y: 30 }}
+              scale="enter:0.5 exit:0.5"
+              y="enter:30px exit:30px"
             >
               <Button
                 glass

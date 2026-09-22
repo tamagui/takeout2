@@ -15,13 +15,11 @@ export const LoginAdminButton = () => {
           variant="outlined"
           size="large"
           onPress={handleSignInAdmin}
-          width="100%"
-          data-testid="login-as-admin"
-          pressStyle={{
-            scale: 0.97,
-          }}
+          w="100%"
+          scale="press:0.97 enter:0.95"
           transition="200ms"
-          enterStyle={{ opacity: 0, scale: 0.95 }}
+          opacity="enter:0"
+          data-testid="login-as-admin"
         >
           Continue as admin (dev)
         </Button>

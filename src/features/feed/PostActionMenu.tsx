@@ -1,7 +1,7 @@
 import { IS_NATIVE, randomId } from '@take-out/helpers'
 import { Menu } from '@tamagui/menu'
 import { router } from 'one'
-import { useIsTouchDevice } from 'tamagui'
+import { Theme, useIsTouchDevice } from 'tamagui'
 
 import { saveRemoteImage } from '~/helpers/media/saveImage'
 import { Button } from '~/interface/buttons/Button'
@@ -134,13 +134,14 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
       <Menu.Portal zIndex={100}>
         <Menu.Content
           transition="quickestLessBouncy"
-          enterStyle={{ scale: 0.9, opacity: 0, y: -5 }}
-          exitStyle={{ scale: 0.95, opacity: 0, y: -3 }}
-          rounded="$4"
-          p="$2"
+          scale="enter:0.9 exit:0.95"
+          opacity="enter:0 exit:0"
+          y="enter:-5px exit:-3px"
+          rounded="4"
+          p="2"
           borderWidth={1}
-          borderColor="$borderColor"
-          boxShadow="0 4px 5px $shadowColor"
+          borderColor="border-color"
+          boxShadow="0 4px 5px shadow-color"
         >
           <Menu.Item
             key="save-image"
@@ -175,18 +176,20 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
           )}
 
           {isOwnPost && (
-            <Menu.Item
-              key="delete"
-              onSelect={handleDelete}
-              destructive
-              justify="space-between"
-              textValue="Delete Post"
-            >
-              <Menu.ItemTitle color="$red10">Delete Post</Menu.ItemTitle>
-              <Menu.ItemIcon ios={{ name: 'trash' }} androidIconName="ic_menu_delete">
-                <TrashIcon size={18} color="$red10" />
-              </Menu.ItemIcon>
-            </Menu.Item>
+            <Theme name="red">
+              <Menu.Item
+                key="delete"
+                onSelect={handleDelete}
+                destructive
+                justify="space-between"
+                textValue="Delete Post"
+              >
+                <Menu.ItemTitle color="color10">Delete Post</Menu.ItemTitle>
+                <Menu.ItemIcon ios={{ name: 'trash' }} androidIconName="ic_menu_delete">
+                  <TrashIcon size={18} color="$color10" />
+                </Menu.ItemIcon>
+              </Menu.Item>
+            </Theme>
           )}
           <Menu.Separator />
 
@@ -211,15 +214,15 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
 
               <Menu.Portal zIndex={200}>
                 <Menu.SubContent
-                  enterStyle={{ scale: 0.95, opacity: 0 }}
-                  exitStyle={{ scale: 0.95, opacity: 0 }}
+                  scale="enter:0.95 exit:0.95"
+                  opacity="enter:0 exit:0"
                   transition="quickestLessBouncy"
                   minW={200}
-                  rounded="$4"
-                  p="$2"
+                  rounded="4"
+                  p="2"
                   borderWidth={1}
-                  borderColor="$borderColor"
-                  boxShadow="0 4px 5px $shadowColor"
+                  borderColor="border-color"
+                  boxShadow="0 4px 5px shadow-color"
                 >
                   {REPORT_REASONS.map((reason) => (
                     <Menu.Item
@@ -237,7 +240,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
 
           {/* report and block options only for other users' posts */}
           {!isOwnPost && (
-            <>
+            <Theme name="red">
               <Menu.Item
                 key="block"
                 onSelect={handleBlock}
@@ -245,29 +248,31 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
                 justify="space-between"
                 textValue="Block User"
               >
-                <Menu.ItemTitle color="$red10">Block User</Menu.ItemTitle>
+                <Menu.ItemTitle color="color10">Block User</Menu.ItemTitle>
                 <Menu.ItemIcon
                   ios={{ name: 'xmark.circle' }}
                   androidIconName="ic_menu_close_clear_cancel"
                 >
-                  <XCircleIcon size={18} color="$red10" />
+                  <XCircleIcon size={18} color="$color10" />
                 </Menu.ItemIcon>
               </Menu.Item>
-            </>
+            </Theme>
           )}
           {isAdmin && (
-            <Menu.Item
-              key="admin-hide"
-              onSelect={handleAdminHide}
-              destructive
-              justify="space-between"
-              textValue="Hide Post (Admin)"
-            >
-              <Menu.ItemTitle color="$red10">Hide Post (Admin)</Menu.ItemTitle>
-              <Menu.ItemIcon ios={{ name: 'eye.slash' }} androidIconName="ic_menu_view">
-                <WarningCircleIcon size={18} color="$red10" />
-              </Menu.ItemIcon>
-            </Menu.Item>
+            <Theme name="red">
+              <Menu.Item
+                key="admin-hide"
+                onSelect={handleAdminHide}
+                destructive
+                justify="space-between"
+                textValue="Hide Post (Admin)"
+              >
+                <Menu.ItemTitle color="color10">Hide Post (Admin)</Menu.ItemTitle>
+                <Menu.ItemIcon ios={{ name: 'eye.slash' }} androidIconName="ic_menu_view">
+                  <WarningCircleIcon size={18} color="$color10" />
+                </Menu.ItemIcon>
+              </Menu.Item>
+            </Theme>
           )}
         </Menu.Content>
       </Menu.Portal>

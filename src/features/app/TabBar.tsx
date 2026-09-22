@@ -386,7 +386,7 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
                   justifyContent: 'flex-end',
                 }}
               >
-                <View flex={1} p="$2" pb="$1" justify="flex-start" gap="$2">
+                <View flex={1} pt="2" pr="2" pl="2" pb="1" justify="flex-start" gap="2">
                   {EXPANDED_MENU_ITEMS.map((item, index) => (
                     <ExpandedMenuItem
                       key={item.route}

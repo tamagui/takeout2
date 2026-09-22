@@ -3,7 +3,10 @@ import { useEffect, useState } from 'react'
 import { useWindowDimensions } from 'react-native'
 import { AnimatePresence, Circle, Portal, styled, XStack, YStack } from 'tamagui'
 
-import { animationClamped } from '~/interface/animations/animationClamped'
+import {
+  transitionQuickestClamped,
+  transitionQuickerLessBouncyClamped,
+} from '~/interface/animations/animationClamped'
 import { Button, type ButtonProps } from '~/interface/buttons/Button'
 import { CaretLeftIcon } from '~/interface/icons/phosphor/CaretLeftIcon'
 import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
@@ -45,19 +48,11 @@ const GalleryItem = styled(YStack, {
 
   variants: {
     // 1 = right, 0 = nowhere, -1 = left
-    going: {
-      ':number': (going) => ({
-        enterStyle: {
-          x: going === 0 ? 0 : going > 0 ? 1000 : -1000,
-          opacity: 0,
-        },
-        exitStyle: {
-          zIndex: 0,
-          x: going === 0 ? 0 : going < 0 ? 1000 : -1000,
-          opacity: 0,
-        },
-      }),
-    },
+    going: (going: number) => ({
+      x: `enter:${going === 0 ? 0 : going > 0 ? 1000 : -1000}px exit:${going === 0 ? 0 : going < 0 ? 1000 : -1000}px`,
+      opacity: 'enter:0 exit:0',
+      zIndex: 'exit:0',
+    }),
   } as const,
 })
 
@@ -110,9 +105,9 @@ export const Gallery = () => {
   return (
     <Portal stackZIndex={1_000_000}>
       <XStack
-        transition={animationClamped('quickest')}
+        transition={transitionQuickestClamped}
         overflow="hidden"
-        bg="$black02"
+        bg="black02"
         backdropFilter="blur(20px)"
         items="center"
         position="fixed"
@@ -121,7 +116,6 @@ export const Gallery = () => {
         r={0}
         b={0}
         z={100_000}
-        onPress={closeGallery}
         {...(hidden
           ? {
               opacity: 0,
@@ -131,6 +125,7 @@ export const Gallery = () => {
               opacity: 1,
               pointerEvents: 'auto',
             })}
+        onPress={closeGallery}
       >
         {items && (
           <>
@@ -141,11 +136,11 @@ export const Gallery = () => {
                 closeGallery()
               }}
               position="absolute"
-              t="$4"
-              r="$4"
+              t="4"
+              r="4"
               z={999}
             >
-              <Circle size={40} bg="$color2">
+              <Circle size={40} bg="color2">
                 <XIcon />
               </Circle>
             </Pressable>
@@ -153,14 +148,11 @@ export const Gallery = () => {
             <AnimatePresence initial={false} custom={{ going }}>
               <GalleryItem
                 key={page}
-                transition={animationClamped('quickerLessBouncy')}
+                transition={transitionQuickerLessBouncyClamped}
                 going={going}
               >
                 {!!currentUrl && !fullyHidden && (
-                  <YStack
-                    transition="quick"
-                    {...(hidden ? { o: 0, y: 10 } : { o: 1, y: 0 })}
-                  >
+                  <YStack transition="quick" opacity={hidden ? 0 : 1} y={hidden ? 10 : 0}>
                     {isVideo ? (
                       <Video
                         src={currentUrl}
@@ -176,8 +168,8 @@ export const Gallery = () => {
                       <Image
                         objectFit="scale-down"
                         src={currentUrl}
-                        width={dimensions.width - 20}
-                        height={dimensions.height - 20}
+                        w={dimensions.width - 20}
+                        h={dimensions.height - 20}
                       />
                     )}
                   </YStack>
@@ -187,7 +179,7 @@ export const Gallery = () => {
 
             <GalleryButton
               aria-label="Carousel left"
-              l="$4"
+              l="4"
               icon={<CaretLeftIcon />}
               onPress={(e: any) => {
                 e.stopPropagation()
@@ -198,7 +190,7 @@ export const Gallery = () => {
 
             <GalleryButton
               aria-label="Carousel right"
-              r="$4"
+              r="4"
               icon={<CaretRightIcon />}
               onPress={(e: any) => {
                 e.stopPropagation()
@@ -220,10 +212,8 @@ const GalleryButton = ({ inactive, ...props }: ButtonProps & { inactive?: boolea
       position="absolute"
       circular
       z={100}
-      {...(inactive && {
-        opacity: 0,
-        pointerEvents: 'none',
-      })}
+      opacity={inactive ? 0 : 1}
+      pointerEvents={inactive ? 'none' : 'auto'}
       {...props}
     />
   )

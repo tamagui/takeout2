@@ -10,9 +10,9 @@ export const LoginEmailButton = () => {
         size="large"
         variant="floating"
         haptic
-        width="100%"
+        w="100%"
         icon={EnvelopeSimpleIcon}
-        height={48}
+        h={48}
       >
         Continue with Email
       </Button>

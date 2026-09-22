@@ -33,16 +33,16 @@ export function ThemeSwitch({ size = '$2' }: { size?: SizeTokens }) {
   const iconSize = size === '$1' ? 16 : size === '$2' ? 20 : size === '$3' ? 24 : 28
 
   return (
-    <View items="center" gap="$1">
+    <View items="center" gap="1">
       <Tooltip label={setting[0]?.toUpperCase() + setting.slice(1)}>
         <Button
           onPress={onPress}
           transition="medium"
+          scale="hover:1.05 press:0.9"
+          opacity="press:0.8"
           size="medium"
           circular
           keepTooltipOpen
-          pressStyle={{ scale: 0.9, opacity: 0.8 }}
-          hoverStyle={{ scale: 1.05 }}
           aria-label="Toggle theme"
         >
           <IconContainer active={setting === 'light'}>

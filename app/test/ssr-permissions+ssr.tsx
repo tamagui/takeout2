@@ -5,7 +5,7 @@
  */
 
 import { createRoute, useLoader } from 'one'
-import { Text, YStack } from 'tamagui'
+import { html, Text, YStack } from 'tamagui'
 
 const route = createRoute<'/test/ssr-permissions'>()
 
@@ -41,18 +41,18 @@ export function SSRPermissionsTestPage() {
   const { viewerId, posts } = useLoader(loader)
 
   return (
-    <YStack p="$4" gap="$2">
-      <Text fontSize="$6" fontWeight="bold">
+    <YStack p="4" gap="2">
+      <Text fontSize="6" fontWeight="bold">
         SSR Permissions Test
       </Text>
-      <Text color="$color10" data-testid="ssr-viewer-id">
+      <Text color="color10" data-testid="ssr-viewer-id">
         Viewer: {viewerId || 'anonymous'}
       </Text>
-      <Text color="$color10" data-testid="ssr-post-count">
+      <Text color="color10" data-testid="ssr-post-count">
         Posts: {posts.length}
       </Text>
 
-      <YStack gap="$1" mt="$4">
+      <YStack gap="1" mt="4">
         {posts.map((post) => (
           <Text key={post.id} data-testid={`ssr-post-${post.id}`}>
             {post.id} (by {post.userId}): {post.caption?.slice(0, 50)}
@@ -61,14 +61,14 @@ export function SSRPermissionsTestPage() {
       </YStack>
 
       {/* hidden data for easy test assertions */}
-      <div
+      <html.div
         data-testid="ssr-post-ids"
-        style={{ display: 'none' }}
+        display="none"
         dangerouslySetInnerHTML={{ __html: posts.map((p) => p.id).join(',') }}
       />
-      <div
+      <html.div
         data-testid="ssr-user-ids"
-        style={{ display: 'none' }}
+        display="none"
         dangerouslySetInnerHTML={{ __html: posts.map((p) => p.userId).join(',') }}
       />
     </YStack>

@@ -2,7 +2,16 @@
   color-scheme: light dark;
   --font-heading: system-ui, sans-serif;
   --font-body: system-ui, sans-serif;
+  --button-glint-border: rgba(255, 255, 255, 0.05);
+  --button-glint-opacity: 0.8;
+  --button-glint-shadow: 0 0.5px 2px rgba(0, 0, 0, 0.12);
   scrollbar-color: #b1b1b1 transparent;
+}
+
+:root.t_dark {
+  --button-glint-border: rgba(255, 255, 255, 0.1);
+  --button-glint-opacity: 0.5;
+  --button-glint-shadow: 0 0.5px 0.5px 1px rgba(0, 0, 0, 0.45);
 }
 
 :root body {
@@ -83,13 +92,17 @@ p a,
 .t_Link:not(:has(div, span)) {
   text-decoration: underline;
   text-decoration-thickness: 2px;
-  text-decoration-color: var(--color01);
+  text-decoration-color: var(--color4);
   text-underline-offset: 4px;
   transition: all ease-in 100ms;
 }
 
 a:hover {
-  text-decoration-color: var(--color02);
+  text-decoration-color: var(--color5);
+}
+
+[data-heading] {
+  scroll-margin-top: 100px;
 }
 
 * {
@@ -101,12 +114,24 @@ a {
   color: inherit;
 }
 
-:root [role="heading"] {
+:root :is([role="heading"], h1, h2, h3, h4, h5, h6) {
   text-wrap: balance;
 }
 
 :root p {
   text-wrap: pretty;
+}
+
+:root :is(h1, h2, h3, h4, h5, h6, p, li) {
+  white-space: normal;
+}
+
+:root li {
+  margin-top: 0;
+  margin-bottom: 7px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 24px;
 }
 
 /* terminal scrollbar hide */

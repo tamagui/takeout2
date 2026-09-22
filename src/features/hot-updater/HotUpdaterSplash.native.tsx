@@ -47,10 +47,10 @@ const SplashContent = ({ children }: { children?: React.ReactNode }) => {
 
   if (!userClearedForAccess) {
     return (
-      <View flex={1} items="center" justify="center" bg="$background">
+      <View flex={1} items="center" justify="center" bg="background">
         <ActivityIndicator size="large" />
         {progress > 0 && (
-          <SizableText mt="$2" color="$color10">
+          <SizableText mt="2" color="color10">
             Downloading update... {Math.round(progress)}%
           </SizableText>
         )}

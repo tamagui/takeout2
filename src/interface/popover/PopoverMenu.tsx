@@ -35,25 +35,23 @@ export const PopoverMenu = ({
           snapPointsMode="percent"
         >
           <Sheet.Overlay
-            bg="$background"
-            opacity={0.5}
+            bg="background"
+            opacity="0.5 enter:0 exit:0"
             transition="quick"
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
           />
           <Sheet.Handle />
-          <Sheet.Frame p="$4">
+          <Sheet.Container p="4">
             <Adapt.Contents />
-          </Sheet.Frame>
+          </Sheet.Container>
         </Sheet>
       </Adapt>
 
       <Popover.Content shadow={shadow} p={0}>
         <YStack
-          width="100%"
+          w="100%"
           // rounded="$5"
           overflow="hidden"
-          height="100%"
+          h="100%"
           flex={1}
           flexBasis="auto"
         >

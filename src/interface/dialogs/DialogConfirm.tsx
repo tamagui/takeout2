@@ -35,19 +35,19 @@ export const DialogConfirm = () => {
         }
       }}
     >
-      <YStack pointerEvents="box-none" gap="$2" mb="$4" $md={{ flex: 1 }}>
+      <YStack pointerEvents="box-none" gap="2" mb="4" flex="md:1">
         <Dialog.Header title={state?.title} description={state?.description} />
 
         {state?.extraConfirm && (
           <Input
-            mt="$2"
+            mt="2"
             onChange={(e) => setExtraConfirm((e.target as HTMLInputElement).value)}
             placeholder='Type "Confirm" to confirm'
           />
         )}
       </YStack>
 
-      <XStack pointerEvents="box-none" justify="flex-end" gap="$2">
+      <XStack pointerEvents="box-none" justify="flex-end" gap="2">
         <Button
           onPress={() => {
             close(false)

@@ -1,4 +1,4 @@
-import { Separator, SizableText, Spinner, XStack, YStack } from 'tamagui'
+import { Separator, SizableText, Spinner, Theme, XStack, YStack } from 'tamagui'
 
 import { useLogout } from '~/features/auth/useLogout'
 import { useProfileEdit } from '~/features/user/useProfileEdit'
@@ -30,7 +30,7 @@ export const UserProfilePopoverContent = () => {
   } = useProfileEdit()
 
   return (
-    <YStack p="$4" gap="$3" minW={320}>
+    <YStack p="4" gap="3" minW={320}>
       <Popover.Close asChild>
         <Button size="small" onPress={() => logout()} icon={DoorIcon} self="flex-end">
           Logout
@@ -40,7 +40,7 @@ export const UserProfilePopoverContent = () => {
       <Separator />
 
       {/* Avatar Upload */}
-      <YStack items="center" py="$2">
+      <YStack items="center" py="2">
         <AvatarUpload
           id="popover-avatar"
           dropActive={false}
@@ -53,17 +53,17 @@ export const UserProfilePopoverContent = () => {
       <Separator />
 
       {/* Name Input */}
-      <YStack gap="$2">
+      <YStack gap="2">
         <XStack justify="space-between" items="center">
-          <SizableText size="$2" fontWeight="500" color="$color11">
+          <SizableText size="2" fontWeight="500" color="color11">
             Name
           </SizableText>
-          <SizableText size="$1" color="$color9">
+          <SizableText size="1" color="color9">
             {name.length}/40
           </SizableText>
         </XStack>
         <Input
-          size="$3"
+          size="3"
           placeholder="John Doe"
           value={name}
           onChange={(e) => handleNameChange((e.target as HTMLInputElement).value)}
@@ -73,42 +73,46 @@ export const UserProfilePopoverContent = () => {
       </YStack>
 
       {/* Username Input */}
-      <YStack gap="$2">
+      <YStack gap="2">
         <XStack justify="space-between" items="center">
-          <SizableText size="$2" fontWeight="500" color="$color11">
+          <SizableText size="2" fontWeight="500" color="color11">
             Username
           </SizableText>
-          <SizableText size="$1" color="$color9">
+          <SizableText size="1" color="color9">
             {username.length}/30
           </SizableText>
         </XStack>
         <XStack items="center" position="relative">
           <Input
-            size="$3"
+            size="3"
             flex={1}
             placeholder="johndoe"
             value={username}
             onChange={(e) => handleUsernameChange((e.target as HTMLInputElement).value)}
             autoCapitalize="none"
             autoCorrect="off"
-            pr="$8"
+            pr="8"
           />
-          <XStack position="absolute" r="$2">
+          <XStack position="absolute" r="2">
             {isCheckingAvailability ? (
-              <Spinner size="small" color="$color10" />
+              <Spinner size="small" color="color10" />
             ) : isUsernameInvalid || isUnavailable ? (
-              <XIcon size={16} color="$red10" />
+              <Theme name="red">
+                <XIcon size={16} color="$color10" />
+              </Theme>
             ) : isAvailable && debouncedUsername ? (
-              <CheckIcon size={16} color="$green10" />
+              <Theme name="green">
+                <CheckIcon size={16} color="$color10" />
+              </Theme>
             ) : null}
           </XStack>
         </XStack>
         {isUnavailable && !isCheckingAvailability ? (
-          <SizableText size="$1" color="$red10">
+          <SizableText theme="red" size="1" color="color10">
             Username is not available
           </SizableText>
         ) : isUsernameInvalid ? (
-          <SizableText size="$1" color="$red10">
+          <SizableText theme="red" size="1" color="color10">
             Must be 3+ chars, start with letter, only letters/numbers/_
           </SizableText>
         ) : null}
@@ -121,9 +125,9 @@ export const UserProfilePopoverContent = () => {
       <Button
         size="small"
         self="center"
+        bg="background"
         onPress={handleSave}
         disabled={!canSave || isSaving}
-        bg="$background"
       >
         {isSaving ? 'Saving...' : 'Save Change'}
       </Button>

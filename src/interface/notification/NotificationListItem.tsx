@@ -46,38 +46,36 @@ export const NotificationListItem = memo(
 
     return (
       <XStack
-        px="$4"
-        py="$3"
-        gap="$3"
+        px="4"
+        py="3"
+        gap="3"
         items="center"
-        bg={read ? 'transparent' : '$background02'}
-        hoverStyle={{ bg: '$background04' }}
-        pressStyle={{ bg: '$background04' }}
+        bg={`${read ? 'transparent' : 'color1'} hover:color2 press:color2`}
         cursor="pointer"
         onPress={onPress}
       >
         <View position="relative">
           {actorImage ? (
             <View
-              width={scaleSize(44)}
-              height={scaleSize(44)}
-              rounded="$10"
+              w={scaleSize(44)}
+              h={scaleSize(44)}
+              rounded="10"
               overflow="hidden"
-              bg="$color3"
+              bg="color3"
             >
               <Image
                 src={actorImage}
-                width={scaleSize(44)}
-                height={scaleSize(44)}
+                w={scaleSize(44)}
+                h={scaleSize(44)}
                 objectFit="cover"
               />
             </View>
           ) : (
             <View
-              width={scaleSize(44)}
-              height={scaleSize(44)}
-              rounded="$10"
-              bg="$color5"
+              w={scaleSize(44)}
+              h={scaleSize(44)}
+              rounded="10"
+              bg="color5"
               items="center"
               justify="center"
             >
@@ -89,30 +87,30 @@ export const NotificationListItem = memo(
               position="absolute"
               t={-2}
               r={-2}
-              width={10}
-              height={10}
-              rounded="$10"
-              bg="$blue10"
+              w={10}
+              h={10}
+              rounded="10"
+              bg="accent10"
             />
           )}
         </View>
 
-        <YStack flex={1} gap="$1">
+        <YStack flex={1} gap="1">
           <XStack justify="space-between" items="center">
             <SizableText
-              size="$4"
-              color="$color12"
+              size="4"
+              color="color12"
               fontWeight={read ? '400' : '600'}
               numberOfLines={1}
             >
               {actorName || title}
             </SizableText>
-            <SizableText size="$2" color="$color10">
+            <SizableText size="2" color="color10">
               {timeAgo}
             </SizableText>
           </XStack>
           {body && (
-            <SizableText size="$3" color="$color11" numberOfLines={2}>
+            <SizableText size="3" color="color11" numberOfLines={2}>
               {body}
             </SizableText>
           )}

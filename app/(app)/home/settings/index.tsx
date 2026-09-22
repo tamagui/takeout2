@@ -14,11 +14,11 @@ const SettingRow = memo(
     const Icon = item.icon
 
     const content = (
-      <SettingRowFrame active={isActive} {...(item.onPress && { onPress: item.onPress })}>
+      <SettingRowFrame active={isActive} onPress={item.onPress}>
         {Icon && (
           <View
-            width={22}
-            height={22}
+            w={22}
+            h={22}
             items="center"
             justify="center"
             opacity={isActive ? 1 : 0.7}
@@ -27,9 +27,9 @@ const SettingRow = memo(
           </View>
         )}
         <SizableText
-          size="$4"
+          size="4"
           fontWeight={isActive ? '600' : '400'}
-          color={isActive ? '$color12' : '$color11'}
+          color={`${isActive ? 'color12' : 'color11'}`}
         >
           {item.title}
         </SizableText>
@@ -48,11 +48,11 @@ const SettingRow = memo(
             onPress={() => Linking.openURL(`https://${DOMAIN}${item.href}`)}
           >
             {Icon && (
-              <View width={22} height={22} items="center" justify="center" opacity={0.7}>
+              <View w={22} h={22} items="center" justify="center" opacity={0.7}>
                 <Icon size="$6" color="$color11" />
               </View>
             )}
-            <SizableText size="$4" color="$color11">
+            <SizableText size="4" color="color11">
               {item.title}
             </SizableText>
           </SettingRowFrame>
@@ -72,8 +72,8 @@ const SettingRow = memo(
 
 const LogoAndVersion = memo(() => {
   return (
-    <YStack items="center" pt="$6" pb="$4">
-      <SizableText size="$2" color="$color9">
+    <YStack items="center" pt="6" pb="4">
+      <SizableText size="2" color="color9">
         {APP_NAME_LOWERCASE} v1.0.0
       </SizableText>
     </YStack>
@@ -92,13 +92,13 @@ export function SettingsSidebarContent() {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <HeadInfo title="Settings" />
-      <YStack p="$4" gap="$4" select="none">
-        <SizableText size="$7" fontWeight="700" px="$3">
+      <YStack p="4" gap="4" select="none">
+        <SizableText size="7" fontWeight="700" px="3">
           Settings
         </SizableText>
 
         {sections.map((section) => (
-          <YStack key={section.title} gap="$1">
+          <YStack key={section.title} gap="1">
             <SectionTitle>{section.title}</SectionTitle>
             {section.items.map((item) => (
               <SettingRow key={item.id} item={item} isActive={isItemActive(item)} />
@@ -116,14 +116,14 @@ const MobileSettingRow = memo(({ item }: { item: SettingItem }) => {
   const Icon = item.icon
 
   const content = (
-    <MobileSettingRowFrame {...(item.onPress && { onPress: item.onPress })}>
-      <XStack gap="$3" items="center" flex={1}>
+    <MobileSettingRowFrame onPress={item.onPress}>
+      <XStack gap="3" items="center" flex={1}>
         {Icon && (
-          <View width={24} items="center" justify="center">
+          <View w={24} items="center" justify="center">
             <Icon size={20} color="$color11" />
           </View>
         )}
-        <SizableText size="$5">{item.title}</SizableText>
+        <SizableText size="5">{item.title}</SizableText>
       </XStack>
       <CaretRightIcon size={16} color="$color8" />
     </MobileSettingRowFrame>
@@ -138,13 +138,13 @@ const MobileSettingRow = memo(({ item }: { item: SettingItem }) => {
       <MobileSettingRowFrame
         onPress={() => Linking.openURL(`https://${DOMAIN}${item.href}`)}
       >
-        <XStack gap="$3" items="center" flex={1}>
+        <XStack gap="3" items="center" flex={1}>
           {Icon && (
-            <View width={24} items="center" justify="center">
+            <View w={24} items="center" justify="center">
               <Icon size={20} color="$color11" />
             </View>
           )}
-          <SizableText size="$5">{item.title}</SizableText>
+          <SizableText size="5">{item.title}</SizableText>
         </XStack>
         <CaretRightIcon size={16} color="$color8" />
       </MobileSettingRowFrame>
@@ -164,10 +164,10 @@ function MobileSettingsContent() {
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
       <HeadInfo title="Settings" />
-      <YStack flex={1} flexBasis="auto" pb="$10" pt="$4">
+      <YStack flex={1} flexBasis="auto" pb="10" pt="4">
         {sections.map((section) => (
-          <YStack key={section.title} mb="$6">
-            <YStack ml="$4">
+          <YStack key={section.title} mb="6">
+            <YStack ml="4">
               <SepHeading>{section.title}</SepHeading>
             </YStack>
             <YStack>
@@ -185,13 +185,13 @@ function MobileSettingsContent() {
 }
 
 const MobileLogoAndVersion = memo(() => (
-  <YStack items="center" pb={100} pt="$4">
-    <XStack items="center" gap="$2">
-      <SizableText color="$color10" fontWeight="bold">
+  <YStack items="center" pb={100} pt="4">
+    <XStack items="center" gap="2">
+      <SizableText color="color10" fontWeight="bold">
         {APP_NAME_LOWERCASE}
       </SizableText>
     </XStack>
-    <SizableText size="$1" color="$color10" mt="$2">
+    <SizableText size="1" color="color10" mt="2">
       v1.0.0
     </SizableText>
   </YStack>
@@ -209,48 +209,38 @@ export function ProfileSettingsPage() {
 
 const SettingRowFrame = styled(XStack, {
   cursor: 'pointer',
-  height: 44,
-  px: '$3',
-  rounded: '$3',
+  h: 44,
+  px: '3',
+  rounded: '3',
   items: 'center',
-  gap: '$3',
-  bg: 'transparent',
+  gap: '3',
+  bg: 'transparent hover:color3 press:color4',
   transition: '200ms',
-
-  hoverStyle: {
-    bg: '$color3',
-  },
-
-  pressStyle: {
-    bg: '$color4',
-    scale: 0.98,
-  },
-
+  scale: 'press:0.98',
   variants: {
     active: {
       true: {
-        bg: '$color3',
+        bg: 'color3',
       },
     },
   } as const,
 })
 
 const SectionTitle = styled(SizableText, {
-  size: '$2',
+  size: '2',
   fontWeight: '600',
-  color: '$color10',
+  color: 'color10',
   textTransform: 'uppercase',
   letterSpacing: 0.5,
-  px: '$3',
-  py: '$2',
+  px: '3',
+  py: '2',
 })
 
 const MobileSettingRowFrame = styled(XStack, {
   cursor: 'pointer',
-  height: 56,
-  px: '$4',
+  h: 56,
+  px: '4',
   items: 'center',
   justify: 'space-between',
-  hoverStyle: { bg: '$color2' },
-  pressStyle: { bg: '$color3' },
+  bg: 'hover:color2 press:color3',
 })

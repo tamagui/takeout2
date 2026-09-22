@@ -2,10 +2,11 @@ import { nbspLastWord } from '@take-out/helpers'
 import { getMDXComponent } from 'mdx-bundler/client'
 import { createRoute, useLoader } from 'one'
 import { useMemo } from 'react'
-import { H1, Paragraph } from 'tamagui'
+import { html } from 'tamagui'
 
 import { components } from '~/features/docs/MDXComponents'
 import { HeadInfo } from '~/interface/app/HeadInfo'
+import { H1 } from '~/interface/text/Headings'
 
 export const sitemap = {
   priority: 0.8,
@@ -47,20 +48,14 @@ export function DocsSlugPage() {
         }}
       />
 
-      <H1
-        mb="$2"
-        mt="$2"
-        $platform-web={{
-          textWrap: 'balance',
-        }}
-      >
+      <H1 mb="2" mt="2" textWrap="web:balance">
         {nbspLastWord(frontmatter.title)}
       </H1>
 
       {!!frontmatter.description && (
-        <Paragraph size="$7" color="$color8" mb="$3">
+        <html.p fontSize="7" lineHeight="7" color="color8" mb="3">
           {nbspLastWord(frontmatter.description || '')}
-        </Paragraph>
+        </html.p>
       )}
 
       <Component components={components} />

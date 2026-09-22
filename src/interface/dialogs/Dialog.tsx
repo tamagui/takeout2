@@ -23,7 +23,7 @@ import { useHandleEscapeIf } from '~/features/shortcuts/handleKeyboardEscape'
 import { BlurView } from '../effects/BlurView'
 import { dialogEmit } from './shared'
 
-const CONTENT_RADIUS: SizeTokens = '$9'
+const CONTENT_RADIUS = '9'
 
 const DialogComponent = ({
   children,
@@ -85,27 +85,25 @@ const DialogComponent = ({
             moveOnKeyboardChange
           >
             <Sheet.Overlay
-              bg="$shadow6"
+              bg="shadow-color"
               transition="medium"
-              enterStyle={{ opacity: 0 }}
-              exitStyle={{ opacity: 0 }}
+              opacity="enter:0 exit:0"
               onPress={() => {
                 props.onOpenChange?.(false)
               }}
             />
-            <Sheet.Frame
-              theme="surface2"
-              p="$4"
+            <Sheet.Container
+              p="4"
               pb={insets.bottom + 100 + 30}
               y={100}
-              gap="$4"
-              rounded="$10"
+              gap="4"
+              rounded="10"
               borderBottomRightRadius={0}
               borderBottomLeftRadius={0}
               bg="transparent"
-              boxShadow="0px 0 40px $shadow6"
+              boxShadow="0px 0 40px shadow-color"
             >
-              <YStack z={0} bg="$color5" opacity={0.5} inset={0} position="absolute" />
+              <YStack z={0} bg="color5" opacity={0.5} inset={0} position="absolute" />
               <BlurView intensity={50} position="absolute" inset={0} />
               <Sheet.ScrollView
                 keyboardShouldPersistTaps="handled"
@@ -114,14 +112,14 @@ const DialogComponent = ({
               >
                 <TamaguiDialog.Adapt.Contents />
               </Sheet.ScrollView>
-            </Sheet.Frame>
+            </Sheet.Container>
           </Sheet>
         </TamaguiDialog.Adapt>
 
         <TamaguiDialog.Portal z={500_000}>
           <DialogOverlay
             key="overlay"
-            bg="$shadow6"
+            bg="shadow-color"
             onPress={(e) => {
               props.onOpenChange?.(false)
               e.stopPropagation()
@@ -133,10 +131,10 @@ const DialogComponent = ({
             ref={dialogContentRef}
             minH={minH}
             minW={minW}
-            key="content"
             rounded={CONTENT_RADIUS}
             overflow="hidden"
-            p="$3"
+            p="3"
+            key="content"
           >
             {children}
           </DialogContent>
@@ -148,46 +146,40 @@ const DialogComponent = ({
 
 const DialogOverlay = styled(TamaguiDialog.Overlay, {
   transition: '200ms',
-  opacity: 1,
+  opacity: '1 enter:0 exit:0',
   backdropFilter: 'blur(3px)',
-  enterStyle: { opacity: 0 },
-  exitStyle: { opacity: 0 },
 })
 
 const DialogContent = styled(TamaguiDialog.Content, {
-  unstyled: true,
   z: 1000000,
   transition: '200ms',
-  bg: '$background08',
+  bg: 'background',
   borderWidth: 0.5,
   rounded: CONTENT_RADIUS,
-  borderColor: '$color3',
+  borderColor: 'color3',
   position: 'relative',
   backdropFilter: 'blur(25px)',
-  shadowColor: '$shadow3',
+  shadowColor: 'shadow-color',
   shadowRadius: 20,
   shadowOffset: { height: 20, width: 0 },
   maxH: '90vh',
-  width: '60%',
+  w: '60%',
   minW: 200,
   maxW: 500,
-  p: '$4',
-  opacity: 1,
-  y: 0,
-  enterStyle: { x: 0, y: -5, opacity: 0, scale: 0.985 },
-  exitStyle: { x: 0, y: 5, opacity: 0 },
-
-  focusStyle: {
-    outlineWidth: 2,
-    outlineColor: '$background02',
-    outlineStyle: 'solid',
-  },
+  p: '4',
+  opacity: '1 enter:0 exit:0',
+  y: '0 enter:-5px exit:5px',
+  scale: 'enter:0.985',
+  x: 'enter:0 exit:0',
+  outlineWidth: 'focus:2px',
+  outlineColor: 'focus:outline-color',
+  outlineStyle: 'focus:solid',
 })
 
 const DialogTitle = styled(TamaguiDialog.Title, {
-  fontFamily: '$mono',
-  size: '$5',
+  fontFamily: 'mono',
   text: 'center',
+  size: '5',
 })
 
 const DialogHeader = ({
@@ -200,12 +192,12 @@ const DialogHeader = ({
   description?: string
 }) => {
   const content = (
-    <YStack pointerEvents="box-none" gap="$3">
-      <DialogTitle size="$5" fontWeight="600" cursor="default" select="none">
+    <YStack pointerEvents="box-none" gap="3">
+      <DialogTitle size="5" fontWeight="600" cursor="default" select="none">
         {title}
       </DialogTitle>
       {!!description && (
-        <DialogDescription size="$4" color="$color10">
+        <DialogDescription size="4" color="color10">
           {description}
         </DialogDescription>
       )}
@@ -223,9 +215,9 @@ const DialogFooter = (props: { children: any }) => {
   return (
     <>
       <Spacer flex={1} />
-      <YStack gap="$3">
+      <YStack gap="3">
         <Separator opacity={0.5} />
-        <XStack justify="flex-end" gap="$2">
+        <XStack justify="flex-end" gap="2">
           {props.children}
         </XStack>
       </YStack>
@@ -235,15 +227,15 @@ const DialogFooter = (props: { children: any }) => {
 
 const DialogBody = (props: { children: any; scrollable?: boolean }) => {
   const content = (
-    <YStack flex={1} gap="$2" px="$1" pb="$3">
+    <YStack flex={1} gap="2" px="1" pb="3">
       {props.children}
     </YStack>
   )
 
   if (props.scrollable) {
     return (
-      <ScrollView m="$-1">
-        <YStack gap="$2" px="$1">
+      <ScrollView m="-1">
+        <YStack gap="2" px="1">
           {content}
         </YStack>
       </ScrollView>

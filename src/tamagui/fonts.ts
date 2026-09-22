@@ -1,4 +1,4 @@
-import { createSystemFont, fonts as baseFonts } from '@tamagui/config/v5'
+import { createSystemFont, fonts as baseFonts } from '@tamagui/config/v6'
 import { isWeb } from 'tamagui'
 
 const mono = createSystemFont({

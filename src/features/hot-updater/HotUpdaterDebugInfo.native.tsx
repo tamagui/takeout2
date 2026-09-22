@@ -48,12 +48,12 @@ OTA Applied: ${isOtaApplied ? 'Yes' : 'No'}`
   if (!showDetails) {
     return (
       <Pressable onPress={handleTap} onLongPress={handleLongPress}>
-        <YStack items="center" gap="$1" opacity={0.6}>
-          <SizableText size="$1" color="$color10">
+        <YStack items="center" gap="1" opacity={0.6}>
+          <SizableText size="1" color="color10">
             v{appVersion} ({buildNumber})
           </SizableText>
           {isOtaApplied && (
-            <SizableText size="$1" color="$green10">
+            <SizableText theme="green" size="1" color="color10">
               OTA: {shortBundleId}
             </SizableText>
           )}
@@ -65,14 +65,14 @@ OTA Applied: ${isOtaApplied ? 'Yes' : 'No'}`
   return (
     <YStack
       width={400}
-      bg="$color2"
-      rounded="$4"
-      p="$3"
-      gap="$2"
+      bg="color2"
+      rounded="4"
+      p="3"
+      gap="2"
       borderWidth={1}
-      borderColor="$color4"
+      borderColor="color4"
     >
-      <SizableText size="$2" fontWeight="bold" color="$color11">
+      <SizableText size="2" fontWeight="bold" color="color11">
         Hot Updater Debug
       </SizableText>
 
@@ -85,8 +85,8 @@ OTA Applied: ${isOtaApplied ? 'Yes' : 'No'}`
 
       <CheckForUpdateButton />
 
-      <YStack items="center" mt="$2">
-        <SizableText size="$1" color="$color9">
+      <YStack items="center" mt="2">
+        <SizableText size="1" color="color9">
           Tap to hide
         </SizableText>
       </YStack>
@@ -140,7 +140,7 @@ const CheckForUpdateButton = memo(() => {
   }
 
   return (
-    <YStack gap="$2" mt="$2">
+    <YStack gap="2" mt="2">
       <Button size="small" onPress={handleCheckForUpdate} disabled={isChecking}>
         {isChecking ? <Spinner size="small" /> : 'Check for Update'}
       </Button>
@@ -149,7 +149,7 @@ const CheckForUpdateButton = memo(() => {
       </Button>
       {status && (
         <YStack items="center">
-          <SizableText size="$1" color="$color10">
+          <SizableText size="1" color="color10">
             {status}
           </SizableText>
         </YStack>
@@ -163,12 +163,19 @@ const CrashHistoryRow = memo(() => {
   if (crashHistory.length === 0) return null
 
   return (
-    <YStack gap="$1">
-      <SizableText size="$1" color="$red10">
+    <YStack gap="1">
+      <SizableText theme="red" size="1" color="color10">
         Crashed Bundles: {crashHistory.length}
       </SizableText>
       {crashHistory.map((id) => (
-        <SizableText key={id} size="$1" color="$red9" fontFamily="$mono" ml="$2">
+        <SizableText
+          theme="red"
+          key={id}
+          size="1"
+          color="color9"
+          fontFamily="mono"
+          ml="2"
+        >
           {id.slice(-12)}
         </SizableText>
       ))}
@@ -178,14 +185,14 @@ const CrashHistoryRow = memo(() => {
 
 const DebugRow = memo(
   ({ label, value, mono }: { label: string; value: string; mono?: boolean }) => (
-    <XStack justify="space-between" gap="$2">
-      <SizableText size="$1" color="$color10">
+    <XStack justify="space-between" gap="2">
+      <SizableText size="1" color="color10">
         {label}
       </SizableText>
       <SizableText
-        size="$1"
-        color="$color11"
-        fontFamily={mono ? '$mono' : undefined}
+        size="1"
+        color="color11"
+        fontFamily={`${mono ? 'mono' : undefined}`}
         numberOfLines={1}
         ellipsizeMode="middle"
       >

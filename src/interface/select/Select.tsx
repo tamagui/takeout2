@@ -34,9 +34,9 @@ export function Select({
   const [id, setId] = useState(defaultValue || items[0]?.id)
   const selected = items.find((x) => x.id === id)
 
-  const handleChange = (val: string) => {
+  const handleChange = (val: string, details?: any) => {
     setId(val)
-    onValueChange?.(val)
+    onValueChange?.(val, details)
   }
 
   return (
@@ -47,22 +47,22 @@ export function Select({
       {...props}
     >
       <TamaguiSelect.Trigger
-        iconAfter={CaretDownIcon}
         bg="transparent"
-        borderColor="$color3"
+        borderColor="color3"
         {...(width
           ? {
-              width,
-              maxWidth: typeof width === 'string' ? width : width || 220,
+              w: width,
+              maxW: typeof width === 'string' ? width : width || 220,
             }
           : {
-              maxWidth: 220,
+              maxW: 220,
             })}
       >
-        <XStack gap="$2" flex={1} items="center">
+        <XStack gap="2" flex={1} items="center">
           {selected?.icon}
           <TamaguiSelect.Value placeholder={selected?.name || '-'} />
         </XStack>
+        <CaretDownIcon size={16} />
       </TamaguiSelect.Trigger>
 
       <Adapt when="max-md" platform="touch">
@@ -72,17 +72,15 @@ export function Select({
           dismissOnSnapToBottom
           transition="quickLessBouncy"
         >
-          <Sheet.Frame>
+          <Sheet.Container>
             <Sheet.ScrollView>
               <Adapt.Contents />
             </Sheet.ScrollView>
-          </Sheet.Frame>
+          </Sheet.Container>
           <Sheet.Overlay
-            bg="$background"
-            opacity={0.5}
+            bg="background"
+            opacity="0.5 enter:0 exit:0"
             transition="quick"
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
           />
         </Sheet>
       </Adapt>
@@ -92,8 +90,8 @@ export function Select({
           items="center"
           justify="center"
           position="relative"
-          width="100%"
-          height="$3"
+          w="100%"
+          h="3"
         >
           <YStack z={10}>
             <CaretUpIcon size={20} />
@@ -101,25 +99,26 @@ export function Select({
           <LinearGradient
             start={[0, 0]}
             end={[0, 1]}
-            fullscreen
+            rounded="4"
+            position="absolute"
+            inset={0}
             colors={['$background', 'transparent']}
-            rounded="$4"
           />
         </TamaguiSelect.ScrollUpButton>
 
         <TamaguiSelect.Viewport maxW={200}>
           {React.useMemo(
             () =>
-              items.map((item, i) => {
+              items.map((item) => {
                 return (
-                  <TamaguiSelect.Item index={i} key={item.id} value={item.id}>
-                    <XStack flex={1} overflow="hidden" gap="$2" items="center">
+                  <TamaguiSelect.Item key={item.id} value={item.id}>
+                    <XStack flex={1} overflow="hidden" gap="2" items="center">
                       {item.icon}
                       <TamaguiSelect.ItemText numberOfLines={1}>
                         {item.name}
                       </TamaguiSelect.ItemText>
                     </XStack>
-                    <TamaguiSelect.ItemIndicator marginLeft="auto">
+                    <TamaguiSelect.ItemIndicator ml="auto">
                       <CheckIcon size={12} color="$color9" />
                     </TamaguiSelect.ItemIndicator>
                   </TamaguiSelect.Item>
@@ -137,7 +136,7 @@ export function Select({
               b={0}
               items="center"
               justify="center"
-              width="$4"
+              w="4"
               pointerEvents="none"
             >
               <CaretDownIcon
@@ -151,8 +150,8 @@ export function Select({
           items="center"
           justify="center"
           position="relative"
-          width="100%"
-          height="$3"
+          w="100%"
+          h="3"
         >
           <YStack z={10}>
             <CaretDownIcon size={20} />
@@ -160,9 +159,10 @@ export function Select({
           <LinearGradient
             start={[0, 0]}
             end={[0, 1]}
-            fullscreen
+            rounded="4"
+            position="absolute"
+            inset={0}
             colors={['transparent', '$background']}
-            rounded="$4"
           />
         </TamaguiSelect.ScrollDownButton>
       </TamaguiSelect.Content>

@@ -10,5 +10,8 @@ ALTER TABLE "report" ALTER COLUMN "createdAt" DROP DEFAULT;--> statement-breakpo
 ALTER TABLE "userPublic" ALTER COLUMN "joinedAt" DROP DEFAULT;`
 
 export async function up(client: PoolClient) {
-  await client.query(sql)
+  for (const stmt of sql.split('--> statement-breakpoint')) {
+    const trimmed = stmt.trim()
+    if (trimmed) await client.query(trimmed)
+  }
 }

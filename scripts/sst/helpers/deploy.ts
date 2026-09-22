@@ -11,8 +11,8 @@ import {
   ECRClient,
   GetAuthorizationTokenCommand,
 } from '@aws-sdk/client-ecr'
-import { slugify, time } from '@take-out/helpers'
-import { run } from '@take-out/scripts/helpers/run'
+import { slugify, time } from '@o/helpers'
+import { run } from '@o/scripts/helpers/run'
 
 export async function buildAndPushDockerImage() {
   console.info('\nBuilding Docker image for ECR...')

@@ -4,7 +4,7 @@
 
 import { existsSync } from 'node:fs'
 import glob from 'fast-glob'
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 // docs are SSG (app/docs/[slug]+ssg.tsx). one's build silently skips any page
 // whose render throws (console.warn "skipping page ...") instead of failing, so

@@ -1,4 +1,4 @@
-import { HotUpdater } from '@take-out/native-hot-update'
+import { HotUpdater } from '@o/native-hot-update'
 import * as Application from 'expo-application'
 import { memo, useState } from 'react'
 import { Alert, Pressable } from 'react-native'

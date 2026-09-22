@@ -1,11 +1,11 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Start frontend in production mode for CI`
   .args('--dev boolean')
   .run(async ({ args, run }) => {
-    const { getTestEnv } = await import('@take-out/scripts/helpers/get-test-env')
+    const { getTestEnv } = await import('@o/scripts/helpers/get-test-env')
     const testEnv = await getTestEnv()
 
     if (args.dev) {

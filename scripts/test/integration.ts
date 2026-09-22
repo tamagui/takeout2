@@ -2,7 +2,7 @@
 
 // @description Run integration tests only
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Run integration tests`.run(async ({ $ }) => {
   await $`bun run test:integration`

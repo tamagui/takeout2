@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Check deployment health`.run(async ({ $, fs }) => {
   const {
@@ -9,8 +9,8 @@ await cmd`Check deployment health`.run(async ({ $, fs }) => {
     checkContainerHealth: checkContainerHealthHelper,
     checkHttpHealth: checkHttpHealthHelper,
     getContainerLogs: getContainerLogsHelper,
-  } = await import('@take-out/scripts/helpers/deploy-health')
-  type SSHContext = import('@take-out/scripts/helpers/deploy-health').SSHContext
+  } = await import('@o/scripts/helpers/deploy-health')
+  type SSHContext = import('@o/scripts/helpers/deploy-health').SSHContext
   const TIMEOUT = 5 * 60 * 1000 // 5 minutes
   const CHECK_INTERVAL = 10000 // 10 seconds
   const PROGRESS_UPDATE_INTERVAL = 30000 // 30 seconds for progress updates

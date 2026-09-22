@@ -73,7 +73,7 @@ have changed auth keys/secrets. that does not affect `bun lite`.
 
 ## environment
 
-env vars are defined in `src/env.ts` using `createEnv` from `@take-out/env`.
+env vars are defined in `src/env.ts` using `createEnv` from `@o/env`.
 use `expected` for required vars, strings for defaults. use `server.X` for
 server-only access (throws on client). run `bun env:update` to sync to CI/docker yml.
 

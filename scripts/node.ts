@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Start interactive Node REPL with SST resources`.run(async () => {
-  await import('@take-out/scripts/ensure-tunnel')
+  await import('@o/scripts/ensure-tunnel')
 
   const { Resource } = await import('sst')
 

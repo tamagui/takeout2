@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Add a Phosphor icon to the project`.run(async ({ fs, path }) => {
   const PHOSPHOR_BASE =

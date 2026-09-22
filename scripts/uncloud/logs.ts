@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`View logs from production deployment`.run(async ({ run }) => {
   const args = process.argv.slice(2)

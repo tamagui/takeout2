@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`AWS CloudWatch configuration`
   .args('--clear-logs boolean --dry-run boolean')

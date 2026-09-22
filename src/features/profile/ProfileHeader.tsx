@@ -1,4 +1,4 @@
-import { formatCount, formatReactionCount } from '@take-out/helpers'
+import { formatCount, formatReactionCount } from '@o/helpers'
 import { router } from 'one'
 import { memo } from 'react'
 import { SizableText, styled, View, XStack, YStack } from 'tamagui'

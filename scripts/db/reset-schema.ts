@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Reset migrations to a fresh state from current schema files`.run(
   async ({ fs, path }) => {

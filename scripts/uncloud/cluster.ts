@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Manage encrypted cluster config`.run(async ({ run, os, path }) => {
   const { existsSync } = await import('node:fs')

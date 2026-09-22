@@ -1,4 +1,4 @@
-import { ensureExists } from '@take-out/helpers'
+import { ensureExists } from '@o/helpers'
 
 import { ensureAuth } from './ensureAuth'
 

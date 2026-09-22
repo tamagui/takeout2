@@ -1,4 +1,4 @@
-import { createEmitter, isEqualNever } from '@take-out/helpers'
+import { createEmitter, isEqualNever } from '@o/helpers'
 
 // Type definition for gallery state
 type GalleryState = null | {

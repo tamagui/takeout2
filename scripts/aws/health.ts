@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`AWS health monitoring`.run(async ({ $ }) => {
   const { execSync } = await import('node:child_process')

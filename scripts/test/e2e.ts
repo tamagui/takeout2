@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Run checks, build with test env, and run all tests (unit + integration)`
   .args(
@@ -8,12 +8,12 @@ await cmd`Run checks, build with test env, and run all tests (unit + integration
   )
   .run(async ({ args }) => {
     const { ports } = await import('~/env')
-    const { sleep, time } = await import('@take-out/helpers')
-    const { getTestEnv } = await import('@take-out/scripts/helpers/get-test-env')
-    const { handleProcessExit } = await import('@take-out/run/helpers/handleProcessExit')
+    const { sleep, time } = await import('@o/helpers')
+    const { getTestEnv } = await import('@o/scripts/helpers/get-test-env')
+    const { handleProcessExit } = await import('@o/run/helpers/handleProcessExit')
     const { run, printTiming, runInline, runParallel, waitForRun } =
-      await import('@take-out/scripts/helpers/run')
-    const { waitForPort } = await import('@take-out/scripts/helpers/wait-for-port')
+      await import('@o/scripts/helpers/run')
+    const { waitForPort } = await import('@o/scripts/helpers/wait-for-port')
 
     const { exit } = handleProcessExit({
       onExit: async () => {

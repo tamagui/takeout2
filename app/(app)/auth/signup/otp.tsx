@@ -1,4 +1,4 @@
-import { useTimer } from '@take-out/helpers'
+import { useTimer } from '@o/helpers'
 import { useParams } from 'one'
 import { useEffect, useState } from 'react'
 import { SizableText, useEvent, YStack } from 'tamagui'

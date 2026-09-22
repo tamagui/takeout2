@@ -1,4 +1,4 @@
-import { randomId } from '@take-out/helpers'
+import { randomId } from '@o/helpers'
 import { useState } from 'react'
 import {
   Adapt,

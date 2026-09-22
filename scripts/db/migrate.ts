@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Build and run database migrations`.run(async ({ $ }) => {
   // generate SQL + sync .ts wrappers from schema

@@ -1,6 +1,6 @@
 import './shimmer.css'
 
-import { useLazyMount, getCurrentComponentStack } from '@take-out/helpers'
+import { useLazyMount, getCurrentComponentStack } from '@o/helpers'
 import { memo, useEffect, useRef } from 'react'
 import { AnimatePresence, XStack, YStack } from 'tamagui'
 

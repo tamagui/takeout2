@@ -1,5 +1,5 @@
 import { expo } from '@better-auth/expo'
-import { time } from '@take-out/helpers'
+import { time } from '@o/helpers'
 import { betterAuth } from 'better-auth'
 import { admin, bearer, emailOTP, jwt, magicLink, phoneNumber } from 'better-auth/plugins'
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 type DeployPlatform = 'sst' | 'uncloud'
 
@@ -9,9 +9,9 @@ await cmd`Run full CI/CD pipeline: test, build prod, deploy`
     `--skip-tests boolean --retry boolean --skip-deploy boolean --dry-run boolean --deploy-only boolean --redeploy boolean --dev boolean`,
   )
   .run(async ({ args, run }) => {
-    const { time } = await import('@take-out/helpers')
-    const { handleProcessExit } = await import('@take-out/run/helpers/handleProcessExit')
-    const { printTiming, runParallel } = await import('@take-out/scripts/helpers/run')
+    const { time } = await import('@o/helpers')
+    const { handleProcessExit } = await import('@o/run/helpers/handleProcessExit')
+    const { printTiming, runParallel } = await import('@o/scripts/helpers/run')
     const sst = await import('../sst/helpers/deploy')
     const uncloud = await import('../uncloud/helpers/deploy')
 

@@ -1,1 +1,1 @@
-export { checkSSHKey, testSSHConnection } from '@take-out/scripts/helpers/ssh'
+export { checkSSHKey, testSSHConnection } from '@o/scripts/helpers/ssh'

@@ -3,7 +3,7 @@
 // Usage: bun tko web build-analyze [route]
 // Example: bun tko web build-analyze /
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Build with analyzer, run Lighthouse, open reports and site`.run(
   async ({ $ }) => {

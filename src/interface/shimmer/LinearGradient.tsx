@@ -1,4 +1,4 @@
-import { extractOpacityFromColor } from '@take-out/helpers'
+import { extractOpacityFromColor } from '@o/helpers'
 import { Svg, Defs, LinearGradient, Stop, Rect } from 'react-native-svg'
 
 import type React from 'react'

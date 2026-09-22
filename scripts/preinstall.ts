@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Check node and bun versions before install`.run(async ({ fs, path }) => {
   const packageJson = JSON.parse(

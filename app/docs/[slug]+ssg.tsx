@@ -1,4 +1,4 @@
-import { nbspLastWord } from '@take-out/helpers'
+import { nbspLastWord } from '@o/helpers'
 import { getMDXComponent } from 'mdx-bundler/client'
 import { createRoute, useLoader } from 'one'
 import { useMemo } from 'react'

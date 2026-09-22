@@ -1,6 +1,6 @@
 ---
 name: takeout-emitters
-description: Event emitters / pub-sub for ephemeral UI state — subscribe, emit, listen, @take-out/helpers.
+description: Event emitters / pub-sub for ephemeral UI state — subscribe, emit, listen, @o/helpers.
 ---
 
 # Emitters Guide - Event-Based State Management
@@ -26,7 +26,7 @@ An emitter is a simple pub-sub pattern with:
 ## Basic Usage
 
 ```tsx
-import { createEmitter, useEmitterValue, useEmitter } from '@take-out/helpers'
+import { createEmitter, useEmitterValue, useEmitter } from '@o/helpers'
 
 // simple value emitter
 const counterEmitter = createEmitter('counter', 0)
@@ -56,7 +56,7 @@ Comparators control when listeners are notified:
 - Custom: Provide your own comparison function
 
 ```tsx
-import { isEqualIdentity, isEqualNever, isEqualDeep } from '@take-out/helpers'
+import { isEqualIdentity, isEqualNever, isEqualDeep } from '@o/helpers'
 
 // always emit (good for action events)
 const actionEmitter = createEmitter(
@@ -178,7 +178,7 @@ async function waitForConfirmation() {
 ### Global emitters that survive HMR
 
 ```tsx
-import { createGlobalEmitter } from '@take-out/helpers'
+import { createGlobalEmitter } from '@o/helpers'
 
 const globalStateEmitter = createGlobalEmitter('globalState', {
   theme: 'dark',
@@ -189,7 +189,7 @@ const globalStateEmitter = createGlobalEmitter('globalState', {
 ### Contextual emitters for component trees
 
 ```tsx
-import { createContextualEmitter } from '@take-out/helpers'
+import { createContextualEmitter } from '@o/helpers'
 
 const [useChannelEmitter, ChannelEmitterProvider] =
   createContextualEmitter<string>('channelId', { comparator: isEqualIdentity })

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Build docker image for web`.run(async ({ $ }) => {
   // pass all arguments directly to docker buildx build

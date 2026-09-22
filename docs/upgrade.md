@@ -104,26 +104,15 @@ For each applicable change:
 - Skip the change (user likely removed this feature intentionally)
 - Optionally mention it in a summary at the end
 
-### 5. Handle Package Ejection
+### 5. Update Shared Packages
 
-Check if the user has ejected from the monorepo setup:
+Shared packages now come from Orez under `@o/*`. Record the installed `on-zero`
+and `@o/*` versions, then run `bun up takeout` to update the Takeout upgrade
+set. Compare the old and new versions and apply any application migration from
+the release commits.
 
-```bash
-# If ./packages directory doesn't exist, they've ejected
-```
-
-**If ejected:**
-
-- DO NOT copy any changes from `./packages/*` directories
-- Record the installed `on-zero` and `@take-out/*` versions
-- Run `bun up takeout` to update the complete Takeout upgrade set
-- Compare the exact old and new versions, then apply every required application
-  migration from the release commits and source diff
-
-**If NOT ejected:**
-
-- Sync changes to `./packages/*` normally
-- Preserve any local modifications to these packages
+Older forks may still have local copies under `./packages/*`. Check for package
+manifests there before copying changes, and preserve any local modifications.
 
 ### 6. Handle Special Cases
 
@@ -176,7 +165,7 @@ After processing all commits:
    - Commits applied successfully
    - Changes skipped (with reasons)
    - Manual interventions made
-   - New package versions (if ejected)
+   - New package versions
    - Any recommended follow-up actions
 
 2. Update the `.takeout` marker file with the new HEAD SHA

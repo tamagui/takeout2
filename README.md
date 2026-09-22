@@ -306,7 +306,7 @@ only, no run) use `bun db:build`.
 Database schema is defined in `src/database/schema.ts`. Use `pgTable(...)` for
 public tables (exposed to Zero/client) and `pgPrivateTable(...)` for private
 tables — `pgPrivateTable` comes from `privateTable(pgTable)` exported by
-`@take-out/database`.
+`@o/database/postgres`.
 
 If you need something outside of Drizzle migrations, you can do
 `bun db:add-migration`

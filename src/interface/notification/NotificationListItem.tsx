@@ -1,4 +1,4 @@
-import { formatDistanceToNow } from '@take-out/helpers'
+import { formatDistanceToNow } from '@o/helpers'
 import { memo } from 'react'
 import { SizableText, View, XStack, YStack } from 'tamagui'
 

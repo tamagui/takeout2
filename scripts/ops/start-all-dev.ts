@@ -1,13 +1,13 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Start backend and frontend in dev mode for quick integration testing`.run(
   async ({ run }) => {
     const { ports } = await import('~/env')
-    const { getTestEnv } = await import('@take-out/scripts/helpers/get-test-env')
-    const { handleProcessExit } = await import('@take-out/run/helpers/handleProcessExit')
-    const { waitForPort } = await import('@take-out/scripts/helpers/wait-for-port')
+    const { getTestEnv } = await import('@o/scripts/helpers/get-test-env')
+    const { handleProcessExit } = await import('@o/run/helpers/handleProcessExit')
+    const { waitForPort } = await import('@o/scripts/helpers/wait-for-port')
 
     handleProcessExit()
 

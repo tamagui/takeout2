@@ -1,4 +1,4 @@
-import { formatDistanceToNow, randomId } from '@take-out/helpers'
+import { formatDistanceToNow, randomId } from '@o/helpers'
 import { useNavigation, useParams, usePathname } from 'one'
 import { memo, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useKeyboardHandler } from 'react-native-keyboard-controller'

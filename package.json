@@ -105,11 +105,11 @@
     "@react-navigation/native": "7.3.16",
     "@resvg/resvg-js": "^2.6.2",
     "@rocicorp/zero": "1.7.0",
-    "@take-out/better-auth-utils": "workspace:*",
-    "@take-out/database": "workspace:*",
-    "@take-out/env": "workspace:*",
-    "@take-out/helpers": "workspace:*",
-    "@take-out/native-hot-update": "workspace:*",
+    "@o/better-auth-utils": "canary",
+    "@o/database": "canary",
+    "@o/env": "canary",
+    "@o/helpers": "canary",
+    "@o/native-hot-update": "canary",
     "@tamagui/config": "2.7.7",
     "@tamagui/helpers-icon": "2.7.7",
     "@tamagui/linear-gradient": "2.7.7",
@@ -191,8 +191,8 @@
     "@aws-sdk/client-ecr": "^3.859.0",
     "@dotenvx/dotenvx": "^1.44.1",
     "@playwright/test": "^1.55.0",
-    "@take-out/cli": "workspace:*",
-    "@take-out/scripts": "workspace:*",
+    "@o/cli": "canary",
+    "@o/scripts": "canary",
     "@types/aws-lambda": "8.10.147",
     "@types/bun": "^1.2.16",
     "@types/node": "24.0.3",
@@ -244,7 +244,7 @@
   },
   "upgradeSets": {
     "takeout": [
-      "@take-out/*",
+      "@o/*",
       "on-zero"
     ],
     "tamagui": [

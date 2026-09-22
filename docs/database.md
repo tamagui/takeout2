@@ -117,7 +117,7 @@ custom TypeScript migrations. You don't need to touch Drizzle directly.
 Tables are declared in a single `src/database/schema.ts`. Use `pgTable(...)` for
 public (Zero-synced) tables and `pgPrivateTable(...)` for private (server-only)
 tables — `pgPrivateTable` is built from `privateTable(pgTable)` exported by
-`@take-out/database`.
+`@o/database`.
 
 ### Migration Workflow
 

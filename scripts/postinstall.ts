@@ -1,10 +1,10 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`npm postinstall tasks`.run(async ({ $ }) => {
   // "tko" wont work until this runs so referencing it directly:
-  const buildInitialLocation = require.resolve('@take-out/scripts/build-initial')
+  const buildInitialLocation = require.resolve('@o/scripts/build-initial')
   await $`bun run ${buildInitialLocation}`
 
   await Promise.all([

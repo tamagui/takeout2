@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Start backend services for CI`.run(async ({ run }) => {
-  const { getTestEnv } = await import('@take-out/scripts/helpers/get-test-env')
+  const { getTestEnv } = await import('@o/scripts/helpers/get-test-env')
 
   if (!process.env.SKIP_BACKEND_CLEAN) {
     await run(`bun backend:clean`, {

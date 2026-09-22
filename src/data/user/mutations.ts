@@ -1,4 +1,4 @@
-import { ensure } from '@take-out/helpers'
+import { ensure } from '@o/helpers'
 import { mutations, serverWhere } from 'on-zero'
 
 import type { UserUpdate } from '../types'

@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { useEmitter } from '@take-out/helpers'
+import { useEmitter } from '@o/helpers'
 import { withLayoutContext } from 'one'
 import { useCallback } from 'react'
 import { useSharedValue, withTiming, Easing } from 'react-native-reanimated'

@@ -54,7 +54,6 @@ When you start, it asks where to begin:
 - **ports** - configure development ports
 - **ci-runners** - set up GitHub Actions
 - **production** - deploy to a server
-- **eject** - switch from monorepo to published packages
 
 ### Prerequisites Check
 
@@ -84,9 +83,9 @@ Ready to deploy? The wizard configures either Uncloud (self-hosted) or AWS SST:
 
 **AWS SST** configures ECS deployment with your preferred architecture (Graviton ARM64 recommended for cost savings).
 
-### Monorepo vs Published Packages
+### Shared Packages
 
-Takeout includes source code for its packages in `./packages`. You can either keep this setup and customize locally, or eject to use published npm packages instead. Ejecting removes the packages directory and switches your imports to `@take-out/*` from npm.
+Takeout installs its shared packages from the Orez canary release under `@o/*`. Their source lives in the [Orez repository](https://github.com/natew/orez/tree/main/packages).
 
 ## Development
 

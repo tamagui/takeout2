@@ -1,4 +1,4 @@
-import { createEmitter } from '@take-out/helpers'
+import { createEmitter } from '@o/helpers'
 import {
   AnimatePresence,
   Popover as TamaguiPopover,

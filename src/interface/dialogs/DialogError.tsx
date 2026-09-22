@@ -1,4 +1,4 @@
-import { useEmitterSelector } from '@take-out/helpers'
+import { useEmitterSelector } from '@o/helpers'
 import { isWeb, useWindowDimensions, XStack, YStack } from 'tamagui'
 
 import { Button } from '../buttons/Button'

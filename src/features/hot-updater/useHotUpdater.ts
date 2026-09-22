@@ -1,5 +1,5 @@
-import { createHotUpdater } from '@take-out/native-hot-update'
-import { createMMKVStorage } from '@take-out/native-hot-update/mmkv'
+import { createHotUpdater } from '@o/native-hot-update'
+import { createMMKVStorage } from '@o/native-hot-update/mmkv'
 import { useEffect } from 'react'
 import { MMKV } from 'react-native-mmkv'
 

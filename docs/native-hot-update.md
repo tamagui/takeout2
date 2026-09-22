@@ -1,6 +1,6 @@
 ---
 name: takeout-native-hot-update
-description: @take-out/native-hot-update OTA — HotUpdaterSplash, deploy-hot-update scripts, troubleshooting.
+description: @o/native-hot-update OTA — HotUpdaterSplash, deploy-hot-update scripts, troubleshooting.
 ---
 
 # Native Hot Update System
@@ -15,7 +15,7 @@ automatically or after user confirmation.
 
 ### Package
 
-Located at packages/native-hot-update, this is a reusable package that provides:
+Published as `@o/native-hot-update` from Orez, this reusable package provides:
 
 - Instance-based API via createHotUpdater()
 - Pluggable storage interface (get/set/delete)
@@ -151,7 +151,7 @@ export function CustomUpdater() {
 ### Debugging
 
 ```ts
-import { hotUpdater } from '@take-out/native-hot-update'
+import { hotUpdater } from '@o/native-hot-update'
 
 console.info('Applied OTA:', hotUpdater.getAppliedOta())
 console.info('Short ID:', hotUpdater.getShortOtaId())
@@ -181,7 +181,7 @@ The package uses a pluggable storage interface. The app provides MMKV storage:
 
 ```ts
 import { MMKV } from 'react-native-mmkv'
-import { createMMKVStorage } from '@take-out/native-hot-update/mmkv'
+import { createMMKVStorage } from '@o/native-hot-update/mmkv'
 
 const mmkv = new MMKV({ id: 'hot-updater' })
 const storage = createMMKVStorage(mmkv)
@@ -252,5 +252,4 @@ verify latest version is available.
 
 ## References
 
-- Package README: packages/native-hot-update/README.md
-- Integration guide: packages/native-hot-update/INTEGRATION.md
+- [Package source and README](https://github.com/natew/orez/tree/main/packages/native-hot-update)

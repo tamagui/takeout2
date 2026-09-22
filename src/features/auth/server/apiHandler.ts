@@ -1,4 +1,4 @@
-import { prettyPrintResponse } from '@take-out/helpers'
+import { prettyPrintResponse } from '@o/helpers'
 
 import { authServer } from './authServer'
 

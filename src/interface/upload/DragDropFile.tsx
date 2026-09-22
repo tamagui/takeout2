@@ -1,9 +1,4 @@
-import {
-  createEmitter,
-  createGlobalContext,
-  uniqBy,
-  useEmitterValue,
-} from '@take-out/helpers'
+import { createEmitter, createGlobalContext, uniqBy, useEmitterValue } from '@o/helpers'
 import {
   memo,
   type ReactElement,

@@ -222,13 +222,14 @@ export const useEmitterSelector = <E extends Emitter<any>, T extends EmitterType
     }
   }
 
-  const prevArgsRef = React.useRef(args)
+  const prevArgsRef = React.useRef<readonly unknown[] | null>(null)
   const argsCountRef = React.useRef(0)
   if (
+    prevArgsRef.current === null ||
     prevArgsRef.current.length !== args.length ||
     prevArgsRef.current.some((a, i) => !Object.is(a, args[i]))
   ) {
-    prevArgsRef.current = args
+    prevArgsRef.current = [...args]
     argsCountRef.current++
   }
 
@@ -265,13 +266,14 @@ export const useEmittersSelector = <const E extends readonly Emitter<any>[], R>(
     return getSelector()(values)
   })
 
-  const prevEmittersRef = React.useRef(emitters)
+  const prevEmittersRef = React.useRef<readonly Emitter<any>[] | null>(null)
   const emittersCountRef = React.useRef(0)
   if (
+    prevEmittersRef.current === null ||
     prevEmittersRef.current.length !== emitters.length ||
     prevEmittersRef.current.some((e, i) => !Object.is(e, emitters[i]))
   ) {
-    prevEmittersRef.current = emitters
+    prevEmittersRef.current = [...emitters]
     emittersCountRef.current++
   }
 

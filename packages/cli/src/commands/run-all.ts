@@ -4,6 +4,19 @@ import { resolve, parse } from 'node:path'
 
 import { defineCommand } from 'citty'
 
+function resolveNodeBinary(): string {
+  const explicitNode = process.env.NODE
+  if (explicitNode && existsSync(explicitNode)) {
+    return explicitNode
+  }
+
+  if (process.execPath.endsWith('/node') && existsSync(process.execPath)) {
+    return process.execPath
+  }
+
+  return 'node'
+}
+
 export const runAllCommand = defineCommand({
   meta: {
     name: 'run-all',
@@ -34,9 +47,10 @@ export const runAllCommand = defineCommand({
         ? localRunPath
         : resolve(projectRoot, 'node_modules/@take-out/run/src/run-pty.mjs')
 
-      const child = spawn('node', [scriptPath, ...filteredArgs], {
+      const child = spawn(resolveNodeBinary(), [scriptPath, ...filteredArgs], {
         stdio: 'inherit',
         shell: false,
+        env: process.env,
       })
 
       const code = await new Promise<number>((resolve) => {

@@ -1,7 +1,7 @@
 import { formatDistanceToNow } from '@take-out/helpers'
 import { router } from 'one'
 import { memo, useState } from 'react'
-import { isWeb, SizableText, View, XStack, YStack } from 'tamagui'
+import { SizableText, View, XStack, YStack } from 'tamagui'
 
 import { useAuth } from '~/features/auth/client/authClient'
 import { Link } from '~/interface/app/Link'
@@ -29,7 +29,6 @@ export const PostCard = memo(({ post }: PostCardProps) => {
   const avatarUrl = post.user?.image
   const username = post.user?.username
 
-  const [, setIsTruncated] = useState<boolean>(false)
   const storedAspectRatio =
     post.imageWidth && post.imageHeight ? post.imageWidth / post.imageHeight : undefined
   const [aspectRatio, setAspectRatio] = useState<number>(storedAspectRatio ?? 1.5)
@@ -37,44 +36,42 @@ export const PostCard = memo(({ post }: PostCardProps) => {
 
   return (
     <View
-      mt="$2"
-      pb="$4"
+      mt="2"
+      pb="4 web:4"
+      rounded="web:6"
+      pt="web:4"
+      maxW="web:600px"
+      mx="web:auto"
+      w="web:100%"
       data-testid={`post-card-${post.id}`}
-      $platform-web={{
-        rounded: '$6',
-        py: '$4',
-        maxW: 600,
-        mx: 'auto',
-        width: '100%',
-      }}
     >
-      <View px="$4">
-        <XStack items="center" justify="space-between" pb="$2">
-          <XStack gap="$3" width="100%">
+      <View px="4">
+        <XStack items="center" justify="space-between" pb="2">
+          <XStack gap="3" w="100%">
             <Link
               href={isOwnProfile ? '/home/profile' : `/home/feed/profile/${authorId}`}
             >
               <Avatar image={avatarUrl || ''} name={username || ''} size={32} gradient />
             </Link>
-            <YStack flex={1} gap="$2">
+            <YStack flex={1} gap="2">
               <XStack items="center" justify="space-between">
-                <XStack items="center" gap="$1">
+                <XStack items="center" gap="1">
                   <Link
                     href={
                       isOwnProfile ? '/home/profile' : `/home/feed/profile/${authorId}`
                     }
                   >
                     <SizableText
-                      size="$4"
+                      size="4"
                       fontWeight="600"
+                      color="hover:color12"
                       numberOfLines={1}
-                      hoverStyle={{ color: '$color12' }}
                     >
                       {username || 'Unknown'}
                     </SizableText>
                   </Link>
                   <DotIcon size={16} color="$color10" />
-                  <SizableText size="$3" color="$color10">
+                  <SizableText size="3" color="color10">
                     {formatDistanceToNow(post.createdAt)}
                   </SizableText>
                 </XStack>
@@ -84,21 +81,10 @@ export const PostCard = memo(({ post }: PostCardProps) => {
           </XStack>
         </XStack>
         <View>
-          <Text
-            flex={1}
-            flexBasis="auto"
-            text="left"
-            {...(!isWeb && {
-              onTextLayout: (e: { nativeEvent: { lines: unknown[] } }) => {
-                if (e.nativeEvent.lines.length >= 3) {
-                  setIsTruncated(true)
-                }
-              },
-            })}
-          >
+          <Text flex={1} flexBasis="auto" text="left">
             {post.caption}
           </Text>
-          <View width="100%" position="relative" mt="$2">
+          <View w="100%" position="relative" mt="2">
             <Pressable onPress={() => router.push(`/home/feed/post/${post.id}`)}>
               <PostImage
                 postId={post.id}
@@ -109,7 +95,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
               />
             </Pressable>
           </View>
-          <XStack pt="$2" items="center" gap="$2">
+          <XStack pt="2" items="center" gap="2">
             <Link href={`/home/feed/post/${post.id}`}>
               <Button
                 variant="transparent"
@@ -117,7 +103,7 @@ export const PostCard = memo(({ post }: PostCardProps) => {
                 icon={<ChatCircleIcon size={22} color="$color11" />}
               >
                 {typeof post.commentCount === 'number' && post.commentCount > 0 && (
-                  <Button.Text color="$color11" fontWeight="600">
+                  <Button.Text color="color11" fontWeight="600">
                     {post.commentCount}
                   </Button.Text>
                 )}

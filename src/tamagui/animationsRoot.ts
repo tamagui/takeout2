@@ -1,5 +1,5 @@
-import { createAnimations } from '@tamagui/animations-css'
-import { animationsCSS } from '@tamagui/config/v5-css'
+import { createAnimations } from '@tamagui/animations-css/extras'
+import { animationsCSS } from '@tamagui/config/animations-css'
 
 export const animationsRoot = createAnimations({
   ...animationsCSS.animations,

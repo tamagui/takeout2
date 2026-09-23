@@ -60,7 +60,6 @@ export const AnimatedTab = memo(
 
     return (
       <Button
-        unstyled
         variant="transparent"
         onPress={onPress}
         onLongPress={onLongPress}

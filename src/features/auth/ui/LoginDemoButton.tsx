@@ -26,7 +26,7 @@ export const LoginDemoButton = () => {
       haptic
       onPress={handleLoginAsDemo}
       disabled={loading}
-      width="100%"
+      w="100%"
       data-testid="login-as-demo"
       testID="login-as-demo"
     >

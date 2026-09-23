@@ -1,7 +1,7 @@
 import { useLinkTo, useRouter, type Href } from 'one'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { Paragraph, Text } from 'tamagui'
+import { html } from 'tamagui'
 
 import { SearchContext } from './SearchContext'
 
@@ -29,8 +29,7 @@ export const Link = ({ href, replace, asChild, ...props }: LinkProps) => {
   const linkProps = useLinkTo({ href: href as string, replace })
 
   return (
-    <Text
-      render="a"
+    <html.a
       asChild={asChild ? 'except-style' : false}
       className="t_Link"
       cursor="pointer"
@@ -150,9 +149,7 @@ const ResultItem = ({
   const url = typeof window !== 'undefined' ? window.location.origin + hit.url : hit.url
   return (
     <Link href={url as any}>
-      <Paragraph render="span" color="$color">
-        {children}
-      </Paragraph>
+      <html.span color="color">{children}</html.span>
     </Link>
   )
 }

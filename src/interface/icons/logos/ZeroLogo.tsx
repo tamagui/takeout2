@@ -2,18 +2,22 @@ import { memo } from 'react'
 import { G, Path, Svg } from 'react-native-svg'
 import { useTheme } from 'tamagui'
 
+import { useIconProps } from '../useIconProps'
+
 import type { IconProps } from '../types'
 
 // zero sync logo - circular arrows forming a "0"
-export const ZeroLogo = memo(({ size = 24, ...svgProps }: IconProps) => {
-  const fill = useTheme().color.get()
+export const ZeroLogo = memo((props: IconProps) => {
+  const { width, height, fill: _fill, ...svgProps } = useIconProps({ size: 24, ...props })
+  const defaultFill = useTheme().color.get()
+  const fill = props.fill || defaultFill
 
   return (
     <Svg
       // its a bit bigger than other logos
       style={{ transform: `scale(0.9)` }}
-      width={size}
-      height={size}
+      width={width}
+      height={height}
       viewBox="0 0 112 112"
       fill="none"
       {...svgProps}

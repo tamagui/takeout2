@@ -18,8 +18,8 @@ export const HeaderButton = ({
   return (
     <Pressable
       onPress={onPress}
-      width={size}
-      height={size}
+      w={size}
+      h={size}
       items="center"
       justify="center"
       {...props}

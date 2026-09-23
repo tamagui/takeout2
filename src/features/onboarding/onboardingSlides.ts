@@ -15,7 +15,7 @@ import type { OnboardingSlideData } from './types'
 export const onboardingSlides: OnboardingSlideData[] = [
   {
     id: 'universal',
-    theme: 'blue',
+    theme: 'brand',
     title: 'Universal',
     description:
       'Build once, deploy everywhere. iOS, Android, and Web from a single codebase.',

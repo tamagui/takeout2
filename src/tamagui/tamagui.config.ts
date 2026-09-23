@@ -1,20 +1,25 @@
-import { defaultConfig } from '@tamagui/config/v5'
+import { createV6Config } from '@tamagui/config/v6'
+import { tokens as legacyTokens } from '@tamagui/themes/v5'
 import { createTamagui } from 'tamagui'
 
 import { animationsRoot } from './animationsRoot'
 import { fonts } from './fonts'
-import { themes as themesJS } from './themes'
+import { themes } from './themes'
+
+const v6Config = createV6Config({ themes })
 
 export const config = createTamagui({
   // LLMs love shared configs
-  ...defaultConfig,
+  ...v6Config,
 
   animations: animationsRoot,
   fonts,
-
-  // tamagui optimization - reduce bundle size by avoiding themes js on client
-  // tamagui will hydrate it from CSS which improves lighthouse scores
-  themes: process.env.VITE_ENVIRONMENT === 'client' ? ({} as typeof themesJS) : themesJS,
+  tokens: {
+    ...v6Config.tokens,
+    radius: legacyTokens.radius,
+    size: legacyTokens.size,
+    space: legacyTokens.space,
+  },
 })
 
 export type Conf = typeof config

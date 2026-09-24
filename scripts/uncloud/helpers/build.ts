@@ -1,4 +1,4 @@
-import { run } from '@take-out/scripts/helpers/run'
+import { run } from '@o/scripts/helpers/run'
 
 export async function buildWeb(): Promise<void> {
   console.info('\n📦 building web app...\n')

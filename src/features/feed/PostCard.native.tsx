@@ -1,4 +1,4 @@
-import { formatDistanceToNow } from '@take-out/helpers'
+import { formatDistanceToNow } from '@o/helpers'
 import { router } from 'one'
 import { memo, useState } from 'react'
 import Animated, { SharedTransition } from 'react-native-reanimated'

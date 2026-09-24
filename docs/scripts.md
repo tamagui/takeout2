@@ -9,7 +9,7 @@ the takeout cli (`tko`) provides a smart script runner that auto-discovers
 scripts from two locations:
 
 1. **local scripts** in `./scripts/` - project-specific scripts
-2. **built-in scripts** in `@take-out/scripts` package - shared utilities
+2. **built-in scripts** in `@o/scripts` package - shared utilities
 
 local scripts override built-in ones with the same name.
 
@@ -144,5 +144,5 @@ to customize a built-in script, eject it to your local scripts folder:
 bun tko script eject
 ```
 
-this copies scripts from `@take-out/scripts` to `./scripts/`, letting you modify
+this copies scripts from `@o/scripts` to `./scripts/`, letting you modify
 them while keeping the same command interface.

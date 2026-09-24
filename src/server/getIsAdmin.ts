@@ -1,4 +1,4 @@
-import { ensure } from '@take-out/helpers'
+import { ensure } from '@o/helpers'
 
 import { ADMIN_WHITELIST } from '~/server/constants-server'
 

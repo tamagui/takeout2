@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Run TypeScript type checking`
   .args('--watch boolean')

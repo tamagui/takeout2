@@ -1,4 +1,4 @@
-import { AppError } from '@take-out/helpers'
+import { AppError } from '@o/helpers'
 import { mutations, serverWhere, zql } from 'on-zero'
 
 import { checkProfanity } from '~/features/moderation/profanityFilter'

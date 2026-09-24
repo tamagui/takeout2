@@ -7,7 +7,7 @@ description: OTA / hot updates in React Native — @hot-updater/react-native, Ho
 
 This guide covers the hot update system for delivering over-the-air (OTA)
 updates to React Native applications using `@hot-updater/react-native` and the
-`@take-out/native-hot-update` helper package.
+`@o/native-hot-update` helper package.
 
 ## Overview
 
@@ -19,7 +19,7 @@ React Native apps without going through the app store review process.
 ### Components
 
 1. **@hot-updater/react-native** - React Native client library (v0.25.x+)
-2. **@take-out/native-hot-update** - Takeout helper package wrapping
+2. **@o/native-hot-update** - Takeout helper package wrapping
    hot-updater with MMKV storage, timeout protection, and pre-release support
 3. **HotUpdater.wrap()** - HOC that initializes config and crash protection
 4. **Feature Flags** - Remote configuration via PostHog
@@ -33,7 +33,7 @@ React Native apps without going through the app store review process.
 - `src/features/hot-updater/HotUpdaterSplash.native.tsx` - HotUpdater.wrap()
 - `src/features/hot-updater/useHotUpdater.ts` - hook with PostHog integration
 - `src/features/hot-updater/HotUpdaterDebugInfo.native.tsx` - debug panel
-- `packages/native-hot-update/` - @take-out/native-hot-update package
+- [Orez native-hot-update package](https://github.com/natew/orez/tree/main/packages/native-hot-update)
 
 ## What's Already Configured
 
@@ -58,7 +58,7 @@ Wraps the native app in `app/_layout.tsx`. Uses `HotUpdater.wrap()` with a
 custom resolver that reads the server URL from MMKV on each update check:
 
 ```tsx
-import { HotUpdater } from '@take-out/native-hot-update'
+import { HotUpdater } from '@o/native-hot-update'
 
 const mmkv = new MMKV({ id: 'hot-updater' })
 
@@ -147,8 +147,8 @@ Set this feature flag in PostHog to activate updates:
 ### useHotUpdater hook (with PostHog)
 
 ```tsx
-import { createHotUpdater } from '@take-out/native-hot-update'
-import { createMMKVStorage } from '@take-out/native-hot-update/mmkv'
+import { createHotUpdater } from '@o/native-hot-update'
+import { createMMKVStorage } from '@o/native-hot-update/mmkv'
 
 const mmkv = new MMKV({ id: 'hot-updater' })
 
@@ -276,7 +276,7 @@ Tap version info 5 times to reveal the debug panel showing:
 3. **Monitor analytics** after deploying updates
 4. **Keep updates small** - large bundles take longer to download
 5. **Version native changes** properly with runtime version bumps
-6. **Import HotUpdater from `@take-out/native-hot-update`** - ensures single instance
+6. **Import HotUpdater from `@o/native-hot-update`** - ensures single instance
 
 ### Don'ts
 

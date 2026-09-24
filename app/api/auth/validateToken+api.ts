@@ -1,4 +1,4 @@
-import { isValidJWT } from '@take-out/better-auth-utils/server'
+import { isValidJWT } from '@o/better-auth-utils/server'
 
 import { server } from '~/env'
 

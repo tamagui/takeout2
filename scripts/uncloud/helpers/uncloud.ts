@@ -1,4 +1,4 @@
-export type { UncloudConfig } from '@take-out/scripts/helpers/uncloud'
+export type { UncloudConfig } from '@o/scripts/helpers/uncloud'
 export {
   checkUncloudCLI,
   initUncloud,
@@ -8,4 +8,4 @@ export {
   showContainers,
   startService,
   stopService,
-} from '@take-out/scripts/helpers/uncloud'
+} from '@o/scripts/helpers/uncloud'

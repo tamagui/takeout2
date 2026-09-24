@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Seed database with demo users and posts`.run(async () => {
   // allow self-signed certs for managed databases

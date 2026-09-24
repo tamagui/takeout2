@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Reset demo database to seed state`.run(async () => {
   // allow self-signed certs for managed databases

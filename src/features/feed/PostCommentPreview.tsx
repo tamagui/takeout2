@@ -1,4 +1,4 @@
-import { formatDistanceToNow } from '@take-out/helpers'
+import { formatDistanceToNow } from '@o/helpers'
 import { SizableText, XStack } from 'tamagui'
 
 import type { CommentWithUser } from '~/data/types'

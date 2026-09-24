@@ -2,7 +2,7 @@
 
 // @description Clear all project ports
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Clear all project ports`.run(async ({ $ }) => {
   const { ports } = await import('~/env')

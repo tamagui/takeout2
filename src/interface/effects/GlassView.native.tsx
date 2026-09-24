@@ -1,4 +1,4 @@
-import { IS_ANDROID } from '@take-out/helpers'
+import { IS_ANDROID } from '@o/helpers'
 import { memo } from 'react'
 import { View } from 'tamagui'
 

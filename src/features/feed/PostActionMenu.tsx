@@ -1,4 +1,4 @@
-import { IS_NATIVE, randomId } from '@take-out/helpers'
+import { IS_NATIVE, randomId } from '@o/helpers'
 import { Menu } from '@tamagui/menu'
 import { router } from 'one'
 import { useIsTouchDevice } from 'tamagui'

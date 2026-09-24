@@ -1,6 +1,6 @@
 import type { LegendListRef } from '@legendapp/list/react-native'
 import { AnimatedLegendList } from '@legendapp/list/reanimated'
-import { useEmitter } from '@take-out/helpers'
+import { useEmitter } from '@o/helpers'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { RefreshControl } from 'react-native'
 import { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated'

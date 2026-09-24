@@ -2,7 +2,7 @@
 
 import { tmpdir } from 'node:os'
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
   // env is loaded by run:prod wrapper (dotenvx --overload -f .env .env.production)
@@ -12,7 +12,7 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
   const { checkUncloudCLI, initUncloud, pushImage, deployStack, showStatus } =
     await import('./helpers/uncloud')
   const { acquireDeployLock, releaseDeployLock } =
-    await import('@take-out/scripts/helpers/deploy-lock')
+    await import('@o/scripts/helpers/deploy-lock')
 
   // parse args
   const args = process.argv.slice(2)

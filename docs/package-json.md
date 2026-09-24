@@ -33,10 +33,8 @@ scripts are minimal - most commands use the takeout cli (`tko`).
 
 ### adding new scripts
 
-if this repo has a `./packages/scripts` - this is for scripts that are shared
-between all users of Takeout, basically any script that is useful beyond being a
-demo/example specifically for this repo. but otherwise you want to just put
-scripts into `./scripts`.
+shared scripts used by multiple Takeout apps live in `@o/scripts` in the Orez
+repository. app-specific scripts live in `./scripts`.
 
 example - adding a port check before dev:
 
@@ -55,7 +53,7 @@ bun tko ensure-port 8081
 ## env vars
 
 environment variables are defined in `src/env.ts` using `createEnv` from
-`@take-out/env`. the `envVars` export is the complete registry used by
+`@o/env`. the `envVars` export is the complete registry used by
 `bun tko env:update` to sync CI yml, docker yml, and `.env` files.
 
 - `expected` - required at runtime (no default)

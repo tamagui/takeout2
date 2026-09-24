@@ -1,4 +1,4 @@
-import { IS_NATIVE } from '@take-out/helpers'
+import { IS_NATIVE } from '@o/helpers'
 import * as ExpoHaptics from 'expo-haptics'
 
 export type HapticStyle = boolean | 'light' | 'medium' | 'heavy' | 'soft' | 'rigid'

@@ -15,6 +15,6 @@ export {
   SUPPORTS_DYNAMIC_COLOR_IOS,
   useIsomorphicLayoutEffect,
   CURRENT_PLATFORM,
-} from '@take-out/helpers'
+} from '@o/helpers'
 
 export const IS_NATIVE = !TAMAGUI_IS_WEB

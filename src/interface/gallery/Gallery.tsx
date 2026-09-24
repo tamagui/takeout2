@@ -1,4 +1,4 @@
-import { useEmitterValue } from '@take-out/helpers'
+import { useEmitterValue } from '@o/helpers'
 import { useEffect, useState } from 'react'
 import { useWindowDimensions } from 'react-native'
 import { AnimatePresence, Circle, Portal, styled, XStack, YStack } from 'tamagui'

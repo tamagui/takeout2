@@ -1,4 +1,4 @@
-import { createStorageValue } from '@take-out/helpers'
+import { createStorageValue } from '@o/helpers'
 
 export const notificationPromptStorage = createStorageValue<boolean>(
   'hasSeenNotificationPrompt',

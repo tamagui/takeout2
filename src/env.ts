@@ -1,4 +1,4 @@
-import { createEnv, expected } from '@take-out/env'
+import { createEnv, expected } from '@o/env'
 
 const result = createEnv({
   freshDev: true,

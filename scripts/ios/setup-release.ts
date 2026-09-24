@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Setup iOS release secrets for App Store deployment`.run(async ({ prompt, colors, fs, os, path }) => {
   const clack = prompt

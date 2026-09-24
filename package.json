@@ -16,9 +16,6 @@
     "node": "^24.3.0"
   },
   "packageManager": "bun@1.4.2",
-  "workspaces": [
-    "./packages/*"
-  ],
   "scripts": {
     "preinstall": "bun ./scripts/preinstall.ts",
     "postinstall": "bun run ./scripts/postinstall.ts",
@@ -65,7 +62,7 @@
     "run:dev": "NODE_ENV=development bun env:dev bun run",
     "run:prod": "NODE_ENV=production bun env:prod bun run",
     "test:integration": "bun run env:dev bun --cwd=./src/test playwright test",
-    "test:unit": "bun run --cwd packages/database test && bun run --cwd packages/run test:bun && bun run:dev vitest run -c ./src/test/vitest.config.ts",
+    "test:unit": "bun run:dev vitest run -c ./src/test/vitest.config.ts",
     "test": "tko test",
     "up": "tko up",
     "watch:types": "tko run typecheck --watch",
@@ -105,11 +102,11 @@
     "@react-navigation/native": "7.3.16",
     "@resvg/resvg-js": "^2.6.2",
     "@rocicorp/zero": "1.7.0",
-    "@take-out/better-auth-utils": "workspace:*",
-    "@take-out/database": "workspace:*",
-    "@take-out/env": "workspace:*",
-    "@take-out/helpers": "workspace:*",
-    "@take-out/native-hot-update": "workspace:*",
+    "@o/better-auth-utils": "0.16.19-canary.1790271926844",
+    "@o/database": "0.16.19-canary.1790271926844",
+    "@o/env": "0.16.19-canary.1790271926844",
+    "@o/helpers": "0.16.19-canary.1790271926844",
+    "@o/native-hot-update": "0.16.19-canary.1790271926844",
     "@tamagui/config": "2.7.7",
     "@tamagui/helpers-icon": "2.7.7",
     "@tamagui/linear-gradient": "2.7.7",
@@ -191,8 +188,8 @@
     "@aws-sdk/client-ecr": "^3.859.0",
     "@dotenvx/dotenvx": "^1.44.1",
     "@playwright/test": "^1.55.0",
-    "@take-out/cli": "workspace:*",
-    "@take-out/scripts": "workspace:*",
+    "@o/cli": "0.16.19-canary.1790271926844",
+    "@o/scripts": "0.16.19-canary.1790271926844",
     "@types/aws-lambda": "8.10.147",
     "@types/bun": "^1.2.16",
     "@types/node": "24.0.3",
@@ -206,7 +203,6 @@
     "drizzle-kit": "1.0.0-beta.9-e89174b",
     "drizzle-zero": "1.0.0-beta.1",
     "fs-extra": "^11.2.0",
-    "jsdom": "29.1.1",
     "knip": "^5.82.0",
     "oxfmt": "^0.16.0",
     "oxlint": "^1.31.0",
@@ -245,7 +241,7 @@
   },
   "upgradeSets": {
     "takeout": [
-      "@take-out/*",
+      "@o/*",
       "on-zero"
     ],
     "tamagui": [

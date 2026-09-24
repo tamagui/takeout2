@@ -1,4 +1,4 @@
-import { formatDistanceToNow, randomId } from '@take-out/helpers'
+import { formatDistanceToNow, randomId } from '@o/helpers'
 import { router, useParams } from 'one'
 import { memo, useRef, useState } from 'react'
 import { ScrollView, SizableText, useMedia, View, XStack, YStack } from 'tamagui'

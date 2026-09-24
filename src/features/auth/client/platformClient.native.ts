@@ -1,7 +1,7 @@
 import '~/helpers/crypto/polyfill.native' // `better-auth/client/plugins` uses `@better-auth/utils` which requires `crypto` in globalThis
 
 import { expoClient } from '@better-auth/expo/client'
-import { createStorage } from '@take-out/helpers'
+import { createStorage } from '@o/helpers'
 
 import { APP_SCHEME } from '../constants'
 

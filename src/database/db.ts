@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { createDatabase, derivePublicTables } from '@take-out/database'
+import { createDatabase, derivePublicTables } from '@o/database/postgres'
 
 import { server } from '~/env'
 

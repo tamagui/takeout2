@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Clear JWKS table to fix auth secret mismatch errors`.run(async ({ $ }) => {
   console.info('clearing jwks table (fixes "Failed to decrypt private key" errors)...')

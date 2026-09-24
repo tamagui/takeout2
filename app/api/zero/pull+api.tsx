@@ -1,4 +1,4 @@
-import { getAuthDataFromRequest } from '@take-out/better-auth-utils/server'
+import { getAuthDataFromRequest } from '@o/better-auth-utils/server'
 
 import { authServer } from '~/features/auth/server/authServer'
 import { zeroBindings } from '~/zero/server'

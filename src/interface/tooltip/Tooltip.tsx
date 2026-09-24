@@ -3,7 +3,7 @@ import {
   isEqualIdentity,
   useEmitterSelector,
   useEmitterValue,
-} from '@take-out/helpers'
+} from '@o/helpers'
 import {
   Children,
   memo,

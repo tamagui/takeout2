@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Deploy to local Multipass VM`.run(async () => {
   const { buildWeb, buildDockerImage } = await import('./helpers/build')

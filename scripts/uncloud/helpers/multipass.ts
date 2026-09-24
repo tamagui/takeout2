@@ -4,10 +4,10 @@ import {
   createVM as _createVM,
   setupVMSSH as _setupVMSSH,
   setupPortForward as _setupPortForward,
-} from '@take-out/scripts/helpers/multipass'
+} from '@o/scripts/helpers/multipass'
 
-export type { MultipassConfig } from '@take-out/scripts/helpers/multipass'
-export { checkMultipass } from '@take-out/scripts/helpers/multipass'
+export type { MultipassConfig } from '@o/scripts/helpers/multipass'
+export { checkMultipass } from '@o/scripts/helpers/multipass'
 
 const config = createMultipassConfig('takeout-deploy')
 

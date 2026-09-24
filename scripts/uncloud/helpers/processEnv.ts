@@ -1,1 +1,1 @@
-export { processComposeEnv } from '@take-out/scripts/helpers/process-compose-env'
+export { processComposeEnv } from '@o/scripts/helpers/process-compose-env'

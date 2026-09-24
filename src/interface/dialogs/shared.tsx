@@ -1,4 +1,4 @@
-import { createEmitter, useEmitter } from '@take-out/helpers'
+import { createEmitter, useEmitter } from '@o/helpers'
 
 import { closeOpenTooltips } from '~/interface/tooltip/closeOpenTooltips'
 

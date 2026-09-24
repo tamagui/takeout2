@@ -1,4 +1,4 @@
-import { IS_SAFARI, IS_ANDROID, IS_WEB, sleep } from '@take-out/helpers'
+import { IS_SAFARI, IS_ANDROID, IS_WEB, sleep } from '@o/helpers'
 import { createElement, forwardRef, isValidElement } from 'react'
 import { Platform } from 'react-native'
 import {

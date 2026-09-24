@@ -4,7 +4,7 @@ import {
   createDatabase,
   derivePublicTables,
   loadMigrationsFromDir,
-} from '@take-out/database'
+} from '@o/database/postgres'
 
 import { server } from '../env'
 import * as schema from './schema'

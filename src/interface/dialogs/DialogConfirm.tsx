@@ -1,4 +1,4 @@
-import { IS_WEB, useEmitterSelector } from '@take-out/helpers'
+import { IS_WEB, useEmitterSelector } from '@o/helpers'
 import { useState } from 'react'
 import { useWindowDimensions, XStack, YStack } from 'tamagui'
 

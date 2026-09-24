@@ -1,5 +1,5 @@
 import { LegendList } from '@legendapp/list/react-native'
-import { IS_NATIVE } from '@take-out/helpers'
+import { IS_NATIVE } from '@o/helpers'
 import { memo, useCallback } from 'react'
 import { Alert, RefreshControl } from 'react-native'
 import { ListItem, ScrollView, SizableText, Spinner, View, YStack } from 'tamagui'

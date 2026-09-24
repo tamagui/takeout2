@@ -1,4 +1,4 @@
-import { useEmitterSelector } from '@take-out/helpers'
+import { useEmitterSelector } from '@o/helpers'
 import { useState } from 'react'
 import { XStack, YStack } from 'tamagui'
 

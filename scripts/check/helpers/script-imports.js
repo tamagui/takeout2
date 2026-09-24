@@ -1,5 +1,5 @@
 /**
- * oxlint plugin: scripts/*\/*.ts should only import { cmd } from '@take-out/cli' at top level.
+ * oxlint plugin: scripts/*\/*.ts should only import { cmd } from '@o/cli' at top level.
  */
 export default {
   meta: { name: 'script-imports' },
@@ -9,7 +9,7 @@ export default {
         type: 'problem',
         messages: {
           invalidImport:
-            "Only `import { cmd } from '@take-out/cli'` is allowed at top level in scripts. Use dynamic import() inside cmd.run() instead.",
+            "Only `import { cmd } from '@o/cli'` is allowed at top level in scripts. Use dynamic import() inside cmd.run() instead.",
         },
       },
       create(context) {
@@ -22,7 +22,7 @@ export default {
 
         return {
           ImportDeclaration(node) {
-            if (node.source.value === '@take-out/cli') {
+            if (node.source.value === '@o/cli') {
               hasCmdImport = true
               return
             }

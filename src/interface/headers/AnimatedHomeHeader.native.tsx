@@ -1,4 +1,4 @@
-import { useEmitter } from '@take-out/helpers'
+import { useEmitter } from '@o/helpers'
 import { memo, useCallback } from 'react'
 import { StyleSheet } from 'react-native'
 import Animated, {

@@ -1,18 +1,18 @@
 /**
  * uncloud deployment helpers for ci/cd
- * re-exports shared helpers from @take-out/scripts, adds takeout-specific deploy logic
+ * re-exports shared helpers from @o/scripts, adds takeout-specific deploy logic
  */
 
 import { homedir } from 'node:os'
 
-import { time } from '@take-out/helpers'
-import { run } from '@take-out/scripts/helpers/run'
+import { time } from '@o/helpers'
+import { run } from '@o/scripts/helpers/run'
 import {
   checkUncloudConfigured,
   installUncloudCLI as _installUncloudCLI,
   setupSSHKey as _setupSSHKey,
   verifyDatabaseConfig,
-} from '@take-out/scripts/helpers/uncloud-deploy'
+} from '@o/scripts/helpers/uncloud-deploy'
 import pc from 'picocolors'
 
 export { checkUncloudConfigured, verifyDatabaseConfig }
@@ -22,7 +22,7 @@ let envLoaded = false
 async function ensureEnv() {
   if (envLoaded) return
   envLoaded = true
-  const { loadEnv } = await import('@take-out/scripts/helpers/env-load')
+  const { loadEnv } = await import('@o/scripts/helpers/env-load')
   await loadEnv('production').catch((err: unknown) => {
     console.warn(
       'warning: could not load production env:',

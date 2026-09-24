@@ -1,10 +1,10 @@
 #!/usr/bin/env bun
 
-import { cmd } from '@take-out/cli'
+import { cmd } from '@o/cli'
 
 await cmd`Sync env variables to GitHub repository secrets`.run(
   async ({ prompt, colors, fs, os, path }) => {
-    const { parseEnvFile } = await import('@take-out/scripts/helpers/parse-env-file')
+    const { parseEnvFile } = await import('@o/scripts/helpers/parse-env-file')
 
     const pc = colors
 

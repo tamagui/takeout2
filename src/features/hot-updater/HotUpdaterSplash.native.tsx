@@ -1,4 +1,4 @@
-import { HotUpdater } from '@take-out/native-hot-update'
+import { HotUpdater } from '@o/native-hot-update'
 import { ActivityIndicator } from 'react-native'
 import { MMKV } from 'react-native-mmkv'
 import { SizableText, View } from 'tamagui'

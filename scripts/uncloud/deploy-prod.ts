@@ -410,6 +410,11 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
   try {
     await tagPreviousImage(host, DEPLOY_SSH_KEY)
 
+    if (!skipLock) {
+      await run(`${ssh} "docker image prune --force"`, { silent: true })
+      console.info(colors.gray('  removed dangling images before deployment'))
+    }
+
     await initUncloud(host, DEPLOY_SSH_KEY)
 
     // upload origin ca certs AFTER init (cluster reset creates fresh caddy volume)

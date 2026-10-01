@@ -9,7 +9,7 @@ import { HighlightText, Span, Strong } from './Typography'
 
 const HeroTitle = styled(H1, {
   style: { textWrap: 'balance' },
-  letterSpacing: -1,
+  letterSpacing: 0,
   color: 'color',
   size: '10 lg:12',
   fontWeight: '800',

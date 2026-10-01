@@ -14,7 +14,6 @@ declare module 'one' {
         | `/auth/login`
         | `/auth/signup/otp`
         | `/eula`
-        | `/help`
         | `/home`
         | `/home/(tabs)`
         | `/home/(tabs)/action`

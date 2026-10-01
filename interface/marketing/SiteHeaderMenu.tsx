@@ -7,7 +7,6 @@ import { APP_HOME_HREF } from '~/features/app/routes'
 import { Link } from '~/interface/app/Link'
 import { Button } from '~/interface/buttons/Button'
 import { Icons } from '~/interface/icons'
-import { PromoLinksRow } from './PromoLinksRow'
 import { SocialLinksRow } from './SocialLinksRow'
 import { TakeoutLogoIcon } from './TakeoutIcons'
 import { ThemeSwitch } from './ThemeSwitch'
@@ -54,7 +53,6 @@ export const SiteHeaderMenu = memo(() => {
                 </SizableText>
               </XStack>
               <XStack items="center" gap={7}>
-                <PromoLinksRow />
                 <ThemeSwitch />
               </XStack>
             </XStack>

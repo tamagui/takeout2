@@ -27,18 +27,6 @@ export const SiteFooter = () => {
               Terms of Service
             </SizableText>
           </Link>
-          <SizableText fontFamily="takeout-body" size="3" color="color-6">
-            •
-          </SizableText>
-          <Link href="/help">
-            <SizableText
-              fontFamily="takeout-body"
-              size="3"
-              color="color-9 hover:color-11"
-            >
-              Help
-            </SizableText>
-          </Link>
         </XStack>
       </YStack>
     </YStack>

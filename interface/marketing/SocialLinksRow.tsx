@@ -1,10 +1,10 @@
 import { SizableText, styled, XStack, YStack } from 'tamagui'
+import { DISCORD_INVITE_URL } from '~/constants'
 import { Link } from '~/interface/app/Link'
 import { DiscordLogo, GithubLogoIcon, TwitterLogo } from './TakeoutIcons'
 
 const TWITTER_URL = 'https://x.com/tamagui__js'
 const GITHUB_URL = 'https://github.com/tamagui'
-const DISCORD_URL = 'https://discord.gg'
 
 const Container = styled(YStack, {
   gap: 16,
@@ -49,7 +49,7 @@ export const SocialLinksRow = ({ large }: { large?: boolean }) => {
       </Link>
 
       {large && (
-        <Link target="_blank" href={DISCORD_URL} aria-label="Discord">
+        <Link target="_blank" href={DISCORD_INVITE_URL} aria-label="Discord">
           <IconLink>
             <Container minW={60}>
               <DiscordLogo size={25 * scale} />

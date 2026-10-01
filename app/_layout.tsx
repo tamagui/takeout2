@@ -15,7 +15,7 @@ const websiteMetadata: Record<string, { title: string; description: string }> = 
   '/': {
     title: 'Takeout',
     description:
-      'The production-ready starter for building real-time, cross-platform apps with React and React Native.',
+      'A free, open-source starter for building real-time, cross-platform apps with React and React Native.',
   },
   '/privacy-policy': {
     title: 'Privacy Policy',
@@ -29,11 +29,6 @@ const websiteMetadata: Record<string, { title: string; description: string }> = 
   '/eula': {
     title: 'End User License Agreement',
     description: 'Review the End User License Agreement (EULA) for Takeout.',
-  },
-  '/help': {
-    title: 'Help & Support',
-    description:
-      'Get help with Takeout. Contact support, submit requests, or browse frequently asked questions.',
   },
   '/docs/intro': {
     title: 'Introduction',

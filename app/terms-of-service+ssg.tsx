@@ -17,19 +17,12 @@ export default function TermsOfServicePage() {
         </LegalText>
       </LegalSection>
 
-      <LegalSection title="Use License">
+      <LegalSection title="Source License">
         <LegalText>
-          Permission is granted to temporarily use {APP_NAME} for personal, non-commercial
-          use only. This is the grant of a license, not a transfer of title, and under
-          this license you may not:
+          Takeout source code is free and open source under the MIT License included with
+          the source. These Terms of Service apply to the hosted demonstration and do not
+          restrict the permissions granted by that license.
         </LegalText>
-        <LegalList>
-          <LegalText>• Modify or copy the materials</LegalText>
-          <LegalText>• Use the materials for commercial purposes</LegalText>
-          <LegalText>• Attempt to decompile or reverse engineer the software</LegalText>
-          <LegalText>• Remove any copyright or proprietary notations</LegalText>
-          <LegalText>• Transfer the materials to another person</LegalText>
-        </LegalList>
       </LegalSection>
 
       <LegalSection title="User Accounts">

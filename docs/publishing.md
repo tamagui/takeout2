@@ -18,11 +18,14 @@ whitelist records beyond this template’s feed, comments, profiles, notificatio
 and Better Auth records. Those product features are absent from this example.
 No old rows or infrastructure have been changed.
 
+The draft is free and open source under MIT, with no paid tier or Help & Support
+service, following Nate’s direction. Existing production remains unchanged.
+
 ## Owner decisions before publication
 
 1. Approve this smaller example as Takeout’s intended scope and lift the
    Takeout main-push restriction for this branch.
-2. Choose the repository’s open source license and public visibility.
+2. Publish the MIT-licensed source in the chosen public repository.
 3. Choose a new example URL or explicitly approve replacing
    `takeout.tamagui.dev`. Use a fresh example database by default. An actual
    production cutover requires a separately reviewed migration preserving

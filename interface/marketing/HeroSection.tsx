@@ -4,7 +4,7 @@ import { Link } from '~/interface/app/Link'
 import { Button } from '~/interface/buttons/Button'
 import { HeroTerminal } from './HeroTerminal'
 import { PhoneMockup } from './PhoneMockup'
-import { ArrowRightIcon, ArrowUpRightIcon, CheckIcon, CopyIcon } from './TakeoutIcons'
+import { ArrowRightIcon, CheckIcon, CopyIcon } from './TakeoutIcons'
 import { HighlightText, Span, Strong } from './Typography'
 
 const HeroTitle = styled(H1, {
@@ -179,37 +179,7 @@ export function HeroSection() {
           </XStack>
 
           <Paragraph fontFamily="takeout-body" size="6 lg:7" color="color-9">
-            Check the{' '}
-            <Link href="https://tamagui.dev/takeout" target="_blank">
-              <Span color="color-11">pro version</Span>
-              <View
-                render="span"
-                ml={4}
-                mr={-5}
-                opacity={0.7}
-                x={-2}
-                y={-9}
-                style={{ display: 'inline-flex' }}
-              >
-                <ArrowUpRightIcon size={8} />
-              </View>
-            </Link>{' '}
-            or the{' '}
-            <Link href="https://github.com/tamagui/takeout-free" target="_blank">
-              <Span color="color-11">free one</Span>
-              <View
-                render="span"
-                ml={4}
-                mr={-5}
-                opacity={0.7}
-                x={-2}
-                y={-9}
-                style={{ display: 'inline-flex' }}
-              >
-                <ArrowUpRightIcon size={8} />
-              </View>
-            </Link>
-            .
+            Free and open source.
           </Paragraph>
         </LeftContent>
 

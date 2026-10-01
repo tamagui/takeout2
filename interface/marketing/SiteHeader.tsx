@@ -4,7 +4,6 @@ import { useAuth } from '~/auth/client/authClient'
 import { APP_HOME_HREF } from '~/features/app/routes'
 import { Link } from '~/interface/app/Link'
 import { Button } from '~/interface/buttons/Button'
-import { PromoLinksRow } from './PromoLinksRow'
 import { SiteHeaderMenu } from './SiteHeaderMenu'
 import { SocialLinksRow } from './SocialLinksRow'
 import { TakeoutLogoIcon } from './TakeoutIcons'
@@ -90,10 +89,9 @@ export const SiteHeader = memo(() => {
           />
 
           <XStack z={1} width="100%" items="center" py={8} px={12} position="relative">
-            {/* left: social and promo links on desktop */}
+            {/* left: social links on desktop */}
             <XStack display="none md:flex" gap={12} items="center">
               <SocialLinksRow />
-              <PromoLinksRow />
             </XStack>
 
             {/* mobile logo: left aligned */}

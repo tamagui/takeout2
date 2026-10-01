@@ -1,6 +1,7 @@
 # Takeout
 
-Takeout keeps its original marketing website and uses Contrast’s app template
+Takeout is free and open source. It keeps its original marketing website and uses
+Contrast’s app template
 for the app underneath: a social feed with
 email and password login, posts, comments, profiles, and account settings on web
 and React Native. It uses One v2, Tamagui v3, contrast-ui, Better Auth, Drizzle,
@@ -61,5 +62,6 @@ and the MIT packages bundled under `packages/`, so installation needs no new npm
 release. The optional Peach CLI is consumed from npm under its own license;
 private Contrast engine packages are not copied here.
 
-This draft retains Takeout’s existing [LICENSE](./LICENSE). Selecting an open
-source license and making the repository public remain owner decisions.
+Takeout source is available under the [MIT License](./LICENSE). Third-party
+dependencies retain their own licenses. There is no paid tier or Help & Support
+service. Repository publication and the isolated deployment remain pending.

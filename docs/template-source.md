@@ -18,10 +18,12 @@ under `interface/marketing`; the app keeps its own template UI and fonts.
 The site menu uses the registered `contrast-ui` Sheet, matching the current
 canonical templates, so its mobile navigation participates in the root overlay host.
 
-The original privacy, terms, EULA, and support pages remain at their existing
-URLs. Their existing legal terms are preserved for owner review before an OSS
-publication changes the repository license. Marketing alone follows the saved
-website theme preference; the app keeps its template appearance behavior.
+Privacy, terms, and EULA remain at their existing URLs. Source licensing is MIT;
+the hosted-demo terms do not restrict those permissions. The unsupported moderation
+and response-time promises are removed. Help & Support and the Pro/Free tier
+promotion are removed because this version is free and open source. Marketing
+follows the saved website theme preference; the app keeps its template
+appearance behavior.
 
 The app preserves template routes, auth and demo identities, sync contracts,
 server source, upload paths, and UI components. Takeout-specific changes are its

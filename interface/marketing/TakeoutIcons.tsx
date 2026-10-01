@@ -322,21 +322,6 @@ export const GithubLogoIcon = memo(({ size = 20, color, ...svgProps }: IconProps
   )
 })
 
-export const SparkleIcon = memo(({ size = 16, color, ...svgProps }: IconProps) => {
-  const theme = useTheme()
-  const s = size
-  const fill =
-    color || theme['color-10']?.get('web') || theme.color?.get('web') || 'currentColor'
-  return (
-    <Svg width={s} height={s} viewBox="0 0 256 256" fill="none" {...svgProps}>
-      <Path
-        d="M199,125.31l-49.88-18.39L130.69,57a19.92,19.92,0,0,0-37.38,0L74.92,106.92,25,125.31a19.92,19.92,0,0,0,0,37.38l49.88,18.39L93.31,231a19.92,19.92,0,0,0,37.38,0l18.39-49.88L199,162.69a19.92,19.92,0,0,0,0-37.38Zm-63.38,35.16a12,12,0,0,0-7.11,7.11L112,212.28l-16.47-44.7a12,12,0,0,0-7.11-7.11L43.72,144l44.7-16.47a12,12,0,0,0,7.11-7.11L112,75.72l16.47,44.7a12,12,0,0,0,7.11,7.11L180.28,144ZM140,40a12,12,0,0,1,12-12h12V16a12,12,0,0,1,24,0V28h12a12,12,0,0,1,0,24H188V64a12,12,0,0,1-24,0V52H152A12,12,0,0,1,140,40ZM252,88a12,12,0,0,1-12,12h-4v4a12,12,0,0,1-24,0v-4h-4a12,12,0,0,1,0-24h4V72a12,12,0,0,1,24,0v4h4A12,12,0,0,1,252,88Z"
-        fill={fill}
-      />
-    </Svg>
-  )
-})
-
 export const ArrowRightIcon = memo(({ size = 16, color, ...svgProps }: IconProps) => {
   const theme = useTheme()
   const s = size
@@ -346,18 +331,6 @@ export const ArrowRightIcon = memo(({ size = 16, color, ...svgProps }: IconProps
       <Path
         d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"
         fill={fill}
-      />
-    </Svg>
-  )
-})
-
-export const ArrowUpRightIcon = memo(({ size = 12, color, ...svgProps }: IconProps) => {
-  const theme = useTheme()
-  return (
-    <Svg width={size} height={size} viewBox="0 0 256 256" fill="none" {...svgProps}>
-      <Path
-        d="M204,64V168a12,12,0,0,1-24,0V93L72.49,200.49a12,12,0,0,1-17-17L163,76H88a12,12,0,0,1,0-24H192A12,12,0,0,1,204,64Z"
-        fill={color || theme.color.get('web')}
       />
     </Svg>
   )
@@ -432,44 +405,3 @@ export const CircleHalfIcon = memo(({ size = 18, color, ...svgProps }: IconProps
     </Svg>
   )
 })
-
-export function EnvelopeIcon({
-  size = 26,
-  color = 'currentColor',
-  ...svgProps
-}: IconProps) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 256 256" fill="none" {...svgProps}>
-      <Path
-        d="M224,44H32A12,12,0,0,0,20,56V192a20,20,0,0,0,20,20H216a20,20,0,0,0,20-20V56A12,12,0,0,0,224,44Zm-96,83.72L62.85,68h130.3ZM92.79,128,44,172.72V83.28Zm17.76,16.28,9.34,8.57a12,12,0,0,0,16.22,0l9.34-8.57L193.15,188H62.85ZM163.21,128,212,83.28v89.44Z"
-        fill={color}
-      />
-    </Svg>
-  )
-}
-
-export function ChatCircleIcon({
-  size = 26,
-  color = 'currentColor',
-  ...svgProps
-}: IconProps) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 256 256" fill="none" {...svgProps}>
-      <Path
-        d="M128,20A108,108,0,0,0,31.85,177.23L21,209.66A20,20,0,0,0,46.34,235l32.43-10.81A108,108,0,1,0,128,20Zm0,192a84,84,0,0,1-42.06-11.27,12,12,0,0,0-6-1.62,12.1,12.1,0,0,0-3.8.62l-29.79,9.93,9.93-29.79a12,12,0,0,0-1-9.81A84,84,0,1,1,128,212Z"
-        fill={color}
-      />
-    </Svg>
-  )
-}
-
-export function UserIcon({ size = 26, color = 'currentColor', ...svgProps }: IconProps) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 256 256" fill="none" {...svgProps}>
-      <Path
-        d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z"
-        fill={color}
-      />
-    </Svg>
-  )
-}

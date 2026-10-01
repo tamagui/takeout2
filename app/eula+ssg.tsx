@@ -1,10 +1,5 @@
 import { APP_NAME } from '~/constants'
-import {
-  LegalList,
-  LegalPage,
-  LegalSection,
-  LegalText,
-} from '~/interface/marketing/LegalPage'
+import { LegalPage, LegalSection, LegalText } from '~/interface/marketing/LegalPage'
 
 export default function EULAPage() {
   return (
@@ -23,34 +18,14 @@ export default function EULAPage() {
         </LegalText>
       </LegalSection>
 
-      <LegalSection title="2. Content Moderation">
-        <LegalList>
-          <LegalText>
-            • We use AI-powered moderation to prevent objectionable content.
-          </LegalText>
-          <LegalText>
-            • Users can report inappropriate content via the in-app reporting feature.
-          </LegalText>
-          <LegalText>
-            • Users can block other users to prevent seeing their content.
-          </LegalText>
-          <LegalText>
-            • Reported content will be reviewed and addressed within 24 hours.
-          </LegalText>
-          <LegalText>
-            • We have zero tolerance for objectionable or abusive behavior.
-          </LegalText>
-        </LegalList>
-      </LegalSection>
-
-      <LegalSection title="3. Account Suspension & Removal">
+      <LegalSection title="2. Account Suspension & Removal">
         <LegalText>
           {APP_NAME} reserves the right to remove content, suspend accounts, or take other
           action for violations at any time.
         </LegalText>
       </LegalSection>
 
-      <LegalSection title="4. Acceptance">
+      <LegalSection title="3. Acceptance">
         <LegalText>
           By using {APP_NAME}, you agree to this EULA and our Terms of Service and Privacy
           Policy.

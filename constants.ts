@@ -18,7 +18,5 @@ export { DEMO_EMAIL, DEMO_NAME, DEMO_PASSWORD, DEMO_USER_ID } from './auth/demoI
 
 export const SERVER_URL = getURL()
 
-// existing website support destinations
-export const HELP_REQUESTS_URL = `https://${DOMAIN}/requests`
-export const HELP_ROADMAP_URL = `https://${DOMAIN}/roadmap`
+// community
 export const DISCORD_INVITE_URL = 'https://discord.gg/4qh6tdcVDa'

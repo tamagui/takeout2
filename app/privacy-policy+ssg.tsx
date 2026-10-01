@@ -36,7 +36,7 @@ export default function PrivacyPolicyPage() {
         <LegalList>
           <LegalText>• Provide, maintain, and improve our services</LegalText>
           <LegalText>• Process your transactions and send related information</LegalText>
-          <LegalText>• Send you technical notices and support messages</LegalText>
+          <LegalText>• Send you technical notices</LegalText>
           <LegalText>• Respond to your comments and questions</LegalText>
           <LegalText>• Monitor and analyze trends, usage, and activities</LegalText>
         </LegalList>

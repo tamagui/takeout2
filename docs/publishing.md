@@ -21,15 +21,18 @@ No old rows or infrastructure have been changed.
 The draft is free and open source under MIT, with no paid tier or Help & Support
 service, following Nate’s direction. Existing production remains unchanged.
 
-## Owner decisions before publication
+## Source publication
 
-1. Approve this smaller example as Takeout’s intended scope and lift the
-   Takeout main-push restriction for this branch.
-2. Publish the MIT-licensed source in the chosen public repository.
-3. Choose a new example URL or explicitly approve replacing
-   `takeout.tamagui.dev`. Use a fresh example database by default. An actual
-   production cutover requires a separately reviewed migration preserving
-   accounts, posts, comments, uploads, relationships, and timestamp units.
+The free MIT scope and preserved artwork are approved. The example runs at
+`https://takeout-example-r51063.contrast.run`, on its own database and bindings.
+The public source destination remains undecided. Both existing Takeout
+repositories are private, and the earlier main-push restriction remains.
+Publishing a clean source snapshot in a new public repository would preserve
+that boundary. Changing an existing repository's visibility or main requires
+the owner's explicit direction.
+
+Replacing `takeout.tamagui.dev` requires a separately reviewed migration
+preserving accounts, posts, comments, uploads, relationships, and timestamp units.
 
 Do not point the old production workflows at the new SQLite app. Do not reuse
 populated identifiers or buckets for a preview. Auth, database, sync, and upload
@@ -45,3 +48,19 @@ The deployment pipeline owns the Cloudflare worker, SQL Durable Object, Rust
 sync host, and upload bindings. Smoke-test landing, demo login, feed sync,
 comments, profile, and a mutation against that deployed URL before calling the
 example shipped.
+
+## Data initialization
+
+Ordinary production migrations apply the schema without development fixtures.
+For this isolated QA example, the existing `/api/demo/reset` route was armed
+with a private `DEMO_ADMIN_TOKEN`, then initialized once from `database/seed.ts`
+under a real clock. The existing demo profile was preserved. Its database
+contains four public profiles, six posts, and three initial comments.
+`DEMO_READ_ONLY` is absent so comment persistence can be verified. The reset
+endpoint returns 404 without its token; credentials are never committed.
+
+The deployed desktop and phone flows pass demo login, the six-post feed,
+post details, profile/settings, and signed-out protection. A new comment survives
+reload. Exact functional source `d2d758a6` passes a frozen Linux install,
+typecheck, Cloudflare build, and bundle secret scan. Final authored social-card
+verification awaits delivery of the hosting metadata fix.

@@ -29,7 +29,7 @@ bun run generate
 Routes live in `app/`, feature code in `features/`, reusable UI in `interface/`,
 queries and mutations in `data/`, and schema and migrations in `database/`.
 Public pages opt into static rendering; signed-in screens use client rendering.
-The six seeded posts provide a working feed immediately.
+The development database contains six seeded posts.
 
 ## Native
 
@@ -52,7 +52,10 @@ contrast deploy --slug takeout-example
 ```
 
 Run those commands from a clean clone. [docs/publishing.md](./docs/publishing.md)
-records the existing production boundaries and outstanding owner decisions.
+records the production boundary and source publication decision.
+Production deployments apply the schema without development seed data. The
+isolated [live example](https://takeout-example-r51063.contrast.run) is initialized
+separately with the six-post fixture.
 The branch CI checks types and produces a build artifact; it does not deploy.
 
 ## Source and license
@@ -64,4 +67,4 @@ private Contrast engine packages are not copied here.
 
 Takeout source is available under the [MIT License](./LICENSE). Third-party
 dependencies retain their own licenses. There is no paid tier or Help & Support
-service. Repository publication and the isolated deployment remain pending.
+service. Public repository publication remains pending.

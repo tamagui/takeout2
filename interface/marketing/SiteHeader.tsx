@@ -16,6 +16,7 @@ function TakeoutBrandmark() {
       <XStack items="center" gap={8}>
         <TakeoutLogoIcon size={26} />
         <SizableText
+          display="none md:flex"
           select="none"
           fontFamily="takeout-mono"
           size="5"

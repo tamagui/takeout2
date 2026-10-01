@@ -4,7 +4,7 @@ import { Link } from '~/interface/app/Link'
 import { Button } from '~/interface/buttons/Button'
 import { HeroTerminal } from './HeroTerminal'
 import { PhoneMockup } from './PhoneMockup'
-import { ArrowRightIcon, CheckIcon, CopyIcon } from './TakeoutIcons'
+import { ArrowRightIcon, ArrowUpRightIcon, CheckIcon, CopyIcon } from './TakeoutIcons'
 import { HighlightText, Span, Strong } from './Typography'
 
 const HeroTitle = styled(H1, {
@@ -103,14 +103,19 @@ function CopyCommand() {
       <Paragraph fontFamily="takeout-mono" fontSize={14} color="color-11">
         $
       </Paragraph>
-      <Paragraph pr={16} flex={1} numberOfLines={1} ellipsizeMode="tail" fontFamily="takeout-mono" fontSize={15} lineHeight="22.25px" fontWeight="700">
+      <Paragraph
+        pr={16}
+        flex={1}
+        numberOfLines={1}
+        ellipsizeMode="tail"
+        fontFamily="takeout-mono"
+        fontSize={15}
+        lineHeight="22.25px"
+        fontWeight="700"
+      >
         {INSTALL_COMMAND}
       </Paragraph>
-      {copied ? (
-        <CheckIcon size={18} />
-      ) : (
-        <CopyIcon size={18} />
-      )}
+      {copied ? <CheckIcon size={18} /> : <CopyIcon size={18} />}
     </CommandBox>
   )
 }
@@ -135,9 +140,15 @@ export function HeroSection() {
             </Strong>
             . <Strong color="color-11">Takeout sucks less.</Strong> We&nbsp;took
             novel&nbsp;tech, made it work well, then&nbsp;added CI/CD, IaC, UI, lots of
-            “agent” stuff, and <Link href="/docs/intro"><Span color="#3b82f6">a changelog</Span></Link> —
-            it's&nbsp;what we use for ourselves, and our{' '}
-            <Link href="https://addeven.com" target="_blank"><Span color="#3b82f6">clients</Span></Link>.
+            “agent” stuff, and{' '}
+            <Link href="/docs/intro">
+              <Span color="color-11">the docs</Span>
+            </Link>{' '}
+            — it's&nbsp;what we use for ourselves, and our{' '}
+            <Link href="https://addeven.com" target="_blank">
+              <Span color="color-11">clients</Span>
+            </Link>
+            .
           </HeroSubtitle>
 
           <HeroSubtitle>
@@ -150,7 +161,16 @@ export function HeroSection() {
 
           <XStack maxW="100%" gap={13} mt={7} items="center">
             <Link href="/docs/intro" asChild>
-              <Button render="a" bg="color" color="color-1" fontFamily="takeout-body" size="lg" iconAfter={<ArrowRightIcon size={16} color={theme['color-1'].get('web')} />}>
+              <Button
+                render="a"
+                bg="color"
+                color="color-1"
+                fontFamily="takeout-body"
+                size="lg"
+                iconAfter={
+                  <ArrowRightIcon size={16} color={theme['color-1'].get('web')} />
+                }
+              >
                 Docs
               </Button>
             </Link>
@@ -161,11 +181,33 @@ export function HeroSection() {
           <Paragraph fontFamily="takeout-body" size="6 lg:7" color="color-9">
             Check the{' '}
             <Link href="https://tamagui.dev/takeout" target="_blank">
-              <Span color="color-11" fontWeight="600">pro version</Span>
+              <Span color="color-11">pro version</Span>
+              <View
+                render="span"
+                ml={4}
+                mr={-5}
+                opacity={0.7}
+                x={-2}
+                y={-9}
+                style={{ display: 'inline-flex' }}
+              >
+                <ArrowUpRightIcon size={8} />
+              </View>
             </Link>{' '}
             or the{' '}
             <Link href="https://github.com/tamagui/takeout-free" target="_blank">
-              <Span color="color-11" fontWeight="600">free one</Span>
+              <Span color="color-11">free one</Span>
+              <View
+                render="span"
+                ml={4}
+                mr={-5}
+                opacity={0.7}
+                x={-2}
+                y={-9}
+                style={{ display: 'inline-flex' }}
+              >
+                <ArrowUpRightIcon size={8} />
+              </View>
             </Link>
             .
           </Paragraph>

@@ -13,6 +13,8 @@ declare module 'one' {
         | `/auth/`
         | `/auth/login`
         | `/auth/signup/otp`
+        | `/eula`
+        | `/help`
         | `/home`
         | `/home/(tabs)`
         | `/home/(tabs)/action`
@@ -30,6 +32,8 @@ declare module 'one' {
         | `/home/settings`
         | `/home/settings/edit-profile`
         | `/home/settings/notifications`
+        | `/privacy-policy`
+        | `/terms-of-service`
       DynamicRoutes:
         | `/auth/signup/${OneRouter.SingleRoutePart<T>}`
         | `/docs/${OneRouter.SingleRoutePart<T>}`

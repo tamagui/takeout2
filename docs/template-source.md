@@ -18,6 +18,11 @@ under `interface/marketing`; the app keeps its own template UI and fonts.
 The site menu uses the registered `contrast-ui` Sheet, matching the current
 canonical templates, so its mobile navigation participates in the root overlay host.
 
+The original privacy, terms, EULA, and support pages remain at their existing
+URLs. Their existing legal terms are preserved for owner review before an OSS
+publication changes the repository license. Marketing alone follows the saved
+website theme preference; the app keeps its template appearance behavior.
+
 The app preserves template routes, auth and demo identities, sync contracts,
 server source, upload paths, and UI components. Takeout-specific changes are its
 name, scheme, native bundle variants, public domain, local database/upload

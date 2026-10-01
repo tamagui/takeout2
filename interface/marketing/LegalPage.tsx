@@ -1,0 +1,54 @@
+import { SizableText, YStack } from 'tamagui'
+import { H1 } from 'tamagui'
+import { MarketingPage } from './MarketingPage'
+import type { ReactNode } from 'react'
+
+type LegalPageProps = {
+  title: string
+  children: ReactNode
+}
+
+export const LegalPage = ({ title, children }: LegalPageProps) => {
+  return (
+    <MarketingPage>
+      <YStack gap={18} maxW={760} width="100%" mx="auto">
+        <H1 fontFamily="takeout-heading">{title}</H1>
+        <YStack gap={18} mt={18}>
+          {children}
+        </YStack>
+      </YStack>
+    </MarketingPage>
+  )
+}
+
+type LegalSectionProps = {
+  title: string
+  children: ReactNode
+}
+
+export const LegalSection = ({ title, children }: LegalSectionProps) => {
+  return (
+    <YStack gap={7}>
+      <SizableText fontFamily="takeout-body" size="5" fontWeight="600" color="color">
+        {title}
+      </SizableText>
+      {children}
+    </YStack>
+  )
+}
+
+export const LegalText = ({ children }: { children: ReactNode }) => {
+  return (
+    <SizableText fontFamily="takeout-body" size="4" color="color" lineHeight="4">
+      {children}
+    </SizableText>
+  )
+}
+
+export const LegalList = ({ children }: { children: ReactNode }) => {
+  return (
+    <YStack gap={7} pl={18}>
+      {children}
+    </YStack>
+  )
+}

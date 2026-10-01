@@ -1,5 +1,3 @@
-import { Tooltip } from 'contrast-ui/tooltip/Tooltip'
-import { setUserScheme, useUserScheme } from 'one'
 import { memo, useEffect, useState } from 'react'
 import { isWeb, SizableText, Spacer, useMedia, XStack, YStack } from 'tamagui'
 import { useAuth } from '~/auth/client/authClient'
@@ -9,42 +7,8 @@ import { Button } from '~/interface/buttons/Button'
 import { PromoLinksRow } from './PromoLinksRow'
 import { SiteHeaderMenu } from './SiteHeaderMenu'
 import { SocialLinksRow } from './SocialLinksRow'
-import { CircleHalfIcon, MoonStarsIcon, SunIcon, TakeoutLogoIcon } from './TakeoutIcons'
-
-const schemeSettings = ['light', 'dark', 'system'] as const
-
-function ThemeSwitch() {
-  const userScheme = useUserScheme()
-  const setting = userScheme.setting
-
-  const onPress = () => {
-    const currentIndex = schemeSettings.findIndex((scheme) => scheme === setting)
-    const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % 3 : 0
-    setUserScheme(schemeSettings[nextIndex]!)
-  }
-
-  const label = setting ? setting[0]!.toUpperCase() + setting.slice(1) : 'Theme'
-
-  return (
-    <Tooltip label={label}>
-      <Button
-        circular
-        size="sm"
-        variant="quiet"
-        aria-label="Toggle theme"
-        onPress={onPress}
-      >
-        {setting === 'light' ? (
-          <SunIcon size={18} />
-        ) : setting === 'dark' ? (
-          <MoonStarsIcon size={18} />
-        ) : (
-          <CircleHalfIcon size={18} />
-        )}
-      </Button>
-    </Tooltip>
-  )
-}
+import { TakeoutLogoIcon } from './TakeoutIcons'
+import { ThemeSwitch } from './ThemeSwitch'
 
 function TakeoutBrandmark() {
   return (

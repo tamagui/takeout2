@@ -1,5 +1,5 @@
 import { Sheet } from 'contrast-ui/sheet/Sheet'
-import { usePathname } from 'one'
+import { usePathname, useUserScheme } from 'one'
 import { memo, useState } from 'react'
 import { Separator, SizableText, View, XStack, YStack } from 'tamagui'
 import { useAuth } from '~/auth/client/authClient'
@@ -10,9 +10,11 @@ import { Icons } from '~/interface/icons'
 import { PromoLinksRow } from './PromoLinksRow'
 import { SocialLinksRow } from './SocialLinksRow'
 import { TakeoutLogoIcon } from './TakeoutIcons'
+import { ThemeSwitch } from './ThemeSwitch'
 
 export const SiteHeaderMenu = memo(() => {
   const [open, setOpen] = useState(false)
+  const { value } = useUserScheme()
   const pathname = usePathname()
   const isDocsPage = pathname.startsWith('/docs')
   const auth = useAuth()
@@ -38,7 +40,10 @@ export const SiteHeaderMenu = memo(() => {
       >
         <Sheet.Overlay bg="background" opacity="0.5 enter:0 exit:0" transition="quick" />
 
-        <Sheet.Container rounded="6">
+        <Sheet.Container
+          rounded="6"
+          theme={value === 'dark' ? 'dark_takeout' : 'light_takeout'}
+        >
           <Sheet.Background bg="color-2" boxShadow="0 0 30px shadow-4" />
           <YStack flex={1} gap={7} p={18}>
             <XStack justify="space-between" items="center" pb={12}>
@@ -48,7 +53,10 @@ export const SiteHeaderMenu = memo(() => {
                   Takeout
                 </SizableText>
               </XStack>
-              <PromoLinksRow />
+              <XStack items="center" gap={7}>
+                <PromoLinksRow />
+                <ThemeSwitch />
+              </XStack>
             </XStack>
 
             <Separator />

@@ -7,7 +7,8 @@ import { appAnalytics } from '~/features/analytics/appAnalytics'
 import { LINK_UNDERLINE_RESET, SAFE_AREA_VARS } from '~/interface/webRootCss'
 import { config } from '~/tamagui/tamagui.config'
 
-const webRootCss = `${SAFE_AREA_VARS}
+const webRootCss = `body { margin: 0; }
+${SAFE_AREA_VARS}
 ${LINK_UNDERLINE_RESET}`
 
 function AppRoutes() {
@@ -58,7 +59,7 @@ export default function Layout() {
             content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
           />
           <title>{APP_NAME}</title>
-          <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+          <link rel="icon" href="/takeout-icon.svg" type="image/svg+xml" />
           <style dangerouslySetInnerHTML={{ __html: webRootCss }} />
         </head>
         <body>{contents}</body>

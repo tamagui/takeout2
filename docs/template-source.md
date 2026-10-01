@@ -12,6 +12,12 @@ The exported MIT packages are `contrast-ui`, `contrast-native`,
 unused `contrast-kit` dev dependency is omitted, so its private engine globals
 are absent from this repository.
 
+The public website preserves Takeout’s original marketing source, artwork,
+animations, and layout from `271cb199`. Its components are ported to Tamagui 3
+under `interface/marketing`; the app keeps its own template UI and fonts.
+The site menu uses the registered `contrast-ui` Sheet, matching the current
+canonical templates, so its mobile navigation participates in the root overlay host.
+
 The app preserves template routes, auth and demo identities, sync contracts,
 server source, upload paths, and UI components. Takeout-specific changes are its
 name, scheme, native bundle variants, public domain, local database/upload

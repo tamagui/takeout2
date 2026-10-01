@@ -2,8 +2,7 @@ import { Redirect } from 'one'
 import { isWeb } from 'tamagui'
 import { useAuth } from '~/auth/client/authClient'
 import { APP_HOME_HREF } from '~/features/app/routes'
-import { Hero } from '~/interface/site/Hero'
-import { SiteShell } from '~/interface/site/SiteShell'
+import { TakeoutWebsite } from '~/interface/marketing/TakeoutWebsite'
 
 // web: everyone — signed in or not — sees the splash. logged-in visitors
 // jump into the real app via the Open app cta in the header / hero.
@@ -32,9 +31,5 @@ export default function Index() {
     return <NativeIndex />
   }
 
-  return (
-    <SiteShell>
-      <Hero />
-    </SiteShell>
-  )
+  return <TakeoutWebsite />
 }

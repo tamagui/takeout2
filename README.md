@@ -1,6 +1,7 @@
 # Takeout
 
-Takeout is the standalone example of Contrast’s app template: a social feed with
+Takeout keeps its original marketing website and uses Contrast’s app template
+for the app underneath: a social feed with
 email and password login, posts, comments, profiles, and account settings on web
 and React Native. It uses One v2, Tamagui v3, contrast-ui, Better Auth, Drizzle,
 and Lite Sync (`orez-lite`) over SQLite.

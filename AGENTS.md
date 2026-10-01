@@ -130,7 +130,7 @@ On your own machine the `contrast` CLI runs this project
 Web and native land a first-time visitor on different screens, deliberately.
 `app/index+ssg.tsx` branches on `isWeb`:
 
-- **Web** renders `SiteShell` + `interface/site/Hero.tsx`: the public
+- **Web** renders `interface/marketing/TakeoutWebsite.tsx`: the public
   marketing/landing page, which sells the product and links into the app.
 - **Native** redirects to `app/auth/login.tsx`, which renders
   `features/auth/ui/LoginScreen.tsx`. There is no public splash on native.
@@ -141,8 +141,10 @@ The two surfaces currently share product identity but use different
 compositions for their different jobs. The web entry action has the stable test
 id `public-app-entry`; the native auth action has `login-as-demo`.
 
-`interface/site/Hero.tsx` currently ships as a text-only placeholder whose
-section owns its own `px`/`py`. `app/auth/login.tsx` and
+The web homepage preserves Takeout’s original artwork, animated phone demo,
+terminal, responsive composition, and long-form sections. Its fonts and themes
+are scoped to marketing; the app uses the canonical Contrast template UI.
+`app/auth/login.tsx` and
 `features/auth/ui/LoginScreen.tsx` are both rendered files for the native login
 surface; the route file establishes `/auth/login` and the shared screen owns the
 native mark, panel, and auth actions. The `native.app` icon, adaptive-icon,

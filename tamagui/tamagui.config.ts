@@ -1,4 +1,5 @@
-import { defaultConfig, settings as v6Settings } from '@tamagui/config/v6'
+import { defaultConfig, settings as v6Settings, toV6Themes } from '@tamagui/config/v6'
+import { defaultConfig as takeoutConfig } from '@tamagui/config/v5'
 import { animationsRoot } from 'contrast-ui/animations/animationsRoot'
 import { createTamagui } from 'tamagui'
 import { fonts } from './fonts'
@@ -67,25 +68,34 @@ export function withAccessibleAccents<T extends Record<string, any>>(themes: T):
 }
 
 const defaultAccentBg = '#7c3aed'
+const takeoutThemes = toV6Themes(takeoutConfig.themes)
 
 export const config = createTamagui({
   ...defaultConfig,
   // brand tint for the native tab bar (see skills/contrast-app-templates.md).
   // accent-background + accent-color always ship as a pair, deriving a passing
   // foreground (WCAG AA >= 4.5:1) from the chosen accent-background.
-  themes: withAccessibleAccents({
-    ...defaultConfig.themes,
-    light: {
-      ...defaultConfig.themes.light,
-      'accent-background': defaultAccentBg,
-      'accent-color': deriveAccentColor(defaultAccentBg),
-    },
-    dark: {
-      ...defaultConfig.themes.dark,
-      'accent-background': defaultAccentBg,
-      'accent-color': deriveAccentColor(defaultAccentBg),
-    },
-  }),
+  themes: {
+    ...withAccessibleAccents({
+      ...defaultConfig.themes,
+      light: {
+        ...defaultConfig.themes.light,
+        'accent-background': defaultAccentBg,
+        'accent-color': deriveAccentColor(defaultAccentBg),
+      },
+      dark: {
+        ...defaultConfig.themes.dark,
+        'accent-background': defaultAccentBg,
+        'accent-color': deriveAccentColor(defaultAccentBg),
+      },
+    }),
+    light_takeout: takeoutThemes.light,
+    dark_takeout: takeoutThemes.dark,
+    light_takeout_accent: takeoutThemes.light_accent,
+    dark_takeout_accent: takeoutThemes.dark_accent,
+    light_takeout_blue: takeoutThemes.light_blue,
+    dark_takeout_blue: takeoutThemes.dark_blue,
+  },
   animations: animationsRoot,
   fonts,
   settings: {

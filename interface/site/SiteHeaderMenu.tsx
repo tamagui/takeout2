@@ -1,6 +1,7 @@
+import { Sheet } from 'contrast-ui/sheet/Sheet'
 import { usePathname } from 'one'
 import { memo, useState } from 'react'
-import { Button, Separator, Sheet, SizableText, View, XStack, YStack } from 'tamagui'
+import { Button, Separator, SizableText, View, XStack, YStack } from 'tamagui'
 import { useAuth } from '~/auth/client/authClient'
 import { APP_NAME } from '~/constants'
 import { APP_HOME_HREF } from '~/features/app/routes'
@@ -33,11 +34,7 @@ export const SiteHeaderMenu = memo(() => {
       <Sheet
         open={open}
         onOpenChange={setOpen}
-        modal
-        dismissOnSnapToBottom
-        snapPoints={[isDocsPage ? 85 : 50]}
-        snapPointsMode="percent"
-        transition="quickLessBouncy"
+        sheetVariant={isDocsPage ? 'large' : 'compact'}
       >
         <Sheet.Overlay bg="background" opacity="0.5 enter:0 exit:0" transition="quick" />
 

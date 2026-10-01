@@ -37,8 +37,8 @@ export default {
           version: '1.0.0',
           orientation: 'portrait',
           userInterfaceStyle: 'automatic',
-          icon: { source: './assets/icon.png', backgroundColor: '#0f172a' },
-          splash: { source: './assets/splash.png', backgroundColor: '#0f172a' },
+          icon: { source: './assets/icon.png', backgroundColor: '#e6dac1' },
+          splash: { source: './assets/logo.png', backgroundColor: '#e6dac1' },
           ios: {
             bundleId: appIdentity.bundleId,
             tablet: false,
@@ -48,7 +48,7 @@ export default {
             applicationId: appIdentity.bundleId,
             adaptiveIcon: {
               foreground: './assets/adaptive-icon.png',
-              backgroundColor: '#0f172a',
+              backgroundColor: '#e6dac1',
             },
             minSdk: 26,
           },

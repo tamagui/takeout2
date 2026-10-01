@@ -20,17 +20,30 @@
         "entryState": "fresh",
         "route": "/",
         "files": [
-          "interface/site/Hero.tsx"
+          "interface/marketing/TakeoutWebsite.tsx",
+          "interface/marketing/HeroSection.tsx",
+          "interface/marketing/SiteHeader.tsx"
+        ],
+        "appearanceModes": [
+          "light",
+          "dark"
+        ]
+      },
+      {
+        "id": "web-login",
+        "platforms": [
+          "web"
+        ],
+        "entryState": "fresh",
+        "route": "/auth/login",
+        "files": [
+          "features/auth/ui/LoginScreen.tsx"
         ],
         "appearanceModes": [
           "light",
           "dark"
         ],
         "advanceSteps": [
-          {
-            "action": "tap-id",
-            "value": "public-app-entry"
-          },
           {
             "action": "tap-id",
             "value": "login-as-demo"

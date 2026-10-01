@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { H1, Paragraph, styled, View, XStack, YStack } from 'tamagui'
+import { H1, Paragraph, styled, useTheme, View, XStack, YStack } from 'tamagui'
 import { Link } from '~/interface/app/Link'
 import { Button } from '~/interface/buttons/Button'
 import { HeroTerminal } from './HeroTerminal'
@@ -116,6 +116,7 @@ function CopyCommand() {
 }
 
 export function HeroSection() {
+  const theme = useTheme()
   return (
     <HeroSectionContainer>
       <HeroContentRow>
@@ -149,7 +150,7 @@ export function HeroSection() {
 
           <XStack maxW="100%" gap={13} mt={7} items="center">
             <Link href="/docs/intro" asChild>
-              <Button render="a" bg="color" color="color-1" fontFamily="takeout-body" size="lg" iconAfter={<ArrowRightIcon size={16} color="currentColor" />}>
+              <Button render="a" bg="color" color="color-1" fontFamily="takeout-body" size="lg" iconAfter={<ArrowRightIcon size={16} color={theme['color-1'].get('web')} />}>
                 Docs
               </Button>
             </Link>

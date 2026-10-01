@@ -1,3 +1,4 @@
+import { usePathname } from 'one'
 import { isWeb, styled, YStack } from 'tamagui'
 
 const GradientOrb = styled(YStack, {
@@ -40,7 +41,8 @@ export const MARKETING_CSS = `
 `
 
 export function HomeBackground() {
-  if (!isWeb) return null
+  const pathname = usePathname()
+  if (!isWeb || pathname !== '/') return null
 
   return (
     <>

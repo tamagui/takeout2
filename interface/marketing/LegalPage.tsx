@@ -12,7 +12,9 @@ export const LegalPage = ({ title, children }: LegalPageProps) => {
   return (
     <MarketingPage>
       <YStack gap={18} maxW={760} width="100%" mx="auto">
-        <H1 fontFamily="takeout-heading">{title}</H1>
+        <H1 fontFamily="takeout-heading" size="10" fontWeight="700">
+          {title}
+        </H1>
         <YStack gap={18} mt={18}>
           {children}
         </YStack>

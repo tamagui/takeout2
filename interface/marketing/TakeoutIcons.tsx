@@ -148,23 +148,11 @@ export const TakeoutLogoIcon = memo(({ size = 24 }: { size?: number }) => {
           <Stop stopColor="#DADADA" offset="0%" />
           <Stop stopColor="#FFFFFF" offset="100%" />
         </LinearGradient>
-        <LinearGradient
-          x1="50%"
-          y1="0%"
-          x2="50%"
-          y2="100%"
-          id="takeout-linearGradient-2"
-        >
+        <LinearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="takeout-linearGradient-2">
           <Stop stopColor="#EEEEEE" offset="0%" />
           <Stop stopColor="#D8D8D8" offset="100%" />
         </LinearGradient>
-        <LinearGradient
-          x1="50%"
-          y1="0%"
-          x2="50%"
-          y2="100%"
-          id="takeout-linearGradient-3"
-        >
+        <LinearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="takeout-linearGradient-3">
           <Stop stopColor="#FDFDFD" offset="0%" />
           <Stop stopColor="#D0D0D0" offset="100%" />
         </LinearGradient>
@@ -337,7 +325,8 @@ export const GithubLogoIcon = memo(({ size = 20, color, ...svgProps }: IconProps
 export const SparkleIcon = memo(({ size = 16, color, ...svgProps }: IconProps) => {
   const theme = useTheme()
   const s = size
-  const fill = color || theme['color-10']?.get('web') || theme.color?.get('web') || 'currentColor'
+  const fill =
+    color || theme['color-10']?.get('web') || theme.color?.get('web') || 'currentColor'
   return (
     <Svg width={s} height={s} viewBox="0 0 256 256" fill="none" {...svgProps}>
       <Path
@@ -431,3 +420,44 @@ export const CircleHalfIcon = memo(({ size = 18, color, ...svgProps }: IconProps
     </Svg>
   )
 })
+
+export function EnvelopeIcon({
+  size = 26,
+  color = 'currentColor',
+  ...svgProps
+}: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 256 256" fill="none" {...svgProps}>
+      <Path
+        d="M224,44H32A12,12,0,0,0,20,56V192a20,20,0,0,0,20,20H216a20,20,0,0,0,20-20V56A12,12,0,0,0,224,44Zm-96,83.72L62.85,68h130.3ZM92.79,128,44,172.72V83.28Zm17.76,16.28,9.34,8.57a12,12,0,0,0,16.22,0l9.34-8.57L193.15,188H62.85ZM163.21,128,212,83.28v89.44Z"
+        fill={color}
+      />
+    </Svg>
+  )
+}
+
+export function ChatCircleIcon({
+  size = 26,
+  color = 'currentColor',
+  ...svgProps
+}: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 256 256" fill="none" {...svgProps}>
+      <Path
+        d="M128,20A108,108,0,0,0,31.85,177.23L21,209.66A20,20,0,0,0,46.34,235l32.43-10.81A108,108,0,1,0,128,20Zm0,192a84,84,0,0,1-42.06-11.27,12,12,0,0,0-6-1.62,12.1,12.1,0,0,0-3.8.62l-29.79,9.93,9.93-29.79a12,12,0,0,0-1-9.81A84,84,0,1,1,128,212Z"
+        fill={color}
+      />
+    </Svg>
+  )
+}
+
+export function UserIcon({ size = 26, color = 'currentColor', ...svgProps }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 256 256" fill="none" {...svgProps}>
+      <Path
+        d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z"
+        fill={color}
+      />
+    </Svg>
+  )
+}

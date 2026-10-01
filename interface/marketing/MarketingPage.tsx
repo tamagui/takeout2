@@ -9,7 +9,7 @@ export function MarketingPage({ children }: { children: ReactNode }) {
   const { value } = useUserScheme()
   return (
     <Theme name={value === 'dark' ? 'dark_takeout' : 'light_takeout'}>
-      <YStack position="relative" minH="100vh" width="100%" bg="background">
+      <YStack position="relative" minH="100vh" width="100%" bg="color-1">
         <HomeBackground />
         <SiteHeader />
         <YStack

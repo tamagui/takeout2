@@ -1,1 +1,0 @@
-../../../docs/hot-updater.md

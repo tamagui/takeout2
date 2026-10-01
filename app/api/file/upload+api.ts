@@ -1,57 +1,84 @@
-// example upload endpoint - add auth before using in production:
-// import { ensureAuth } from '~/features/auth/server/ensureAuth'
-// await ensureAuth(req)
+import { S3mini } from 's3mini'
+import { authServer } from '~/auth/server/authServer'
+import { getZeroAuthData } from '~/auth/server/getZeroAuthData'
+import { server } from '~/env'
+import { randomId } from '~/helpers/randomId'
+import type { Endpoint } from 'one'
 
-import { randomId } from '@o/helpers'
+const FOLDER = 'uploads'
 
-import { s3Client } from '~/features/upload/s3client'
-import { defaultBucket, uploadToS3 } from '~/features/upload/upload'
+type R2Bucket = {
+  put: (
+    key: string,
+    value: Uint8Array | ArrayBuffer | string,
+    options?: { httpMetadata?: { contentType?: string } },
+  ) => Promise<unknown>
+}
 
-const folder = 'uploads'
+function cloudflareFilesBucket(): R2Bucket | undefined {
+  return (globalThis as { __soot_cf_r2_bucket?: R2Bucket }).__soot_cf_r2_bucket
+}
 
-export default async function handler(req: Request) {
-  if (req.method !== 'POST') {
-    return Response.json({ error: 'Method not allowed' }, { status: 405 })
+let _client: S3mini | null = null
+function s3() {
+  if (_client) return _client
+  // s3mini folds the bucket into the endpoint url (path-style for R2)
+  _client = new S3mini({
+    endpoint: `${server.CLOUDFLARE_R2_ENDPOINT}/${server.CLOUDFLARE_R2_BUCKET}`,
+    region: 'auto',
+    accessKeyId: server.CLOUDFLARE_R2_ACCESS_KEY,
+    secretAccessKey: server.CLOUDFLARE_R2_SECRET_KEY,
+  })
+  return _client
+}
+
+async function putUploadObject(
+  key: string,
+  bytes: Uint8Array,
+  contentType?: string,
+): Promise<void> {
+  const r2 = cloudflareFilesBucket()
+  if (r2) {
+    await r2.put(key, bytes, contentType ? { httpMetadata: { contentType } } : undefined)
+    return
   }
 
-  const formData = (await req.formData()) as unknown as FormData // not sure why this regressed
+  // putAnyObject buffers a single PUT and auto-promotes to multipart for
+  // large files — the equivalent of the old @aws-sdk lib-storage Upload.
+  const res = await s3().putAnyObject(key, bytes, contentType)
+  if (!res.ok) {
+    throw new Error(`s3 put failed: ${res.status}`)
+  }
+}
+
+export const POST: Endpoint = async (req) => {
+  // require an authenticated user for uploads
+  const auth = await getZeroAuthData(authServer, req)
+  if (!auth?.id || auth.id === 'anon') {
+    return Response.json({ error: 'not authenticated' }, { status: 401 })
+  }
+
+  const formData = (await req.formData()) as unknown as FormData
   const file = formData.get('file')
   if (!file || !(file instanceof File)) {
-    return Response.json({ error: 'Failed to parse the form' }, { status: 500 })
+    return Response.json({ error: 'no file' }, { status: 400 })
   }
 
-  // console.info(`[Upload API] File received: ${file.name}, type: ${file.type}, size: ${file.size}`)
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+  const key = `${FOLDER}/${randomId()}-${safeName}`
+
+  const bytes = new Uint8Array(await file.arrayBuffer())
+  const contentType = file.type || undefined
 
   try {
-    const key = `${folder}/${randomId()}-${file.name}`
+    await putUploadObject(key, bytes, contentType)
 
-    // for images, read into buffer first
-    if (file.type.startsWith('image/')) {
-      const arrayBuffer = await file.arrayBuffer()
-      const imageBytes = new Uint8Array(arrayBuffer)
-
-      const result = await uploadToS3(s3Client, {
-        bucket: defaultBucket,
-        key,
-        body: imageBytes,
-        contentType: file.type,
-      })
-
-      return Response.json({ message: 'File uploaded successfully', ...result })
-    }
-
-    // non-image files - upload directly
-    const result = await uploadToS3(s3Client, {
-      bucket: defaultBucket,
-      key,
-      body: file.stream(),
-      contentType: file.type,
-    })
-
-    return Response.json({ message: 'File uploaded successfully', ...result })
-  } catch (error) {
+    const url = `${server.CLOUDFLARE_R2_PUBLIC_URL}/${key}`
+    return Response.json({ ok: true, key, url })
+  } catch (err) {
+    console.error('[upload] failed', err)
     return Response.json(
-      { error: 'Failed to upload file', details: `${error}` },
+      { error: 'upload failed', details: String(err) },
       { status: 500 },
     )
   }

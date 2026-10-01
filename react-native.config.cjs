@@ -1,3 +1,1 @@
-module.exports = {
-  commands: [...require('vxrn/react-native-commands')],
-}
+module.exports = require('one/react-native-config')

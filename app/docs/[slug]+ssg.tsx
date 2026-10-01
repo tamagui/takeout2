@@ -1,69 +1,51 @@
-import { nbspLastWord } from '@o/helpers'
-import { getMDXComponent } from 'mdx-bundler/client'
+import { MDX } from 'contrast-mdx'
+import { compileMDX } from 'contrast-mdx/build'
 import { createRoute, useLoader } from 'one'
-import { useMemo } from 'react'
-import { H1, Paragraph } from 'tamagui'
-
+import { Paragraph, YStack } from 'tamagui'
+import { DocsLayout } from '~/features/docs/DocsLayout'
+import { docsRoutes } from '~/features/docs/docsRoutes'
 import { components } from '~/features/docs/MDXComponents'
-import { HeadInfo } from '~/interface/app/HeadInfo'
+import { SiteShell } from '~/interface/site/SiteShell'
+import gettingStartedSource from '../../docs/getting-started.mdx?raw'
+import introSource from '../../docs/intro.mdx?raw'
 
-export const sitemap = {
-  priority: 0.8,
-  changefreq: 'weekly',
+const route = createRoute<'/docs/[slug]'>()
+const docs: Record<string, string> = {
+  intro: introSource,
+  'getting-started': gettingStartedSource,
 }
 
-const route = createRoute<'/(site)/docs/[slug]'>()
-
 export async function generateStaticParams() {
-  const { getAllFrontmatter } = await import('@vxrn/mdx')
-  const frontmatters = getAllFrontmatter('src/features/site/docs')
-  return frontmatters.map(({ slug }) => ({
-    slug: slug.replace(/.*docs\//, ''),
-  }))
+  return docsRoutes.map((entry) => ({ slug: entry.slug }))
 }
 
 export const loader = route.createLoader(async ({ params }) => {
-  const { getMDXBySlug } = await import('@vxrn/mdx')
-  const { frontmatter, code } = await getMDXBySlug('src/features/site/docs', params.slug)
+  const slug = params.slug ?? 'intro'
+  const source = docs[slug]
   return {
-    frontmatter,
-    code,
+    slug,
+    mdx: source ? await compileMDX(source) : null,
   }
 })
 
-export function DocsSlugPage() {
-  const { code, frontmatter } = useLoader(loader)
-  const Component = useMemo(() => getMDXComponent(code), [code])
-
-  const ogImageUrl = `${process.env.ONE_SERVER_URL}/api/og?type=blog&title=${encodeURIComponent(frontmatter.title || '')}`
+export default function DocsSlugPage() {
+  const data = useLoader(loader)
+  const slug = data?.slug ?? 'intro'
+  const title = docsRoutes.find((entry) => entry.slug === slug)?.title ?? slug
 
   return (
-    <>
-      <HeadInfo
-        title={frontmatter.title}
-        description={frontmatter.description}
-        openGraph={{
-          images: [{ url: ogImageUrl, width: 1200, height: 630 }],
-        }}
-      />
-
-      <H1
-        mb="$2"
-        mt="$2"
-        $platform-web={{
-          textWrap: 'balance',
-        }}
-      >
-        {nbspLastWord(frontmatter.title)}
-      </H1>
-
-      {!!frontmatter.description && (
-        <Paragraph size="$7" color="$color8" mb="$3">
-          {nbspLastWord(frontmatter.description || '')}
-        </Paragraph>
-      )}
-
-      <Component components={components} />
-    </>
+    <SiteShell>
+      <DocsLayout slug={slug} title={title}>
+        {data?.mdx ? (
+          <MDX hast={data.mdx.hast} components={components} />
+        ) : (
+          <YStack py="8">
+            <Paragraph color={`${data ? 'red-900' : 'color-9'}`}>
+              {data ? `Document not found: ${slug}` : 'Loading…'}
+            </Paragraph>
+          </YStack>
+        )}
+      </DocsLayout>
+    </SiteShell>
   )
 }

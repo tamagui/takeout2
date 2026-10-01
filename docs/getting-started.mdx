@@ -1,0 +1,50 @@
+---
+title: Getting started
+description: Boot the dev stack, sign in as the demo user, and explore the feed.
+---
+
+# Getting started
+
+The fastest way to see this template running is the demo login on the
+homepage's `/auth/login` route. It seeds a user named **Demo User** and
+drops you straight into the signed-in home route.
+
+## Running locally
+
+```bash
+bun install
+bun dev
+```
+
+`bun dev` boots the One.js dev server with one native SQLite application
+database and native Orez/Zero sync. PORT_OFFSET lets you run multiple instances
+at once:
+
+```bash
+PORT_OFFSET=10 bun dev
+```
+
+## Editing data
+
+Schema lives in `database/schema.ts`. Edit a table, then re-generate the
+Zero schema and Drizzle migrations:
+
+```bash
+bun generate
+bun generate:migrations
+```
+
+Posts and comments are read through `data/<name>/queries.ts` and written via
+`data/<name>/mutations.ts`. Zero handles optimistic updates and rebases — you
+write the mutation function once and it runs on the client and server.
+
+## Where to go next
+
+Most product work happens in three places:
+
+- **`app/home/`** — authenticated routes (the tab screens and settings)
+- **`features/`** — feature modules grouped by concern
+- **`interface/`** — shared UI primitives
+
+The public marketing surfaces (the splash + this docs page) live under
+`app/index+ssg.tsx`, `app/docs/`, and `interface/site/`.

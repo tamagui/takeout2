@@ -1,60 +1,70 @@
-import './root.css'
+import { AppAnalyticsProvider } from 'contrast-better-auth/analytics/react'
+import { ContrastProvider } from 'contrast-ui/provider/ContrastProvider'
+import { Slot, Stack } from 'one'
+import { isWeb, useTheme } from 'tamagui'
+import { APP_NAME } from '~/constants'
+import { appAnalytics } from '~/features/analytics/appAnalytics'
+import { LINK_UNDERLINE_RESET, SAFE_AREA_VARS } from '~/interface/webRootCss'
+import { config } from '~/tamagui/tamagui.config'
 
-import { LoadProgressBar, Slot, Stack } from 'one'
-import { SafeAreaProvider } from 'react-native-safe-area-context'
+const webRootCss = `${SAFE_AREA_VARS}
+${LINK_UNDERLINE_RESET}`
 
-import { SiteRootLayout } from '~/features/site/ui/SiteRootLayout'
-import { HomeBackground } from '~/interface/landing/HomeBackground'
-import { PlatformSpecificRootProvider } from '~/interface/platform/PlatformSpecificRootProvider'
-import { GlobalTooltipProvider } from '~/interface/tooltip/Tooltip'
-import { TamaguiRootProvider } from '~/tamagui/TamaguiRootProvider'
-
-export function Layout() {
-  // One lets you use html like this only in your root layout, and strips
-  // it out on native. it's an odd exception but we just found it useful
+function AppRoutes() {
+  // no Configuration disableSSR: these examples are SSG, and disableSSR puts
+  // tamagui in client-only mode, which skips server-side atomic-style
+  // extraction — the first paint ships until hydration.
+  const theme = useTheme()
+  if (isWeb) return <Slot />
   return (
-    <html lang="en-US">
-      <head>
-        <meta charSet="utf-8" />
-        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=5.0"
-        />
-        <link rel="icon" href="/favicon.png" />
-      </head>
-
-      <body>
-        <div style={{ display: 'contents' }} data-testid="app-container">
-          <PlatformSpecificRootProvider>
-            <TamaguiRootProvider>
-              <GlobalTooltipProvider>
-                <SafeAreaProvider>
-                  {process.env.VITE_NATIVE ? (
-                    <Stack
-                      screenOptions={{
-                        headerShown: false,
-                        animation: 'none',
-                      }}
-                    >
-                      <Stack.Screen name="(app)" />
-                    </Stack>
-                  ) : (
-                    <>
-                      <LoadProgressBar startDelay={800} />
-                      <HomeBackground />
-                      <SiteRootLayout>
-                        <Slot />
-                      </SiteRootLayout>
-                    </>
-                  )}
-                </SafeAreaProvider>
-              </GlobalTooltipProvider>
-            </TamaguiRootProvider>
-          </PlatformSpecificRootProvider>
-        </div>
-      </body>
-    </html>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: theme.background?.val },
+      }}
+      // native starts at index; the native index resolves its session-aware
+      // target itself (signed-in to app home, signed-out to /auth/login), so
+      // the signed-out surface lives at its real route.
+      initialRouteName="index"
+    >
+      <Stack.Screen name="index" />
+      <Stack.Screen name="auth" />
+      <Stack.Screen name="home" />
+    </Stack>
   )
+}
+
+function AppShell() {
+  return (
+    <AppAnalyticsProvider client={appAnalytics}>
+      <ContrastProvider config={config}>
+        <AppRoutes />
+      </ContrastProvider>
+    </AppAnalyticsProvider>
+  )
+}
+
+export default function Layout() {
+  const contents = <AppShell />
+
+  if (isWeb) {
+    return (
+      <html lang="en-US">
+        <head>
+          <meta charSet="utf-8" />
+          <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+          />
+          <title>{APP_NAME}</title>
+          <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+          <style dangerouslySetInnerHTML={{ __html: webRootCss }} />
+        </head>
+        <body>{contents}</body>
+      </html>
+    )
+  }
+
+  return contents
 }

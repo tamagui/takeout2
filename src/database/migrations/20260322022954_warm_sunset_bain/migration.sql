@@ -1,1 +1,0 @@
-ALTER TABLE "invite" DROP CONSTRAINT "invite_code_unique";

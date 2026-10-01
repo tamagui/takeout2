@@ -1,0 +1,113 @@
+{
+  "name": "contrast-ui",
+  "version": "0.1.0",
+  "description": "Contrast UI — wired-up interaction patterns above Tamagui: one global overlay host for dialogs, sheets, popovers, and tooltips.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sootbean/soot.git",
+    "directory": "packages/contrast-ui"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "keywords": [
+    "contrast",
+    "tamagui",
+    "react-native",
+    "dialog",
+    "sheet",
+    "toast"
+  ],
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json",
+    "./animations/animationClamped": "./src/animations/animationClamped.ts",
+    "./animations/animationsRoot": {
+      "react-native": "./src/animations/animationsRoot.native.ts",
+      "default": "./src/animations/animationsRoot.ts"
+    },
+    "./dialog/DialogHost": "./src/dialog/DialogHost.tsx",
+    "./overlay": "./src/overlay/index.ts",
+    "./overlay/overlayOpenBus": "./src/overlay/overlayOpenBus.ts",
+    "./popover/Popover": "./src/popover/Popover.tsx",
+    "./sheet/Sheet": "./src/sheet/Sheet.tsx",
+    "./sheet/RouteSheet": "./src/sheet/RouteSheet.tsx",
+    "./sheet/routeSheetOptions": "./src/sheet/routeSheetOptions.ts",
+    "./tooltip/Tooltip": "./src/tooltip/Tooltip.tsx",
+    "./tooltip/closeOpenTooltips": "./src/tooltip/closeOpenTooltips.ts",
+    "./tooltip/tooltipBus": "./src/tooltip/tooltipBus.ts",
+    "./tooltip/tooltipHelpers": "./src/tooltip/tooltipHelpers.tsx",
+    "./dialog/Dialog": "./src/dialog/Dialog.tsx",
+    "./dialog/confirm": "./src/dialog/confirm.tsx",
+    "./toast/Toast": "./src/toast/Toast.tsx",
+    "./keyboard/escape": "./src/keyboard/escape.ts",
+    "./buttons/Button": "./src/buttons/Button.tsx",
+    "./glass/GlassView": "./src/glass/GlassView.tsx",
+    "./theme/useIsDarkTheme": "./src/theme/useIsDarkTheme.ts",
+    "./forms/Input": "./src/forms/Input.tsx",
+    "./forms/TextArea": "./src/forms/TextArea.tsx",
+    "./forms/DateField": "./src/forms/DateField.tsx",
+    "./select/Select": "./src/select/Select.tsx",
+    "./tabs/Tabs": "./src/tabs/Tabs.tsx",
+    "./tabs/MobileTabBar": "./src/tabs/MobileTabBar.tsx",
+    "./menu/Menu": "./src/menu/Menu.tsx",
+    "./icons/getIconSize": "./src/icons/getIconSize.ts",
+    "./icons/sfSymbol": "./src/icons/sfSymbol.tsx",
+    "./icons/types": "./src/icons/types.ts",
+    "./icons/useIconProps": "./src/icons/useIconProps.ts",
+    "./icons/phosphor/*": "./src/icons/phosphor/*.tsx",
+    "./forms/Form": "./src/forms/Form.tsx",
+    "./forms/FormSheetBody": "./src/forms/FormSheetBody.tsx",
+    "./forms/formContract": "./src/forms/formContract.ts",
+    "./display": "./src/display/index.ts",
+    "./lists/SwipeableRow": {
+      "react-native": "./src/lists/SwipeableRow.native.tsx",
+      "default": "./src/lists/SwipeableRow.tsx"
+    },
+    "./image/Image": {
+      "react-native": "./src/image/Image.native.tsx",
+      "default": "./src/image/Image.tsx"
+    },
+    "./lists/VirtualList": "./src/lists/VirtualList.tsx",
+    "./keyboard/KeyboardLayoutFrame": {
+      "react-native": "./src/keyboard/KeyboardLayoutFrame.native.tsx",
+      "default": "./src/keyboard/KeyboardLayoutFrame.tsx"
+    },
+    "./provider/ContrastProvider": "./src/provider/ContrastProvider.tsx",
+    "./platform/PlatformSpecificRootProvider": {
+      "react-native": "./src/platform/PlatformSpecificRootProvider.native.tsx",
+      "default": "./src/platform/PlatformSpecificRootProvider.tsx"
+    }
+  },
+  "dependencies": {
+    "@o/helpers": "0.16.19-canary.1790679335417",
+    "@tamagui/animations-css": "3.0.0-beta.1473.1",
+    "@tamagui/animations-reanimated": "3.0.0-beta.1473.1",
+    "@tamagui/config": "3.0.0-beta.1473.1",
+    "@tamagui/core": "3.0.0-beta.1473.1",
+    "@tamagui/menu": "3.0.0-beta.1473.1",
+    "@tamagui/toast": "3.0.0-beta.1473.1",
+    "@tamagui/use-window-dimensions": "3.0.0-beta.1473.1",
+    "sf-symbols-typescript": "2.2.0",
+    "tamagui": "3.0.0-beta.1473.1"
+  },
+  "peerDependencies": {
+    "one": "2.0.0-beta.145.1",
+    "react": "19.2.3",
+    "react-native-gesture-handler": "~3.3.0",
+    "react-native-keyboard-controller": "1.22.5",
+    "react-native-reanimated": "4.6.0",
+    "react-native-svg": "15.15.4",
+    "react-native-teleport": "^1.2.2",
+    "tamagui": "3.0.0-beta.1473.1"
+  }
+}

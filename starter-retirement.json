@@ -1,0 +1,157 @@
+{
+  "requireChanged": {
+    "path": "features/app/routes.ts",
+    "text": "export const APP_HOME_HREF = APP_FEED_HREF"
+  },
+  "files": [
+    {
+      "path": "app/home/(tabs)/feed/@sheet/(.)make/index.tsx",
+      "sha256": "707efa6c3cba2e68445e3d4a185a75482cdfc73c1aa8d20b5fa575633ddf459b"
+    },
+    {
+      "path": "app/home/(tabs)/feed/@sheet/default.tsx",
+      "sha256": "6fccb5f7c03439c1246484d8982649ec88deeedf0aae1560935ef860045bb216"
+    },
+    {
+      "path": "app/home/(tabs)/feed/_layout.native.tsx",
+      "sha256": "6e2b1f824d8a459bc949a0baa4ecac1e42164f3b948348e659893d38554fe0c2"
+    },
+    {
+      "path": "app/home/(tabs)/feed/_layout.tsx",
+      "sha256": "dfbc1aabb2e8d63de69b7c1887d7aac85350b92cf1decaca5b8c4eca661e65f4"
+    },
+    {
+      "path": "app/home/(tabs)/feed/index.tsx",
+      "sha256": "75cabc50d87d38dfec7d8323f35b18c7bb9a6690fc47abbfaa43ea219d4fb0c0"
+    },
+    {
+      "path": "app/home/(tabs)/feed/make.native.tsx",
+      "sha256": "9764d76db89ec5de919ad719fdd85ed2dbca93ae67db35b28ea7134b0b6a6cb3"
+    },
+    {
+      "path": "app/home/(tabs)/feed/make.tsx",
+      "sha256": "54dee62f7998a0f1c6c1f2c35a6b9d522d35818e952a92ae9a37aaa8794eec93"
+    },
+    {
+      "path": "app/home/(tabs)/feed/post/[postId].tsx",
+      "sha256": "c4e8ef0caaa23be644448a6bbbee310c087cb3f72e319cf231f2b9c36f0f7d21"
+    },
+    {
+      "path": "app/home/(tabs)/profile/_layout.tsx",
+      "sha256": "8b9cd2143212fba15de1c232ec6a1acd66a7bd4a55776f01931f68e7a5defd90"
+    },
+    {
+      "path": "app/home/(tabs)/profile/_layout.native.tsx",
+      "sha256": "10309f274ef380a9b7af7c5d2e261b6874da778694aec275ee2bfa082f2a4984"
+    },
+    {
+      "path": "app/home/(tabs)/profile/index.tsx",
+      "sha256": "04300deee75ac90f77ebb93e247bf570bb483a2cbccc9c38fdbae26cd4e71222"
+    },
+    {
+      "path": "features/patterns/patternEntries.ts",
+      "sha256": "e4b5f3fe12ba3f040b5350549f77a1db13d4aa6f95ebdfef3a9f633aa4ca4e2a"
+    },
+    {
+      "path": "interface/dialogs/shared.tsx",
+      "sha256": "f9a64ba5eec630b42df84bf7de37a0992e081bb1a8840fc2620777ba78eecec3"
+    },
+    {
+      "path": "interface/dialogs/types.ts",
+      "sha256": "6353a67b7616a7f41a301e367f2f392d7a672e62eeef47add0e172991ea0914e"
+    },
+    {
+      "path": "interface/feed/CommentSection.tsx",
+      "sha256": "a773c12cd3b080d849229b0c738730ccb61de6ff9809cc6efc65a6e08778f991"
+    },
+    {
+      "path": "interface/feed/CreatePostDialog.tsx",
+      "sha256": "00f68c530e8ada1ad4ba86835c18930091770b480dfdd1223398f17ae9663e29"
+    },
+    {
+      "path": "interface/feed/PostCard.tsx",
+      "sha256": "276af79c40853de5adfe11f940efb4299296498c01b1b1c526a966fb2e7f702b"
+    },
+    {
+      "path": "interface/patterns/PatternEntryForm.tsx",
+      "sha256": "f7eeac8ec84421f0b04b53a7ff7a7980f625188818fd93f680dead5e52c30c99"
+    }
+  ],
+  "imports": [
+    {
+      "path": "features/app/tabs.ts",
+      "from": "./routes",
+      "names": [
+        "APP_FEED_HREF",
+        "APP_FEED_ROUTE_NAME",
+        "APP_PROFILE_HREF",
+        "APP_PROFILE_ROUTE_NAME"
+      ]
+    },
+    {
+      "path": "features/notifications/destinations.ts",
+      "from": "~/features/app/routes",
+      "names": [
+        "APP_PROFILE_HREF",
+        "postDetailHref"
+      ]
+    }
+  ],
+  "replacements": [
+    {
+      "path": "features/app/routes.ts",
+      "old": "export const APP_FEED_ROUTE_NAME = 'feed'\n",
+      "new": ""
+    },
+    {
+      "path": "features/app/routes.ts",
+      "old": "export const APP_PROFILE_ROUTE_NAME = 'profile'\n",
+      "new": ""
+    },
+    {
+      "path": "features/app/routes.ts",
+      "old": "export const APP_FEED_HREF = '/home/feed' satisfies Href\n",
+      "new": ""
+    },
+    {
+      "path": "features/app/routes.ts",
+      "old": "export const APP_PROFILE_HREF = '/home/profile' satisfies Href\n",
+      "new": ""
+    },
+    {
+      "path": "features/app/routes.ts",
+      "old": "// the feed's create/edit entry: one dialog on web, the system form sheet on\n// native, the same file under soft and hard navigation alike.\nexport const APP_FEED_MAKE_HREF = '/home/feed/make' satisfies Href\n",
+      "new": ""
+    },
+    {
+      "path": "features/app/routes.ts",
+      "old": "export function postDetailHref<T extends string>(postId: T) {\n  return `/home/feed/post/${postId}` satisfies Href\n}\n",
+      "new": ""
+    },
+    {
+      "path": "features/app/routes.ts",
+      "old": "// the post-login landing, declared after every href it can alias: a constant\n// read before its declaration throws when the module loads. the feed's own\n// chrome (its tab and create actions) targets APP_FEED_HREF, so pointing the\n// landing at another screen moves only the landing.\n",
+      "new": ""
+    },
+    {
+      "path": "features/app/tabs.ts",
+      "old": "  {\n    name: APP_FEED_ROUTE_NAME,\n    label: 'Feed',\n    href: APP_FEED_HREF,\n    icon: Home,\n    sfSymbol: 'newspaper',\n    sfSymbolFocused: 'newspaper.fill',\n    materialSymbol: 'newspaper',\n  },\n",
+      "new": ""
+    },
+    {
+      "path": "features/app/tabs.ts",
+      "old": "  {\n    name: APP_PROFILE_ROUTE_NAME,\n    label: 'Profile',\n    href: APP_PROFILE_HREF,\n    icon: User,\n    sfSymbol: 'person.crop.circle',\n    sfSymbolFocused: 'person.crop.circle.fill',\n    materialSymbol: 'person',\n  },\n",
+      "new": ""
+    },
+    {
+      "path": "features/notifications/destinations.ts",
+      "old": "    case 'post':\n      return postDetailHref(destination.id)\n",
+      "new": "    case 'post':\n      return null\n"
+    },
+    {
+      "path": "features/notifications/destinations.ts",
+      "old": "    case 'profile':\n      return APP_PROFILE_HREF\n",
+      "new": "    case 'profile':\n      return null\n"
+    }
+  ]
+}

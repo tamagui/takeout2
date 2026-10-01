@@ -1,23 +1,20 @@
-import { getAuthDataFromRequest } from '@o/better-auth-utils/server'
-
-import { authServer } from '~/features/auth/server/authServer'
-import { zeroBindings } from '~/zero/server'
-
+import { authServer } from '~/auth/server/authServer'
+import { getZeroAuthData } from '~/auth/server/getZeroAuthData'
+import { zeroBindings } from '~/data/zero-server'
 import type { Endpoint } from 'one'
-
-// this sets up the synced queries endpoint
-// see: https://zero.rocicorp.dev/docs/synced-queries
 
 export const POST: Endpoint = async (request) => {
   try {
-    const authData = await getAuthDataFromRequest(authServer, request)
+    const authData = await getZeroAuthData(authServer, request)
+
     const response = await zeroBindings.transformQueryRequest({
       authData,
       request,
     })
-    return Response.json(response)
+    const body = Array.isArray(response) ? { queries: response } : response
+    return Response.json({ queryTransformVersion: 0, ...body })
   } catch (err) {
-    console.error(`[zero] pull+api error`, err)
-    return Response.json({ err }, { status: 500 })
+    console.error('[zero:pull] error', err)
+    return new Response('internal error', { status: 500 })
   }
 }

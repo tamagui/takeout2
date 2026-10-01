@@ -1,9 +1,0 @@
-appId: dev.tamagui.takeout.dev
-tags:
-  - util
----
-- launchApp
-# wait for either login page or feed (if already logged in)
-- extendedWaitUntil:
-    visible: 'Login as Demo User|Takeout'
-    timeout: 90000

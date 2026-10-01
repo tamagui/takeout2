@@ -1,4 +1,0 @@
-flows:
-  - 'flows/*'
-excludeTags:
-  - util

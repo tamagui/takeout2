@@ -1,1 +1,0 @@
-../../../docs/react-native-navigation-flow.md

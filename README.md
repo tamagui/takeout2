@@ -1,6 +1,6 @@
 # Takeout
 
-Takeout is free and open source. It keeps its original marketing website and uses
+Takeout is a free starter prepared for future open-source publication. It keeps its original marketing website and uses
 Contrast’s app template
 for the app underneath: a social feed with
 email and password login, posts, comments, profiles, and account settings on web
@@ -52,10 +52,10 @@ contrast deploy --slug takeout-example
 ```
 
 Run those commands from a clean clone. [docs/publishing.md](./docs/publishing.md)
-records the production boundary and source publication decision.
+records the private publication hold and production boundary.
 Production deployments apply the schema without development seed data. The
-isolated [live example](https://takeout-example-r51063.contrast.run) is initialized
-separately with the six-post fixture.
+isolated QA example was initialized with the six-post fixture, tested, and then
+withdrawn from public access.
 The branch CI checks types and produces a build artifact; it does not deploy.
 
 ## Source and license
@@ -67,4 +67,5 @@ private Contrast engine packages are not copied here.
 
 Takeout source is available under the [MIT License](./LICENSE). Third-party
 dependencies retain their own licenses. There is no paid tier or Help & Support
-service. Public repository publication remains pending.
+service. The existing repository stays private until the owner is ready to
+open-source it. Public demo access is disabled.

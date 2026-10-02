@@ -18,18 +18,21 @@ whitelist records beyond this template’s feed, comments, profiles, notificatio
 and Better Auth records. Those product features are absent from this example.
 No old rows or infrastructure have been changed.
 
-The draft is free and open source under MIT, with no paid tier or Help & Support
-service, following Nate’s direction. Existing production remains unchanged.
+The draft is prepared for free open-source use under MIT, with no paid tier or
+Help & Support service, following Nate’s direction. Existing production remains unchanged.
 
 ## Source publication
 
-The free MIT scope and preserved artwork are approved. The example runs at
-`https://takeout-example-r51063.contrast.run`, on its own database and bindings.
-The public source destination remains undecided. Both existing Takeout
-repositories are private, and the earlier main-push restriction remains.
-Publishing a clean source snapshot in a new public repository would preserve
-that boundary. Changing an existing repository's visibility or main requires
-the owner's explicit direction.
+The free MIT scope and preserved artwork are approved. Nate requires this
+version to remain private until he is ready, using the existing private Takeout
+repository for its eventual open-source publication. No new public repository
+was created, and both existing Takeout repositories remain private.
+
+The isolated example at `https://takeout-example-r51063.contrast.run` was tested
+and then withdrawn. Its Cloudflare dynamic route is suspended. The homepage,
+login, auth API, static assets, and direct worker URL return 404. Its source and
+stored data are preserved. Do not deploy or re-enable it until Nate explicitly
+permits publication. The earlier Takeout main-push restriction remains.
 
 Replacing `takeout.tamagui.dev` requires a separately reviewed migration
 preserving accounts, posts, comments, uploads, relationships, and timestamp units.
@@ -41,7 +44,8 @@ Takeout scheme and bundle variants; production signing remains owner-controlled.
 
 ## Example deployment
 
-From a clean clone, sign into Contrast, create a new `app` project with
+After the owner explicitly permits publication, sign into Contrast from a clean
+clone and create a new `app` project with
 `contrast link --create --name takeout-example --template app`, and deploy it
 using an unused slug. Do not link this branch to an existing production project.
 The deployment pipeline owns the Cloudflare worker, SQL Durable Object, Rust
@@ -59,8 +63,8 @@ contains four public profiles, six posts, and three initial comments.
 `DEMO_READ_ONLY` is absent so comment persistence can be verified. The reset
 endpoint returns 404 without its token; credentials are never committed.
 
-The deployed desktop and phone flows pass demo login, the six-post feed,
-post details, profile/settings, and signed-out protection. A new comment survives
+Before withdrawal, deployed desktop and phone checks passed demo login, the six-post feed,
+post details, profile/settings, and signed-out protection. A new comment survived
 reload. Exact functional source `d2d758a6` passes a frozen Linux install,
 typecheck, Cloudflare build, and bundle secret scan. Final authored social-card
-verification awaits delivery of the hosting metadata fix.
+verification is held with public deployment until the owner is ready.

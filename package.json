@@ -76,6 +76,12 @@
     "zero": "tko zero"
   },
   "overrides": {
+    "@react-navigation/bottom-tabs": "8.0.0-alpha.50",
+    "@react-navigation/core": "8.0.0-alpha.34",
+    "@react-navigation/elements": "3.0.0-alpha.48",
+    "@react-navigation/native": "8.0.0-alpha.44",
+    "@react-navigation/native-stack": "8.0.0-alpha.52",
+    "@react-navigation/routers": "8.0.0-alpha.17",
     "rolldown": "^1.2.4",
     "@expo/fingerprint": "0.20.6",
     "sharp": "npm:@tamagui/proxy-worm@1.123.14",

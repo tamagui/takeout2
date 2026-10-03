@@ -48,10 +48,8 @@ export const Shimmer = memo(() => {
           <YStack
             key="shimmer"
             transition={animationClamped('medium')}
+            opacity="1 enter:0 exit:0"
             data-is-shimmer
-            opacity={1}
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
           >
             <ShimmerInner />
           </YStack>
@@ -60,12 +58,11 @@ export const Shimmer = memo(() => {
         {disableShimmer && (
           <YStack
             key="fallback"
-            fullscreen
+            position="absolute"
+            inset={0}
             transition={animationClamped('medium')}
-            bg="$color3"
-            opacity={0.8}
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
+            bg="color3"
+            opacity="0.8 enter:0 exit:0"
           />
         )}
       </AnimatePresence>

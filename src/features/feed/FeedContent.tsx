@@ -28,17 +28,13 @@ export const FeedContent = memo(() => {
           ],
         }}
       />
+
       <AnimatePresence>
         {isLoading && (
           <YStack
             key="home-shimmer"
             transition="medium"
-            enterStyle={{
-              opacity: 0,
-            }}
-            exitStyle={{
-              opacity: 0,
-            }}
+            opacity="enter:0 exit:0"
             z={999}
             position="absolute"
             t={60}
@@ -55,23 +51,18 @@ export const FeedContent = memo(() => {
 
       <YStack
         transition="medium"
-        enterStyle={{
-          opacity: 0,
-        }}
-        exitStyle={{
-          opacity: 0,
-        }}
+        opacity="enter:0 exit:0"
         position="relative"
         flex={1}
         flexBasis="auto"
-        bg="$background"
+        bg="background"
         width="100vw"
         ml="50%"
         transform="translateX(-50%)"
       >
-        <YStack pb="$10" gap="$4" mx="auto" px="$4" width="100%" $xl={{ maxW: 760 }}>
+        <YStack pb="10" gap="4" mx="auto" px="4" width="100%" maxW="xl:760px">
           {!isLoading && posts.length === 0 ? (
-            <YStack p="$4" items="center" justify="center" mt="$4">
+            <YStack p="4" items="center" justify="center" mt="4">
               <H5 select="none">No posts yet</H5>
             </YStack>
           ) : (

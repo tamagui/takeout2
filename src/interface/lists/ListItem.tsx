@@ -60,7 +60,7 @@ const ListItemComponent = ({
 
 const ListItemAfter = ({ children }: { children: React.ReactNode }) => {
   return (
-    <XStack items="center" height="100%" ml="auto" gap="$1">
+    <XStack items="center" height="100%" ml="auto" gap="1">
       {children}
     </XStack>
   )
@@ -75,7 +75,7 @@ const ListItemLoading = () => {
 }
 
 const ListItemPad = styled(View, {
-  p: '$2',
+  p: '2',
 })
 
 export const ListItem = withStaticProperties(ListItemComponent, {

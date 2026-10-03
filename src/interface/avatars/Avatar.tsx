@@ -98,9 +98,9 @@ export const Avatar = memo(
             position="absolute"
             b={-1.1 * scale + (isBig ? 4.5 : 0)}
             r={-1.1 * scale + (isBig ? 4.5 : 0)}
-            size={7 * scale}
             opacity={1}
-            bg={isOnline ? '$green10' : '$color4'}
+            bg={isOnline ? 'green10' : 'color4'}
+            size={7 * scale}
           />
         ) : null}
       </YStack>
@@ -110,34 +110,21 @@ export const Avatar = memo(
 
 const SelectableCircle = styled(Circle, {
   select: 'none',
-  bg: '$background02',
-
+  bg: 'background02',
   variants: {
     active: {
       true: {
-        outlineColor: '#fff',
+        outlineColor: '#fff press:#ccc',
         outlineWidth: 2,
         outlineStyle: 'solid',
-
-        pressStyle: {
-          outlineColor: '#ccc',
-        },
       },
     },
 
     pressable: {
       true: {
-        hoverStyle: {
-          outlineColor: '$color5',
-          outlineWidth: 2,
-          outlineStyle: 'solid',
-        },
-
-        pressStyle: {
-          outlineColor: '#fff',
-          outlineWidth: 2,
-          outlineStyle: 'solid',
-        },
+        outlineColor: 'hover:color5 press:#fff',
+        outlineWidth: 'hover:2px press:2px',
+        outlineStyle: 'hover:solid press:solid',
       },
     },
   } as const,

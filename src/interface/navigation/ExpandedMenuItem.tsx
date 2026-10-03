@@ -31,8 +31,8 @@ interface ExpandedMenuItemProps {
 const MenuPressable = styled(Pressable, {
   flexDirection: 'row',
   items: 'center',
-  py: '$3',
-  px: '$4',
+  py: '3',
+  px: '4',
   rounded: 99,
   position: 'relative',
 })
@@ -108,14 +108,14 @@ export const ExpandedMenuItem = memo(
             ]}
           />
 
-          <View width={28} height={28} items="center" justify="center" mr="$3">
-            <Icon size={20} color={isSelected ? '$color12' : '$color10'} />
+          <View width={28} height={28} items="center" justify="center" mr="3">
+            <Icon size={20} color={isSelected ? 'color12' : 'color10'} />
           </View>
 
           <SizableText
-            size="$3"
+            size="3"
             flex={1}
-            color={isSelected ? '$color12' : '$color10'}
+            color={isSelected ? 'color12' : 'color10'}
             fontWeight={isSelected ? 'bold' : '600'}
           >
             {item.label}

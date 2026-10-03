@@ -23,7 +23,7 @@ export const PopoverMenu = ({
   snapPoints = [30],
 }: PopoverMenuProps) => {
   return (
-    <Popover name={name} size="$5" placement={placement}>
+    <Popover name={name} placement={placement}>
       <Popover.Trigger>{trigger}</Popover.Trigger>
 
       <Adapt when="max-md" platform="touch">
@@ -35,14 +35,12 @@ export const PopoverMenu = ({
           snapPointsMode="percent"
         >
           <Sheet.Overlay
-            bg="$background"
-            opacity={0.5}
+            bg="background"
+            opacity="0.5 enter:0 exit:0"
             transition="quick"
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
           />
           <Sheet.Handle />
-          <YStack p="$4">
+          <YStack p="4">
             <Adapt.Contents />
           </YStack>
         </Sheet>

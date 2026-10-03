@@ -3,7 +3,7 @@ import type { TransitionKeys, TransitionProp } from 'tamagui'
 // you almost never want opacity or background color to "bounce past" the ends
 // when doing spring animations, so this is a nice helper
 
-const springToTime: Partial<Record<TransitionKeys, TransitionKeys>> = {
+const springToTime: Partial<Record<TransitionKeys, TransitionProp>> = {
   quickLessBouncy: '300ms',
   quick: '200ms',
   quicker: '100ms',
@@ -21,13 +21,7 @@ const springToTime: Partial<Record<TransitionKeys, TransitionKeys>> = {
 
 export const animationClamped = (
   animation: TransitionKeys,
-  opacitySpeed: TransitionKeys = springToTime[animation] || '75ms',
-): TransitionProp => {
-  return [
-    animation,
-    {
-      opacity: opacitySpeed,
-      backgroundColor: opacitySpeed,
-    },
-  ]
+  opacitySpeed: TransitionProp = springToTime[animation] || '75ms',
+) => {
+  return { preset: animation, opacity: opacitySpeed, backgroundColor: opacitySpeed }
 }

@@ -25,20 +25,13 @@ export const GradientBackground = ({
   const { width, height } = useWindowDimensions()
   const offset = bottomOffset || inset.top + 60
 
-  const lightColors = ['$color1', '$color2', '$color4', '$color5']
-  const darkColors = ['$color1', '$color3', '$color2', '$color1']
+  const lightColors = ['color1', 'color2', 'color4', 'color5']
+  const darkColors = ['color1', 'color3', 'color2', 'color1']
 
   if (useImage) {
     return (
       <>
-        <View
-          flex={1}
-          pb={useInsets ? inset.bottom : 0}
-          $platform-android={{
-            // TODO: check this on One Stack Header
-            pt: offset,
-          }}
-        >
+        <View flex={1} pb={useInsets ? inset.bottom : 0} pt={`android:${offset}px`}>
           {/* Content */}
           {children}
         </View>
@@ -54,20 +47,14 @@ export const GradientBackground = ({
           ]}
           resizeMode="cover"
         />
+
         <GradientBlurView width={width} height={height / 1.5} />
       </>
     )
   }
 
   return (
-    <View
-      flex={1}
-      pb={useInsets ? inset.bottom : 0}
-      $platform-android={{
-        // TODO: check this on One Stack Header
-        pt: offset,
-      }}
-    >
+    <View flex={1} pb={useInsets ? inset.bottom : 0} pt={`android:${offset}px`}>
       {/* Base gradient - using theme colors */}
       <LinearGradient
         colors={isDark ? darkColors : lightColors}

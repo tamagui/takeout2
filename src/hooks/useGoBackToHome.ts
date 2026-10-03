@@ -19,8 +19,12 @@ export function useGoBackToHome() {
       }
 
       let rootNavigation = navigation
-      while (rootNavigation.getParent()) {
-        rootNavigation = rootNavigation.getParent()
+      for (
+        let parent = rootNavigation.getParent();
+        parent;
+        parent = rootNavigation.getParent()
+      ) {
+        rootNavigation = parent
       }
       const oldState = rootNavigation.getState()
       if (oldState.index === 1 && oldState.routes[0]?.name === ROOT_MAIN_ROUTE_NAME) {

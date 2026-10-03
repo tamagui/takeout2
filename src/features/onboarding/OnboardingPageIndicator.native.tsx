@@ -19,7 +19,7 @@ export function OnboardingPageIndicator({
   if (!scrollPosition) return null
 
   return (
-    <XStack gap={8} justify="center" items="center" py="$3">
+    <XStack gap={8} justify="center" items="center" py="3">
       {Array.from({ length: totalPages }).map((_, idx) => (
         <IndicatorDot
           key={idx}

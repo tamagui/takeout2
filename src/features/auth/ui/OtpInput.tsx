@@ -124,7 +124,7 @@ export const OtpInput = memo(function OtpInput({
   }, [onCodeChanged, onCodeFilled, codeString, isFilled])
 
   return (
-    <YStack gap="$3">
+    <YStack gap="3">
       <XStack gap={8}>
         {Array(otpCount)
           .fill(null)
@@ -138,18 +138,19 @@ export const OtpInput = memo(function OtpInput({
                   width={inputWidth}
                   height={inputWidth}
                   rounded={12}
+                  fontSize="5"
+                  {...(inputProps as any)}
                   type="number"
                   ref={(ref) => {
                     if (ref) inputRef.current[i] = ref
                   }}
-                  fontSize="$5"
                   value={otpValue[i]}
                   onChange={(e) => onFocusNext((e.target as HTMLInputElement).value, i)}
                   onKeyDown={(e) => onFocusPrevious(e.nativeEvent.key, i)}
                   autoComplete="one-time-code"
                   autoFocus={autoFocus && i === 0}
-                  {...(inputProps as any)}
                 />
+
                 <View
                   position="absolute"
                   inset={0}
@@ -157,9 +158,9 @@ export const OtpInput = memo(function OtpInput({
                   justify="center"
                   width={inputWidth}
                   height={inputWidth}
-                  bg="$color2"
+                  bg="color2"
                   borderWidth={1}
-                  borderColor="$color4"
+                  borderColor="color4"
                   rounded={12}
                   pointerEvents="none"
                 >
@@ -185,7 +186,7 @@ export const OtpInput = memo(function OtpInput({
           disabled: true,
         })}
       >
-        <Button.Text color="$color9">Paste code</Button.Text>
+        <Button.Text color="color9">Paste code</Button.Text>
       </Button>
     </YStack>
   )

@@ -94,15 +94,10 @@ export const ListItemText = forwardRef<TamaguiElement, ListItemTextProps>(
 
 export const ListItemTextFrame = styled(Text, {
   context: ListItemContext,
-  color: '$color11',
-  fontFamily: '$body',
+  color: 'color11 group-hover/item:color12',
+  fontFamily: 'body',
   cursor: 'default',
   select: 'none',
-
-  '$group-item-hover': {
-    color: '$color12',
-  },
-
   variants: {
     variant: {
       sidebar: {
@@ -112,35 +107,34 @@ export const ListItemTextFrame = styled(Text, {
 
     size: {
       small: {
-        fontSize: '$3',
-        lineHeight: '$3',
+        fontSize: '3',
+        lineHeight: '3',
       },
 
       medium: {
-        fontSize: '$4',
-        lineHeight: '$4',
+        fontSize: '4',
+        lineHeight: '4',
       },
 
       large: {
-        fontSize: '$5',
-        lineHeight: '$5',
+        fontSize: '5',
+        lineHeight: '5',
       },
     },
 
     active: {
       true: {
-        color: '$color12',
+        color: 'color12',
       },
     },
 
     bold: {
       true: {
         fontWeight: '900',
-        color: '$color12',
+        color: 'color12',
       },
     },
   } as const,
-
   defaultVariants: {
     size: 'medium',
   },

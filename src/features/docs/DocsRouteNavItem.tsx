@@ -23,36 +23,26 @@ export const DocsRouteNavItem = function DocsRouteNavItem({
         data-nav-item
         className="docs-nav-item"
         items="center"
-        py="$1.5"
-        px="$2"
-        rounded="$3"
+        py="1-5"
+        px="2"
+        rounded="3"
         opacity={pending ? 0.35 : 1}
         pointerEvents={pending ? 'none' : ('inherit' as any)}
-        $platform-web={{
-          transition: 'background-color 100ms',
-        }}
-        hoverStyle={{
-          bg: '$color2',
-        }}
-        pressStyle={{
-          bg: '$color2',
-        }}
+        transition="web:background-color 100ms"
+        bg="hover:color2 press:color2"
       >
         <SizableText
-          size="$4"
+          size="4"
           cursor="pointer"
           select="none"
-          color={active ? '$color12' : '$color10'}
-          hoverStyle={{
-            color: '$color12',
-          }}
+          color={`${active ? 'color12' : 'color10'} hover:color12`}
           fontWeight={active ? '600' : '400'}
         >
           {children}
         </SizableText>
 
         {isExternal && (
-          <XStack opacity={0.5} ml="$2">
+          <XStack opacity={0.5} ml="2">
             <ArrowSquareOutIcon size={10} />
           </XStack>
         )}
@@ -60,7 +50,7 @@ export const DocsRouteNavItem = function DocsRouteNavItem({
         {pending && (
           <>
             <Spacer flex={1} />
-            <SizableText size="$1" color="$color9">
+            <SizableText size="1" color="color9">
               WIP
             </SizableText>
           </>

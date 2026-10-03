@@ -15,21 +15,19 @@ export const ProBadge = ({ size = 'small', link, ...props }: ProBadgeProps) => {
     <XStack
       display="inline-flex"
       y={-2}
-      mx={isLarge ? '$2' : 0}
-      px="$2"
-      py="$1"
-      bg="$color4"
-      rounded="$3"
+      mx={isLarge ? '2' : 0}
+      px="2"
+      py="1"
+      bg={link ? 'color4 hover:color5 press:color6' : 'color4'}
+      rounded="3"
       cursor={link ? 'pointer' : 'inherit'}
-      hoverStyle={link ? { bg: '$color5' } : {}}
-      pressStyle={link ? { bg: '$color6' } : {}}
       {...props}
     >
       <SizableText
-        size={isLarge ? '$4' : '$3'}
-        fontFamily="$mono"
+        size={isLarge ? '4' : '3'}
+        fontFamily="mono"
         fontWeight="600"
-        color="$color11"
+        color="color11"
       >
         Pro
       </SizableText>

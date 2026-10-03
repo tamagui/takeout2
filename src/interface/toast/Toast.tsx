@@ -11,19 +11,19 @@ import { XCircleIcon } from '~/interface/icons/phosphor/XCircleIcon'
 export { showToast } from './helpers'
 
 const toastIcons = {
-  success: <CheckCircleIcon size={18} color="$green10" />,
-  error: <XCircleIcon size={18} color="$red10" />,
-  warning: <WarningCircleIcon size={18} color="$yellow10" />,
-  info: <InfoIcon size={18} color="$blue10" />,
+  success: <CheckCircleIcon size={18} color="green10" />,
+  error: <XCircleIcon size={18} color="red10" />,
+  warning: <WarningCircleIcon size={18} color="yellow10" />,
+  info: <InfoIcon size={18} color="blue10" />,
 }
 
 const toastTitleColor: Record<string, ColorTokens> = {
-  success: '$green11',
-  error: '$red11',
-  warning: '$yellow11',
-  info: '$blue11',
-  default: '$color12',
-  loading: '$color12',
+  success: 'green11',
+  error: 'red11',
+  warning: 'yellow11',
+  info: 'blue11',
+  default: 'color12',
+  loading: 'color12',
 }
 
 function ToastContent({ toast: t }: { toast: ToastT }) {
@@ -36,13 +36,13 @@ function ToastContent({ toast: t }: { toast: ToastT }) {
 
   return (
     <>
-      <XStack gap="$3" items="center">
+      <XStack gap="3" items="center">
         <Toast.Icon />
-        <YStack flex={1} gap="$0.5">
+        <YStack flex={1} gap="0-5">
           {title ? (
             <Toast.Title
               fontWeight="600"
-              size="$3"
+              size="3"
               color={toastTitleColor[toastType]}
               numberOfLines={1}
             >
@@ -50,23 +50,21 @@ function ToastContent({ toast: t }: { toast: ToastT }) {
             </Toast.Title>
           ) : null}
           {description ? (
-            <Toast.Description color="$color9" size="$2" numberOfLines={2}>
+            <Toast.Description color="color9" size="2" numberOfLines={2}>
               {description}
             </Toast.Description>
           ) : null}
           {t.action || t.cancel ? (
-            <XStack gap="$2" mt="$2">
+            <XStack gap="2" mt="2">
               {t.action ? (
                 <Toast.Action
-                  bg="$color12"
-                  hoverStyle={{ bg: '$color11' }}
-                  pressStyle={{ bg: '$color10' }}
+                  bg="color12 hover:color11 press:color10"
                   onPress={(e: any) => {
                     t.action?.onClick?.(e)
                     if (!e.defaultPrevented) handleClose()
                   }}
                 >
-                  <SizableText size="$1" fontWeight="600" color="$background">
+                  <SizableText size="1" fontWeight="600" color="background">
                     {t.action.label}
                   </SizableText>
                 </Toast.Action>
@@ -79,7 +77,7 @@ function ToastContent({ toast: t }: { toast: ToastT }) {
                     handleClose()
                   }}
                 >
-                  <SizableText size="$1" color="$color11">
+                  <SizableText size="1" color="color11">
                     {t.cancel.label}
                   </SizableText>
                 </Toast.Action>

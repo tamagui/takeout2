@@ -32,9 +32,9 @@ export const SearchPage = memo(() => {
   const renderEmpty = useCallback(() => {
     if (isSearching) {
       return (
-        <YStack flex={1} items="center" justify="center" p="$4" minH={400}>
+        <YStack flex={1} items="center" justify="center" p="4" minH={400}>
           <Spinner size="large" />
-          <SizableText size="$3" color="$color10" mt="$3">
+          <SizableText size="3" color="color10" mt="3">
             Searching...
           </SizableText>
         </YStack>
@@ -43,8 +43,8 @@ export const SearchPage = memo(() => {
 
     if (!searchText) {
       return (
-        <YStack flex={1} items="center" justify="center" p="$4" minH={400}>
-          <SizableText size="$5" color="$color10">
+        <YStack flex={1} items="center" justify="center" p="4" minH={400}>
+          <SizableText size="5" color="color10">
             {isWeb ? 'Enter text to search posts' : 'Start typing to search posts'}
           </SizableText>
         </YStack>
@@ -52,11 +52,11 @@ export const SearchPage = memo(() => {
     }
 
     return (
-      <YStack flex={1} items="center" justify="center" p="$4" minH={400}>
-        <SizableText size="$5" color="$color10">
+      <YStack flex={1} items="center" justify="center" p="4" minH={400}>
+        <SizableText size="5" color="color10">
           No posts found
         </SizableText>
-        <SizableText size="$3" color="$color8" mt="$2">
+        <SizableText size="3" color="color8" mt="2">
           Try different keywords
         </SizableText>
       </YStack>
@@ -66,7 +66,7 @@ export const SearchPage = memo(() => {
   const renderFooter = useCallback(() => {
     if (!hasMore || posts.length === 0) return null
     return (
-      <YStack p="$4" items="center">
+      <YStack p="4" items="center">
         <Spinner size="small" />
       </YStack>
     )
@@ -80,19 +80,17 @@ export const SearchPage = memo(() => {
       t={headerHeight}
       l={0}
       r={0}
-      p="$3"
+      p="3"
       z={99}
-      $platform-web={{
-        maxW: 640,
-        mx: 'auto',
-      }}
+      maxW="web:640px"
+      mx="web:auto"
     >
       <Input
         glass
         placeholder="Search posts..."
         value={searchText}
         onChangeText={setSearchText}
-        size="$4"
+        size="md"
       />
     </YStack>
   )
@@ -102,26 +100,26 @@ export const SearchPage = memo(() => {
       <PageLayout>
         <HeadInfo title="Search" />
         {searchInput}
-        <View px="$3" pt="$10">
+        <View px="3" pt="10">
           {isSearching ? (
-            <YStack flex={1} items="center" justify="center" p="$4" minH={400}>
+            <YStack flex={1} items="center" justify="center" p="4" minH={400}>
               <Spinner size="large" />
-              <SizableText size="$3" color="$color10" mt="$3">
+              <SizableText size="3" color="color10" mt="3">
                 Searching...
               </SizableText>
             </YStack>
           ) : !searchText ? (
-            <YStack flex={1} items="center" justify="center" p="$4" minH={400}>
-              <SizableText size="$5" color="$color10">
+            <YStack flex={1} items="center" justify="center" p="4" minH={400}>
+              <SizableText size="5" color="color10">
                 Enter text to search posts
               </SizableText>
             </YStack>
           ) : posts.length === 0 ? (
-            <YStack flex={1} items="center" justify="center" p="$4" minH={400}>
-              <SizableText size="$5" color="$color10">
+            <YStack flex={1} items="center" justify="center" p="4" minH={400}>
+              <SizableText size="5" color="color10">
                 No posts found
               </SizableText>
-              <SizableText size="$3" color="$color8" mt="$2">
+              <SizableText size="3" color="color8" mt="2">
                 Try different keywords
               </SizableText>
             </YStack>
@@ -136,7 +134,7 @@ export const SearchPage = memo(() => {
   return (
     <PageLayout>
       {searchInput}
-      <View flex={1} px="$3">
+      <View flex={1} px="3">
         <LegendList
           ref={listRef}
           data={posts}

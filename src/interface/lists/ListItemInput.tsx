@@ -7,41 +7,37 @@ export const ListItemInput = styled(TamaguiInput, {
   borderWidth: 0,
   rounded: 0,
   bg: 'transparent',
-  color: '$color12',
+  color: 'color12',
   flex: 1,
   py: 0,
   px: 0,
   height: 'auto',
-  focusVisibleStyle: {
-    outlineWidth: 2,
-    outlineColor: '$color8',
-    outlineStyle: 'solid',
-  },
-
+  outlineWidth: 'focus-visible:2px',
+  outlineColor: 'focus-visible:color8',
+  outlineStyle: 'focus-visible:solid',
   variants: {
     size: {
       small: {
-        fontSize: '$3',
-        lineHeight: '$3',
+        fontSize: '3',
+        lineHeight: '3',
       },
       medium: {
-        fontSize: '$4',
-        lineHeight: '$4',
+        fontSize: '4',
+        lineHeight: '4',
       },
       large: {
-        fontSize: '$5',
-        lineHeight: '$5',
+        fontSize: '5',
+        lineHeight: '5',
       },
     },
 
     bold: {
       true: {
         fontWeight: '900',
-        color: '$color12',
+        color: 'color12',
       },
     },
   } as const,
-
   defaultVariants: {
     size: 'medium',
   },

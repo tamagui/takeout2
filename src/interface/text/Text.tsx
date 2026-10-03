@@ -20,5 +20,5 @@ export const Em = styled(TamaguiText, {
 
 export const InlineLink = styled(TamaguiText, {
   render: 'span',
-  color: '$blue11',
+  color: 'blue11',
 })

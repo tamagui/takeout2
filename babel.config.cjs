@@ -13,5 +13,9 @@ const oneBundlerOptions = {
 }
 
 module.exports = function (api) {
-  return preset(api, oneBundlerOptions)
+  const config = preset(api, oneBundlerOptions)
+  return {
+    ...config,
+    plugins: ['@babel/plugin-transform-export-namespace-from', ...config.plugins],
+  }
 }

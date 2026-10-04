@@ -1,4 +1,4 @@
-import { getClipboardText } from '@o/helpers'
+import { getClipboardText } from '@o/helpers/clipboard'
 import { memo, useEffect, useRef, useState } from 'react'
 import {
   SizableText,

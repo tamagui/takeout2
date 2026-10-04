@@ -2,6 +2,8 @@
 // withOne() invokes the same Metro pipeline One uses for production bundles.
 
 const { withOne } = require('one/metro-config')
+const { getDefaultConfig } = require('expo/metro-config')
+const expoConfig = getDefaultConfig(__dirname)
 const oneBundlerOptions = {
   routerRoot: 'app',
   setupFile: {
@@ -11,4 +13,11 @@ const oneBundlerOptions = {
   },
 }
 
-module.exports = withOne(__dirname, oneBundlerOptions)
+module.exports = withOne(__dirname, oneBundlerOptions).then((config) => ({
+  ...config,
+  serializer: {
+    ...config.serializer,
+    // expo export expects its serializer's artifact format.
+    customSerializer: expoConfig.serializer.customSerializer,
+  },
+}))

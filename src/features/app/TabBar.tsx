@@ -431,6 +431,12 @@ export function TabBar({ state, navigation, onExpandedMenuPress }: TabBarProps) 
                           type: 'tabPress',
                           target: route.key,
                           canPreventDefault: true,
+                          data: {
+                            behavior: {
+                              scrollToTop: isFocused,
+                              popToTop: isFocused,
+                            },
+                          },
                         })
                         if (!isFocused && !event.defaultPrevented) {
                           navigation.navigate(tab.name)

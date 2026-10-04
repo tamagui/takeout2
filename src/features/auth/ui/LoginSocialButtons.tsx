@@ -12,31 +12,33 @@ const handleSocialLogin = async (provider: 'google' | 'apple') => {
 export const LoginSocialButtons = () => {
   return (
     <>
-      <XStack items="center" gap="$4">
+      <XStack items="center" gap="4">
         <Separator />
-        <SizableText size="$2" color="$color9">
+        <SizableText size="2" color="color9">
           or continue with
         </SizableText>
         <Separator />
       </XStack>
 
-      <XStack gap="$3">
+      <XStack gap="3">
         <Button
           flex={1}
+          scale="press:0.98"
+          bg="press:color3"
           size="large"
           haptic
           onPress={() => handleSocialLogin('google')}
-          pressStyle={{ scale: 0.98, bg: '$color3' }}
           icon={<GoogleIcon size={20} />}
         >
           Google
         </Button>
         <Button
           flex={1}
+          scale="press:0.98"
+          opacity="press:0.9"
           size="large"
           haptic
           onPress={() => handleSocialLogin('apple')}
-          pressStyle={{ scale: 0.98, opacity: 0.9 }}
           icon={<AppleIcon size={22} />}
         >
           <SizableText fontWeight="600">Apple</SizableText>

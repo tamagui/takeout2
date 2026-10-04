@@ -73,7 +73,7 @@ export const AnimatedBlurHeader = memo(
             glass
             circular
             onPress={() => router.back()}
-            icon={<CaretLeftIcon size={22} color="$color12" />}
+            icon={<CaretLeftIcon size={22} color="color12" />}
           />
         )
       }
@@ -104,13 +104,13 @@ export const AnimatedBlurHeader = memo(
           <GradientBlurView intensity={20} width="100%" height="100%" inverted />
         </Animated.View>
 
-        <XStack flex={1} items="center" justify="space-between" px="$3">
+        <XStack flex={1} items="center" justify="space-between" px="3">
           <XStack width={60} items="center" justify="flex-start">
             {renderLeftContent()}
           </XStack>
 
           <XStack flex={1} items="center" justify="center">
-            <SizableText fontSize="$5" fontWeight="600" color="$color" numberOfLines={1}>
+            <SizableText fontSize="5" fontWeight="600" color="color" numberOfLines={1}>
               {title}
             </SizableText>
           </XStack>

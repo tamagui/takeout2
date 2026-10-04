@@ -128,7 +128,7 @@ export const OtpPage = () => {
         />
 
         {timerCount > 0 ? (
-          <SizableText size="$4" color="$color11">
+          <SizableText size="4" color="color11">
             Resend Code in ({timerCount})
           </SizableText>
         ) : (

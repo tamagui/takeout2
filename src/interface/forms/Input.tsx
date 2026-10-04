@@ -17,15 +17,24 @@ export const Input = memo(({ ref, glass, ...props }: InputProps) => {
   const inputElement = (
     <TamaguiInput
       borderWidth={glass && !isWeb ? 0 : 0.5}
-      ref={ref}
-      focusVisibleStyle={inputFocusStyle}
+      outlineWidth="focus-visible:3px"
+      outlineStyle="focus-visible:solid"
+      outlineColor="focus-visible:background04"
+      outlineOffset="focus-visible:1px"
+      borderColor="focus-visible:color5"
       bg={glass ? 'transparent' : undefined}
-      placeholderTextColor="$color8"
+      placeholderTextColor="color8"
       height={50}
-      size="$5"
       {...props}
+      ref={ref}
+      size="lg"
+      fontSize="5"
+      px="3"
+      py="2"
+      rounded="4"
     />
   )
+
   if (glass && !isWeb) {
     return (
       <GlassView borderRadius={14} intensity={40}>
@@ -36,12 +45,3 @@ export const Input = memo(({ ref, glass, ...props }: InputProps) => {
 
   return inputElement
 })
-
-export const inputFocusStyle = {
-  outlineWidth: 3,
-  outlineStyle: 'solid',
-  outlineColor: '$background04',
-  outlineOffset: 1,
-  borderWidth: 0.5,
-  borderColor: '$color5',
-} satisfies ViewProps['focusVisibleStyle']

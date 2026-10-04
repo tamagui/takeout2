@@ -1,16 +1,16 @@
 import { Paragraph, styled, XStack, YStack } from 'tamagui'
 
 const TableFrame = styled(YStack, {
-  my: '$4',
+  my: '4',
   borderWidth: 1,
-  borderColor: '$borderColor',
-  rounded: '$4',
+  borderColor: 'borderColor',
+  rounded: '4',
   overflow: 'hidden',
 })
 
 const TableRow = styled(XStack, {
   borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
+  borderBottomColor: 'borderColor',
   variants: {
     last: {
       true: {
@@ -21,7 +21,7 @@ const TableRow = styled(XStack, {
 })
 
 const TableCellText = styled(Paragraph, {
-  size: '$4',
+  size: '4',
   variants: {
     head: {
       true: {
@@ -32,13 +32,13 @@ const TableCellText = styled(Paragraph, {
 })
 
 const TableCellFrame = styled(XStack, {
-  p: '$3',
+  p: '3',
   flex: 1,
   flexBasis: 0,
   variants: {
     head: {
       true: {
-        bg: '$color2',
+        bg: 'color2',
       },
     },
   } as const,

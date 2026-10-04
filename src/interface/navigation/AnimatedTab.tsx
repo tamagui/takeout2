@@ -60,7 +60,6 @@ export const AnimatedTab = memo(
 
     return (
       <Button
-        unstyled
         variant="transparent"
         onPress={onPress}
         onLongPress={onLongPress}
@@ -72,7 +71,7 @@ export const AnimatedTab = memo(
         position="relative"
       >
         <Animated.View style={animatedIconStyle}>
-          <Icon size={24} color={isFocused ? '$color' : '$color10'} />
+          <Icon size={24} color={isFocused ? 'color' : 'color10'} />
         </Animated.View>
       </Button>
     )

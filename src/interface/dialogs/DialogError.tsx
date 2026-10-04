@@ -34,11 +34,11 @@ export const DialogError = () => {
         }
       }}
     >
-      <YStack pointerEvents="box-none" gap="$3" $md={{ flex: 1 }}>
+      <YStack pointerEvents="box-none" gap="3" flex="md:1">
         <Dialog.Header title={state?.title} description={state?.description} />
       </YStack>
 
-      <XStack pointerEvents="box-none" justify="flex-end" gap="$2" mt="$3">
+      <XStack pointerEvents="box-none" justify="flex-end" gap="2" mt="3">
         <Dialog.Close asChild>
           <Button
             variant="action"

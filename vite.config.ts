@@ -1,12 +1,28 @@
 import { tamaguiAliases, tamaguiPlugin } from '@tamagui/vite-plugin'
 import { autoWarmPlugin, one } from 'one/vite'
 import { visualizer } from 'rollup-plugin-visualizer'
+import { hotUpdaterNativePlugin } from './scripts/hotUpdaterNativePlugin.ts'
+
+import { createRequire } from 'node:module'
+import { dirname, join } from 'node:path'
 
 import type { UserConfig } from 'vite'
+
+const require = createRequire(import.meta.url)
+const rnwLiteDir = dirname(require.resolve('@tamagui/react-native-web-lite/package.json'))
 
 export default {
   resolve: {
     alias: [
+      // beta-lane workaround: @tamagui/vite-plugin 3.0.0-beta.1351.1 maps
+      // react-native/Libraries/Utilities/codegenNativeComponent to
+      // <web-lite>/Libraries/Utilities/codegenNativeComponent, which v3 no
+      // longer ships (flat dist/esm). point at the real file until upstream
+      // fixes tamaguiAliases. must stay above the spread (first match wins).
+      {
+        find: /^react-native\/Libraries\/Utilities\/codegenNativeComponent$/,
+        replacement: join(rnwLiteDir, 'dist/esm/codegenNativeComponent.mjs'),
+      },
       // much smaller bundle size on web
       ...tamaguiAliases({
         rnwLite: 'without-animated',
@@ -108,27 +124,15 @@ export default {
       },
 
       react: {
-        compiler: process.env.NODE_ENV === 'production',
+        compiler: {
+          web: process.env.NODE_ENV === 'production',
+          native: true,
+        },
       },
 
       native: {
-        bundler: 'metro',
         bundlerOptions: {
-          watchman: false, // had some slowness
-          babelConfigOverrides: (config) => {
-            return {
-              ...config,
-              plugins: [
-                // React Compiler for automatic memoization - must run first
-                'babel-plugin-react-compiler',
-                ...(config?.plugins || []),
-                // Hot Updater (React Native OTA solution)
-                'hot-updater/babel-plugin',
-                // reanimated worklet compilation - MUST be last
-                'react-native-reanimated/plugin',
-              ],
-            }
-          },
+          plugins: [hotUpdaterNativePlugin()],
         },
       },
 

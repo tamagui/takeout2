@@ -383,9 +383,9 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
           intensity={80}
           containerStyle={{ flex: 1, width: '100%', height: '100%' }}
         >
-          <YStack flex={1} pt={insets.top} px="$4" pb="$3">
-            <XStack items="center" justify="space-between" mb="$4" pt="$2">
-              <SizableText fontSize="$6" fontWeight="700" color="$color">
+          <YStack flex={1} pt={insets.top} px="4" pb="3">
+            <XStack items="center" justify="space-between" mb="4" pt="2">
+              <SizableText fontSize="6" fontWeight="700" color="color">
                 Quick Menu
               </SizableText>
 
@@ -397,7 +397,7 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
                 justify="center"
                 rounded={14}
               >
-                <XIcon size={22} color="$color" />
+                <XIcon size={22} color="color" />
               </Pressable>
             </XStack>
 
@@ -408,7 +408,7 @@ export const FeedDropdown = memo(({ isOpen, onClose }: FeedDropdownProps) => {
                   animatedHorizontalStyle,
                 ]}
               >
-                <XStack gap="$3" justify="center" flexWrap="wrap">
+                <XStack gap="3" justify="center" flexWrap="wrap">
                   {menuItems.slice(0, 6).map((item, index) => (
                     <QuickMenuIcon
                       key={item.id}
@@ -550,9 +550,9 @@ const QuickMenuIcon = ({ item, index, isOpen, onPress }: QuickMenuIconProps) => 
         items="center"
         justify="center"
         rounded={14}
-        bg="$background04"
+        bg="background04"
       >
-        <Icon size={24} color="$color12" />
+        <Icon size={24} color="color12" />
       </Pressable>
     </Animated.View>
   )
@@ -644,16 +644,16 @@ const QuickMenuRow = ({ item, onPress, onRemove, onSwipeableRef }: QuickMenuRowP
             onPress={onPress}
             flexDirection="row"
             items="center"
-            gap="$3"
-            px="$3"
-            py="$2"
-            bg="$background04"
+            gap="3"
+            px="3"
+            py="2"
+            bg="background04"
             width="100%"
           >
             <View width={44} height={44} items="center" justify="center" rounded={12}>
-              <Icon size={20} color="$color12" />
+              <Icon size={20} color="color12" />
             </View>
-            <SizableText fontSize="$4" fontWeight="500" color="$color">
+            <SizableText fontSize="4" fontWeight="500" color="color">
               {item.label}
             </SizableText>
           </Pressable>

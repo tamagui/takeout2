@@ -39,19 +39,17 @@ export const PostCard = memo(({ post }: PostCardProps) => {
 
   return (
     <View
-      mt="$3"
+      mt="3"
       rounded={25}
       overflow="hidden"
+      py="4"
+      px="3-5"
+      gap="3"
+      bg="dark:shadow4"
       testID={`post-card-${post.id}`}
       data-testid={`post-card-${post.id}`}
-      py="$4"
-      px="$3.5"
-      gap="$3"
-      $theme-dark={{
-        bg: '$shadow4',
-      }}
     >
-      <XStack items="center" gap="$3">
+      <XStack items="center" gap="3">
         <AvatarWithMenu
           avatarUrl={avatarUrl || ''}
           userId={authorId}
@@ -60,10 +58,10 @@ export const PostCard = memo(({ post }: PostCardProps) => {
         />
 
         <YStack flex={1}>
-          <SizableText size="$4" fontWeight="700" color="$color12">
+          <SizableText size="4" fontWeight="700" color="color12">
             {username || 'Unknown'}
           </SizableText>
-          <SizableText size="$3" color="$color9">
+          <SizableText size="3" color="color9">
             {formatDistanceToNow(post.createdAt)}
           </SizableText>
         </YStack>
@@ -72,7 +70,14 @@ export const PostCard = memo(({ post }: PostCardProps) => {
       </XStack>
 
       {post.caption && (
-        <SizableText size="$5" m="$-0.25" color="$color12" my="$1" numberOfLines={3}>
+        <SizableText
+          size="5"
+          mr="-0-25"
+          ml="-0-25"
+          my="1"
+          color="color12"
+          numberOfLines={3}
+        >
           {post.caption}
         </SizableText>
       )}
@@ -104,12 +109,12 @@ export const PostCard = memo(({ post }: PostCardProps) => {
         </View>
       </Pressable>
 
-      <XStack items="center" gap="$3" p="$2">
+      <XStack items="center" gap="3" p="2">
         <Link href={`/home/feed/post/${post.id}`} asChild>
-          <XStack items="center" gap="$2">
-            <ChatCircleDotsIcon size={26} color="$color" />
+          <XStack items="center" gap="2">
+            <ChatCircleDotsIcon size={26} color="color" />
             {typeof post.commentCount === 'number' && post.commentCount > 0 && (
-              <SizableText size="$4" fontWeight="700">
+              <SizableText size="4" fontWeight="700">
                 {post.commentCount}
               </SizableText>
             )}

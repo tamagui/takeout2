@@ -157,19 +157,19 @@ export const FeedDetailPage = memo(() => {
           containerHeight.set(e.nativeEvent.layout.height)
         }}
       >
-        <XStack items="center" gap="$3" py="$4">
+        <XStack items="center" gap="3" py="4">
           <Avatar gradient image={author.image as string} size={32} />
           <YStack flex={1}>
-            <SizableText size="$4" fontWeight="700" color="$color12">
+            <SizableText size="4" fontWeight="700" color="color12">
               {author.username || 'Unknown'}
             </SizableText>
-            <SizableText size="$2" color="$color10">
+            <SizableText size="2" color="color10">
               {formatDistanceToNow(post.createdAt)}
             </SizableText>
           </YStack>
         </XStack>
 
-        <YStack mb="$4">
+        <YStack mb="4">
           <PostImage
             postId={post.id}
             image={post.image}

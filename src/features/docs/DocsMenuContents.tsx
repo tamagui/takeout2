@@ -94,6 +94,7 @@ export const DocsMenuContents = () => {
         activeIndex={activeIndex}
         visible={indicatorVisible}
       />
+
       <Accordion
         value={openSections.length > 0 ? openSections : ['base']}
         type="multiple"
@@ -114,7 +115,7 @@ const SubSection = ({ section, items }: { section: DocsSection; items: Item[] })
   const { currentPath } = useDocsMenu()
 
   const content = (
-    <YStack px="$2">
+    <YStack px="2">
       {items.map(({ page }, index) => {
         const isActive = currentPath === page.route
         return (
@@ -125,7 +126,7 @@ const SubSection = ({ section, items }: { section: DocsSection; items: Item[] })
             key={`${page.route}${index}`}
           >
             {page.title}
-            {page.pro && <ProBadge ml="$2" />}
+            {page.pro && <ProBadge ml="2" />}
           </DocsRouteNavItem>
         )
       })}
@@ -133,23 +134,23 @@ const SubSection = ({ section, items }: { section: DocsSection; items: Item[] })
   )
 
   if (!section.title) {
-    return <YStack mb="$2">{content}</YStack>
+    return <YStack mb="2">{content}</YStack>
   }
 
   return (
-    <Accordion.Item borderWidth={0} value={section.title || 'base'} mb="$4">
-      <Accordion.Trigger unstyled bg="transparent" borderWidth={0}>
+    <Accordion.Item borderWidth={0} mb="4" value={section.title || 'base'}>
+      <Accordion.Trigger bg="transparent" borderWidth={0}>
         {({ open }: { open: boolean }) => {
           return (
-            <XStack p="$2" rounded="$3" items="center" width="100%">
-              <Paragraph size="$5" fontWeight="600" color="$color12">
+            <XStack p="2" rounded="3" items="center" width="100%">
+              <Paragraph size="5" fontWeight="600" color="color12">
                 {section.title}
               </Paragraph>
 
               <XStack flex={1} />
 
               <Square transition="quick" rotate={open ? '90deg' : '0deg'}>
-                <CaretRightIcon color="$color9" size={10} />
+                <CaretRightIcon color="color9" size={10} />
               </Square>
             </XStack>
           )
@@ -157,12 +158,7 @@ const SubSection = ({ section, items }: { section: DocsSection; items: Item[] })
       </Accordion.Trigger>
 
       <Accordion.HeightAnimator overflow="hidden" transition="medium">
-        <Accordion.Content
-          unstyled
-          transition="medium"
-          bg="transparent"
-          exitStyle={{ opacity: 0 }}
-        >
+        <Accordion.Content transition="medium" bg="transparent" opacity="exit:0">
           {content}
         </Accordion.Content>
       </Accordion.HeightAnimator>
@@ -194,11 +190,11 @@ const ActiveIndicator = ({
       t={topPosition}
       height={indicatorHeight}
       width={3}
-      bg="$color12"
-      rounded="$2"
+      bg="color12"
+      rounded="2"
       transition="quick"
       z={999}
-      enterStyle={{ opacity: 0 }}
+      opacity="enter:0"
     />
   )
 }

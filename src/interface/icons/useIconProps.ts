@@ -7,7 +7,7 @@ import type { ColorTokens } from 'tamagui'
 
 export const useIconProps = ({
   size,
-  color = '$color11' as ColorTokens,
+  color = 'color11' as ColorTokens,
   ...restProps
 }: IconProps) => {
   const theme = useTheme()

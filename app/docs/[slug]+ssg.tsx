@@ -47,18 +47,12 @@ export function DocsSlugPage() {
         }}
       />
 
-      <H1
-        mb="$2"
-        mt="$2"
-        $platform-web={{
-          textWrap: 'balance',
-        }}
-      >
+      <H1 mb="2" mt="2" textWrap="web:balance">
         {nbspLastWord(frontmatter.title)}
       </H1>
 
       {!!frontmatter.description && (
-        <Paragraph size="$7" color="$color8" mb="$3">
+        <Paragraph size="7" color="color8" mb="3">
           {nbspLastWord(frontmatter.description || '')}
         </Paragraph>
       )}

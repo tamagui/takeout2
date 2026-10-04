@@ -1,4 +1,4 @@
-import { toast } from '@tamagui/toast/v2'
+import { toast } from '@tamagui/toast'
 import type { ReactNode } from 'react'
 
 import { useNotificationListener } from '~/features/notification/useNotificationListener'

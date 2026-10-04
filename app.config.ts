@@ -91,6 +91,7 @@ export default {
         {
           ios: {
             deploymentTarget: '17.0',
+            enableSceneSupport: true,
           },
         },
       ],

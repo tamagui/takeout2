@@ -5,8 +5,8 @@ import { ArrowUpRightIcon } from '~/interface/icons/phosphor/ArrowUpRightIcon'
 
 export const ProFreeButtons = () => {
   return (
-    <View ml="$3">
-      <XGroup rounded="$3" borderWidth={0.5} borderColor="$color5" overflow="hidden">
+    <View ml="3">
+      <XGroup rounded="3" borderWidth={0.5} borderColor="color5" overflow="hidden">
         <XGroup.Item>
           <Theme name="blue">
             <Link
@@ -17,20 +17,13 @@ export const ProFreeButtons = () => {
             >
               <XStack
                 render="a"
-                px="$2.5"
-                py="$1.5"
-                bg="$color4"
+                px="2-5"
+                py="1-5"
+                bg="color4 hover:color5 press:color6"
                 cursor="pointer"
-                hoverStyle={{ bg: '$color5' }}
-                pressStyle={{ bg: '$color6' }}
-                gap="$1.5"
+                gap="1-5"
               >
-                <SizableText
-                  size="$3"
-                  fontFamily="$mono"
-                  fontWeight="600"
-                  color="$color11"
-                >
+                <SizableText size="3" fontFamily="mono" fontWeight="600" color="color11">
                   Pro
                 </SizableText>
                 <View y={1} mr={-4}>
@@ -49,17 +42,15 @@ export const ProFreeButtons = () => {
           >
             <XStack
               render="a"
-              px="$2.5"
-              py="$1.5"
-              bg="$color2"
+              px="2-5"
+              py="1-5"
+              bg="color2 hover:color3 press:color4"
               borderLeftWidth={0.5}
-              borderLeftColor="$color5"
+              borderLeftColor="color5"
               cursor="pointer"
-              hoverStyle={{ bg: '$color3' }}
-              pressStyle={{ bg: '$color4' }}
-              gap="$1.5"
+              gap="1-5"
             >
-              <SizableText size="$3" fontFamily="$mono" color="$color10">
+              <SizableText size="3" fontFamily="mono" color="color10">
                 Free
               </SizableText>
               <View y={1} mr={-4}>

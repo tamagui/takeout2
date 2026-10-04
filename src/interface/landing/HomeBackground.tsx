@@ -27,9 +27,7 @@ export function HomeBackground() {
         position="absolute"
         inset={0}
         opacity={0.3}
-        $theme-dark={{
-          filter: 'invert(1)',
-        }}
+        filter="dark:invert(1)"
         z={0}
         pointerEvents="none"
       />
@@ -46,6 +44,7 @@ export function HomeBackground() {
               'radial-gradient(circle, rgba(100, 100, 100, 0.08) 0%, transparent 70%)',
           }}
         />
+
         <GradientOrb
           width={800}
           height={800}
@@ -56,6 +55,7 @@ export function HomeBackground() {
             opacity: 0.048,
           }}
         />
+
         <GradientOrb
           width={500}
           height={500}

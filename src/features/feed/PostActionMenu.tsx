@@ -134,13 +134,14 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
       <Menu.Portal zIndex={100}>
         <Menu.Content
           transition="quickestLessBouncy"
-          enterStyle={{ scale: 0.9, opacity: 0, y: -5 }}
-          exitStyle={{ scale: 0.95, opacity: 0, y: -3 }}
-          rounded="$4"
-          p="$2"
+          scale="enter:0.9 exit:0.95"
+          opacity="enter:0 exit:0"
+          y="enter:-5px exit:-3px"
+          rounded="4"
+          p="2"
           borderWidth={1}
-          borderColor="$borderColor"
-          boxShadow="0 4px 5px $shadowColor"
+          borderColor="borderColor"
+          boxShadow="0 4px 5px shadowColor"
         >
           <Menu.Item
             key="save-image"
@@ -153,7 +154,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
               ios={{ name: 'arrow.down.circle' }}
               androidIconName="ic_menu_save"
             >
-              <DownloadSimpleIcon size={18} color="$color10" />
+              <DownloadSimpleIcon size={18} color="color10" />
             </Menu.ItemIcon>
           </Menu.Item>
 
@@ -169,7 +170,7 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
                 ios={{ name: 'person.circle' }}
                 androidIconName="ic_menu_myplaces"
               >
-                <UserCircleIcon size={18} color="$color10" />
+                <UserCircleIcon size={18} color="color10" />
               </Menu.ItemIcon>
             </Menu.Item>
           )}
@@ -182,9 +183,9 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
               justify="space-between"
               textValue="Delete Post"
             >
-              <Menu.ItemTitle color="$red10">Delete Post</Menu.ItemTitle>
+              <Menu.ItemTitle color="red10">Delete Post</Menu.ItemTitle>
               <Menu.ItemIcon ios={{ name: 'trash' }} androidIconName="ic_menu_delete">
-                <TrashIcon size={18} color="$red10" />
+                <TrashIcon size={18} color="red10" />
               </Menu.ItemIcon>
             </Menu.Item>
           )}
@@ -206,20 +207,20 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
                   />
                 )}
                 <Menu.ItemTitle>Report</Menu.ItemTitle>
-                <CaretRightIcon size={18} color="$color10" />
+                <CaretRightIcon size={18} color="color10" />
               </Menu.SubTrigger>
 
               <Menu.Portal zIndex={200}>
                 <Menu.SubContent
-                  enterStyle={{ scale: 0.95, opacity: 0 }}
-                  exitStyle={{ scale: 0.95, opacity: 0 }}
+                  scale="enter:0.95 exit:0.95"
+                  opacity="enter:0 exit:0"
                   transition="quickestLessBouncy"
                   minW={200}
-                  rounded="$4"
-                  p="$2"
+                  rounded="4"
+                  p="2"
                   borderWidth={1}
-                  borderColor="$borderColor"
-                  boxShadow="0 4px 5px $shadowColor"
+                  borderColor="borderColor"
+                  boxShadow="0 4px 5px shadowColor"
                 >
                   {REPORT_REASONS.map((reason) => (
                     <Menu.Item
@@ -245,12 +246,12 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
                 justify="space-between"
                 textValue="Block User"
               >
-                <Menu.ItemTitle color="$red10">Block User</Menu.ItemTitle>
+                <Menu.ItemTitle color="red10">Block User</Menu.ItemTitle>
                 <Menu.ItemIcon
                   ios={{ name: 'xmark.circle' }}
                   androidIconName="ic_menu_close_clear_cancel"
                 >
-                  <XCircleIcon size={18} color="$red10" />
+                  <XCircleIcon size={18} color="red10" />
                 </Menu.ItemIcon>
               </Menu.Item>
             </>
@@ -263,9 +264,9 @@ export function PostActionMenu({ post, isOwnPost }: PostActionMenuProps) {
               justify="space-between"
               textValue="Hide Post (Admin)"
             >
-              <Menu.ItemTitle color="$red10">Hide Post (Admin)</Menu.ItemTitle>
+              <Menu.ItemTitle color="red10">Hide Post (Admin)</Menu.ItemTitle>
               <Menu.ItemIcon ios={{ name: 'eye.slash' }} androidIconName="ic_menu_view">
-                <WarningCircleIcon size={18} color="$red10" />
+                <WarningCircleIcon size={18} color="red10" />
               </Menu.ItemIcon>
             </Menu.Item>
           )}

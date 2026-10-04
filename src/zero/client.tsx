@@ -114,11 +114,11 @@ class ZeroErrorBoundary extends Component<
 
 function ZeroErrorFallback({ error, onRetry }: { error: Error; onRetry: () => void }) {
   return (
-    <YStack flex={1} items="center" justify="center" gap="$4" px="$6">
-      <SizableText size="$7" fontWeight="700" color="$color12">
+    <YStack flex={1} items="center" justify="center" gap="4" px="6">
+      <SizableText size="7" fontWeight="700" color="color12">
         Sync Error
       </SizableText>
-      <SizableText size="$4" color="$color10" text="center">
+      <SizableText size="4" color="color10" text="center">
         {error.message}
       </SizableText>
       <Button size="large" theme="accent" onPress={onRetry}>

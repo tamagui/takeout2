@@ -12,18 +12,18 @@ export const WIPBadge = ({ size = 'small', ...props }: WIPBadgeProps) => {
       <XStack
         display="inline-flex"
         y={-2}
-        mx={isLarge ? '$2' : 0}
-        px="$2"
-        py="$1"
-        bg="$color4"
-        rounded="$3"
+        mx={isLarge ? '2' : 0}
+        px="2"
+        py="1"
+        bg="color4"
+        rounded="3"
         {...props}
       >
         <SizableText
-          size={isLarge ? '$4' : '$3'}
-          fontFamily="$mono"
+          size={isLarge ? '4' : '3'}
+          fontFamily="mono"
           fontWeight="600"
-          color="$color11"
+          color="color11"
         >
           WIP
         </SizableText>

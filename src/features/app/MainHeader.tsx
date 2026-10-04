@@ -26,9 +26,9 @@ export const MainHeader = () => {
   return (
     <ScrollHeader>
       <PageContainer>
-        <YStack width="100%" py="$2">
-          <XStack position="relative" width="100%" px="$2" items="center">
-            <XStack gap="$2" items="center">
+        <YStack width="100%" py="2">
+          <XStack position="relative" width="100%" px="2" items="center">
+            <XStack gap="2" items="center">
               <Link href="/" aria-label="Home">
                 <Logo />
               </Link>
@@ -42,15 +42,14 @@ export const MainHeader = () => {
               pointerEvents="none"
               items="center"
               justify="center"
-              display="none"
-              $lg={{ display: 'flex' }}
+              display="none lg:flex"
             >
               <View pointerEvents="auto">
                 <NavigationTabs />
               </View>
             </XStack>
 
-            <XStack gap="$2.5" items="center" display="none" $md={{ display: 'flex' }}>
+            <XStack gap="2-5" items="center" display="none md:flex">
               {user && (
                 <UserProfilePopover
                   trigger={
@@ -97,12 +96,12 @@ export const MainHeaderMenu = memo(() => {
     <>
       <Button
         size="large"
+        display="md:none"
         variant="transparent"
         circular
-        icon={<ListIcon size="$1" />}
+        icon={<ListIcon size={20} />}
         aria-label="Menu"
         onPress={() => setOpen(true)}
-        $md={{ display: 'none' }}
       />
       <Sheet
         open={open}
@@ -112,17 +111,19 @@ export const MainHeaderMenu = memo(() => {
         dismissOnSnapToBottom
         snapPoints={[50]}
       >
-        <Sheet.Overlay
-          bg="$background"
-          opacity={0.5}
-          transition="quick"
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
-        />
-        <Sheet.Frame bg="$color2" boxShadow="0 0 10px $shadow4">
-          <YStack flex={1} gap="$2">
-            <XStack p="$4" pb="$3" justify="space-between" items="center">
-              <XStack gap="$3" items="center">
+        <Sheet.Overlay bg="background" opacity="0.5 enter:0 exit:0" transition="quick" />
+        <Sheet.Container boxShadow="0 0 10px shadow4">
+          <Sheet.Background bg="color2" />
+          <YStack flex={1} gap="2">
+            <XStack
+              paddingTop="4"
+              paddingRight="4"
+              paddingLeft="4"
+              pb="3"
+              justify="space-between"
+              items="center"
+            >
+              <XStack gap="3" items="center">
                 <Logo />
               </XStack>
               <ThemeSwitch />
@@ -130,7 +131,7 @@ export const MainHeaderMenu = memo(() => {
 
             <Separator />
 
-            <YStack flex={1} p="$3" gap="$2">
+            <YStack flex={1} p="3" gap="2">
               <Link href="/home/settings" asChild>
                 <ListItem onPress={() => setOpen(false)}>
                   <ListItem.Icon>
@@ -149,21 +150,28 @@ export const MainHeaderMenu = memo(() => {
             </YStack>
 
             {user && (
-              <XStack p="$4" pt="$2" gap="$3" items="center">
+              <XStack
+                paddingRight="4"
+                paddingBottom="4"
+                paddingLeft="4"
+                pt="2"
+                gap="3"
+                items="center"
+              >
                 <Avatar
                   size={40}
                   image={user.image}
                   name={user.name ?? user.username ?? 'User'}
                 />
                 <YStack flex={1}>
-                  <H3 size="$3" fontWeight="600">
+                  <H3 size="3" fontWeight="600">
                     {user.name || user.username}
                   </H3>
                 </YStack>
               </XStack>
             )}
           </YStack>
-        </Sheet.Frame>
+        </Sheet.Container>
       </Sheet>
     </>
   )

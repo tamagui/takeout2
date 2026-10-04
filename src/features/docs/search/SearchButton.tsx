@@ -14,31 +14,23 @@ export const SearchButton = () => {
     <XStack
       render="button"
       onPress={searchContext.onOpen}
-      ml="$1"
-      mr="$3"
-      px="$2.5"
-      py="$1.5"
-      mb="$4"
-      rounded="$3"
+      ml="1"
+      mr="3"
+      px="2-5"
+      py="1-5"
+      mb="4"
+      rounded="3"
       borderWidth={0.5}
-      borderColor="$color5"
-      bg="$color2"
+      borderColor="color5 hover:color6"
+      bg="color2 hover:color3 press:color4"
       items="center"
       cursor="pointer"
-      hoverStyle={{
-        bg: '$color3',
-        borderColor: '$color6',
-      }}
-      pressStyle={{
-        bg: '$color4',
-      }}
-      {...({} as any)}
     >
-      <MagnifyingGlassIcon size={14} color="$color8" />
-      <Paragraph flex={1} text="left" ml="$2" size="$3" color="$color9">
+      <MagnifyingGlassIcon size={14} color="color8" />
+      <Paragraph flex={1} text="left" ml="2" color="color9" size="3">
         Search
       </Paragraph>
-      <Paragraph size="$2" color="$color8" fontFamily="$mono" letterSpacing={1}>
+      <Paragraph size="2" color="color8" fontFamily="mono" letterSpacing={1}>
         ⌘K
       </Paragraph>
     </XStack>

@@ -51,7 +51,7 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
     <>
       <HeadInfo title={title} description={description} openGraph={ogImage} />
 
-      <YStack px="$4" pb="$10" maxW={760} mx="auto">
+      <YStack px="4" pb="10" maxW={760} mx="auto">
         <ProfileHeader
           userInfo={user}
           isOwnProfile={isOwnProfile}
@@ -59,16 +59,16 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
         />
 
         {isLoading && !posts?.length ? (
-          <YStack p="$6" items="center" justify="center">
-            <Spinner size="small" color="$color10" />
+          <YStack p="6" items="center" justify="center">
+            <Spinner size="small" color="color10" />
           </YStack>
         ) : posts && posts.length === 0 ? (
-          <YStack p="$4" items="center" justify="center" mt="$4">
-            <H5 mt="$3">No posts yet</H5>
+          <YStack p="4" items="center" justify="center" mt="4">
+            <H5 mt="3">No posts yet</H5>
           </YStack>
         ) : (
           <>
-            <SimpleGrid gap="$2">
+            <SimpleGrid gap="2">
               {posts?.map((post) => (
                 <SimpleGridItem key={post.id} columns={3}>
                   <Pressable onPress={() => handleImagePress(post.id.toString())}>
@@ -76,7 +76,7 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
                       src={post.image}
                       width="100%"
                       aspectRatio={1}
-                      rounded="$3"
+                      rounded="3"
                       objectFit="cover"
                     />
                   </Pressable>
@@ -85,8 +85,8 @@ export const ProfilePage = memo(({ userId, isOwnProfile }: ProfilePageProps) => 
             </SimpleGrid>
 
             {isLoading && (
-              <YStack p="$4" items="center" justify="center">
-                <Spinner size="small" color="$color10" />
+              <YStack p="4" items="center" justify="center">
+                <Spinner size="small" color="color10" />
               </YStack>
             )}
 

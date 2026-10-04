@@ -72,7 +72,7 @@ export const PageHeader = memo(
           ]}
         >
           <LinearGradient
-            colors={['$background08', 'transparent']}
+            colors={['background08', 'transparent']}
             position="absolute"
             t={0}
             l={0}
@@ -104,21 +104,22 @@ export const PageHeader = memo(
           ]}
         >
           <LinearGradient
-            colors={['$color3', '$color1']}
+            colors={['color3', 'color1']}
             position="absolute"
             t={0}
             l={0}
             r={0}
             height={44 + safeAreaInsets.top}
           />
-          <XStack items="center" gap="$2">
+
+          <XStack items="center" gap="2">
             {Icon && <Icon size={24} />}
-            <SizableText size="$5" fontWeight="600">
+            <SizableText size="5" fontWeight="600">
               {title}
             </SizableText>
           </XStack>
 
-          <XStack gap="$4">{after}</XStack>
+          <XStack gap="4">{after}</XStack>
         </Animated.View>
       </>
     )

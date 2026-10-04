@@ -45,19 +45,11 @@ const GalleryItem = styled(YStack, {
 
   variants: {
     // 1 = right, 0 = nowhere, -1 = left
-    going: {
-      ':number': (going) => ({
-        enterStyle: {
-          x: going === 0 ? 0 : going > 0 ? 1000 : -1000,
-          opacity: 0,
-        },
-        exitStyle: {
-          zIndex: 0,
-          x: going === 0 ? 0 : going < 0 ? 1000 : -1000,
-          opacity: 0,
-        },
-      }),
-    },
+    going: styled.dynamic<number>((going) => ({
+      x: `enter:${going === 0 ? 0 : going > 0 ? 1000 : -1000}px exit:${going === 0 ? 0 : going < 0 ? 1000 : -1000}px`,
+      opacity: 'enter:0 exit:0',
+      zIndex: 'exit:0',
+    })),
   } as const,
 })
 
@@ -112,7 +104,7 @@ export const Gallery = () => {
       <XStack
         transition={animationClamped('quickest')}
         overflow="hidden"
-        bg="$black02"
+        bg="black02"
         backdropFilter="blur(20px)"
         items="center"
         position="fixed"
@@ -121,7 +113,6 @@ export const Gallery = () => {
         r={0}
         b={0}
         z={100_000}
-        onPress={closeGallery}
         {...(hidden
           ? {
               opacity: 0,
@@ -131,6 +122,7 @@ export const Gallery = () => {
               opacity: 1,
               pointerEvents: 'auto',
             })}
+        onPress={closeGallery}
       >
         {items && (
           <>
@@ -141,11 +133,11 @@ export const Gallery = () => {
                 closeGallery()
               }}
               position="absolute"
-              t="$4"
-              r="$4"
+              t="4"
+              r="4"
               z={999}
             >
-              <Circle size={40} bg="$color2">
+              <Circle size={40} bg="color2">
                 <XIcon />
               </Circle>
             </Pressable>
@@ -187,7 +179,7 @@ export const Gallery = () => {
 
             <GalleryButton
               aria-label="Carousel left"
-              l="$4"
+              l="4"
               icon={<CaretLeftIcon />}
               onPress={(e: any) => {
                 e.stopPropagation()
@@ -198,7 +190,7 @@ export const Gallery = () => {
 
             <GalleryButton
               aria-label="Carousel right"
-              r="$4"
+              r="4"
               icon={<CaretRightIcon />}
               onPress={(e: any) => {
                 e.stopPropagation()

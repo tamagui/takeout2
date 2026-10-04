@@ -112,6 +112,7 @@ export const AnimatedHomeHeader = memo(({ scrollY }: AnimatedHomeHeaderProps) =>
         t={0}
         z={999}
       />
+
       <Animated.View
         style={[
           { backgroundColor: theme.background04.val },
@@ -121,7 +122,7 @@ export const AnimatedHomeHeader = memo(({ scrollY }: AnimatedHomeHeaderProps) =>
         ]}
       >
         <BlurView intensity={60} position="absolute" inset={0} />
-        <XStack flex={1} items="center" justify="space-between" px="$3" pb="$2">
+        <XStack flex={1} items="center" justify="space-between" px="3" pb="2">
           <Pressable
             onPress={handlePlusPress}
             width={40}
@@ -129,20 +130,15 @@ export const AnimatedHomeHeader = memo(({ scrollY }: AnimatedHomeHeaderProps) =>
             items="center"
             justify="center"
           >
-            <PlusIcon size={24} color="$color12" />
+            <PlusIcon size={24} color="color12" />
           </Pressable>
 
-          <Pressable
-            onPress={handleFeedPress}
-            flexDirection="row"
-            items="center"
-            gap="$2"
-          >
-            <SizableText fontSize="$6" fontWeight="700" color="$color">
+          <Pressable onPress={handleFeedPress} flexDirection="row" items="center" gap="2">
+            <SizableText fontSize="6" fontWeight="700" color="color">
               Takeout
             </SizableText>
             <Animated.View style={animatedCaretStyle}>
-              <CaretDownIcon size={16} color="$color12" />
+              <CaretDownIcon size={16} color="color12" />
             </Animated.View>
           </Pressable>
 
@@ -153,7 +149,7 @@ export const AnimatedHomeHeader = memo(({ scrollY }: AnimatedHomeHeaderProps) =>
             items="center"
             justify="center"
           >
-            <BellIcon size={22} color="$color12" />
+            <BellIcon size={22} color="color12" />
           </Pressable>
         </XStack>
       </Animated.View>

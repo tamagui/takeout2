@@ -186,8 +186,11 @@ git push origin feature-branch
 
 ## database configuration
 
-uncloud deployment uses externally managed databases (digital ocean, render,
-supabase, etc.).
+uncloud deployment uses an externally managed database (digital ocean, render,
+supabase, etc.), or runs postgres on the deploy host itself: set `DEPLOY_DB`
+to `postgresql://<user>:<password>@pgdb:5432/postgres` and the deploy brings
+up the compose `pgdb` service (profile `self-hosted-db`) from those
+credentials before migrations, keeping its data in the `pgdb_data` volume.
 
 ### required databases
 

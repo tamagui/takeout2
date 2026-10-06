@@ -73,46 +73,14 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
     }
   }
 
-  async function gracefulStopPgdb(host: string, sshKey: string): Promise<void> {
-    const ssh = getSSHCmd(host, sshKey)
-    try {
-      const { stdout } = await run(`${ssh} "docker ps -qf name=pgdb"`, {
-        captureOutput: true,
-        silent: true,
-      })
-      const containerId = stdout.trim()
-      if (!containerId) return
-
-      const { stdout: ready } = await run(
-        `${ssh} "docker exec ${containerId} pg_isready -U takeout 2>&1 || echo NOT_READY"`,
-        { captureOutput: true, silent: true },
-      )
-
-      if (ready.includes('NOT_READY')) {
-        console.info(colors.gray('  pgdb: not ready, skipping graceful stop'))
-        return
-      }
-
-      console.info(colors.gray('  pgdb: issuing CHECKPOINT before stop...'))
-      await run(
-        `${ssh} "docker exec ${containerId} psql -U takeout -d postgres -c 'CHECKPOINT;'"`,
-        { silent: true },
-      )
-
-      console.info(colors.gray('  stopping pgdb gracefully (60s timeout)...'))
-      await run(`${ssh} "docker stop -t 60 ${containerId}"`, { silent: true })
-      console.info(colors.gray('  pgdb stopped cleanly'))
-    } catch {
-      console.info(colors.gray('  pgdb: not running or already stopped'))
-    }
-  }
-
   // run migrations as a one-off container from the pushed web image, before the
   // stack deploys. the image carries the repo + node_modules + bun, and migrate.ts
   // creates the zero publication on completion (ensureZeroPublication). running it
   // first means the publication + zero_cvr/zero_cdb databases exist before zero
   // connects upstream — otherwise zero comes up against a db with no publication.
   // db urls go through a scp'd env file so they never land in logs or process args.
+  // the container joins the uncloud network with the cluster's dns so a self-hosted
+  // DEPLOY_DB host (the pgdb service) resolves exactly as it does for web and zero.
   async function runMigrations(
     host: string,
     sshKey: string,
@@ -148,7 +116,7 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
       let migrationOutput = ''
       try {
         const { stdout } = await run(
-          `${ssh} "docker run --rm --env-file ${remoteEnvFile} takeout-web:latest bun src/database/migrate.ts 2>&1"`,
+          `${ssh} 'docker run --rm --network uncloud --dns "$(docker network inspect uncloud -f "{{(index .IPAM.Config 0).Gateway}}")" --dns-search internal --env-file ${remoteEnvFile} takeout-web:latest bun src/database/migrate.ts 2>&1'`,
           { captureOutput: true },
         )
         migrationOutput = stdout.trim()
@@ -173,6 +141,12 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
       await run(`${ssh} "rm -f ${remoteEnvFile}"`, { silent: true }).catch(() => {})
       await fs.promises.unlink(localEnvFile).catch(() => {})
     }
+  }
+
+  // a DEPLOY_DB whose host is `pgdb` runs postgres on the deploy host as the
+  // compose pgdb service (profile self-hosted-db) instead of a managed database
+  function selfHostedDb(deployDb: string): boolean {
+    return new URL(deployDb).hostname === 'pgdb'
   }
 
   async function checkPrerequisites(): Promise<{
@@ -244,7 +218,11 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
 
     console.info(`✅ deploy host: ${DEPLOY_HOST}`)
     console.info(`✅ deploy user: ${DEPLOY_USER}`)
-    console.info(`✅ using external managed database`)
+    console.info(
+      selfHostedDb(deployDb)
+        ? `✅ using the self-hosted pgdb service`
+        : `✅ using external managed database`,
+    )
 
     await checkUncloudCLI()
     await checkSSHKey(DEPLOY_SSH_KEY)
@@ -426,15 +404,30 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
     console.info('\n📝 processing compose file with production env...\n')
     const processedCompose = 'src/uncloud/docker-compose.processed.yml'
     console.info(colors.gray(`   zero version: ${process.env.ZERO_VERSION}`))
+    const upstream = new URL(ZERO_UPSTREAM_DB)
     processComposeEnv('src/uncloud/docker-compose.yml', processedCompose, {
       ...(process.env as Record<string, string | undefined>),
       ZERO_UPSTREAM_DB,
       ZERO_CVR_DB,
       ZERO_CHANGE_DB,
+      ...(selfHostedDb(ZERO_UPSTREAM_DB) && {
+        POSTGRES_USER: decodeURIComponent(upstream.username),
+        POSTGRES_PASSWORD: decodeURIComponent(upstream.password),
+        POSTGRES_DB: upstream.pathname.slice(1),
+      }),
     })
 
     await gracefulStopZero(host, DEPLOY_SSH_KEY)
-    await gracefulStopPgdb(host, DEPLOY_SSH_KEY)
+
+    // a self-hosted database comes up before migrations. without --recreate uncloud
+    // restarts it only when its image or config changed, keeping the pgdb_data volume.
+    if (selfHostedDb(ZERO_UPSTREAM_DB)) {
+      await deployStack(processedCompose, {
+        profile: 'self-hosted-db',
+        service: 'pgdb',
+        recreate: false,
+      })
+    }
 
     // migrate before deploying so the zero publication exists before zero starts
     await runMigrations(host, DEPLOY_SSH_KEY, {
@@ -444,7 +437,6 @@ await cmd`Deploy to production`.run(async ({ run, colors, fs, path }) => {
     })
 
     // deploy web with --recreate to pick up the freshly pushed :latest image
-    // (no pgdb profile — using an external managed database)
     await deployStack(processedCompose, { service: 'web' })
 
     // deploy zero WITHOUT --recreate: uncloud restarts it only when its image/config

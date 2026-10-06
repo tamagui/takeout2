@@ -1,70 +1,67 @@
-# Publishing the Takeout example
+# Publishing Takeout
 
-This branch is a reviewable replacement of the starter. It does not upgrade the
-existing production database, publish npm packages, change repository visibility,
-or deploy to `takeout.tamagui.dev`. Nate’s explicit instruction prohibiting
-Takeout main pushes remains in effect.
+Nate, 2026-10-06: "takeout is gonna move to the new version. In fact we can do
+that now ... the new takeout site actually can be migrated right now as well"
+and "That should already be on a branch". This authorizes the web cutover and
+landing the validated replacement branch on Takeout main. Repository visibility
+and native signing remain unchanged.
 
-## Existing production
+Nate, 2026-10-06, reviewing the preview: "the video doesn't show for me at least
+in my in-line browser here" and "have we refreshed it to talk like about the
+whole new stack that we've done with Cloudflare and the new sink engine". The
+landing and docs describe One 2, Tamagui 3, Better Auth, Drizzle, Rust Lite Sync,
+SQLite Durable Objects, and R2. The phone demo uses one H.264 MP4 in the owned
+R2 bucket, a demo poster, inline playback, and native controls for browsers
+that restrict autoplay.
 
-The previous starter uses Postgres, stock Zero, One 1.25, Tamagui 2, Expo native
-configuration, and Uncloud/SST deployment. The template uses SQLite, Lite Sync,
-One 2, Tamagui 3, and Cloudflare Durable Objects. The old workflows and release
-scripts are replaced by a build-only workflow in this candidate. They remain
-available on the unchanged main branch.
+## Cloudflare ownership
 
-The old schema includes reports, blocks, devices, invitations, user state, and
-whitelist records beyond this template’s feed, comments, profiles, notifications,
-and Better Auth records. Those product features are absent from this example.
-No old rows or infrastructure have been changed.
+The app deploys directly into account `aa20b480cc813f2131bc005e2b7fd140`.
+`takeout-site` owns the singleton application SQLite Durable Object and R2
+uploads. `takeout-site-sync` owns the Lite Sync cache and reaches the app's
+private `OrezDataFeed` entrypoint through a service binding. The app forwards
+`/zero-http/*` to that sync worker. `scripts/deploy-cloudflare.ts` uses the
+published `orez-lite/cloudflare/build` helpers and the generated query registry.
+The app applies checked-in SQLite migrations without demo fixtures.
 
-The draft is prepared for free open-source use under MIT, with no paid tier or
-Help & Support service, following Nate’s direction. Existing production remains unchanged.
+GitHub Actions builds and checks each pull request, then deploys pushes to main.
+It uses `TAKEOUT_CLOUDFLARE_API_TOKEN` scoped to Workers, routes, and R2 in this
+account and zone, plus `TAKEOUT_BETTER_AUTH_SECRET`. The bucket is provisioned
+once; deployments preserve its contents and the SQLite namespaces. No reset
+endpoint secret remains on the production worker.
+
+## Data cutover
+
+The old Supabase `takeout-new` data is read only during migration. Five users,
+one credential account, five public profiles, seven posts, and fifty comments
+map to the new schema. Timestamp columns convert from PostgreSQL timestamps to
+integer epoch milliseconds. Private auth IDs and password hashes are preserved;
+existing browser sessions must sign in again. Derived comment counts are
+computed from imported comments. Columns belonging to retired features remain
+in the offsite PostgreSQL dump rather than the new database.
+
+Two image URLs point at an unavailable historical localhost upload service.
+Their post records and comments are preserved, with images replaced by bundled
+demo photos. The other images are copied to the new upload bucket so the feed
+can survive retirement of old image storage.
+
+The old VPS stack, `zero.tamagui.dev`, and Supabase remain live until the cutover
+owner closes them after the one-hour observation. Native and TestFlight work
+are outside this web cutover. The removed iOS workflow used an Expo bundle
+command against a starter that now builds native with One; it is not carried
+into this deployment.
+
+## Observation
+
+Record the first verified production response time and `version.json` marker.
+Run `scripts/watch-cutover.ts <origin> <version> <started-at-ISO>` through one
+detached `tm wait` for the remaining observation interval, at most fifty minutes.
+The watcher checks the homepage, login, version, and unsigned sync route after
+one hour has elapsed. Desktop and phone flow captures accompany those endpoint
+checks. The coordinator owns CI and closure of the old infrastructure.
 
 ## Source publication
 
-The free MIT scope and preserved artwork are approved. Nate requires this
-version to remain private until he is ready, using the existing private Takeout
-repository for its eventual open-source publication. No new public repository
-was created, and both existing Takeout repositories remain private.
-
-The isolated example at `https://takeout-example-r51063.contrast.run` was tested
-and then withdrawn. Its Cloudflare dynamic route is suspended. The homepage,
-login, auth API, static assets, and direct worker URL return 404. Its source and
-stored data are preserved. Do not deploy or re-enable it until Nate explicitly
-permits publication. The earlier Takeout main-push restriction remains.
-
-Replacing `takeout.tamagui.dev` requires a separately reviewed migration
-preserving accounts, posts, comments, uploads, relationships, and timestamp units.
-
-Do not point the old production workflows at the new SQLite app. Do not reuse
-populated identifiers or buckets for a preview. Auth, database, sync, and upload
-bindings must belong to the same new deployment. Native builds keep the existing
-Takeout scheme and bundle variants; production signing remains owner-controlled.
-
-## Example deployment
-
-After the owner explicitly permits publication, sign into Contrast from a clean
-clone and create a new `app` project with
-`contrast link --create --name takeout-example --template app`, and deploy it
-using an unused slug. Do not link this branch to an existing production project.
-The deployment pipeline owns the Cloudflare worker, SQL Durable Object, Rust
-sync host, and upload bindings. Smoke-test landing, demo login, feed sync,
-comments, profile, and a mutation against that deployed URL before calling the
-example shipped.
-
-## Data initialization
-
-Ordinary production migrations apply the schema without development fixtures.
-For this isolated QA example, the existing `/api/demo/reset` route was armed
-with a private `DEMO_ADMIN_TOKEN`, then initialized once from `database/seed.ts`
-under a real clock. The existing demo profile was preserved. Its database
-contains four public profiles, six posts, and three initial comments.
-`DEMO_READ_ONLY` is absent so comment persistence can be verified. The reset
-endpoint returns 404 without its token; credentials are never committed.
-
-Before withdrawal, deployed desktop and phone checks passed demo login, the six-post feed,
-post details, profile/settings, and signed-out protection. A new comment survived
-reload. Exact functional source `d2d758a6` passes a frozen Linux install,
-typecheck, Cloudflare build, and bundle secret scan. Final authored social-card
-verification is held with public deployment until the owner is ready.
+The repository remains private. Takeout and the bundled source packages retain
+their MIT licensing and original artwork. There is no paid tier or support
+service. No npm release or repository visibility change occurs in this cutover.

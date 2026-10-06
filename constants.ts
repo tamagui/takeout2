@@ -6,7 +6,7 @@ export const APP_NAME_LOWERCASE = APP_NAME.toLowerCase()
 export const APP_SCHEME = 'takeout'
 // the one sentence under the name on the landing page
 export const APP_TAGLINE =
-  'A starter you can ship. Auth and live sync across web and iOS, ready for whatever you build next.'
+  'One 2, Tamagui 3, Better Auth, and Rust Lite Sync. A starter for web and React Native, running on Cloudflare.'
 
 // domain
 export const DOMAIN = 'takeout.tamagui.dev'

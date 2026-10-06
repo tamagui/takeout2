@@ -16,8 +16,8 @@ bun install
 bun dev
 ```
 
-`bun dev` boots the One.js dev server with one native SQLite application
-database and native Orez/Zero sync. PORT_OFFSET lets you run multiple instances
+`bun dev` boots the One 2 dev server with one SQLite application
+database and the Rust Lite Sync engine. PORT_OFFSET lets you run multiple instances
 at once:
 
 ```bash
@@ -35,8 +35,15 @@ bun generate:migrations
 ```
 
 Posts and comments are read through `data/<name>/queries.ts` and written via
-`data/<name>/mutations.ts`. Zero handles optimistic updates and rebases — you
+`data/<name>/mutations.ts`. The Zero client handles optimistic updates and rebases — you
 write the mutation function once and it runs on the client and server.
+
+## Deploying to Cloudflare
+
+The production build runs on Workers with SQLite Durable Objects, Lite Sync,
+and R2 uploads. `scripts/deploy-cloudflare.ts` prepares and deploys both workers.
+GitHub Actions runs this path on main. See `docs/publishing.md` in the repository
+for account bindings, secrets, and migration details.
 
 ## Where to go next
 
@@ -47,4 +54,4 @@ Most product work happens in three places:
 - **`interface/`** — shared UI primitives
 
 The public marketing surfaces (the splash + this docs page) live under
-`app/index+ssg.tsx`, `app/docs/`, and `interface/site/`.
+`app/index+ssg.tsx`, `app/docs/`, and `interface/marketing/`.

@@ -170,7 +170,8 @@
     "drizzle-kit": "1.0.0-beta.9-e89174b",
     "peachsim": "0.1.628",
     "typescript": "7.0.2",
-    "vite": "^8.2.2"
+    "vite": "^8.2.2",
+    "wrangler": "4.114.0"
   },
   "trustedDependencies": [
     "@rocicorp/zero-sqlite3",

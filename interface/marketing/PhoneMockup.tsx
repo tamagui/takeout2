@@ -42,7 +42,9 @@ export function PhoneMockup() {
             loop
             muted
             playsInline
-            poster="/iphone-frame.webp"
+            controls
+            aria-label="Takeout app demo"
+            poster="/appdemo2_poster.webp"
             ref={(el) => {
               if (el) el.playbackRate = 1.3
             }}
@@ -56,11 +58,7 @@ export function PhoneMockup() {
             }}
           >
             <source
-              src="https://pub-836fc09a8b0e484f900cd6aa05105026.r2.dev/videos/appdemo2_h265.mp4"
-              type="video/mp4; codecs=hvc1"
-            />
-            <source
-              src="https://pub-836fc09a8b0e484f900cd6aa05105026.r2.dev/videos/appdemo2_h264.mp4"
+              src="https://pub-94d0316bd2b44bd59d3d3627e6eebd8f.r2.dev/marketing/demo-h264.mp4"
               type="video/mp4"
             />
           </video>

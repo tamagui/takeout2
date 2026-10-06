@@ -1,9 +1,13 @@
-name: example build
+name: takeout cloudflare
 
 on:
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -21,10 +25,19 @@ jobs:
       - run: bun run typecheck
       - run: bun run build
         env:
-          ALLOW_MISSING_ENV: '1'
-          ONE_SERVER_URL: https://example.invalid
-          BETTER_AUTH_URL: https://example.invalid
+          ALLOW_MISSING_ENV: "1"
+          ONE_SERVER_URL: https://takeout.tamagui.dev
+          BETTER_AUTH_URL: https://takeout.tamagui.dev
       - uses: actions/upload-artifact@v4
         with:
           name: takeout-cloudflare
           path: dist/
+      - name: Deploy app and Lite Sync workers
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          bun scripts/deploy-cloudflare.ts
+          printf '%s' "$BETTER_AUTH_SECRET" | bunx wrangler secret put BETTER_AUTH_SECRET --config dist/worker/wrangler.json
+        env:
+          ONE_SERVER_URL: https://takeout.tamagui.dev
+          CLOUDFLARE_API_TOKEN: ${{ secrets.TAKEOUT_CLOUDFLARE_API_TOKEN }}
+          BETTER_AUTH_SECRET: ${{ secrets.TAKEOUT_BETTER_AUTH_SECRET }}

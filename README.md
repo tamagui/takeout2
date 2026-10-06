@@ -41,22 +41,20 @@ backend that build should use.
 
 ## Deploy
 
-The production build emits `dist/worker` and `dist/client` for Cloudflare. The
-app needs its SQLite Durable Object, Rust sync host, auth secret, and R2 upload
-bindings. Contrast’s deployment pipeline provisions those together:
+The production build emits `dist/worker` and `dist/client` for Cloudflare.
+`takeout.tamagui.dev` runs the `takeout-site` app worker, its SQLite Durable
+Object, the `takeout-site-sync` Lite Sync worker, and the `takeout-site-files`
+R2 bucket. Pushes to `main` build, typecheck, and deploy through GitHub Actions.
 
 ```sh
-contrast login
-contrast link --create --name takeout-example --template app
-contrast deploy --slug takeout-example
+ALLOW_MISSING_ENV=1 ONE_SERVER_URL=https://takeout.tamagui.dev BETTER_AUTH_URL=https://takeout.tamagui.dev bun run build
+ONE_SERVER_URL=https://takeout.tamagui.dev bun scripts/deploy-cloudflare.ts
 ```
 
-Run those commands from a clean clone. [docs/publishing.md](./docs/publishing.md)
-records the private publication hold and production boundary.
-Production deployments apply the schema without development seed data. The
-isolated QA example was initialized with the six-post fixture, tested, and then
-withdrawn from public access.
-The branch CI checks types and produces a build artifact; it does not deploy.
+Wrangler uses `CLOUDFLARE_API_TOKEN`. The app's `BETTER_AUTH_SECRET` is a worker
+secret. [docs/publishing.md](./docs/publishing.md) records the cutover, data
+mapping, and deployment ownership. Native builds are manual and out of scope
+for the web cutover; the retired Expo and Uncloud workflows are removed.
 
 ## Source and license
 
@@ -68,4 +66,4 @@ private Contrast engine packages are not copied here.
 Takeout source is available under the [MIT License](./LICENSE). Third-party
 dependencies retain their own licenses. There is no paid tier or Help & Support
 service. The existing repository stays private until the owner is ready to
-open-source it. Public demo access is disabled.
+open-source it. The hosted app offers demo login.

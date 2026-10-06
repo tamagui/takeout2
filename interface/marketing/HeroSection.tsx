@@ -138,25 +138,18 @@ export function HeroSection() {
             <Strong color="color-11">
               Most starter kits <HighlightText fontWeight="700">suck</HighlightText>
             </Strong>
-            . <Strong color="color-11">Takeout sucks less.</Strong> We&nbsp;took
-            novel&nbsp;tech, made it work well, then&nbsp;added CI/CD, IaC, UI, lots of
-            “agent” stuff, and{' '}
+            . <Strong color="color-11">Takeout sucks less.</Strong> One 2 and Tamagui 3
+            for web and React Native. Better Auth for sign-in. Drizzle and our Rust Lite
+            Sync engine for live data. All wired up, with{' '}
             <Link href="/docs/intro">
               <Span color="color-11">the docs</Span>
-            </Link>{' '}
-            — it's&nbsp;what we use for ourselves, and our{' '}
-            <Link href="https://addeven.com" target="_blank">
-              <Span color="color-11">clients</Span>
             </Link>
             .
           </HeroSubtitle>
 
           <HeroSubtitle>
-            It's the{' '}
-            <Strong fontWeight="600" color="color-11">
-              fastest way to build something&nbsp;great
-            </Strong>{' '}
-            on both React Native and web.
+            Deploy to <Strong color="color-11">Cloudflare Workers</Strong>, with SQLite in
+            a Durable Object and uploads in R2. One app, live across clients.
           </HeroSubtitle>
 
           <XStack maxW="100%" gap={13} mt={7} items="center">

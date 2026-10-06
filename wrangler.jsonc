@@ -1,16 +1,14 @@
-// One merges this into the generated dist/worker/wrangler.json during `one build`.
-// Only contains template-stable bindings; contrast overrides `name` per deploy slug
-// via `wrangler deploy --name <slug>`.
+// one merges this into dist/worker/wrangler.json during the build.
+// scripts/deploy-cloudflare.ts adds the app route, sync service, and R2 binding.
 {
   "compatibility_date": "2026-04-28",
   "compatibility_flags": ["nodejs_compat"],
-  // the app keeps its authoritative SQL DO; a per-app Rust worker owns sync.
+  // the app owns authoritative SQLite; the separate Rust worker owns sync.
   "durable_objects": {
     "bindings": [{ "name": "ZERO_SQL_DO", "class_name": "ZeroSqlDO" }],
   },
   "migrations": [
-    { "tag": "v1", "new_sqlite_classes": ["ZeroCacheDO", "ZeroSqlDO"] },
-    { "tag": "v3-rust-sync-host", "deleted_classes": ["ZeroCacheDO"] },
+    { "tag": "v1", "new_sqlite_classes": ["ZeroSqlDO"] },
   ],
   "observability": {
     "logs": {

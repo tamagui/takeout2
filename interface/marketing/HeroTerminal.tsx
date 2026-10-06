@@ -95,8 +95,8 @@ const steps: CommandStep[] = [
     command: 'bun install',
     output: [
       '  Installing dependencies...',
-      '  Auth and live sync configured',
-      '  Ready to dev',
+      '  Better Auth + Drizzle configured',
+      '  Rust Lite Sync ready',
     ],
   },
   {
@@ -112,9 +112,9 @@ const steps: CommandStep[] = [
     command: 'bun run build',
     output: [
       '  Building for production...',
-      '  Bundling web + native targets...',
-      '  Optimizing assets...',
-      '  Cloudflare worker built',
+      '  Bundling One 2 app...',
+      '  SQLite Durable Object + R2',
+      '  Cloudflare app + sync workers ready',
     ],
   },
 ]

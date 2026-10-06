@@ -1,29 +1,33 @@
 ---
 title: Introduction
-description: A starter app with auth and live sync across web + iOS.
+description: One 2, Tamagui 3, and Rust Lite Sync on Cloudflare.
 ---
 
 # Takeout
 
-Takeout is a starter template for a real, cross-platform app. Auth and public
-profiles are wired up, with data synced live between web and iOS through Zero
-and one native SQLite application database.
+Takeout is a starter for web and React Native apps. The live web demo runs on
+Cloudflare Workers, with SQLite in a Durable Object and uploads in R2.
 
 ## What's in the box
 
-- **Auth** — email and password via better-auth, with a built-in
-  "Login as Demo User" button for fast first runs.
-- **Live data** — Zero + Drizzle keep clients and the server in sync without
-  hand-rolled sockets.
-- **Cross-platform UI** — Tamagui for design tokens, animations, and
-  responsive layouts that compile down to both web and native React Native.
-- **Public surface:** a landing page (the one you're hitting right now) and
-  docs compiled to HAST during the production build.
+- **One 2** handles file-based routes, loaders, static generation, and server
+  rendering on web, with Metro for native builds.
+- **Tamagui 3** shares design tokens, components, and responsive layouts across
+  web and React Native.
+- **Better Auth** handles email and password sign-in and sessions. Use
+  "Login as Demo User" to explore the feed without registering.
+- **Drizzle** defines the application SQLite schema and migrations in TypeScript.
+- **Lite Sync** is our Rust sync engine, packaged as `orez-lite`. It runs as
+  WebAssembly in its own Durable Object and keeps client queries live. The Zero
+  client and `on-zero` helpers provide typed queries and optimistic mutations.
+- **Cloudflare Workers and R2** serve the app and API and store uploads. GitHub
+  Actions builds and deploys the app and sync workers on a push to main.
 
-## When to pick this template
+## How data moves
 
-Pick **Takeout** if you want a real product app to evolve from — auth and
-data are wired so you can focus on what makes your app yours.
+One SQLite Durable Object owns users, sessions, posts, and comments. The sync
+worker reads its private data feed through a service binding. The app forwards
+`/zero-http/*` to that worker, so auth and live data use the same origin.
 
-If you only need a marketing site or static blog, the **Static Site**
-template is leaner.
+Locally, `bun dev` runs the app with SQLite and Lite Sync. See
+[Getting started](/docs/getting-started) for routes, schema generation, and mutations.

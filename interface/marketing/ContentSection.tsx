@@ -1,7 +1,6 @@
 import { H1, H2, H3, H4, Paragraph, styled, Text, XStack, YStack } from 'tamagui'
-
 import { Link } from '~/interface/app/Link'
-import { OneLogo, TamaguiLogo, ZeroLogo } from './TakeoutIcons'
+import { OneLogo, TamaguiLogo } from './TakeoutIcons'
 import { Em, GradientText, InlineLink, Strong } from './Typography'
 
 const SectionContainer = styled(YStack, {
@@ -97,8 +96,6 @@ const ContentTitle = styled(H1, {
   fontWeight: '800',
   color: 'color',
   text: 'center',
-
-
 })
 
 export function ContentSection() {
@@ -121,28 +118,15 @@ export function ContentSection() {
       </ContentParagraph>
 
       <ContentParagraph>
-        Takeout now uses{' '}
-        <Link href="/docs/intro">
-          <InlineLink fontWeight="600">the Contrast app template</InlineLink>
-        </Link>
-        , bringing the same app stack to React and React Native.
+        One 2 handles routes and rendering. Tamagui 3 shares UI across web and React
+        Native. Better Auth handles sign-in, and Drizzle defines the SQLite schema. Our
+        Rust Lite Sync engine keeps queries and optimistic mutations live across clients.
       </ContentParagraph>
 
       <ContentParagraph>
-        Even when sharing a lot of code you can easily get 90+ Lighthouse performance
-        scores, like this very page, thanks to our libraries{' '}
-        <Link href="https://tamagui.dev" target="_blank">
-          <InlineLink>Tamagui</InlineLink>
-        </Link>{' '}
-        and{' '}
-        <Link href="https://onestack.dev" target="_blank">
-          <InlineLink>One</InlineLink>
-        </Link>
-        . Then, make your app come alive better and easier than ever before with{' '}
-        <Link href="https://zero.rocicorp.dev" target="_blank">
-          <InlineLink>Zero</InlineLink>
-        </Link>
-        .
+        The backend runs on Cloudflare Workers. SQLite lives in a Durable Object, Lite
+        Sync runs in its own Durable Object, and R2 stores uploads. The demo you can sign
+        into here runs on this stack, deployed from GitHub Actions.
       </ContentParagraph>
 
       {/* goals section */}
@@ -213,9 +197,9 @@ export function ContentSection() {
         <GoalItem>
           <GoalTitle>Low risk</GoalTitle>
           <ContentParagraph>
-            Self host or deploy to the cloud. Runs on SQLite with Orez Lite and Zero sync. Unplug parts you don't
-            like. Libraries chosen for being OSS, popular, single-purpose, and well
-            maintained and documented.
+            Run locally with SQLite, then deploy the same app to Cloudflare. Your schema,
+            queries, mutations, and permissions stay in one repository. The framework, UI,
+            auth, and sync libraries are open source.
           </ContentParagraph>
         </GoalItem>
 
@@ -248,19 +232,14 @@ export function ContentSection() {
           </XStack>
 
           <ContentParagraph>
-            Vite is the best bundler for web. One ported Expo Router to Vite, then added a
-            lot of stuff needed for high performance web: loaders, render modes, smart
-            preloading and prefetching, and bundle size improvements. And a whole bunch
-            more than that.
+            One 2 brings file-based routes, loaders, static generation, and server
+            rendering to Vite. Share routes and app code across web and React Native, with
+            Metro handling native builds.
           </ContentParagraph>
 
           <ContentParagraph>
-            The new <Strong>Metro-mode</Strong> gives you Vite's simplicity for web, and
-            Metro's maturity on native. One is stable for production use, and{' '}
-            <Link href="https://onestack.dev/blog/version-one-rc1">
-              <InlineLink fontWeight="600">read our v1 RC1 releae post here</InlineLink>
-            </Link>
-            .
+            Takeout uses One's Cloudflare worker output for the website and API. The same
+            app structure supports native screens when you're ready to ship them.
           </ContentParagraph>
         </TechCard>
 
@@ -290,11 +269,7 @@ export function ContentSection() {
           </ContentParagraph>
 
           <ContentParagraph>
-            <Link
-              href="https://tamagui.dev/docs/intro/introduction"
-              target="_blank"
-             
-            >
+            <Link href="https://tamagui.dev/docs/intro/introduction" target="_blank">
               <InlineLink fontWeight="600">Read the Tamagui documentation</InlineLink>
             </Link>{' '}
             with too much to list.
@@ -302,51 +277,38 @@ export function ContentSection() {
         </TechCard>
 
         <TechCard>
-          <XStack items="center" gap={13}>
-            <LogoWrapper bg="rgba(59, 130, 246, 0.15)">
-              <ZeroLogo size={24} />
-            </LogoWrapper>
-            <Link href="https://zero.rocicorp.dev" target="_blank">
-              <TechTitle color="var(--blue-11)">Zero</TechTitle>
-            </Link>
-          </XStack>
-
+          <TechTitle color="var(--blue-11)">Lite Sync</TechTitle>
           <ContentParagraph>
-            <Strong color="color">
-              Zero solves the worst area of frontend development today
-            </Strong>
-            : getting data to the client, keeping it in sync, and mutating it instantly.
-            It's{' '}
-            <Strong>
-              like Firebase, but open source, with relations, types, and
-              optimistic mutations built in
-            </Strong>
-            .
+            Our <Strong color="color">Rust sync engine</Strong>, packaged as{' '}
+            <Link href="https://github.com/natew/orez" target="_blank">
+              <InlineLink fontWeight="600">orez-lite</InlineLink>
+            </Link>
+            , runs as WebAssembly in a Cloudflare Durable Object. It syncs live queries
+            from the application database to clients and supports optimistic mutations.
           </ContentParagraph>
 
           <ContentParagraph>
-            Our{' '}
-            <Link
-              href="https://github.com/natew/orez/tree/main/packages/on-zero"
-              target="_blank"
-             
-            >
-              <InlineLink fontWeight="600">on-zero</InlineLink>
-            </Link>{' '}
-            library makes it feel like Rails, auto-generating boilerplate, gluing things
-            together, giving you simple CRUD and permissions, and more.
+            The Zero client and our <Strong>on-zero</Strong> helpers give the app typed
+            queries, shared mutations, and permissions. Drizzle owns the SQLite schema;
+            Lite Sync connects it to the UI.
           </ContentParagraph>
         </TechCard>
 
         <TechCard>
-          <TechTitle>And a bunch of things we use</TechTitle>
+          <TechTitle>Cloudflare, SQLite, and R2</TechTitle>
           <ContentParagraph>
-            This isn't just some thrown together starter, it's extracted from the stack
-            we've always wanted, and we use it ourselves to start new projects.{' '}
-            <Strong color="color">The UI comes from contrast-ui</Strong>. Plus
-            the best libraries we can find, like{' '}
-            <Strong color="color">Better Auth</Strong> for auth, or{' '}
-            <Strong>Cloudflare</Strong> workers for production.
+            A Worker serves the site and API. A SQLite Durable Object owns application
+            data, a second Worker hosts Lite Sync, and R2 stores images and uploads.
+            GitHub Actions builds and deploys both workers when you push to main.
+          </ContentParagraph>
+        </TechCard>
+
+        <TechCard>
+          <TechTitle>Better Auth and Drizzle</TechTitle>
+          <ContentParagraph>
+            Better Auth handles email and password sign-in, sessions, and the demo login.
+            Drizzle defines tables and migrations in TypeScript. Both use the same
+            application SQLite database, alongside the feed and comments.
           </ContentParagraph>
         </TechCard>
       </YStack>

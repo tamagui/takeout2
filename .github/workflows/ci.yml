@@ -2,6 +2,11 @@ name: CI
 
 on:
   workflow_dispatch:
+    inputs:
+      deploy_only:
+        description: skip the e2e tests and deploy main
+        type: boolean
+        default: false
   push:
     branches:
       - '**'
@@ -69,7 +74,7 @@ jobs:
           ORIGIN_CA_KEY_B64: ${{ secrets.ORIGIN_CA_KEY_B64 }}
 
       - name: CI/CD
-        run: bun ops release ${{ github.ref != 'refs/heads/main' && '--skip-deploy' || '' }}
+        run: bun ops release ${{ github.ref != 'refs/heads/main' && '--skip-deploy' || '' }} ${{ inputs.deploy_only && '--deploy-only' || '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # origin ca certs for cloudflare ssl (base64 encoded)

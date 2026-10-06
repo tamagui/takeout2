@@ -108,7 +108,7 @@ export default {
       },
 
       react: {
-        compiler: process.env.NODE_ENV === 'production',
+        compiler: process.env.NODE_ENV === 'production' ? true : 'native',
       },
 
       native: {
@@ -119,8 +119,6 @@ export default {
             return {
               ...config,
               plugins: [
-                // React Compiler for automatic memoization - must run first
-                'babel-plugin-react-compiler',
                 ...(config?.plugins || []),
                 // Hot Updater (React Native OTA solution)
                 'hot-updater/babel-plugin',

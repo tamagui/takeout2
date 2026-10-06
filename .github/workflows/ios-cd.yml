@@ -1,6 +1,7 @@
 name: iOS CD
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -47,8 +48,9 @@ jobs:
   build-and-deploy:
     needs: check-trigger
     if: needs.check-trigger.outputs.should-run == 'true' && github.event.pull_request.draft != true
-    # use warpbuild macos runner for faster builds (16 cores, 32GB RAM)
-    runs-on: warp-macos-15-arm64-6x
+    # self-hosted fleet mac (m1max-takeout); it builds with the host's selected
+    # xcode and homebrew fastlane
+    runs-on: [heavy, takeout]
     timeout-minutes: 60
     env:
       # select bundle id based on variant
@@ -59,13 +61,8 @@ jobs:
         with:
           fetch-depth: 0  # fetch full history for changelog generation
 
-      - name: Select Xcode
-        run: |
-          XCODE_VERSION=$(cat .xcode-version 2>/dev/null || echo "16.0")
-          echo "Selecting Xcode $XCODE_VERSION"
-          sudo xcode-select -s "/Applications/Xcode_${XCODE_VERSION}.app/Contents/Developer" || \
-          sudo xcode-select -s "/Applications/Xcode.app/Contents/Developer"
-          xcodebuild -version
+      - name: Xcode Version
+        run: xcodebuild -version
 
       - name: Install
         uses: ./.github/actions/install
@@ -200,11 +197,8 @@ jobs:
           echo "keychain-name=$keychain_name" >> $GITHUB_OUTPUT
           echo "keychain-password=$keychain_password" >> $GITHUB_OUTPUT
 
-      - name: Install Fastlane
-        run: |
-          # always install latest fastlane for match compatibility
-          gem install fastlane --no-document
-          fastlane --version
+      - name: Fastlane Version
+        run: fastlane --version
 
       - name: Install Apple WWDR Certificate
         run: |

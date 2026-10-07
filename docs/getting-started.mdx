@@ -17,7 +17,7 @@ bun dev
 ```
 
 `bun dev` boots the One 2 dev server with one SQLite application
-database and the Rust Lite Sync engine. PORT_OFFSET lets you run multiple instances
+database and Durable Zero sync. PORT_OFFSET lets you run multiple instances
 at once:
 
 ```bash
@@ -40,7 +40,7 @@ write the mutation function once and it runs on the client and server.
 
 ## Deploying to Cloudflare
 
-The production build runs on Workers with SQLite Durable Objects, Lite Sync,
+The production build runs on Workers with SQLite Durable Objects, Durable Zero,
 and R2 uploads. `scripts/deploy-cloudflare.ts` prepares and deploys both workers.
 GitHub Actions runs this path on main. See `docs/publishing.md` in the repository
 for account bindings, secrets, and migration details.

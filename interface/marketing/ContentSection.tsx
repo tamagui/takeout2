@@ -119,13 +119,13 @@ export function ContentSection() {
 
       <ContentParagraph>
         One 2 handles routes and rendering. Tamagui 3 shares UI across web and React
-        Native. Better Auth handles sign-in, and Drizzle defines the SQLite schema. Our
-        Rust Lite Sync engine keeps queries and optimistic mutations live across clients.
+        Native. Better Auth handles sign-in, and Drizzle defines the SQLite schema.
+        Durable Zero brings Zero's client and query model to Cloudflare Durable Objects.
       </ContentParagraph>
 
       <ContentParagraph>
-        The backend runs on Cloudflare Workers. SQLite lives in a Durable Object, Lite
-        Sync runs in its own Durable Object, and R2 stores uploads. The demo you can sign
+        The backend runs on Cloudflare Workers. SQLite lives in a Durable Object, Durable
+        Zero runs in its own Durable Object, and R2 stores uploads. The demo you can sign
         into here runs on this stack, deployed from GitHub Actions.
       </ContentParagraph>
 
@@ -158,7 +158,7 @@ export function ContentSection() {
         </GoalItem>
 
         <GoalItem>
-          <GoalTitle>Platform-native</GoalTitle>
+          <GoalTitle>Truly native</GoalTitle>
           <ContentParagraph>
             A top-tier experience on every platform, served from a single Vite app and
             file system route setup:
@@ -181,8 +181,9 @@ export function ContentSection() {
 
           <SubGoalItem>
             <ContentParagraph>
-              And of course, <Strong>native iOS and Android apps</Strong> with native UI
-              and navigation, Liquid Glass, Material UI, etc.
+              And of course, <Strong>100% native UI on iOS and Android</Strong>. One 2
+              exposes SwiftUI, Jetpack Compose, native navigation, Liquid Glass, and
+              Material components, with direct access to native APIs.
             </ContentParagraph>
           </SubGoalItem>
         </GoalItem>
@@ -238,8 +239,18 @@ export function ContentSection() {
           </ContentParagraph>
 
           <ContentParagraph>
-            Takeout uses One's Cloudflare worker output for the website and API. The same
-            app structure supports native screens when you're ready to ship them.
+            One 2 gives you access to any native API through React Native and native
+            modules. Built-in features include cameras, maps, notifications, haptics, and
+            secure storage. On iOS, that extends to purchases, background tasks, widgets,
+            and Live Activities.
+          </ContentParagraph>
+          <ContentParagraph>
+            Use platform UI directly, share app logic, and add your own native code
+            wherever your product needs it.{' '}
+            <Link href="https://onestack.dev/docs/native-overview" target="_blank">
+              <InlineLink fontWeight="600">Explore One 2's native features</InlineLink>
+            </Link>
+            .
           </ContentParagraph>
         </TechCard>
 
@@ -277,9 +288,11 @@ export function ContentSection() {
         </TechCard>
 
         <TechCard>
-          <TechTitle color="var(--blue-11)">Lite Sync</TechTitle>
+          <TechTitle color="var(--blue-11)">Durable Zero</TechTitle>
           <ContentParagraph>
-            Our <Strong color="color">Rust sync engine</Strong>, packaged as{' '}
+            <Strong color="color">Zero, adapted to Cloudflare Durable Objects.</Strong>{' '}
+            Durable Zero uses Zero's client and query model. Our Rust sync engine,
+            packaged as{' '}
             <Link href="https://github.com/natew/orez" target="_blank">
               <InlineLink fontWeight="600">orez-lite</InlineLink>
             </Link>
@@ -290,7 +303,7 @@ export function ContentSection() {
           <ContentParagraph>
             The Zero client and our <Strong>on-zero</Strong> helpers give the app typed
             queries, shared mutations, and permissions. Drizzle owns the SQLite schema;
-            Lite Sync connects it to the UI.
+            Durable Zero connects it to the UI.
           </ContentParagraph>
         </TechCard>
 
@@ -298,7 +311,7 @@ export function ContentSection() {
           <TechTitle>Cloudflare, SQLite, and R2</TechTitle>
           <ContentParagraph>
             A Worker serves the site and API. A SQLite Durable Object owns application
-            data, a second Worker hosts Lite Sync, and R2 stores images and uploads.
+            data, a second Worker hosts Durable Zero, and R2 stores images and uploads.
             GitHub Actions builds and deploys both workers when you push to main.
           </ContentParagraph>
         </TechCard>

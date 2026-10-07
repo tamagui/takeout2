@@ -139,8 +139,9 @@ export function HeroSection() {
               Most starter kits <HighlightText fontWeight="700">suck</HighlightText>
             </Strong>
             . <Strong color="color-11">Takeout sucks less.</Strong> One 2 and Tamagui 3
-            for web and React Native. Better Auth for sign-in. Drizzle and our Rust Lite
-            Sync engine for live data. All wired up, with{' '}
+            for web and truly native apps.{' '}
+            <Strong color="color-11">100% native UI</Strong>, with SwiftUI, Jetpack
+            Compose, and direct access to native APIs. All wired up, with{' '}
             <Link href="/docs/intro">
               <Span color="color-11">the docs</Span>
             </Link>
@@ -148,8 +149,9 @@ export function HeroSection() {
           </HeroSubtitle>
 
           <HeroSubtitle>
-            Deploy to <Strong color="color-11">Cloudflare Workers</Strong>, with SQLite in
-            a Durable Object and uploads in R2. One app, live across clients.
+            Better Auth for sign-in. Drizzle and Durable Zero for live data. Deploy to{' '}
+            <Strong color="color-11">Cloudflare Workers</Strong>, with SQLite in a Durable
+            Object and uploads in R2. One app, live across clients.
           </HeroSubtitle>
 
           <XStack maxW="100%" gap={13} mt={7} items="center">

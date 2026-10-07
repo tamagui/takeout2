@@ -96,7 +96,7 @@ const steps: CommandStep[] = [
     output: [
       '  Installing dependencies...',
       '  Better Auth + Drizzle configured',
-      '  Rust Lite Sync ready',
+      '  Durable Zero ready',
     ],
   },
   {

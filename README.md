@@ -5,7 +5,8 @@ Contrast’s app template
 for the app underneath: a social feed with
 email and password login, posts, comments, profiles, and account settings on web
 and React Native. It uses One v2, Tamagui v3, contrast-ui, Better Auth, Drizzle,
-and Lite Sync (`orez-lite`) over SQLite.
+and Durable Zero over SQLite: Zero's client and query model with our Rust sync
+engine (`orez-lite`) on Cloudflare Durable Objects.
 
 ## Run
 
@@ -43,7 +44,7 @@ backend that build should use.
 
 The production build emits `dist/worker` and `dist/client` for Cloudflare.
 `takeout.tamagui.dev` runs the `takeout-site` app worker, its SQLite Durable
-Object, the `takeout-site-sync` Lite Sync worker, and the `takeout-site-files`
+Object, the `takeout-site-sync` Durable Zero worker, and the `takeout-site-files`
 R2 bucket. Pushes to `main` build, typecheck, and deploy through GitHub Actions.
 
 ```sh

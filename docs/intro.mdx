@@ -1,6 +1,6 @@
 ---
 title: Introduction
-description: One 2, Tamagui 3, and Rust Lite Sync on Cloudflare.
+description: One 2, Tamagui 3, and Durable Zero on Cloudflare.
 ---
 
 # Takeout
@@ -17,11 +17,24 @@ Cloudflare Workers, with SQLite in a Durable Object and uploads in R2.
 - **Better Auth** handles email and password sign-in and sessions. Use
   "Login as Demo User" to explore the feed without registering.
 - **Drizzle** defines the application SQLite schema and migrations in TypeScript.
-- **Lite Sync** is our Rust sync engine, packaged as `orez-lite`. It runs as
-  WebAssembly in its own Durable Object and keeps client queries live. The Zero
-  client and `on-zero` helpers provide typed queries and optimistic mutations.
+- **Durable Zero** adapts Zero's client and query model to Cloudflare Durable
+  Objects. Our Rust sync engine, packaged as `orez-lite`, runs as WebAssembly
+  in its own Durable Object. The Zero client and `on-zero` helpers provide
+  typed queries and optimistic mutations.
 - **Cloudflare Workers and R2** serve the app and API and store uploads. GitHub
   Actions builds and deploys the app and sync workers on a push to main.
+
+## Truly native with One 2
+
+One 2 gives you 100% native UI through React Native, SwiftUI on iOS, and Jetpack
+Compose on Android. Use native navigation, platform controls, Liquid Glass,
+and Material components while sharing your routes and app logic.
+
+Access native APIs directly. One includes cameras, maps, notifications,
+haptics, and secure storage. Its iOS features also include purchases,
+background tasks, widgets, and Live Activities. Add native modules for any
+platform API your product needs. See [One Native](https://onestack.dev/docs/native-overview)
+and its [API reference](https://onestack.dev/docs/native-apis) for platform support.
 
 ## How data moves
 
@@ -29,5 +42,5 @@ One SQLite Durable Object owns users, sessions, posts, and comments. The sync
 worker reads its private data feed through a service binding. The app forwards
 `/zero-http/*` to that worker, so auth and live data use the same origin.
 
-Locally, `bun dev` runs the app with SQLite and Lite Sync. See
+Locally, `bun dev` runs the app with SQLite and Durable Zero. See
 [Getting started](/docs/getting-started) for routes, schema generation, and mutations.

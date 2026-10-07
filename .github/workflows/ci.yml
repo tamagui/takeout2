@@ -32,7 +32,7 @@ jobs:
         with:
           name: takeout-cloudflare
           path: dist/
-      - name: Deploy app and Lite Sync workers
+      - name: Deploy app and Durable Zero workers
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         run: |
           bun scripts/deploy-cloudflare.ts

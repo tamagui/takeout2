@@ -1,74 +1,16 @@
-node_modules
-test-results
-playwright-report
-
-ios/**
-android/**
-
-packages/*/types
-
-tmp-data
-
-tmp
-dist
-migrate-dist.js
+node_modules/
+dist/
+.one/
+.orez/
+.orez-*/
+.tamagui/
+.contrast/
+.wrangler/
+app/routes.d.ts
+.env*
+scripts/tmp/
+ios/
+android/
 .DS_Store
-.ultra.cache.json
-*.tsbuildinfo
-
-.build
-.tamagui
-
-.sst
-
-# generated claude skills from docs (run `bun tko skills generate` to regenerate)
-.claude/skills/takeout-*
-# used for syncing with upstream
-.claude/sync
-
-.env
-.env.production
-.env.hotupdater
-.env.bak
-
-# local env files
-.env.local
-.env.development
-.env.development.local
-.env.test.local
-.env.production.local
-.env.backup
-.env.ios
-
-.expo
-
-# test output
-.output
-
-# Logs
-.logs/
-
-.watchman*
-
-# Docker volume data
-.docker
-
-# uncloud
-.cloud-init.yml
-# cluster config (encrypted, optionally commit for team)
-# .uncloud-cluster.enc
-src/uncloud/docker-compose.processed.yml
-report.xml
-certs/
-
-# Origin CA certs (keep .gitkeep)
-src/uncloud/certs/origin.*
-
-# Custom Caddyfile (generated during onboard if custom domains configured)
-src/uncloud/Caddyfile
-# hot-updater
-.hot-updater/output
-.maestro-debug/
-scripts/test/
-
-.orez
+.remote-out/
+.remote-deliveries/

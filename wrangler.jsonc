@@ -1,0 +1,19 @@
+// one merges this into dist/worker/wrangler.json during the build.
+// scripts/deploy-cloudflare.ts adds the app route, sync service, and R2 binding.
+{
+  "compatibility_date": "2026-04-28",
+  "compatibility_flags": ["nodejs_compat"],
+  // the app owns authoritative SQLite; the separate Rust worker owns sync.
+  "durable_objects": {
+    "bindings": [{ "name": "ZERO_SQL_DO", "class_name": "ZeroSqlDO" }],
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["ZeroSqlDO"] },
+  ],
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true,
+    },
+  },
+}

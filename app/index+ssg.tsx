@@ -1,26 +1,35 @@
-import { YStack } from 'tamagui'
+import { Redirect } from 'one'
+import { isWeb } from 'tamagui'
+import { useAuth } from '~/auth/client/authClient'
+import { APP_HOME_HREF } from '~/features/app/routes'
+import { TakeoutWebsite } from '~/interface/marketing/TakeoutWebsite'
 
-import { HeadInfo } from '~/interface/app/HeadInfo'
-import { ContentSection } from '~/interface/landing/ContentSection'
-import { HeroSection } from '~/interface/landing/HeroSection'
+// web: everyone — signed in or not — sees the splash. logged-in visitors
+// jump into the real app via the Open app cta in the header / hero.
+// native: no public splash — first boot resolves its session-aware target
+// here (signed-in to the app home, signed-out to /auth/login) so launch
+// costs exactly one replace instead of index -> auth/login -> home.
+// Redirect only fires while this screen is focused, so a cold deep link
+// (index parked as a back-stack entry) keeps its own destination, and the
+// auth/home layouts keep their protection for direct entry, sign-out, and
+// expiry. rendering a surface directly here kept the URL at "/", so every
+// signed-out capture recorded observed "/" against a declared route and the
+// evaluation's route receipt invalidated the capture.
 
-const ogImageUrl = `${process.env.ONE_SERVER_URL}/take-og.png`
+// native-only route: hooks stay out of the shared web/native Index below,
+// and the web landing keeps no auth subscription.
+function NativeIndex() {
+  const auth = useAuth()
+  // hold for the session restore; the auth layout still owns the spinner
+  // surface once a signed-out boot reaches it.
+  if (auth.state === 'loading') return null
+  return <Redirect href={auth.user ? APP_HOME_HREF : '/auth/login'} />
+}
 
-export function IndexPage() {
-  return (
-    <YStack position="relative">
-      <HeadInfo
-        title="Takeout"
-        description="The production-ready starter for building real-time, cross-platform apps with React and React Native."
-        openGraph={{
-          url: process.env.ONE_SERVER_URL,
-          images: [{ url: ogImageUrl, width: 1200, height: 630 }],
-        }}
-      />
+export default function Index() {
+  if (!isWeb) {
+    return <NativeIndex />
+  }
 
-      <HeroSection />
-
-      <ContentSection />
-    </YStack>
-  )
+  return <TakeoutWebsite />
 }

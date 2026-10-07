@@ -1,0 +1,33 @@
+---
+title: Introduction
+description: One 2, Tamagui 3, and Rust Lite Sync on Cloudflare.
+---
+
+# Takeout
+
+Takeout is a starter for web and React Native apps. The live web demo runs on
+Cloudflare Workers, with SQLite in a Durable Object and uploads in R2.
+
+## What's in the box
+
+- **One 2** handles file-based routes, loaders, static generation, and server
+  rendering on web, with Metro for native builds.
+- **Tamagui 3** shares design tokens, components, and responsive layouts across
+  web and React Native.
+- **Better Auth** handles email and password sign-in and sessions. Use
+  "Login as Demo User" to explore the feed without registering.
+- **Drizzle** defines the application SQLite schema and migrations in TypeScript.
+- **Lite Sync** is our Rust sync engine, packaged as `orez-lite`. It runs as
+  WebAssembly in its own Durable Object and keeps client queries live. The Zero
+  client and `on-zero` helpers provide typed queries and optimistic mutations.
+- **Cloudflare Workers and R2** serve the app and API and store uploads. GitHub
+  Actions builds and deploys the app and sync workers on a push to main.
+
+## How data moves
+
+One SQLite Durable Object owns users, sessions, posts, and comments. The sync
+worker reads its private data feed through a service binding. The app forwards
+`/zero-http/*` to that worker, so auth and live data use the same origin.
+
+Locally, `bun dev` runs the app with SQLite and Lite Sync. See
+[Getting started](/docs/getting-started) for routes, schema generation, and mutations.

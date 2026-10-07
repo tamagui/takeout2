@@ -1,195 +1,100 @@
-import { tamaguiAliases, tamaguiPlugin } from '@tamagui/vite-plugin'
-import { autoWarmPlugin, one } from 'one/vite'
-import { visualizer } from 'rollup-plugin-visualizer'
+import { createRequire } from 'node:module'
+import { onZeroPlugin } from 'on-zero/vite'
+import { one } from 'one/vite'
+import { orezSyncCfHostWasm } from 'orez-lite/cloudflare/vite-wasm-loader'
+import { orez } from 'orez-lite/vite'
 
-import type { UserConfig } from 'vite'
+const { tamaguiPlugin } = createRequire(import.meta.url)('@tamagui/vite-plugin')
+const portOffset = Number(process.env.PORT_OFFSET || 0)
+const webPort = 4200 + portOffset
+const appVariant = process.env.APP_VARIANT || 'development'
+if (appVariant !== 'development' && appVariant !== 'preview' && appVariant !== 'production') {
+  throw new Error(`invalid APP_VARIANT: ${appVariant}`)
+}
+const appIdentity = {
+  development: { name: 'Takeout (Dev)', bundleId: 'dev.tamagui.takeout.dev' },
+  preview: { name: 'Takeout (Preview)', bundleId: 'dev.tamagui.takeout.preview' },
+  production: { name: 'Takeout', bundleId: 'dev.tamagui.takeout' },
+}[appVariant]
 
 export default {
-  resolve: {
-    alias: [
-      // much smaller bundle size on web
-      ...tamaguiAliases({
-        rnwLite: 'without-animated',
-        svg: true,
-      }),
-    ],
-  },
-
-  server: {
-    allowedHosts: ['host.docker.internal'],
-  },
-
-  optimizeDeps: {
-    include: ['async-retry'],
-
-    // @hot-updater/cli-tools contains native .node binaries (oxc-transform)
-    // that esbuild can't handle - exclude from optimization
-    exclude: [
-      '@hot-updater/cli-tools',
-      'qrcode-terminal',
-      'oxc-parser',
-      // we are avoiding reanimated on web - for many apps this may not be desirable
-      // if you can live with motion/tamagui animations + one-off CSS, then its simpler
-      // 'react-native-reanimated',
-    ],
-  },
-
-  ssr: {
-    // we set this as it generally improves compatability by optimizing all deps for node
-    noExternal: true,
-    // @rocicorp/zero must be external to prevent Symbol mismatch between
-    // @rocicorp/zero and @rocicorp/zero/server - they share queryInternalsTag
-    // Symbol that must be the same instance for query transforms to work
-    external: [
-      'on-zero',
-      '@vxrn/mdx',
-      '@rocicorp/zero',
-      '@opentelemetry/semantic-conventions',
-      'retext',
-      'retext-smartypants',
-      // og image generation - native node addons
-      '@resvg/resvg-js',
-      'satori',
-      // rolldown tree-shaking bug: drops AlgorithmId from @smithy re-exports
-      '@aws-sdk/client-s3',
-      '@aws-sdk/lib-storage',
-      '@aws-sdk/core',
-      '@aws-sdk/credential-provider-node',
-      // rolldown tree-shaking bug: with sideEffects:false, rolldown drops
-      // motion-dom/scale-border-radius.mjs (defines correctBorderRadius) while
-      // keeping scale-correction.mjs that references it. externalizing avoids
-      // the broken bundling and lets node resolve the correct import chain.
-      // motion is no-oped on SSR anyway (Configuration disableSSR in app layout)
-      'framer-motion',
-      'motion-dom',
-      'motion-utils',
-    ],
-  },
+  root: import.meta.dirname,
 
   plugins: [
-    // learns which deps you need optimized so dev mode gets faster
-    autoWarmPlugin('./warm-deps.generated.json'),
-
-    tamaguiPlugin(
-      // see tamagui.build.ts for configuration
-      // this is what lets us nicely do commands like `bun tamagui generate-css`
-    ),
+    ...orezSyncCfHostWasm({ runtime: 'workerd' }),
+    orez(),
+    tamaguiPlugin({ config: './tamagui/tamagui.config.ts' }),
 
     one({
-      patches: {
-        // better-auth's createDynamicPathProxy returns a recursive proxy for
-        // unknown keys instead of undefined. react 19.2 / rn 0.83 introspect
-        // objects ($$typeof, constructor, etc) triggering fake API calls and
-        // 404 loops on native. fix: return undefined when path doesn't exist
-        // in routes. see: better-auth/better-auth#6938
-        // better-auth's proxy returns recursive proxies for ALL property access,
-        // including introspection keys ($$typeof, constructor, toJSON). react 19.2
-        // / rn 0.83 introspect objects more aggressively, triggering fake API calls.
-        // extend existing then/catch/finally guard with common introspection keys.
-        // see: better-auth/better-auth#6938
-        'better-auth': {
-          'dist/shared/better-auth.RKafzlkP.mjs': (contents) =>
-            contents?.replace(
-              'if (prop === "then" || prop === "catch" || prop === "finally")',
-              'if (prop === "then" || prop === "catch" || prop === "finally" || prop === "$$$$typeof" || prop === "constructor" || prop === "toJSON" || prop === "nodeType")',
-            ),
-          'dist/shared/better-auth.8HJ5v58s.cjs': (contents) =>
-            contents?.replace(
-              'if (prop === "then" || prop === "catch" || prop === "finally")',
-              'if (prop === "then" || prop === "catch" || prop === "finally" || prop === "$$$$typeof" || prop === "constructor" || prop === "toJSON" || prop === "nodeType")',
-            ),
-        },
-      },
-
       setupFile: {
-        client: './src/setupClient.ts',
-        native: './src/setupNative.ts',
-        server: './src/setupServer.ts',
-      },
-
-      react: {
-        compiler: process.env.NODE_ENV === 'production',
+        native: './setupNative.ts',
       },
 
       native: {
-        bundler: 'metro',
-        bundlerOptions: {
-          watchman: false, // had some slowness
-          babelConfigOverrides: (config) => {
-            return {
-              ...config,
-              plugins: [
-                // React Compiler for automatic memoization - must run first
-                'babel-plugin-react-compiler',
-                ...(config?.plugins || []),
-                // Hot Updater (React Native OTA solution)
-                'hot-updater/babel-plugin',
-                // reanimated worklet compilation - MUST be last
-                'react-native-reanimated/plugin',
-              ],
-            }
+        app: {
+          name: appIdentity.name,
+          scheme: 'takeout',
+          version: '1.0.0',
+          orientation: 'portrait',
+          userInterfaceStyle: 'automatic',
+          icon: { source: './assets/icon.png', backgroundColor: '#e6dac1' },
+          splash: { source: './assets/logo.png', backgroundColor: '#e6dac1' },
+          ios: {
+            bundleId: appIdentity.bundleId,
+            tablet: false,
+            deploymentTarget: '17.0',
           },
-        },
-      },
-
-      router: {
-        experimental: {
-          typedRoutesGeneration: 'runtime',
+          android: {
+            applicationId: appIdentity.bundleId,
+            adaptiveIcon: {
+              foreground: './assets/adaptive-icon.png',
+              backgroundColor: '#e6dac1',
+            },
+            minSdk: 26,
+          },
         },
       },
 
       web: {
-        experimental_scriptLoading: 'after-lcp-aggressive',
-        inlineLayoutCSS: true,
         defaultRenderMode: 'spa',
-        sitemap: {
-          priority: 0.5,
-          changefreq: 'weekly',
-          exclude: [
-            '/login/**',
-            '/signup/**',
-            '/profile-setup',
-            '/avatar-setup',
-            '/settings/**',
-          ],
+        skewProtection: 'proactive',
+        deploy: {
+          target: 'cloudflare',
+          url: process.env.ONE_SERVER_URL,
         },
       },
 
       build: {
-        api: {
-          config: {
-            build: {
-              rollupOptions: {
-                external: [
-                  '@rocicorp/zero',
-                  'better-auth',
-                  'better-auth/plugins',
-                  'sharp',
-                ],
-              },
-            },
-          },
+        server: {
+          unified: true,
         },
       },
     }),
 
-    ...(process.env.ANALYZE
-      ? [
-          visualizer({
-            filename: 'bundle_stats.html',
-            open: false,
-            gzipSize: true,
-            brotliSize: true,
-            emitFile: true,
-          }),
-          visualizer({
-            filename: 'bundle_stats.json',
-            template: 'raw-data',
-            gzipSize: true,
-            brotliSize: true,
-            emitFile: true,
-          }),
-        ]
-      : []),
+    onZeroPlugin({
+      dir: './data',
+    }),
   ],
-} satisfies UserConfig
+
+  server: {
+    port: webPort,
+  },
+
+  // contrast-ui and other vendored packages ship .tsx source. vite pre-bundles only
+  // .js/.ts entries by default, so a .tsx entry would load raw and its own imports
+  // (tamagui subpaths, CJS react/jsx-runtime) would skip dependency discovery.
+  optimizeDeps: {
+    extensions: ['.tsx'],
+  },
+
+  resolve: {
+    dedupe: ['on-zero', '@rocicorp/zero'],
+  },
+
+  ssr: {
+    external: ['on-zero', '@rocicorp/zero'],
+    // auth packages expose React hooks from package code. bundle them through
+    // Vite so SSR uses the renderer's React instance.
+    noExternal: ['better-auth', '@o/helpers', 'contrast-better-auth'],
+  },
+}

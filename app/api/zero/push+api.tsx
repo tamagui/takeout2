@@ -1,30 +1,30 @@
-import {
-  getAuthDataFromRequest,
-  NotAuthenticatedError,
-} from '@o/better-auth-utils/server'
-import { handleSyncExecutorPushRequest } from 'orez-sync-executor'
-
-import { authServer } from '~/features/auth/server/authServer'
-import { zeroExecutor } from '~/zero/server'
-
+import { handleSyncExecutorPushRequest } from 'orez-lite'
+import { authServer } from '~/auth/server/authServer'
+import { getZeroAuthData } from '~/auth/server/getZeroAuthData'
+import { zeroExecutor } from '~/data/zero-server'
 import type { Endpoint } from 'one'
-
-// see: https://zero.rocicorp.dev/docs/custom-mutators
 
 export const POST: Endpoint = async (request) => {
   try {
-    const authData = await getAuthDataFromRequest(authServer, request)
+    const authData = await getZeroAuthData(authServer, request)
+
+    // no anon fallback: an unauthenticated push must be rejected, never written
+    // under a placeholder identity. silently coercing to `{ id: 'anon' }`
+    // committed every web mutation as `anon` (cookie was being clobbered server
+    // side) while the query socket validated as the real user — the
+    // "userID does not match validated server userID" / "auth state not
+    // available" protocol errors, plus orphaned anon-owned rows.
+    if (!authData) {
+      return new Response('unauthorized', { status: 401 })
+    }
+
     return handleSyncExecutorPushRequest({
       executor: zeroExecutor,
       request,
       authData,
     })
   } catch (err) {
-    if (err instanceof NotAuthenticatedError) {
-      console.warn(`[zero] push+api not authenticated!`)
-    } else {
-      console.error(`[zero] push+api error`, err)
-    }
-    return Response.json({ err }, { status: 500 })
+    console.error('[zero:push] error', err)
+    return new Response('internal error', { status: 500 })
   }
 }

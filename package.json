@@ -1,269 +1,188 @@
 {
   "name": "takeout",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
-  "patchedDependencies": {
-    "react-native-ios-context-menu@3.2.1": "patches/react-native-ios-context-menu@3.2.1.patch",
-    "react-native-ios-utilities@5.2.0": "patches/react-native-ios-utilities@5.2.0.patch"
-  },
-  "resolutions": {
-    "sharp": "npm:@tamagui/proxy-worm@1.123.14"
-  },
-  "sideEffects": false,
-  "type": "module",
-  "main": "node_modules/one/metro-entry.js",
-  "files": [],
+  "license": "MIT",
   "engines": {
-    "node": "^24.3.0"
+    "node": ">=24.16.0"
   },
-  "packageManager": "bun@1.4.2",
-  "scripts": {
-    "preinstall": "bun ./scripts/preinstall.ts",
-    "postinstall": "bun run ./scripts/postinstall.ts",
-    "android:prebuild": "bun native:prebuild --platform android --no-install",
-    "android": "one run:android",
-    "aws": "tko aws",
-    "backend:clean": "docker compose down --volumes --remove-orphans --rmi local",
-    "backend:migrate": "ALLOW_MISSING_ENV=1 bun run:dev src/database/migrate.ts",
-    "backend": "docker compose up -d pgdb --remove-orphans --wait && bun backend:migrate && docker compose up --remove-orphans",
-    "build": "tko run build",
-    "check": "tko check --default-all",
-    "ops": "bun run:prod tko ops",
-    "clean": "tko run clean",
-    "db:add-migration": "tko db add-migration",
-    "db:build": "tko db build",
-    "db:migrate": "tko db migrate",
-    "db": "tko db",
-    "dev": "tko run-all --pty --flags=last watch watch:types watch:zero:generate one:dev",
-    "dev:fresh": "bun backend:clean; bun dev --clean",
-    "eas": "tko eas",
-    "env": "bun src/env.ts --",
-    "env:dev": "NODE_ENV=development bun env",
-    "env:prod": "NODE_ENV=production bun env",
-    "env:pull": "tko run env-pull",
-    "env:update": "tko run env-update",
-    "format:check": "oxfmt --check",
-    "format": "oxfmt",
-    "hot-update": "tko hot-update",
-    "icon:add": "bun tko icon add-phosphor",
-    "ios:prebuild": "bun native:prebuild --platform ios --no-install",
-    "ios": "one run:ios",
-    "fix": "bun lint:fix",
-    "lint:fix": "oxfmt && oxlint --import-plugin --type-aware --fix --fix-suggestions",
-    "lint": "oxlint --import-plugin --type-aware",
-    "lite:backend": "bun run:dev orez --disable-wasm-sqlite --data-dir=${OREZ_DATA_DIR:-.orez} --pg-port=${VITE_PORT_POSTGRES:-5433} --zero-port=${VITE_PORT_ZERO:-4848} --s3 --s3-port=${VITE_PORT_MINIO:-9200} --on-db-ready='bun db:migrate' --admin-port=${VITE_PORT_OREZ_ADMIN:-6477}",
-    "lite:backend:demo": "bun run:dev orez --disable-wasm-sqlite --data-dir=${OREZ_DATA_DIR:-.orez} --pg-port=${VITE_PORT_POSTGRES:-5433} --zero-port=${VITE_PORT_ZERO:-4848} --s3 --s3-port=${VITE_PORT_MINIO:-9200} --on-db-ready='bun db:migrate && bun scripts/db/seed-demo.ts' --admin-port=${VITE_PORT_OREZ_ADMIN:-6477}",
-    "lite": "bun tko run build && SKIP_INITIAL_BUILD=1 bun run:dev tko run-all --pty --flags=last lite:backend watch watch:types watch:zero:generate one:dev",
-    "lite:demo": "bun tko run build && SKIP_INITIAL_BUILD=1 bun run:dev tko run-all --pty --flags=last lite:backend:demo watch watch:types watch:zero:generate one:dev",
-    "native:prebuild": "one prebuild",
-    "onboard": "tko onboard",
-    "one:dev": "bun ./scripts/one-dev.ts",
-    "repl": "tko run repl",
-    "run:env": "bun env bun run",
-    "run:dev": "NODE_ENV=development bun env:dev bun run",
-    "run:prod": "NODE_ENV=production bun env:prod bun run",
-    "test:integration": "bun run env:dev bun --cwd=./src/test playwright test",
-    "test:unit": "bun run:dev vitest run -c ./src/test/vitest.config.ts",
-    "test": "tko test",
-    "up": "tko up",
-    "watch:types": "tko run typecheck --watch",
-    "watch:zero:generate": "bun zero:generate --watch",
-    "web": "tko web",
-    "zero:generate": "bun zero:schema && on-zero generate",
-    "zero:schema": "drizzle-zero generate --config src/database/drizzle-zero.config.ts --output src/data/generated/schema.ts --force --suppress-defaults-warning",
-    "zero": "tko zero"
-  },
-  "overrides": {
-    "rolldown": "^1.2.4",
-    "@expo/fingerprint": "0.20.6",
-    "sharp": "npm:@tamagui/proxy-worm@1.123.14",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "react-native": "0.86.2",
-    "expo-linking": "~57.0.5",
-    "expo-modules-core": "~57.0.12",
-    "@lydell/node-pty-darwin-arm64": "1.2.0-beta.10"
-  },
-  "dependencies": {
-    "@aws-sdk/client-rekognition": "^3.975.0",
-    "@aws-sdk/client-s3": "^3.709.0",
-    "@aws-sdk/lib-storage": "^3.709.0",
-    "@better-auth/expo": "^1.6.23",
-    "@better-fetch/fetch": "^1.3.1",
-    "@docsearch/css": "3.8.3",
-    "@docsearch/react": "3.8.3",
-    "@gorhom/bottom-sheet": "^5.2.6",
-    "@hot-updater/bare": "0.25.8",
-    "@hot-updater/react-native": "0.25.8",
-    "@hot-updater/supabase": "0.25.8",
-    "@legendapp/list": "3.3.8",
-    "@react-native-masked-view/masked-view": "^0.3.2",
-    "@react-native-menu/menu": "^2.0.0",
-    "@react-navigation/bottom-tabs": "^7.10.1",
-    "@react-navigation/native": "7.3.16",
-    "@resvg/resvg-js": "^2.6.2",
-    "@rocicorp/zero": "1.7.0",
-    "@o/better-auth-utils": "0.16.19-canary.1790271926844",
-    "@o/database": "0.16.19-canary.1790271926844",
-    "@o/env": "0.16.19-canary.1790271926844",
-    "@o/helpers": "0.16.19-canary.1790271926844",
-    "@o/native-hot-update": "0.16.19-canary.1790271926844",
-    "@tamagui/config": "2.7.7",
-    "@tamagui/helpers-icon": "2.7.7",
-    "@tamagui/linear-gradient": "2.7.7",
-    "@tamagui/menu": "2.7.7",
-    "@tamagui/native": "2.7.7",
-    "@tamagui/themes": "2.7.7",
-    "@tamagui/toast": "2.7.7",
-    "@tamagui/vite-plugin": "2.7.7",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@vxrn/color-scheme": "1.25.4",
-    "@vxrn/compiler": "1.25.4",
-    "@vxrn/mdx": "1.25.4",
-    "@vxrn/resolve": "1.25.4",
-    "@vxrn/tslib-lite": "1.25.4",
-    "@vxrn/use-isomorphic-layout-effect": "1.25.4",
-    "@vxrn/vite-plugin-metro": "1.25.4",
-    "better-auth": "^1.6.23",
-    "burnt": "^0.12.2",
-    "drizzle-orm": "1.0.0-beta.9-e89174b",
-    "expo": "~57.0.10",
-    "expo-application": "~57.0.2",
-    "expo-blur": "~57.0.2",
-    "expo-build-properties": "~57.0.8",
-    "expo-clipboard": "~57.0.1",
-    "expo-constants": "~57.0.9",
-    "expo-crypto": "~57.0.1",
-    "expo-dev-client": "~57.0.10",
-    "expo-device": "~57.0.1",
-    "expo-font": "~57.0.1",
-    "expo-haptics": "~57.0.1",
-    "expo-image": "~57.0.2",
-    "expo-image-picker": "~57.0.7",
-    "expo-linear-gradient": "~57.0.1",
-    "expo-linking": "~57.0.5",
-    "expo-media-library": "~57.0.3",
-    "expo-network": "~57.0.1",
-    "expo-notifications": "~57.0.8",
-    "expo-secure-store": "~57.0.1",
-    "expo-splash-screen": "~57.0.5",
-    "expo-sqlite": "~57.0.1",
-    "expo-web-browser": "~57.0.2",
-    "hot-updater": "^0.25.8",
-    "jsonwebtoken": "^9.0.2",
-    "motion": "12.36.0",
-    "on-zero": "0.16.3",
-    "one": "1.25.4",
-    "orez": "0.16.3",
-    "orez-sync-executor": "0.13.2",
-    "pg": "8.18.0",
-    "posthog-js": "^1.252.0",
-    "posthog-node": "^5.5.1",
-    "posthog-react-native": "^4.1.0",
-    "postmark": "^4.0.5",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "react-native": "0.86.2",
-    "react-native-bottom-tabs": "^0.10.0",
-    "react-native-gesture-handler": "~2.32.0",
-    "react-native-ios-context-menu": "^3.2.1",
-    "react-native-ios-utilities": "^5.2.0",
-    "react-native-keyboard-controller": "1.21.11",
-    "react-native-launch-arguments": "^4.1.1",
-    "react-native-mmkv": "^3.3.0",
-    "react-native-permissions": "^5.4.2",
-    "react-native-reanimated": "4.5.1",
-    "react-native-safe-area-context": "~5.7.0",
-    "react-native-screens": "~4.26.0",
-    "react-native-svg": "15.15.4",
-    "react-native-teleport": "^0.5.6",
-    "react-native-worklets": "0.10.1",
-    "satori": "^0.19.1",
-    "server-only": "^0.0.1",
-    "tamagui": "2.7.7",
-    "voltra": "^1.2.1",
-    "vxrn": "1.25.4",
-    "zeego": "^3.0.6"
-  },
-  "devDependencies": {
-    "@aws-sdk/client-ecr": "^3.859.0",
-    "@dotenvx/dotenvx": "^1.44.1",
-    "@playwright/test": "^1.55.0",
-    "@o/cli": "0.16.19-canary.1790271926844",
-    "@o/scripts": "0.16.19-canary.1790271926844",
-    "@types/aws-lambda": "8.10.147",
-    "@types/bun": "^1.2.16",
-    "@types/node": "24.0.3",
-    "@types/pg": "^8.11.10",
-    "@types/react": "19.2.14",
-    "@types/react-dom": "~19.1.7",
-    "@types/subset-font": "^2",
-    "@typescript/native-preview": "7.0.0-dev.20251211.1",
-    "chrome-devtools-mcp": "^0.16.0",
-    "dotenv": "^17.2.3",
-    "drizzle-kit": "1.0.0-beta.9-e89174b",
-    "drizzle-zero": "1.0.0-beta.1",
-    "fs-extra": "^11.2.0",
-    "knip": "^5.82.0",
-    "oxfmt": "^0.16.0",
-    "oxlint": "^1.31.0",
-    "oxlint-tsgolint": "^0.11.4",
-    "p-map": "^7.0.3",
-    "picocolors": "^1.1.1",
-    "playwright": "^1.57.0",
-    "react-native-pager-view": "^8.0.0",
-    "rollup-plugin-visualizer": "^6.0.5",
-    "sst": "3.17.10",
-    "subset-font": "^2.4.0",
-    "typescript": "^5.9.3",
-    "valibot": "^1.1.0",
-    "vite": "8.2.2",
-    "vitest": "4.1.11",
-    "xcodebuildmcp": "1.15.1"
-  },
-  "reanimated": {
-    "staticFeatureFlags": {
-      "ENABLE_SHARED_ELEMENT_TRANSITIONS": true,
-      "ANDROID_SYNCHRONOUSLY_UPDATE_UI_PROPS": true,
-      "IOS_SYNCHRONOUSLY_UPDATE_UI_PROPS": false,
-      "USE_COMMIT_HOOK_ONLY_FOR_REACT_COMMITS": true,
-      "DISABLE_COMMIT_PAUSING_MECHANISM": true,
-      "FORCE_REACT_RENDER_FOR_SETTLED_ANIMATIONS": true
+  "type": "module",
+  "targets": [
+    "native",
+    "web"
+  ],
+  "contrast": {
+    "entry": [
+      {
+        "id": "web-landing",
+        "platforms": [
+          "web"
+        ],
+        "entryState": "fresh",
+        "route": "/",
+        "files": [
+          "interface/marketing/TakeoutWebsite.tsx",
+          "interface/marketing/HeroSection.tsx",
+          "interface/marketing/SiteHeader.tsx"
+        ],
+        "appearanceModes": [
+          "light",
+          "dark"
+        ]
+      },
+      {
+        "id": "web-login",
+        "platforms": [
+          "web"
+        ],
+        "entryState": "fresh",
+        "route": "/auth/login",
+        "files": [
+          "features/auth/ui/LoginScreen.tsx"
+        ],
+        "appearanceModes": [
+          "light",
+          "dark"
+        ],
+        "advanceSteps": [
+          {
+            "action": "tap-id",
+            "value": "login-as-demo"
+          }
+        ]
+      },
+      {
+        "id": "native-login",
+        "platforms": [
+          "native"
+        ],
+        "entryState": "fresh",
+        "route": "/auth/login",
+        "files": [
+          "features/auth/ui/LoginScreen.tsx"
+        ],
+        "appearanceModes": [
+          "light",
+          "dark"
+        ],
+        "advanceSteps": [
+          {
+            "action": "tap-id",
+            "value": "login-as-demo"
+          }
+        ]
+      }
+    ],
+    "runtime": {
+      "endpoints": [
+        {
+          "role": "web",
+          "port": 4200,
+          "health": "/",
+          "offset": true
+        },
+        {
+          "role": "metro",
+          "port": 4200,
+          "health": "/status",
+          "offset": true
+        },
+        {
+          "role": "backend",
+          "port": 5049,
+          "offset": true
+        }
+      ]
     }
   },
+  "scripts": {
+    "dev": "bun env.ts -- one dev",
+    "build": "NODE_OPTIONS=--import=orez-lite/cloudflare/node-wasm-loader one build",
+    "generate": "bun run generate:migrations && bun run generate:types",
+    "generate:types": "on-zero generate data",
+    "generate:migrations": "drizzle-kit generate --config=database/drizzle.config.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@better-auth/core": "1.6.30",
+    "@better-auth/expo": "1.6.30",
+    "@callstack/liquid-glass": "^0.8.2",
+    "@react-native/assets-registry": "0.87.1",
+    "@react-navigation/bottom-tabs": "8.0.0-alpha.50",
+    "@react-navigation/core": "8.0.0-alpha.34",
+    "@react-navigation/elements": "3.0.0-alpha.48",
+    "@react-navigation/native": "8.0.0-alpha.44",
+    "@react-navigation/native-stack": "8.0.0-alpha.52",
+    "@react-three/fiber": "^9.7.0",
+    "@rocicorp/zero": "1.9.0",
+    "@o/database": "0.16.19-canary.1790679335417",
+    "@o/env": "0.16.19-canary.1790679335417",
+    "@o/helpers": "0.16.19-canary.1790679335417",
+    "@tamagui/animations-css": "3.0.0-beta.1473.1",
+    "@tamagui/animations-reanimated": "3.0.0-beta.1473.1",
+    "@tamagui/config": "3.0.0-beta.1473.1",
+    "@tamagui/native": "3.0.0-beta.1473.1",
+    "@tamagui/toast": "3.0.0-beta.1473.1",
+    "better-auth": "1.6.30",
+    "contrast-better-auth": "file:packages/contrast-better-auth",
+    "contrast-mdx": "file:packages/contrast-mdx",
+    "contrast-native": "file:packages/contrast-native",
+    "contrast-notifications": "file:packages/contrast-notifications",
+    "contrast-ui": "file:packages/contrast-ui",
+    "drizzle-orm": "1.0.0-beta.9-e89174b",
+    "drizzle-zero-sqlite": "0.16.19-canary.1790679335417",
+    "maplibre-gl": "^5.24.0",
+    "markdown-to-jsx": "^9.10.2",
+    "on-zero": "0.16.19-canary.1790679335417",
+    "one": "2.0.0-beta.145.1",
+    "orez-lite": "0.16.19-canary.1790679335417",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.87.1",
+    "react-native-gesture-handler": "~3.3.0",
+    "react-native-keyboard-controller": "1.22.5",
+    "react-native-mmkv": "^3.3.0",
+    "react-native-purchases": "10.4.3",
+    "react-native-reanimated": "4.6.0",
+    "react-native-screens": "4.27.0",
+    "react-native-svg": "15.15.4",
+    "react-native-teleport": "^1.2.2",
+    "react-native-webgpu": "0.10.2",
+    "react-native-worklets": "0.12.2",
+    "s3mini": "^0.9.5",
+    "server-only": "^0.0.1",
+    "peach-swipeable": "file:packages/peach-swipeable",
+    "tamagui": "3.0.0-beta.1473.1",
+    "three": "0.184.0",
+    "typegpu": "0.11.8",
+    "valibot": "^1.3.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@react-native-community/cli": "20.0.2",
+    "@react-native-community/template": "0.87.2",
+    "@react-native/metro-config": "0.87.1",
+    "@tamagui/vite-plugin": "3.0.0-beta.1473.1",
+    "@types/bun": "^1.4.0",
+    "@types/node": "^25.5.0",
+    "@types/three": "0.184.0",
+    "@webgpu/types": "^0.1.21",
+    "drizzle-kit": "1.0.0-beta.9-e89174b",
+    "peachsim": "0.1.628",
+    "typescript": "7.0.2",
+    "vite": "^8.2.2",
+    "wrangler": "4.114.0"
+  },
   "trustedDependencies": [
-    "oxc-parser"
+    "@rocicorp/zero-sqlite3",
+    "@swc/core"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "takeout": {
-    "onboarded": false
-  },
-  "upgradeSets": {
-    "takeout": [
-      "@o/*",
-      "on-zero"
-    ],
-    "tamagui": [
-      "tamagui",
-      "@tamagui/*"
-    ],
-    "one": [
-      "one",
-      "vxrn",
-      "@vxrn/*"
-    ],
-    "zero": [
-      "@rocicorp/zero"
-    ],
-    "better-auth": [
-      "better-auth",
-      "@better-auth/*"
-    ],
-    "drizzle": [
-      "drizzle-orm",
-      "drizzle-kit"
-    ]
+  "patchedDependencies": {
+    "@react-navigation/bottom-tabs@8.0.0-alpha.50": "patches/@react-navigation%2Fbottom-tabs@8.0.0-alpha.50.patch",
+    "react-native-screens@4.27.0": "patches/react-native-screens@4.27.0.patch",
+    "react-native-reanimated@4.6.0": "patches/react-native-reanimated@4.6.0.patch",
+    "@react-navigation/native-stack@8.0.0-alpha.52": "patches/@react-navigation%2Fnative-stack@8.0.0-alpha.52.patch",
+    "react-native-keyboard-controller@1.22.5": "patches/react-native-keyboard-controller@1.22.5.patch",
+    "react-native-webgpu@0.10.2": "patches/react-native-webgpu@0.10.2.patch"
   }
 }

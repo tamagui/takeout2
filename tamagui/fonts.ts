@@ -33,9 +33,9 @@ export const fonts = {
     },
   }),
   mono: withTailwindTypeScale(mono),
-  'takeout-body': takeoutFonts.body,
-  'takeout-heading': takeoutFonts.heading,
-  'takeout-mono': createSystemFont({
+  'takeout-body': withTailwindTypeScale(takeoutFonts.body),
+  'takeout-heading': withTailwindTypeScale(takeoutFonts.heading),
+  'takeout-mono': withTailwindTypeScale(createSystemFont({
     sizes: Object.fromEntries(
       Object.entries(takeoutFonts.body.size).map(([key, size]) => [key, parseFloat(String(size))]),
     ),
@@ -44,5 +44,5 @@ export const fonts = {
       family: isWeb ? '"JetBrains Mono", monospace' : 'JetBrains Mono',
       weight: { 0: '400' },
     },
-  }),
+  })),
 }

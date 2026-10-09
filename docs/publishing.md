@@ -78,3 +78,12 @@ checks. The coordinator owns CI and closure of the old infrastructure.
 The repository remains private. Takeout and the bundled source packages retain
 their MIT licensing and original artwork. There is no paid tier or support
 service. No npm release or repository visibility change occurs in this cutover.
+
+## Marketing font validation
+
+Nate, 2026-10-09: "we can just adjust the takeout fonts I guess to the new one
+just kinda make sure that they visually look right". Preserve the marketing
+fonts' numbered sizes, weights, and line heights while supplying v3 named
+sizes. Compare landing, login, docs, and feed against the parent of `44e4493`
+with headless Playwright at 3x. Marketing button labels retain their previously
+rendered 16px size and 18px line height; app fonts stay independently scoped.

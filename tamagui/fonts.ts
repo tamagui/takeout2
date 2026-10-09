@@ -2,6 +2,8 @@ import { fonts as baseFonts, withTailwindTypeScale } from '@tamagui/config/v6'
 import { createSystemFont, fonts as takeoutFonts } from '@tamagui/config/v5'
 import { createFont, isWeb } from 'tamagui'
 
+const takeoutBody = withTailwindTypeScale(takeoutFonts.body)
+
 const mono = createFont({
   ...baseFonts.body,
   // JetBrains Mono is not bundled as a native face, and the app template's
@@ -33,7 +35,16 @@ export const fonts = {
     },
   }),
   mono: withTailwindTypeScale(mono),
-  'takeout-body': withTailwindTypeScale(takeoutFonts.body),
+  'takeout-body': {
+    ...takeoutBody,
+    // keep marketing button labels at their pre-v3 rendered dimensions.
+    size: { ...takeoutBody.size, sm: 16 },
+    lineHeight: {
+      ...takeoutBody.lineHeight,
+      sm: 18,
+      base: 18,
+    },
+  },
   'takeout-heading': withTailwindTypeScale(takeoutFonts.heading),
   'takeout-mono': withTailwindTypeScale(createSystemFont({
     sizes: Object.fromEntries(

@@ -3,8 +3,8 @@ import {
   Circle,
   Defs,
   Ellipse,
-  FeGaussianBlur,
-  Filter,
+  FeGaussianBlur as RNSvgFeGaussianBlur,
+  Filter as RNSvgFilter,
   G,
   LinearGradient,
   Path,
@@ -14,6 +14,9 @@ import {
   Svg,
 } from 'react-native-svg'
 import { useTheme } from 'tamagui'
+
+const Filter: any = RNSvgFilter || 'filter'
+const FeGaussianBlur: any = RNSvgFeGaussianBlur || 'feGaussianBlur'
 
 export type IconProps = ComponentProps<typeof Svg> & {
   size?: number

@@ -5,4 +5,7 @@ export default {
   components: ['tamagui'],
   config: './tamagui/tamagui.config.ts',
   outputCSS: false,
+  experimental: {
+    nativeFastPath: true,
+  },
 } satisfies TamaguiBuildOptions

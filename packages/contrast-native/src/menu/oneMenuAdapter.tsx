@@ -1,4 +1,4 @@
-import { One } from 'one'
+import { One, type SFSymbolName } from 'one'
 import React from 'react'
 import { Platform } from 'react-native'
 import type { NativeMenuAdapter, NativeMenuModule } from '@tamagui/native'
@@ -107,7 +107,7 @@ export function createOneMenuAdapter(): NativeMenuAdapter {
 
     // One items carry an SF Symbol name, never a bitmap, so a source image has
     // no honest mapping and is dropped where the expo adapter passed it through.
-    function actionImage(element: ReactElement<MarkerProps>): string {
+    function actionImage(element: ReactElement<MarkerProps>): SFSymbolName | '' {
       const image = elementOfType(element.props.children, ItemImage)
       if (image) warnUnsupported('menu item images')
       const icon = elementOfType(element.props.children, ItemIcon)
@@ -119,9 +119,12 @@ export function createOneMenuAdapter(): NativeMenuAdapter {
         'name' in ios &&
         typeof ios.name === 'string'
       ) {
-        return ios.name
+        // tamagui menu icons carry free strings; one types them as sf symbol names
+        return ios.name as SFSymbolName
       }
-      return typeof icon.props.iosIconName === 'string' ? icon.props.iosIconName : ''
+      return typeof icon.props.iosIconName === 'string'
+        ? (icon.props.iosIconName as SFSymbolName)
+        : ''
     }
 
     function itemHelp(element: ReactElement<MarkerProps>): string {

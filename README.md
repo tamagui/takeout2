@@ -3,7 +3,7 @@
 Takeout is a free, open-source starter: a marketing website and, underneath it, a social feed
 app with email and password login, posts, comments, profiles, and account
 settings on web and React Native. It uses One v2, Tamagui v3, takeout-ui, Better Auth, Drizzle,
-and Durable Zero over SQLite: Zero's client and query model with our Rust sync
+and Lime Sync over SQLite: Zero's client and query model with our Rust sync
 engine (`orez-lite`) on Cloudflare Durable Objects.
 
 ## Run
@@ -53,7 +53,7 @@ backend that build should use.
 
 The production build emits `dist/worker` and `dist/client` for Cloudflare.
 `takeout.tamagui.dev` runs the `takeout-site` app worker, its SQLite Durable
-Object, the `takeout-site-sync` Durable Zero worker, and the `takeout-site-files`
+Object, the `takeout-site-sync` Lime Sync worker, and the `takeout-site-files`
 R2 bucket. Pushes to `main` build, typecheck, and deploy through GitHub Actions.
 
 ```sh

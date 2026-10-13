@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { styled, YStack } from 'tamagui'
 
 const PhoneContainer = styled(YStack, {
@@ -10,6 +11,8 @@ const PhoneContainer = styled(YStack, {
 })
 
 export function PhoneMockup() {
+  const [paused, setPaused] = useState(true)
+
   return (
     <PhoneContainer y="lg:20px">
       <svg width="0" height="0" style={{ position: 'absolute' }}>
@@ -42,8 +45,22 @@ export function PhoneMockup() {
             loop
             muted
             playsInline
-            controls
-            aria-label="Takeout app demo"
+            role="button"
+            tabIndex={0}
+            aria-label={paused ? 'Play Takeout app demo' : 'Pause Takeout app demo'}
+            onPlay={() => setPaused(false)}
+            onPause={() => setPaused(true)}
+            onClick={(event) => {
+              const video = event.currentTarget
+              if (video.paused) void video.play()
+              else video.pause()
+            }}
+            onKeyDown={(event) => {
+              if (event.key === ' ' || event.key === 'Enter') {
+                event.preventDefault()
+                event.currentTarget.click()
+              }
+            }}
             poster="/appdemo2_poster.webp"
             ref={(el) => {
               if (el) el.playbackRate = 1.3
@@ -55,6 +72,7 @@ export function PhoneMockup() {
               width: 294 + 4,
               height: 588 + 12,
               objectFit: 'cover',
+              cursor: 'pointer',
             }}
           >
             <source

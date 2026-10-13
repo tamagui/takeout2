@@ -120,12 +120,12 @@ export function ContentSection() {
       <ContentParagraph>
         One 2 handles routes and rendering. Tamagui 3 shares UI across web and React
         Native. Better Auth handles sign-in, and Drizzle defines the SQLite schema.
-        Durable Zero brings Zero's client and query model to Cloudflare Durable Objects.
+        Lime Sync brings Zero's client and query model to Cloudflare Durable Objects.
       </ContentParagraph>
 
       <ContentParagraph>
-        The backend runs on Cloudflare Workers. SQLite lives in a Durable Object, Durable
-        Zero runs in its own Durable Object, and R2 stores uploads. The demo you can sign
+        The backend runs on Cloudflare Workers. SQLite lives in a Durable Object, Lime
+        Sync runs in its own Durable Object, and R2 stores uploads. The demo you can sign
         into here runs on this stack, deployed from GitHub Actions.
       </ContentParagraph>
 
@@ -288,10 +288,10 @@ export function ContentSection() {
         </TechCard>
 
         <TechCard>
-          <TechTitle color="var(--blue-11)">Durable Zero</TechTitle>
+          <TechTitle color="var(--blue-11)">Lime Sync</TechTitle>
           <ContentParagraph>
             <Strong color="color">Zero, adapted to Cloudflare Durable Objects.</Strong>{' '}
-            Durable Zero uses Zero's client and query model. Our Rust sync engine,
+            Lime Sync uses Zero's client and query model. Our Rust sync engine,
             packaged as{' '}
             <Link href="https://github.com/natew/orez" target="_blank">
               <InlineLink fontWeight="600">orez-lite</InlineLink>
@@ -303,7 +303,12 @@ export function ContentSection() {
           <ContentParagraph>
             The Zero client and our <Strong>on-zero</Strong> helpers give the app typed
             queries, shared mutations, and permissions. Drizzle owns the SQLite schema;
-            Durable Zero connects it to the UI.
+            Lime Sync connects it to the UI.
+          </ContentParagraph>
+          <ContentParagraph>
+            <Link href="https://lime-sync.natewienert.workers.dev" target="_blank">
+              <InlineLink fontWeight="600">Read the Lime Sync documentation</InlineLink>
+            </Link>
           </ContentParagraph>
         </TechCard>
 
@@ -311,7 +316,7 @@ export function ContentSection() {
           <TechTitle>Cloudflare, SQLite, and R2</TechTitle>
           <ContentParagraph>
             A Worker serves the site and API. A SQLite Durable Object owns application
-            data, a second Worker hosts Durable Zero, and R2 stores images and uploads.
+            data, a second Worker hosts Lime Sync, and R2 stores images and uploads.
             GitHub Actions builds and deploys both workers when you push to main.
           </ContentParagraph>
         </TechCard>

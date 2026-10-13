@@ -149,7 +149,7 @@ export function HeroSection() {
           </HeroSubtitle>
 
           <HeroSubtitle>
-            Better Auth for sign-in. Drizzle and Durable Zero for live data. Deploy to{' '}
+            Better Auth for sign-in. Drizzle and Lime Sync for live data. Deploy to{' '}
             <Strong color="color-11">Cloudflare Workers</Strong>, with SQLite in a Durable
             Object and uploads in R2. One app, live across clients.
           </HeroSubtitle>

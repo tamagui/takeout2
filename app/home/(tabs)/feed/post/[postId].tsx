@@ -1,5 +1,5 @@
-import { formatDistanceToNow } from 'contrast-ui/display'
-import { Image } from 'contrast-ui/image/Image'
+import { formatDistanceToNow } from 'takeout-ui/display'
+import { Image } from 'takeout-ui/image/Image'
 import { useMutation } from 'on-zero'
 import { useLocalSearchParams, useRouter } from 'one'
 import { Button, H4, Paragraph, View, XStack, YStack } from 'tamagui'

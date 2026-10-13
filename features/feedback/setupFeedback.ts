@@ -1,7 +1,7 @@
-import { configureFeedback } from 'contrast-native/feedback'
+import { configureFeedback } from 'takeout-native/feedback'
 import { APP_NAME, APP_SCHEME, SERVER_URL } from '~/constants'
 import { isFeedbackSettingEnabled, subscribeToFeedbackSetting } from './feedbackSetting'
-import type { FeedbackReport } from 'contrast-native/feedback'
+import type { FeedbackReport } from 'takeout-native/feedback'
 
 // three-finger tap opens the overlay on any screen. the report is delivered by
 // this app's own submit function, so the overlay itself never learns an origin,

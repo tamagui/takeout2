@@ -2,8 +2,8 @@ import 'server-only'
 import { expo } from '@better-auth/expo'
 import { betterAuth } from 'better-auth'
 import { bearer, emailOTP } from 'better-auth/plugins'
-import { trustedContrastAppOrigins } from 'contrast-better-auth'
-import { APP_ANALYTICS_INSTALLATION_HEADER } from 'contrast-better-auth/analytics'
+import { trustedAppOrigins } from 'takeout-better-auth'
+import { APP_ANALYTICS_INSTALLATION_HEADER } from 'takeout-better-auth/analytics'
 import { APP_SCHEME } from '~/constants'
 import { server, ports } from '~/env'
 import { afterCreateUser } from './afterCreateUser'
@@ -40,7 +40,7 @@ export const authServer = betterAuth({
     autoSignIn: false,
   },
 
-  trustedOrigins: trustedContrastAppOrigins([
+  trustedOrigins: trustedAppOrigins([
     `http://localhost:${ports.web}`,
     `http://localhost:${ports.zero}`,
     `http://127.0.0.1:${ports.web}`,

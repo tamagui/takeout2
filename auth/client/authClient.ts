@@ -1,17 +1,17 @@
 import { createStorageValue } from '@o/helpers'
 import { emailOTPClient } from 'better-auth/client/plugins'
 import {
-  createContrastBetterAuthClient,
+  createAppAuthClient,
   nativeBearerTokenStore,
   platformClient,
-} from 'contrast-better-auth'
-import { APP_ANALYTICS_INSTALLATION_HEADER } from 'contrast-better-auth/analytics'
+} from 'takeout-better-auth'
+import { APP_ANALYTICS_INSTALLATION_HEADER } from 'takeout-better-auth/analytics'
 import { APP_SCHEME, DEMO_EMAIL, DEMO_NAME, DEMO_PASSWORD, SERVER_URL } from '~/constants'
 import { appAnalytics } from '~/features/analytics/appAnalytics'
 
 const nativeBearerToken = createStorageValue<string>(`${APP_SCHEME}-native-bearer-token`)
 
-export const { authClient, useAuth } = createContrastBetterAuthClient({
+export const { authClient, useAuth } = createAppAuthClient({
   baseURL: SERVER_URL,
   fetchOptions: {
     onRequest(context) {

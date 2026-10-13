@@ -1,5 +1,5 @@
-import { AppAnalyticsProvider } from 'contrast-better-auth/analytics/react'
-import { ContrastProvider } from 'contrast-ui/provider/ContrastProvider'
+import { AppAnalyticsProvider } from 'takeout-better-auth/analytics/react'
+import { AppProvider } from 'takeout-ui/provider/AppProvider'
 import { Slot, Stack, usePathname, useUserScheme } from 'one'
 import { isWeb, useTheme } from 'tamagui'
 import { APP_NAME, DOMAIN } from '~/constants'
@@ -69,9 +69,9 @@ function AppRoutes() {
 function AppShell() {
   return (
     <AppAnalyticsProvider client={appAnalytics}>
-      <ContrastProvider config={config}>
+      <AppProvider config={config}>
         <AppRoutes />
-      </ContrastProvider>
+      </AppProvider>
     </AppAnalyticsProvider>
   )
 }

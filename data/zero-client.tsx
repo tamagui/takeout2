@@ -34,7 +34,7 @@ export const {
 export const zeroEvents: ZeroEventsEmitter = zeroClient.zeroEvents
 
 // one pull endpoint in every environment: local dev proxies it to the native
-// Rust sidecar, deployed apps route it to their Rust host, and Contrast preview
+// Rust sidecar, deployed apps route it to their Rust host, and a browser preview
 // routes it to the browser host. the application executor remains the one push owner.
 const SYNC_URL = `${SERVER_URL}/zero-http`
 const SYNC_TRANSPORT = createZeroClientTransport({

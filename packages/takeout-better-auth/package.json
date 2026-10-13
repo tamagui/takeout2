@@ -1,0 +1,35 @@
+{
+  "name": "takeout-better-auth",
+  "version": "0.0.2",
+  "description": "SSR-safe React helpers and native bearer transport for Better Auth",
+  "type": "module",
+  "main": "./src/index.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./analytics": "./src/analytics.ts",
+    "./analytics/react": "./src/analyticsReact.tsx",
+    "./analytics/server": "./src/analyticsServer.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "bun test ./test"
+  },
+  "keywords": [
+    "better-auth",
+    "expo",
+    "react",
+    "react-native",
+    "ssr"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "better-auth": ">=1.6.18 <2",
+    "react": "19.2.3"
+  }
+}

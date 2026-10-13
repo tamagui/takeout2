@@ -1,5 +1,5 @@
 import { createEmitter, useEmitter } from '@o/helpers'
-import { closeOpenTooltips } from 'contrast-ui/tooltip/closeOpenTooltips'
+import { closeOpenTooltips } from 'takeout-ui/tooltip/closeOpenTooltips'
 import type { DialogType } from './types'
 
 export const dialogEmitter = createEmitter<DialogType>('dialog', {

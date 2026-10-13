@@ -21,7 +21,7 @@ import { NativeTabInsetsProvider } from '~/interface/layout/nativeTabInsets'
 export default function TabsLayout() {
   // brand the active tab with the app's own tint instead of the platform blue:
   // accent-background, the one token a product's theme always sets and the
-  // tint contrast-ui's MobileTabBar draws on web.
+  // tint takeout-ui's MobileTabBar draws on web.
   const theme = useTheme()
   // the focused tab's action from tabAction.ts; a tab without one renders no
   // action tab, and an undeclared route file is never shown as a tab.

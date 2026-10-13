@@ -1,4 +1,4 @@
-import { sfSymbol } from 'contrast-ui/icons/sfSymbol'
+import { sfSymbol } from 'takeout-ui/icons/sfSymbol'
 import { Icons as BaseIcons } from './base'
 
 // ios draws the system symbol wherever iOS itself would, and keeps the shared

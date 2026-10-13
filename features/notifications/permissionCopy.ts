@@ -1,4 +1,4 @@
-import type { NotificationPermissionStatus } from 'contrast-notifications'
+import type { NotificationPermissionStatus } from 'takeout-notifications'
 
 // what each authorization actually gets the user. quiet authorization is its
 // own row rather than a shade of "on", because a provisionally authorized app

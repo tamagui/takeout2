@@ -82,7 +82,7 @@ export default {
     port: webPort,
   },
 
-  // contrast-ui and other vendored packages ship .tsx source. vite pre-bundles only
+  // takeout-ui and other vendored packages ship .tsx source. vite pre-bundles only
   // .js/.ts entries by default, so a .tsx entry would load raw and its own imports
   // (tamagui subpaths, CJS react/jsx-runtime) would skip dependency discovery.
   optimizeDeps: {
@@ -97,6 +97,6 @@ export default {
     external: ['on-zero', '@rocicorp/zero'],
     // auth packages expose React hooks from package code. bundle them through
     // Vite so SSR uses the renderer's React instance.
-    noExternal: ['better-auth', '@o/helpers', 'contrast-better-auth'],
+    noExternal: ['better-auth', '@o/helpers', 'takeout-better-auth'],
   },
 }

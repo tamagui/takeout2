@@ -1,5 +1,5 @@
-import { notificationPermissionAlerts, useNotificationPermission } from 'contrast-notifications'
-import { formatDistanceToNow } from 'contrast-ui/display'
+import { notificationPermissionAlerts, useNotificationPermission } from 'takeout-notifications'
+import { formatDistanceToNow } from 'takeout-ui/display'
 import { One, router } from 'one'
 import {
   notificationDestinationHref,

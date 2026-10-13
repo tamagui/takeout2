@@ -208,8 +208,8 @@ export function ContentSection() {
           <GoalTitle>AI-native</GoalTitle>
           <ContentParagraph>
             Point a coding agent at Takeout and prompt an entire app into production in
-            hours. Project instructions, typed routes, a shared UI package, and the{' '}
-            <CodeInline>contrast</CodeInline> CLI give agents a cohesive app to work on.
+            hours. Project instructions, typed routes, a shared UI package, and agent{' '}
+            <CodeInline>skills</CodeInline> give agents a cohesive app to work on.
           </ContentParagraph>
         </GoalItem>
       </YStack>

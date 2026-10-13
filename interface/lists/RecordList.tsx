@@ -3,7 +3,7 @@ import { Paragraph, SizableText, useTheme, View, XStack, YStack, styled } from '
 import { Icons } from '~/interface/icons'
 import type { RecordListProps, RecordRowProps } from './recordListContract'
 
-// android and web: the grouped card contrast-ui's Form Section draws on these
+// android and web: the grouped card takeout-ui's Form Section draws on these
 // legs, and its 56pt NavigationRow, so a record list and a settings list read
 // as one family. RecordList.ios.tsx is the iOS leg.
 

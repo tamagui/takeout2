@@ -1,5 +1,5 @@
-import { formatDistanceToNow } from 'contrast-ui/display'
-import { Image } from 'contrast-ui/image/Image'
+import { formatDistanceToNow } from 'takeout-ui/display'
+import { Image } from 'takeout-ui/image/Image'
 import { memo } from 'react'
 import { isWeb, Paragraph, View, XStack, YStack } from 'tamagui'
 import { postDetailHref } from '~/features/app/routes'

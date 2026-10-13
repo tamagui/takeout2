@@ -1,10 +1,10 @@
-import { sfSymbol } from 'contrast-ui/icons/sfSymbol'
+import { sfSymbol } from 'takeout-ui/icons/sfSymbol'
 import { Children, createContext, isValidElement, use } from 'react'
 import { SizableText, View, XStack, YStack, styled } from 'tamagui'
 import { Icons } from '~/interface/icons'
 import type { RecordListProps, RecordRowProps } from './recordListContract'
 
-// iOS: the inset-grouped list, at the iOS 27 metrics contrast-kit measured for
+// iOS: the inset-grouped list, at the iOS 27 metrics measured for
 // SwiftUI's own (iPhone 17 Pro): a 26pt card corner, a 52pt row floor, a 16pt
 // row inset, a 1pt separator inset 16 from both card edges that starts at the
 // title (40 past the inset) when the row leads with a glyph, and a 17pt

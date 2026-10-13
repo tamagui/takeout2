@@ -3,8 +3,7 @@
 // children are never part of the Swift mount contract.
 //
 // a file declaring `RNXModule` classes also exports them by name. their types
-// are the `<name>.d.swift.ts` beside it that `one typegen` writes and the
-// contrast editor derives, which `allowArbitraryExtensions` lets typescript
+// are the `<name>.d.swift.ts` beside it that `one typegen` writes, which `allowArbitraryExtensions` lets typescript
 // read ahead of this module.
 declare module '*.swift' {
   import type { ComponentType } from 'react'

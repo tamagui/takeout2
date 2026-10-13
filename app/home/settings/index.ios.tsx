@@ -4,7 +4,7 @@ import {
   Section,
   SubmitButton,
   ToggleField,
-} from 'contrast-ui/forms/Form'
+} from 'takeout-ui/forms/Form'
 import { One, useRouter } from 'one'
 import { APP_NAME_LOWERCASE, DOMAIN } from '~/constants'
 import { useSettingsData } from '~/features/settings/useSettingsData'

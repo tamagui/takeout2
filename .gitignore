@@ -4,7 +4,6 @@ dist/
 .orez/
 .orez-*/
 .tamagui/
-.contrast/
 .wrangler/
 app/routes.d.ts
 .env*

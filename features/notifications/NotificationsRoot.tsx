@@ -4,8 +4,8 @@ import {
   useNotificationForegroundPolicy,
   type NotificationForegroundPolicy,
   type NotificationResponseResult,
-} from 'contrast-notifications'
-import { showToast } from 'contrast-ui/toast/Toast'
+} from 'takeout-notifications'
+import { showToast } from 'takeout-ui/toast/Toast'
 import { router } from 'one'
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { notificationById } from '~/data/appNotification/queries'
@@ -33,9 +33,9 @@ export function NotificationsRoot({ children }: { children: ReactNode }) {
     setOpeningId(result.notificationId)
   }, [])
 
-  // no `register` callback: contrast-push owns the installation registry and
-  // only the app's authenticated backend may mint registration tokens for it.
-  // generated apps leave this off until their backend serves that mint; the
+  // no `register` callback: the push service owns the installation registry
+  // and only the app's authenticated backend may mint registration tokens for
+  // it. the app leaves this off until its backend serves that mint; the
   // inbox and foreground presentation work without it.
   return (
     <NotificationsProvider foregroundPolicy={FOREGROUND_POLICY} onNotificationResponse={onResponse}>

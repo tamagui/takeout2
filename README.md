@@ -1,10 +1,8 @@
 # Takeout
 
-Takeout is a free starter prepared for future open-source publication. It keeps its original marketing website and uses
-Contrast’s app template
-for the app underneath: a social feed with
-email and password login, posts, comments, profiles, and account settings on web
-and React Native. It uses One v2, Tamagui v3, contrast-ui, Better Auth, Drizzle,
+Takeout is a free, open-source starter: a marketing website and, underneath it, a social feed
+app with email and password login, posts, comments, profiles, and account
+settings on web and React Native. It uses One v2, Tamagui v3, takeout-ui, Better Auth, Drizzle,
 and Durable Zero over SQLite: Zero's client and query model with our Rust sync
 engine (`orez-lite`) on Cloudflare Durable Objects.
 
@@ -34,7 +32,18 @@ The development database contains six seeded posts.
 
 ## Native
 
-[EJECT.md](./EJECT.md) covers One’s Expo-free iOS and Android builds. Native
+One builds iOS and Android without Expo. iOS needs macOS and Xcode; Android
+needs JDK 17 and the Android SDK.
+
+```sh
+bunx one prebuild --platform ios   # generates ios/
+bunx one run:ios                   # build and launch on the simulator
+bunx one prebuild --platform android
+bunx one run:android               # connected device or emulator
+```
+
+For a signed device or store build, open `ios/*.xcworkspace` in Xcode, or run
+`./gradlew bundleRelease` in `android/` after configuring signing. Native
 identity follows `APP_VARIANT=development|preview|production`, preserving the
 existing Takeout bundle identifiers and `takeout` URL scheme. Use
 `APP_VARIANT=preview` for an isolated native build. `ONE_SERVER_URL` must name the
@@ -57,14 +66,8 @@ secret. [docs/publishing.md](./docs/publishing.md) records the cutover, data
 mapping, and deployment ownership. Native builds are manual and out of scope
 for the web cutover; the retired Expo and Uncloud workflows are removed.
 
-## Source and license
+## License
 
-[docs/template-source.md](./docs/template-source.md) records the canonical source
-and the MIT packages bundled under `packages/`, so installation needs no new npm
-release. The optional Peach CLI is consumed from npm under its own license;
-private Contrast engine packages are not copied here.
-
-Takeout source is available under the [MIT License](./LICENSE). Third-party
-dependencies retain their own licenses. There is no paid tier or Help & Support
-service. The existing repository stays private until the owner is ready to
-open-source it. The hosted app offers demo login.
+Takeout source, including the packages under `packages/`, is available under
+the [MIT License](./LICENSE). Third-party dependencies retain their own
+licenses. The hosted app offers demo login.

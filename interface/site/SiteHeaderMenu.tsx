@@ -1,4 +1,4 @@
-import { Sheet } from 'contrast-ui/sheet/Sheet'
+import { Sheet } from 'takeout-ui/sheet/Sheet'
 import { usePathname } from 'one'
 import { memo, useState } from 'react'
 import { Button, Separator, SizableText, useDidFinishSSR, View, XStack, YStack } from 'tamagui'

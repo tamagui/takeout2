@@ -30,7 +30,7 @@ Follow this bounded pass when adding a screen:
 
 Do not inspect themes, shared primitives, icon catalogs, other packages, or
 `tamagui_config_inspect`; Section 0's contract and import lines are exact. `rg`
-`/node_modules/contrast-ui` only for a name this skill does not give. Change
+`/node_modules/takeout-ui` only for a name this skill does not give. Change
 those owners only when named in OWNS.
 
 The concrete file shapes and API contracts are below.
@@ -106,12 +106,12 @@ Consume the template's pre-bound design-system and component contract directly.
 - Text: `SizableText` from `'tamagui'` with `size="1"` to `"9"` and `fontWeight`; `fontFamily="heading"` for a title.
 
 ### Money and dates
-- Display helpers: `import { centsFromInput, formatCents, formatDateOnly, formatRelativeDate, formatShortDate, todayDateOnly, type DateOnlyKey } from 'contrast-ui/display'`.
+- Display helpers: `import { centsFromInput, formatCents, formatDateOnly, formatRelativeDate, formatShortDate, todayDateOnly, type DateOnlyKey } from 'takeout-ui/display'`.
 - Money: store integer cents. `formatCents(cents, currency?, locale?)` formats cents as text; `centsFromInput(text)` parses an entered amount into integer cents or `null`; `<CurrencyAmount cents={valueCents} currency="USD" size="6" />` from `~/interface/text/CurrencyAmount` renders cents. Paired amounts (`X of Y`) use the same formatter on both sides. On compact cards they stack vertically or wrap with `flexWrap="wrap"`, `minW={0}`, and `shrink={1}` on each amount so they fit at 320pt; never use one unwrapped row of two full amounts plus a joiner. Never divide by 100 in a screen or concatenate a currency symbol.
 - Dates: a calendar day is a `DateOnlyKey` (`YYYY-MM-DD`): a new one defaults to `todayDateOnly()`, never a hand-built string, and renders through `formatDateOnly(key)`; a timestamp renders through `formatShortDate(ms)` or `formatRelativeDate(ms)`. A month label comes from the same `monthModel` as the filter bounds. Never render a raw key, an ISO string, or `Date.toString()` in the interface.
 
 ### Fields
-- Fields: a form body is `import { Field, Form, Section } from 'contrast-ui/forms/Form'` as `<Form presentation="sheet"><Section plain>...</Section></Form>`; a labeled text entry is `Field` (`label`, `value`, `onChangeText`, `placeholder`, `keyboardType`, `testID`); a calendar day is `import { DateField } from 'contrast-ui/forms/DateField'` (`label`, `value` as the date-only key, `onChange`); a choice is `import { Select } from 'contrast-ui/select/Select'` (a required `label`, `items={[{ id, name }]}`, `value={id}` or the empty value before a pick, `onValueChange`; no `placeholder`). `Input` takes no `label` prop; bare `Input` from `contrast-ui/forms/Input` is for entry outside a form, such as search. Picker items come from `choiceCatalog` in `data/catalog.ts` (`Object.entries(choiceCatalog.<set>).map(([id, name]) => ({ id, name }))`), never a per-screen list. Never a plain text input for a date.
+- Fields: a form body is `import { Field, Form, Section } from 'takeout-ui/forms/Form'` as `<Form presentation="sheet"><Section plain>...</Section></Form>`; a labeled text entry is `Field` (`label`, `value`, `onChangeText`, `placeholder`, `keyboardType`, `testID`); a calendar day is `import { DateField } from 'takeout-ui/forms/DateField'` (`label`, `value` as the date-only key, `onChange`); a choice is `import { Select } from 'takeout-ui/select/Select'` (a required `label`, `items={[{ id, name }]}`, `value={id}` or the empty value before a pick, `onValueChange`; no `placeholder`). `Input` takes no `label` prop; bare `Input` from `takeout-ui/forms/Input` is for entry outside a form, such as search. Picker items come from `choiceCatalog` in `data/catalog.ts` (`Object.entries(choiceCatalog.<set>).map(([id, name]) => ({ id, name }))`), never a per-screen list. Never a plain text input for a date.
 
 ### Layout, controls, and icons
 - Layout container: `import { PageScrollView } from '~/interface/layout/PageScrollView'` wraps scrollable screen content (`<PageScrollView p="4" gap="4">...</PageScrollView>`).
@@ -126,7 +126,7 @@ holding only the settings gear; `PageScrollView` keeps content below it.
 - `_layout.tsx`: leave it alone, unless the screen has a sheet (section 5):
   then add the `add` screen and keep the `index` title:
   ```tsx
-  import { formSheetOptions } from 'contrast-ui/sheet/routeSheetOptions'
+  import { formSheetOptions } from 'takeout-ui/sheet/routeSheetOptions'
   import { Stack } from 'one'
 
   export const unstable_settings = { initialRouteName: 'index' }
@@ -182,7 +182,7 @@ order: the landing screen at index 0, every other screen after the last entry:
 `app/home/(tabs)/_layout.tsx`, `app/home/(tabs)/_layout.native.tsx`, and `features/app/MainHeader.tsx` render `APP_TABS` and the focused tab's action (section 5) automatically. Never edit or restructure them to add a screen or change an action.
 
 ## 5. Sheets and dialogs
-Forms live in route files declared in `_layout.tsx` (section 1). Use `add.tsx` for the tab action; row actions may open `/add?id=<record id>`. If fields differ by mode, validate each mode separately. iOS uses the native form sheet; Android and web use the `contrast-ui` sheet. Never mount a form with inline `Dialog`, `@tamagui/sheet`, or raw Tamagui primitives.
+Forms live in route files declared in `_layout.tsx` (section 1). Use `add.tsx` for the tab action; row actions may open `/add?id=<record id>`. If fields differ by mode, validate each mode separately. iOS uses the native form sheet; Android and web use the `takeout-ui` sheet. Never mount a form with inline `Dialog`, `@tamagui/sheet`, or raw Tamagui primitives.
 - The tab bar opens it, never a button on the screen: `index.tsx` declares it as its tab's action, drawn as the circle beside the tab bar on native and web and as the desktop header button, with `testID="<name>-primary-action"` (`<name>` is the tab name), an id only the tab bar carries:
   ```tsx
   // useTabAction from '~/features/app/tabAction', Plus from '~/interface/icons/lucide/Plus'

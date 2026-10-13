@@ -1,0 +1,25 @@
+{
+  "name": "takeout-swipeable",
+  "version": "0.1.0",
+  "description": "iOS-native full-swipe-to-delete row on top of the RNGH Swipeable API",
+  "type": "module",
+  "main": "./src/index.tsx",
+  "types": "./src/index.tsx",
+  "exports": {
+    ".": "./src/index.tsx"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "keywords": [
+    "react-native",
+    "swipeable",
+    "ios"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "19.2.3",
+    "react-native": "0.87.1"
+  }
+}

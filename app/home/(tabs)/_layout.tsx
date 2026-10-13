@@ -9,7 +9,7 @@
  * layout engine, which cannot parse CSS. do not copy a value like it into a
  * shared (non-platform-suffixed) file without giving native a plain number.
  */
-import { MobileTabBar } from 'contrast-ui/tabs/MobileTabBar'
+import { MobileTabBar } from 'takeout-ui/tabs/MobileTabBar'
 import { Slot } from 'one'
 import { useState } from 'react'
 import { useMedia, View, YStack } from 'tamagui'

@@ -1,4 +1,4 @@
-import { VirtualList } from 'contrast-ui/lists/VirtualList'
+import { VirtualList } from 'takeout-ui/lists/VirtualList'
 import { useSafeAreaInsets } from 'one'
 import { Platform } from 'react-native'
 import { useTheme } from 'tamagui'

@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 
 // a screen's records as one grouped list. both legs take exactly these props:
 // RecordList.ios.tsx draws iOS's inset-grouped list, RecordList.tsx draws the
-// grouped card contrast-ui's Form Section draws on android and web.
+// grouped card takeout-ui's Form Section draws on android and web.
 
 export type RecordListProps = {
   /** the section header above the group. */

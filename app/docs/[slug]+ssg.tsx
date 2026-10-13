@@ -1,5 +1,5 @@
-import { MDX } from 'contrast-mdx'
-import { compileMDX } from 'contrast-mdx/build'
+import { MDX } from 'takeout-mdx'
+import { compileMDX } from 'takeout-mdx/build'
 import { createRoute, useLoader } from 'one'
 import { Paragraph, YStack } from 'tamagui'
 import { DocsLayout } from '~/features/docs/DocsLayout'

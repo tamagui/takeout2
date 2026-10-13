@@ -1,6 +1,6 @@
 import { defaultConfig, settings as v6Settings, toV6Themes } from '@tamagui/config/v6'
 import { defaultConfig as takeoutConfig } from '@tamagui/config/v5'
-import { animationsRoot } from 'contrast-ui/animations/animationsRoot'
+import { animationsRoot } from 'takeout-ui/animations/animationsRoot'
 import { createTamagui } from 'tamagui'
 import { fonts } from './fonts'
 
@@ -72,7 +72,7 @@ const takeoutThemes = toV6Themes(takeoutConfig.themes)
 
 export const config = createTamagui({
   ...defaultConfig,
-  // brand tint for the native tab bar (see skills/contrast-app-templates.md).
+  // brand tint for the native tab bar.
   // accent-background + accent-color always ship as a pair, deriving a passing
   // foreground (WCAG AA >= 4.5:1) from the chosen accent-background.
   themes: {

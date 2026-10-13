@@ -1,5 +1,5 @@
-import { formatDistanceToNow } from 'contrast-ui/display'
-import { Input } from 'contrast-ui/forms/Input'
+import { formatDistanceToNow } from 'takeout-ui/display'
+import { Input } from 'takeout-ui/forms/Input'
 import { useMutation } from 'on-zero'
 import { One } from 'one'
 import { useState } from 'react'

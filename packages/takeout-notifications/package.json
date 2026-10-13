@@ -1,0 +1,34 @@
+{
+  "name": "takeout-notifications",
+  "version": "0.1.0",
+  "description": "Remote push registration and notification routing for One apps",
+  "type": "module",
+  "main": "./src/index.ts",
+  "react-native": "./src/index.native.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "react-native": "./src/index.native.ts",
+      "default": "./src/index.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "keywords": [
+    "notifications",
+    "push-notifications",
+    "react-native"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "one": "2.6.0",
+    "react": "19.2.3",
+    "react-native": "0.87.1"
+  }
+}

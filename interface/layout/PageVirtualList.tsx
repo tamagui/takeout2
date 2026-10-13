@@ -1,4 +1,4 @@
-import { VirtualList } from 'contrast-ui/lists/VirtualList'
+import { VirtualList } from 'takeout-ui/lists/VirtualList'
 import { useBottomTabBarHeight } from './bottomTabBarHeight'
 import type { ComponentProps } from 'react'
 

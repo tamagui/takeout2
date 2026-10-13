@@ -1,4 +1,4 @@
-import { Tooltip } from 'contrast-ui/tooltip/Tooltip'
+import { Tooltip } from 'takeout-ui/tooltip/Tooltip'
 import { setUserScheme, useUserScheme } from 'one'
 import { Button } from '~/interface/buttons/Button'
 import { CircleHalfIcon, MoonStarsIcon, SunIcon } from './TakeoutIcons'

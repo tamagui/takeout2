@@ -1,7 +1,7 @@
-import { useIconProps } from 'contrast-ui/icons/useIconProps'
+import { useIconProps } from 'takeout-ui/icons/useIconProps'
 import { memo } from 'react'
 import { Svg, Circle, Path } from 'react-native-svg'
-import type { IconProps } from 'contrast-ui/icons/types'
+import type { IconProps } from 'takeout-ui/icons/types'
 
 export const MapPin = memo((props: IconProps) => {
   const { width, height, fill, ...svgProps } = useIconProps(props)

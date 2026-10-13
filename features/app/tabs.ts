@@ -14,7 +14,7 @@ import {
   APP_PROFILE_HREF,
   APP_PROFILE_ROUTE_NAME,
 } from './routes'
-import type { Icon, SfSymbolName } from 'contrast-ui/icons/types'
+import type { Icon, SfSymbolName } from 'takeout-ui/icons/types'
 import type { ComponentProps } from 'react'
 
 export type ComposeIconName = ComponentProps<typeof One.Android.Icon>['name']

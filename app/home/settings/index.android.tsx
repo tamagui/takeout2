@@ -4,7 +4,7 @@ import {
   Section,
   SubmitButton,
   ToggleField,
-} from 'contrast-ui/forms/Form'
+} from 'takeout-ui/forms/Form'
 import { One, useRouter } from 'one'
 import { Paragraph, XStack } from 'tamagui'
 import { APP_NAME_LOWERCASE, DOMAIN } from '~/constants'

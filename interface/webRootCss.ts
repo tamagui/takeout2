@@ -1,7 +1,7 @@
 // safe-area lengths every app layout should use instead of raw
 // env(safe-area-inset-*): WebKit only resolves env() in the TOP document, so
-// inside the Contrast preview iframe it is always 0 and phone chrome renders under
-// the dynamic island. the preview host mirrors the real insets into the guest
+// inside a preview iframe it is always 0 and phone chrome renders under
+// the dynamic island. a preview host can mirror the real insets into the guest
 // as --safe-area-inset-* custom properties; these vars prefer that bridge and
 // fall back to env() so the same code is correct deployed AND in the preview.
 // usage: pt="calc(50px + var(--safe-area-top))".
@@ -13,8 +13,7 @@ export const SAFE_AREA_VARS = `:root {
 }`
 
 // shared web link preset for every example + template — one source of truth
-// instead of a per-app `a { text-decoration: none }` patch. mirrors
-// src/site/contrast-root.css: links have NO underline by default, a link wrapping
+// instead of a per-app `a { text-decoration: none }` patch. links have NO underline by default, a link wrapping
 // a button never underlines, and only links inside prose (paragraphs / list items
 // / table cells + tamagui's Paragraph) underline — so docs stay readable while
 // nav / cta / pagination links stay clean. inject it into the root <style>

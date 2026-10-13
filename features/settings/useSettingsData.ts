@@ -1,4 +1,4 @@
-import { openFeedback } from 'contrast-native/feedback'
+import { openFeedback } from 'takeout-native/feedback'
 import {
   APP_SETTINGS_EDIT_PROFILE_HREF,
   APP_SETTINGS_NOTIFICATIONS_HREF,
@@ -7,8 +7,8 @@ import { useLogout } from '~/features/auth/useLogout'
 import { useFeedbackSetting } from '~/features/feedback/feedbackSetting'
 import { useHasUnreadNotifications } from '~/features/notifications/useNotificationInbox'
 import { Icons } from '~/interface/icons'
-import type { NavigationRowProps } from 'contrast-ui/forms/formContract'
-import type { Icon } from 'contrast-ui/icons/types'
+import type { NavigationRowProps } from 'takeout-ui/forms/formContract'
+import type { Icon } from 'takeout-ui/icons/types'
 import type { Href } from 'one'
 
 export type SettingItem = {

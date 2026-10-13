@@ -1,4 +1,4 @@
-import { Image } from 'contrast-ui/image/Image'
+import { Image } from 'takeout-ui/image/Image'
 import { useState } from 'react'
 import { View, Paragraph, type ColorTokens } from 'tamagui'
 

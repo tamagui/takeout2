@@ -1,4 +1,4 @@
-import { formatCents } from 'contrast-ui/display'
+import { formatCents } from 'takeout-ui/display'
 import { SizableText } from 'tamagui'
 import type { ComponentProps } from 'react'
 

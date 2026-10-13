@@ -1,25 +1,21 @@
-# Product App Template Agent Guide
+# Takeout Agent Guide
 
-This is a Contrast app template: One + Tamagui on web and Peach native,
-with better-auth, on-zero, Drizzle, one native SQLite application database,
-docs, and a public landing surface. This file is project-local guidance.
-The user may edit it; follow the saved project copy and do not overwrite it
-unless asked.
+Takeout is a One + Tamagui app for web and React Native, with Better Auth,
+on-zero, Drizzle, one SQLite application database, docs, and a public landing
+page. This file is project-local guidance for coding agents.
 
 ## Running locally
 
-On your own machine the `contrast` CLI runs this project
-(`curl -fsSL https://contrast.dev/install.sh | sh` installs it).
-
-- `contrast dev` runs the whole stack and prints the web URL. Leave it running
-  in the background; it reloads on save.
-- `contrast shot [route]` screenshots the running web app to a PNG and exits 1
-  when the page logged an error. Check every UI change with it.
-- `contrast ios` opens the app in a Peach iOS simulator in the browser;
-  `peach describe`, `peach screenshot`, and `peach get errors` inspect it.
-- `bunx tsc --noEmit` typechecks the app.
-- `contrast login`, then `contrast link --create`, connects the project to
-  contrast.dev; `contrast deploy` publishes it.
+- `bun install`, then `bun dev` runs the whole stack (web, sync, database,
+  uploads) at http://localhost:4200. Leave it running; it reloads on save.
+  `PORT_OFFSET=100 bun dev` moves every port together.
+- `bun run typecheck` typechecks the app; `bun run build` builds for
+  Cloudflare; `bun run generate` regenerates migrations and Zero types after
+  a schema change.
+- Check every UI change in a browser (headless playwright works well) and
+  watch the console for errors.
+- `bunx one run:ios` and `bunx one run:android` build and launch the native
+  app; see the Native section of `README.md`.
 
 ## Repo Map
 
@@ -40,23 +36,18 @@ On your own machine the `contrast` CLI runs this project
   chrome. A screen under a tab owns its own content and its own entry in those
   layouts and in the tab bars; it does not restructure the chrome around other
   screens.
-- `starter-retirement.json` inventories starter-only leaves, components, and
-  registry entries. When a new product replaces the starter, shared navigation
-  runs `retire_starter` after the primary Design moves `APP_HOME_HREF`. The tool
-  preserves changed leaves and unrelated registrations. Data and seed replacement
-  belong to their data owners. `features/account/AccountToolbarButton.tsx`
-  (with its `.ios`/`.android` legs) is permanent shared chrome, not starter
-  content: each tab root mounts it in its screen content as the trailing
-  settings gear of that root's own navigation bar, the native route to
-  settings and sign-out after retirement. It is never listed in the manifest;
-  a new product's tab roots mount it the same way.
+- `features/account/AccountToolbarButton.tsx` (with its `.ios`/`.android`
+  legs) is permanent shared chrome: each tab root mounts it in its screen
+  content as the trailing settings gear of that root's own navigation bar, the
+  native route to settings and sign-out. A new product's tab roots mount it
+  the same way.
 - Each tab root declares its own primary action with `useTabAction` from
   `features/app/tabAction.ts` (label, href, optional `onPress`, and the web,
   SF Symbol, and Material glyphs). The native prominent tab, the web action
-  circle (`MobileTabBar` from `contrast-ui/tabs/MobileTabBar`, rendered by
+  circle (`MobileTabBar` from `takeout-ui/tabs/MobileTabBar`, rendered by
   `app/home/(tabs)/_layout.tsx`), and the desktop header button render the
-  focused tab's action, and a tab without one shows none; per the
-  `contrast-native-action-button` skill, never edit the three surfaces for it.
+  focused tab's action, and a tab without one shows none; never edit the three
+  surfaces for it.
 - Product identity lives in more than the copy. A rebrand edits `APP_NAME`,
   `APP_TAGLINE`, and `APP_SCHEME` in `constants.ts` (`APP_NAME_LOWERCASE`
   derives from it), `name`, `displayName`, and `scheme` in `vite.config.ts`'s `native.app`, the titles and descriptions in
@@ -76,31 +67,31 @@ On your own machine the `contrast` CLI runs this project
 - A create, edit, or quick-entry flow is its own route presented as a sheet;
   `skills/screen-authoring.md` owns that recipe, and `app/_layout.tsx` already
   mounts the `Presentations` host that gives it its web leg, so a leaf layout
-  declares only its own screens. `Dialog` from `contrast-ui/dialog/Dialog` is
+  declares only its own screens. `Dialog` from `takeout-ui/dialog/Dialog` is
   for content the user reads or changes in place with no url of its own, and
   `dialogConfirm()` is the yes/no question before a destructive action. Never
   mount a raw `Sheet` for a form. `dialogConfirm()` and `showToast()` come from
   the same package, and `app/_layout.tsx` mounts their host once, inside
-  `ContrastProvider`.
-- `Input` and `TextArea` come from `contrast-ui/forms/Input` and
-  `contrast-ui/forms/TextArea`, never raw Tamagui: one border, one focus ring,
+  `AppProvider`.
+- `Input` and `TextArea` come from `takeout-ui/forms/Input` and
+  `takeout-ui/forms/TextArea`, never raw Tamagui: one border, one focus ring,
   `size="xs" | "sm" | "md" | "lg" | "xl"`. A calendar day is `DateField` from
-  `contrast-ui/forms/DateField` (`value` is the `YYYY-MM-DD` key), and a choice
-  from a closed set is `Select` from `contrast-ui/select/Select` with items
+  `takeout-ui/forms/DateField` (`value` is the `YYYY-MM-DD` key), and a choice
+  from a closed set is `Select` from `takeout-ui/select/Select` with items
   from the data contract's label catalog; neither is ever a plain text input.
   `interface/dialogs/SheetScreen.tsx` is the frame for a create or edit route
   (title, close, body, and one `action` with `disabled` and `disabledReason`).
 - `interface/buttons/Button.tsx` re-exports the kit's `Button` from
-  `contrast-ui/buttons/Button`, so every template's buttons improve with the
+  `takeout-ui/buttons/Button`, so every template's buttons improve with the
   kit. It takes boolean props for its looks: `<Button accent>` for the primary
   action, `<Button subtle>`, and `<Button glass>` for a control floating over
   content (a capsule, or a circle when square), plus `size` and `disabled`.
   Glass buttons that belong together share one `ButtonGroup`; a button on a
   surface such as a dialog footer stays plain. `variant` accepts only
-  Tamagui's `outlined` and `quiet`. `contrast-ui` is imported by subpath only
-  (`contrast-ui/forms/Input`, `contrast-ui/toast/Toast`); there is no root
+  Tamagui's `outlined` and `quiet`. `takeout-ui` is imported by subpath only
+  (`takeout-ui/forms/Input`, `takeout-ui/toast/Toast`); there is no root
   barrel.
-- `sm`, `md`, `lg` are `contrast-ui` size names, and Tamagui controls take the
+- `sm`, `md`, `lg` are `takeout-ui` size names, and Tamagui controls take the
   same `xs`-`xl` names where they take a `size` at all (`Button`, `Progress`,
   `Slider`, `Input`, `Card`, `Select`, `Tabs`, and the checkbox/radio/switch/
   list-item family). A component with no `size` prop takes an explicit
@@ -143,7 +134,7 @@ id `public-app-entry`; the native auth action has `login-as-demo`.
 
 The web homepage preserves Takeout’s original artwork, animated phone demo,
 terminal, responsive composition, and long-form sections. Its fonts and themes
-are scoped to marketing; the app uses the canonical Contrast template UI.
+are scoped to marketing; the app uses its own template UI.
 `app/auth/login.tsx` and
 `features/auth/ui/LoginScreen.tsx` are both rendered files for the native login
 surface; the route file establishes `/auth/login` and the shared screen owns the
@@ -161,7 +152,7 @@ content insets while its web implementation preserves document scrolling. Use
 `PageScrollView` plus `.map()` for most collections. Only genuinely long or
 unbounded data earns virtualization, and that path is
 `interface/layout/PageVirtualList`, built on `VirtualList` from
-`contrast-ui/lists/VirtualList`. Never use React Native `FlatList`. Screen routes express only ordinary extra spacing through
+`takeout-ui/lists/VirtualList`. Never use React Native `FlatList`. Screen routes express only ordinary extra spacing through
 the shared primitives' padding props and never read `useSafeAreaInsets()` for
 scroll content. Verify the first visible node begins at or below the native top
 inset and the final item can scroll above the bottom chrome.
@@ -178,12 +169,10 @@ The template ships a real demo auth path:
   moves the ids with it).
 - Pressing it signs in `demo@example.com`.
 
-These ids and actions are part of the current auth contract, and
-`package.json` `contrast.entry` states them for the platform that drives entry,
-along with the `files` that render each entry surface's body.
+These ids and actions are part of the current auth contract.
 A visual rebrand does not by itself change the entry or demo-login behavior; a
 task that changes the auth flow or moves an entry surface's body must update its
-callers and `contrast.entry` as part of the same change.
+callers as part of the same change.
 
 Do not touch the demo identity in `auth/demoIdentity.ts` (`DEMO_EMAIL`,
 `DEMO_PASSWORD`, `DEMO_NAME`, `DEMO_USER_ID`) when re-branding. It is auth

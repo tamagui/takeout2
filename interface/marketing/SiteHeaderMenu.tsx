@@ -1,7 +1,7 @@
 import { Sheet } from 'contrast-ui/sheet/Sheet'
 import { usePathname, useUserScheme } from 'one'
 import { memo, useState } from 'react'
-import { Separator, SizableText, View, XStack, YStack } from 'tamagui'
+import { Separator, SizableText, useDidFinishSSR, View, XStack, YStack } from 'tamagui'
 import { useAuth } from '~/auth/client/authClient'
 import { APP_HOME_HREF } from '~/features/app/routes'
 import { Link } from '~/interface/app/Link'
@@ -17,7 +17,8 @@ export const SiteHeaderMenu = memo(() => {
   const pathname = usePathname()
   const isDocsPage = pathname.startsWith('/docs')
   const auth = useAuth()
-  const isAuthed = auth.isLoggedIn
+  // static pages render signed out on the server, so the first client render must too
+  const isAuthed = useDidFinishSSR() && auth.isLoggedIn
 
   return (
     <>

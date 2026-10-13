@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from 'react'
-import { isWeb, SizableText, Spacer, useMedia, XStack, YStack } from 'tamagui'
+import { isWeb, SizableText, Spacer, useDidFinishSSR, useMedia, XStack, YStack } from 'tamagui'
 import { useAuth } from '~/auth/client/authClient'
 import { APP_HOME_HREF } from '~/features/app/routes'
 import { Link } from '~/interface/app/Link'
@@ -33,7 +33,8 @@ export const SiteHeader = memo(() => {
   const [isScrolled, setIsScrolled] = useState(false)
   const media = useMedia()
   const auth = useAuth()
-  const isAuthed = auth.isLoggedIn
+  // static pages render signed out on the server, so the first client render must too
+  const isAuthed = useDidFinishSSR() && auth.isLoggedIn
 
   useEffect(() => {
     if (!isWeb) return

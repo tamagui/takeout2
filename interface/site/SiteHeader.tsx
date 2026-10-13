@@ -1,6 +1,6 @@
 import { Link } from 'one'
 import { memo } from 'react'
-import { SizableText, Spacer, XStack, YStack } from 'tamagui'
+import { SizableText, Spacer, useDidFinishSSR, XStack, YStack } from 'tamagui'
 import { useAuth } from '~/auth/client/authClient'
 import { APP_NAME } from '~/constants'
 import { APP_HOME_HREF } from '~/features/app/routes'
@@ -12,7 +12,8 @@ import { SiteHeaderMenu } from './SiteHeaderMenu'
 // (Sheet) below.
 export const SiteHeader = memo(() => {
   const auth = useAuth()
-  const isAuthed = auth.isLoggedIn
+  // static pages render signed out on the server, so the first client render must too
+  const isAuthed = useDidFinishSSR() && auth.isLoggedIn
 
   return (
     <YStack render="header" t={0} z={50} width="100%">

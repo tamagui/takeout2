@@ -128,6 +128,7 @@ const syncConfig = cloudflareRustSyncWranglerConfig({
 })
 syncConfig.account_id = config.account_id
 writeFileSync(join(syncDir, 'wrangler.json'), JSON.stringify(syncConfig, null, 2))
+execFileSync('bun', ['scripts/check-cloudflare.ts'], { stdio: 'inherit' })
 if (!process.argv.includes('--prepare-only')) {
   for (const directory of [syncDir, workerDir])
     execFileSync(

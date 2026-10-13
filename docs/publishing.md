@@ -9,14 +9,14 @@ and native signing remain unchanged.
 Nate, 2026-10-06, reviewing the preview: "the video doesn't show for me at least
 in my in-line browser here" and "have we refreshed it to talk like about the
 whole new stack that we've done with Cloudflare and the new sink engine". The
-landing and docs describe One 2, Tamagui 3, Better Auth, Drizzle, Durable Zero,
+landing and docs describe One 2, Tamagui 3, Better Auth, Drizzle, Lime Sync,
 SQLite Durable Objects, and R2. The phone demo uses one H.264 MP4 in the owned
-R2 bucket, a demo poster, inline playback, and native controls for browsers
-that restrict autoplay.
+R2 bucket, a demo poster, muted inline autoplay on a loop, and tap or keyboard pause/resume without
+native controls.
 
 Nate, 2026-10-06: "Maybe we could call it like durable zero because basically
 it's zero it's still zero but it's just adapted to work on cloud flare,
-durable objects, right". Durable Zero is the public name for Zero's client
+durable objects, right". Lime Sync is the public name for Zero's client
 and query model with our Rust sync engine on Cloudflare Durable Objects. The
 implementation package remains `orez-lite`; deployed names and bindings stay
 stable.
@@ -31,7 +31,7 @@ features. Native and TestFlight builds remain outside this web cutover.
 
 The app deploys directly into account `aa20b480cc813f2131bc005e2b7fd140`.
 `takeout-site` owns the singleton application SQLite Durable Object and R2
-uploads. `takeout-site-sync` owns the Durable Zero cache and reaches the app's
+uploads. `takeout-site-sync` owns the Lime Sync cache and reaches the app's
 private `OrezDataFeed` entrypoint through a service binding. The app forwards
 `/zero-http/*` to that sync worker. `scripts/deploy-cloudflare.ts` uses the
 published `orez-lite/cloudflare/build` helpers and the generated query registry.

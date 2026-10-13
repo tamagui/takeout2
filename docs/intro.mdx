@@ -1,6 +1,6 @@
 ---
 title: Introduction
-description: One 2, Tamagui 3, and Durable Zero on Cloudflare.
+description: One 2, Tamagui 3, and Lime Sync on Cloudflare.
 ---
 
 # Takeout
@@ -17,7 +17,7 @@ Cloudflare Workers, with SQLite in a Durable Object and uploads in R2.
 - **Better Auth** handles email and password sign-in and sessions. Use
   "Login as Demo User" to explore the feed without registering.
 - **Drizzle** defines the application SQLite schema and migrations in TypeScript.
-- **Durable Zero** adapts Zero's client and query model to Cloudflare Durable
+- **[Lime Sync](https://lime-sync.natewienert.workers.dev)** adapts Zero's client and query model to Cloudflare Durable
   Objects. Our Rust sync engine, packaged as `orez-lite`, runs as WebAssembly
   in its own Durable Object. The Zero client and `on-zero` helpers provide
   typed queries and optimistic mutations.
@@ -42,5 +42,5 @@ One SQLite Durable Object owns users, sessions, posts, and comments. The sync
 worker reads its private data feed through a service binding. The app forwards
 `/zero-http/*` to that worker, so auth and live data use the same origin.
 
-Locally, `bun dev` runs the app with SQLite and Durable Zero. See
+Locally, `bun dev` runs the app with SQLite and Lime Sync. See
 [Getting started](/docs/getting-started) for routes, schema generation, and mutations.

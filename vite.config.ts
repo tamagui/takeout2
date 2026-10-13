@@ -12,9 +12,9 @@ if (appVariant !== 'development' && appVariant !== 'preview' && appVariant !== '
   throw new Error(`invalid APP_VARIANT: ${appVariant}`)
 }
 const appIdentity = {
-  development: { name: 'Takeout (Dev)', bundleId: 'dev.tamagui.takeout.dev' },
-  preview: { name: 'Takeout (Preview)', bundleId: 'dev.tamagui.takeout.preview' },
-  production: { name: 'Takeout', bundleId: 'dev.tamagui.takeout' },
+  development: { displayName: 'Takeout (Dev)', bundleId: 'dev.tamagui.takeout.dev' },
+  preview: { displayName: 'Takeout (Preview)', bundleId: 'dev.tamagui.takeout.preview' },
+  production: { displayName: 'Takeout', bundleId: 'dev.tamagui.takeout' },
 }[appVariant]
 
 export default {
@@ -32,7 +32,9 @@ export default {
 
       native: {
         app: {
-          name: appIdentity.name,
+          // the native target name is an identifier; the home screen shows displayName
+          name: 'Takeout',
+          displayName: appIdentity.displayName,
           scheme: 'takeout',
           version: '1.0.0',
           orientation: 'portrait',

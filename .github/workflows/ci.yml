@@ -28,6 +28,11 @@ jobs:
           ALLOW_MISSING_ENV: "1"
           ONE_SERVER_URL: https://takeout.tamagui.dev
           BETTER_AUTH_URL: https://takeout.tamagui.dev
+      - name: Check prepared Cloudflare worker
+        if: github.ref != 'refs/heads/main' || github.event_name == 'pull_request'
+        run: bun scripts/deploy-cloudflare.ts --prepare-only
+        env:
+          ONE_SERVER_URL: https://takeout.tamagui.dev
       - uses: actions/upload-artifact@v4
         with:
           name: takeout-cloudflare

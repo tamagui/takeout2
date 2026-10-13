@@ -94,7 +94,6 @@ export default {
   },
 
   ssr: {
-    external: ['on-zero', '@rocicorp/zero'],
     // auth packages expose React hooks from package code. bundle them through
     // Vite so SSR uses the renderer's React instance.
     noExternal: ['better-auth', '@o/helpers', 'takeout-better-auth'],

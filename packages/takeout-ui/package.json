@@ -100,7 +100,7 @@
     "tamagui": "3.0.12"
   },
   "peerDependencies": {
-    "one": "2.6.22",
+    "one": "2.7.2",
     "react": "19.2.3",
     "react-native-gesture-handler": "~3.3.0",
     "react-native-keyboard-controller": "1.22.5",

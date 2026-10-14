@@ -95,10 +95,10 @@
     "@swc/core"
   ],
   "patchedDependencies": {
-    "@react-navigation/bottom-tabs@8.0.0-alpha.56": "patches/@react-navigation%2Fbottom-tabs@8.0.0-alpha.56.patch",
-    "react-native-screens@4.27.0": "patches/react-native-screens@4.27.0.patch",
+    "@react-navigation/bottom-tabs@8.0.0-alpha.57": "patches/@react-navigation%2Fbottom-tabs@8.0.0-alpha.57.patch",
+    "react-native-screens@4.30.0": "patches/react-native-screens@4.30.0.patch",
     "react-native-reanimated@4.6.0": "patches/react-native-reanimated@4.6.0.patch",
-    "@react-navigation/native-stack@8.0.0-alpha.58": "patches/@react-navigation%2Fnative-stack@8.0.0-alpha.58.patch",
+    "@react-navigation/native-stack@8.0.0-alpha.59": "patches/@react-navigation%2Fnative-stack@8.0.0-alpha.59.patch",
     "react-native-keyboard-controller@1.22.5": "patches/react-native-keyboard-controller@1.22.5.patch",
     "react-native-webgpu@0.10.2": "patches/react-native-webgpu@0.10.2.patch"
   }

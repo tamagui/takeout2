@@ -43,7 +43,7 @@ page. This file is project-local guidance for coding agents.
   the same way.
 - Each tab root declares its own primary action with `useTabAction` from
   `features/app/tabAction.ts` (label, href, optional `onPress`, and the web,
-  SF Symbol, and Material glyphs). The native prominent tab, the web action
+  SF Symbol, and Material glyphs). The native action tab, the web action
   circle (`MobileTabBar` from `takeout-ui/tabs/MobileTabBar`, rendered by
   `app/home/(tabs)/_layout.tsx`), and the desktop header button render the
   focused tab's action, and a tab without one shows none; never edit the three

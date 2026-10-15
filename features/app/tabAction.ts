@@ -1,11 +1,11 @@
 /**
  * @agent-rule
- * each tab's primary action, drawn beside the tab bar for whichever tab is
- * focused: the native tab layout renders it as the ios 27 prominent tab (a
- * glass circle trailing the tab pill), takeout-ui's MobileTabBar draws the
- * same circle at phone-width web, and the desktop header shows it as its
- * accent button. a tab root screen declares its own with useTabAction; a tab
- * that declares none shows no action and the pill centers. the action is that
+ * each tab's primary action, shown for whichever tab is focused: the native
+ * tab layout renders it as a trailing action tab inside the tab pill,
+ * takeout-ui's MobileTabBar draws it as a glass circle beside the pill at
+ * phone-width web, and the desktop header shows it as its accent button. a
+ * tab root screen declares its own with useTabAction; a tab that declares
+ * none shows no action and the pill centers. the action is that
  * tab's primary action, so the screen draws no button of its own for it. it is
  * never a tab: keep it out of APP_TABS. see the takeout-native-action-button
  * skill.

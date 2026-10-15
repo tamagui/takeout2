@@ -32,7 +32,7 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@tamagui/native": "3.0.13",
+    "@tamagui/native": "3.0.14",
     "one": "2.7.4",
     "react": "19.2.3",
     "react-native": "0.87.1",

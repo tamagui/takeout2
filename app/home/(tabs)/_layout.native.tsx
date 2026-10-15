@@ -77,10 +77,6 @@ export default function TabsLayout() {
               tabBarAccessibilityLabel: action.label,
               tabBarButtonTestID: action.testID,
               tabBarSelectionEnabled: false,
-              // one fork: the prominent tab detaches into its own glass
-              // circle beside the tab pill on ios 27+. below that (and on
-              // android) it renders inline like any other tab.
-              tabBarProminent: Platform.OS === 'ios' ? true : undefined,
               tabBarIcon: Platform.select({
                 ios: { type: 'sfSymbol', name: action.sfSymbol },
                 android: { type: 'materialSymbol', name: action.materialSymbol },

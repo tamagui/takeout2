@@ -30,6 +30,6 @@
   "license": "MIT",
   "peerDependencies": {
     "better-auth": ">=1.6.18 <2",
-    "react": "19.2.3"
+    "react": "19.3.0"
   }
 }

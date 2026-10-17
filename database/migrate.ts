@@ -104,8 +104,10 @@ export async function migrateApplicationDatabase(
         }
         await executor.exec(sql)
       }
+      // anonymous placeholders: node:sqlite binds positional args only to
+      // `?`, and `?N` throws "column index out of range" under `one dev`.
       await executor.exec(
-        'INSERT INTO "_app_migrations" (name, "appliedAt") VALUES (?1, ?2)',
+        'INSERT INTO "_app_migrations" (name, "appliedAt") VALUES (?, ?)',
         [migration.name, Date.now()],
       )
     }
@@ -120,7 +122,7 @@ export async function migrateApplicationDatabase(
             .map(quoteIdentifier)
             .join(
               ', ',
-            )}) VALUES (${columns.map((_, index) => `?${index + 1}`).join(', ')}) ON CONFLICT DO NOTHING`,
+            )}) VALUES (${columns.map(() => '?').join(', ')}) ON CONFLICT DO NOTHING`,
           columns.map((column) => sqliteValue(row[column])),
         )
       }

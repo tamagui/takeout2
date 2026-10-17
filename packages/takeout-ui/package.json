@@ -100,11 +100,11 @@
     "tamagui": "3.0.18"
   },
   "peerDependencies": {
-    "one": "2.7.7",
-    "react": "19.2.3",
+    "one": "2.8.0",
+    "react": "19.3.0",
     "react-native-gesture-handler": "~3.3.0",
     "react-native-keyboard-controller": "1.22.5",
-    "react-native-reanimated": "4.6.0",
+    "react-native-reanimated": "4.7.1",
     "react-native-svg": "15.15.4",
     "react-native-teleport": "^1.2.2",
     "tamagui": "3.0.18"

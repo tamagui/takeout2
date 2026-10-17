@@ -513,7 +513,7 @@ export function VirtualList<TItem>({
     </VirtualRow>
   ))
 
-  const scrollProps: ScrollViewProps = {
+  const scrollProps = {
     style,
     contentContainerStyle: [
       endAligned
@@ -551,7 +551,7 @@ export function VirtualList<TItem>({
         {footer}
       </>
     ),
-  }
+  } satisfies ScrollViewProps
 
   if (renderScroll)
     return <>{renderScroll(scrollProps, scrollRef, handleContentInsetChange)}</>

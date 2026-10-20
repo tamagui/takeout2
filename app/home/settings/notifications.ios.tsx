@@ -72,7 +72,7 @@ function SectionInbox({
             onPress={() => open(row)}
             testID={`notification-row-${row.id}`}
           >
-            <One.iOS.HStack alignment="leading" spacing={8}>
+            <One.iOS.HStack alignment="top" spacing={8}>
               <One.iOS.VStack alignment="leading" spacing={2}>
                 <One.iOS.Text text={row.title} />
                 <One.iOS.Text text={row.body} swiftStyle={{ foregroundStyle: '#8E8E93' }} />

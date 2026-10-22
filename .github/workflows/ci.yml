@@ -20,7 +20,7 @@ jobs:
           node-version: 24.16.0
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 1.4.2
+          bun-version: 1.4.4
       - run: bun install --frozen-lockfile --ignore-scripts
       - run: bun run typecheck
       - run: bun run build

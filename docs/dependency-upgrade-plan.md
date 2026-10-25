@@ -1,4 +1,19 @@
-# Published Tamagui 3.1.3 consumer update
+# Published Tamagui 3.1.4 consumer update
+
+Parent r116738 assigned task t-mvo9k7l0-myl0 on 2026-10-25 under the
+owner rollout direction recorded below. Update the published Tamagui family
+from 3.1.3 to exact 3.1.4 pins in the root, local packages and lockfile.
+Preserve One 2.10.0, application source and unrelated dependencies. The
+parent reports published source 7ea8fdab verified by CI356. The corresponding
+Contrast consumer plan is plans/contrast/oss-patch-consumers.md.
+
+Validate the frozen install, installed family alignment, existing typecheck
+and headless web demo login/feed with captures. Native builds, production
+builds and package publication are outside this task. Parent r116738 owns
+the independent Opus review and merge; CI356 owns broader checks.
+
+## Previous Tamagui 3.1.3 consumer update
+
 
 On 2026-10-22, Nate directed the release coordinator: "Yeah, please cut them
 both and then upgrade them across the other repose" (parent rollout task
@@ -43,3 +58,28 @@ where inputs are unchanged. Those web checks do not establish native visual
 acceptance or synchronized feed health. Native builds and device checks are
 outside this continuation. Parent r104486 owns final independent review and
 the watch through main; CI manager p96184 owns natural checks.
+
+## 3.1.4 validation results
+
+- `bun install --frozen-lockfile` passed with the regenerated lockfile.
+- `tm window run heavy -- bun run typecheck` passed.
+- All 122 resolved Tamagui family records and installed manifests are 3.1.4.
+  The seven directly inspected registry artifacts match lockfile integrity.
+  Registry metadata for tamagui and core names gitHead
+  a49cc7ea6b93ba384e77a4880ae48ac4a5635c14; the release-source verification
+  remains the parent's separate CI356 evidence, not a claim from this smoke.
+- A parsed comparison against the base lockfile found only 122 Tamagui family
+  and two local package records changed. One/vxrn and unrelated records are
+  identical, including One 2.10.0.
+- Headless Chromium passed public entry and demo login, seeded feed loading,
+  desktop profile/feed navigation, and create-dialog typing/cancel at
+  1440x1000 and 390x844 CSS pixels. Post stays disabled without an image,
+  including with a caption. No browser page errors were observed.
+- WebP captures were encoded at quality 90 without resizing from 3x device
+  screenshots: desktop 4320x3000, phone 1170x2532. Captures and executable
+  probes are retained outside the disposable worktree and linked in the task.
+
+The dev server reports a stale upstream React Native patch and missing orez
+source maps. Neither prevented this web validation. No native, production
+build, publish or CI dispatch was performed. Independent review, CI and merge
+remain with the parent and CI owner.

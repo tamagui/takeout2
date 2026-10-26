@@ -30,6 +30,13 @@ export default {
         native: './setupNative.ts',
       },
 
+      // scan every fs route as an optimizer entry. the flat default omits
+      // routes nested below depth 3 (feed, profile), whose first-visit
+      // discovery re-triggers optimization and 504s in-flight chunks.
+      optimization: {
+        autoEntriesScanning: true,
+      },
+
       native: {
         app: {
           // the native target name is an identifier; the home screen shows displayName

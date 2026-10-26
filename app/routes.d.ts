@@ -45,10 +45,10 @@ declare module 'one' {
         | `/home/feed/post/[postId]`
       IsTyped: true
       RouteTypes: {
-        '/auth/signup/[method]': RouteInfo<{ method: string }>
-        '/docs/[slug]': RouteInfo<{ slug: string }>
-        '/home/(tabs)/feed/post/[postId]': RouteInfo<{ postId: string }>
-        '/home/feed/post/[postId]': RouteInfo<{ postId: string }>
+        '/auth/signup/[method]': RouteInfo<{ method: string }, '/auth/signup/[method]'>
+        '/docs/[slug]': RouteInfo<{ slug: string }, '/docs/[slug]'>
+        '/home/(tabs)/feed/post/[postId]': RouteInfo<{ postId: string }, '/home/(tabs)/feed/post/[postId]'>
+        '/home/feed/post/[postId]': RouteInfo<{ postId: string }, '/home/feed/post/[postId]'>
       }
     }
   }
@@ -57,7 +57,7 @@ declare module 'one' {
 /**
  * Helper type for route information
  */
-type RouteInfo<Params = Record<string, never>> = {
+type RouteInfo<Params = Record<string, never>, Path extends string = string> = {
   Params: Params
-  LoaderProps: { path: string; search?: string; subdomain?: string; params: Params; request?: Request }
+  LoaderProps: import('one').LoaderProps<Params, OneRouter.LoaderSearchParams<Path>>
 }

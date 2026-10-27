@@ -27,7 +27,7 @@
     "access": "public"
   },
   "peerDependencies": {
-    "one": "2.11.4",
+    "one": "2.11.5",
     "react": "19.3.0",
     "react-native": "0.88.0"
   }

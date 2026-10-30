@@ -33,7 +33,7 @@
   },
   "peerDependencies": {
     "@tamagui/native": "3.1.9",
-    "one": "2.12.1",
+    "one": "2.13.0",
     "react": "19.3.0",
     "react-native": "0.88.0",
     "react-native-gesture-handler": "~3.3.0",

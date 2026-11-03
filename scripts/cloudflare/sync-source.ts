@@ -1,4 +1,4 @@
-// adapted from the existing application sync host; engine code stays in orez-lite.
+// adapted from the existing application sync host; engine code stays in limesync.
 type RustSyncColumn = {
   type: string
 }
@@ -126,8 +126,8 @@ export function cloudflareRustSyncHostSource(
     appID: appId,
   })}`
   return `
-import { createSyncDurableObject, createSyncWorker } from 'orez-lite/cloudflare/sync'
-import { defineStreamingFields } from 'orez-lite/realtime'
+import { createSyncDurableObject, createSyncWorker } from 'limesync/cloudflare/sync'
+import { defineStreamingFields } from 'limesync/realtime'
 import { createSyncQueries } from 'on-zero/server'
 import { queries as appQueryDefinitions } from ${JSON.stringify(queryModuleSpecifier)}
 import { schema as appSchema } from ${JSON.stringify(schemaModuleSpecifier)}

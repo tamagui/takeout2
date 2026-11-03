@@ -1,4 +1,4 @@
-import { count, type AggregateDefinitions } from 'orez-lite/aggregate'
+import { count, type AggregateDefinitions } from 'limesync/aggregate'
 import { schema } from '~/data/generated/schema'
 
 export const aggregates = {

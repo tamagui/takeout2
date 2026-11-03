@@ -1,6 +1,6 @@
 import { resolve } from 'node:path'
 import { drizzleZeroConfig } from 'drizzle-zero-sqlite'
-import { defineLocalConfig } from 'orez-lite/local'
+import { defineLocalConfig } from 'limesync/local'
 import * as drizzleSchema from './database/drizzle-zero.config.ts'
 import { localApplicationSqlClientFactory } from './database/installLocalApplicationSql.server.ts'
 import { migrateApplicationDatabase } from './database/migrate.ts'

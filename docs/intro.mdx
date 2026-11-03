@@ -18,7 +18,7 @@ Cloudflare Workers, with SQLite in a Durable Object and uploads in R2.
   "Login as Demo User" to explore the feed without registering.
 - **Drizzle** defines the application SQLite schema and migrations in TypeScript.
 - **[Lime Sync](https://lime-sync.natewienert.workers.dev)** adapts Zero's client and query model to Cloudflare Durable
-  Objects. Our Rust sync engine, packaged as `orez-lite`, runs as WebAssembly
+  Objects. Our Rust sync engine, packaged as `limesync`, runs as WebAssembly
   in its own Durable Object. The Zero client and `on-zero` helpers provide
   typed queries and optimistic mutations.
 - **Cloudflare Workers and R2** serve the app and API and store uploads. GitHub

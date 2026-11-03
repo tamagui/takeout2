@@ -294,7 +294,7 @@ export function ContentSection() {
             Lime Sync uses Zero's client and query model. Our Rust sync engine,
             packaged as{' '}
             <Link href="https://github.com/natew/orez" target="_blank">
-              <InlineLink fontWeight="600">orez-lite</InlineLink>
+              <InlineLink fontWeight="600">limesync</InlineLink>
             </Link>
             , runs as WebAssembly in a Cloudflare Durable Object. It syncs live queries
             from the application database to clients and supports optimistic mutations.

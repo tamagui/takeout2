@@ -1,7 +1,7 @@
 import { toast } from '@tamagui/toast'
 import { clearZeroClientData, createZeroClient, type ZeroEventsEmitter } from 'on-zero'
 import { createZeroKvStore } from 'on-zero/kv-store'
-import { createZeroClientTransport } from 'orez-lite/client'
+import { createZeroClientTransport } from 'limesync/client'
 import { useEffect, useMemo, type ReactNode } from 'react'
 import { useAuth } from '~/auth/client/authClient'
 import { SERVER_URL } from '~/constants'

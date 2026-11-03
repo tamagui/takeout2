@@ -8,9 +8,9 @@
         "@better-auth/core": "1.6.30",
         "@better-auth/expo": "1.6.30",
         "@callstack/liquid-glass": "^0.8.2",
-        "@o/database": "0.16.19-canary.1790679335417",
-        "@o/env": "0.16.19-canary.1790679335417",
-        "@o/helpers": "0.16.19-canary.1790679335417",
+        "@o/database": "0.16.21-canary.1793729553599",
+        "@o/env": "0.16.21-canary.1793729553599",
+        "@o/helpers": "0.16.21-canary.1793729553599",
         "@react-native/assets-registry": "0.88.0",
         "@react-navigation/bottom-tabs": "8.0.0-alpha.57",
         "@react-navigation/core": "8.0.0-alpha.41",
@@ -27,12 +27,12 @@
         "@tamagui/toast": "3.2.0",
         "better-auth": "1.6.30",
         "drizzle-orm": "1.0.0-beta.9-e89174b",
-        "drizzle-zero-sqlite": "0.16.19-canary.1790679335417",
+        "drizzle-zero-sqlite": "0.16.21-canary.1793729553599",
+        "limesync": "0.16.21-canary.1793729553599",
         "maplibre-gl": "^5.24.0",
         "markdown-to-jsx": "^9.10.2",
-        "on-zero": "0.16.19-canary.1790679335417",
+        "on-zero": "0.16.21-canary.1793729553599",
         "one": "2.13.3",
-        "orez-lite": "0.16.19-canary.1790679335417",
         "react": "19.3.0",
         "react-dom": "19.3.0",
         "react-native": "0.88.0",
@@ -563,11 +563,11 @@
 
     "@nodelib/fs.walk": ["@nodelib/fs.walk@1.2.8", "", { "dependencies": { "@nodelib/fs.scandir": "2.1.5", "fastq": "^1.6.0" } }, "sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg=="],
 
-    "@o/database": ["@o/database@0.16.19-canary.1790679335417", "", { "dependencies": { "@aws-sdk/client-s3": "^3.709.0", "@o/helpers": "0.16.19-canary.1790679335417", "@types/async-retry": "1.4.9", "async-retry": "^1.3.3", "citty": "^0.1.6" }, "peerDependencies": { "better-auth": ">=1.6.0 <2", "drizzle-orm": ">=1.0.0-beta.0 <2", "pg": "^8.16.3", "vite": ">=5" }, "optionalPeers": ["better-auth", "pg", "vite"], "bin": { "database": "dist/takeout/cli.js" } }, "sha512-cPK9EOuwkZaeSTBm5j9ZtVjrLiEoOcSqaJXe/fOBlcx9AGaGOO8YoiYPQHQWKZj+XtvV44fBdwLgwHpsRF8wWw=="],
+    "@o/database": ["@o/database@0.16.21-canary.1793729553599", "", { "dependencies": { "@aws-sdk/client-s3": "^3.709.0", "@o/helpers": "0.16.21-canary.1793729553599", "@types/async-retry": "1.4.9", "async-retry": "^1.3.3", "citty": "^0.1.6" }, "peerDependencies": { "better-auth": ">=1.6.0 <2", "drizzle-orm": ">=1.0.0-beta.0 <2", "pg": "^8.16.3", "vite": ">=5" }, "optionalPeers": ["better-auth", "pg", "vite"], "bin": { "database": "dist/takeout/cli.js" } }, "sha512-H929hE29l6kHOydtVCoE4dhORRVoV/1ZQvjhV6YYQmRGTuMqjDqsf4hGe1gqrG64HWMyX/DcRgNGah3vANWk7Q=="],
 
-    "@o/env": ["@o/env@0.16.19-canary.1790679335417", "", {}, "sha512-D61ytq6RVPPmhZuAQwmaXOEiM6Um/NrGbS/w5C7MdtoJxVWsQqFQgiq9LJMw+8mErnP27VbpO3P8MX8r3O/2HA=="],
+    "@o/env": ["@o/env@0.16.21-canary.1793729553599", "", {}, "sha512-bpGk5lW8GtHaZOd3ZfrPLAGGCEaPeTh9nJLh7PHJAikO4Fk30N65dq85H2aH2Ea1N/4gqFTFLr8kaPPZ2sPpHg=="],
 
-    "@o/helpers": ["@o/helpers@0.16.19-canary.1790679335417", "", { "dependencies": { "dequal": "^2.0.3" }, "peerDependencies": { "expo-clipboard": "*", "react": "*", "react-native": "*" }, "optionalPeers": ["expo-clipboard", "react", "react-native"] }, "sha512-6pPEqvlhRoJtRXqm2wNaEO0WaEdlWbLgJ5VWeG7GEicoP+6Y3Y9QpvpEjfJ+fZDmZ0caddk78LLIzsnhPbbMrA=="],
+    "@o/helpers": ["@o/helpers@0.16.21-canary.1793729553599", "", { "dependencies": { "dequal": "^2.0.3" }, "peerDependencies": { "expo-clipboard": "*", "react": "*", "react-native": "*" }, "optionalPeers": ["expo-clipboard", "react", "react-native"] }, "sha512-oDQw626WKTzVe8BE9ND0dVcfT1wwZu6Ojg0q5DvWie+wgo5Bc89LytX9kpRTZbraitdwkQy0/QXVEF04EBfo+w=="],
 
     "@op-engineering/op-sqlite": ["@op-engineering/op-sqlite@18.2.5", "", { "peerDependencies": { "@sqlite.org/sqlite-wasm": "*", "react": "*", "react-native": "*" }, "optionalPeers": ["@sqlite.org/sqlite-wasm"] }, "sha512-OLmcM0SQLapP1p5Q6Ck5P+V3N6RsAhBozIG07PbQr+8wgB0gYoFgFjuWZK0JvNBY+UYgYPxkOQDd4rk4naWNGw=="],
 
@@ -1599,7 +1599,7 @@
 
     "basic-auth": ["basic-auth@2.0.1", "", { "dependencies": { "safe-buffer": "5.1.2" } }, "sha512-NF+epuEdnUYVlGuhaxbbq+dvJttwLnGY+YixlXlME5KpQ5W3CnXA5cVTneY3SPbPDRkcjMbifrwmFYcClgOZeg=="],
 
-    "bedrock-sqlite": ["bedrock-sqlite@0.16.19-canary.1790679335417", "", {}, "sha512-oeyStX0uqRlebkSKUCHVCPp5km3cCuPz+AsMyztifWj+Izq0nTVPEWspiMPY6sxH65NSppyuyPC3HrKTej/kvQ=="],
+    "bedrock-sqlite": ["bedrock-sqlite@0.16.21-canary.1793729553599", "", {}, "sha512-0nRGGEyS4PmKwTWmL6SPoTLXURVGC92Hx+KubARh2vY6gmH8c3IS1WJugkjv5UZv9U2ts/v88euXgwUXPELGww=="],
 
     "better-auth": ["better-auth@1.6.30", "", { "dependencies": { "@better-auth/core": "1.6.30", "@better-auth/drizzle-adapter": "1.6.30", "@better-auth/kysely-adapter": "1.6.30", "@better-auth/memory-adapter": "1.6.30", "@better-auth/mongo-adapter": "1.6.30", "@better-auth/prisma-adapter": "1.6.30", "@better-auth/telemetry": "1.6.30", "@better-auth/utils": "0.4.2", "@better-fetch/fetch": "1.3.1", "@noble/ciphers": "^2.1.1", "@noble/hashes": "^2.0.1", "better-call": "1.4.0", "defu": "^6.1.4", "jose": "^6.1.3", "kysely": "^0.28.17 || ^0.29.0", "nanostores": "^1.1.1", "zod": "^4.3.6" }, "peerDependencies": { "@lynx-js/react": "*", "@prisma/client": "^5.0.0 || ^6.0.0 || ^7.0.0", "@sveltejs/kit": "^2.0.0", "@tanstack/react-start": "^1.0.0", "@tanstack/solid-start": "^1.0.0", "better-sqlite3": "^12.0.0", "drizzle-kit": ">=0.31.4", "drizzle-orm": "^0.45.2", "mongodb": "^6.0.0 || ^7.0.0", "mysql2": "^3.0.0", "next": "^14.0.0 || ^15.0.0 || ^16.0.0", "pg": "^8.0.0", "prisma": "^5.0.0 || ^6.0.0 || ^7.0.0", "react": "^18.0.0 || ^19.0.0", "react-dom": "^18.0.0 || ^19.0.0", "solid-js": "^1.0.0", "svelte": "^4.0.0 || ^5.0.0", "vitest": "^2.0.0 || ^3.0.0 || ^4.0.0", "vue": "^3.0.0" }, "optionalPeers": ["@lynx-js/react", "@prisma/client", "@sveltejs/kit", "@tanstack/react-start", "@tanstack/solid-start", "better-sqlite3", "drizzle-kit", "drizzle-orm", "mongodb", "mysql2", "next", "pg", "prisma", "react", "react-dom", "solid-js", "svelte", "vitest", "vue"] }, "sha512-+fmPXSZFE7MDmLcppkmzUGMtQxzZXsJbKi5rUunmIYtSQZIgNCZHNSQFwK/ywx10uczkzbtVkrHm75i4o7+gpQ=="],
 
@@ -1811,7 +1811,7 @@
 
     "drizzle-orm": ["drizzle-orm@1.0.0-beta.9-e89174b", "", { "peerDependencies": { "@aws-sdk/client-rds-data": ">=3", "@cloudflare/workers-types": ">=4", "@effect/sql": "^0.48.5", "@effect/sql-pg": "^0.49.7", "@electric-sql/pglite": ">=0.2.0", "@libsql/client": ">=0.10.0", "@libsql/client-wasm": ">=0.10.0", "@neondatabase/serverless": ">=0.10.0", "@op-engineering/op-sqlite": ">=2", "@opentelemetry/api": "^1.4.1", "@planetscale/database": ">=1.13", "@prisma/client": "*", "@sqlitecloud/drivers": ">=1.0.653", "@tidbcloud/serverless": "*", "@tursodatabase/database": ">=0.2.1", "@tursodatabase/database-common": ">=0.2.1", "@tursodatabase/database-wasm": ">=0.2.1", "@types/better-sqlite3": "*", "@types/mssql": "^9.1.4", "@types/pg": "*", "@types/sql.js": "*", "@upstash/redis": ">=1.34.7", "@vercel/postgres": ">=0.8.0", "@xata.io/client": "*", "better-sqlite3": ">=9.3.0", "bun-types": "*", "expo-sqlite": ">=14.0.0", "gel": ">=2", "mssql": "^11.0.1", "mysql2": ">=2", "pg": ">=8", "postgres": ">=3", "prisma": "*", "sql.js": ">=1", "sqlite3": ">=5" }, "optionalPeers": ["@aws-sdk/client-rds-data", "@cloudflare/workers-types", "@effect/sql", "@effect/sql-pg", "@electric-sql/pglite", "@libsql/client", "@libsql/client-wasm", "@neondatabase/serverless", "@op-engineering/op-sqlite", "@opentelemetry/api", "@planetscale/database", "@prisma/client", "@sqlitecloud/drivers", "@tidbcloud/serverless", "@tursodatabase/database", "@tursodatabase/database-common", "@tursodatabase/database-wasm", "@types/better-sqlite3", "@types/pg", "@types/sql.js", "@upstash/redis", "@vercel/postgres", "@xata.io/client", "better-sqlite3", "bun-types", "expo-sqlite", "gel", "mysql2", "pg", "postgres", "prisma", "sql.js", "sqlite3"] }, "sha512-B5KR/qYMZ0JMOurK+0xi1ObpOQcgrjaC9wHUiU2eTJjLemuh2CoQIw6yur68NxZG6Xcd0b9qghUNC/78/bEfbg=="],
 
-    "drizzle-zero-sqlite": ["drizzle-zero-sqlite@0.16.19-canary.1790679335417", "", { "peerDependencies": { "@rocicorp/zero": ">=1.7.0", "drizzle-orm": ">=1.0.0-beta.0 <2" } }, "sha512-bZQ0jM67n+vuDc/Gd+/9Hq8Zhr09fomkmudlmv+EifrciSU8qYW3MCo6YZmJjntV9GsApjHMfOKfzHhtBwnj0A=="],
+    "drizzle-zero-sqlite": ["drizzle-zero-sqlite@0.16.21-canary.1793729553599", "", { "peerDependencies": { "@rocicorp/zero": ">=1.7.0", "drizzle-orm": ">=1.0.0-beta.0 <2" } }, "sha512-rxDmpfCT8+JcFs4aEOF+U602lEe0ymhl0mFEqmiBzAOPPBS99qlurfNSbvb7gHZuEsndAMC+9Cl5+ojWh2tn9A=="],
 
     "dunder-proto": ["dunder-proto@1.0.1", "", { "dependencies": { "call-bind-apply-helpers": "^1.0.1", "es-errors": "^1.3.0", "gopd": "^1.2.0" } }, "sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A=="],
 
@@ -2217,6 +2217,8 @@
 
     "lilconfig": ["lilconfig@3.1.3", "", {}, "sha512-/vlFKAoH5Cgt3Ie+JLhRbwOsCQePABiU3tJ1egGvyQ+33R/vcwM2Zl2QR/LzjsBeItPt3oSVXapn+m4nQDvpzw=="],
 
+    "limesync": ["limesync@0.16.21-canary.1793729553599", "", { "dependencies": { "@noble/ciphers": "1.3.0", "@noble/curves": "1.9.7", "@noble/hashes": "1.8.0", "bedrock-sqlite": "0.16.21-canary.1793729553599", "es-module-lexer": "1.7.0", "esbuild": "^0.25.0", "orez-sync-cf-host": "0.16.21-canary.1793729553599", "orez-sync-executor": "0.16.21-canary.1793729553599", "ws": "^8.19.0" }, "optionalDependencies": { "orez-sync-native": "0.1.29" }, "peerDependencies": { "@rocicorp/zero": ">=1.7.0", "vite": ">=5" }, "optionalPeers": ["vite"], "bin": { "limesync": "dist/cli.js" } }, "sha512-NpMUlqU74zNJA+5fhpmZ8ujwQMBlV7I5OMV88VMwcls4BSKrhGIXigK4OrK+wooKLYU8dFHG+9j1McLbLh05zQ=="],
+
     "lines-and-columns": ["lines-and-columns@1.2.4", "", {}, "sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg=="],
 
     "locate-path": ["locate-path@6.0.0", "", { "dependencies": { "p-locate": "^5.0.0" } }, "sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw=="],
@@ -2393,7 +2395,7 @@
 
     "on-headers": ["on-headers@1.1.0", "", {}, "sha512-737ZY3yNnXy37FHkQxPzt4UZ2UWPWiCZWLvFZ4fu5cueciegX0zGPnrlY6bwRg4FdQOe9YU8MkmJwGhoMybl8A=="],
 
-    "on-zero": ["on-zero@0.16.19-canary.1790679335417", "", { "dependencies": { "@babel/parser": "7.29.7", "@rocicorp/logger": "6.2.0", "chokidar": "^4.0.3", "citty": "^0.1.6", "dequal": "^2.0.3", "orez-lite": "0.16.19-canary.1790679335417", "typescript": "7.0.2", "valibot": "^1.1.0" }, "peerDependencies": { "@rocicorp/zero": ">=1.7.0", "drizzle-orm": ">=1.0.0-beta.0 <2", "drizzle-zero-sqlite": "^0.6.0", "react": "*", "react-native": "*" }, "optionalPeers": ["drizzle-orm", "drizzle-zero-sqlite", "react-native"], "bin": { "on-zero": "cli.cjs" } }, "sha512-9D81WJu1HiubXLdLrjGKTrBfDArHIL/MifhoVj8L41+3ezhcigCW8uDSS1rc5KnCS9bR+Yz57MnLKg1nSa9kLw=="],
+    "on-zero": ["on-zero@0.16.21-canary.1793729553599", "", { "dependencies": { "@babel/parser": "7.29.7", "@rocicorp/logger": "6.2.0", "chokidar": "^4.0.3", "citty": "^0.1.6", "dequal": "^2.0.3", "limesync": "0.16.21-canary.1793729553599", "typescript": "7.0.2", "valibot": "^1.1.0" }, "peerDependencies": { "@rocicorp/zero": ">=1.7.0", "drizzle-orm": ">=1.0.0-beta.0 <2", "drizzle-zero-sqlite": "^0.6.0", "react": "*", "react-native": "*" }, "optionalPeers": ["drizzle-orm", "drizzle-zero-sqlite", "react-native"], "bin": { "on-zero": "cli.cjs" } }, "sha512-VXd3ACPHRlm+I3LfhVHBaiELttGh+R5fXir9HzcQjT9Y63W6BJukPjFPVXaxNCmGOD1oxLCuaCAljU9f9fGaYA=="],
 
     "once": ["once@1.4.0", "", { "dependencies": { "wrappy": "1" } }, "sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w=="],
 
@@ -2405,29 +2407,27 @@
 
     "ora": ["ora@5.4.1", "", { "dependencies": { "bl": "^4.1.0", "chalk": "^4.1.0", "cli-cursor": "^3.1.0", "cli-spinners": "^2.5.0", "is-interactive": "^1.0.0", "is-unicode-supported": "^0.1.0", "log-symbols": "^4.1.0", "strip-ansi": "^6.0.0", "wcwidth": "^1.0.1" } }, "sha512-5b6Y85tPxZZ7QytO+BQzysW31HJku27cRIlkbAXaNx+BdcVi+LlRFmVXzeF6a7JCwJpyw5c4b+YSVImQIrBpuQ=="],
 
-    "orez-lite": ["orez-lite@0.16.19-canary.1790679335417", "", { "dependencies": { "@noble/ciphers": "1.3.0", "@noble/curves": "1.9.7", "@noble/hashes": "1.8.0", "bedrock-sqlite": "0.16.19-canary.1790679335417", "esbuild": "^0.25.0", "orez-sync-cf-host": "0.16.19-canary.1790679335417", "orez-sync-executor": "0.16.19-canary.1790679335417", "ws": "^8.19.0" }, "optionalDependencies": { "orez-sync-native": "0.1.17" }, "peerDependencies": { "@rocicorp/zero": ">=1.7.0", "vite": ">=5" }, "optionalPeers": ["vite"], "bin": { "orez-lite": "dist/cli.js" } }, "sha512-Gun7ToK8ZpGLlBymuLWexvGQRNPbtc2rMFOXW0EhKHSIsvg181j/klMVN698yLVZ4WLVg9dxc3r24rahc1LF4A=="],
+    "orez-sync-cf-host": ["orez-sync-cf-host@0.16.21-canary.1793729553599", "", { "dependencies": { "@opentelemetry/api": "^1.9.0", "orez-sync-executor": "0.16.21-canary.1793729553599" }, "peerDependencies": { "@rocicorp/zero": ">=1.7.0", "vite": ">=5" }, "optionalPeers": ["vite"] }, "sha512-wkl6Dt1XWe571vDxhxsG41TBFZTpckA2erM20SfAA2FUnmkWKcSeKRAY3Y7r8g4t2GWr0OPEi0iJkjfcHlcd1Q=="],
 
-    "orez-sync-cf-host": ["orez-sync-cf-host@0.16.19-canary.1790679335417", "", { "dependencies": { "@opentelemetry/api": "^1.9.0", "orez-sync-executor": "0.16.19-canary.1790679335417" }, "peerDependencies": { "@rocicorp/zero": ">=1.7.0", "vite": ">=5" }, "optionalPeers": ["vite"] }, "sha512-0+aY1t6OZvQ8o5x5dvQb5f55bvVZaP+3YKKcX1ksmqE0arovC1691IfVPtgQZARcS8ELOqomL3HFz7KJwo2mKw=="],
+    "orez-sync-executor": ["orez-sync-executor@0.16.21-canary.1793729553599", "", { "peerDependencies": { "@rocicorp/zero": ">=1.7.0" } }, "sha512-mP9UmWxn41Mca8inx9K7ChJ7pBgIItVJBGbuacJOf3xKxRMAoQNYticIpY7+sbKINUZcqk3S92fJ2ONL14Uhrg=="],
 
-    "orez-sync-executor": ["orez-sync-executor@0.16.19-canary.1790679335417", "", { "peerDependencies": { "@rocicorp/zero": ">=1.7.0" } }, "sha512-iHn27p4sSXmfuziDBZ0KFwJqjWAltKR5M7thww2vBK9OVtCTrHETw3cW71pAQWGiecLc4LL1OHeqYjRhsHE+Eg=="],
+    "orez-sync-native": ["orez-sync-native@0.1.29", "", { "optionalDependencies": { "orez-sync-native-darwin-arm64": "0.1.29", "orez-sync-native-darwin-x64": "0.1.29", "orez-sync-native-linux-arm64-gnu": "0.1.29", "orez-sync-native-linux-arm64-musl": "0.1.29", "orez-sync-native-linux-x64-gnu": "0.1.29", "orez-sync-native-linux-x64-musl": "0.1.29", "orez-sync-native-win32-arm64": "0.1.29", "orez-sync-native-win32-x64": "0.1.29" }, "bin": { "sync-native": "bin/sync-native.cjs" } }, "sha512-kZfvzcL+BFZ/Zd0nqoN51PJ36TPAGkIWImSuty/OTpVAMISt3sNtDhlmpyqFkpS0Ch+8iVmo16chYGGEbAx3ZQ=="],
 
-    "orez-sync-native": ["orez-sync-native@0.1.17", "", { "optionalDependencies": { "orez-sync-native-darwin-arm64": "0.1.17", "orez-sync-native-darwin-x64": "0.1.17", "orez-sync-native-linux-arm64-gnu": "0.1.17", "orez-sync-native-linux-arm64-musl": "0.1.17", "orez-sync-native-linux-x64-gnu": "0.1.17", "orez-sync-native-linux-x64-musl": "0.1.17", "orez-sync-native-win32-arm64": "0.1.17", "orez-sync-native-win32-x64": "0.1.17" }, "bin": { "sync-native": "bin/sync-native.cjs" } }, "sha512-sHoKtz9hzkhEmnmID49WE44qGBeRwCMV020VvlZ6+plQmxdiigxOJONLcKcUfPEMRxvrSXwcccbvQxerIRl1nQ=="],
+    "orez-sync-native-darwin-arm64": ["orez-sync-native-darwin-arm64@0.1.29", "", { "os": "darwin", "cpu": "arm64" }, "sha512-R0h1C9PgAR0W0UKLpejt0QlBuiIZAqUSvqmfULFD/dobTWs5qQt10hYZ6sNwtKjavk6rxN1+foSeso8wA/Amxg=="],
 
-    "orez-sync-native-darwin-arm64": ["orez-sync-native-darwin-arm64@0.1.17", "", { "os": "darwin", "cpu": "arm64" }, "sha512-7VM6v2iAZZgDssqV3iOLddtnriNVEBhrEHr+IekE2lc1htPghl7bWt7ayYt38IyGUZLZDSRunnY3n3ari3hLRw=="],
+    "orez-sync-native-darwin-x64": ["orez-sync-native-darwin-x64@0.1.29", "", { "os": "darwin", "cpu": "x64" }, "sha512-Kyzmnob8duGUr/Cl5tHl/v8KQtVEY7TmaZOCpymmU6YygMj7/ALFEuBFLx+Nhggt1jFxTa7ZUJK/91B8XSOJzQ=="],
 
-    "orez-sync-native-darwin-x64": ["orez-sync-native-darwin-x64@0.1.17", "", { "os": "darwin", "cpu": "x64" }, "sha512-grsBuWydRXl0kPtW7M1jiisgIwqdwvm5VoKB7SpgfOcoYD1vY4p0HOIxgfxof8H2ZSGnfimabFuz967ohvZt2g=="],
+    "orez-sync-native-linux-arm64-gnu": ["orez-sync-native-linux-arm64-gnu@0.1.29", "", { "os": "linux", "cpu": "arm64", "libc": "glibc" }, "sha512-nCh9cTkDgXNYxprSlRERSjuAkkCPKuafJEYanfW9wZYkJW2Pno4vONT7M3Yl8oeOj0809nWCHp9UTqxcvJvZVg=="],
 
-    "orez-sync-native-linux-arm64-gnu": ["orez-sync-native-linux-arm64-gnu@0.1.17", "", { "os": "linux", "cpu": "arm64" }, "sha512-6WmTnkX8i4pwG7+M+yzFIEwZHaEgZ6te4IHCs8CoRRl3CB+BRyN5XczT8aStWoTwFvQ6CuEMDQvgCyFUxNZMEQ=="],
+    "orez-sync-native-linux-arm64-musl": ["orez-sync-native-linux-arm64-musl@0.1.29", "", { "os": "linux", "cpu": "arm64", "libc": "musl" }, "sha512-QM8jxP2tkh7VePedagvrfXsFJayguLrZYKKqCjTZxIDyk5Dzz1rsPFRtSj2henLMNiE9snwGxQlwgvCaUot71g=="],
 
-    "orez-sync-native-linux-arm64-musl": ["orez-sync-native-linux-arm64-musl@0.1.17", "", { "os": "linux", "cpu": "arm64" }, "sha512-bzRJzu/J4Foard9TKslQWOV07B15s3gIy3SB5pFl0PabNy+SSOJikpN/AhiXGx3oLeyl33SYqe0yh0bm+SjoPQ=="],
+    "orez-sync-native-linux-x64-gnu": ["orez-sync-native-linux-x64-gnu@0.1.29", "", { "os": "linux", "cpu": "x64", "libc": "glibc" }, "sha512-O24tuMTfdX5SUvLxOshn0tHWKUg5+EJ3LkybQlT2qOAr1gLg3X6Kirvod2i3/zGbVac4vARiboy+uawgk0F5Dg=="],
 
-    "orez-sync-native-linux-x64-gnu": ["orez-sync-native-linux-x64-gnu@0.1.17", "", { "os": "linux", "cpu": "x64" }, "sha512-SGRZdYMY2SQPGVkp0MXcvgq9WgnjkfoQGzRR/gP4yrkvKUNjqZkgVG7RNq5BNACKLaeEWgdo0ArX7d7kVB1Yiw=="],
+    "orez-sync-native-linux-x64-musl": ["orez-sync-native-linux-x64-musl@0.1.29", "", { "os": "linux", "cpu": "x64", "libc": "musl" }, "sha512-EYsWKajYWXI2HoMLoi+K+16GPXEftX6GuQoa0O8b2qaDkpin46P2JunPf7mF7gSYxyboWKLqbSXEA84sqoYWIQ=="],
 
-    "orez-sync-native-linux-x64-musl": ["orez-sync-native-linux-x64-musl@0.1.17", "", { "os": "linux", "cpu": "x64" }, "sha512-9/vgOxrZ919PGqCR1ns9igP/2gGuzVuAi855pCPVaWAjAHO6ioPPzMNXOSoUY2xS1jsICUOYMO9JwhZ8h/uVLg=="],
+    "orez-sync-native-win32-arm64": ["orez-sync-native-win32-arm64@0.1.29", "", { "os": "win32", "cpu": "arm64" }, "sha512-vgc9uh5hnjgmzhN2rToGZcw0hR/ljvn+3u50L2P9KMv5LpVuBPTr9aVrdcbLc2PMIFgy068+GghjYki1//I66Q=="],
 
-    "orez-sync-native-win32-arm64": ["orez-sync-native-win32-arm64@0.1.17", "", { "os": "win32", "cpu": "arm64" }, "sha512-/TrNfwXG/WjbNScOYDJLGnR/19p+wrt7YGJVZwmHAbuMr6QI1HUcAnW5DpbLQcMAZdYSjmykPyvJgEvXEnqNJg=="],
-
-    "orez-sync-native-win32-x64": ["orez-sync-native-win32-x64@0.1.17", "", { "os": "win32", "cpu": "x64" }, "sha512-aC1PzFjARg/cG4X8/qUczd78kLUXJ9XFXNaclSg704VqHnXqAhUbanj6ZVrYXNIuIPqwurRRYJ30yaHAqZqlqw=="],
+    "orez-sync-native-win32-x64": ["orez-sync-native-win32-x64@0.1.29", "", { "os": "win32", "cpu": "x64" }, "sha512-uX8Uw/157N45Eq2BDQu+sxxTLSTlj7EfZkzybYYGgJ/d19OaT/83tAKnSWspplCRC08oCDyAHgp6qHhNgKY64g=="],
 
     "outdent": ["outdent@0.8.0", "", {}, "sha512-KiOAIsdpUTcAXuykya5fnVVT+/5uS0Q1mrkRHcF89tpieSmY33O/tmc54CqwA+bfhbtEfZUNLHaPUiB9X3jt1A=="],
 
@@ -3319,6 +3319,10 @@
 
     "light-my-request/cookie": ["cookie@2.0.1", "", {}, "sha512-yuToqVvRrj6pfDXREyQAAv8SkAEk/8GS3jQRTiUMm66TVtBYmqQeoEjL2Lmq8Rpo6271vH76InTChTitEAm65w=="],
 
+    "limesync/@noble/ciphers": ["@noble/ciphers@1.3.0", "", {}, "sha512-2I0gnIVPtfnMw9ee9h1dJG7tp81+8Ob3OJb3Mv37rx5L40/b0i7djjCVvGOVqc9AEIQyvyu1i6ypKdFw8R8gQw=="],
+
+    "limesync/@noble/hashes": ["@noble/hashes@1.8.0", "", {}, "sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A=="],
+
     "log-symbols/chalk": ["chalk@4.1.2", "", { "dependencies": { "ansi-styles": "^4.1.0", "supports-color": "^7.1.0" } }, "sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA=="],
 
     "logkitty/yargs": ["yargs@15.4.1", "", { "dependencies": { "cliui": "^6.0.0", "decamelize": "^1.2.0", "find-up": "^4.1.0", "get-caller-file": "^2.0.1", "require-directory": "^2.1.1", "require-main-filename": "^2.0.0", "set-blocking": "^2.0.0", "string-width": "^4.2.0", "which-module": "^2.0.0", "y18n": "^4.0.0", "yargs-parser": "^18.1.2" } }, "sha512-aePbxDmcYW++PaqBsJ+HYUFwCdv4LVvdnhBy78E57PIor8/OVvhMrADFFEDh8DHDFRv/O9i3lPhsENjO7QX0+A=="],
@@ -3346,10 +3350,6 @@
     "one/nanoid": ["nanoid@3.3.20", "", { "bin": { "nanoid": "bin/nanoid.cjs" } }, "sha512-uKdg2G3GNCKQn9byYOpxbGqrT2fGO5KRt5J/8b3pok8rT6qxGWF6hxMyJiEYtAf+FVyYuD9hRaDqX5uPFYJ4ZQ=="],
 
     "ora/chalk": ["chalk@4.1.2", "", { "dependencies": { "ansi-styles": "^4.1.0", "supports-color": "^7.1.0" } }, "sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA=="],
-
-    "orez-lite/@noble/ciphers": ["@noble/ciphers@1.3.0", "", {}, "sha512-2I0gnIVPtfnMw9ee9h1dJG7tp81+8Ob3OJb3Mv37rx5L40/b0i7djjCVvGOVqc9AEIQyvyu1i6ypKdFw8R8gQw=="],
-
-    "orez-lite/@noble/hashes": ["@noble/hashes@1.8.0", "", {}, "sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A=="],
 
     "oxc-parser/@oxc-project/types": ["@oxc-project/types@0.112.0", "", {}, "sha512-m6RebKHIRsax2iCwVpYW2ErQwa4ywHJrE4sCK3/8JK8ZZAWOKXaRJFl/uP51gaVyyXlaS4+chU1nSCdzYf6QqQ=="],
 
@@ -3408,6 +3408,8 @@
     "tailwindcss/chokidar": ["chokidar@3.6.0", "", { "dependencies": { "anymatch": "~3.1.2", "braces": "~3.0.2", "glob-parent": "~5.1.2", "is-binary-path": "~2.1.0", "is-glob": "~4.0.1", "normalize-path": "~3.0.0", "readdirp": "~3.6.0" }, "optionalDependencies": { "fsevents": "~2.3.2" } }, "sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw=="],
 
     "tailwindcss/glob-parent": ["glob-parent@6.0.2", "", { "dependencies": { "is-glob": "^4.0.3" } }, "sha512-XxwI8EOhVQgWp6iDL+3b0r86f4d6AX6zSU55HfB4ydCEuXLXc5FcYeOu+nnGftS4TEju/11rt4KJPTMgbfmv4A=="],
+
+    "takeout-ui/@o/helpers": ["@o/helpers@0.16.19-canary.1790679335417", "", { "dependencies": { "dequal": "^2.0.3" }, "peerDependencies": { "expo-clipboard": "*", "react": "*", "react-native": "*" }, "optionalPeers": ["expo-clipboard", "react", "react-native"] }, "sha512-6pPEqvlhRoJtRXqm2wNaEO0WaEdlWbLgJ5VWeG7GEicoP+6Y3Y9QpvpEjfJ+fZDmZ0caddk78LLIzsnhPbbMrA=="],
 
     "tedious/@types/node": ["@types/node@26.6.5", "", { "dependencies": { "undici-types": "~8.9.0" } }, "sha512-uMzsv9stDdofIZBx4UGh4Z9ZgXnGC9seRDscilBcTHAeOFk67MZg/k9bWVfO+bk4qZmG+l52hRnLwUiH2LnJTg=="],
 

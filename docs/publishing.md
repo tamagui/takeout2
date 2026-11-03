@@ -18,7 +18,7 @@ Nate, 2026-10-06: "Maybe we could call it like durable zero because basically
 it's zero it's still zero but it's just adapted to work on cloud flare,
 durable objects, right". Lime Sync is the public name for Zero's client
 and query model with our Rust sync engine on Cloudflare Durable Objects. The
-implementation package remains `orez-lite`; deployed names and bindings stay
+implementation package remains `limesync`; deployed names and bindings stay
 stable.
 
 Nate, 2026-10-06: "I would also mention like truly native" and "the new one
@@ -34,7 +34,7 @@ The app deploys directly into account `aa20b480cc813f2131bc005e2b7fd140`.
 uploads. `takeout-site-sync` owns the Lime Sync cache and reaches the app's
 private `OrezDataFeed` entrypoint through a service binding. The app forwards
 `/zero-http/*` to that sync worker. `scripts/deploy-cloudflare.ts` uses the
-published `orez-lite/cloudflare/build` helpers and the generated query registry.
+published `limesync/cloudflare/build` helpers and the generated query registry.
 The app applies checked-in SQLite migrations without demo fixtures.
 
 GitHub Actions builds and checks each pull request, then deploys pushes to main.

@@ -5,7 +5,7 @@ import {
   createApplicationSqlClient,
   ZeroDO,
   projectOrezFeedBody,
-} from 'orez-lite/cloudflare'
+} from 'limesync/cloudflare'
 import { orezAppSchema, runCloudflareMigrations } from 'orez:cloudflare-migrations'
 export { ZeroDO as ZeroSqlDO }
 const signals = new AsyncLocalStorage()

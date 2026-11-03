@@ -1,5 +1,5 @@
 import { createZeroServerBindings } from 'on-zero/server'
-import { createSQLiteApplicationDatabase, createSyncExecutor } from 'orez-lite'
+import { createSQLiteApplicationDatabase, createSyncExecutor } from 'limesync'
 import { models } from '~/data/generated/models'
 import { schema } from '~/data/generated/schema'
 import { mutationValidators } from '~/data/generated/syncedMutations'

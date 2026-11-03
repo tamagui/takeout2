@@ -4,7 +4,7 @@ Takeout is a free, open-source starter: a marketing website and, underneath it, 
 app with email and password login, posts, comments, profiles, and account
 settings on web and React Native. It uses One v2, Tamagui v3, takeout-ui, Better Auth, Drizzle,
 and Lime Sync over SQLite: Zero's client and query model with our Rust sync
-engine (`orez-lite`) on Cloudflare Durable Objects.
+engine (`limesync`) on Cloudflare Durable Objects.
 
 ## Run
 

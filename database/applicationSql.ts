@@ -1,7 +1,7 @@
-import { createQueryCompiler } from 'orez-lite/cloudflare/query-compiler'
+import { createQueryCompiler } from 'limesync/cloudflare/query-compiler'
 import { schema } from '~/data/generated/schema'
 import type { SQLiteTransactionProvider } from '@o/database/sqlite'
-import type { LocalApplicationSqlClient } from 'orez-lite/local'
+import type { LocalApplicationSqlClient } from 'limesync/local'
 
 type ApplicationSqlClientFactory = (namespace: string) => LocalApplicationSqlClient
 

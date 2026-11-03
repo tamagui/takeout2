@@ -13,7 +13,7 @@ import {
   pruneUnreachableWorkerModules,
   stripDeadPageRouteImports,
   assertWorkerStaticModuleImportsResolve,
-} from 'orez-lite/cloudflare/build'
+} from 'limesync/cloudflare/build'
 import { schema } from '../data/generated/schema'
 import {
   cloudflareRustSyncHostSource,

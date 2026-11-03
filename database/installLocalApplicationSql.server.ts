@@ -1,4 +1,4 @@
-import { createLocalApplicationSqlClientFactory } from 'orez-lite/local'
+import { createLocalApplicationSqlClientFactory } from 'limesync/local'
 
 export const localApplicationSqlClientFactory = createLocalApplicationSqlClientFactory({
   dataDir: '.orez/application-sql',

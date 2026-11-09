@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "skills": {
+    "building-with-one": {
+      "source": "onejs/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/one/skills/building-with-one/SKILL.md",
+      "computedHash": "a0fa329b6c3c8b7225389d21031fca450ff4886bbe9afca3ef0f3424c678e7fa"
+    },
+    "one-api-routes": {
+      "source": "onejs/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/one/skills/one-api-routes/SKILL.md",
+      "computedHash": "11d72d208fcc0d62dd55053bb0655e13133854df185d543365239eb913319361"
+    },
+    "one-deployment": {
+      "source": "onejs/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/one/skills/one-deployment/SKILL.md",
+      "computedHash": "4768e8ab88b80fba24f994de716d493063a4610015d77619ae67f89a521126c5"
+    },
+    "one-guides": {
+      "source": "onejs/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/one/skills/one-guides/SKILL.md",
+      "computedHash": "a1f9b25c42b5b167891a2d7d6eb5e9037215494e18a3021680d1d94a809eefc4"
+    },
+    "one-loaders": {
+      "source": "onejs/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/one/skills/one-loaders/SKILL.md",
+      "computedHash": "5e250f4634cb592d9c9e6298d0829bd92e7a4bbc7d38ac2310da42c805416a73"
+    },
+    "one-render-modes": {
+      "source": "onejs/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/one/skills/one-render-modes/SKILL.md",
+      "computedHash": "0462cbbf0494002d229380a60001e0812760ff67dbcbcf4e329e7e9c70496c39"
+    }
+  }
+}

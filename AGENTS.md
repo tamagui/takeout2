@@ -4,6 +4,25 @@ Takeout is a One + Tamagui app for web and React Native, with Better Auth,
 on-zero, Drizzle, one SQLite application database, docs, and a public landing
 page. This file is project-local guidance for coding agents.
 
+## One skills
+
+The six official One skills are committed in `.agents/skills/`:
+`building-with-one`, `one-guides`, `one-api-routes`, `one-loaders`,
+`one-render-modes`, and `one-deployment`. Read the relevant skill before
+changing framework routing, loaders, rendering, native integration, or deployment.
+Claude Code discovers the same copies through `.claude/skills/` links.
+Takeout-specific recipes remain in `skills/`; use them alongside One guidance.
+
+Install or refresh all six from the repository root:
+
+```sh
+bunx skills add onejs/skills --skill '*' -a codex -a claude-code -y
+```
+
+Run `bunx skills check` to check for updates, or `bunx skills update` to
+update installed skills. Commit `.agents/skills/`, `.claude/skills/`, and
+`skills-lock.json` together after an update, then start a fresh agent session.
+
 ## Running locally
 
 - `bun install`, then `bun dev` runs the whole stack (web, sync, database,

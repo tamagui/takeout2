@@ -89,24 +89,24 @@
   },
   "dependencies": {
     "@o/helpers": "0.16.19-canary.1790679335417",
-    "@tamagui/animations-css": "3.3.1",
-    "@tamagui/animations-reanimated": "3.3.1",
-    "@tamagui/config": "3.3.1",
-    "@tamagui/core": "3.3.1",
-    "@tamagui/menu": "3.3.1",
-    "@tamagui/toast": "3.3.1",
-    "@tamagui/use-window-dimensions": "3.3.1",
+    "@tamagui/animations-css": "3.3.2",
+    "@tamagui/animations-reanimated": "3.3.2",
+    "@tamagui/config": "3.3.2",
+    "@tamagui/core": "3.3.2",
+    "@tamagui/menu": "3.3.2",
+    "@tamagui/toast": "3.3.2",
+    "@tamagui/use-window-dimensions": "3.3.2",
     "sf-symbols-typescript": "2.2.0",
-    "tamagui": "3.3.1"
+    "tamagui": "3.3.2"
   },
   "peerDependencies": {
-    "one": "2.16.0",
+    "one": "2.17.2",
     "react": "19.3.0",
     "react-native-gesture-handler": "~3.3.0",
     "react-native-keyboard-controller": "1.22.5",
     "react-native-reanimated": "4.7.1",
     "react-native-svg": "15.16.0",
     "react-native-teleport": "^1.2.2",
-    "tamagui": "3.3.1"
+    "tamagui": "3.3.2"
   }
 }
